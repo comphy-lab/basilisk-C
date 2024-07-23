@@ -1,0 +1,38 @@
+#!/bin/bash
+
+AVCONV="`which avconv 2> /dev/null`"
+if test -z "$AVCONV"; then
+    AVCONV=`which ffmpeg`
+fi
+
+if test -z "$AVCONV"; then
+    echo "ppm2ogv: warning: could not find 'avconv' or 'ffmpeg'" >&2
+    echo "ppm2ogv: the output will just be concatenated PPM files" >&2
+    command=cat
+else
+    # -r 15  '15 frames/sec'
+    while test $# -gt 0; do
+	case $1 in
+	    -r) shift; rate="-r $1" ;;
+	    *) options="$options $1" ;;
+	esac
+	shift
+    done
+    command="$AVCONV -f image2pipe -vcodec ppm $rate -i - -codec:v libtheora -qscale:v 7 -y -f ogv $options -"
+fi
+
+if test -d "$TMPDIR" ; then
+    log=`mktemp $TMPDIR/ppm2ogv.XXXXXX`
+else
+    log=`mktemp /tmp/ppm2ogv.XXXXXX`
+fi
+
+if $command 2> $log; then :
+else
+    cat $log >&2
+    rm -f $log
+    exit 1
+fi
+rm -f $log
+
+exit 0

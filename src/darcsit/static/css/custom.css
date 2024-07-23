@@ -1,0 +1,69 @@
+@import url("screen.css"); /* default gitit screen styles */
+@import url("hk-pyg.css"); /* for syntax highlighting */
+
+/* These are for statically-generated HTML */
+
+.bibtex td {
+  padding-top: 0em;    
+  padding-bottom: 0em;
+}
+code > span.pp { color: #007020; }
+code > span.im { color: #007020; }
+code > span.cf {
+  color: #007020; 
+  font-weight: bold;
+}
+
+/* These are for the gitit server */
+
+pre.sourceCode {
+    display: block;
+    padding: 0.5em 0.5em;
+    border: 1px dashed #bebab0;
+    background: #f9f9f9;
+    font-size: 92%;
+}
+
+.sourceCode a {
+    color:inherit;
+}
+
+.figure {
+    text-align: center;
+}
+
+.caption {
+    font-size:  90%;
+}
+
+.message {
+    border: 1px solid #bebab0;
+    padding: 0.5em 0.5em;
+    background: #fff7b2;
+    margin-bottom: 5px;
+}
+
+.error {
+    border: 1px solid #bebab0;
+    padding: 0.5em 0.5em;
+    background: #ffe4e4;
+    margin-bottom: 5px;
+}
+
+#msg_logo {
+    vertical-align:middle;
+    float: left;
+    width: 32px;
+}
+
+#msg_label {
+    margin-left: 32px;
+}
+
+/*
+#previewpane {
+    overflow: auto;
+    height: 300px;
+    margin-top: 0.5em;
+}
+*/

@@ -1,0 +1,9 @@
+<div class="pageTools">
+  <fieldset>
+    <legend>This page</legend>
+    <ul>
+      <li><a href="$pageUrl$?raw">Raw page source</a></li>
+      <li><a href="$pageUrl$?delete">Delete this page</a></li>
+    </ul>
+  </fieldset>
+</div>

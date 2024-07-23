@@ -1,0 +1,3 @@
+test17.c:10: warning (interpreter): undefined condition 'b'
+test17.c:19: warning (interpreter): undefined condition 'b'
+test17.c:23: warning (interpreter): undefined condition 'a'

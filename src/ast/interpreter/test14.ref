@@ -1,0 +1,50 @@
+test14.c:9: interpreter_verbosity (4): !
+test14.c:11: array_new()
+/common.h:382: 1: 1 [0]
+/common.h:382: pmalloc (59)
+ast/interpreter/overload.h:35: malloc (59)
+ast/interpreter/overload.h:35: malloc (size): 0xaddress
+/common.h:382: (Array *) pmalloc ((1)*sizeof(Array),__func__,__FILE__,__LINE__): 0xaddress
+/common.h:383: a->p = NULL: 0xaddress
+/common.h:384: a->max = a->len = 0: 0  + [/src/common.h:384: 'a->len = 0']
+/common.h:385: a: 0xaddress
+test14.c:13: array_append (0xaddress, 0xaddress, 5)
+/common.h:396: a->len + size >= a->max: 1
+/common.h:397: max (5, 4096  + [/src/common.h:397: '4096'])
+ast/interpreter/overload.h:462: 'a > b': [/src/common.h:397: '4096'] = [0]
+ast/interpreter/overload.h:462: a > b ? a : b: 4096  + [/src/common.h:397: '4096']
+/common.h:397: a->max += max (size, 4096): 4096  + [/src/common.h:384: 'a->len = 0']
+/common.h:398: prealloc (0xaddress, 4096  + [/src/common.h:384: 'a->len = 0'])
+ast/interpreter/overload.h:45: realloc (0xaddress, 4096  + [/src/common.h:384: 'a->len = 0'])
+ast/interpreter/overload.h:45: realloc (ptr, size): 0xaddress
+/common.h:398: a->p = prealloc (a->p, a->max,__func__,__FILE__,__LINE__): 0xaddress
+/common.h:400: (char *)a->p: 0xaddress
+/common.h:400: memcpy (0xaddress, 0xaddress, 5 [0])
+/common.h:400: memcpy (((char *)a->p) + a->len, elem, size): 0xaddress
+/common.h:401: a->len += size: 5  + [/src/common.h:384: 'a->len = 0']
+test14.c:13: array_append (a, &b, sizeof(Elem)): !
+test14.c:16: i < a->len/sizeof(Elem): 1
+test14.c:17: *j: 1
+test14.c:16: i++: 0
+test14.c:16: i < a->len/sizeof(Elem): 0
+test14.c:19: b = 2: 2
+test14.c:20: array_append (0xaddress, 0xaddress, 5)
+/common.h:396: a->len + size >= a->max: 0
+/common.h:400: (char *)a->p: 0xaddress
+/common.h:400: memcpy (0xaddress, 0xaddress, 5)
+/common.h:400: memcpy (((char *)a->p) + a->len, elem, size): 0xaddress
+/common.h:401: a->len += size: 10  + [/src/common.h:384: 'a->len = 0']
+test14.c:20: array_append (a, &b, sizeof(Elem)): !
+test14.c:22: a->p: 0xaddress
+test14.c:23: (char *)a->p: 0xaddress
+test14.c:23: ((char *)a->p) + 5: 0xaddress
+test14.c:25: j = (Elem *) a->p: 0xaddress
+test14.c:26: i < a->len/sizeof(Elem): 1
+test14.c:27: j: 0xaddress
+test14.c:28: *j: 1
+test14.c:26: i++: 0
+test14.c:26: i < a->len/sizeof(Elem): 1
+test14.c:27: j: 0xaddress
+test14.c:28: *j: 2
+test14.c:26: i++: 1
+test14.c:26: i < a->len/sizeof(Elem): 0

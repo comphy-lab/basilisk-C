@@ -1,0 +1,26 @@
+test3.c:15: interpreter_verbosity (4): !
+test3.c:18: p.z = 3: 3  + [test3.c:18: 'p.z = 3']
+test3.c:24: pfunc ({...})
+test3.c:7: 'c + d': [test3.c:17: '0'] = [0]
+test3.c:7: c + d: 25  + [test3.c:17: '5']
+test3.c:26: a = 3*q: 75  + [test3.c:17: '5']
+test3.c:28: 3: 3  + [test3.c:28: '3']
+test3.c:30: p = p2: {...}
+test3.c:31: a = p.z*3: 15  + [test3.c:17: '5']
+test3.c:33: warning (interpreter): 'printf' undeclared
+test3.c:33: warning (interpreter): undefined function call 'printf (0xaddress, 15  + [test3.c:17: '5'])'
+test3.c:33: printf ("%g\n", a): !
+test3.c:38: u += 2: 0xaddress
+test3.c:39: a++: 15  + [test3.c:17: '5']
+test3.c:39: -2: -2  + [test3.c:39: '2']
+test3.c:39: u[-2] = (a++)*b: 60  + [test3.c:17: '5'] + [test3.c:20: 'b = 4']
+test3.c:41: -2: -2  + [test3.c:41: '2']
+test3.c:41: 'a + u[-2]': [test3.c:20: 'b = 4'] = [0]
+test3.c:41: a = a + u[-2]: 76  + [test3.c:17: '5']
+test3.c:43: c = 2*a: 152  + [test3.c:17: '5']
+test3.c:48: -2: -2  + [test3.c:48: '2']
+test3.c:48: u[-2] = a*b: 304  + [test3.c:17: '5'] + [test3.c:20: 'b = 4']
+test3.c:49: -2: -2  + [test3.c:49: '2']
+test3.c:49: a = 2*u[-2]: 608  + [test3.c:17: '5'] + [test3.c:20: 'b = 4']
+test3.c:53: 0: 0  + [test3.c:53: '0']
+test3.c:53: b = 1*p[0]: 608  + [test3.c:17: '5'] + [test3.c:20: 'b = 4']

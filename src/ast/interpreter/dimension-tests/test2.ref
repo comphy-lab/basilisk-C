@@ -1,0 +1,103 @@
+dimension-tests/test2.c:4: warning: 'c' is unset: assuming it has dimension [0]
+------------------- 
+#line 6 "dimension-tests/test2.c"
+x
+
+#line 6 "dimension-tests/test2.c"
+double
+size: 17, flags: 1, pointer: 0, scope: 3, value: 0 (unset) [0]
+===================
+------------------- 
+#line 4 "dimension-tests/test2.c"
+c
+
+# 14 "dimension-tests/test2-cpp.c" 2
+# 1 "dimension-tests/test2.c"
+
+
+
+double
+size: 17, flags: 1, pointer: 0, scope: 0, value: 0 (unset) [0]
+===================
+dimension-tests/test2.c:16: warning: 'a' is unset: assuming it has dimension [0]
+------------------- 
+#line 16 "dimension-tests/test2.c"
+a
+
+    
+#line 16 "dimension-tests/test2.c"
+double
+size: 17, flags: 1, pointer: 0, scope: 3, value: 0 (unset) [0]
+===================
+------------------- 
+#line 6 "dimension-tests/test2.c"
+x
+
+#line 6 "dimension-tests/test2.c"
+double
+size: 17, flags: 1, pointer: 0, scope: 4, value: 0 (unset) [0]
+===================
+------------------- 
+#line 4 "dimension-tests/test2.c"
+c
+
+# 14 "dimension-tests/test2-cpp.c" 2
+# 1 "dimension-tests/test2.c"
+
+
+
+double
+size: 17, flags: 1, pointer: 0, scope: 0, value: 0 (unset) [0]
+===================
+dimension-tests/test2.c:20: warning: 'b' is unset: assuming it has dimension [0]
+------------------- 
+#line 20 "dimension-tests/test2.c"
+b
+
+      
+#line 20 "dimension-tests/test2.c"
+double
+size: 17, flags: 1, pointer: 0, scope: 4, value: 0 (unset) [0]
+===================
+------------------- 
+#line 4 "dimension-tests/test2.c"
+c
+
+# 14 "dimension-tests/test2-cpp.c" 2
+# 1 "dimension-tests/test2.c"
+
+
+
+double
+size: 17, flags: 1, pointer: 0, scope: 0, value: 0 (unset) [0]
+===================
+------------------- 
+#line 6 "dimension-tests/test2.c"
+x
+
+#line 6 "dimension-tests/test2.c"
+double
+size: 17, flags: 1, pointer: 0, scope: 5, value: 0 (unset) [0]
+===================
+------------------- 
+#line 4 "dimension-tests/test2.c"
+c
+
+# 14 "dimension-tests/test2-cpp.c" 2
+# 1 "dimension-tests/test2.c"
+
+
+
+double
+size: 17, flags: 1, pointer: 0, scope: 0, value: 0 (unset) [0]
+===================
+------------------- 
+#line 16 "dimension-tests/test2.c"
+a
+
+    
+#line 16 "dimension-tests/test2.c"
+double
+size: 17, flags: 1, pointer: 0, scope: 3, value: 0 (unset) [0]
+===================
+6 constraints, 6 unknowns

@@ -1,0 +1,24 @@
+This (symmetric) matrix represents the current state of compatibility
+of various features in Basilisk: 'yes' means that the features are
+compatible and that this has been tested; 'no' means that the features
+are known to be incompatible (for the moment) and 'maybe' means that
+this may work but has not been tested yet.
+
+Id Feature               1     2     3     4     5     6     7     8     9     10    11    12    13    14    15
+-- ------------------    ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+1  1D                     - 
+2  2D                           - 
+3  3D                                 - 
+4  Solids                maybe  yes   yes   - 
+5  MPI                   maybe  yes   yes   no    - 
+6  Periodic BC            yes   yes   yes  maybe  yes    - 
+7  Saint--Venant          yes   yes   yes   yes   yes   yes   - 
+8  Navier--Stokes        maybe  yes   yes   yes   yes   yes         - 
+9  Conservation laws      yes   yes   yes   yes   yes   yes               - 
+10 Compressible flows    maybe  yes   yes   yes   yes   yes                     - 
+11 Volume-Of-Fluid        no    yes   yes  maybe  yes   yes         yes         no    - 
+12 Height functions       no    yes   yes  maybe  yes   yes         yes         yes   yes   - 
+13 Surface tension        no    yes   yes  maybe  yes   yes         yes         no    yes   yes   - 
+14 Metric                 yes   yes   yes  maybe  yes   yes   yes   no   maybe maybe maybe  no    no    - 
+15 Adaptivity             yes   yes   yes   yes   yes   yes   yes   yes   yes   yes   yes   yes   yes   yes   -
+16 dump/restore           yes   yes   yes   no    yes   yes   yes   yes   yes   yes   yes   yes   yes   yes   yes

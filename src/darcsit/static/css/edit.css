@@ -1,0 +1,39 @@
+/* Side-by-side edit and preview */
+#editcontainer {
+    display: flex;
+    flex-direction: row;
+    height: 85vh;
+}
+#left-column {
+    min-width: 0; /* weird fix: see https://moduscreate.com/blog/how-to-fix-overflow-issues-in-css-flex-layouts/ */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+#preview {
+    margin-right: 0.3em;
+    margin-bottom: 1em;
+    overflow-y: auto;
+    flex: 1;
+}
+#status {
+/*    align-self: center; */
+    box-sizing: border-box;
+    width: 98%;
+}
+#right-column {
+    display: flex;
+    flex-direction: column;
+}
+#editor {
+    overflow-y: auto;
+    flex: 1;
+}
+#editform textarea {
+    font-family: monospace; font-size: 93%;
+}
+#editform #logMsg {
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 0.3em;
+}

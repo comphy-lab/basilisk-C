@@ -1,0 +1,28 @@
+test2.c:23: warning (interpreter): 'printf' undeclared
+test2.c:23: warning (interpreter): undefined function call 'printf (0xaddress, 9  + [test2.c:21: 'a = 3'] + [test2.c:19: 'p.z = 3'], 15  + [test2.c:21: 'a = 3'] + [test2.c:18: '5'])'
+test2.c:8: warning (interpreter): 'printf' undeclared
+test2.c:8: warning (interpreter): undefined function call 'printf (0xaddress, 25  + [test2.c:18: '5'], 0  + [test2.c:18: '5'] + [test2.c:18: '0'])'
+test2.c:29: warning (interpreter): 'printf' undeclared
+test2.c:29: warning (interpreter): undefined function call 'printf (0xaddress, 25  + [test2.c:18: '5'])'
+test2.c:33: warning (interpreter): 'printf' undeclared
+test2.c:33: warning (interpreter): undefined function call 'printf (0xaddress, 75  + [test2.c:18: '5'])'
+test2.c:40: warning (interpreter): 'printf' undeclared
+test2.c:40: warning (interpreter): undefined function call 'printf (0xaddress, 15  + [test2.c:18: '5'], 4  + [test2.c:21: 'b = 4'])'
+test2.c:50: warning (interpreter): 'printf' undeclared
+test2.c:50: warning (interpreter): undefined function call 'printf (0xaddress, 60  + [test2.c:18: '5'] + [test2.c:21: 'b = 4'], 76  + [test2.c:18: '5'])'
+test2.c:62: warning (interpreter): 'printf' undeclared
+test2.c:62: warning (interpreter): undefined function call 'printf (0xaddress, 608  + [test2.c:18: '5'] + [test2.c:21: 'b = 4'], 608  + [test2.c:18: '5'] + [test2.c:21: 'b = 4'])'
+test2.c:68: warning (interpreter): 'printf' undeclared
+test2.c:68: warning (interpreter): undefined function call 'printf (0xaddress, 3  + [test2.c:66: '1'], 2  + [test2.c:66: '2'])'
+test2.c:73: warning (interpreter): 'printf' undeclared
+test2.c:73: warning (interpreter): undefined function call 'printf (0xaddress, 4  + [test2.c:71: '(*p).x = 2'], 0, 1, 1, 4, 4, 1, 0)'
+test2.c:77: warning (interpreter): 'dfunc' undeclared
+test2.c:77: warning (interpreter): undefined function call 'dfunc (1, 0)'
+test2.c:80: warning (interpreter): 'dfunc' undeclared
+test2.c:80: warning (interpreter): undefined function call 'dfunc (0xaddress (unset), 0xaddress)'
+test2.c:81: warning (interpreter): unallocated array access in '*i++'
+test2.c:81: warning (interpreter): undefined argument(s) in 'b = *i++'
+test2.c:82: warning (interpreter): 'dfunc' undeclared
+test2.c:82: warning (interpreter): undefined function call 'dfunc (0xaddress (unset), 0xaddress)'
+test2.c:83: warning (interpreter): uninitialised structure pointer 'b'
+test2.c:83: warning (interpreter): undefined function call 'b->destroy (0xaddress (unset))'

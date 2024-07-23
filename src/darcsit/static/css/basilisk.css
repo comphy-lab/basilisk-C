@@ -1,0 +1,8 @@
+/* Port of hk-pyg.css to CodeMirror */
+
+.cm-s-basilisk .cm-keyword { color: #902000; }
+.cm-s-basilisk .cm-comment { color: #60a0b0; font-style: italic; }
+.cm-s-basilisk .cm-meta { color: #007020; }
+.cm-s-basilisk .cm-number { color: #40a070; }
+.cm-s-basilisk .cm-string { color: #4070a0; }
+

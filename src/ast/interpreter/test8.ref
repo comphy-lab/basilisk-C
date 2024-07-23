@@ -1,0 +1,10 @@
+test8.c:5: interpreter_verbosity (4): !
+test8.c:7: a: 0 (unset)
+test8.c:7: warning (interpreter): undefined condition 'a'
+test8.c:8: c++: 1  + [test8.c:6: 'c = 1']
+test8.c:10: c--: 1  + [test8.c:6: 'c = 1']
+test8.c:11: c: 0 (unset)  + [test8.c:6: 'c = 1']
+test8.c:12: c: 0 (unset)  + [test8.c:6: 'c = 1']
+test8.c:12: warning (interpreter): undefined condition 'c'
+test8.c:13: b: 2  + [test8.c:6: 'b = 2']
+test8.c:15: b*b: 4  + 2*[test8.c:6: 'b = 2']

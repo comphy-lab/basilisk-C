@@ -1,0 +1,1 @@
+predist cd src && touch Makefile.tests Makefile.deps && cp /home/basilisk-src/basilisk/src/ChangeLog .

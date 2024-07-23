@@ -1,0 +1,99 @@
+------------------- 
+#line 6 "test21.c"
+a
+
+  
+#line 6 "test21.c"
+int
+size: 5, flags: 0, pointer: 0, scope: 2, value: 1
+===================
+-------------------
+#line 8 "test21.c"
+1
+
+#line 8 "types.c"
+ast_long
+size: 17, flags: 2, pointer: 0, scope: 2, value: 1  + [test21.c:8: '1']
+===================
+-------------------
+#line 9 "test21.c"
+1*2
+
+#line 8 "types.c"
+ast_long
+size: 17, flags: 2, pointer: 0, scope: 2, value: 2
+===================
+-------------------
+#line 10 "test21.c"
+1*2 + 4
+
+#line 8 "types.c"
+ast_long
+size: 17, flags: 2, pointer: 0, scope: 2, value: 6
+===================
+-------------------
+#line 11 "test21.c"
+1 << 2 + 4
+
+#line 8 "types.c"
+ast_long
+size: 17, flags: 2, pointer: 0, scope: 2, value: 64
+===================
+-------------------
+#line 12 "test21.c"
+1*a + 4
+
+#line 8 "types.c"
+ast_long
+size: 17, flags: 0, pointer: 0, scope: 2, value: 5
+===================
+-------------------
+#line 13 "test21.c"
+(1*2 + 4)/32.
+
+#line 13 "types.c"
+ast_double
+size: 17, flags: 2, pointer: 0, scope: 2, value: 0.1875  + [test21.c:13: '(1*2 + 4)/32.']
+===================
+-------------------
+#line 14 "test21.c"
+sqrt(2.)
+
+#line 13 "types.c"
+ast_double
+size: 17, flags: 2, pointer: 0, scope: 2, value: 1.41421  + 0.5*[test21.c:14: '2.']
+===================
+-------------------
+#line 16 "test21.c"
+2*b
+
+#line 13 "types.c"
+ast_double
+size: 17, flags: 0, pointer: 0, scope: 2, value: 6  + [test21.c:15: 'b = 3']
+===================
+------------------- 
+#line 6 "test21.c"
+a
+
+  
+#line 6 "test21.c"
+int
+size: 5, flags: 0, pointer: 0, scope: 2, value: 3
+===================
+------------------- 
+#line 21 "test21.c"
+b
+
+    
+#line 21 "test21.c"
+double
+size: 17, flags: 1, pointer: 0, scope: 3, value: 2 (unset)  + [test21.c:25: 'b = 2.']
+===================
+-------------------
+#line 29 "test21.c"
+sq(4)
+
+#line 13 "types.c"
+ast_double
+size: 17, flags: 2, pointer: 0, scope: 2, value: 16  + 2*[test21.c:29: '4']
+===================

@@ -1,0 +1,25 @@
+1 0 GfsPoisson GfsBox GfsGEdge { overlap = 0 } {
+  Refine 9
+  Init {} { Div = -18.*M_PI*M_PI*sin(3.*M_PI*x)*sin(3.*M_PI*y) }
+  ApproxProjectionParams { 
+      tolerance = 1e-100 nrelax = 4 nitermin = N nitermax = N 
+      minlevel = 0
+  }
+  Time { iend = 1 }
+  OutputErrorNorm { start = end } stderr {
+   	v = P
+  } {
+   	s = (sin (M_PI*3.*x)*sin (M_PI*3.*y))
+   	unbiased = 1
+   	v = E
+  }
+  OutputTime { start = end } stdout
+  OutputProjectionStats { start = end } stdout
+#  OutputSimulation { start = end } stdout
+}
+GfsBox {
+  left =   Boundary { BcDirichlet P (sin (M_PI*3.*x)*sin (M_PI*3.*y)) }
+  right =  Boundary { BcDirichlet P (sin (M_PI*3.*x)*sin (M_PI*3.*y)) }
+  top =    Boundary { BcDirichlet P (sin (M_PI*3.*x)*sin (M_PI*3.*y)) }
+  bottom = Boundary { BcDirichlet P (sin (M_PI*3.*x)*sin (M_PI*3.*y)) }
+}

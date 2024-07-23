@@ -1,0 +1,29 @@
+test26.c:8: interpreter_verbosity (4): !
+test26.c:12: i: 0 (unset)
+test26.c:12: b[i]: 4  + [test26.c:11: '4']
+test26.c:13: 0: 0  + [test26.c:13: '0']
+test26.c:13: b[0]: 4  + [test26.c:11: '4']
+test26.c:14: i: 0 (unset)
+test26.c:14: b[i] = 6: 6  + [test26.c:14: 'b[i] = 6']
+test26.c:15: 0: 0  + [test26.c:15: '0']
+test26.c:15: b[0]: 6  + [test26.c:14: 'b[i] = 6']
+test26.c:19: i: 0 (unset)
+test26.c:19: a[i] = (struct { int x, y; }){3,4}: {...}
+test26.c:20: 0: 0  + [test26.c:20: '0']
+test26.c:20: a[0].x: 3
+test26.c:21: 0: 0  + [test26.c:21: '0']
+test26.c:21: a[0].y: 4
+test26.c:23: 0: 0  + [test26.c:23: '0']
+test26.c:23: a[0] = (struct { int x, y; }){5,6}: {...}
+test26.c:24: 0: 0  + [test26.c:24: '0']
+test26.c:24: a[0].x: 5
+test26.c:25: 0: 0  + [test26.c:25: '0']
+test26.c:25: a[0].y: 6
+test26.c:27: i: 0 (unset)
+test26.c:27: a[i].x: 5
+test26.c:29: i: 0 (unset)
+test26.c:29: a[i].x = 7: 7
+test26.c:30: 0: 0  + [test26.c:30: '0']
+test26.c:30: a[0].x: 7
+test26.c:31: 0: 0  + [test26.c:31: '0']
+test26.c:31: a[0].y: 6

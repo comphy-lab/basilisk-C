@@ -1,0 +1,45 @@
+dimension-tests/test8.c:23: warning: 'b' is unset: assuming it has dimension [0]
+------------------- 
+#line 23 "dimension-tests/test8.c"
+d
+
+
+
+
+
+
+
+  
+#line 23 "dimension-tests/test8.c"
+double
+size: 17, flags: 1, pointer: 0, scope: 2, value: -14 (unset)  + [dimension-tests/test8.c:23: 'c = 7']
+===================
+------------------- 
+#line 23 "dimension-tests/test8.c"
+d
+
+
+
+
+
+
+
+  
+#line 23 "dimension-tests/test8.c"
+double
+size: 17, flags: 1, pointer: 0, scope: 2, value: 21 (unset)  + [dimension-tests/test8.c:23: 'c = 7']
+===================
+19 constraints, 19 unknowns
+Dimensions of finite constants
+  [0]
+    dimension-tests/test8.c:30: 'e = 4'
+  [1]
+    /src/common.h:858: 'L0 = 1. [1]'
+    dimension-tests/test8.c:11: 'f[] = 1. [1]'
+    dimension-tests/test8.c:13: 'f[] = 2.'
+    dimension-tests/test8.c:16: '3.'
+    dimension-tests/test8.c:16: '4.'
+  [2]
+    dimension-tests/test8.c:38: '1 [2]'
+    dimension-tests/test8.c:38: '2'
+    dimension-tests/test8.c:39: '3.'

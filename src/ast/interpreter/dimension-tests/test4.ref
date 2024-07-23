@@ -1,0 +1,9 @@
+11 constraints, 11 unknowns
+Dimensions of finite constants
+  [1]
+    dimension-tests/test4.c:6: '1.'
+    dimension-tests/test4.c:12: 'a = 2'
+    dimension-tests/test4.c:13: '1. [1]'
+  [2]
+    dimension-tests/test4.c:6: '1.'
+    dimension-tests/test4.c:14: '2. [2]'

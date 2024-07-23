@@ -1,0 +1,7 @@
+# From Table 1 of Johansen & Colella, 1998, JCP 147, 60-85
+# N    tau_p_max  tau_p_avg  tau_f_max
+40     1.20e-1	  2.63e-2    1.66e-3
+80     7.71e-2	  1.45e-2    4.15e-4
+160    4.20e-2	  7.35e-3    1.04e-4
+320    2.18e-2	  3.73e-3    2.59e-5
+640    1.11e-2	  1.89e-3    6.49e-6

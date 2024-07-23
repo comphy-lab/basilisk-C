@@ -1,0 +1,10 @@
+------------------- 
+#line 8 "dimension-tests/test12.c"
+v
+
+  
+#line 8 "dimension-tests/test12.c"
+double
+size: 17, flags: 0, pointer: 0, scope: 2, value: 0  + [dimension-tests/test12.c:5: 'a[i] = 2. [1]']
+===================
+39 constraints, 39 unknowns

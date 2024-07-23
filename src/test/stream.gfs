@@ -1,0 +1,30 @@
+# similar to stream.c
+
+Define LEVEL 8
+
+1 0 GfsAdvection GfsBox GfsGEdge {} {
+  Refine LEVEL
+  Time { end = 30 }
+  VariableTracer Omega
+  Init {} { 
+      Omega = {
+	  #define sq(x) ((x)*(x))
+	  double dd = 0.1;
+	  return (exp(-(sq(x - dd) + sq(y))/(dd/10.)) +
+	      exp(-(sq(x + dd) + sq(y))/(dd/10.)));
+      }
+  }
+  VariablePoisson Psi -Omega
+  VariableStreamFunction { istep = 1 } Psi1 Psi
+  AdaptError { istep = 1 } { cmax = 3e-3 maxlevel = LEVEL } Omega
+#  OutputSimulation { step = 0.5 } stdout
+  OutputScalarSum { step = 30 } stderr { v = Omega }
+  OutputSimulation { step = 5 } sim-%g.gfs
+  OutputTiming { start = end } stderr
+}
+GfsBox {
+  left = Boundary { BcDirichlet Psi 0 }
+  right = Boundary { BcDirichlet Psi 0 }
+  top = Boundary { BcDirichlet Psi 0 }
+  bottom = Boundary { BcDirichlet Psi 0 }
+}

@@ -1,0 +1,9 @@
+test4.c:5: interpreter_verbosity (4): !
+test4.c:6: 2: 2  + [test4.c:6: '2']
+test4.c:7: 0: 0  + [test4.c:7: '0']
+test4.c:8: a: 3  + [test4.c:6: '1']
+test4.c:9: 1: 1  + [test4.c:9: '1']
+test4.c:10: 1: 1  + [test4.c:10: '1']
+test4.c:10: *p: {...}
+test4.c:10: (*p).x = b[1]: 2  + [test4.c:6: '2']
+test4.c:11: a = p->x*2: 4  + [test4.c:6: '2']

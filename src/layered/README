@@ -1,0 +1,78 @@
+# A vertically-Lagrangian multilayer solver for free-surface flows
+
+This directory contains a hierarchy of modules which can be combined
+to solve an increasingly complex (and accurate) range of equations
+describing the motion of layers of incompressible fluids (illustrated
+below): from the hydrostatic Saint-Venant/shallow-water equations to
+the variable-density, incompressible Navier--Stokes equations with
+interfaces, Coriolis acceleration etc.
+
+![The layered system and some of the associated
+ fields](../figures/layers.svg){ width="60%" }
+
+The theoretical basis and main algorithms for this solver are
+described in [Popinet, 2020](#popinet2020).
+
+The modules are, in order of increasing complexity:
+
+* The [hydrostatic solver](hydro.h) approximates
+  $$
+  \begin{aligned}
+    \partial_t h_k + \mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k & =
+    0,\\
+    \partial_t \left( h \mathbf{u} \right)_k + \mathbf{{\nabla}} \cdot \left(
+    h \mathbf{u}  \mathbf{u} \right)_k & = - gh_k  \mathbf{{\nabla}} (\eta)
+  \end{aligned}
+  $$
+* The [implicit free-surface extension](implicit.h) adds time-implicit
+  integration of the free-surface evolution.
+* The [Coriolis extension](coriolis.h) adds the (horizontal) Coriolis
+  acceleration.
+* The [Boussinesq](dr.h) and [isopycnal](isopycnal.h) extensions add
+  the buoyancy term due to small density variations i.e. the terms and
+  equations in blue
+  $$
+  \begin{aligned}
+  \partial_t \left( h \mathbf{u} \right)_k + \mathbf{{\nabla}} \cdot \left(
+  h \mathbf{u}  \mathbf{u} \right)_k & = - gh_k  \mathbf{{\nabla}} (\eta)
+  {\color{blue} - \mathbf{{\nabla}} (h q)_k + \left[ q 
+  \mathbf{{\nabla}} z \right]_k}\\
+  ...\\
+  {\color{blue}\partial_t \left( h T \right)_k + \mathbf{{\nabla}} \cdot \left(
+  h \mathbf{u}  T \right)_k} & {\color{blue} = 0,}\\
+  {\color{blue}q(z)} & {\color{blue} = \int_0^z g \Delta \rho(T) dz}
+  \end{aligned}
+  $$
+* The [non-hydrostatic extension](nh.h) adds vertical momentum and the
+  non-hydrostatic pressure i.e.
+  $$
+  \begin{aligned}
+    \partial_t h_k + \mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k & =
+    0,\\
+    \partial_t \left( h \mathbf{u} \right)_k + \mathbf{{\nabla}} \cdot \left(
+    h \mathbf{u}  \mathbf{u} \right)_k & = - gh_k  \mathbf{{\nabla}} (\eta) 
+    {\color{blue} - \mathbf{{\nabla}} (h \phi)_k + \left[ \phi 
+      \mathbf{{\nabla}} z \right]_k},\\
+    {\color{blue} \partial_t (hw)_k + \mathbf{{\nabla}} \cdot 
+    \left( hw \mathbf{u} \right)_k} & {\color{blue} = - [\phi]_k,}\\
+    {\color{blue} \mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k + 
+    \left[ w - \mathbf{u} \cdot \mathbf{{\nabla}} z \right]_k} & 
+    {\color{blue} = 0},
+  \end{aligned}
+  $$
+
+Additional modules include:
+
+* [Vertical viscosity and diffusion](diffusion.h)
+* [Vertical remapping](remap.h)
+* [Horizontal viscosity](viscosity.h)
+* An [interface](gotm.h) for the [General Ocean Turbulence
+  Model](http://gotm.net)
+* [Performance statistics](perfs.h)
+* [Calculation of the Reference Potential Energy](rpe.h)
+
+## References
+
+~~~bib
+@hal{popinet2020, hal-02365730}
+~~~

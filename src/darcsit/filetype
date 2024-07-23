@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# checks whether a file can be formatted using markdown
+
+function filetype()
+{
+    if [[ "$1" == *.page || "$1" == *.md ]]; then
+	echo page
+    elif [[ "$1" == */log || "$1" == */out ]]; then
+	echo "text/plain"
+    elif [[ "$1" == *.[chm] || "$1" == *.py ]]; then
+	if $BASILISK/darcsit/pagemagic "$1"; then
+	    echo page-magic
+	else
+	    if [[ "$1" == *.[ch] ]]; then
+		echo c
+	    elif [[ "$1" == *.m ]]; then
+		echo octave
+	    else
+		echo python
+	    fi
+	fi
+    else
+	local type=$(file -b -L --mime-type "$1")
+	if [[ "$type" == text/x-shellscript || "$1" == *.sh ]]; then
+	    if $BASILISK/darcsit/pagemagic "$1"; then
+		echo page-magic
+	    else
+		echo bash
+	    fi
+	elif [[ "$type" == text/x-makefile ]]; then
+	    if grep -q '^[ \t]*~~~' "$1"; then
+		echo page
+	    else
+		echo makefile
+	    fi
+	elif [[ "$type" == text/x-c ]]; then
+	    if grep -q '^[ \t]*~~~' "$1"; then
+		echo page
+	    else
+		echo c
+	    fi
+	elif [[ "$type" == text/* ]]; then
+	    if [[ "$1" == *.awk ]]; then
+		echo awk
+	    elif [[ "$1" == *.plot ]]; then
+		echo bash
+	    elif [[ "$1" == *.html ]]; then
+		echo html
+	    elif [[ "$1" == *.css ]]; then
+		echo css
+	    elif [[ "$1" == *.js ]]; then
+		echo javascript
+	    elif grep -q '^[ \t]*~~~' "$1"; then
+		echo page
+	    else
+		# match types with those of `pandoc --list-highlight-languages`
+		case "$type" in
+		    *lisp)   echo commonlisp ;;
+		    *diff)   echo diff ;;
+		    *python) echo python ;;
+		    *)
+			if [[ "$1" != *.* ]]; then
+			    echo page
+			else
+			    echo "$type"
+			fi
+			;;
+		esac
+	    fi
+	else
+	    echo "$type"
+	fi
+    fi
+}

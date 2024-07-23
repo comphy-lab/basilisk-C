@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    $if(basepage)$
+    <base href="$base$/$basepage$/"/>
+    $endif$
+    $if(feed)$
+    <link href="$base$/_feed/" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed" />
+    <link href="$base$/_feed$pageUrl$" type="application/atom+xml" rel="alternate" title="This page's ATOM Feed" />
+    $endif$
+    <title>$wikititle$ - $pagetitle$</title>
+    $if(printable)$
+    <link href="$base$/css/print.css" rel="stylesheet" media="all" type= "text/css" />
+    $else$
+    <link href="$base$/css/custom.css" rel="stylesheet" media="screen, projection" type="text/css" />
+    <link href="$base$/css/print.css" rel="stylesheet" media="print" type= "text/css" />
+    $endif$
+    <!--[if IE]><link href="$base$/css/ie.css" rel="stylesheet" media="screen, projection" type="text/css" /><![endif]-->
+    <link rel="stylesheet" href="$base$/css/basilisk.css"/>
+    <script src="$base$/js/jquery.min.js" type="text/javascript"></script>
+    <script src="$base$/js/jquery-ui.packed.js" type="text/javascript"></script>
+    <script src="$base$/js/plots.js" type="text/javascript"></script>
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css"
+      integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j"
+      crossorigin="anonymous"/>
+<script defer
+	src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.js"
+	integrity="sha384-9Nhn55MVVN0/4OFx7EE5kpFBPsEMZxKTCnA+4fqDmg12eCTqGi6+BB2LjY8brQxJ"
+	crossorigin="anonymous">
+</script>
+  </head>
+  <body>
+    <div id="doc3" class="yui-t1">
+        <div id="yui-main">
+          <div id="maincol" class="yui-b">
+<div id="userbox">
+  <noscript>
+    <a href="$base$/_login">Login</a>
+    <a href="$base$/_logout">Logout</a>
+  </noscript>
+  &nbsp;
+  <a id="loginlink" class="login" href="$base$/_login">Login / Get an account</a>
+  <a id="logoutlink" class="login" href="$base$/_logout">Logout <span id="logged_in_user"></span></a>
+</div>
+$if(tabs)$
+<ul class="tabs">
+  $tabs$
+</ul>
+$endif$
+<div id="content">
+  $if(revision)$
+    <h2 class="revision">Revision $revision$</h2>
+  $endif$
+  $if(notitle)$
+  $else$
+    <h1 class="pageTitle"><a href="$pageUrl$">$pagetitle$</a></h1>
+  $endif$
+<ul class="messages" id="messages">$messages$</ul>
+  <div id="status"></div>
+  $if(login)$
+<form action="$pageUrl$" method="post" id="BogoForm">
+  <fieldset>
+    <label>Username </label>
+    <input type="text" name="bogoid" id="bogoid" size="15" tabindex="1"/>
+    <label>Password </label>
+    <input type="password" name="bogopid" id="bogopid" size="15"
+           tabindex="2"/>
+    <input type="text" name="destination" id="destination"
+           style="display: none;" value="$referer$"/>
+    <input type="submit" name="bogo" id="bogo" value="Login" tabindex="3"/>
+  </fieldset>
+</form>
+<p>If you do not have an account,
+  <a href="/_register?destination=$referer$">click here to get one.</a>
+</p>
+<!-- <p>If you forgot your password, -->
+<!--   <a href="/_resetPassword">click here to get a new one.</a></p> -->
+  $endif$
+  $if(register)$
+Please note that:
+<ul>
+  <li>Usernames can contain spaces. The prefered format is "Jane Smith".</li>
+  <li>Usernames will appear in the file history.</li>
+  <li>Email is optional but is recommended for validating authorship.</li>
+</ul>
+<form action="" method="post" id="bogoForm">
+  <fieldset>
+    <label>Username (at least 3 letters or digits):</label><br/>
+    <input type="text" name="bogoid" id="bogoid"
+	   size="20" tabindex="2"/><br/>
+    <label>Email (optional, will not be displayed on the Wiki):</label><br/>
+    <input type="text" name="email" id="email"
+	   size="20" tabindex="3" value=""/><br/>
+    <input type="text" name="full_name_1" id="full_name_1"
+	   size="20" class="req"/>
+    <label>Password (at least 6 characters, including at least one non-letter):</label><br/>
+    <input type="password" name="bogopid" id="bogopid"
+	   size="20" tabindex="4"/> <br/>
+    <label>Confirm Password:</label><br/>
+    <input type="password" name="bogopid2" id="bogopid2"
+	   size="20" tabindex="5"/><br/>
+    <input type="submit" name="register" id="register"
+	   value="Register" tabindex="6"/>
+  </fieldset>
+</form>
+  $endif$
+$if(toc)$
+<div id="$idprefix$TOC">
+$toc$
+</div>
+$endif$
+$body$
+</div>
+<div id="footer">
+inspired by <a href="http://github.com/jgm/gitit/tree/master/">gitit</a>,
+powered by <a href="/src/darcsit/README">darcsit</a>
+</div>
+          </div>
+        </div>
+        <div id="sidebar" class="yui-b first">
+<div id="logo">
+  <a href="$base$/" alt="site logo" title="Go to top page"><img src="$base$/img/logo.png" /></a>
+</div>
+          $if(sitenav)$
+<div class="sitenav">
+  <fieldset>
+    <legend>Site</legend>
+    <ul>
+      <li><a href="$base$/Front Page">Front page</a></li>
+      <li><a href="$base$/_index">All pages</a></li>
+      <li><a href="$base$/_activity">Recent activity</a></li>
+      $if(feed)$
+      <li><a href="$base$/_feed/" type="application/atom+xml" rel="alternate" title="ATOM Feed">Atom feed</a> <img alt="feed icon" src="$base$/img/icons/feed.png"/></li>
+      $endif$
+      <li><a href="$base$/Help">Help</a></li>
+    </ul>
+    <form action="/_search" method="get" id="searchform">
+      <input type="text" name="patterns" id="patterns"/>
+      <input type="submit" value="Search"/>
+    </form>
+  </fieldset>
+  <fieldset>
+    <legend>Documentation</legend>
+    <ul>
+      <li><a href="$base$/Tutorial">Tutorial</a></li>
+      <li><a href="$base$/src/INSTALL">Installation</a></li>
+      <li><a href="$base$/Basilisk C">Basilisk C</a></li>
+      <li><a href="$base$/src/README">Solvers and functions</a></li>
+      <li><a href="$base$/src/examples/README">Examples</a></li>
+      <li><a href="http://groups.google.com/d/forum/basilisk-fr">User forum</a></li>
+      <li><a href="$base$/sandbox/documentation">More documentation</a></li>
+    </ul>
+  </fieldset>
+  <fieldset>
+    <legend>Development</legend>
+    <ul>
+      <li><a href="$base$/src/?history">Recent activity</a></li>
+      <li><a href="$base$/src/">Source code</a></li>
+      <li><a href="https://hub.darcs.net/basilisk/basilisk/browse/src">Darcs Hub</a></li>
+      <li><a href="$base$/src/test/README">Test cases</a></li>
+      <li><a href="$base$/sandbox/bugs/README">Bug reports</a></li>
+      <li><a href="$base$/src/Contributing">How to contribute</a></li>
+      <li><a href="$base$/sandbox/">Play in the sandbox</a></li>
+    </ul>
+  </fieldset>
+</div>
+          $endif$
+          $if(pagetools)$
+<div class="pageTools">
+  <fieldset>
+    <legend>This page</legend>
+    <ul>
+      <li><a href="$pageUrl$?raw">Raw page source</a></li>
+      <li><a href="$pageUrl$?delete">Delete this page</a></li>
+    </ul>
+  </fieldset>
+</div>
+          $endif$
+          $if(markuphelp)$
+<div class="markupHelp">
+<pre>
+# Section heading
+
+## Subsection
+
+Formatting:  *italics*,
+**bold**, super^script^,
+sub~script~, ~~strikeout~~.
+A line break  
+can be forced with two spaces
+at the end of the line.
+
+> Indented quotation
+
+Links:
+[external](http://google.com),
+[Wiki Link](),
+![image](/img/logo.png),
+[to heading](#section-heading).
+
+Indented code block:
+
+    #include &lt;stdbool.h&gt;
+
+Or use a delimited code block:
+
+~~~ { .haskell }
+let a = 1:a in head a
+~~~
+
+- bulleted
+- list
+
+* * * * *
+
+1.  ordered
+2.  list
+    a. sublist (indent 4 spaces)
+    b. another
+3.  item three
+
+term
+:   definition
+
+orange
+:   orange fruit
+</pre>
+For more: <a href=http://daringfireball.net/projects/markdown>markdown syntax</a>, <a href=http://pandoc.org/README.html>pandoc extensions</a>.
+</div>
+          $endif$
+        </div>
+    </div>
+    $javascripts$
+    $if(users)$
+<script type="text/javascript">
+/* <![CDATA[ */
+  __ESCAPEDDOLLAR__.get("$base$/_user", {}, function(username, status) {
+     __ESCAPEDDOLLAR__("#logged_in_user").text(username);
+     if (username == "") {  // nobody logged in
+        __ESCAPEDDOLLAR__("#logoutlink").hide();
+        __ESCAPEDDOLLAR__("#loginlink").show();
+     } else {
+        __ESCAPEDDOLLAR__("#logoutlink").show();
+        __ESCAPEDDOLLAR__("#loginlink").hide();
+     };
+   });
+/* ]]> */
+</script>
+    $endif$
+  </body>
+</html>

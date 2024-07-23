@@ -1,0 +1,163 @@
+The default installation relies on a [small implementation](fb_tiny.c)
+without any dependencies other than the C library. This should be
+portable to any system. Only follow the instructions below if you
+think that you *really* need another implementation.
+
+Two alternative options are possible: off-screen rendering with OSMesa
+or using graphics-acceleration hardware.
+
+# Off-screen rendering with OSMesa
+
+[OSMesa](https://www.mesa3d.org/osmesa.html) is a software-only
+implementation of OpenGL i.e. it does not require any graphics
+hardware and is thus suitable for installation on large-scale clusters
+which usually do not have graphical capabilities.
+
+## Debian-based systems (Debian, Ubuntu, etc.)
+
+~~~bash
+sudo apt-get install bison libosmesa6-dev
+~~~
+
+to install the required system libraries (and their "development"
+requirements i.e. header files etc.), then do:
+
+~~~bash
+cd $BASILISK/gl
+make libglutils.a libfb_osmesa.a
+~~~
+
+to compile the libraries provided by Basilisk.
+
+## Mac OSX
+
+You first need to install [MacPorts](https://www.macports.org), then
+do:
+
+~~~bash
+sudo port install mesa
+~~~
+
+to install the required system libraries, then do:
+
+~~~bash
+cd $BASILISK/gl
+CFLAGS=-I/opt/local/include make libglutils.a libfb_osmesa.a
+~~~
+
+to compile the libraries provided by Basilisk.
+
+# Using graphics-acceleration hardware
+
+If a graphics card is installed on the system, this can be used to
+provide faster OpenGL graphics. libGLEW, libGL and libX11 are
+required.
+
+## Debian-based systems (Debian, Ubuntu, etc.)
+
+Use
+
+~~~bash
+sudo apt-get install bison libglu1-mesa-dev libglew-dev libgl1-mesa-dev
+~~~
+
+to install the required system libraries (and their "development"
+requirements i.e. header files etc.), then do:
+
+~~~bash
+cd $BASILISK/gl
+make libglutils.a libfb_glx.a
+~~~
+
+to compile the libraries provided by Basilisk.
+
+# Standalone installation
+
+The libraries are independent from Basilisk and can be installed
+separately. This is useful for example when [running on
+supercomputers](/src/Tips#running-on-supercomputers) which do not have
+Basilisk installed.
+
+This can be done easily using something like:
+
+On the local system:
+
+~~~bash
+cd $BASILISK
+tar czvf gl.tgz gl
+scp gl.tgz login@supercomputer.org:
+~~~
+
+On the remote machine:
+
+~~~bash
+tar xzvf gl.tgz
+cd gl
+make clean
+~~~
+
+and then follow the [installation
+instructions](#using-off-screen-rendering) above.
+
+## Bug in OSMesa "gallium" implementation
+
+If when using the system-provided OSMesa library in parallel (with
+MPI), you see only a partial image this can be a symptom of a
+[bug](https://gitlab.freedesktop.org/mesa/mesa/-/issues/885) in the
+"gallium" version of OSMesa. To work around this bug, you will need to
+recompile the `libfb_osmesa` library using something like
+
+~~~bash
+cd $BASILISK/gl
+rm -f fb_osmesa.o
+CFLAGS=-DGALLIUM=1 make libfb_osmesa.a
+~~~
+
+Note that this bug has been
+[fixed](https://gitlab.freedesktop.org/mesa/mesa/-/commit/c5c1aa7c75c05927017325829cb3f354654d0b73)
+in more recent versions of OSMesa.
+
+## Installing OSMesa from source
+
+If pre-compiled packages for OSMesa are not available (or broken)
+on the system you want to use, it is reasonably simple to install
+these libraries directly from source. Something like the following
+recipe should work on most UNIX systems:
+
+~~~bash
+wget http://basilisk.fr/src/gl/mesa-17.2.4.tar.gz
+tar xzvf mesa-17.2.4.tar.gz
+cd mesa-17.2.4
+./configure --prefix=$HOME/local --enable-osmesa \
+	    --with-gallium-drivers=swrast                \
+            --disable-driglx-direct --disable-dri --disable-gbm --disable-egl
+make
+make install
+~~~
+
+see also:
+
+* [OSMesa](https://mesa.freedesktop.org/osmesa.html)
+
+## OSMesa on Occigen
+
+If you have an account on
+[Occigen](https://www.cines.fr/calcul/materiels/occigen/) you can
+access my local installation of basilisk/gl using something like:
+
+~~~bash
+module purge
+module load openmpi
+module load intel
+module load llvm
+module load mesa
+
+NAME=view
+MESA=`module show mesa 2>&1 | grep MANPATH | cut -d' ' -f3`
+GL=/home/popinet/local
+mpicc -Wall -std=c99 -O2 _$NAME.c -o $NAME    \
+    -I$MESA -L$MESA/lib -I$GL -L$GL/gl-system \
+    -lglutils -lfb_osmesa -lOSMesa -lm
+srun --mpi=pmi2 -K1 --resv-ports -n $SLURM_NTASKS ./$NAME \
+     2> log-$SLURM_NTASKS > out-$SLURM_NTASKS
+~~~

@@ -1,0 +1,27 @@
+dimension-tests/test14.c:8: warning: stencils: point function 'display_value' is not defined
+------------------- 
+#line 116 "ast/interpreter/overload.h"
+point
+ 
+#line 106 "ast/interpreter/overload.h"
+struct {
+  int i, j, k, l;
+  int level;
+}
+size: 25, flags: 0, pointer: 0, scope: 2, value: {...}
+===================
+------------------- 
+#line 116 "ast/interpreter/overload.h"
+point
+ 
+#line 106 "ast/interpreter/overload.h"
+struct {
+  int i, j, k, l;
+  int level;
+}
+size: 25, flags: 0, pointer: 0, scope: 2, value: {...}
+===================
+9 constraints, 9 unknowns
+Dimensions of finite constants
+  [1]
+    /src/common.h:858: 'L0 = 1. [1]'

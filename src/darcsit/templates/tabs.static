@@ -1,0 +1,5 @@
+$if(tabs)$
+<ul class="tabs">
+  $tabs$
+</ul>
+$endif$

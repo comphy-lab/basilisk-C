@@ -1,0 +1,11 @@
+dimension-tests/test19.c:7: '3 [1]': [dimension-tests/test19.c:7: 'b = 3 [1]'] = [1]
+dimension-tests/test19.c:8: warning (interpreter): 'x' undeclared
+dimension-tests/test19.c:8: warning (interpreter): undefined argument(s) in 'x'
+dimension-tests/test19.c:8: 'if (x)
+      a *= b;': [dimension-tests/test19.c:7: 'b = 3 [1]'] = [0]
+dimension-tests/test19.c:7: error: the dimensional constraints below are not compatible
+dimension-tests/test19.c:7: '3 [1]'
+	└─ [dimension-tests/test19.c:7: 'b = 3 [1]'] = [1]
+dimension-tests/test19.c:8: 'if (x)
+      a *= b;'
+	└─ [dimension-tests/test19.c:7: 'b = 3 [1]'] = [0]

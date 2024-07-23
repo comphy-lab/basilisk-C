@@ -1,0 +1,12 @@
+-------------------
+#line 8 "dimension-tests/test10.c"
+1./Delta
+
+#line 13 "types.c"
+ast_double
+size: 17, flags: 1, pointer: 0, scope: 3, value: 1 (unset)  - [dimension-tests/test10.c:6: 'L0 = 1. [1]']
+===================
+10 constraints, 10 unknowns
+Dimensions of finite constants
+  [1]
+    dimension-tests/test10.c:6: 'L0 = 1. [1]'

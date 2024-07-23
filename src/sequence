@@ -1,0 +1,78 @@
+#!/bin/bash
+
+gfvpair() {
+    if awk -v t=$1 '
+    BEGIN { ts = -1; ss = ""; } {
+      for (i = 1; i <= NF; i++) {
+        te = $i*1.; se = $i;
+        if (ts >= 0 && t >= ts && t <= te)
+          break;
+        ts = te; ss = se;
+      }
+      if (ss == "" || ts == te)
+        exit (1);
+      print ss,se;
+    }'; then
+	return 0;
+    fi
+    return 1;
+}
+
+gfv() {
+    t=$1
+    shift
+    files=""
+    while test $# -gt 0; do
+	files="$files $1"
+	shift
+    done
+    if ! pair=`echo $files | gfvpair $t`; then
+	return 1
+    fi
+
+    echo Clear
+    start=`echo $pair | awk '{print $1}'`
+    end=`echo $pair | awk '{print $2}'`
+    ts=`echo $pair | awk '{print substr($1,0,index($1,":")-1)}'`
+    te=`echo $pair | awk '{print substr($2,0,index($2,":")-1)}'`
+    txs=`grep 'tx =' $start | awk '{print $3}'`
+    tys=`grep 'tx =' $start | awk '{print $6}'`
+    fovs=`grep 'fov =' $start | awk '{print $3}'`
+    txe=`grep 'tx =' $end | awk '{print $3}'`
+    tye=`grep 'tx =' $end | awk '{print $6}'`
+    fove=`grep 'fov =' $end | awk '{print $3}'`
+    awk -v txs=$txs -v tys=$tys -v txe=$txe -v tye=$tye \
+	-v fovs=$fovs -v fove=$fove \
+	-v t=$t -v ts=$ts -v te=$te '{
+      if (te > ts)
+        a = (t - ts)*1./(te - ts);
+      else
+        a = 0.;
+      if ($1 == "tx")
+        print "  tx = " txs + (txe - txs)*a " ty = " tys + (tye - tys)*a; 
+      else if ($1 == "fov")
+        print "  fov = " fovs + (fove - fovs)*a;
+      else 
+        print $0;
+    }' < $start
+}
+
+gfs=""
+gfv=""
+command=""
+while test $# -gt 0; do
+    case "$1" in
+	*.gfv) gfv="$gfv $1" ;;
+	*.gfs) gfs="$gfs $1" ;;
+	*) command="$command $1" ;;
+    esac
+    shift
+done
+
+for f in $gfs; do
+    t=`grep -a "Time { t = " $f | awk '{print $5}'`
+    if gfv $t $gfv; then
+	gerris3D -e "Init { istep = 1 } { f = (f < 1e-3 ? 0 : f > 1. - 1e-3 ? 1. : f) }" $f
+	echo $command
+    fi
+done

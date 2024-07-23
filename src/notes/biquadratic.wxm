@@ -1,0 +1,69 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 13.04.2 ] */
+
+/* [wxMaxima: input   start ] */
+matrix(
+ [0,0,1,0,0,1,0,0], 
+ [0,0,-1,0,0,1,0,0], 
+ [1,1,0,0,0,0,0,0], 
+ [-1,1,0,0,0,0,0,0], 
+ [1,1,1,1,1,1,1,1], 
+ [1,1,-1,-1,-1,1,1,1], 
+ [-1,1,1,-1,1,1,-1,1], 
+ [-1,1,-1,1,-1,1,-1,1]
+)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+m:invert(%);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+m;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+v:matrix(
+ [fa0,fb0,f0a,f0b,faa,fba,fab,fbb]
+)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+a:m.v;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+p:matrix(
+ [d/4], 
+ [d*d/16], 
+ [c/4], 
+ [c*d/16], 
+ [c*d*d/64], 
+ [c*c/16], 
+ [c*c*d/64], 
+ [c*c*d*d/256]
+)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+sol:a.p+f00;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+sol:subst(1, d^2, sol);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+sol:subst(1, c^2, sol);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+fortran(sol);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+fortran(a);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

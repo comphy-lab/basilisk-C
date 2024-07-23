@@ -1,0 +1,5 @@
+set $_exitcode = -999
+run 2> log > out
+if $_exitcode != -999
+  quit
+end

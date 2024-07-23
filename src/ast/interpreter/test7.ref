@@ -1,0 +1,2 @@
+test7.c:22: warning (interpreter): undefined condition 'x < 1.2*0.025 && sq(y) + sq(z) < 2.*sq(1./12.) && level < maxlevel'
+test7.c:27: warning (interpreter): undefined condition 'refined'

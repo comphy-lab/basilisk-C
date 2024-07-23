@@ -1,0 +1,27 @@
+stencils.c:15: warning: scalar 's' should be assigned with a foreach_face(x|y|z) loop
+stencils.c:15: dirty: 0:s
+stencils.c:21: turned s into a face vector y-component
+stencils.c:21: dirty: 0:s
+stencils.c:28: turned v into a face vector
+stencils.c:28: dirty: 1:v.x 2:v.y
+stencils.c:35: turned Fq.x into a face vector
+stencils.c:35: turned Fq.y into a face vector
+stencils.c:35: dirty: 3:Fq.x.x 4:Fq.x.y 5:Fq.y.x 6:Fq.y.y
+stencils.c:42: turned Fv.x.y into a vertex scalar
+stencils.c:42: dirty: 8:Fv.x.y
+stencils.c:49: flux y: 0:s
+stencils.c:49: dirty: 11:a
+stencils.c:56: listc: 0:s
+stencils.c:56: dirty: 11:a
+stencils.c:63: dirty: 0:s
+stencils.c:67: listc: 0:s
+stencils.c:67: dirty: 11:a
+stencils.c:74: dirty: 12:f.x 13:f.y
+stencils.c:80: flux y: 13:f.y
+stencils.c:80: dirty: 11:a
+stencils.c:87: listc: 13:f.y
+stencils.c:87: dirty: 11:a
+stencils.c:94: warning: face vector 'f.x' should be assigned with a foreach_face() loop
+stencils.c:94: dirty: 12:f.x
+stencils.c:102: warning: vertex scalar 'b' should be assigned with a foreach_vertex() loop
+stencils.c:102: dirty: 14:b

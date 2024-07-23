@@ -1,0 +1,39 @@
+# -*-Makefile-*-
+
+# the C99 flags
+C99_FLAGS = -std=c99 -D_XOPEN_SOURCE=700
+
+# how to launch the C99 compiler within qcc
+CC99 = $(CC) $(C99_FLAGS) -pedantic  -Wno-unused-result
+
+# how to strip unused code
+STRIPFLAGS = -s
+
+# other useful (non-standard) flags
+CFLAGS += -g -Wall -Wno-unused-function -Wno-misleading-indentation -pipe -D_FORTIFY_SOURCE=2
+
+# if you have valgrind, otherwise comment this out
+VALGRIND = valgrind -q --tool=memcheck --suppressions=$(BASILISK)/openmpi.supp \
+	--leak-check=full
+
+# if gnuplot supports pngcairo, otherwise comment this out
+PNG = pngcairo
+
+# configuration for python modules (requires swig)
+MDFLAGS = -fpic
+PYTHONINCLUDE = /usr/include/python2.7
+
+# "OpenGL" libraries
+
+OPENGLIBS = -lfb_tiny
+# OPENGLIBS = -lfb_osmesa -lOSMesa
+# OPENGLIBS = -lfb_glx -lGLEW -lGL -lX11
+
+# Compiler and libraries to use with CADNA.
+# See [README.cadna]() for more documentation.
+CADNACC = clang -D_CADNA=1 -x c++ -m64 \
+	-Wno-unused-function \
+	-Wno-unused-result \
+	-Wno-c++11-compat-deprecated-writable-strings \
+	-Wno-address-of-array-temporary
+CADNALIBS = -lcadnaC -lstdc++

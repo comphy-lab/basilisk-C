@@ -1,0 +1,55 @@
+# Examples
+
+If you would like to run the examples, first read [*"Running and
+creating test cases (and
+examples)"*](/src/test/README#running-and-creating-test-cases-and-examples).
+
+## Various equations
+
+* [Conway’s game of life](life.c)
+* [Coupled reaction–diffusion equations: the Brusselator](brusselator.c)
+* [The complex Ginzburg--Landau equation](ginzburg-landau.c)
+* [Distance field computation from a 3D model](distance.c)
+* [Wavelet transforms and filtering](wavelet.c)
+
+## Navier--Stokes
+
+* [Decaying two-dimensional turbulence](turbulence.c)
+* [Bénard–von Kármán Vortex Street for flow around a cylinder at
+  Re=160](karman.c)
+* [Vortex shedding behind a sphere at Re=300](sphere.c)
+* [Forced isotropic turbulence in a triply-periodic box](isotropic.c)
+* [Stokes flow through a complex 3D porous medium](porous3D.c)
+* [Coupling two solvers](master.c)
+
+## Two-phase flows
+
+* [Atomisation of a pulsed liquid jet](atomisation.c)
+* [Bubble rising in a large tank](bubble.c)
+* [Flow in a rotating bottom-driven cylindrical container](yang.c)
+* [Two-phase flow around RV Tangaroa](tangaroa.c)
+
+## Geophysical applications
+
+* [The 2004 Indian Ocean tsunami](tsunami.c)
+* [The 2011 Tohoku tsunami](tohoku.c)
+* [Breakup of a rectangular perturbation into a train of solitons](madsen.c)
+* [Tidally-induced internal lee waves](lee.c)
+* [Periodic wave propagation over an ellipsoidal shoal](shoal.c)
+* [Periodic wave propagation over an ellipsoidal shoal (multilayer
+  solver)](shoal-ml.c)
+* [3D breaking Stokes wave (multilayer solver)](breaking.c)
+* [Transcritical flow over a bump](gaussian-ns.c)
+* [A Shallow Water Analogue for the Standing Accretion Shock
+  Instability](swasi.c)
+
+## Python interface
+
+* [Decaying two-dimensional turbulence](example.py)
+* [Poisson problem](poisson.py)
+
+## See also
+
+* [Test cases](/src/test/README)
+* [Examples by Pierre-Yves Lagrée](/sandbox/M1EMN/README)
+* [Examples (and more) by Antoon van Hooft](/sandbox/Antoonvh/README)

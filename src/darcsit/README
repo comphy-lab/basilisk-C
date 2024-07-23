@@ -1,0 +1,200 @@
+# Darcsit: a wiki engine for Basilisk
+
+Darcsit is "inspired" from [gitit](https://github.com/jgm/gitit) from
+[John Mac Farlane](https://johnmacfarlane.net/). I put "inspired"
+within quotes because "plagiarised" could be a better description!
+This concerns mostly the layout and CSS style files though. The engine
+itself ([darcsit](cgi-bin/darcsit)) is completely different. It is
+written in bash rather than [Haskell](https://www.haskell.org/) to
+start with, but also uses the excellent [pandoc](https://pandoc.org/),
+also from John.
+
+# How to setup your own wiki
+
+Darcsit is designed to be usable on its own. It can be used for
+example to setup a (typically temporary) interactive website, that
+students in a course would use to write their own documentation and
+run their own Basilisk simulations, all through the web interface of
+the wiki.
+
+To do this you will need to have:
+
+* Administrative rights for an Apache web server,
+* Account creation privileges i.e. root access on the same server.
+
+## Apache configuration
+
+The Apache server will need to have the MPM (Multi-Processing Module)
+enabled. This can be installed using:
+
+~~~bash
+sudo apt install libapache2-mpm-itk
+~~~
+
+See also [this page](https://www.debiantutorials.com/how-to-set-up-a-web-server-lamp-on-debian-9-stretch/).
+
+Since the Darcsit server is a bash script,
+[CGI](https://httpd.apache.org/docs/2.4/howto/cgi.html) will need to
+be enabled, this can be done using
+
+~~~bash
+sudo a2dismod cgid
+sudo a2enmod cgi
+~~~
+
+Note that [MPM is not compatible with
+cgid](https://lists.debian.org/debian-isp/2009/02/msg00037.html) so
+that cgid needs to be disabled (but not cgi).
+
+You will also need the [mod_rewrite
+module](https://httpd.apache.org/docs/2.4/mod/mod_rewrite.html) i.e.
+
+~~~bash
+sudo a2enmod rewrite
+~~~
+
+## Account setup
+
+Since the wiki will be able to write to disk (and also optionally run
+user-provided code), it is a good idea to run the server as a standard
+and different user from the other Apache servers (this is what the
+mpm-itk module does). We must first create this user, let's call it
+`darcsit`.
+
+~~~bash
+sudo adduser darcsit
+~~~
+
+We then create an initial (empty) wiki directory using something like:
+
+~~~bash
+su darcsit
+cd ~darcsit
+mkdir wiki
+cd wiki
+darcs init
+mkdir static
+cd static
+ln -s $BASILISK/darcsit/static/css
+ln -s $BASILISK/darcsit/static/js
+ln -s $BASILISK/darcsit/static/img
+~~~
+
+To be able to use [codemirror](https://codemirror.net/) instead of the
+default basic text editor, it needs to be installed in `static/`
+using:
+
+~~~bash
+cd ~darcsit/wiki/static/
+wget https://codemirror.net/codemirror.zip
+unzip codemirror.zip
+rm codemirror.zip
+mv codemirror-* codemirror
+~~~
+
+To add support for "Basilisk C" syntax in codemirror, we need to apply
+a patch, like this:
+
+~~~bash
+cd ~darcsit/wiki/static/
+patch -p0 < $BASILISK/darcsit/codemirror.patch
+~~~
+
+Note that the patch was made for version 5.46 of codemirror and may
+need to be adapted for later versions.
+
+## Apache configuration file for the wiki
+
+We now need to setup the Apache configuration for the wiki. This can
+be done (as root) using:
+
+~~~bash
+cp $BASILISK/darcsit/darcsit.conf /etc/apache2/sites-enabled/mywiki.conf
+~~~
+
+The top part of `miwiki.conf` must then be edited to configure the
+wiki. The available options are commented in the file. Just follow the
+instructions there.
+
+You also need to make sure that eveything is setup so that you can
+[generate local HTML pages](/src/Contributing#generating-local-html-pages).
+
+Once this is done use:
+
+~~~bash
+/etc/init.d/apache2 reload
+~~~
+
+to reload the configuration. Your wiki should now be fonctional, at
+the address you set in `mywiki.conf`.
+
+## Running code from the wiki
+
+To run code from the wiki you first need to have access to a [Basilisk
+server](/src/README.server). You will need to allow the `darcsit` user
+to access the server i.e. you need to generate an SSH public key for
+this user and copy it in the `.ssh/authorized_keys` file on the
+server. Use something like:
+
+~~~bash
+su darcsit
+cd ~darcsit
+ssh-keygen
+scp ~/.ssh/id_rsa.pub basilisk.server:
+ssh basilisk.server
+etc..
+~~~
+
+You then need to add the logins allowed to run code to the
+`darcsit-runners` file (or any other file you configured in
+`mywiki.conf`).
+
+### Inline graphics
+
+[Inline graphics](/src/test/README#graphics) are generated locally
+(i.e. by the wiki server). To improve security, since this involves
+running user-provided commands, this is done using the
+[basilisk-untrusted
+user](/src/README.server#creating-the-untrusted-user) through sudo. So
+we need to give `darcsit` the right to sudo to
+`basilisk-untrusted`. This can be done using:
+
+~~~bash
+sudo -s
+echo "darcsit ALL=(basilisk-untrusted) NOPASSWD: ALL" >> /etc/sudoers.d/basilisk
+~~~
+
+## Changing the layout
+
+The default layout, styles, images etc... are defined in the `static/`
+directory and in `$BASILISK/darcsit/templates`. To change it, you will
+need to
+
+1. Change `wiki/static/img/logo.png`. This involves replacing
+   the symbolic link to `img/` with a copy of the directory.
+2. Make a new `templates/` directory i.e. `mkdir wiki/static/templates`.
+3. Copy the templates you need to modify e.g.
+   `cp $BASILISK/darcsit/templates/page.st wiki/static/templates/`.
+4. Edit `page.st` (and other templates e.g. `sitenav.st` if necessary).
+5. Regenerate the page template (`page.static`), using:
+
+~~~bash
+cd wiki/static/templates/
+make -f $BASILISK/darcsit/templates/Makefile
+~~~
+
+Note that you may need to remove old .html files to force regeneration
+of these pages using the new template. This can be done using
+something like:
+
+~~~bash
+cd wiki
+rm -f `find . -name '*.html'`
+~~~
+
+Be careful if you have your own '*.html' files for some reason.
+
+# Troubleshooting
+
+* If "history" or "Recent activity" do not work, make sure that the
+  version of darcs on the server is less than 2.8.5.

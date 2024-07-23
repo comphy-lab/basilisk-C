@@ -1,0 +1,183 @@
+# Built-in memory tracing/profiling
+
+The basilisk preprocessor (`qcc`) can generate code to trace all calls
+to `malloc()`, `calloc()`, `realloc()`, `strdup()` and `free()`. This
+can be used to track the evolution of the amount of memory dynamically
+allocated by the program and can automatically detect common errors
+such as invalid pointers, double free's and memory leaks. It is
+similar to the
+[`mtrace()`](http://www.gnu.org/software/libc/manual/html_node/Tracing-malloc.html)
+functionality implemented in the GNU C library, however it will only
+trace calls made by code compiled with `qcc` (i.e. it is not a library
+implementation). This can be quite useful on systems where either
+`mtrace()` is not available, or where `mtrace()` does not play well
+with other libraries (MPI in particular).
+
+To turn on memory tracing you need to set the macro `MTRACE` to
+something different from zero, for example using:
+
+~~~bash
+qcc -DMTRACE=1 mycode.c -o mycode -lm
+~~~
+
+or if you are [using makefiles](/Tutorial#using-makefiles):
+
+~~~bash
+CFLAGS=-DMTRACE=1 make bump2D.tst
+~~~
+
+In addition to the program outputs, the tracing function will output a
+summary on standard error looking like:
+
+~~~
+*** MTRACE: max resident  set size:   17137664 bytes
+*** MTRACE: max traced memory size:    4398337 bytes (tracing overhead 0.1%)
+ max bytes                function   file
+   3567536           mempool_alloc   /home/popinet/basilisk/src/grid/mempool.h:52
+    796672            cache_append   /home/popinet/basilisk/src/grid/tree.h:300
+    495616      cache_level_shrink   /home/popinet/basilisk/src/grid/tree.h:290
+    196608      cache_level_append   /home/popinet/basilisk/src/grid/tree.h:273
+    194400            new_refarray   /home/popinet/basilisk/src/grid/tree.h:89
+    131072              matrix_new   /home/popinet/basilisk/src/utils.h:226
+      5600          realloc_scalar   /home/popinet/basilisk/src/grid/tree.h:1234
+...
+*** MTRACE: To get a graph use: tail -n 2 mtrace | gnuplot -persist
+*** MTRACE: No memory leaks
+~~~
+
+The first line is the maximum system memory usage (in bytes), as
+reported by
+[`getrusage().ru_maxrss`](http://man7.org/linux/man-pages/man2/getrusage.2.html)
+(if this function is available on your system). The second line is the
+maximum amount of memory allocated by the functions traced by code
+compiled with `qcc`. A breakdown of this amount according to which
+function made the call (with the corresponding file and line numbers)
+then follows.
+
+## Trace file
+
+In addition to the summary profiling information, a file tracing all
+calls is also generated. It is called `mtrace` by default, but this
+can be changed using the `MTRACE` environment variable. For example
+
+~~~bash
+MTRACE=/tmp/mtrace CFLAGS=-DMTRACE=1 make bump2D.tst
+~~~
+
+will use `/tmp/trace` instead. When using MPI, `mtrace` will be used
+for process 0 and `mtrace-1`, `mtrace-2` etc... for the other
+processes.
+
+There are only two types of records in the file:
+
+1. Index definition, something like
+
+~~~
+@ 20 mempool_new /home/popinet/basilisk/src/grid/mempool.h 31
+~~~
+
+where `@` indicates that this is an index record, `20` is the index
+number, `mempool_new` is the name of the function containing the call,
+followed by the file and line number where the call is made. An index
+record always precedes the first use of this index
+
+2. Memory function call, something like:
+
+~~~
++ 20 3640 2096433 384 17137664
+~~~
+
+where `+` is the type of memory operation, `20` is the index number
+(i.e. where is the call made), `3640` is the record number (starting
+from zero), `2096433` is the total amount of allocated memory (in
+bytes) after the call, `384` is the total amount of memory allocated
+up-to-now by this specific call (as identified by its index) and
+`17137664` is the `ru_maxrss` value (in bytes) at this point in time.
+
+The memory operations corresponds to the functions being traced i.e.
+
+`+`: 
+memory allocation (i.e. `malloc()`, `calloc()`, `strdup()`)
+
+`-`: 
+memory deallocation (i.e. `free()`)
+
+`>`: 
+memory allocation by `realloc()`
+
+`<`
+: memory deallocation by `realloc()`
+
+The last two lines of the file contain commands which can be used by
+`gnuplot` to get a graph, for example using
+
+~~~bash
+gnuplot> set term x11
+gnuplot> load "< tail -n2 mtrace"
+~~~
+
+which will give something like
+
+![Graph of memory trace](figures/mtrace.png)
+
+By default only functions representing more than 1% of the total
+allocated memory are displayed. The initial amount of memory reported
+by `ru_maxrss` (here 1.7e7 bytes) is substracted from the
+corresponding curve in the graph.
+
+## Memory leak reporting
+
+Note that in the previous graph, all curves (`ru_maxrss` excepted)
+should converge to zero at the end of the trace, otherwise memory leaks
+are present. If this the case, a message like this will be displayed:
+
+~~~
+...
+/home/popinet/basilisk-octree/src/common.h:825: error: 34960 bytes leaked here
+/home/popinet/basilisk/src/Makefile.defs:33: recipe for target 'bump2D.tst' failed
+make: *** [bump2D.tst] Error 1
+~~~
+
+(the program exits with an error status of one). The number of bytes
+leaked is given together with the location of where the leaked memory
+was allocated.
+
+## Other memory errors
+
+Trying to free memory twice or passing invalid pointers to `free()`
+can also be detected and will lead to the program aborting. A
+[debugger](README#tracking-floating-point-exceptions) can then be used
+to track the cause of the problem.
+
+## Controlling outputs
+
+The degree of verbosity of the profiling can be controlled by
+increasing the value of `MTRACE`.
+
+`MTRACE=1`:
+Profiling output and memory trace.
+
+`MTRACE=2`:
+Profiling output.
+
+`MTRACE=3`:
+Memory leak errors only.
+
+# Accessing the profiling summary
+
+The profiling summary is contained in
+
+~~~c
+struct {
+  FILE * fp;                     // trace file
+  size_t total, max;             // current and maximum allocated memory
+  size_t overhead, maxoverhead;  // current and maximum profiling overhead
+  size_t nr;                     // current number of records
+  size_t startrss, maxrss;       // starting and maximum system ressource usage
+  char * fname;                  // trace file name
+} pmtrace;
+~~~
+
+# See also
+
+* [Built-in profiling](README.trace)

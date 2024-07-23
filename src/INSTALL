@@ -1,0 +1,155 @@
+# Getting the source code
+
+You have two ways of getting the most recent source code:
+
+## Using [darcs](http://darcs.net)
+
+This is the recommended way of installing Basilisk.
+
+This is useful if you want to modify the code (because everything is
+version-controlled) and also if you want to maintain your version
+up-to-date.
+
+On a Debian-like system (i.e. Debian, Ubuntu etc...) installing darcs
+is as easy as
+
+~~~bash
+sudo apt install darcs make gawk
+~~~
+
+To get the latest Basilisk source code do
+
+~~~bash
+darcs clone http://basilisk.fr/basilisk
+~~~
+
+If later you want to update the source code, you just need to do
+
+~~~bash
+cd basilisk
+darcs pull
+~~~
+
+and recompile using
+
+~~~bash
+make -k clean
+make
+~~~
+
+## Using a tarball
+
+If for some reason you can't use darcs, you can use this instead. You
+will get exactly the same version as with darcs, but the code will not
+be version-controlled.
+
+~~~bash
+wget http://basilisk.fr/basilisk/basilisk.tar.gz
+tar xzf basilisk.tar.gz
+~~~
+
+If you don't have `wget`, just follow the
+[link](/basilisk/basilisk.tar.gz), save the file or
+extract the archive where you want to install it.
+
+# Compilation
+
+For compilation, the only requirement is a C99-compliant compiler and
+a version of `make` compatible with GNU make.
+
+If you are using gcc on a UNIX-like system, this should work:
+
+~~~bash
+cd basilisk/src
+ln -s config.gcc config
+make
+~~~
+
+Note that on 32-bits systems you need to use *config.gcc.32bits*
+instead.
+
+If you are using another system/compiler, find a config file which
+looks close to yours, then try
+
+~~~bash
+cd basilisk/src
+ls config.*
+cp config.[your pick] config
+make
+~~~
+
+You can also edit this file to customise things for your system
+(please also consider sharing your new config file).
+
+Note also that there is a specific [installation
+guide](/sandbox/INSTALL_MACOS) contributed by Mac OSX users.
+
+To avoid having to type the full path to the [qcc](qcc.c) executable,
+you can add the following 'export' commands to your `$HOME/.bashrc`
+file (or a similar file if you are using another shell). You can
+either edit `$HOME/.bashrc` manually or do
+
+~~~bash
+cd basilisk/src
+echo "export BASILISK=$PWD" >> ~/.bashrc
+echo 'export PATH=$PATH:$BASILISK' >> ~/.bashrc
+~~~
+
+# Useful additional packages
+
+- gnuplot (> 4.2)
+- imagemagick
+- ffmpeg
+- graphviz
+- valgrind
+- gifsicle
+- pstoedit
+
+and also
+[gprof2dot](https://github.com/jrfonseca/gprof2dot). On a
+Debian-like system (i.e. Debian, Ubuntu, Mint etc...) you just need to do
+
+~~~bash
+sudo apt install gnuplot imagemagick ffmpeg graphviz valgrind gifsicle pstoedit
+~~~
+
+# Using Basilisk from within python
+
+You will need [SWIG](http://www.swig.org/) which can easily be installed with
+
+~~~bash
+sudo apt install swig libpython-dev
+~~~
+
+You also need to setup the *MDFLAGS* and *PYTHONINCLUDE* variables in your
+*config* file.
+
+# Installation of optional libraries
+
+The standard makefile/installation does not build all the libraries
+provided by Basilisk because they may depend on other
+programs/libraries which are not generally necessary. The modules
+which require additional installation are
+
+* [GOTM for the layered solver](/src/gotm/common.h)
+* [CVMix for the layered solver](/src/cvmix/cvmix.h)
+* [PPR remapping for the layered solver](/src/ppr/Makefile)
+
+This depends on a Fortran compiler, just do
+
+~~~bash
+sudo apt install gfortran
+cd $BASILISK/ppr
+make
+~~~
+
+# Getting started
+
+The best place to start is the [tutorial](/Tutorial).
+
+# Useful links
+
+* [Statically-linked ffmpeg
+  executables](https://johnvansickle.com/ffmpeg/): this can be useful
+  to get ffmpeg on systems with deficient packaging. Note however that
+  this is **definitely not** the best way to install ffmpeg.

@@ -1,0 +1,155 @@
+# How to configure a Basilisk server
+
+~~~bash
+sudo apt install task-spooler make gcc openmpi-bin libopenmpi-dev clang psmisc
+~~~
+
+Install the KDT library, [OpenGL utility libraries](gl/INSTALL) and
+binaries in
+
+~~~bash
+$HOME/lib/libkdt.a
+$HOME/lib/libglutils.a
+$HOME/lib/libfb_osmesa.a
+$HOME/include/kdt/kdt.h
+$HOME/include/gl/framebuffer.h
+$HOME/include/gl/utils.h
+$HOME/include/gl/trackball.h
+$HOME/include/gl/gl2ps/gl2ps.h
+$HOME/bin/ppm2mpeg
+$HOME/bin/ppm2mp4
+$HOME/bin/ppm2gif
+$HOME/bin/xyz2kdt
+~~~
+
+Append this to the start of `.bashrc`
+
+~~~bash
+# number of simultaneous Task Spooler jobs
+export TS_SLOTS=8
+
+# path to local binaries
+export PATH=$PATH:/home/basilisk/bin
+
+# workaround for openmpi warning message
+export OMPI_MCA_btl=^openib
+
+# allow oversubscribing
+export OMPI_MCA_rmaps_base_oversubscribe=1
+
+# howto compile C99 programs
+export CC99="mpicc -O2 -Wall -fno-diagnostics-show-caret -Wno-unused-result -std=c99 -D_XOPEN_SOURCE=700 -DHAVE_GETOPT_H=1 -D_GNU_SOURCE=1"
+
+# howto compile CADNA programs
+export CADNACC="clang -D_CADNA=1 -x c++ -m64 \
+        -Wno-unused-function \
+        -Wno-unused-result \
+        -Wno-c++11-compat-deprecated-writable-strings \
+        -Wno-address-of-array-temporary"
+
+# OpenGL libraries
+export OPENGLIBS="-lfb_tiny"
+
+# howto kill tests
+
+killtest()
+{
+    chksum=$1
+    if test -z "$chksum"; then
+		return 1
+    fi
+    if [[ -x /tmp/$chksum/$chksum ]]; then
+		# running
+		sudo -n -u basilisk-untrusted -- killall /tmp/$chksum/$chksum
+    else
+		# queued
+		id=$(tsp | sed "s/\([0-9]*\)  queued  .*$chksum\.sh/\1/;t;d")
+		if [[ -n "$id" ]]; then
+			tsp -r $id
+		fi
+    fi
+    rm -r -f ./$chksum*
+    sudo -n -u basilisk-untrusted -- rm -r -f /tmp/$chksum*
+}
+
+statustest()
+{
+    chksum=$1
+    if [[ -x /tmp/$chksum/$chksum ]]; then
+		echo -n "The code is running.";
+		if [[ -s /tmp/$chksum/progress ]]; then
+			echo -n " "
+			tr '\r' '\n' < /tmp/$chksum/progress | tail -n 1
+		else
+			echo
+		fi
+    else
+		echo "The code is waiting to run.";
+    fi
+}
+~~~
+
+If you also intend to generate graphics etc... on the server, do
+
+~~~bash
+sudo apt-get install gnuplot gnuplot-nox imagemagick ffmpeg smpeg-plaympeg graphviz valgrind gifsicle libglu1-mesa-dev libosmesa6-dev
+~~~
+
+## Creating the untrusted user
+
+~~~bash
+sudo -s
+cat <<EOF > /etc/sudoers.d/basilisk
+basilisk ALL=(basilisk-untrusted) NOPASSWD: ALL
+EOF
+chmod 0440 /etc/sudoers.d/basilisk
+useradd basilisk-untrusted -d /nonexistent -s /bin/bash
+service sudo restart
+~~~
+
+## Using the server
+
+You first need to allow the client to connect to the server through
+SSH. This implies adding the SSH public key of the client account to
+the "authorized keys" on the server.
+
+You can then do (on the client), something like:
+
+~~~bash
+SANDBOX=basilisk@server.domain.net make simulation.tst
+~~~
+
+You should then get
+
+~~~bash
+qcc -g -O2 -g -Wall -o simulation/simulation simulation.c -lm
+[simulation.tst on basilisk@server.domain.net (12725)]
+  running...
+~~~
+
+If you then do `ls simulation/*pid*`, you will see two files:
+*pid.tst* and *tspid.tst*, they contain the PID of the process running
+on the client and on the server respectively. When the simulation
+completes on the server, data are copied to the client, both processes
+terminate and these `*pid*` files are removed.
+
+If you modify your simulation and redo `make` as above, before the old
+simulation has completed, the old processes will be killed and only
+the new simulation will run on the server.
+
+The status of the completed simulation is indicated by either an
+(empty) *pass* file (in the simulation directory), or a *fail* file
+containing the error messages.
+
+### Allowing shared SSH connections
+
+On the client, it is a good idea to enable [shared SSH
+connections](https://en.wikibooks.org/wiki/OpenSSH/Cookbook/Multiplexing)
+using something like (in `.ssh/config`):
+
+~~~bash
+Host server.domain.net
+        ControlPath ~/.ssh/controlmasters/%r@%h:%p
+        ControlMaster auto
+        ControlPersist 10m
+~~~

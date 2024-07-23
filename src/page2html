@@ -1,0 +1,216 @@
+#!/bin/sh
+
+usage()
+{
+    cat <<EOF > /dev/stderr
+usage: page2html -url URL -ext EXT -type TYPE FILE
+
+  If -url is not specified it is set to $BASE_URL (if defined) or to
+  http://basilisk.fr
+
+  The EXT extension (typically .html) is added to page links.
+
+  TYPE is the file type, either "page" or the pandoc language hightlight type
+  (as listed by 'pandoc --list-highlight-languages').
+EOF
+    exit 1
+}
+
+ext=""
+while test $# -gt 0; do
+    case $1 in
+	-url)
+	    shift
+	    BASE_URL="$1"
+	    ;;
+	-ext)
+	    shift
+	    ext="$1"
+	    ;;
+	-type)
+	    shift
+	    TYPE="$1"
+	    ;;
+	-*)
+	    usage
+	    ;;
+	*.[cm])
+	    page="$1";
+	    javascripts="<script src=\"/js/status.js\" type=\"text/javascript\"></script>";;
+	*)
+	    page="$1";
+	    ;;
+    esac
+    shift
+done
+
+if test -z "$page"; then
+    usage
+fi
+
+if test ! -f $page; then
+    echo "page2html: cannot access '$page'" >&2
+    exit 1
+fi
+
+darcsroot()
+{
+    d=`pwd`
+    while ! test -d _darcs; do
+	cd ..
+    done
+    pwd
+    cd "$d"
+}
+
+basename="$page"
+title=""
+if darcs show repo > /dev/null 2>&1; then
+    ROOT=`darcsroot`
+    DIR=`echo $PWD | sed -e "s|$ROOT||" -e "s|^/||"`
+    if test -n "$DIR"; then
+	title="$DIR/"
+    fi
+fi
+case $basename in
+    /*)
+	basename=`basename $basename`
+	page=`basename $page`
+	url=$basename
+	title=`echo $url | sed 's/%20/ /g'`
+	;;
+    *)
+	url=/$title$basename
+	title=$title`echo $basename | sed 's/%20/ /g'`
+	;;
+esac
+
+if test -z "$BASE_URL" -a -z "$DOCUMENT_ROOT"; then
+    BASE_URL="http://basilisk.fr"
+fi
+
+cpreproc()
+{
+    echo ~~~ {$2 .numberLines .lineAnchors}
+    cat $1
+    echo
+    echo ~~~
+}
+
+cpostproc()
+{
+    awk -v tags="$1.tags" -f $BASILISK/darcsit/decl_anchors.awk
+}
+
+pagepreproc()
+{
+    $BASILISK/darcsit/literate-c $1 $2 | sed 's/~~~literatec/~~~c/g'
+}
+
+pagepostproc()
+{
+    $BASILISK/darcsit/codeblock "$BASE_URL" $1 $2
+}
+
+pagetitle()
+{
+    awk '{
+    	if ($1 == "---")
+	  inheader = 1;
+	else if (inheader && $1 == "title:") {
+	  sub("title: *", "");
+	  print $0;
+          exit(0);
+	}
+	else if ($1 == "...")
+	  exit (0);
+    }'
+}
+
+if test -n "$TYPE"; then
+    case $TYPE in
+	page-magic)
+	    PREPROC="pagepreproc $basename 1"
+	    POSTPROC="pagepostproc $basename $ext"
+	    ;;
+	page)
+	    PREPROC="pagepreproc $basename 0"
+	    POSTPROC="pagepostproc $basename $ext"
+	    headertitle=`pagetitle < $page`
+	    if test -n "$headertitle"; then
+		title=$headertitle
+	    fi
+	    ;;
+	*)
+	    PREPROC="cpreproc $page .$TYPE"
+	    POSTPROC="cpostproc $page"
+	    ;;
+    esac
+else
+    case $page in
+	*.py | *.[chm])
+	    if $BASILISK/darcsit/pagemagic $page; then
+		PREPROC="pagepreproc $page 1"
+		POSTPROC="pagepostproc $page $ext"
+	    else
+		case $page in
+		    *.py)   PREPROC="cpreproc $page .python" ;;
+		    *.[ch]) PREPROC="cpreproc $page .c" ;;
+		    *.m)    PREPROC="cpreproc $page .octave" ;;
+		esac
+		POSTPROC="cpostproc $page"
+	    fi
+	    ;;
+	*)
+	    if $BASILISK/darcsit/pagemagic $page; then
+		PREPROC="pagepreproc $basename 1"
+	    else
+		PREPROC="pagepreproc $basename 0"
+	    fi
+	    POSTPROC="pagepostproc $basename $ext"
+	    headertitle=`pagetitle < $page`
+	    if test -n "$headertitle"; then
+		title=$headertitle
+	    fi
+	    ;;
+    esac
+fi
+
+# Test whether pandoc supports the --smart option
+if echo "" | pandoc --smart > /dev/null 2>&1; then
+    PANDOC="pandoc -f markdown --smart"
+else 
+    # assumes it works like this (i.e. it is a recent version)
+    PANDOC="pandoc -f markdown+smart"
+fi
+
+tabs="<li class=selected><a href=\"$url\">view</a></li>"
+if test -n "$USERS"; then
+    tabs="$tabs<li><a href=\"/_edit$url\">edit</a></li>"
+fi
+tabs="$tabs<li><a href=\"$url?history\">history</a></li>"
+
+if test -n "$DOCUMENT_ROOT" -a -r "$DOCUMENT_ROOT/static/templates/page.static"; then
+    template="$DOCUMENT_ROOT/static/templates/page.static"
+else
+    template="$BASILISK/darcsit/templates/page.static"
+fi
+
+if test -z "WIKI_TITLE"; then
+    WIKI_TITLE=Basilisk
+fi
+
+$PREPROC | $PANDOC -s --katex --toc --preserve-tabs            \
+	   -V wikititle="$WIKI_TITLE"				\
+	   -V base="$BASE_URL"				        \
+	   -V pageUrl="$url"			                \
+	   -V pagetitle="$title" 			        \
+	   -V wikiupload=true					\
+	   -V sitenav=true					\
+	   -V pagetools=true					\
+	   -V tabs="$tabs"                                      \
+	   -V javascripts="$javascripts"                        \
+	   -V users="$USERS"                                    \
+	   --template="$template"	                        \
+    | sed 's/__ESCAPEDDOLLAR__/$/g'			        \
+    | $POSTPROC

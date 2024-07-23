@@ -1,0 +1,22 @@
+# A generic interpreter for Basilisk C
+
+This directory contains the source code and test cases for a generic
+interpreter for Basilisk C.
+
+The main files are:
+
+* [interpreter.c](): the source code for the interpreter.
+* [declarations.h](): Declarations of Basilisk-specific default
+  variables and constants.
+* [overload.h](): replacement functions for some system- or
+  Basilisk-specific functions and macros.
+* [internal.h](): prototypes for functions which are
+  internally-defined in the interpreter.
+* `test*.c` and `test*.ref`: the source code and reference files for the
+  test suite. These should be run using the [Makefile]() and:
+  
+    ~~~bash
+    make check
+    ~~~
+
+The interpreter is used in particular for [dimensional analysis](dimension.c).

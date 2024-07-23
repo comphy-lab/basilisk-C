@@ -1,0 +1,163 @@
+pristine:3e66d877883d1c6d49cb6af858986b38cb8ae59bd4563acc7eef608e3c09e6e0
+Starting with inventory:
+0000041580-431f62614bd670fc42b551fac2d0b4eb5bdb25fef02560d5c86570e9a9f15b7a
+[TAG release 24-01-15
+Stephane Popinet <popinet@basilisk.fr>**20240312093302
+ Ignore-this: e1645d1c630b49b8753829124796e7d0
+] 
+hash: 0000027341-94ba907a1a3e3aff23051726a280f7d3b760de3281540420cf9d78c03403fd2f
+[Restructured foreach stencils in preparation for GPUs
+Stephane Popinet <popinet@basilisk.fr>**20240122173306
+ Ignore-this: 4696e1a98ff349a0eb5320f18cde5623
+] 
+hash: 0000023836-fe5a18be5ac760c09349c16798989fd3a9f6a3a4cf8398e33e2f5d9cad4b208e
+[Stencils must access assignment expressions in the correct order (r.h.s. first)
+Stephane Popinet <popinet@basilisk.fr>**20240122180024
+ Ignore-this: 5f727fba862861e2d96a2913a2790216
+] 
+hash: 0000001081-3a9763e0b85bb7524e1f6f4f10d1704945bb5952a1da667ea8e7ee208ebf67ad
+[Minimal documentation for test/advection.c
+Stephane Popinet <popinet@basilisk.fr>**20240124200310
+ Ignore-this: 8591dc927d2b986471bdbc0a5510e64c
+] 
+hash: 0000002219-7196f04f905ce36f2003bf49718644fd1caa497e85ef6465de72e34ac8db2d04
+[qcc checks that source file exists when using -source
+Stephane Popinet <popinet@basilisk.fr>**20240129153708
+ Ignore-this: 64dd5581afeb66918b948374b5b7c581
+] 
+hash: 0000000294-9e4effe5b3e51fd11a86503143932840bd1d15f3d59ad922caf716a7d6e0d7c2
+[The interpreter does not "unset" array members accessed with an unset index, anymore.
+Stephane Popinet <popinet@basilisk.fr>**20240306163410
+ Ignore-this: d6a83be52ea55c20d99d4f481dec6dfc
+] 
+hash: 0000008795-ef9c0a170ce50f1615c0e8928e248f032c0e18d9ea3093f3f9422f927458d771
+[More robust stencil preprocessing
+Stephane Popinet <popinet@basilisk.fr>**20240312112243
+ Ignore-this: 67d4ff6ea9433a4c86ea1e05216f09a5
+] 
+hash: 0000014681-56f3cccc408da0bac1845c5aaadc2a58e1ad371fba5b18c9be4889da1c8192de
+[Generic Makefile does not filter out targets using wildcards anymore
+Stephane Popinet <popinet@basilisk.fr>**20240312112703
+ Ignore-this: 30e0b2f70e0dc3eb5d4aa23b14adf818
+] 
+hash: 0000000849-06b3a06355aa1bea72b8f25889ea7ba82cdd6f84877c6f7e818dcc1de932880c
+['Point point' is deprecated and has been replaced with foreach_point/region
+Stephane Popinet <popinet@basilisk.fr>**20240312134012
+ Ignore-this: 1d850dd0cfd4d6d1ae6e1cdf2f1b7722
+] 
+hash: 0000032312-7f6133291eb398e096a754c257b12c972f6cfa9c77c64de00ea61a7de5240baa
+[Removed (probably) unnecessary boundary() calls
+Stephane Popinet <popinet@basilisk.fr>**20240312134054
+ Ignore-this: b2e9fbd772434741396254b937ddca38
+] 
+hash: 0000000333-6fef49db8778e14f4988e5fcd53d01f4b41c0ac7081fd94bf24d47441a6687fc
+[Computation kernels for external accelerators (e.g. GPUs)
+Stephane Popinet <popinet@basilisk.fr>**20240312142628
+ Ignore-this: 124e2a2e15af02a79e5473922d5b4dc1
+] 
+hash: 0000048512-f8bd422c2e4fd90462598261a55e135dc6f83b388c4d0a1eda0ced5f0273ba46
+[Optimised 'postproc' pass of qcc
+Stephane Popinet <popinet@basilisk.fr>**20240313084039
+ Ignore-this: 31149c55202019f5a8773948e087b5e5
+] 
+hash: 0000008138-2a4b152fc78d5855422e21c7b29977e9ec7e6ea4844d042984855793df76aadd
+[Updated references
+Stephane Popinet <popinet@basilisk.fr>**20240313084629
+ Ignore-this: c0d428accaad47cc2753fba64ac317d3
+] 
+hash: 0000030544-7a772df0a67c86076fd9c2a7693b849d8586a5b67a74d9c1594f8810b4ab5068
+[Added missing reference for ast/interpreter/test26.c
+Stephane Popinet <popinet@basilisk.fr>**20240313085824
+ Ignore-this: f5127cb1e8ab8fabc86d0195cbaef5cf
+] 
+hash: 0000001286-0d215eca1afa7ae9ef51fb7e1454e17a459093e8c5b7aa152be985bb453741e9
+[Periodic boundaries for grid/cartesian.h
+Stephane Popinet <popinet@basilisk.fr>**20240313092341
+ Ignore-this: beb08cebfa79b8c61d4d4df50ebdea86
+] 
+hash: 0000002283-3faf1ae72d416e73aea39407c7dda41b644ded92421f77c2a9f3e2a8602e3922
+[Restructured inheritance of methods for grids
+Stephane Popinet <popinet@basilisk.fr>**20240314094454
+ Ignore-this: d2d152d11745f7af76f26bb01c12225
+] 
+hash: 0000010255-403b69e6d344930668204c4b77b7b505638848264a6803c70e98b0fb178ac157
+[Updated references
+Stephane Popinet <popinet@basilisk.fr>**20240314094601
+ Ignore-this: a7e8a57794e3fa49383ab6b088c545a0
+] 
+hash: 0000021076-7df68ff2e55eda8254a455d7f33ed70bbf0539934b01e21183d2a93235221efb
+['automatic()' was not backward-compatible with diffusion()
+Stephane Popinet <popinet@basilisk.fr>**20240426133725
+ Ignore-this: 86b5e9769a4de05dd0b8efa99edfe9ff
+] 
+hash: 0000000373-c9447e0a5c316722b5d18fa57fc7550ef495631971fb7297a25a0904d283a8a3
+[HAL references are now cached
+Stephane Popinet <popinet@basilisk.fr>**20240522162458
+ Ignore-this: 3305c5b4fa4dd9558d39f8696a4e41c1
+] 
+hash: 0000000808-c87fdff5cc7e5761d4df1cd041879e0c5d057e8655f6f84390d73bf83715e498
+[Reduce coord and mat3 struct 
+nicolas.fintzi@etu.sorbonne-universite.fr**20240515080906
+ Ignore-this: b12e70f4caf3c702f3ed79d003f0545c
+] 
+hash: 0000004532-b1e4ff764a449796846f9c5210fcc47bc1ebc1f43e2728f087684dad77d4adbe
+[Fixed indentation and formatting
+Stephane Popinet <popinet@basilisk.fr>**20240523114732
+ Ignore-this: f67d4eae48d61f4c18a18e0bb5e4412a
+] 
+hash: 0000003445-1eae8d91f21b0bd061292ff9206df26077755c8dce48a956517939c11500b2c5
+[Einstein summation macro 
+nicolas.fintzi@etu.sorbonne-universite.fr**20240514094715
+ Ignore-this: e45c6bed8061c6e50fc438ec569c5fc7
+] 
+hash: 0000021731-9ba7850877202090b04ca34d37a224790e551d6df73a14eef4f3590da20f7370
+[Formatting and other fixes for einstein_sum()
+Stephane Popinet <popinet@basilisk.fr>**20240523125557
+ Ignore-this: 102c48be4b45a99a3f3a734b3854ac09
+] 
+hash: 0000032315-b986245318be39f107fc749bc438d2058ccf65aca786ec537e3afd6a86752946
+[No coalescence between VoF with the header no-coalescence.h
+nicolas.fintzi@etu.sorbonne-universite.fr**20240514104939
+ Ignore-this: 6418077fdf11ff2a8c3c7782fd8f62df
+] 
+hash: 0000016848-b88a9affae5932f2c9299f6fbf30ecbb9caa6148dfba4c675afcc13a07837e71
+[Formatting and other changes for no-coalescence
+Stephane Popinet <popinet@basilisk.fr>**20240523140441
+ Ignore-this: f35361c04ccee69918c14277ff09d89e
+] 
+hash: 0000009754-660361c17b65a38053a29d66f57c58391aa6f15020f2082781ff08c806530193
+[Example of master/slave solver coupling
+Stephane Popinet <popinet@basilisk.fr>**20240608113448
+ Ignore-this: 144bc9c72e2af27714d4d6d8c08210a7
+] 
+hash: 0000008528-9bd175abf22680b764f3c6417487671ddf9c3141aaf8557fbafcaad2c5cda5eb
+[Fixes for solver coupling
+Stephane Popinet <popinet@basilisk.fr>**20240608143145
+ Ignore-this: ffa7b3b3005677f7985ce427c65a0041
+] 
+hash: 0000000412-87a94c565b4f3e804e9e37124f0db23a674fdb4f218b849d7872f2d16be70b20
+[Cosmetics
+Stephane Popinet <popinet@basilisk.fr>**20240608144353
+ Ignore-this: 2f25d889986bdf90cfe3624470ea1d49
+] 
+hash: 0000000789-f20e290cabc6cf375f73de503240cb6200a21491992baef1646b3076af2756c1
+[Stencils are more robust with OpenMP
+Stephane Popinet <popinet@basilisk.fr>**20240610153957
+ Ignore-this: ad558489fcd609ab943fe597f9f2f8b4
+] 
+hash: 0000000725-401f112cdb9dddaa56688933b03d22356c21b85a48c9accfa2b76e0594c3e1d4
+[foreach_block() needs to be converted into foreach_block_inner() in Point functions
+Stephane Popinet <popinet@basilisk.fr>**20240612161506
+ Ignore-this: b7e4959e10124f9bd0433551140ae9cc
+] 
+hash: 0000000593-6d8285d2028619fe3eb61706397f2ac86d3afffbb9cac4078fe36f263026883d
+[Field names are set using functions compatible with the interpreter
+Stephane Popinet <popinet@basilisk.fr>**20240315071841
+ Ignore-this: 3177b2cfa3eb1c443899d639259255c5
+] 
+hash: 0000001190-edc2e1b664375637707c8543b559eff58857fd0713937034f7106f9092abefd6
+[Replaced "OWS Papa" data with a local mirror
+Stephane Popinet <popinet@basilisk.fr>**20240629151409
+ Ignore-this: b6ac91989130bb15aed7f5d63e87d6de
+] 
+hash: 0000000448-4b6a8e71a8f7f6963c54f256e3eb42a5c3c34ae58ef9c8b1a4b74e15e4fb4aa0

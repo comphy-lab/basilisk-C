@@ -1,0 +1,1585 @@
+#!/bin/bash
+#
+# The darcsit web server. Heavily "inspired" from the excellent gitit
+# (https://github.com/jgm/gitit) by John MacFarlane.
+
+################## Configuration #########################
+
+export LANG=en_US.UTF-8
+
+# Need to match that in $BASILISK/Makefile.defs
+CHECKSUM="md5sum -c --status"
+GENSUM="md5sum"
+
+PANDOC="pandoc -f markdown --smart --katex --preserve-tabs"
+
+COOKIE_OPTS="path=/; HttpOnly; SameSite=Lax"
+MAX_LOGIN_AGE=43200
+
+passfile()
+{
+    local PASSFILE=$(eval echo ~$(whoami))/.darcsit
+    if [[ -f "$PASSFILE" ]]; then
+	if [[ -z $(find "$PASSFILE" -perm 400 2> /dev/null) ]]; then
+	    cat <<EOF
+Content-Type: text/html; charset=utf-8
+	      
+<h1>500 Internal Server Error</h1>
+$PASSFILE: wrong permissions. Must be 0400 (owner-read-only).
+EOF
+	    exit 1
+    	fi
+    else
+	head /dev/urandom | tr -dc A-Za-z0-9 | head -c 256 > "$PASSFILE"
+	chmod 400 "$PASSFILE"
+    fi
+    echo "$PASSFILE"
+}
+
+encode()
+{
+    openssl enc -aes-256-cbc -a -A -e -in - -out - -kfile $(passfile)
+}
+
+decode()
+{
+    openssl enc -aes-256-cbc -a -A -d -in - -out - -kfile $(passfile)
+}
+
+sanitize()
+{
+    # bleach can be installed using: sudo apt install bleach
+    # python -c 'import bleach, sys; reload(sys); sys.setdefaultencoding("utf8"); sys.stdout.write (bleach.clean (sys.stdin.read(), strip=True))' | sed -e 's/&lt;/</g' -e 's/&gt;/>/g'
+    $BASILISK/darcsit/sanitize
+}
+
+######### For debugging ########
+
+BASH_XTRACEFD=2
+if test -n "$HTTP_LOGFILE"; then
+    exec 2>> "$HTTP_LOGFILE"
+fi
+# use set -x or set +x
+echo "${REQUEST_URI}" >&2
+
+################## End of configuration ##################
+
+file="$DOCUMENT_ROOT$REQUEST_URI"
+export BASILISK="$HTTP_BASILISK"
+export BASILISK_INCLUDE_PATH="$HTTP_BASILISK_INCLUDE_PATH"
+export USERS="$HTTP_USERS"
+export WIKI_TITLE="$HTTP_WIKI_TITLE"
+export DOCUMENT_ROOT
+export HTTP_LOGFILE
+
+template="$DOCUMENT_ROOT/static/templates/page.static"
+if [[ ! -r "$template" ]]; then
+    template="$BASILISK/darcsit/templates/page.static"
+fi
+PANDOCT="$PANDOC --template=$template"
+
+# COOKIE_OPTS="$COOKIE_OPTS; Domain=${HTTP_DOMAIN}"
+
+################### Are we logged in? ####################
+
+if [[ -n "$USERS" && "$HTTP_COOKIE" == *"darcsit_ssid="* ]]; then
+    cookie=${HTTP_COOKIE##*darcsit_ssid=}
+    cookie=$(echo ${cookie%%;*} | decode)
+    server=${cookie%%/*}
+    if [[ "$SERVER_NAME" == "$server" ]]; then
+	cookie=${cookie#*/}
+	username=${cookie%%/*}
+	cookie=${cookie#*/}
+	email=${cookie%%/*}
+	cookie=${cookie#*/}
+	tstamp=${cookie%%/*}
+    fi
+fi
+
+function login_timeout()
+{
+    if [[ "$username" ]]; then
+	now=$(date +%s)
+	if (( now > tstamp + $MAX_LOGIN_AGE )); then
+	    # the cookie is older than 24 hours -> logout
+	    echo "Set-Cookie: darcsit_ssid=bar; max-age=0; $COOKIE_OPTS"
+	    username=""
+	    email=""
+	fi
+    fi
+}
+
+##########################################################
+
+basename="${file##*/}"
+dirname="${file%/*}"
+
+debug()
+{
+    cat<<EOF
+Content-type: text/html; charset=utf-8
+
+<pre>
+file: $file
+basename: $basename
+dirname: $dirname
+BASILISK: $BASILISK
+</pre>
+EOF
+
+echo "<pre>"
+env
+echo "</pre>"
+}
+
+# debug
+
+################### _user ################################
+
+if [[ "$REQUEST_URI" == "/_user" ]]; then
+    echo -e "Content-type: text/plain\n"
+    echo -n "$username"
+    exit 0
+fi
+
+################### _logout ##############################
+
+if [[ "$REQUEST_URI" == "/_logout" ]]; then
+    echo "Set-Cookie: darcsit_ssid=bar; max-age=0; $COOKIE_OPTS"
+    echo "Status: 302 Found"
+    echo -e "Location: $HTTP_REFERER\n"
+    exit 0
+fi
+
+################### Front Page ###########################
+
+if [[ "$REQUEST_URI" == "/" ]]; then
+    basename="Front%20Page"
+    file="$dirname/$basename"
+    # fall trough
+fi
+
+################### _index ###############################
+
+function is_not_bot()
+{
+    # echo "checking for bot: $HTTP_USER_AGENT" >&2
+    # try to guess whether the client is an indexing robot
+    if [[ "$HTTP_USER_AGENT" =~ [Bb]ot[s]* ]]; then
+	echo "Access denied for bot: $HTTP_USER_AGENT" >&2
+	cat <<EOF
+Content-Type: text/html; charset=utf-8
+
+<h1>403 Read access forbidden</h1>
+EOF
+	exit 0
+    fi
+}
+
+if [[ "$basename" == "_index" ]] && is_not_bot; then
+    basename=""
+    file="$dirname"
+    REQUEST_URI="/"
+    # fall through
+fi
+
+################### ?changes ###########################
+
+if [[ "$REQUEST_URI" == *\?changes=* ]] && is_not_bot; then
+    basename=".${REQUEST_URI%%\?*}"
+    shortname=$(echo "$basename" | sed -e 's|^./||' -e 's/%20/ /g')
+    hash=${REQUEST_URI##*\?changes=}
+    login_timeout
+    echo "X-Robots-Tag: noindex"
+    echo -e "Content-type: text/html; charset=utf-8\n"
+    # replace --match "date $hash with --hash=$hash for darcs version 2.12
+    ( cd $DOCUMENT_ROOT && timeout 60 darcs changes --verbose --match "date $hash" \
+				 --repodir=$DOCUMENT_ROOT ) | \
+	awk -v basename="$basename" -f $BASILISK/darcsit/changes2html.awk |   \
+	$PANDOCT -s -V wikititle="$WIKI_TITLE"		    \
+		-V pagetitle="Changes to $shortname" 	    \
+		-V sitenav=true				    \
+		-V users="$USERS"                           \
+	| sed 's/__ESCAPEDDOLLAR__/$/g'
+    exit 0
+fi
+
+################### ?history ########################
+
+dhistory()
+{
+    awk -v file=$1 '
+    function output()
+    {
+      	 split(date,a," ");
+      	 nm["Jan"] = 1
+     	 nm["Feb"] = 2
+      	 nm["Mar"] = 3
+      	 nm["Apr"] = 4
+      	 nm["May"] = 5
+      	 nm["Jun"] = 6
+      	 nm["Jul"] = 7
+      	 nm["Aug"] = 8
+      	 nm["Sep"] = 9
+      	 nm["Oct"] = 10
+      	 nm["Nov"] = 11
+      	 nm["Dec"] = 12
+      	 month = nm[a[2]]
+      	 day = a[3]
+      	 hour = a[4]
+      	 tz = a[5]
+      	 year = a[6]
+	 split(hour,b,":");
+	 # Comment out the following line for darcs version 2.12
+	 hash = strftime ("%Y%m%d%H%M%S", mktime (year " " month " " day " " b[1] " " b[2] " " b[3]), 1);
+      	 printf ("* %4d-%02d-%02d %s %s ([%s](_activity?forUser=%s)): ", 
+      	         year, month, day, hour, tz, author, author);
+	 if (file)
+	    printf ("[%s](%s?changes=%s)", title, file, hash);
+	 else {
+	    printf ("%s", title);   
+      	    if (nfiles) {
+      	      printf (" (");
+	      fl = 1;
+	      for (f in files) {
+	    	if (!fl)
+		  printf (", ");
+		shortname = f
+		gsub (".*/", "", shortname);
+	    	printf ("[%s](%s?changes=%s)", shortname, f, hash);
+		fl = 0;
+	      }
+              printf (")");
+      	   }
+         }
+	 printf ("\n");
+      	 delete files;
+      	 nfiles = 0;
+    }
+    /^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/ { # for darcs version 2.8.5
+      if (hash)
+        output();
+      date = $1;
+      for (i = 2; i <= 6; i++)
+	 date = date " " $i;
+      author = $7;
+      for (i = 8; i < NF; i++)
+	 author = author " " $i;
+    }
+    /^Author:/ { # for darcs version 2.12
+      author = $2;
+      for (i = 3; i < NF; i++)
+	 author = author " " $i;
+    }
+    /^Date:/ { # for darcs version 2.12
+      date = $2;
+      for (i = 3; i <= NF; i++)
+	 date = date " " $i;
+    }
+    /^ *hunk */ {
+      files[$2]++;
+      nfiles++;
+    }
+    /^  [*] / {
+      title = substr($0,4);
+      hash = title; # comment this out for darcs version 2.12
+    }
+    /^patch [^ ]*/ { # for darcs version 2.12
+      if (hash)
+      	 output();
+      hash = $2;
+    }
+    END {
+      if (hash)
+      	 output();
+    }
+    '
+}
+
+if [[ "$REQUEST_URI" == *\?history ]] && is_not_bot; then
+    basename=.${REQUEST_URI%%\?*}
+    shortname=$(echo $basename | sed -e 's|^./||' -e 's/%20/ /g')
+    login_timeout
+    echo "X-Robots-Tag: noindex"
+    echo -e "Content-type: text/html; charset=utf-8\n"
+    tabs="<li><a href=\"${REQUEST_URI%%\?*}\">view</a></li>"
+    if [[ -n "$USERS" && ! -d "$DOCUMENT_ROOT/$basename" ]]; then
+	tabs="$tabs<li><a href=\"/_edit${REQUEST_URI%%\?*}\">edit</a></li>"
+    fi
+    tabs="$tabs<li class=selected><a href=\"${REQUEST_URI}\">history</a></li>"
+    ( cd "$DOCUMENT_ROOT" && timeout 60 darcs changes \
+	--max-count=50 --repodir=$DOCUMENT_ROOT $basename ) | \
+	dhistory ${REQUEST_URI%%\?*} |                        \
+	$PANDOCT -s -V wikititle="$WIKI_TITLE"		    \
+		-V pagetitle="Changes to $shortname" 	    \
+		-V sitenav=true				    \
+		-V tabs="$tabs"                             \
+		-V users="$USERS"                           \
+		-V pageUrl="${REQUEST_URI%%\?*}"            \
+	| sed 's/__ESCAPEDDOLLAR__/$/g'
+    exit 0
+fi
+
+################### Recent activity ######################
+
+if [[ "$basename" == _activity* ]] && is_not_bot; then
+    login_timeout
+    echo "X-Robots-Tag: noindex"
+    echo -e "Content-type: text/html; charset=utf-8\n"
+    ( user=${basename##_activity?forUser=}
+      if [[ "$user" == "_activity" ]]; then
+	  echo "# Recent changes by all users"
+	  user=".*"
+      else
+	  user=$(echo $user | sed 's/%20/ /g')
+	  echo "# Recent changes by $user"
+      fi
+      ( cd "$DOCUMENT_ROOT" && timeout 60 darcs changes \
+	    --match "author \"$user\" && date \"in the last month\"" \
+	    --max-count=50 --verbose --repodir="$DOCUMENT_ROOT" ) | dhistory ) |\
+	$PANDOCT -s -V wikititle="$WIKI_TITLE"		      \
+		-V pagetitle="Recent changes" 		      \
+		-V sitenav=true				      \
+		-V users="$USERS"                             \
+	| sed 's/__ESCAPEDDOLLAR__/$/g'
+    exit 0
+fi
+
+################### Raw source ###########################
+
+mimetype()
+{
+    case "$1" in
+	*.[chm]|*.lex)
+	    echo "Content-type: text/plain; charset=utf-8"
+	    echo -e "Content-Disposition: inline\n"
+	    ;;
+	*)
+	    echo -e "Content-type: "$(file -b -L --mime-type $1)"\n"
+	    ;;
+    esac    
+}
+
+if [[ "$QUERY_STRING" == "raw" ]] ; then
+    file=${file%\?raw}
+    if [[ ! -r "$file" ]]; then
+	cat <<EOF
+Content-Type: text/html; charset=utf-8
+
+<h1>404 Not Found</h1>
+While retrieving URL $REQUEST_URI on $SERVER_NAME.
+EOF
+	exit 0
+    fi
+    mimetype $file
+    cat $file
+    exit 0
+fi
+
+################### Utility functions ####################
+
+function urldecode()
+{
+#    sed "s@+@ @g;s@%@\\\\x@g" | xargs -0 printf "%b" | sed 's/\r$//g'
+    $BASILISK/darcsit/urldecode
+}
+
+function cgi_get_post_vars()
+{
+    local saveIFS=$IFS
+    IFS='=&'
+    local parm=($(cat))
+    IFS=$saveIFS
+    unset post
+    declare -g -A post
+    for ((i=0; i<${#parm[@]}; i+=2)); do
+	post[${parm[i]}]="${parm[i+1]}"
+    done
+}
+
+function internal_error()
+{
+    cat <<EOF
+Content-Type: text/html; charset=utf-8
+
+<h1>500 Internal Server Error</h1>
+While retrieving URL $REQUEST_URI.
+EOF
+    if [[ -r "$1" ]]; then
+	cat <<EOF
+<p>
+$dirname/$1:
+<pre>
+EOF
+	cat "$1"
+	echo "</pre>"
+    fi
+}
+
+function no_cache()
+{
+    # from https://www.willmaster.com/library/web-content-prep/preventing-browser-cache.php
+    cat <<EOF
+Cache-Control: max-age=0
+Cache-Control: no-cache
+Expires: -1
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Pragma: no-cache
+EOF
+}
+
+function runnable()
+{
+    if [[ -r "$USERS" && -r "$HTTP_RUNNERS" && -n "$HTTP_SANDBOX" && "$1" == *.[cm] ]]; then
+	return 0;
+    else
+	return 1;
+    fi
+}
+
+function killchildren()
+{
+    p=$1
+    c=`ps -o pid= --ppid $p`
+    kill $p
+    while test -n "$c"; do
+	p=$c
+	c=`ps -o pid= --ppid $p`
+	kill $p
+    done
+}
+
+################### _search ###############################
+
+searchrepo()
+{
+    cd $1 && \
+	darcs show files --no-pending --no-directories -0 | \
+	    xargs -0 grep -I "`echo $2 | urldecode`" | head -n 1000
+}
+
+searchpreproc()
+{
+    if [ -z "$1" ]; then
+	echo "### No match found for ''"
+    else
+	(
+	    # The line below should be removed for standard sites
+	    searchrepo $BASILISK/..   "$1"
+	    searchrepo "$DOCUMENT_ROOT" "$1"
+	) | awk -v string="`echo $1 | urldecode`" -f $BASILISK/darcsit/search.awk
+    fi
+}
+
+if [[ "$REQUEST_URI" == "/_search?"* ]] && is_not_bot; then
+    patterns=${REQUEST_URI##/_search\?patterns=}
+    echo "X-Robots-Tag: noindex"
+    echo -e "Content-type: text/html\n"
+    searchpreproc "$patterns" | iconv -f utf-8 -t utf-8 -c |  \
+	$PANDOCT -s -V wikititle="$WIKI_TITLE"		      \
+		 -V pagetitle="Search results" 		      \
+		 -V sitenav=true			      \
+		 -V users="$USERS"                            \
+	| sed 's/__ESCAPEDDOLLAR__/$/g'
+    exit 0
+fi
+
+######################## ?status ############################
+
+function is_up_to_date()
+{
+    if [[ -f "$1" ]]; then
+	if grep "$1" "$2" | $CHECKSUM 2> /dev/null; then
+	    return 0
+	fi
+    fi
+    return 1
+}
+
+function parse_errors()
+{
+    # Note: the line with $BASILISK should be removed for standard sites
+    uniq | sed                                                                                      \
+	       -e "s|[~]*$3|${3##\~}|g"                                                             \
+	       -e "s|$DOCUMENT_ROOT/\([^:]*\):\([0-9]*\):|<a href=\"/\1#\2\"\">\1:\2</a>:|g"        \
+	       -e "s|$BASILISK/\([^:]*\):\([0-9]*\):|<a href=\"/src/\1#\2\"\">src/\1:\2</a>:|g"     \
+	       -e "s|^\./\([^:]*\):\([0-9]*\):|<a href=\"./\1#\2\"\">\1:\2</a>:|g"                  \
+	       -e "s|^[~]*$1:\([0-9]*\):|$1:<a href=\"$2#\1\" onclick=\"toline(\1)\">\1</a>:|g"     \
+	       -e 's/$/<br>/g'
+}
+
+function status_warning()
+{
+    local basename=${1%%.?}
+    if [[ -s "$basename/warn" ]]; then
+	cat <<EOF
+<div class=message id=warning>
+<div id=msg_logo><img src=/img/warning.png></div>
+<div id=msg_label>
+EOF
+	msg=$(parse_errors "${1##\~}" "$2" "$basename" < "$basename/warn")
+	if [[ "$msg" ]]; then
+	    echo "$msg"
+	fi
+cat <<EOF
+</div></div>
+EOF
+    fi
+}
+
+function status_fail()
+{
+    cat <<EOF
+<div class=error id=error>
+<div id=msg_logo><img src=/img/error.png></div>
+<div id=msg_label>
+EOF
+    local basename=${1%%.?}
+    msg=$(tail -n 20 "$basename/fail" | parse_errors "${1##\~}" "$2" "$basename")
+    if $BASILISK/darcsit/pagemagic "$1"; then
+	if [[ ! "$msg" ]]; then
+	    tail -n 20 "$basename/fail" | sed 's/.*\(Program received signal.*\)/\1/;t;d'
+	else
+	    echo "$msg"
+	fi
+    else
+	echo "$msg"
+    fi
+    cat <<EOF
+</div></div>
+EOF
+    status_warning "$1" "$2"
+}
+
+function status_rerun()
+{
+    cat <<EOF
+<div class=message id=rerun>
+<div id=msg_logo><img src=/img/warning.png></div>
+<div id=msg_label>
+The results may be out of date.
+EOF
+    if [[ ! "$2" ]] && runnable "$1"; then
+	echo "<a href="/_edit$1">Check edits and run</a> the code to update."
+    else
+	echo "Run the code to update."
+    fi
+    echo "</div></div>"
+}
+
+function status_run()
+{
+    cat <<EOF
+<div class=message id=run>
+<div id=msg_logo><img src=/img/warning.png></div>
+<div id=msg_label>
+EOF
+    if [[ ! "$2" ]] && runnable "$1"; then
+	echo "<a href="/_edit$1">Run</a> the code to update the graphs."
+    else
+	echo "Run the code to update the graphs."
+    fi
+    echo "</div></div>"
+}
+
+function status_pass()
+{
+    cat <<EOF
+<div class=message id=pass>
+<div id=msg_logo><img src=/img/check.png></div>
+<div id=msg_label>
+The results are up to date.
+</div></div>
+EOF
+    status_warning "$1" "$2"
+}
+
+function status_running()
+{
+    cat <<EOF
+<div class=message id=running>
+<div id=msg_logo><img src=/img/gears.gif></div>
+<div id=msg_label>
+EOF
+    if [[ ! "$ministatus" ]]; then
+	ssh "$HTTP_SANDBOX" statustest $(cat $1)
+    fi
+    cat <<EOF
+</div></div>
+EOF
+}
+
+function status_completing()
+{
+    cat <<EOF
+<div class=message id=running>
+<div id=msg_logo><img src=/img/gears.gif></div>
+<div id=msg_label>
+The code is generating graphics.
+</div></div>
+EOF
+}
+
+function debug()
+{
+    # echo $@ >&2
+    :
+}
+
+function has_plots()
+{
+    if grep -E -q -e '[ \t]*~~~[a-zA-Z_]*plot([ \t]|$)' \
+	          -e '\]\([ \t]*'$1'/'; then
+	return 0
+    fi
+    return 1
+}
+
+function status()
+{
+    local filename="${1##*/}"
+    local basename="${1%%.?}"
+    local dirname="${basename%/*}"
+    local ministatus="$2"
+    basename="${basename##*/}"
+    if [[ "$dirname/" == /_edit/* ]]; then
+	local edit=true
+	dirname="${dirname##/_edit}"
+	filename="~$filename"
+	basename="~$basename"
+    fi
+    if [[ -d "$DOCUMENT_ROOT/$dirname/$basename" ]] && cd "$DOCUMENT_ROOT/$dirname"; then
+	local tst=$(ls "$basename/fail".*tst 2> /dev/null)
+	tst=${tst##*\.}
+	if [[ "$tst" ]]; then
+	    if [[ -f "$basename/fail" ]]; then
+		if is_up_to_date "$filename" "$basename/fail.$tst"; then
+		    status_fail "$filename" "${REQUEST_URI%%\?status}"
+		    return
+		else
+		    debug "need to rerun 5"
+		    rm -f "$basename/fail" "$filename.html"
+		    status_rerun "$dirname/$filename" "$edit"
+		    return
+		fi
+	    else
+		debug "need to rerun 4"
+		status_rerun "$dirname/$filename" "$edit"
+		return
+	    fi
+	else
+	    tst=$(ls "$basename".*tst 2> /dev/null)
+	    tst=${tst##*\.}
+	    if [[ "$tst" ]] &&
+		   is_up_to_date "$filename" "$basename.$tst" &&
+		   is_up_to_date "$basename.s" "$basename.$tst" ; then
+		if [[ -f "$basename/pass" ]]; then
+		    debug "pass"
+		    if [[ "$edit" || "$ministatus" ]]; then
+			status_pass "$filename" "${REQUEST_URI%%\?status}"
+		    else
+			status_warning "$filename" "${REQUEST_URI%%\?status}"
+		    fi
+		    return
+		else
+		    local pid=$(find $basename/pid.*tst 2> /dev/null)
+		    if [[ "$pid" ]]; then
+			if [[ "$(find $basename/pid.*tst -mmin +60 2> /dev/null)" ]] || ! kill -0 `cat "$pid"` 2> /dev/null; then
+			    # pid.*tst is older than 60 minutes or is not running -> stalled calculation
+			    rm -f "$basename.$tst" "$basename/pid.*tst" "$basename/tspid.*tst"
+			    debug "need to rerun 1"
+			    status_rerun "$dirname/$filename" "$edit"
+			    return
+			elif [[ -f "$basename/completing" ]]; then
+			    debug "completing"
+			    status_completing
+			    status_warning "$filename" "${REQUEST_URI%%\?status}"
+			    return
+			else
+			    debug "running"
+			    status_running "$basename/tspid."* "$ministatus"
+			    status_warning "$filename" "${REQUEST_URI%%\?status}"
+			    return
+			fi
+		    else
+			rm -f "$basename.$tst"
+			debug "need to rerun 2"
+			status_rerun "$dirname/$filename" "$edit"
+			return
+		    fi
+		fi
+	    else
+		debug "need to rerun 3"
+		status_rerun "$dirname/$filename" "$edit"
+		return
+	    fi
+	fi
+    fi
+    if [[ -f "$DOCUMENT_ROOT/$dirname/$filename" ]] && has_plots "${basename##\~}" < "$DOCUMENT_ROOT/$dirname/$filename"; then
+	debug "need to run"
+	status_run "$dirname/$filename" "$edit"
+    else
+	debug "not run"
+    fi
+}
+
+if [[ "$REQUEST_URI" == *.[cm]\?status ]]; then
+    echo -e "Content-type: text/plain; charset=utf-8\n"
+    status "${REQUEST_URI%%\?status}"
+    exit 0
+fi
+
+######################## _edit ############################
+
+function get_path()
+{
+    local path=${1##.}
+    local dir=${path%%/*}
+    local dir1=${dir}
+    while [[ "$dir" != "$path" ]]; do
+	if [[ ! -d "$DOCUMENT_ROOT/$dir1" ]]; then
+	    echo -n "$dir1 "
+	fi
+	path=${path#*/}
+	dir=${path%%/*}
+	dir1="$dir1/$dir"
+    done
+}
+
+function check_path()
+{
+    for p in $(get_path "$1"); do
+	id=${p//\//_}
+	id=${id//./_}
+	id=${id//%/_}
+	cat <<EOF
+<input type="checkbox" name="$id" id="$id" value="checked"> Create new directory '${p##/}/'<br>
+EOF
+    done
+    echo "<br>"
+}
+
+function mkpath()
+{
+    echo "<li>"
+    for p in $(get_path "$1"); do
+	if mkdir .$p 2>&1; then
+	    :
+	else
+	    echo "</li>"
+	    return 1
+	fi
+    done
+}
+
+function copy_test_dir()
+{
+    # copy_test dirname1 dirname2
+    if [[ -d "$1" ]]; then
+	if [[ ! -d "$2" ]]; then
+	    mkdir "$2"
+	    local warn=1
+	    local fail=1
+	else
+	    [ -f "$2/warn" ]
+	    local warn=$?
+	    [ -f "$2/fail" ]
+	    local fail=$?
+	fi
+	cp -af "$1/"* "$2/"
+	if [[ -f "$1.s" ]]; then
+	    cp -af "$1.s" "$2.s"
+	fi
+	if [[ -f "$1/warn" ]]; then
+	    if (( warn == 0)); then
+		sed "s/$1/$2/g" < "$1/warn" > "$2/warn.tmp"
+		if diff -q "$2/warn" "$2/warn.tmp" > /dev/null; then
+		    rm -f "$2/warn.tmp"
+		else
+		    mv -f "$2/warn.tmp" "$2/warn"
+		    rm -f $2.?.html
+		fi
+	    else
+		sed "s/$1/$2/g" < "$1/warn" > "$2/warn"
+		rm -f $2.?.html
+	    fi
+	elif (( warn == 0 )); then
+	    rm -f "$2/warn" $2.?.html
+	fi
+	if [[ -f "$1/fail.tst" ]]; then
+	    sed "s/$1/$2/g" < "$1/fail.tst" > "$2/fail.tst"
+	    sed "s/$1/$2/g" < "$1/fail" > "$2/fail"
+	    if (( fail == 1 )); then
+		rm -f $2.?.html
+	    fi
+	    rm -f "$2.*tst"
+	elif [[ -f "$1.tst" ]]; then
+	    sed "s/$1/$2/g" < "$1.tst" > "$2.tst"
+	    rm -f "$2/fail.tst" "$2/fail"
+	    if (( fail == 0 )); then
+		rm -f $2.?.html
+	    fi
+	    if [[ "$(find $1/pid.*tst 2> /dev/null)" ]]; then
+		rm -f "$2/pass"
+	    fi
+	fi
+    fi
+}
+
+function update_test()
+{
+    local basename="$1"
+    if [[ "$basename" == *.[cm] ]]; then
+	local dirname="${basename%/*}"
+	basename="${basename##*/}"
+	basename="${basename%%.?}"
+	if cd "$DOCUMENT_ROOT/$dirname"; then
+	    copy_test_dir "~$basename" "$basename"
+	    if [[ "$(find ~$basename/pid.*tst 2> /dev/null)" ]]; then
+		# We are still running so we need to keep the directory alive
+		cp -ar "$basename"/* "~$basename"
+		rm -rf "$basename"
+		mv -f "~$basename" "$basename"
+	    fi
+	    rm -r -f "~$basename" "~$basename".*
+	fi
+    fi
+}
+
+if [[ -n "$USERS" && "$REQUEST_URI" == /_edit/* ]] && is_not_bot; then
+    if [[ "$REQUEST_URI" == /_edit/static/* ]]; then
+		cat <<EOF
+Content-Type: text/html; charset=utf-8
+
+<h1>403 Access forbidden</h1>
+While retrieving URL $REQUEST_URI on $SERVER_NAME.
+EOF
+		exit 0
+    fi
+    if [[ "$username" ]]; then
+	basename=.${REQUEST_URI##/_edit}
+	shortname=$(echo $basename | sed -e 's|^./||' -e 's/%20/ /g')
+	dirname="${basename%/*}"
+	messages=""
+	logMsg=""
+	checkboxes=""
+	# check whether data has been posted
+	if [[ "$REQUEST_METHOD" == "POST" ]]; then
+	    cgi_get_post_vars
+		
+	    ######################## Discard ############################
+	    if [[ "${post[cancel]}" == "Discard" ]]; then
+		filename="${file##*/}"
+		basename="${filename%%.?}"
+		if cd "$DOCUMENT_ROOT/$dirname"; then
+		    if [[ -d "~$basename" ]]; then
+			if diff -q "~$filename" "$filename" > /dev/null; then
+			    copy_test_dir "~$basename" "$basename"
+			    if [[ "$(find ~$basename/pid.*tst 2> /dev/null)" ]]; then
+				# We are still running so we need to keep the directory alive
+				cp -ar "$basename"/* "~$basename"
+				rm -rf "$basename"
+				mv -f "~$basename" "$basename"
+			    fi
+			elif [[ "$(find ~$basename/pid.*tst 2> /dev/null)" ]]; then
+			    # we stop the running calculation
+			    killchildren $(cat ~$basename/pid.*tst)
+			    if [[ "$HTTP_SANDBOX" ]]; then
+				ssh "$HTTP_SANDBOX" killtest $(cat ~$basename/tspid.*tst)
+			    fi
+			fi
+		    fi
+		    rm -r -f "~$basename" "~$basename".*
+		    echo "Status: 302 Found"
+		    echo -e "Location: /${REQUEST_URI##/_edit/}\n"
+		    exit 0
+		else
+		    internal_error "cannot cd to $dirname"
+		    exit 1
+		fi
+	    fi
+	    
+	else # not POST
+	    if [[  ! -f "$DOCUMENT_ROOT/$basename" ]]; then
+		######## New page #######
+		checkboxes=$(check_path "$basename")
+	    fi
+	fi
+	no_cache
+	echo "X-Robots-Tag: noindex"
+	echo -e "Content-type: text/html; charset=utf-8\n"
+	tabs="<li><a href=\"${REQUEST_URI##/_edit}\">view</a></li>"
+	tabs="$tabs<li class=selected><a href=\"${REQUEST_URI}\">edit</a></li>"
+	tabs="$tabs<li><a href=\"${REQUEST_URI##/_edit}?history\">history</a></li>"
+	javascripts="<script src=\"/js/preview.js\" type=\"text/javascript\"></script>"
+	if runnable "$shortname"; then
+	    if grep -q "^$username$" "$HTTP_RUNNERS"; then
+		javascripts="$javascripts<script src=\"/js/run.js\" type=\"text/javascript\"></script>"
+	    else
+		javascripts="$javascripts<script src=\"/js/norun.js\" type=\"text/javascript\"></script>"
+	    fi
+	fi
+	template="$DOCUMENT_ROOT/static/templates/edit.static"
+	if [[ ! -r "$template" ]]; then
+	    template="$BASILISK/darcsit/templates/edit.static"
+	fi
+	echo | $PANDOC --template=$template -s                      \
+		       -V wikititle="$WIKI_TITLE"		    \
+		       -V basepage="${dirname##./}"                 \
+		       -V pagetitle="Editing $shortname" 	    \
+		       -V markuphelp=true			    \
+		       -V tabs="$tabs"                              \
+		       -V editable=true                             \
+		       -V messages="$messages"                      \
+		       -V logMsg="$logMsg"                          \
+		       -V checkboxes="$checkboxes"                  \
+		       -V javascripts="$javascripts"                \
+		       -V users="$USERS"                            \
+		       -V pageUrl="${REQUEST_URI}"                  \
+	    | sed -e 's/__ESCAPEDDOLLAR__/$/g'
+    else
+	echo "Status: 302 Found"
+	echo -e "Location: /_login?destination=$REQUEST_URI\n"
+    fi
+    exit 0
+fi
+
+######################## _save ############################
+
+function get_edited_text()
+{
+    echo -n "${post[editedText]}" | urldecode | sanitize
+}
+    
+if [[ -n "$USERS" && "$REQUEST_URI" == /_save/* ]]; then
+    if [[ "$username" ]]; then
+	basename=.${REQUEST_URI##/_save}
+	shortname=$(echo $basename | sed -e 's|^./||' -e 's/%20/ /g')
+	dirname="${basename%/*}"
+	# check whether data has been posted
+	messages=""
+	if [[ "$REQUEST_METHOD" == "POST" ]]; then
+	    cgi_get_post_vars
+
+	    logMsg=$(echo "${post[logMsg]}" | urldecode | sanitize)
+	    if [[ ${logMsg// //} == "" ]]; then
+		messages="<li>The description cannot be empty. Please try to describe the changes properly.</li>"
+	    else
+		author="$username"
+		if [[ "$email" ]]; then
+		    author="$author <$email>"
+		fi
+		    
+		############ Changes to an existing page #########
+		if [[ -f "$DOCUMENT_ROOT/$basename" ]]; then
+		    if (cd "$DOCUMENT_ROOT" && get_edited_text > "$basename" &&
+			    darcs record -a -q -A "$author" -m "$logMsg" "$basename") \
+				> "$DOCUMENT_ROOT/$basename.log" 2>&1;
+		    then
+			update_test "$basename"
+		    else
+			messages="<li>"$(< "$DOCUMENT_ROOT/$basename.log")"</li>"
+		    fi
+		    rm -f "$DOCUMENT_ROOT/$basename.log"
+		else
+
+		    ################ Creation of a new page ##############
+		    cd $DOCUMENT_ROOT
+		    if messages=$(mkpath "$basename"); then
+			get_edited_text > "$basename"
+			if (darcs add -q "$basename" &&
+				darcs record -a -q -A "$author" -m "$logMsg" "$basename") \
+				    > "$DOCUMENT_ROOT/$basename.log" 2>&1;
+			then
+			    update_test "$basename"
+			    messages=""
+			else
+			    messages="<li>"$(< "$DOCUMENT_ROOT/$basename.log")"</li>"
+			fi
+			rm -f "$DOCUMENT_ROOT/$basename.log"
+		    fi
+		fi
+	    fi
+	fi
+	echo -e "Content-type: text/html; charset=utf-8\n"
+	echo -n "$messages"
+    else
+	echo "Status: 302 Found"
+	echo -e "Location: /_login?destination=$REQUEST_URI\n"
+    fi
+    exit 0
+fi
+
+######################## _run ############################
+
+if [[ "$REQUEST_URI" == /_run/* ]] && runnable "$REQUEST_URI"; then
+    if [[ "$username" ]]; then
+	basename=.${REQUEST_URI##/_run}
+	dirname="${basename%/*}"
+	messages=""
+	# check whether data has been posted
+	if [[ "$REQUEST_METHOD" == "POST" ]]; then
+	    if grep -q "^$username$" "$HTTP_RUNNERS"; then
+		cgi_get_post_vars
+		
+		cd $DOCUMENT_ROOT
+		if messages=$(mkpath "$basename"); then
+		    messages=""
+		    filename="${file##*/}"
+		    basename="${filename%%.?}"
+		    cd $dirname
+		    if [[ ! -d "~$basename" && -d "$basename" ]]; then
+			for f in "$basename".*; do
+			    cp -af "$f" "~$f"
+			done
+			copy_test_dir "$basename" "~$basename"
+		    fi
+		    get_edited_text > "~$filename"
+		    makefile="$BASILISK/Makefile.defs"
+		    if [[ -r Makefile ]]; then
+			makefile=$(mktemp)
+			echo "include $BASILISK/Makefile.defs" >> $makefile
+			sed "s/$basename.tst/~$basename.tst/g" < Makefile | \
+			    awk -f $BASILISK/darcsit/filter-makefile.awk >> $makefile
+			# cat $makefile >&2
+		    fi
+		    filename="~$filename"
+		    basename="~$basename"
+		    rm -f "$basename.log"
+		    if ( make -f "$makefile" "$basename.s" ) > "$basename.log" 2>&1; then
+			if rm -f "$basename/fail.tst" && \
+				SANDBOX="$HTTP_SANDBOX" CFLAGS="-O2 -DMTRACE=3" \
+				       make -f "$makefile" "$basename.tst" > "$basename.log" 2> "$basename.make.log"; then
+			    rm -f "$basename.log" "$basename.make.log"
+			else
+			    mkdir -p "$basename"
+			    cat "$basename.make.log" >> "$basename/fail"
+			    rm -f "$basename.make.log"
+			    $GENSUM "$filename" "$basename.s" > "$basename/fail.tst"
+			fi
+		    else
+			mkdir -p "$basename"
+			cat "$basename.log" >> "$basename/fail"
+			rm -f "$basename.log"
+			$GENSUM "$filename" > "$basename/fail.tst"
+		    fi
+		fi
+	    else ##### Not allowed
+		messages="<li>Please ask the system administrator for permission to run code on the server.</li>"
+	    fi
+	fi
+	echo -e "Content-type: text/html; charset=utf-8\n"
+	echo -n "$messages"
+    else
+	echo "Status: 302 Found"
+	echo -e "Location: /_login?destination=$REQUEST_URI\n"
+    fi
+    exit 0
+fi
+
+######################## _preview ############################
+
+function cpreproc()
+{
+    echo ~~~ {$2 .numberLines .lineAnchors}
+    cat $1
+    echo
+    echo ~~~
+}
+
+function cpostproc()
+{
+    # add anchors since the .lineAnchors does not seem to work
+    # with pandoc 1.17.2
+    sed -e 's|<pre>1$|<pre><a id="1" href="'"/_edit$2/$1"'#1">1</a>|' \
+	-e 's|^ *\([0-9]*\)$|<a id="\1" href="'"/_edit$2/$1"'#\1">\1</a>|g'
+}
+
+function pagepreproc()
+{
+    $BASILISK/darcsit/literate-c $1 $2 | sed -e 's/~~~literatec/~~~c/g'
+}
+
+function pagepostproc()
+{
+    $BASILISK/darcsit/codeblock "" $1 $2
+}
+
+function filterdir()
+{
+    sed -r 's|([^~a-zA-Z_\-]+)'$1'/|\1~'$1'/|g'
+}
+
+source $BASILISK/darcsit/filetype
+
+function setproc()
+{
+    if [[ "$1" == *.[cm] ]]; then
+	local dir="${1%%.?}"
+	local target="${dir##\~}"
+	if [[ ! -d "$dir" && -d "$target" ]]; then
+	    copy_test_dir "$target" "$dir"
+	fi
+    fi
+    if [[ -s "$1" ]]; then
+	case "$1" in
+	    *.[cmh])
+		if $BASILISK/darcsit/pagemagic "$1"; then
+		    PREPROC="pagepreproc $1 1"
+		    if [[ "$1" == *.[cm] ]]; then
+			local dir="${1%%.?}"
+			dir="${dir##\~}"
+			PREPROC="$PREPROC | filterdir $dir"
+		    fi
+		    POSTPROC="pagepostproc $1"
+		else
+		    if [[ $1 == *.[ch] ]]; then
+			PREPROC="cpreproc $1 .c"
+		    else
+			PREPROC="cpreproc $1 .octave"
+		    fi
+		    POSTPROC="cpostproc ${1##\~} $2"
+		fi
+		;;
+	    *)
+		local type=$(filetype "$1")
+		case $type in
+		    page)
+			PREPROC="pagepreproc $1 0"
+			POSTPROC="pagepostproc $1"
+			;;
+		    *)
+			PREPROC="cpreproc $1 .$type"
+			POSTPROC="cpostproc ${1##\~} $2"
+			;;
+		esac
+		;;
+	esac
+    else
+	# empty file
+	PREPROC="echo"
+	POSTPROC="cat"
+    fi
+}
+
+if [[ -n "$USERS" && "$REQUEST_URI" == /_preview/* ]]; then
+    if [[ "$username" ]]; then
+	if [[ -r $DOCUMENT_ROOT/${REQUEST_URI##/_preview/} ]]; then
+	    basename=${file//$dirname\//}
+	    dirname=${dirname//$DOCUMENT_ROOT\/_preview/$DOCUMENT_ROOT}
+	else
+	    basename=${file//$dirname\//}
+	    dirname=$DOCUMENT_ROOT
+	fi
+	log="_preview_$basename.log"
+	makefile=$(mktemp)
+	echo "include $BASILISK/Makefile.defs" > $makefile
+	if [[ -r $dirname/Makefile ]]; then
+	    awk -f $BASILISK/darcsit/filter-makefile.awk $dirname/Makefile >> $makefile
+	fi
+	if cd "$dirname" && \
+		sed 's/raw=//' | urldecode | sanitize > "~$basename" 2> "$log" && \
+		make -f $makefile "~$basename.tags" >> "$log" 2>&1; then
+	    setproc "~$basename" "${dirname#$DOCUMENT_ROOT}"
+	    echo -e "Content-type: text/html; charset=utf-8\n"
+	    if ( eval $PREPROC | $PANDOC | $POSTPROC | sed 's/__ESCAPEDDOLLAR__/$/g' ) \
+		   2>> "$log"; then
+	        rm -f "$dirname/$log" $makefile
+		exit 0
+	    fi
+	fi
+	internal_error "$log" >&2
+        rm -f "$dirname/$log" $makefile
+	exit 1
+    else
+	echo "Status: 302 Found"
+	echo -e "Location: /_login?destination=$REQUEST_URI\n"
+    fi
+    exit 0
+fi
+
+################### Formatted page #######################
+
+if [[ -r "$file" ]] ; then
+    type=$(filetype "$file")
+    if [[ "$type" != */* ]]; then
+	makefile=$(mktemp)
+	echo "include $BASILISK/Makefile.defs" > $makefile
+	if [[ -r $dirname/Makefile ]]; then
+	    awk -f $BASILISK/darcsit/filter-makefile.awk $dirname/Makefile >> $makefile
+	fi
+	if cd $dirname &&  \
+		TYPE="$type" make -f $makefile $basename.html > $basename.log 2>&1; then
+	    login_timeout
+	    echo -e "Content-type: text/html; charset=utf-8\n"
+	    cat $basename.html
+	else
+	    internal_error $basename.log
+	fi
+	rm -f $basename.log $makefile
+	exit 0
+    fi
+fi
+
+################### _running  ###################
+
+running_preproc()
+{
+    cd $DOCUMENT_ROOT
+    path="/"
+    echo -n "<a class=\"updir\" href=\"$path\">"/"</a>"
+    for d in $(echo $1 | sed 's/\// /g'); do
+	path=$path$d"/"
+	echo -n "<a class=\"updir\" href=\"$path?running\">"$d/"</a>"
+    done
+    if cd $DOCUMENT_ROOT/$1; then
+	echo '<ul class="index">'
+	    files=$(find . -name 'pid.*tst')
+	    for f in $files; do
+		basename=${f%%/pid.*tst}
+		basename=${basename##./}
+		filename=$(ls $basename.[cm] 2> /dev/null)
+		if [[ -n "$filename" && $(status $1$filename true) == *"id=running"* ]]; then
+		    echo -n "<li class=\"upload\"><a href=\"$filename\">"
+		    echo -n "<div style=\"color:blue\">$filename</div>"
+		    echo "</a></li>"
+		fi
+	    done
+	echo '</ul>'
+    fi
+}
+
+if [[ "$REQUEST_URI" == *\?running ]]; then
+    echo -e "Content-type: text/html; charset=utf-8\n"
+    running_preproc ${REQUEST_URI%%\?running} | $PANDOCT -s -V wikititle="$WIKI_TITLE"	    \
+		       -V pagetitle="Codes currently running in ${REQUEST_URI%%\?running}"	    \
+		       -V sitenav=true				    \
+		       -V users="$USERS"                            \
+	| sed 's/__ESCAPEDDOLLAR__/$/g'
+    exit 0
+fi
+
+################### Directory listing  ###################
+
+dirpreproc()
+{
+    path="/"
+    echo -n "<a class=\"updir\" href=\"$path\">"/"</a>"
+    for d in $(echo $1 | sed 's/\// /g'); do
+	path=$path$d"/"
+	echo -n "<a class=\"updir\" href=\"$path\">"$d/"</a>"
+    done
+    echo '<ul class="index">'
+    files=$(darcs show files --no-pending --no-directories | grep '^\.'$1'[^/]*$')
+    for f in $files; do
+	echo -n "<li class=\"upload\">"
+	basename=${f}
+	dirname=${f%/*}
+	echo -n "<a href=\"${dirname#\.}/${basename##*/}\">"
+	if [[ "$f" == *.[cm] ]]; then
+	    status=$(status $basename true)
+	    color="black"
+	    if [[ "$status" == *"id=running"* ]]; then
+		color="blue"
+	    elif [[ "$status" == *"id="*"run"* ]]; then
+		color="orange"
+	    elif [[ "$status" == *"id=error"* ]]; then
+		color="red"
+	    elif [[ "$status" == *"id=warning"* ]]; then
+		color="orange"
+	    elif [[ "$status" == *"id=pass"* ]]; then
+		color="green"
+	    fi
+	    echo -n "<div style=\"color:$color\">${basename##*/}</div>"
+	else
+	    echo -n "${basename##*/}"
+	fi
+	echo "</a></li>"
+    done
+    darcs show files --no-pending --no-files | grep '^\.'$1'[^/]*$' | \
+	sed 's|^\.\(.*\)/\([^/]*\)$|<li class="folder"><a href="\1/\2/">\2</a></li>|g'
+    echo '</ul>'
+}
+
+if [[ -d $file ]] && is_not_bot; then
+    cd $DOCUMENT_ROOT
+
+    PREPROC="dirpreproc $REQUEST_URI"
+
+    if test -n "$REQUEST_URI"; then
+	login_timeout
+	echo "X-Robots-Tag: noindex"
+	echo -e "Content-type: text/html; charset=utf-8\n"
+    fi
+
+    tabs="<li class=selected><a href=\"${REQUEST_URI}\">view</a></li>"
+    tabs="$tabs<li><a href=\"${REQUEST_URI}?history\">history</a></li>"
+    $PREPROC | $PANDOCT -s -V wikititle="$WIKI_TITLE"		    \
+		       -V pagetitle="$REQUEST_URI"		    \
+		       -V notitle=true                              \
+		       -V sitenav=true				    \
+		       -V tabs="$tabs"                              \
+		       -V users="$USERS"                            \
+	| sed 's/__ESCAPEDDOLLAR__/$/g'
+    exit 0
+fi
+
+################### _login ################################
+
+if [[ "$REQUEST_URI" == "/_login"* && -n "$USERS" ]] && is_not_bot; then
+    destination=${REQUEST_URI##*\?destination=}
+    if [[ "$destination" == "$REQUEST_URI" ]]; then
+	destination="$HTTP_REFERER"
+    else
+	destination=$(echo "$destination" | urldecode)
+    fi
+    # check whether data has been posted
+    if [[ "$REQUEST_METHOD" == "POST" ]]; then
+	cgi_get_post_vars
+	bogoid=$(echo ${post[bogoid]} | urldecode)
+	destination=$(echo ${post[destination]} | urldecode)
+	login=$(grep -F "$bogoid"$'\t' "$USERS")	
+	if [[ -n "$login" ]]; then
+	    login=${login#*	}
+	    salt=${login%%	*}
+	    login=${login#*	}
+	    hash=${login%%	*}
+	    bogopid=$(echo ${post[bogopid]} | urldecode)
+	    check=$(echo -n "$salt$bogopid" | sha512sum)
+	    check=${check%% *}
+	    if [[ "$hash" == "$check" ]]; then
+		login=${login#*	}
+		email=${login%%	*}
+		cookie="$SERVER_NAME/$bogoid/$email/"$(date +%s)
+		cookie=$(echo $cookie | encode)
+		echo "Set-Cookie: darcsit_ssid=$cookie; max-age=$MAX_LOGIN_AGE; $COOKIE_OPTS"
+		echo "Status: 302 Found"
+		if [[ "$destination" ]]; then
+	            echo -e "Location: $destination\n"
+		else
+	            echo -e "Location: /\n"
+		fi
+		exit 0
+	    fi
+	fi
+	messages="<li style=\"color:red;\">Invalid username or password.</li>"
+    fi
+    no_cache
+    echo "X-Robots-Tag: noindex"
+    echo -e "Content-type: text/html; charset=utf-8\n"
+    echo |                         \
+	$PANDOCT -s -V wikititle="$WIKI_TITLE"		    \
+		-V pagetitle="Login" 			    \
+		-V sitenav=true				    \
+		-V login=true                               \
+		-V referer="$destination"                   \
+		-V messages="$messages"                     \
+	| sed 's/__ESCAPEDDOLLAR__/$/g'
+    messages=""
+    exit 0
+fi
+
+################### _register ############################
+
+if [[ "$REQUEST_URI" == "/_register"* && -n "$USERS" ]] && is_not_bot; then
+    destination=${REQUEST_URI##*\?destination=}
+    if [[ "$destination" == "$REQUEST_URI" ]]; then
+	destination="$HTTP_REFERER"
+    else
+	destination=$(echo "$destination" | urldecode)
+    fi
+    # check whether data has been posted
+    if [[ "$REQUEST_METHOD" == "POST" ]]; then
+	cgi_get_post_vars
+	bogoid=$(echo ${post[bogoid]} | urldecode)
+	bogoidlen=${#bogoid}
+	bogopid=$(echo ${post[bogopid]} | urldecode)
+	bogopidlen=${#bogopid}
+	bogopid2=$(echo ${post[bogopid2]} | urldecode)
+	email=$(echo ${post[email]} | urldecode)
+	if ((bogoidlen < 3)); then
+	    messages="<li style=\"color:red;\">Username is too short.</li>"
+	elif ((bogopidlen < 6)); then
+	    messages="<li style=\"color:red;\">Password is too short.</li>"
+	elif [[ "${bogopid//[a-zA-Z]/}" == "" ]]; then
+	    messages="<li style=\"color:red;\">Password must contain at least one non-letter.</li>"
+	elif [[ "$bogopid" != "$bogopid2" ]]; then
+	    messages="<li style=\"color:red;\">Passwords do not match.</li>"
+	elif grep -q -E ^"$bogoid"$'\t' "$USERS"; then
+	    messages="<li style=\"color:red;\">Sorry, that username is already taken.</li>"
+	else
+	    salt=$(date | sha1sum)
+	    salt=${salt%% *}
+	    hash=$(echo -n "$salt$bogopid" | sha512sum)
+	    hash=${hash%% *}
+	    echo "$bogoid"$'\t'"$salt"$'\t'"$hash"$'\t'"$email" >> "$USERS"
+	    cookie="$SERVER_NAME/$bogoid/$email/"$(date +%s)
+	    cookie=$(echo $cookie | encode)
+	    echo "Set-Cookie: darcsit_ssid=$cookie; max-age=$MAX_LOGIN_AGE; $COOKIE_OPTS"
+	    # echo -e "Content-type: text/plain\n"
+	    echo "Status: 302 Found"
+	    echo -e "Location: $destination\n"
+	    exit 0	    
+	fi
+    fi
+    cat <<EOF
+Content-type: text/html; charset=utf-8
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Pragma: no-cache
+Cache-Control: no-cache
+
+EOF
+    echo |                         \
+	$PANDOCT -s -V wikititle="$WIKI_TITLE"		    \
+		-V pagetitle="Register for an account" 	    \
+		-V sitenav=true				    \
+		-V register=true                            \
+		-V referer="$destination"                   \
+		-V messages="$messages"                     \
+	| sed 's/__ESCAPEDDOLLAR__/$/g'
+    messages=""
+    exit 0
+fi
+
+################### ?delete ###########################
+
+function delete_page()
+{
+    cat <<EOF
+<form action="" method="post">
+<p>Are you sure you want to delete this page?</p>
+<input type="text" name="filetodelete" style="display: none;" value="$1"/>
+<input type="submit" name="confirm" id="confirm" value="Yes, delete it!"/> 
+<input type="submit" name="cancel" id="cancel" value="No, keep it!"/><br/>
+</form>
+EOF
+}
+
+if [[ "$REQUEST_URI" == *\?delete ]] && is_not_bot; then
+    if [[ "$username" ]]; then
+	basename=".${REQUEST_URI%%\?*}"
+	shortname=$(echo "$basename" | sed -e 's|^./||' -e 's/%20/ /g')
+	# check whether data has been posted
+	if [[ "$REQUEST_METHOD" == "POST" ]]; then
+	    cgi_get_post_vars
+	    if [[ "$(echo ${post[filetodelete]} | urldecode)" == "$shortname" ]]; then
+		if cd "$DOCUMENT_ROOT" && [[ "$(echo ${post[confirm]} | urldecode)" == "Yes, delete it!" ]]; then
+		    rm -f "$basename" "$basename.html" "$basename.tags"*
+		    if [[ "$basename" == *.[chm] ]]; then
+			s=${basename%%.[chm]}
+			rm -f "$s.log" "$s.s" "$s.s.d" "$s."*tst
+		    fi
+		    author="$username"
+		    if [[ "$email" ]]; then
+			author="$author <$email>"
+		    fi
+		    if (darcs record -a -q -A "$author" -m "Deleted using web interface" "$basename") > "$basename.log" 2>&1;
+		    then
+			rm -f "$basename.log"
+			echo "Status: 302 Found"
+			echo -e "Location: /\n"
+			exit 0
+		    else
+			dirname="$DOCUMENT_ROOT"
+			internal_error "$basename.log"
+			exit 1
+		    fi
+		else
+		    echo "Status: 302 Found"
+		    echo -e "Location: ${REQUEST_URI%%\?*}\n"
+		fi
+	    fi
+	else
+	    echo "X-Robots-Tag: noindex"
+	    echo -e "Content-type: text/html; charset=utf-8\n"
+	    tabs="<li class=selected><a href=\"${REQUEST_URI%%\?*}\">view</a></li>"
+	    if [[ -n "$USERS" && ! -d "$DOCUMENT_ROOT/$basename" ]]; then
+		tabs="$tabs<li><a href=\"/_edit${REQUEST_URI%%\?*}\">edit</a></li>"
+	    fi
+	    tabs="$tabs<li><a href=\"${REQUEST_URI}\">history</a></li>"	
+	    delete_page "$shortname" |                              \
+		$PANDOCT -s -V wikititle="$WIKI_TITLE"		    \
+			-V pagetitle="Delete $shortname?" 	    \
+			-V sitenav=true				    \
+			-V tabs="$tabs"                             \
+			-V users="$USERS"                           \
+		| sed 's/__ESCAPEDDOLLAR__/$/g'
+	fi
+    else
+	echo "Status: 302 Found"
+	echo -e "Location: /_login?destination=$REQUEST_URI\n"
+    fi
+    exit 0
+fi
+
+################### Any other file #######################
+
+if [[ -f "${file%%\?*}" ]]; then
+    file="${file%%\?*}"
+    if [[ $(find "$file" -perm -004 2> /dev/null) ]]; then
+ 	type=$(mimetype "$file")
+	if [[ "$type" == "Content-type: video/"* ]]; then
+	    size=$(stat --printf="%s" "$file")
+	    start=0
+	    let end=$size-1
+	    if [ -n "$HTTP_RANGE" ]; then
+		bytes="${HTTP_RANGE##*=}"
+		start="${bytes%%-*}"
+		end="${bytes##*-}"
+		if [ -z "$end" ]; then
+		    let end=$size-1
+		fi
+		if (( $start > $end || $start > $size - 1 || $end >= $size)); then
+		    echo "Status: 416 Requested Range Not Satisfiable"
+ 		    echo "$type"
+		    echo "Accept-Ranges: 0-$size"
+		    let end=$size-1
+                    echo "Content-Range: bytes 0-$end/$size"
+                    exit 0;
+		fi
+	    fi
+	    let length=$end-$start+1
+	    if (( $length < $size )); then
+		echo "Status: 206 Partial Content"
+	    fi
+ 	    echo "$type"
+	    echo "Accept-Ranges: 0-$size"
+	    echo "Content-Range: bytes $start-$end/$size"
+            echo "Content-Length: $length"
+	    echo
+	    tail -c +$start "$file" 2> /dev/null | head -c $length
+	else
+ 	    echo "$type"
+	    echo
+	    cat "$file"
+	fi
+    else
+	cat <<EOF
+Content-Type: text/html; charset=utf-8
+
+<h1>403 Read access forbidden</h1>
+While retrieving URL $REQUEST_URI on $SERVER_NAME.
+EOF
+    fi
+elif [[ -n "$USERS" && ! "$file" =~ .*\.(png|gif|jpg|mp4|ogv) ]]; then
+    ################### New page #######################
+    title=${REQUEST_URI//%20/ }
+    title=${title##/}
+    login_timeout
+    echo "X-Robots-Tag: noindex"
+    echo -e "Content-type: text/html; charset=utf-8\n"
+    echo "There is no page '$title'. You may create the page by [clicking here](/_edit$REQUEST_URI)." | \
+    	$PANDOCT -s -V wikititle="$WIKI_TITLE"		    \
+    		-V pagetitle="Create $title?"               \
+    		-V sitenav=true				    \
+		-V users="$USERS"                           \
+    	| sed 's/__ESCAPEDDOLLAR__/$/g'
+    exit 0
+else
+    cat <<EOF
+Content-Type: text/html; charset=utf-8
+
+<h1>404 Not Found</h1>
+While retrieving URL $REQUEST_URI on $SERVER_NAME.
+EOF
+fi

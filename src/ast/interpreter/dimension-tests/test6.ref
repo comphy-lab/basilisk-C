@@ -1,0 +1,5 @@
+8 constraints, 8 unknowns
+Dimensions of finite constants
+  [1]
+    dimension-tests/test6.c:6: '1.'
+    dimension-tests/test6.c:12: '1 [1]'

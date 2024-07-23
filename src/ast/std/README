@@ -1,0 +1,9 @@
+# Avoid parsing system header files
+
+To avoid parsing large system header files with qcc, we redirect the
+preprocessor to the files contained in this directory, which are just
+pointers to the system files.
+
+The corresponding typedef/enum declarations necessary for proper
+parsing by [basilisk.yacc](/src/ast/basilisk.yacc) need to be added to
+[defaults.h](/src/ast/defaults.h).
