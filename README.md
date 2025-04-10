@@ -1,6 +1,5 @@
 # basilisk-C
 
-
 <br>
 
 ![Github Repo Size](https://img.shields.io/github/repo-size/comphy-lab/basilisk-C?style=for-the-badge&color=yellow)
@@ -9,7 +8,7 @@
 
 ## About This Fork
 
-This repository contains our fork of the Basilisk C codebase (basilisk.fr). We maintain this fork to track and document comphy-lab related bugs and issues. This is a development fork that will be frequently synced with the main Basilisk repository.
+This repository contains our fork of the Basilisk C codebase ([basilisk.fr](http://basilisk.fr)). We maintain this fork to track and document comphy-lab related bugs and issues. This is a development fork that will be frequently synced with the main Basilisk repository.
 
 ## About Basilisk C
 
@@ -21,6 +20,11 @@ Basilisk C is a powerful open-source computational fluid dynamics (CFD) framewor
 - Advanced visualization tools with interactive 3D display
 - Memory profiling and debugging capabilities
 - Python integration through SWIG
+
+## Acknowledgements
+
+- S. Popinet & collaborators, Basilisk C, [http://basilisk.fr](http://basilisk.fr) (Last accessed: June 2025) (2013-2025)
+
 
 ### Key Features
 
