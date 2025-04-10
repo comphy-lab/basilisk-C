@@ -8,8 +8,10 @@ event perfs (i += 1) {
   static FILE * fp = fopen ("perfs", "w");
   if (i == 0)
     fprintf (fp,
-	     "t dt mgp.i mgp.nrelax grid->tn perf.t perf.speed npe\n");
-  fprintf (fp, "%g %g %d %d %ld %g %g %d\n", 
+	     "t dt mgp.i mgp.nrelax grid->tn perf.t perf.speed npe perf.ispeed\n");
+  static double start = 0.;
+  if (i > 10 && perf.t - start < 1.) return 0;
+  fprintf (fp, "%g %g %d %d %ld %g %g %d %g\n", 
 	   t, dt,
 #if NH
 	   mgp.i, mgp.nrelax,
@@ -18,8 +20,9 @@ event perfs (i += 1) {
 #else
 	   0, 0,
 #endif
-	   grid->tn*nl, perf.t, perf.speed*nl, npe());
+	   grid->tn*nl, perf.t, perf.speed*nl, npe(), perf.ispeed*nl);
   fflush (fp);
+  start = perf.t;
 }
 
 /**
@@ -30,7 +33,7 @@ displayed and updated at regular intervals (10 seconds as defined in
 event perf_plot (i = 10) {
   if (getenv ("DISPLAY"))
     popen ("gnuplot -e 'set term x11 noraise title perfs' "
-	   "$BASILISK/layered/perfs.plot 2> /dev/null "
+	   "$BASILISK/layered/perfs.plot "
 	   "& read dummy; kill $!", "w");
 }
 

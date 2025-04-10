@@ -1,4 +1,4 @@
-44 constraints, 44 unknowns
+43 constraints, 43 unknowns
 Dimensions of finite constants
   [1]
     dimension-tests/test3.c:16: '1. [1]'

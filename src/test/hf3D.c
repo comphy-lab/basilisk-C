@@ -32,8 +32,4 @@ int main()
   stats s = statsf (kappa);
   fprintf (stderr, "kappa min: %g avg: %g stddev: %g max: %g\n",
 	   s.min, s.sum/s.volume, s.stddev, s.max);
-#if 0
-  FILE * fp = popen ("gfsview3D -s hf.gfv", "w");
-  output_gfs (fp);
-#endif
 }

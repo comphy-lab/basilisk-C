@@ -62,6 +62,8 @@ Note that only the documented test cases appear in the list below
 * [Breaking Stokes wave](stokes.c)
 * [Galilean invariance](galilean_invariance.c)
 * [Typical (1D) tsunami wave](tsunami.c)
+* [3D meniscus](meniscus3D.c)
+* [Dispersion relation of gravito-capillary waves](dispersion_gravitocap.c)
 
 ## Coriolis
 
@@ -75,6 +77,7 @@ Note that only the documented test cases appear in the list below
 * [Overflow](overflow.c)
 * [Lock-exchange](lock.c)
 * [Non-hydrostatic lock-exchange](kh.c)
+* [Isopycnal gyres intersecting the bathymetry](bleck.c)
 
 ## Volume-Of-Fluid
 
@@ -133,6 +136,7 @@ Note that only the documented test cases appear in the list below
 * [Stability of the embedded face velocity interpolation](uf.c)
 * [Hydrostatic balance with refined embedded boundaries](hydrostatic2.c)
 * [Hydrostatic balance with refined embedded boundaries in 3D](hydrostatic3.c)
+* [Compatibility of embedded boundaries, axi and VOF](missing_metric.c)
 
 ### Stokes
 
@@ -189,6 +193,32 @@ Note that only the documented test cases appear in the list below
 * [Boundary conditions for face vector fields](mpi-interpu.c)
 * [Simple test of Basilisk View](view.c)
 
+## GPU tests
+
+These tests can be run manually using:
+
+~~~bash
+make -k gpu-tests
+~~~
+
+* [A range of GPU tests](gpu.c)
+* [Layers](layers.c)
+* [Reductions on GPUs](gpu-reduce.c)
+* [Non-linear geostrophic adjustment](nonlinear.c)
+* [Time-reversed advection in a vortex](advection.c)
+* [Saint-Venant bump](bump2D-gpu.c)
+* [Time-reversed VOF advection in a vortex](reversed.c)
+* [Stommel gyre](stommel-ml.c)
+* [Isopycnal gyres intersecting the bathymetry](bleck.c)
+
+Tests for the multigrid solver on GPUs.
+
+* [Convergence of axisymmetric viscous terms](axi.c)
+* [Lid-driven cavity](lid.c)
+* [Rising bubble (CLSVOF version)](rising.c)
+
+See also the [GPU Benchmarks](/src/grid/gpu/Benchmarks.md).
+
 ## Speed benchmarks
 
 * [Speed of elementary operations on different grids](laplacian.c)
@@ -209,6 +239,7 @@ Note that only the documented test cases appear in the list below
 * [Segment traversal](segment.c)
 * [Redistancing of a perturbed distance field](redistance-ellipse.c)
 * [Einstein summation](einstein_sum.c)
+* [Macros](macro.c)
 
 ## Unmaintained
 

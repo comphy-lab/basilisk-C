@@ -39,8 +39,7 @@ event init (t = 0) {
   The gravity vector is aligned with the channel and viscosity is
   unity. */
   
-  const face vector g[] = {1.,1.};
-  a = g;
+  a[] = {1.,1.};
   mu = fm;
 
   /**

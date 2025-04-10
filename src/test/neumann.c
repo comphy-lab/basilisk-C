@@ -36,8 +36,7 @@ double exact_gradient (Point point, double theta, double r)
 We also need a function for homogeneous Dirichlet condition. */
 
 static
-double dirichlet_homogeneous_bc (Point point, Point neighbor,
-				 scalar s, void * data) {
+double dirichlet_homogeneous_bc (Point point, Point neighbor, scalar s, bool * data) {
   return 0.;
 }
 

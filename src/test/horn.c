@@ -121,8 +121,7 @@ int main()
   nu = nu_H;
   DT = 0.05;
 #if 0
-  const scalar l[] = HUGE; // free slip
-  lambda_b = l;
+  lambda_b[] = {HUGE}; // free slip
 #endif
 
   /**

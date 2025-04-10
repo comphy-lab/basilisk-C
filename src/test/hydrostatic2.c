@@ -64,8 +64,7 @@ int main()
   porous (cs, fs);
 #endif
   
-  const face vector G[] = {1.,2.};
-  a = G;
+  a[] = {1.,2.};
 
   /**
   The system is quite stiff. */

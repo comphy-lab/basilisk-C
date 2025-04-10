@@ -72,14 +72,6 @@ event velo (t = end)
   output_field ((scalar *){u}, fopen ("velo", "w"), n = 16, linear = true);
 
 #if TREE
-
-#if 0
-event gfsview (i++) {
-  static FILE * fp = popen ("gfsview2D -s test.gfv", "w");
-  output_gfs (fp);
-}
-#endif
-
 event adapt (i++) {
   double sb = statsf(f).sum;
   double sb1 = statsf(f1).sum;

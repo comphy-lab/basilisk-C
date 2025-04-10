@@ -16,7 +16,7 @@ conditions for each field. */
 
 attribute {
   // fixme: use a structure
-  bool input, output;
+  bool input, output, nowarning; // fixme: use a single flag
   int width; // maximum stencil width/height/depth
   int dirty; // // boundary conditions status:
   // 0: all conditions applied
@@ -24,15 +24,20 @@ attribute {
   // 2: boundary_face applied
 }
 
-typedef struct {
-  char * name;       // the name of the variable
-  char * type;       // the type of the variable
-  void * pointer;    // a pointer to the data
-  int * dimensions;  // the dimensions of the array
-  int nd;            // the number of pointer dereferences
-  char reduct;       // the reduction operation
-  scalar data;       // user data
-} NonLocal;
+typedef struct _External External;
+
+struct _External {
+  char * name;    // the name of the variable
+  void * pointer; // a pointer to the data
+  int type;       // the type of the variable
+  int nd;         // the number of pointer dereferences or attribute offset or enum constant
+  char reduct;    // the reduction operation
+  char global;    // is it a global variable?
+  void * data;    // the dimensions (int *) for arrays or the code (char *) for functions
+  scalar s;       // used for reductions on GPUs
+  External * externals, * next;
+  int used;
+};
 
 typedef struct {
   const char * fname; // name of the source file
@@ -46,95 +51,6 @@ typedef struct {
   scalar * dirty;     // the dirty fields (i.e. write-accessed)
   void * data;        // user data
 } ForeachData;
-
-// fixme: this should be rewritten using better macros
-@def foreach_stencil(...) {
-  static int _first = 1.;
-  ForeachData _loop = {
-    .fname = S__FILE__, .line = S_LINENO, .first = _first
-  };
-  if (baseblock) for (scalar s = baseblock[0], * i = baseblock;
-		s.i >= 0; i++, s = *i) {
-    _attribute[s.i].input = _attribute[s.i].output = false;
-    _attribute[s.i].width = 0;
-  }
-  int ig = 0, jg = 0, kg = 0; NOT_UNUSED(ig); NOT_UNUSED(jg); NOT_UNUSED(kg);
-  Point point = {0}; NOT_UNUSED (point);
-@
-
-@def end_foreach_stencil()
-  check_stencil (&_loop);
-  boundary_stencil (&_loop);
-  _first = 0;
-}
-@
-
-@define foreach_vertex_stencil(...) foreach_stencil(S__VA_ARGS__) _loop.vertex = true;
-@define end_foreach_vertex_stencil() end_foreach_stencil()
-
-@define foreach_face_stencil(...) foreach_stencil(S__VA_ARGS__)
-@define end_foreach_face_stencil() end_foreach_stencil()
-
-@define foreach_visible_stencil(...) foreach_stencil(S__VA_ARGS__)
-@define end_foreach_visible_stencil() end_foreach_stencil()
-
-@define foreach_point_stencil(...) foreach_stencil(S__VA_ARGS__)
-@define end_foreach_point_stencil() end_foreach_stencil()
-
-@define foreach_region_stencil(...) foreach_stencil(S__VA_ARGS__)
-@define end_foreach_region_stencil() end_foreach_stencil()
-  
-@define _stencil_is_face_x() { _loop.face |= (1 << 0);
-@define end__stencil_is_face_x() }
-@define _stencil_is_face_y() { _loop.face |= (1 << 1);
-@define end__stencil_is_face_y() }
-@define _stencil_is_face_z() { _loop.face |= (1 << 2);
-@define end__stencil_is_face_z() }
-
-void stencil_val (Point p, scalar s, int i, int j, int k,
-		  const char * file, int line, bool overflow);
-void stencil_val_a (Point p, scalar s, int i, int j, int k, bool input,
-		    const char * file, int line);
-
-@def _stencil_val(a,_i,_j,_k)
-  stencil_val (point, a, _i, _j, _k, S__FILE__, S_LINENO, false)
-@
-@def _stencil_val_o(a,_i,_j,_k)
-  stencil_val (point, a, _i, _j, _k, S__FILE__, S_LINENO, true)
-@
-@def _stencil_val_a(a,_i,_j,_k)
-  stencil_val_a (point, a, _i, _j, _k, false, S__FILE__, S_LINENO)
-@
-@def _stencil_val_r(a,_i,_j,_k)
-  stencil_val_a (point, a, _i, _j, _k, true, S__FILE__, S_LINENO)
-@
-
-@define _stencil_fine(a,_i,_j,_k) _stencil_val(a,_i,_j,_k)
-@define _stencil_fine_a(a,_i,_j,_k) _stencil_val_a(a,_i,_j,_k)
-@define _stencil_fine_r(a,_i,_j,_k) _stencil_val_r(a,_i,_j,_k)
-
-@define _stencil_coarse(a,_i,_j,_k) _stencil_val(a,_i,_j,_k)
-@define _stencil_coarse_a(a,_i,_j,_k) _stencil_val_a(a,_i,_j,_k)
-@define _stencil_coarse_r(a,_i,_j,_k) _stencil_val_r(a,_i,_j,_k)
-
-@define r_assign(x)
-@define _assign(x)
-
-@define _stencil_neighbor(i,j,k)
-@define _stencil_child(i,j,k)
-@define _stencil_aparent(i,j,k)
-@define _stencil_aparent_a(i,j,k)
-@define _stencil_aparent_r(i,j,k)
-
-@define _stencil_neighborp(i,j,k) neighborp(i,j,k)
-
-int _stencil_nop;
-@define _stencil_val_higher_dimension (_stencil_nop = 1)
-@define _stencil__val_constant(a,_i,_j,_k) (_stencil_nop = 1)
-
-typedef void _stencil_undefined;
-
-@define o_stencil -2
 
 /**
 ## Automatic boundary conditions
@@ -237,7 +153,7 @@ void check_stencil (ForeachData * loop)
       type (i.e. face or vertex). */
       
       if (write) {
-	if (dimension > 1 && !loop->vertex && loop->first) {
+	if (dimension > 1 && !loop->vertex && loop->first && !s.nowarning) {
 	  bool vertex = true;
 	  foreach_dimension()
 	    if (s.d.x != -1)
@@ -249,7 +165,7 @@ void check_stencil (ForeachData * loop)
 		     loop->fname, loop->line, s.name);
 	}
 	if (s.face) {
-	  if (loop->face == 0 && loop->first)
+	  if (loop->face == 0 && loop->first && !s.nowarning)
 	    fprintf (stderr,
 		     "%s:%d: warning: face vector '%s' should be assigned with"
 		     " a foreach_face() loop\n",
@@ -270,7 +186,7 @@ void check_stencil (ForeachData * loop)
 	      }
 	      d *= 2, i++;
 	    }
-	    if (!s.face && loop->first)
+	    if (!s.face && loop->first && !s.nowarning)
 	      fprintf (stderr,
 		       "%s:%d: warning: scalar '%s' should be assigned with "
 		       "a foreach_face(x|y|z) loop\n",
@@ -392,6 +308,124 @@ void boundary_stencil (ForeachData * loop)
     free (loop->dirty), loop->dirty = NULL;
   }
 }
+
+macro2 foreach_stencil (char flags, Reduce reductions)
+{
+  {
+    static int _first = 1.;
+    ForeachData _loop = {
+      .fname = S__FILE__, .line = S_LINENO, .first = _first
+    };
+    if (baseblock) for (scalar s = baseblock[0], * i = baseblock; s.i >= 0; i++, s = *i) {
+	_attribute[s.i].input = _attribute[s.i].output = _attribute[s.i].nowarning = false;
+	_attribute[s.i].width = 0;
+      }
+    int ig = 0, jg = 0, kg = 0; NOT_UNUSED(ig); NOT_UNUSED(jg); NOT_UNUSED(kg);
+    Point point = {0}; NOT_UNUSED (point);
+    
+    {...}
+    
+    check_stencil (&_loop);
+    boundary_stencil (&_loop);
+    _first = 0;
+  }
+}
+
+macro2 foreach_vertex_stencil (char flags, Reduce reductions) {
+  foreach_stencil (flags, reductions) {
+    _loop.vertex = true;
+    {...}
+  }
+}
+
+macro2 foreach_face_stencil (char flags, Reduce reductions, const char * order) {
+  foreach_stencil (flags, reductions)
+    {...}
+}
+
+macro2 foreach_level_stencil (int l, char flags, Reduce reductions) {
+  if (0) {
+    // automatic boundary conditions are not implemented yet so we don't do anything for the moment
+    int ig = 0, jg = 0, kg = 0; NOT_UNUSED(ig); NOT_UNUSED(jg); NOT_UNUSED(kg);
+    Point point = {0}; NOT_UNUSED (point);
+    {...}
+  }
+}
+
+macro2 foreach_coarse_level_stencil (int l, char flags, Reduce reductions) {
+  foreach_level_stencil (l, flags, reductions)
+    {...}
+}
+
+macro2 foreach_level_or_leaf_stencil (int l, char flags, Reduce reductions) {
+  foreach_level_stencil (l, flags, reductions)
+    {...}
+}
+
+macro2 foreach_point_stencil (double xp, double yp, double zp, char flags, Reduce reductions)
+{
+  foreach_stencil (flags, reductions)
+    {...}
+}
+
+macro2 foreach_region_stencil (coord p, coord box[2], coord n, char flags, Reduce reductions)
+{
+  foreach_stencil (flags, reductions)
+    {...}
+}
+
+macro2 _stencil_is_face_x (ForeachData l = _loop) { l.face |= (1 << 0); {...} }
+macro2 _stencil_is_face_y (ForeachData l = _loop) { l.face |= (1 << 1); {...} }
+macro2 _stencil_is_face_z (ForeachData l = _loop) { l.face |= (1 << 2); {...} }
+
+void stencil_val (Point p, scalar s, int i, int j, int k,
+		  const char * file, int line, bool overflow);
+void stencil_val_a (Point p, scalar s, int i, int j, int k, bool input,
+		    const char * file, int line);
+
+@def _stencil_val(a,_i,_j,_k)
+  stencil_val (point, a, _i, _j, _k, S__FILE__, S_LINENO, false)
+@
+@def _stencil_val_o(a,_i,_j,_k)
+  stencil_val (point, a, _i, _j, _k, S__FILE__, S_LINENO, true)
+@
+@def _stencil_val_a(a,_i,_j,_k)
+  stencil_val_a (point, a, _i, _j, _k, false, S__FILE__, S_LINENO)
+@
+@def _stencil_val_r(a,_i,_j,_k)
+  stencil_val_a (point, a, _i, _j, _k, true, S__FILE__, S_LINENO)
+@
+
+@define _stencil_fine(a,_i,_j,_k) _stencil_val(a,_i,_j,_k)
+@define _stencil_fine(a,_i,_j,_k) _stencil_val(a,_i,_j,_k)
+@define _stencil_fine_a(a,_i,_j,_k) _stencil_val_a(a,_i,_j,_k)
+@define _stencil_fine_r(a,_i,_j,_k) _stencil_val_r(a,_i,_j,_k)
+
+@define _stencil_coarse(a,_i,_j,_k) _stencil_val(a,_i,_j,_k)
+@define _stencil_coarse_a(a,_i,_j,_k) _stencil_val_a(a,_i,_j,_k)
+@define _stencil_coarse_r(a,_i,_j,_k) _stencil_val_r(a,_i,_j,_k)
+
+@define r_assign(x)
+@define _assign(x)
+
+@define _stencil_neighbor(i,j,k)
+@define _stencil_child(i,j,k)
+@define _stencil_aparent(i,j,k)
+@define _stencil_aparent_a(i,j,k)
+@define _stencil_aparent_r(i,j,k)
+
+@define _stencil_allocated(i,j,k) true
+
+@define _stencil_neighborp(i,j,k) neighborp(i,j,k)
+
+int _stencil_nop;
+@define _stencil_val_higher_dimension (_stencil_nop = 1)
+@define _stencil__val_constant(a,_i,_j,_k) (_stencil_nop = 1)
+@define _stencil_val_diagonal(a,_i,_j,_k) (_stencil_nop = 1)
+
+typedef void _stencil_undefined;
+
+@define o_stencil -3
 
 /**
 ## See also

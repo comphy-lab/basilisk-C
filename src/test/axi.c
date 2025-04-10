@@ -72,6 +72,15 @@ int main()
 {
   L0 = 2.*pi;
   periodic (right);
+
+  /**
+  When using single precision (32-bits floats) convergence cannot be
+  achieved to the default 1e-3. */
+  
+#if SINGLE_PRECISION
+  TOLERANCE = 1e-2;
+#endif
+
   for (N = 16; N <= 128; N *= 2)
     run();
 }
@@ -93,7 +102,8 @@ event integration (i++)
   double dt = 1.;
 
   /**
-  This is the time integration loop. We first add the forcing term... */
+  This is the time integration loop. We first add the forcing
+  term... */
   
   foreach() {
     u.x[] += dt*pow(y, a - 1.)*(3.*y*cos(x)*sin(y) - (2.*a + 1.)*cos(x)*cos(y)
@@ -119,12 +129,12 @@ event error (i = 20)
   solution. */
   
   scalar e[];
-  foreach() {
+  foreach (serial) {
     printf ("%g %g %g %g %g\n", x, y, u.x[], u.y[], pow(y,a)*cos(x)*sin(y));
     e[] = u.x[] - pow(y,a)*cos(x)*sin(y);
   }
   norm n = normf (e);
-  fprintf (stderr, "%d %g %g %g %d %d\n",
+  fprintf (stderr, "%d %.3g %.3g %.3g %d %d\n",
 	   N, n.avg, n.rms, n.max, mg.i, mg.nrelax);
 }
 

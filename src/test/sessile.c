@@ -59,8 +59,7 @@ int main()
   /**
   We use a constant viscosity. */
   
-  const face vector muc[] = {.1,.1};
-  mu = muc;
+  mu[] = {.1,.1};
 
   /**
   We must associate the height function field with the VOF tracer, so
@@ -68,6 +67,7 @@ int main()
   particular). */
 
   f.height = h;
+
 
   /**
   We set the surface tension coefficient and run for the range of

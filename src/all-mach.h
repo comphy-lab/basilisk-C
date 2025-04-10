@@ -61,6 +61,7 @@ We store the combined pressure gradient and acceleration field in
 *g*. */
 
 vector g[];
+mgstats mgp = {0}, mgu = {0};
 
 event defaults (i = 0) {
 
@@ -72,6 +73,12 @@ event defaults (i = 0) {
 
   if (rho.i == unity.i)
     rho = cm;
+  
+  /**
+  We reset the multigrid parameters to their default values. */
+  
+  mgp = (mgstats){0};
+  mgu = (mgstats){0};    
 }
 
 event init (i = 0) {
@@ -132,8 +139,6 @@ The equation for the pressure is a Poisson--Helmoltz problem which we
 will solve with the [multigrid solver](poisson.h). The statistics for
 the solver will be stored in *mgp* (resp. *mgu* for the viscosity
 solver). */
-
-mgstats mgp, mgu;
 
 event pressure (i++, last)
 {

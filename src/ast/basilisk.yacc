@@ -51,6 +51,11 @@ https://blog.robertelder.org/jim-roskind-grammar/c%2B%2Bgrammar2.0.tar.Z
 %define api.pure full
 %define api.value.type { Ast * }
 
+%printer {
+  fputc ('\n', stderr);
+  ast_print_tree ($$, stderr, "  ", 0, -1);
+} <>
+
 %{
 #include <string.h>
 #include <assert.h>
@@ -88,8 +93,14 @@ static int yyparse (AstRoot * parse, Ast * root);
 ## Basilisk C tokens */
 
 %token  MAYBECONST NEW_FIELD TRACE
-%token  FOREACH FOREACH_INNER FOREACH_DIMENSION
-%token  REDUCTION
+%token  FOREACH_DIMENSION
+%token  REDUCTION MACRO ELLIPSIS_MACRO MACRODEF
+
+/**
+The token below is only used temporarily in ast/stencil.c, not in the
+grammar. */
+
+%token  foreach_statement
 
 /**
 ## Grammar
@@ -111,10 +122,12 @@ translation_unit
 
 primary_expression
         : IDENTIFIER
+	| MACRO
 	| constant
 	| string
 	| '(' expression_error ')'
 	| generic_selection
+	| reduction_list /* Basilisk C extension */
 	;
 
 expression_error
@@ -350,7 +363,8 @@ storage_class_specifier
 	| THREAD_LOCAL
 	| AUTO
 	| REGISTER
-	| TRACE /* Basilisk C extension */
+	| TRACE    /* Basilisk C extension */
+	| MACRODEF /* Basilisk C extension */
 	;
 
 type_specifier
@@ -484,6 +498,7 @@ direct_declarator
 generic_identifier
         : IDENTIFIER
 	| TYPEDEF_NAME
+	| MACRO
 	;
 
 pointer
@@ -513,6 +528,8 @@ parameter_declaration
 	| declaration_specifiers declarator '=' initializer /* Basilisk C extension */
 	| declaration_specifiers abstract_declarator
 	| declaration_specifiers
+	| BREAK '=' initializer /* Basilisk C extension */
+	| BREAK '=' BREAK /* Basilisk C extension */
 	;
 
 identifier_list
@@ -668,7 +685,6 @@ jump_statement
 external_declaration
 	: function_definition
 	| declaration
-	| macro_statement /* Basilisk C extension */
 	| event_definition /* Basilisk C extension */
 	| boundary_definition /* Basilisk C extension */
 	| external_foreach_dimension /* Basilisk C extension */
@@ -696,32 +712,17 @@ declaration_list
 ## Basilisk C grammar extensions */
 
 basilisk_statements
-        : macro_statement
-        | foreach_statement
-	| foreach_inner_statement
+        : ELLIPSIS_MACRO
+        | macro_statement
 	| foreach_dimension_statement
 	| forin_declaration_statement
 	| forin_statement
 	;
 
 macro_statement
-        : function_call compound_statement
+        : MACRO '(' ')' statement
+	| MACRO '(' argument_expression_list ')' statement
         ;
-
-foreach_statement
-        : FOREACH '(' ')' statement
-	| FOREACH '(' foreach_parameters ')' statement
-	;
-
-foreach_parameters
-        : foreach_parameter
-	| foreach_parameters ',' foreach_parameter
-	;
-
-foreach_parameter
-        : assignment_expression
-        | reduction_list
-	;
 
 reduction_list
         : reduction
@@ -741,11 +742,6 @@ reduction_operator
 reduction_array
         : generic_identifier
 	| generic_identifier '[' ':' expression ']'
-	;
-
-foreach_inner_statement
-        : FOREACH_INNER '(' ')' statement
-	| FOREACH_INNER '(' expression ')' statement
 	;
 
 foreach_dimension_statement

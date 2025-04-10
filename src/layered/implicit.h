@@ -58,15 +58,21 @@ static void relax_hydro (scalar * ql, scalar * rhsl, int lev, void * data)
 {
   scalar eta = ql[0], rhs_eta = rhsl[0];
   face vector alpha = *((vector *)data);
-  foreach_level_or_leaf (lev) {
+#if _GPU // Gauss-Seidel relaxation
+  for (int parity = 0; parity < 2; parity++)
+    foreach_level_or_leaf (lev)
+      if (level == 0 || ((point.i + parity) % 2) != (point.j % 2))
+#else
+  foreach_level_or_leaf (lev)
+#endif
+  {
     double d = - cm[]*Delta;
     double n = d*rhs_eta[];
     eta[] = 0.;
     foreach_dimension() {
       n += alpha.x[0]*a_baro (eta, 0) - alpha.x[1]*a_baro (eta, 1);
-      diagonalize (eta) {
+      diagonalize (eta)
 	d -= alpha.x[0]*a_baro (eta, 0) - alpha.x[1]*a_baro (eta, 1);
-      }
     }
     eta[] = n/d;
   }

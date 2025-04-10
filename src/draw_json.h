@@ -57,32 +57,6 @@ int _view_json (char * s, int len) {
   s += i, len -= i, len1 += i;
   return len1;
 }
-int _begin_translate_json (char * s, int len) {
-  int i, len1 = 0;
-  i = snprintf (s, len, "  \"begin_translate\" : {");
-  s += i, len -= i, len1 += i;
-  i = snprintf (s, len, "\n    \"x\": { \"type\": \"pfloat\", \"cardinality\": 1, \"value\": \"%f\" }", 0.);
-  s += i, len -= i, len1 += i;
-  i = snprintf (s, len, ",\n    \"y\": { \"type\": \"pfloat\", \"cardinality\": 1, \"value\": \"%f\" }", 0.);
-  s += i, len -= i, len1 += i;
-  i = snprintf (s, len, ",\n    \"z\": { \"type\": \"pfloat\", \"cardinality\": 1, \"value\": \"%f\" }", 0.);
-  s += i, len -= i, len1 += i;
-  i = snprintf (s, len, "\n  }");
-  s += i, len -= i, len1 += i;
-  return len1;
-}
-int _begin_mirror_json (char * s, int len) {
-  int i, len1 = 0;
-  i = snprintf (s, len, "  \"begin_mirror\" : {");
-  s += i, len -= i, len1 += i;
-  i = snprintf (s, len, "\n    \"n\": { \"type\": \"pdouble\", \"cardinality\": 3, \"value\": [%lf,%lf,%lf] }", 0., 0., 0.);
-  s += i, len -= i, len1 += i;
-  i = snprintf (s, len, ",\n    \"alpha\": { \"type\": \"pdouble\", \"cardinality\": 1, \"value\": \"%lf\" }", 0.);
-  s += i, len -= i, len1 += i;
-  i = snprintf (s, len, "\n  }");
-  s += i, len -= i, len1 += i;
-  return len1;
-}
 int _draw_vof_json (char * s, int len) {
   int i, len1 = 0;
   i = snprintf (s, len, "  \"draw_vof\" : {");
@@ -180,6 +154,8 @@ int _vectors_json (char * s, int len) {
   i = snprintf (s, len, ",\n    \"lc\": { \"type\": \"color\", \"cardinality\": 3, \"value\": [%f,%f,%f] }", 0., 0., 0.);
   s += i, len -= i, len1 += i;
   i = snprintf (s, len, ",\n    \"lw\": { \"type\": \"pfloat\", \"cardinality\": 1, \"value\": \"%f\" }", 0.);
+  s += i, len -= i, len1 += i;
+  i = snprintf (s, len, ",\n    \"level\": { \"type\": \"pint\", \"cardinality\": 1, \"value\": \"%d\" }", 0);
   s += i, len -= i, len1 += i;
   i = snprintf (s, len, "\n  }");
   s += i, len -= i, len1 += i;
@@ -298,6 +274,20 @@ int _labels_json (char * s, int len) {
   i = snprintf (s, len, "  \"labels\" : {");
   s += i, len -= i, len1 += i;
   i = snprintf (s, len, "\n    \"f\": { \"type\": \"pstring\", \"cardinality\": 1, \"value\": \"%s\" }", "");
+  s += i, len -= i, len1 += i;
+  i = snprintf (s, len, ",\n    \"lc\": { \"type\": \"color\", \"cardinality\": 3, \"value\": [%f,%f,%f] }", 0., 0., 0.);
+  s += i, len -= i, len1 += i;
+  i = snprintf (s, len, ",\n    \"lw\": { \"type\": \"pfloat\", \"cardinality\": 1, \"value\": \"%f\" }", 0.);
+  s += i, len -= i, len1 += i;
+  i = snprintf (s, len, "\n  }");
+  s += i, len -= i, len1 += i;
+  return len1;
+}
+int _lines_json (char * s, int len) {
+  int i, len1 = 0;
+  i = snprintf (s, len, "  \"lines\" : {");
+  s += i, len -= i, len1 += i;
+  i = snprintf (s, len, "\n    \"file\": { \"type\": \"pstring\", \"cardinality\": 1, \"value\": \"%s\" }", "");
   s += i, len -= i, len1 += i;
   i = snprintf (s, len, ",\n    \"lc\": { \"type\": \"color\", \"cardinality\": 3, \"value\": [%f,%f,%f] }", 0., 0., 0.);
   s += i, len -= i, len1 += i;

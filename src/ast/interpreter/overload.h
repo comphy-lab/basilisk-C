@@ -103,21 +103,9 @@ bool overload_event()
 /**
 Foreach variables */
 
-typedef struct {
-  int i, j, k, l;
-  int level;
-} Point;
-
-typedef struct {
-  int x, y, z;
-} ChildPos;
-
 void _Variables() {
   Point point;
-  double x, y, z;
-  double Delta, Delta_x, Delta_y, Delta_z;
-  int level;
-  ChildPos child;
+  int ig, jg, kg;
 }
 
 enum {
@@ -133,12 +121,7 @@ void unset_double (double * x)
 
 void _init_point_variables (void)
 {
-  Delta = L0;
-  unset_double (&Delta);
-  Delta_x = Delta_y = Delta_z = Delta;
-  x = X0 + Delta;
-  y = Y0 + Delta;
-  z = Z0 + Delta;
+  ig = jg = kg = 0;
 }
 
 /**
@@ -162,56 +145,11 @@ void free_grid (void)
 void reset (void * alist, double val)
 {
   Intergrid * igrid = (Intergrid *) grid;
-  double * p = igrid->d;
+  real * p = igrid->d;
   if (alist)
     for (scalar * s = alist; s->i >= 0; s++)
-      reset_field_value (p + s->i, _attribute[s->i].name, 0.);
-}
-
-static double _dirichlet (double expr, Point point, Point neighbor, scalar _s, void * data)
-{
-  if (data) {
-    *((bool *)data) = true;
-    return expr;
-  }
-  return 2.*expr - val(_s,0,0,0);
-}
-
-static double _dirichlet_homogeneous (double expr, Point point, Point neighbor, scalar _s, void * data)
-{
-  if (data) {
-    *((bool *)data) = true;
-    return 0;
-  }
-  return - val(_s,0,0,0);
-}
-
-static double _dirichlet_face (double expr, Point point, Point neighbor, scalar _s, void * data)
-{
-  return expr;
-}
-
-static double _dirichlet_face_homogeneous (double expr, Point point, Point neighbor, scalar _s, void * data)
-{
-  return 0.;
-}
-
-static double _neumann (double expr, Point point, Point neighbor, scalar _s, void * data)
-{
-  if (data) {
-    *((bool *)data) = false;
-    return expr;
-  }
-  return Delta*expr + val(_s,0,0,0);
-}
-
-static double _neumann_homogeneous (double expr, Point point, Point neighbor, scalar _s, void * data)
-{
-  if (data) {
-    *((bool *)data) = false;
-    return 0;
-  }
-  return val(_s,0,0,0);
+      for (int b = 0; b < _attribute[s->i].block; b++)
+	reset_field_value (p + s->i + b, _attribute[s->i].name, 0., b);
 }
 
 static const int o_stencil = -2;
@@ -324,16 +262,16 @@ static
 void interpreter_reset_scalar (scalar s)
 {
   Intergrid * p = (Intergrid *) grid;
-  char * c = p->d + s.i*sizeof (double);
-  memset (c, 0, sizeof (double));
-  char * flags = c + sizeof(double) - 1;
+  char * c = p->d + s.i*sizeof (real);
+  memset (c, 0, sizeof (real));
+  char * flags = c + sizeof(real) - 1;
   *flags = unset;
 }
 
 double z_indexing (scalar s, bool leaves)
 {
   Intergrid * p = (Intergrid *) grid;
-  double * c = p->d + s.i*sizeof (double);
+  real * c = p->d + s.i*sizeof (real);
   *c = 0[0];
 }
 
@@ -349,7 +287,7 @@ static void init_block_scalar (scalar sb, const char * name, const char * ext,
   }
   else
     _attribute[sb.i].block = - n;
-  all = list_append (all, sb);
+  _attribute[sb.i].name = strdup(bname); all = list_append (all, sb);
 }
 
 void realloc_scalar (int size)
@@ -375,10 +313,10 @@ void is_face_x() {}
 void is_face_y() {}
 void is_face_z() {}
 
-double * val (scalar s, int i, int j, int k)
+real * val (scalar s, int i, int j, int k)
 {
   Intergrid * igrid = (Intergrid *) grid;
-  return (double *)(igrid->d + s.i*sizeof(double));
+  return (real *)(igrid->d + s.i*sizeof(real));
 }
 
 Point locate (double xp, double yp, double zp)
@@ -417,7 +355,8 @@ astats adapt_wavelet (scalar * slist, double * max,
   astats st; // unset
   if (slist && max) {
     Intergrid * igrid = (Intergrid *) grid;
-    double * g = igrid->d, * v = max;
+    real * g = igrid->d;
+    double * v = max;
     for (scalar * s = slist; s->i >= 0; s++, v++)
       *v == *(g + s->i);
   }
@@ -437,13 +376,16 @@ void output_ppm (scalar f, FILE * fp, int n, char * file,
 		 scalar mask, colormap map, char * opt)
 {}
 
+void coarsen_cell_recursive (Point point, scalar * list)
+{}
+
 /**
 Helper functions for dimensions */
 
 void _init_dimension (int index, long dimension)
 {
   Intergrid * p = (Intergrid *) grid;
-  double * d = p->d;
+  real * d = p->d;
   memcpy ((char *)(d + index) + 8, &dimension, 8);
 }
 
@@ -460,52 +402,24 @@ double constant (scalar s)
   return is_constant(s) ? _constant[s.i - _NVARMAX] : 1e30;
 }
 
-double max (double a, double b)
-{
-  return a > b ? a : b;
-}
-
-double min (double a, double b)
-{
-  return a < b ? a : b;
-}
-
-int sign (double x)
-{
-  const int i = 1;
-  return x > 0 ? i : - i;
-}
-
-int sign2 (double x)
-{
-  const int i = 1;
-  return x > 0 ? i : x < 0 ? - i : 0;
-}
-
-double clamp (double x, double a, double b)
-{
-  return x < a ? a : x > b ? b : x;
-}
-
-int abs (int i)
-{
-  return i < 0 ? - i : i;
-}
-
 int depth() { int undef; return undef; }
 int pid()   { int undef; return undef; }
 int tid()   { int undef; return undef; }
 int npe()   { int undef; return undef; }
 
-double noise() { return 0. [0]; }
-
 void dimensional (int a) {}
 void show_dimension_internal (double a) {}
 
 /**
-## Emulations of macros in <math.h> */
+## Emulations of macros and functions in <math.h> */
 
 const double M_PI = 3.14159265358979 [0];
+const int RAND_MAX = 1;
+
+double fmax (double a, double b) { return a > b ? a : b; }
+double fmin (double a, double b) { return a < b ? a : b; }
+int abs (int i) { return i < 0 ? - i : i; }
+int rand() { int undef; return undef; }
 
 /**
 ## Events 
@@ -557,4 +471,73 @@ void interpreter_set_int (int * i)
   char * flags = i;
   flags += sizeof(int) - 1;
   *flags = 0;
+}
+
+/**
+GPU-specific functions */
+
+void gpu_init_grid (int n) { init_grid (n); }
+
+vec4 Vec4 (float r, float g, float b, float a)
+{
+  return (vec4){r, g, b, a};
+}
+
+void register_fpointer (void (* ptr) (void), const char * name, const void * nonlocals) {}
+
+void reset_gpu (void * alist, double val)
+{
+  reset (alist, val);
+}
+
+/**
+Other functions */
+
+scalar lookup_field (const char * name)
+{
+  if (name) { interpreter_verbosity (2);
+    for (scalar * s = all; s && s->i >= 0; s++)
+      if (!strcmp (_attribute[s->i].name, name))
+	return *s;
+    // Check whether the name is of the form ".*[0-9]+"
+    int size = strlen (name) - 1;
+    while (size >= 0 && name[size] >= '0' && name[size] <= '9') size--;
+    size++;
+    if (size > 0 && size < strlen (name))
+      for (scalar * s = baseblock; s && s->i >= 0; s++)
+	if (_attribute[s->i].block > 1 &&
+	    strlen(_attribute[s->i].name) == size &&
+	    !strncmp (_attribute[s->i].name, name, size))
+	  return *s;
+  }
+  return (scalar){-1};
+}
+
+vector lookup_vector (const char * name)
+{
+  if (name) {
+    char component[strlen(name) + 3];
+    strcpy (component, name);
+    strcat (component, ".x");
+    interpreter_maximum_iterations (256);
+    for (scalar * s = all; s && s->i >= 0; s++)
+      if (!strcmp (_attribute[s->i].name, component)) {
+	interpreter_maximum_iterations (32);
+	return _attribute[s->i].v;
+      }
+    interpreter_maximum_iterations (32);
+    // Check whether the name is of the form ".*[0-9]+"
+    int size = strlen (name) - 1;
+    while (size >= 0 && name[size] >= '0' && name[size] <= '9') size--;
+    size++;
+    if (size > 0 && size < strlen (name)) {
+      component[size] = '\0';
+      strcat (component, ".x");
+      for (scalar * s = baseblock; s && s->i >= 0; s++)
+	if (_attribute[s->i].block > 1 &&
+	    strcmp (_attribute[s->i].name, component))
+	  return *s;
+    }
+  }
+  return (vector){{-1}};
 }

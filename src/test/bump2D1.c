@@ -44,7 +44,7 @@ the Saint-Venant system are the characteristic speeds $u \pm
 
 double G = 1.;
 
-void flux (const double * s, double * f, double e[2])
+void flux (const double * s, double * f, double * e)
 {
   double h = s[0], qx = s[1], u = qx/h, qy = s[2];
   f[0] = qx;

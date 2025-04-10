@@ -35,7 +35,7 @@ void * stack_pop (Stack * s)
 
 void * stack_index (Stack * s, int i)
 {
-  if (!s->n || i > s->n - 1)
+  if (!s->n || i > s->n - 1 || i < 0)
     return NULL;
   return ((char *)s->p) + (s->n - i - 1)*s->size;
 }

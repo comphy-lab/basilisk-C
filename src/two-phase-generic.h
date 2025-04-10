@@ -41,7 +41,7 @@ averages (i.e. harmonic). */
 We have the option of using some "smearing" of the density/viscosity
 jump. */
 
-#ifdef FILTERED
+#if FILTERED
 scalar sf[];
 #else
 # define sf f

@@ -15,6 +15,7 @@ typedef struct {
   FILE * fp;
 } Gauge;
 
+trace
 void output_gauges (Gauge * gauges, scalar * list)
 {
   int n = 0;

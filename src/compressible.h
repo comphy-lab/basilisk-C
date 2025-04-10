@@ -58,7 +58,7 @@ function is the array `s` which contains the state variables for each
 conserved field, in the order of their definition above (i.e. scalars
 then vectors). */
 
-void flux (const double * s, double * f, double e[2])
+void flux (const double * s, double * f, double * e)
 {
 
   /**

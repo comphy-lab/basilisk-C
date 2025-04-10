@@ -62,8 +62,8 @@ $\lambda$ and the polymeric viscosity $\mu_p$. The solvent viscosity
 $\mu_s$ is defined in the [Navier-Stokes
 solver](navier-stokes/centered.h). */
 
-(const) scalar lambda = unity;
-(const) scalar mup = unity;
+(const) scalar lambda[] = 1.;
+(const) scalar mup[] = 1.;
 
 /**
 Constitutive models other than Oldroyd-B (the default) are defined
@@ -137,7 +137,7 @@ symmetric tensor tau_p[];
 #if AXI
 scalar tau_qq[];
 #endif
-(const) scalar trA = zeroc;
+(const) scalar trA[] = 0.;
 
 event defaults (i = 0) {
   if (is_constant (a.x))

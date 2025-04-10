@@ -64,7 +64,7 @@ static void half_column (Point point, scalar c, vector h, vector cs, int j)
      -1*) we initialise *S* and *H* with the volume fraction in
      the current cell. */
 
-    double S = c[], H = S, ci, a;
+    double S = c[], H = S, ci;
 
     /**
      On the upward integration (*j = 1*), we recover the state of the
@@ -153,7 +153,7 @@ static void half_column (Point point, scalar c, vector h, vector cs, int j)
        interface but didn't go through it: this is an
        inconsistent height and we stop the integration. */
       
-      else if (S == ci && modf(H, &a))
+      else if (S == ci && trunc(H) != H)
 	break;
     }
 
@@ -221,7 +221,11 @@ each direction. */
 
 static void column_propagation (vector h)
 {
+#if _OPENMP 
   foreach (serial) // not compatible with OpenMP
+#else
+  foreach()
+#endif
     for (int i = -2; i <= 2; i++)
       foreach_dimension()
 	if (fabs(height(h.x[i])) <= 3.5 &&

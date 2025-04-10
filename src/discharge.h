@@ -72,7 +72,7 @@ static double falsepos (struct Eta_b p,
   } while (fabs(newq/p.Q_b) > p.prec && n < 100);
 
   if (n >= 100)
-    fprintf (stderr, "WARNING: eta_b(): convergence not reached\n");
+    fprintf (stderr, "src/discharge.h:%d: warning: eta_b(): convergence not reached\n", LINENO);
   
   return newb;
 }
@@ -115,6 +115,6 @@ double eta_b (double Q_b, bid b,
     Qsup = bflux (p, etasup);
   }
   if (n >= 100)
-    fprintf (stderr, "WARNING: eta_b() not converged\n");
+    fprintf (stderr, "src/discharge.h:%d: warning: eta_b() not converged\n", LINENO);
   return falsepos (p, etainf, Qinf, etasup, Qsup);
 }

@@ -317,6 +317,32 @@ void input_gfs (FILE * fp = stdin,
   events (false);
 }
 
+#define valgrd(v,i,j) ((v)[(j) + 1 + ((i) + 1)*(nx + 2)])
+
+static void bc_grd (double * v, int nx, int ny, bool periodic[2])
+{
+  if (periodic[0])
+    for (int i = 0; i < ny; i++) {
+      valgrd(v,i,-1) = valgrd(v,i,nx - 1);
+      valgrd(v,i,nx) = valgrd(v,i,0);
+    }
+  else
+    for (int i = 0; i < ny; i++) {
+      valgrd(v,i,-1) = valgrd(v,i,0);
+      valgrd(v,i,nx) = valgrd(v,i,nx - 1);
+    }
+  if (periodic[1])
+    for (int j = -1; j <= nx; j++) {
+      valgrd(v,-1,j) = valgrd(v,ny - 1,j);
+      valgrd(v,ny,j) = valgrd(v,0,j);
+    }
+  else
+    for (int j = -1; j <= nx; j++) {
+      valgrd(v,-1,j) = valgrd(v,0,j);
+      valgrd(v,ny,j) = valgrd(v,ny - 1,j);
+    }
+}
+
 /**
 # *input_grd()*: Raster format (Esri grid)
 
@@ -344,10 +370,8 @@ the raster file.
 : if true, the raster data is bilinearly interpolated. Default is false.
 
 *periodic*
-: if true, the x-axis is treated as periodic. Default is false.
-
-*zero*
-: if true NoDataValue are replaced by zero. Default is false.
+: if true, the x-axis and/or y-axis are treated as periodic. Default
+is the same as the domain periodicity.
 
 *smooth*
 : the number of Laplacian smoothing passes applied to the data before
@@ -356,8 +380,9 @@ interpolation. Default is zero.
 
 void input_grd (scalar s,
 		FILE * fp = stdin, const char * file = NULL,
-		double nodatavalue = 0.,
-		bool linear = false, bool periodic = false, bool zero = false,
+		double nodatavalue = 0.12345678,
+		bool linear = false,
+		bool periodic[2] = {Period.x, Period.y},
 		int smooth = 0)
 {
   scalar input = s;
@@ -404,88 +429,80 @@ void input_grd (scalar s,
     if (file) fclose (fp);
     return;    
   }
-
-  //default value of NoData value
-  if (!nodatavalue)
+  
+  // default value of NoData value
+  if (nodatavalue == 0.12345678)
     nodatavalue = ndv;
 
   // read the data
-  double * value = qmalloc (nx*ny, double);
+  double * value = qmalloc ((nx + 2)*(ny + 2), double);
   for (int i = ny - 1; i >= 0; i--)
     for (int j = 0 ; j < nx; j++) {
-      if (fscanf (fp, "%lf ", &value[j + i*nx]) != 1) {
+      if (fscanf (fp, "%lf ", &valgrd(value,i,j)) != 1) {
 	fprintf (stderr, "input_grd(): error reading value %d,%d\n", i, j);
 	if (file) fclose (fp);
 	free (value);
 	return;
       }
-      if (zero && value[j + i*nx] == ndv)
-	value[j + i*nx] = 0.;
     }
+  bc_grd (value, nx, ny, periodic);
 
   // Laplacian smoothing
   if (smooth > 0) {
-    double * smoothed = qmalloc (nx*ny, double);
+    double * smoothed = qmalloc ((nx + 2)*(ny + 2), double);
     for (int s = 0; s < smooth; s++) {
       for (int i = 0; i < ny; i++)
 	for (int j = 0 ; j < nx; j++) {
 	  int n = 0;
-	  smoothed[j + i*nx] = 0.;
+	  valgrd(smoothed, i, j) = 0.;
 	  for (int k = -1; k <= 1; k++)
 	    for (int l = -1; l <= 1; l++)
 	      if ((l != 0 || k != 0) &&
-		  i + k >= 0 && i + k < ny &&
-		  j + l >= 0 && j + l < nx &&
-		  value[j + l + (i + k)*nx] != ndv)
-		smoothed[j + i*nx] += value[j + l + (i + k)*nx], n++;
+		  valgrd(value, i + k, j + l) != ndv)
+		valgrd(smoothed, i, j) += valgrd(value, i + k, j + l), n++;
 	  if (n == 0)
-	    smoothed[j + i*nx] = zero ? 0. : ndv;
+	    valgrd(smoothed, i, j) = ndv;
 	  else
-	    smoothed[j + i*nx] /= n;
+	    valgrd(smoothed, i, j) /= n;
 	}
       swap (double *, value, smoothed);
+      bc_grd (value, nx, ny, periodic);
     }
     free (smoothed);
   }
   
   bool warning = false;  
   foreach (serial) {
-    if (periodic || input.boundary[right] == periodic_bc) {
-      if (x > XG0 + nx*DeltaGRD)
-	x -= nx*DeltaGRD;
-      else if (x < XG0)
-	x += nx*DeltaGRD;
+    if (periodic[0]) {
+      while (x < XG0) x += nx*DeltaGRD;
+      while (x > XG0 + nx*DeltaGRD) x -= nx*DeltaGRD;
     }
-    // Test if the point in the Basilisk area is included in the raster area
-    int j = (x - XG0 + DeltaGRD/2.)/DeltaGRD;
-    int i = (y - YG0 + DeltaGRD/2.)/DeltaGRD;    
-    if (i >= 0 && i < ny && j >= 0 && j < nx) {
-      double val;
-      // Test if we are on the ring of data around the raster grid
-      int j1 = (x - XG0)/DeltaGRD;
-      int i1 = (y - YG0)/DeltaGRD;
-      if (linear && i1 >= 0 && j1 >= 0 && i1 < ny - 1 && j1 < nx - 1 &&
-	  value[j1 + i1*nx] != ndv && value[j1 + 1 + i1*nx] != ndv &&
-	  value[j1 + (i1 + 1)*nx] != ndv && value[j1 + 1 + (i1 + 1)*nx] != ndv) {
+    if (periodic[1]) {
+      while (y < YG0) y += ny*DeltaGRD;
+      while (y > YG0 + ny*DeltaGRD) y -= ny*DeltaGRD;
+    }
+    // Test if we are on the ring of data around the raster grid
+    int j1 = (x - XG0)/DeltaGRD;
+    int i1 = (y - YG0)/DeltaGRD;
+    if (i1 >= -1 && i1 < ny && j1 >= -1 && j1 < nx) {
+      if (linear &&
+	  valgrd(value,i1,j1) != ndv && valgrd(value,i1,j1 + 1) != ndv &&
+	  valgrd(value,i1 + 1,j1) != ndv && valgrd(value,i1 + 1,j1 + 1) != ndv) {
 	// bi-linear interpolation
 	double dx = x - (j1*DeltaGRD + XG0);
 	double dy = y - (i1*DeltaGRD + YG0);
-	val = (value[j1 + i1*nx] +
-	       dx*(value[j1 + 1 + i1*nx] - value[j1 + i1*nx])/DeltaGRD +
-	       dy*(value[j1 + (i1 + 1)*nx] - value[j1 + i1*nx])/DeltaGRD +
-	       dx*dy*(value[j1 + i1*nx] + value[j1 + 1 + (i1 + 1)*nx] -
-		      value[j1 + (i1 + 1)*nx] - value[j1 + 1 + i1*nx])
-	       /sq(DeltaGRD));
+	input[] = (valgrd(value,i1,j1) +
+		   dx*(valgrd(value,i1,j1 + 1) - valgrd(value,i1,j1))/DeltaGRD +
+		   dy*(valgrd(value,i1 + 1,j1) - valgrd(value,i1,j1))/DeltaGRD +
+		   dx*dy*(valgrd(value,i1,j1) + valgrd(value,i1 + 1,j1 + 1) -
+			  valgrd(value,i1 + 1,j1) - valgrd(value,i1,j1 + 1))
+		   /sq(DeltaGRD));
       }
       else
-	val = value[j + i*nx];
-      if (val == ndv)
-	input[] = nodata;
-      else
-	input[] = val;
+	input[] = valgrd(value, i1, j1);
     }
     else {
-      input[] = nodata;
+      input[] = nodatavalue;
       warning = true;
     }
   }
@@ -493,8 +510,8 @@ void input_grd (scalar s,
   
   if (warning)
     fprintf (stderr,
-	     "input_grd(): Warning: Raster data is not covering all"
-	     " the simulation area\n");
+	     "%s:%d: warning: raster data is not covering all the simulation area\n",
+	     __FILE__, LINENO);
 
   if (file)
     fclose (fp);

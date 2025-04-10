@@ -201,17 +201,17 @@ struct _Key {
 };
 
 static
-void key_add_dimension (Key * k, Dimension * d)
+void key_add_dimension (Key * k, Dimension * d, Stack * stack)
 {
   k->refs++;
   if (!k->dimensions) {
-    k->dimensions = calloc (1, sizeof (List)); // fixme: memory leak
+    k->dimensions = static_calloc (1, sizeof (List), stack);
     k->dimensions->d = d;
     return;
   }
   List * l = k->dimensions;
   while (l->next) l = l->next;
-  l->next = calloc (1, sizeof (List)); // fixme: memory leak
+  l->next = static_calloc (1, sizeof (List), stack);
   l->next->d = d;
 }
 
@@ -224,7 +224,6 @@ bool key_remove_dimension (Key * k, const Dimension * d)
 	k->dimensions = l->next;
       else
 	prev->next = l->next;
-      free (l);
       k->refs--;
       return true;
     }
@@ -243,6 +242,7 @@ struct _Dimension {
   Key ** c;
   const Ast * origin;
   int row;
+  char * warn;
   System * s;
 };
 
@@ -502,10 +502,10 @@ static
 Ast * binary_expression_parent (Ast * n)
 {
   n = n->parent;
-  while (!n->child[1] ||
-	 n->sym == sym_primary_expression ||
-	 n->sym == sym_conditional_expression ||
-	 n->child[0]->sym == sym_unary_operator)
+  while (n->child &&
+	 (!n->child[1] ||
+	  n->sym == sym_primary_expression ||
+	  n->child[0]->sym == sym_unary_operator))
     n = n->parent;
   for (int * op = (int[]){
       sym_multiplicative_expression,
@@ -566,6 +566,7 @@ Dimension * dimension_zero (Allocator * alloc, Ast * origin)
   d->b = NULL;
   d->c = NULL;
   d->origin = origin;
+  d->warn = NULL;
   return d;
 }
 
@@ -622,6 +623,7 @@ Dimension * new_dimension (Ast * n, Stack * stack)
   *dimension->c[0] = (Key) { .parent = n };
   dimension->c[1] = NULL;
   dimension->origin = n;
+  dimension->warn = NULL;
   return dimension;
 }
 
@@ -691,13 +693,14 @@ Dimension * get_dimension (Value * v, Stack * stack)
     }
 
     /**
-    Constants in multiplicative expressions are dimensionless. */
+    Non-zero constants in multiplicative expressions are dimensionless. */
 
     Ast * parent = binary_expression_parent (n);
     if (parent && (parent->sym == sym_multiplicative_expression ||
 		   (parent->sym == sym_assignment_expression &&
 		    (parent->child[1]->child[0]->sym == sym_MUL_ASSIGN ||
-		     parent->child[1]->child[0]->sym == sym_DIV_ASSIGN))))
+		     parent->child[1]->child[0]->sym == sym_DIV_ASSIGN))) &&
+	(!ast_terminal(n) || atof (ast_terminal(n)->start)))
       return (value_dimension (v) = dimension_zero (stack_static_alloc (stack), (Ast *) v));
     
     /**
@@ -722,17 +725,38 @@ Dimension * get_dimension (Value * v, Stack * stack)
   /**
   Everything else is dimensionless. */
 
-  System * system = interpreter_get_data (stack);
-  if ((value_flags (v) & unset) && v->type->sym != sym_LONG && system->output) {
-    Ast * n = (Ast *) v;
-    AstTerminal * t = ast_left_terminal (n);
-    char * s = ast_str_append (n, NULL);
-    fprintf (system->output, "%s:%d: warning: '%s' is unset: assuming it has dimension [0]\n",
-	     ast_file_crop (t->file), t->line, ast_crop_before (s));
+  Dimension * d = dimension_zero (stack_static_alloc (stack), (Ast *) v);
+  if ((value_flags (v) & unset) && v->type->sym != sym_LONG &&
+      ((System *)interpreter_get_data (stack))->output) {
+    AstTerminal * t = ast_left_terminal ((Ast *) v);
+    char * s = ast_str_append ((Ast *) v, NULL), warn[200];
+    s = simplified_expression (ast_crop_before (s));
+    Ast * n = (Ast *) v, * call = ast_function_call_identifier ((Ast *) v);
+    if (call && !strcmp (ast_terminal (call)->start, "val")) {
+      call = NN(n, sym_function_call,
+		NN(n, sym_postfix_expression,
+		   NN(n, sym_primary_expression,
+		      NA(n, sym_IDENTIFIER, "_field_name"))),
+		NCA(n, "("),
+		NN(n, sym_argument_expression_list,
+		   ast_copy (ast_find ((Ast *) v, sym_argument_expression_list_item))),
+		NCA(n, ")"));
+      Value * vname = run (call, stack);
+      ast_destroy (call);
+      char * s1 = NULL;
+      str_append (s1, value_data (vname, void *), strchr (s, '['), NULL);
+      free (s);
+      s = s1;
+    }
+    snprintf (warn, 199,
+	      "%s:%d: warning: '%s' is unset: assuming it has dimension [0]\n",
+	      ast_file_crop (t->file), t->line, s);
     free (s);
+    int len = strlen (warn) + 1;
+    d->warn = allocate (stack_static_alloc (stack), len*sizeof (char));
+    strcpy (d->warn, warn);
   }
-
-  return (value_dimension (v) = dimension_zero (stack_static_alloc (stack), (Ast *) v));
+  return (value_dimension (v) = d);
 }
 
 static
@@ -925,7 +949,7 @@ void add_constraint (System * s, Dimension * constraint, Stack * stack)
     constraint_print (constraint, stderr, LINENO);
   if (system_append (s, constraint)) {
     foreach_key (constraint, c) {
-      key_add_dimension (c, constraint);
+      key_add_dimension (c, constraint, stack);
       c->used = 1;
     }
   }
@@ -1094,7 +1118,7 @@ void set_row (System * s, int row, Dimension * d)
   s->r[row] = d; d->row = row;
 }
 
-static bool system_pivot (System * s)
+static bool system_pivot (System * s, Stack * stack)
 {
   system_index (s);
 
@@ -1150,7 +1174,7 @@ static bool system_pivot (System * s)
 	      assert (key_remove_dimension (c, r));
 	    Dimension * d = dimensions_multiply (r->origin, s->alloc, r, s->r[h], - f);
 	    foreach_key(d, c)
-	      key_add_dimension (c, d);
+	      key_add_dimension (c, d, stack);
 	    DEBUG (fprintf (stderr, "      gives "), constraint_print (d, stderr, LINENO | INDEX | NORIGIN));
 	    /* If l.h.s. is zero and r.h.s. is not zero the system does not have a solution */
 	    if (!d->c && d->a) {
@@ -1214,14 +1238,14 @@ Key ** system_unconstrained (const System * s)
   return unconstrained;
 }
 
-static bool system_solve (System * s)
+static bool system_solve (System * s, Stack * stack)
 {
 #if WRITE_GRAPH  
   system_write_graph (s, "dimensions0.dot");
   { FILE * fp = fopen ("system0", "w"); system_print (s, fp), fclose (fp); }
 #endif
   
-  if (!system_pivot (s))
+  if (!system_pivot (s, stack))
     return false;
   
   DEBUG (fprintf (stderr, "@@ %d unknowns, %d constraints\n", s->n, s->m));
@@ -1262,7 +1286,7 @@ static bool system_solve (System * s)
     
   }
 
-  if (s->output)
+  if (s->output && s->lineno)
     fprintf (s->output, "%d constraints, %d unknowns\n", s->m, s->n);
 
   return true;
@@ -1274,13 +1298,15 @@ static bool system_solve (System * s)
 static
 Value * dimension_run (Ast * n, Stack * stack)
 {
-  if (!n)
+  if (!n || n == ast_placeholder)
     return NULL;
 
   switch (n->sym) {
 
   case sym_primary_expression: {
     Value * v = ast_run_node (n, stack);
+    if (!v)
+      return NULL;
     if (n->child[0]->sym == sym_constant &&
 	(n->child[0]->child[0]->sym == sym_I_CONSTANT ||
 	 n->child[0]->child[0]->sym == sym_F_CONSTANT))
@@ -1289,6 +1315,75 @@ Value * dimension_run (Ast * n, Stack * stack)
 	     !strcmp (ast_terminal (n->child[0])->start, "_val_higher_dimension"))
       value_dimension (v) = dimension_any;
     return v;
+  }
+
+  /**
+  All initializers of `double, float *` or `double, float []` arrays
+  have the same dimensions. */
+
+  case sym_init_declarator: {
+    Ast * list, * type;
+    if (!(list = ast_find (n, sym_initializer_list)) ||
+	!(type = ast_find (ast_parent (n, sym_declaration), sym_declaration_specifiers,
+			   0, sym_type_specifier,
+			   0, sym_types)) ||
+	(type->child[0]->sym != sym_DOUBLE && type->child[0]->sym != sym_FLOAT))
+      return ast_run_node (n, stack);
+    Ast * array = NULL;
+    if (ast_schema (n, sym_init_declarator,
+		    0, sym_declarator,
+		    0, sym_direct_declarator,
+		    1, token_symbol('['))) { // a `[]` array
+      if (!(array = ast_schema (n, sym_init_declarator,
+				0, sym_declarator,
+				0, sym_direct_declarator,
+				0, sym_direct_declarator,
+				0, sym_generic_identifier,
+				0, sym_IDENTIFIER)))
+	return ast_run_node (n, stack);
+    }
+    else if (ast_schema (n, sym_init_declarator,
+			 0, sym_declarator,
+			 0, sym_pointer)) { // a `*` array
+      if (!(array = ast_schema (n, sym_init_declarator,
+				0, sym_declarator,
+				1, sym_direct_declarator,
+				0, sym_generic_identifier,
+				0, sym_IDENTIFIER)))
+	return ast_run_node (n, stack);
+    }
+    else
+      return ast_run_node (n, stack);
+    Value * value = ast_run_node (n, stack);
+    int len = 0;
+    foreach_item (list, 2, item) len++;
+    if (len > 1) {
+      char slen[20];
+      snprintf (slen, 19, "%d", len);
+      char * func = strdup ("_set_element_dimensions");
+      if (type->child[0]->sym == sym_FLOAT)
+	str_append (func, "_float");
+      Ast * call =
+	NN(n, sym_function_call,
+	   NN(n, sym_postfix_expression,
+	      NN(n, sym_primary_expression,
+		 NA(n, sym_IDENTIFIER, func))),
+	   NCA(n, "("),
+	   NN(n, sym_argument_expression_list,
+	      NN(n, sym_argument_expression_list,
+		 NN(n, sym_argument_expression_list_item,
+		    ast_attach (ast_new_unary_expression (n),
+				ast_new_identifier (n, ast_terminal(array)->start)))),
+	      NCA(n, ","),
+	      NN(n, sym_argument_expression_list_item,
+		 ast_new_constant (n, sym_I_CONSTANT, slen))),
+	   NCA(n, ")"));
+      free (func);
+      // fprintf (stderr, "%d ", len); ast_print_tree (array, stderr, 0, 0, -1);
+      ast_run_node (call, stack);
+      ast_destroy (call);
+    }
+    return value;
   }
     
   default:
@@ -1317,6 +1412,16 @@ Value * dimension_assign (Ast * n, Value * dst, Value * src, Stack * stack)
   return dst;
 }
 
+static void warn_unset_zero (Dimension * d, Stack * stack)
+{
+  if (d && d->warn) {
+    System * system = interpreter_get_data (stack);
+    if (system->output)
+      fputs (d->warn, system->output);
+    d->warn = NULL;
+  }
+}
+
 static
 Dimension * homogeneous_dimensions (Ast * n, Value * va, Value * vb, Stack * stack)
 {
@@ -1325,6 +1430,9 @@ Dimension * homogeneous_dimensions (Ast * n, Value * va, Value * vb, Stack * sta
     return db;
   if (db == dimension_any)
     return da;
+
+  warn_unset_zero (da, stack);
+  warn_unset_zero (db, stack);
   
   /**
   We first consider the case where all dimensions are known and check
@@ -1472,11 +1580,7 @@ static
 Value * dimension_internal_functions (Ast * call, Ast * identifier, Value ** params, Stack * stack, Value * value)
 {
   const char * name = ast_terminal (identifier)->start;
-  if (!strcmp (name, "sq"))
-    value_dimension (value) = dimension_pow (call, stack, get_dimension (params[0], stack), 2.);
-  else if (!strcmp (name, "cube"))
-    value_dimension (value) = dimension_pow (call, stack, get_dimension (params[0], stack), 3.);
-  else if (!strcmp (name, "sqrt"))
+  if (!strcmp (name, "sqrt"))
     value_dimension (value) = dimension_pow (call, stack, get_dimension (params[0], stack), 0.5);
   else if (!strcmp (name, "atan2")) {
     Dimension * constraint = dimensions_multiply (call, stack_static_alloc (stack),
@@ -1505,13 +1609,17 @@ Value * dimension_internal_functions (Ast * call, Ast * identifier, Value ** par
   else if (!strcmp (name, "reset_field_value")) {
     char * field = value_data (params[0], char *);
     Dimension * d = *((Dimension **)(field + ast_base_type_size (params[2]->type)));
-    const char * name = value_data (params[1], char *);
-    if (name) {
-      d->c[0]->field = allocate (stack_static_alloc (stack), (strlen(name) + 1)*sizeof (char));
-      strcpy (d->c[0]->field, name);
+    if (value_data (params[3], int)) // block != 0
+      d->c = NULL; // block scalars are not used, set their dimension to zero
+    else { // block == 0
+      const char * name = value_data (params[1], char *);
+      if (name) {
+	d->c[0]->field = allocate (stack_static_alloc (stack), (strlen(name) + 1)*sizeof (char));
+	strcpy (d->c[0]->field, name);
+      }
+      else
+	d->c[0]->field = NULL;
     }
-    else
-      d->c[0]->field = NULL;
   }
   else {
     static char * funcs[] = {
@@ -1694,11 +1802,11 @@ void dimension_after_run (Ast * n, Stack * stack)
   System * s = interpreter_get_data (stack);
   s->alloc = stack_alloc (stack);
   if (!s->output) {
-    if (!system_pivot (s))
+    if (!system_pivot (s, stack))
       ((StackData *)stack_get_data (stack))->maxcalls = -1;
     return;
   }
-  if (!system_solve (s)) {
+  if (!system_solve (s, stack)) {
     ((StackData *)stack_get_data (stack))->maxcalls = -1;
     return;
   }
@@ -1787,7 +1895,17 @@ void dimension_after_run (Ast * n, Stack * stack)
 	  r->b = b;
 	}
 	fputs (s->lineno ? "    " : "  ", fp);
-	fputs (r->c[0]->label, fp);
+	if (s->lineno)
+	  fputs (r->c[0]->label, fp);
+	else {
+	  char * s = r->c[0]->label;
+	  while (*s != ':')
+	    fputc (*s++, fp);
+	  s++;
+	  while (*s != ':') s++;
+	  while (*s != '\0')
+	    fputc (*s++, fp);
+	}
 	fputc ('\n', fp);
       }
     }

@@ -208,6 +208,7 @@ $$
 $$
     + [Volume-Of-Fluid advection](vof.h)
 	+ [Contact angles](contact.h)
+* [Avoiding coalescence of VOF interfaces](no-coalescence.h)
 * [Interfacial forces](iforce.h)
 $$
 \phi\mathbf{n}\delta_s
@@ -258,12 +259,14 @@ $$
 * [Hessenberg systems](hessenberg.h)
 * [Community Ocean Vertical Mixing (CVMix) interface](cvmix/cvmix.h)
 * [A C interface to the General Ocean Turbulence Model](gotm/common.h)
+* [Equilibrium tide](equilibrium_tide.h)
 
 # The Basilisk C preprocessor
 
 * [qcc](qcc.c): the command line preprocessor/compiler
 * [The Abstract Syntax Tree (AST) library](ast/README)
 * [Dimensional Analysis](ast/interpreter/dimension.c)
+* [Running on GPUs](grid/gpu/grid.h)
 
 # General orthogonal coordinates
 
@@ -305,6 +308,7 @@ Several metric spaces/coordinate systems are predefined:
   slope limiters, etc.
 * [Tagging connected neighborhoods](tag.h)
 * [Counting droplets](examples/atomisation.c#counting-droplets)
+* [Harmonic decomposition](harmonic.h)
 
 # Output functions
 

@@ -57,8 +57,7 @@ int main()
   /**
   We use a constant viscosity. */
 
-  const face vector muc[] = {.1,.1,.1};
-  mu = muc;
+  mu[] = {.1,.1,.1};
   
   /**
   We must associate the height function field with the VOF tracer, so

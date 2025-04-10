@@ -6,7 +6,7 @@
 int main() {
   origin (-0.5, 0);
   periodic (top);
-  dimensions (nx = 1);
+  dimensions (nx = 1, ny = 4);
   
   stokes = true;
   TOLERANCE = 1e-5 [*];
@@ -22,10 +22,8 @@ scalar un[];
 
 event init (t = 0) {
   // we also check for hydrostatic balance
-  const face vector g[] = {1.,1.};
-  a = g;
-  const face vector muc[] = {1.,1.};
-  mu = muc;
+  a[] = {1.,1.};
+  mu[] = {1.,1.};
   foreach()
     un[] = u.y[];
 }

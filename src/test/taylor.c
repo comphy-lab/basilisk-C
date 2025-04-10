@@ -57,6 +57,7 @@ The problem is assumed to be axisymmetric. */
 #include "ehd/stress.h"
 #include "vof.h"
 #include "tension.h"
+#include "view.h"
 
 /**
 We need to track the interface with the volume fraction field *f*. The
@@ -198,9 +199,8 @@ event error (i += 20; t <= 10.) {
 At the end of the simulation we create two files: *log* (standard
 error) will contain the dimensionless radial and azimuthal velocities
 and their theoretical values as functions of the dimensionless radial
-coordinate along the line $\theta= 45^o$. *vector.svg* displays the
-velocity field, interface position and isopotential lines, as
-displayed by gfsview-batch. */
+coordinate along the line $\theta= 45^o$. *vector.png* displays the
+velocity field, interface position and isopotential lines. */
 
 event result (t = end) {
   double h  = 0.35*L0/(2*99);
@@ -221,10 +221,19 @@ event result (t = end) {
 	     (ux*x + uy*y)/(R0*r), vrt, (-uy*x + ux*y)/(R0*r), vtt);
   }
 
-  FILE * fp = popen ("gfsview-batch2D taylor.gfv", "w");
-  output_gfs (fp);
-  fprintf (fp, "Save vectors.svg { format = SVG }\n");
-  pclose (fp);
+  view (quat = {0.000, 0.000, 0.000, 1.000},
+	fov = 30, near = 0.01, far = 1000,
+	tx = 0, ty = -0.046, tz = -0.177,
+	width = 900, height = 500);
+  draw_vof (c = "f", lc = {1,0,0}, lw = 2);
+  vectors (u = "u", scale = 0.02, lc = {0,0,1}, level = 8);
+  isoline (phi = "phi", n = 100, max = 2);
+  mirror (n = {1,0,0}) {
+    draw_vof (c = "f", lc = {1,0,0}, lw = 2);
+    vectors (u = "u", scale = 0.02, lc = {0,0,1}, level = 8);
+    isoline (phi = "phi", n = 100, max = 2);
+  }
+  save ("vectors.png");
 }
 
 /**
@@ -244,7 +253,7 @@ plot 'log' u 1:2 notitle, 'log' u 1:3 w l t "v_r",\
      'log' u 1:4 notitle, 'log' u 1:5 w l t "v_{/Symbol q}"
 ~~~
 
-![Steady-state velocity vectors, interface position and equipotential lines.](taylor/vectors.svg)
+![Steady-state velocity vectors, interface position and equipotential lines.](taylor/vectors.png)
 
 ## Bibliography
 

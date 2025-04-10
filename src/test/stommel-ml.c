@@ -148,7 +148,6 @@ more implicit discretisation than the default ($\alpha_H = 1/2$). */
 
 #define F0() (Beta*(y - 0.5))
 #define K0() (DELTA*Beta)
-#define alpha_H 1.
 #include "layered/coriolis.h"
 
 double border = 0.;
@@ -161,7 +160,17 @@ int main()
 
   linearised = true;
   DT = 0.5;
+
+  /**
+  On GPUs the tolerance needs to be higher. This is probably due to
+  single precision arithmetics. */
+  
+#if _GPU
+  TOLERANCE = 1e-7;
+#else
   TOLERANCE = 1e-9;
+#endif
+  
   for (border = 0; border <= 1; border++) {
     fprintf (stderr, "\n\n# border = %g\n", border);
     for (N = 64; N <= 256; N *= 2) {
@@ -226,10 +235,10 @@ event init (i = 0)
   when a "border" is not included. */
 
   foreach_dimension() {
+    zb[left] = 1000.;
     h[left] = 0.;
-    eta[left] = dirichlet(1.);
+    zb[right] = 1000.;
     h[right] = 0.;
-    eta[right] = dirichlet(1.);
   }
 
   /**
@@ -270,7 +279,11 @@ void streamfunctions (scalar psi, scalar psim)
   vorticity (u, omega);
   foreach()
     psi[] = 0.;
-  poisson (psi, omega);
+  poisson (psi, omega
+#if _GPU	   
+	   , tolerance = 1e-4 // similar single-precision issue as above
+#endif
+	   );
 
   foreach()
     psim[] = stommel(x, y)*(x > 0 && x < 1 && y > 0 && y < 1);
@@ -283,6 +296,12 @@ event logfile (i += 10; t <= 200)
 {
   double du = change (u.y, un);
 
+#if _GPU && SHOW
+  scalar psi[], psim[];
+  streamfunctions (psi, psim);
+  output_ppm (psi, fp = NULL, fps = 30, n = 512, spread = -1);
+#endif
+  
 #if 0
   scalar ev[], hw[];
   foreach() {

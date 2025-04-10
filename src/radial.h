@@ -16,13 +16,15 @@ double dtheta = pi/3.;
 For convenience we add definitions for the radial and angular
 coordinates $(r, \theta)$. */
 
-map()
+macro VARIABLES (Point point = point, int _ig = ig, int _jg = jg, int _kg = kg)
 {
+  VARIABLES (point, _ig, _jg, _kg);
   double r = x, theta = y*dtheta/L0;
   NOT_UNUSED(r); NOT_UNUSED(theta);
 }
 
-event metric (i = 0) {
+event metric (i = 0)
+{
 
   /**
   We initialise the scale factors, taking care to first allocate the

@@ -17,7 +17,7 @@ int main()
   
   scalar s[];
   foreach()
-    s[] = sin(x)*cos(y);
+    s[] = sin(x)*cos(y) + 2.*x + y;
 
   output_cells (stdout);
   dump (file = "restore.dump", list = {s});

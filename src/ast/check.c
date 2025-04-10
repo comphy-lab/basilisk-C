@@ -31,18 +31,18 @@ Ast * ast_check_grammar (Ast * n, bool recursive, bool stencils)
     return NULL;
   if (n->child) {
     if (!check (n) &&
-	!(stencils && n->sym == sym_foreach_statement &&
-	  ((n->child[0] && n->child[0]->sym == sym_FOREACH &&
+	!(stencils && n->sym == sym_macro_statement &&
+	  ((n->child[0] && n->child[0]->sym == sym_MACRO &&
 	    n->child[1] && n->child[1]->sym == token_symbol('(') &&
 	    n->child[2] && n->child[2]->sym == token_symbol(')') &&
 	    n->child[3] && n->child[3]->sym == sym_statement &&
-	    n->child[4] && n->child[4]->sym == sym_foreach_statement && !n->child[5]) ||
-	   (n->child[0] && n->child[0]->sym == sym_FOREACH &&
+	    n->child[4] && n->child[4]->sym == sym_macro_statement && !n->child[5]) ||
+	   (n->child[0] && n->child[0]->sym == sym_MACRO &&
 	    n->child[1] && n->child[1]->sym == token_symbol('(') &&
-	    n->child[2] && n->child[2]->sym == sym_foreach_parameters &&
+	    n->child[2] && n->child[2]->sym == sym_argument_expression_list &&
 	    n->child[3] && n->child[3]->sym == token_symbol(')') &&
 	    n->child[4] && n->child[4]->sym == sym_statement &&
-	    n->child[5] && n->child[5]->sym == sym_foreach_statement && !n->child[6])))) {	
+	    n->child[5] && n->child[5]->sym == sym_macro_statement && !n->child[6])))) {
       fprintf (stderr, "\ngrammatical error:\n");
       ast_print_tree (n, stderr, 0, 0, 10);
       abort ();

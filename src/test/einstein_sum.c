@@ -66,7 +66,6 @@ int main ()
 
   fprintf (stderr, "%g %g\n", kinetic_energy, kinetic_energy2);
   
-  einstein_sum (i,j) {
+  einstein_sum (i,j)
     fprintf (stderr, "%g %g\n", R.i.j, R2.i.j);
-  }
 }

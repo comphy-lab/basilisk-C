@@ -9,5 +9,5 @@ int main (int argc, char * argv[])
   assert (restore (file = "restore-multigrid.dump", list = {s}));
   output_cells (stdout);
   foreach()
-    assert (s[] == sin(x)*cos(y));
+    assert (s[] == sin(x)*cos(y) + 2.*x + y);
 }

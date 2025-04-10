@@ -42,7 +42,7 @@ int main() {
 #if dimension == 2  
   isoline ("sqrt(x^2 + y^2)", n = 10, spread = -1, lc = {1,0,0});
 #endif
-  save ("out.png");
+  save ("out.png", checksum = stderr);
 
   /**
   A few more files just for testing. */

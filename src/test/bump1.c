@@ -8,7 +8,7 @@ vector * vectors = {q};
 
 double G = 1.;
 
-void flux (const double * s, double * f, double e[2])
+void flux (const double * s, double * f, double * e)
 {
   double h = s[0], q = s[1], u = q/h;
   f[0] = q;

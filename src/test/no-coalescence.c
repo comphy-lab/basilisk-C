@@ -20,8 +20,7 @@ int main()
 {
   size (4.);
   origin (-L0/2., -L0/2.);
-  const face vector muc[] = {0.01,0.01};
-  mu = muc;
+  mu[] = {0.01,0.01};
   f.sigma = 1.;
   run();
 }

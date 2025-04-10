@@ -81,7 +81,7 @@ event velocity (i++)
   pseudo-vector `f`. */
 
   trash ({u});
-  struct { double x, y; } f = {-1.[0],1.[0]};
+  coord f = {-1.[0],1.[0]};
   foreach_face()
     u.x[] = f.x*(psi[0,1] + psi[-1,1] - psi[0,-1] - psi[-1,-1])/(4.*Delta);
 }

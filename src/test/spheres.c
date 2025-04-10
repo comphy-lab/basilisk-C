@@ -93,8 +93,7 @@ event init (t = 0)
   /**
   And set acceleration and viscosity to unity. */
   
-  const face vector g[] = {1.,0.,0.};
-  a = g;
+  a[] = {1.,0.,0.};
   mu = fm;
 
   /**

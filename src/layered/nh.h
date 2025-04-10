@@ -111,7 +111,7 @@ retained. */
 
 static void box_matrix (Point point, scalar phi, scalar rhs,
 			face vector hf, scalar eta,
-			double * H, double * d)
+			double H[nl*nl], double d[nl])
 {
   coord dz, dzp;
   foreach_dimension()
@@ -171,7 +171,15 @@ static void relax_nh (scalar * phil, scalar * rhsl, int lev, void * data)
   scalar phi = phil[0], rhs = rhsl[0];
   scalar eta = phil[1], rhs_eta = rhsl[1];
   face vector alpha = *((vector *)data);
-  foreach_level_or_leaf (lev) {
+  
+#if GAUSS_SEIDEL || _GPU
+  for (int parity = 0; parity < 2; parity++)
+    foreach_level_or_leaf (lev)
+      if (level == 0 || ((point.i + parity) % 2) != (point.j % 2))
+#else
+  foreach_level_or_leaf (lev)
+#endif
+  {
 
     /**
     The updated values of $\phi$ in a column are obtained as
@@ -183,7 +191,7 @@ static void relax_nh (scalar * phil, scalar * rhsl, int lev, void * data)
 
     double H[nl*nl], b[nl];
     box_matrix (point, phi, rhs, hf, eta, H, b);
-    solve_hessenberg (H, b, nl);
+    solve_hessenberg (H, b);
     int l = nl - 1;
     foreach_layer()
       phi[] = b[l--];
@@ -207,9 +215,8 @@ static void relax_nh (scalar * phil, scalar * rhsl, int lev, void * data)
     eta[] = 0.;
     foreach_dimension() {
       n += alpha.x[0]*a_baro (eta, 0) - alpha.x[1]*a_baro (eta, 1);
-      diagonalize (eta) {
+      diagonalize (eta)
 	d -= alpha.x[0]*a_baro (eta, 0) - alpha.x[1]*a_baro (eta, 1);
-      }
     }
     eta[] = n/d;
   }

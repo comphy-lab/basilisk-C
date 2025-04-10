@@ -1448,7 +1448,7 @@ double z_indexing (scalar index, bool leaves)
   
   double maxi = -1.;
   if (pid() == 0)
-    foreach_level(0)
+    foreach_level(0, serial)
       maxi = size[] - 1.;
 
   /**

@@ -69,9 +69,8 @@ int main()
 
   /**
   The surface wind stress is constant. */
-  
-  const vector tau_w[] = { 1.027 };
-  airsea_tau = tau_w;
+
+  airsea_tau[] = { 1.027 };
   
   run();
 }

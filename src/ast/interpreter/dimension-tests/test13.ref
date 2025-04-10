@@ -1,10 +1,10 @@
 ------------------- 
-#line 961 "/common.h"
+#line 130 "/common.h"
 datasize
  
 #line 37 "ast/defaults.h"
 long
-size: 17, flags: 0, pointer: 0, scope: 0, value: 34  + [/src/common.h:961: 'datasize = 0']
+size: 17, flags: 0, pointer: 0, scope: 0, value: 34  + [/src/common.h:130: 'datasize = 0']
 ===================
 -------------------
 #line 15 "dimension-tests/test13.c"

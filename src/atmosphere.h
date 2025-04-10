@@ -11,6 +11,7 @@ double G = 1.;
 // Viscosity
 double NU = 0.;
 
+trace
 void advection_centered (scalar f, vector u, scalar df)
 {
   foreach()
@@ -20,6 +21,7 @@ void advection_centered (scalar f, vector u, scalar df)
 	    (f[] + f[0,1])*u.y[0,1])/(2.*Delta);
 }
 
+trace
 void advection_upwind (scalar f, vector u, scalar df)
 {
   foreach()
@@ -28,7 +30,8 @@ void advection_upwind (scalar f, vector u, scalar df)
 	    (u.y[] < 0. ? f[] : f[0,-1])*u.y[] - 
 	    (u.y[0,1] > 0. ? f[] : f[0,1])*u.y[0,1])/Delta;
 }
-    
+
+trace
 double timestep (void)
 {
   double dtmax = DT/CFL;
@@ -48,6 +51,7 @@ double timestep (void)
   return sqrt (dtmax)*CFL;
 }
 
+trace
 void momentum (vector u, scalar h, vector du)
 {
   scalar ke[];
@@ -80,6 +84,7 @@ void momentum (vector u, scalar h, vector du)
       + NU*(d.x[] - d.x[-1,0])/Delta;
 }
 
+trace
 void advance (double t, scalar * f, scalar * df)
 {
   vector u = {f[0], f[1]}, du = {df[0], df[1]};

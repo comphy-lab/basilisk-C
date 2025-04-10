@@ -47,6 +47,7 @@ char *    ast_str_print        (const Ast * n, char * s, int kind, int real);
 void      ast_print            (const Ast * n, FILE * fp, int kind);
 void      ast_print_tree       (Ast * n, FILE * fp, const char * indent,
 				bool compress, int maxdepth);
+void      ast_print_constructor (Ast * n, FILE * fp, const char * indent);
 void      ast_print_file_line  (Ast * n, FILE * fp);
 AstRoot * ast_get_root         (const Ast * n);
 void      ast_identifier_print (Ast * identifier, FILE * fp);
@@ -115,8 +116,9 @@ Ast * ast_new_internal (Ast * parent, ...);
 #define ast_new(parent,...) ast_new_internal (parent, __VA_ARGS__, -1)
 Ast * ast_schema_internal (const Ast * n, ...);
 #define ast_schema(n,...) ast_schema_internal (n, __VA_ARGS__, -1)
-Ast * ast_find_internal (const Ast * n, ...);
-#define ast_find(n,...) ast_find_internal (n, __VA_ARGS__, -1)
+Ast * ast_find_internal (const Ast * n, const char * identifier, ...);
+#define ast_find(n,...) ast_find_internal (n, NULL, __VA_ARGS__, -1)
+#define ast_find_identifier(id,n,...) ast_find_internal (n, id, __VA_ARGS__, -1)
 Ast * ast_copy_single (const Ast * n,
 		       AstRoot ** dst_root, AstRoot ** src_root);
 Ast * ast_copy_internal (const Ast * n, ...);
@@ -139,11 +141,11 @@ static inline int ast_child_index (const Ast * n)
   return *c == n ? index : - 1;
 }
 
-static inline Ast * ast_ancestor (Ast * n, int i)
+static inline Ast * ast_ancestor (const Ast * n, int i)
 {
   while (n && i)
     n = n->parent, i--;
-  return n;
+  return (Ast *) n;
 }
 
 char * str_append_realloc (char * dst, ...);
@@ -169,7 +171,7 @@ char * ast_line (AstTerminal * t);
 #define ast_file_line(n, nolineno)					\
   "\"", ast_terminal((Ast *)n)->file, "\",",				\
     nolineno ? "0" : ast_line(ast_terminal((Ast *)n))
-void ast_set_line (Ast * n, AstTerminal * l);
+void ast_set_line (Ast * n, AstTerminal * l, bool overwrite);
 Ast * ast_flatten (Ast * n, AstTerminal * t);
 AstTerminal * ast_replace (Ast * n, const char * terminal, Ast * with);
 
@@ -222,6 +224,8 @@ void  ast_traverse                 (Ast * n, Stack * stack,
        list = list->parent, arg = ast_child (list, symbol))
 
 Ast * ast_identifier_declaration (Stack * stack, const char * identifier);
+int   ast_identifier_parse_type (Stack * stack, const char * identifier, bool call,
+				 const char * file, int line);
 Ast * ast_identifier_declaration_from_to (Stack * stack, const char * identifier,
 					  const Ast * start, const Ast * end);
 Ast * ast_function_identifier (const Ast * function_definition);
@@ -241,7 +245,7 @@ Ast * ast_block_list_insert_after (Ast * insert, Ast * item);
 Ast * ast_block_list_insert_before (Ast * insert, Ast * item);
 Ast * ast_block_list_insert_before2 (Ast * insert, Ast * item);
 Ast * ast_block_list_get_item (Ast * statement);
-Ast * ast_list_append (Ast * list, int item_sym, Ast * item);
+Ast * ast_list_append (Ast * list, int item_sym, Ast * item, const char * separator);
 Ast * ast_list_prepend (Ast * list, int item_sym, Ast * item);
 Ast * ast_list_remove (Ast * list, Ast * item);
 Ast * ast_list_insert_after (Ast * insert, Ast * item);
@@ -273,14 +277,17 @@ bool  ast_is_foreach_stencil (const Ast * n);
 bool  ast_is_stencil_function (Ast * n);
 Ast * ast_is_point_function (const Ast * declarator);
 Ast * ast_stencil (Ast * n, bool parallel, bool overflow, bool nowarning);
-Ast * ast_is_point_point (const Ast * identifier);
 void  ast_stencil_access (Ast * n, Stack * stack, int dimension);
+const Ast * ast_attribute_access (const Ast * n, Stack * stack);
+Ast * ast_attribute_array_access (Ast * n);
 Ast * ast_constant_postfix_expression (const Ast * n, Stack * stack);
+Ast * ast_is_function_pointer (const Ast * n, Stack * stack);
+bool  ast_is_foreach_statement (const Ast * n);
 
 /**
 ## Types */
 
-extern AstTerminal ast_int, ast_long, ast_enum, ast_char, ast_void, ast_float, ast_double, ast_function;
+extern AstTerminal ast_int, ast_long, ast_enum, ast_char, ast_void, ast_float, ast_double, ast_function, ast_bool;
 
 typedef struct {
   int pointer;
@@ -294,8 +301,17 @@ Ast * ast_get_array_dimensions (Ast * direct_declarator, int symbol, AstDimensio
 /**
 ## Kernels */
 
-void ast_non_local_references (Ast * n, Ast * argument);
-void ast_kernel               (Ast * n, Ast * argument);
+void ast_diagonalize (Ast * n, Stack * stack, void * field);
+char * ast_external_references (Ast * n, char * references, Stack * functions);
+char * ast_kernel              (Ast * n, char * argument, bool nolineno, Ast * macroscope);
+
+/**
+## Macros */
+
+Ast * ast_is_macro_declaration (const Ast * function_declaration);
+void ast_macro_replacement (Ast * statement, Ast * initial, Stack * stack,
+			    bool nolineno, int postmacros, bool expand_definitions,
+			    int * return_macro_index, Ast * scope);
 
 /**
 ## Interface for the generic C interpreter */
@@ -307,3 +323,15 @@ int ast_run (AstRoot * root, Ast * n, int verbosity, int maxcalls, void * data);
 
 bool ast_check_dimensions (AstRoot * root, Ast * n, int verbosity, int maxcalls,
 			   FILE * dimensions, int finite, int redundant, int lineno, int warn);
+
+/**
+## The entry function
+
+Called by [qcc](/src/qcc.c) to trigger the translation. */
+
+AstRoot * endfor (FILE * fin, FILE * fout,
+		  const char * grid, int dimension,
+		  bool nolineno, bool progress, bool catch,
+		  bool parallel, bool cpu, bool gpu,
+		  bool prepost,
+		  FILE * swigfp, char * swigname);

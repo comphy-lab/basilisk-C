@@ -28,7 +28,7 @@ int MAXLEVEL;
 /**
 We center the unit box on the origin and set a maximum timestep of 0.1 */
 
-int main()
+int main (int argc, char * argv[])
 {
   origin (-0.5, -0.5);
   DT = .1[0,1];
@@ -42,7 +42,7 @@ int main()
   /**
   We then run the simulation for different levels of refinement. */
 
-  for (MAXLEVEL = 5; MAXLEVEL <= 7; MAXLEVEL++) {
+  for (MAXLEVEL = 5; MAXLEVEL <= (argc > 1 ? atoi(argv[1]) : 7); MAXLEVEL++) {
     init_grid (1 << MAXLEVEL);
     run();
   }
@@ -99,7 +99,7 @@ event velocity (i++) {
   non-divergent. */
   
   trash ({u});
-  struct { double x, y; } f = {-1.,1.};
+  coord f = {-1.,1.};
   foreach_face()
     u.x[] = f.x*(psi[0,1] - psi[])/Delta;
 }
@@ -120,7 +120,7 @@ event logfile (t = {0,T}) {
   stats sc = statsf (cf);
   double cmin = HUGE, cmax = 0.;
   foreach (reduction(min:cmin) reduction(max:cmax))
-    if (f[] > 1e-12) { // round-off errors are a problem
+    if (f[] > 1e-6) { // round-off errors are a problem
       double c = cf[]/f[];
       if (c < cmin) cmin = c;
       if (c > cmax) cmax = c;
@@ -152,8 +152,10 @@ We also output the shape of the reconstructed interface at regular
 intervals (but only on the finest grid considered). */
 
 event shape (t += T/4.) {
+#if !BENCHMARK
   if (N == 128)
     output_facets (f);
+#endif
 }
 
 /**
@@ -181,6 +183,13 @@ event movie (i += 10)
 }
 #endif
 
+#if 0 // _GPU // uncomment for real-time display on GPU
+event display (i++) {
+  output_ppm (f, n = 400, min = 0, max = 1, fps = 30);
+  output_ppm (cf, n = 400, min = 0, max = 1, fps = 30);
+}
+#endif
+
 /**
 ## Results
 
@@ -196,9 +205,9 @@ f2(x)=a2+b2*x
 fit f2(x) 'log' u (log($1)):(log($2)) via a2,b2
 
 fc(x)=ac+bc*x
-fit fc(x) 'clog' u (log($1)):(log($4)) via ac,bc
+fit fc(x) '../reversed/clog' u (log($1)):(log($4)) via ac,bc
 fc2(x)=ac2+bc2*x
-fit fc2(x) 'clog' u (log($1)):(log($2)) via ac2,bc2
+fit fc2(x) '../reversed/clog' u (log($1)):(log($2)) via ac2,bc2
 
 set xlabel 'Maximum resolution'
 set ylabel 'Maximum error'
@@ -208,10 +217,10 @@ set xrange [16:256]
 set xtics 16,2,256
 set grid ytics
 set cbrange [1:1]
-plot 'log' u 1:4 t 'max (adaptive)', exp(f(log(x))) t ftitle(a,b), \
-     'clog' u 1:4 t 'max (constant)', exp(fc(log(x))) t ftitle(ac,bc), \
-     'log' u 1:2 t 'norm1 (adaptive)', exp(f2(log(x))) t ftitle(a2,b2), \
-     'clog' u 1:2 t 'norm1 (constant)', exp(fc2(log(x))) t ftitle(ac2,bc2)
+plot 'log' u 1:4 t 'max', exp(f(log(x))) t ftitle(a,b), \
+     '../reversed/clog' u 1:4 t 'max (constant)', exp(fc(log(x))) t ftitle(ac,bc), \
+     'log' u 1:2 t 'norm1', exp(f2(log(x))) t ftitle(a2,b2), \
+     '../reversed/clog' u 1:2 t 'norm1 (constant)', exp(fc2(log(x))) t ftitle(ac2,bc2)
 ~~~
 
 The shapes of the interface at $t=0$, $t=T/4$, $t=T/2$, $t=3T/4$ and
@@ -224,7 +233,12 @@ larger than those for $t=T$.
 ~~~gnuplot Shapes of the interface for $t=0$, $t=T/4$, $t=T/2$, $t=3T/4$ and $t=T$ for two sets of simulations.
 reset
 set size ratio -1
-plot [-0.5:0.5][-0.5:0.5]'out' w l t "adaptive", 'cout' w l t "constant"
+plot [-0.5:0.5][-0.5:0.5]'out' w l t "current", '../reversed/cout' w l t "constant"
 ~~~
 
-![Refinement levels for $t=T/2$ and $N=128$.](reversed/levels.png) */
+![Refinement levels for $t=T/2$ and $N=128$.](reversed/levels.png) 
+
+## See also
+
+[Benchmark on GPUs](/src/grid/gpu/Benchmarks.md#time-reversed-vof-advection-in-a-vortex)
+*/

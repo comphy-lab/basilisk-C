@@ -19,11 +19,11 @@ provided as surface fields by the calling solver. They are zero by
 default. */
 
 // surface wind stress (eg. in Pa or N/m^2)
-(const) vector airsea_tau      = zerof;
+(const) vector airsea_tau[] = {0.};
 // surface heat flux (eg. in W/m^2)
-(const) scalar airsea_heat_flux = zeroc;
+(const) scalar airsea_heat_flux[] = 0.;
 // surface short-wave radiation flux (eg. in W/m^2)
-(const) scalar airsea_swr_flux  = zeroc;
+(const) scalar airsea_swr_flux[] = 0.;
 
 /**
 ## Implementation
@@ -247,18 +247,18 @@ event viscous_term (i++)
   struct { realtype * x, * y; } gotm_u = { meanflow_u.a, meanflow_v.a };
   struct { realtype * x, * y; } gotm_t = { &airsea_tx, &airsea_ty };
   foreach() {
-    memcpy (&meanflow_h.a[1], &h[], nl*sizeof(double));
-    foreach_dimension() {
+    foreach_dimension()
       *gotm_t.x = airsea_tau.x[];
-      memcpy (&gotm_u.x[1], &u.x[], nl*sizeof(double));
-    }
-    if (T.i >= 0)
-      memcpy (&meanflow_t.a[1], &T[], nl*sizeof(double));
-    if (S.i >= 0)
-      memcpy (&meanflow_s.a[1], &S[], nl*sizeof(double));
     
-    double z = zb[];    
+    double z = zb[];
     foreach_layer() {
+      meanflow_h.a[point.l + 1] = h[];
+      foreach_dimension()
+	gotm_u.x[point.l + 1] = u.x[];
+      if (T.i >= 0)
+	meanflow_t.a[point.l + 1] = T[];
+      if (S.i >= 0)
+	meanflow_s.a[point.l + 1] = S[];
       meanflow_z.a[point.l + 1] = z + h[]/2.;
       z += h[];
     }
@@ -266,13 +266,15 @@ event viscous_term (i++)
     airsea_heat = airsea_heat_flux[];
     airsea_i_0 = airsea_swr_flux[];
     gotm_step (i);
-    
-    foreach_dimension()
-      memcpy (&u.x[], &gotm_u.x[1], nl*sizeof(double));
-    if (T.i >= 0)
-      memcpy (&T[], &meanflow_t.a[1], nl*sizeof(double));
-    if (S.i >= 0)
-      memcpy (&S[], &meanflow_s.a[1], nl*sizeof(double));
+
+    foreach_layer() {
+      foreach_dimension()
+	u.x[] = gotm_u.x[point.l + 1];
+      if (T.i >= 0)
+	T[] = meanflow_t.a[point.l + 1];
+      if (S.i >= 0)
+	S[] = meanflow_s.a[point.l + 1];
+    }
   }
 }
 

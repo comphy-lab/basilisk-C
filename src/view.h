@@ -150,6 +150,8 @@ struct _bview {
 
   unsigned width, height, samples;
 
+  int maxlevel; // the maximum level to draw
+  
   framebuffer * fb;
   Frustum frustum; // the view frustum
 
@@ -188,7 +190,8 @@ bview * bview_new()
 
   p->samples = 4;
   p->width = 600*p->samples, p->height = 600*p->samples;
-
+  p->maxlevel = -1;
+  
   /* OpenGL somehow generates floating-point exceptions... turn them off */
   disable_fpe (FE_DIVBYZERO|FE_INVALID);
 
@@ -240,7 +243,7 @@ bview * get_view() {
 /**
 The main drawing function. */
 
-static void redraw() {
+static void redraw (bool clear = true) {
   bview * view = get_view();
     
   /* OpenGL somehow generates floating-point exceptions... turn them off */
@@ -279,9 +282,11 @@ static void redraw() {
   
   glScalef (view->sx/L0, view->sy/L0, view->sz/L0);
 
-  glClearColor (view->bg[0], view->bg[1], view->bg[2], 0.);
-  glClear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-
+  if (clear) {
+    glClearColor (view->bg[0], view->bg[1], view->bg[2], 0.);
+    glClear (GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+  }
+    
   gl_get_frustum (&view->frustum);
   
   view->active = true;
@@ -496,6 +501,7 @@ bool save (char * file = NULL, char * format = "ppm", char * opt = NULL,
 	   FILE * fp = NULL,
 	   float lw = 0,
 	   int sort = 0, int options = 0,
+	   FILE * checksum = NULL,
 	   
 	   bview * view = NULL)
 {
@@ -522,9 +528,18 @@ bool save (char * file = NULL, char * format = "ppm", char * opt = NULL,
       if (!fp) {
 	perror (file);
 	return false;
-      }      
+      }
       gl_write_image (fp, image, view->width, view->height, view->samples);
       close_image (file, fp);
+      if (checksum) {
+	Adler32Hash hash;
+	a32_hash_init (&hash);
+	a32_hash_add (&hash, image, view->width*view->height*4*sizeof (unsigned char));
+	fputs ("# ", checksum);
+	if (file)
+	  fprintf (checksum, "%s: ", file);
+	fprintf (checksum, "checksum: %08lx\n", (unsigned long) a32_hash (&hash));
+      }
     }
     return true;
   }  
@@ -689,12 +704,6 @@ bool process_line (char * line)
 
   #include "draw_get.h"
 
-  else if (!strcmp (s, "end_mirror"))
-    end_mirror();
-  
-  else if (!strcmp (s, "end_translate"))
-    end_translate();
-  
   else if (!strcmp (s, "clear"))
     clear();
 

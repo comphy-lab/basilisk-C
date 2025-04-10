@@ -23,8 +23,4 @@ event logfile (i = 1)
 {
   norm n = normf (u.x);
   fprintf (stderr, "# %.10f %.10f %.10f\n", n.avg, n.rms, n.max);
-#if 0
-  FILE * fp = popen ("gfsview2D -s", "w");
-  output_gfs (fp);
-#endif
 }

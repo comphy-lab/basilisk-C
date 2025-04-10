@@ -51,8 +51,10 @@ KHASH_MAP_INIT_INT64(INT64, void *)
 # define allocate(alloc, size) calloc (1, size)
 #endif
 
+static unsigned
+  maximum_iterations = 32; // INT_MAX;
+  
 static const unsigned
-  maximum_iterations = 32, // INT_MAX,
   maximum_recursion = 2,
   display_pointers = false,
   
@@ -968,6 +970,8 @@ Value * unary_operation (Ast * n, Ast * op, Value * a, Stack * stack)
     va = value_data (a, float);			\
   else if (a->type->sym == sym_DOUBLE)		\
     va = value_data (a, double);		\
+  else if (a->type->sym == sym_CHAR)		\
+    va = value_data (a, char);			\
   else						\
     return not_implemented (NULL, n, stack)
 
@@ -1471,6 +1475,39 @@ Ast * identifier_type (Ast * n, Dimensions * d, Stack * stack)
 }
 
 static
+Ast * return_type (Ast * function_declaration, Dimensions * d, Stack * stack)
+{
+  if (!function_declaration)
+    return NULL;
+  
+  Ast * declarator = ast_child (function_declaration, sym_declarator);
+  while (declarator) {
+    Ast * pointer = declarator;
+    while ((pointer = ast_child (pointer, sym_pointer)))
+      d->pointer++;
+    if (ast_child (declarator, token_symbol ('[')))
+      d->pointer++;
+    if (ast_child (declarator, sym_direct_declarator))
+      declarator = ast_child (declarator, sym_direct_declarator);
+    else
+      declarator = ast_child (declarator, sym_declarator);
+  }
+  
+  Ast * specifiers = ast_child (function_declaration, sym_declaration_specifiers);
+  assert (specifiers);
+  Ast * type = ast_find (specifiers, sym_types);
+  assert (type);
+  type = type->child[0];
+  if (type->sym == sym_struct_or_union_specifier &&
+      !ast_child (type, sym_struct_declaration_list)) {
+    if (ast_child (type, sym_YYerror))
+      return NULL;
+    type = ast_child (type, sym_generic_identifier)->child[0];
+  }
+  return base_type (type, d, stack);
+}
+
+static
 Ast * type_name_type (Ast * type_name, Dimensions * d, Stack * stack)
 {
   Ast * declarator = ast_child (type_name, sym_abstract_declarator);
@@ -1512,6 +1549,8 @@ Ast * struct_size (Ast * type,
   Ast * list = ast_child (type, sym_struct_declaration_list);
   while (!list) {
     type = base_type (ast_child (type, sym_generic_identifier)->child[0], d, stack);
+    if (!type)
+      return NULL;
     assert (type->sym == sym_struct_or_union_specifier);
     list = ast_child (type, sym_struct_declaration_list);
   }
@@ -1995,8 +2034,35 @@ void * static_realloc (void * ptr, size_t size, Stack * stack)
   return p;
 }
 
-static double sq (double x) { return x*x; }
-static double cube (double x) { return x*x*x; }
+static
+bool continue_iterations (Ast * n, Stack * stack, int iter, int calls)
+{
+  if (iter <= 0) {
+    message (NULL, n, "reached maximum number of iterations\n", warning_verbosity, stack);
+    return false;
+  }    
+  return true;
+#if 0  
+  iter = maximum_iterations - iter;
+  calls = calls - ((StackData *)stack_get_data (stack))->maxcalls;
+
+  //  if (iter == maximum_iterations)
+#if 0  
+  fprintf (stderr, "%s:%d: %d #iterations %d\n",
+	   ast_left_terminal (n)->file, ast_left_terminal (n)->line,
+	   iter, 20000000/(calls/iter));
+#endif
+#if 1
+  if (iter > 2 && 20000000/(calls/iter) < 1000) {
+    if (!strncmp (ast_left_terminal (n)->file, "ast/", 4) && iter < 32)
+      return true;
+    message (NULL, n, "could reach maximum number of iterations\n", error_verbosity, stack);
+    return false;
+  }
+#endif
+  return true;
+#endif
+}
 
 static
 Value * internal_functions (Ast * call, Ast * identifier, Ast ** parameters, bool constant_arguments, Stack * stack)
@@ -2011,6 +2077,7 @@ Value * internal_functions (Ast * call, Ast * identifier, Ast ** parameters, boo
       value_set_flags (value, unset);
     else {
       long size = value_data (params[0], long);
+      if (size < 0) size = 0;
       value_data (value, void *) = memset (pmalloc (static_calloc (1, sizeof(pmdata) + size, stack), size), 0, size);
       value_data (value, Pointer).start = value_data (value, void *);
       value_data (value, Pointer).size = size;
@@ -2028,6 +2095,7 @@ Value * internal_functions (Ast * call, Ast * identifier, Ast ** parameters, boo
     else {
       long nmemb = value_data (params[0], long);
       long size = value_data (params[1], long);
+      if (size < 0) size = 0;
       value_data (value, void *) = memset (pmalloc (static_malloc (sizeof(pmdata) + nmemb*size, stack), nmemb*size),
 					   0, nmemb*size);
       value_data (value, Pointer).start = value_data (value, void *);
@@ -2050,6 +2118,7 @@ Value * internal_functions (Ast * call, Ast * identifier, Ast ** parameters, boo
       value_set_flags (value, unset);
     else {
       long size = value_data (params[1], long);
+      if (size < 0) size = 0;
       value_data (value, void *) = pmalloc (static_realloc (pfree (ptr, call, stack), sizeof (pmdata) + size, stack), size);
       long oldsize = value_data (params[0], Pointer).size;
       if (size > oldsize)
@@ -2235,6 +2304,28 @@ Value * internal_functions (Ast * call, Ast * identifier, Ast ** parameters, boo
     }
     return ast_internal_functions_hook (call, identifier, params, stack, value);
   }
+  else if (!strcmp (name, "strncmp")) {
+    Value * params[] = { run (parameters[0], stack), run (parameters[1], stack), run (parameters[2], stack) };
+    if (!params[0] || !params[1] || !params[2])
+      return undefined (NULL, call, stack);
+    Value * value = new_value (stack, call, (Ast *)&ast_int, 0);
+    if ((value_flags (params[0]) & unset) ||
+	(value_flags (params[1]) & unset) ||
+	(value_flags (params[2]) & unset))
+      value_set_flags (value, unset);
+    else {
+      const char * s1 = value_data (params[0], void *);
+      const char * s2 = value_data (params[1], void *);
+      long size = value_data (params[2], long);
+      if (!s1 || !s2) {
+	message (NULL, call, "strncmp (null, null, stack)\n", 2, stack);
+	value_data (value, int) = 0;
+      }
+      else
+	value_data (value, int) = strncmp (s1, s2, size);
+    }
+    return ast_internal_functions_hook (call, identifier, params, stack, value);
+  }
   else if (!strcmp (name, "atan2")) {
     Value * params[] = { run (parameters[0], stack), run (parameters[1], stack) };
     if (!params[0] || !params[1])
@@ -2265,8 +2356,13 @@ Value * internal_functions (Ast * call, Ast * identifier, Ast ** parameters, boo
   }
   else if (!strcmp (name, "interpreter_verbosity"))
     ((StackData *)stack_get_data (stack))->verbosity = value_data (run (parameters[0], stack), int);
+  else if (!strcmp (name, "interpreter_maximum_iterations"))
+    maximum_iterations = value_data (run (parameters[0], stack), int);
   else if (!strcmp (name, "reset_field_value")) {
-    Value * params[] = { run (parameters[0], stack), run (parameters[1], stack), run (parameters[2], stack) };
+    Value * params[] = {
+      run (parameters[0], stack), run (parameters[1], stack),
+      run (parameters[2], stack), run (parameters[3], stack)
+    };
     char * field = value_data (params[0], char *);
     memcpy (field, params[2]->data.p, params[2]->size);
     *((Flags *)(field + params[2]->size - sizeof (Flags))) |= unset;
@@ -2282,7 +2378,6 @@ Value * internal_functions (Ast * call, Ast * identifier, Ast ** parameters, boo
       {"asin", asin}, {"acos", acos}, {"atan", atan},
       {"sinh", sinh}, {"cosh", cosh}, {"tanh", tanh},
       {"asinh", sinh}, {"acosh", cosh}, {"atanh", tanh},
-      {"sq", sq}, {"cube", cube},
       {NULL}
     }, * i = funcs;
     for (; i->name; i++)
@@ -2492,6 +2587,17 @@ Value * ast_run_node (Ast * n, Stack * stack)
     break;
 
   case sym_function_call:
+    {
+      Ast * identifier;
+      if ((identifier = ast_schema (n, sym_function_call,
+				    0, sym_postfix_expression,
+				    0, sym_primary_expression,
+				    0, sym_IDENTIFIER)) &&
+	  !strcmp (ast_terminal (identifier)->start, "_register_fpointer")) {
+	value = run (ast_find (n, sym_argument_expression_list_item), stack);
+	break;
+      }
+    }
     value = run (n->child[0], stack);
     if (value) {
       Ast * identifier, * function_definition;
@@ -2754,10 +2860,10 @@ Value * ast_run_node (Ast * n, Stack * stack)
       value = run (n->child[0], stack);
     else { // '(' type_name ')' cast_expression
       value = run (n->child[3], stack);
-      if (value && value->pointer) { // fixme: only apply cast to pointers??!!
+      if (value) {
 	Dimensions d = { .size = 1 };
 	Ast * type = type_name_type (n->child[1], &d, stack);
-	if (!d.pointer)
+	if (value->pointer && !d.pointer)
 	  return message (scope, n->child[1], "can only cast from pointers to pointers\n",
 			  warning_verbosity, stack);
 	Value * v = new_value (stack, n, type, d.pointer);
@@ -2836,9 +2942,6 @@ Value * ast_run_node (Ast * n, Stack * stack)
       Ast * identifier = ast_identifier_declaration (stack, ast_terminal (n->child[0]->child[0])->start);
       if (identifier && has_value (identifier))
 	value = (Value *) identifier;
-      if (ast_schema (ast_is_point_point (n->child[0]), sym_declaration) &&
-	  strcmp (ast_terminal (n->child[0]->child[0])->file, "ast/interpreter/overload.h"))
-	init_point_variables (stack);
     }
     else
       value = run (ast_child (n, sym_declarator), stack);
@@ -2869,11 +2972,27 @@ Value * ast_run_node (Ast * n, Stack * stack)
 	value_set_parent (value, n);
 	if (ast_assign_hook)
 	  value = ast_assign_hook (n, value, value, stack);
+	/**
+	Cast the value to the proper return type, if necessary. */
+	if (value && value->type->sym != sym_struct_or_union_specifier) {
+	  Dimensions d = { .size = 1 };
+	  Ast * type = return_type (ast_schema (ast_parent (n, sym_function_definition), sym_function_definition,
+						0, sym_function_declaration), &d, stack);
+	  if (type && type->sym != value->type->sym) {
+#if 0	    
+	    ast_print_tree (type, stderr, 0, 0, -1);
+	    ast_print_tree (value->type, stderr, 0, 0, -1);
+#endif
+	    Value * v = new_value (stack, n, type, d.pointer);
+	    assign (n, v, value, stack);
+	    value = v;
+	  }
+	}
       }
       else
 	value = new_value (stack, n, (Ast *)&ast_void, 0);
-      StackData * d = stack_get_data (stack);
 #if 1
+      StackData * d = stack_get_data (stack);
       if (d->call < d->conditional) // fixme: changed from d->call <= d->conditional
 	value_set_flags (value, unset);
 #endif
@@ -2883,6 +3002,7 @@ Value * ast_run_node (Ast * n, Stack * stack)
   case sym_for_declaration_statement:
   case sym_iteration_statement: {
     int maxiter = maximum_iterations;
+    int maxcalls = ((StackData *)stack_get_data (stack))->maxcalls;
     if (n->child[0]->sym == sym_WHILE) { // while ...
       Value * condition = run (n->child[2], stack);
       if (!condition)
@@ -2897,15 +3017,15 @@ Value * ast_run_node (Ast * n, Stack * stack)
 	  }
 	  if (value_flags (condition) & unset) {
 	    message (NULL, n->child[2], "undefined condition '%s'\n", warning_verbosity, stack);
-	    maxiter = 0;
+	    cond = false;
 	  }
 	  else if (!cond)
 	    break;
 	  value = run (n->child[4], stack);
-	  if (value && ((Ast *)value)->sym == sym_jump_statement)
+	  if (!cond || (value && ((Ast *)value)->sym == sym_jump_statement))
 	    break;
 	  condition = run (n->child[2], stack);
-	} while (maxiter-- && condition);
+	} while (condition && continue_iterations (n, stack, --maxiter, maxcalls));
     }
     else if (n->child[0]->sym == sym_DO) { // do ... while
       do {
@@ -2929,10 +3049,10 @@ Value * ast_run_node (Ast * n, Stack * stack)
 	}
 	else if (!cond)
 	  break;
-      } while (maxiter--);
+      } while (continue_iterations (n, stack, --maxiter, maxcalls));
     }
     else if (n->child[0]->sym == sym_for_declaration_statement)
-      run (n->child[0], stack);
+      value = run (n->child[0], stack);
     else { // for loop
       assert (n->child[0]->sym == sym_for_scope);
       run (n->child[2], stack);
@@ -2949,7 +3069,7 @@ Value * ast_run_node (Ast * n, Stack * stack)
 	  }
 	  if (value_flags (condition) & unset) {
 	    message (NULL, n->child[3], "undefined condition '%s'\n", warning_verbosity, stack);
-	    maxiter = 0;
+	    cond = false;
 	  }
 	  else if (!cond)
 	    break;
@@ -2958,12 +3078,10 @@ Value * ast_run_node (Ast * n, Stack * stack)
 	    break;
 	  Value * expr = run (ast_child (n, sym_expression), stack);
 	  condition = run (n->child[3], stack);
-	  if (!expr || !condition)
+	  if (!cond || !expr || !condition)
 	    break;
-	} while (maxiter--);
+	} while (continue_iterations (n, stack, --maxiter, maxcalls));
     }
-    if (maxiter < 0)
-      message (NULL, n, "reached maximum number of iterations\n", warning_verbosity, stack);
     break;
   }
 
@@ -3112,26 +3230,24 @@ Value * ast_run_node (Ast * n, Stack * stack)
     }
     break;
 
-  case sym_foreach_statement:
-    if (!ast_is_foreach_stencil (n)) {
-      if (strcmp (ast_terminal (n->child[0])->start, "foreach_face_generic"))
-	init_point_variables (stack);
-      default_check (stack, n);
-    }
-    else {
-      StackData * d = stack_get_data (stack);
-      run (d->stencil, stack);
-      default_check (stack, n);
-      run (d->end_stencil, stack);
-    }
-    break;
-
   case sym_macro_statement: {
+    if (ast_is_foreach_statement (n)) {
+      if (ast_is_foreach_stencil (n)) {
+	StackData * d = stack_get_data (stack);
+	run (d->stencil, stack);
+	default_check (stack, n);
+	run (d->end_stencil, stack);
+      }
+      else {
+	if (strcmp (ast_terminal (n->child[0])->start, "foreach_face_generic"))
+	  init_point_variables (stack);
+	default_check (stack, n);
+      }
+      break;
+    }
+
     Ast * identifier = ast_schema (n, sym_macro_statement,
-				   0, sym_function_call,
-				   0, sym_postfix_expression,
-				   0, sym_primary_expression,
-				   0, sym_IDENTIFIER);
+				   0, sym_MACRO);
     if (identifier && !strncmp (ast_terminal (identifier)->start, "is_face_", 8))
       init_point_variables (stack);
     value = default_check (stack, n);

@@ -77,11 +77,7 @@ display ("squares (color = 'u.x', spread = -1);", true);
 # define DISPLAY_RANGE "7100:7200"
 #endif
 
-#if 1
-# define debug(...)
-#else
-# define debug(...) fprintf (qerr, __VA_ARGS__), fflush(qerr)
-#endif
+#define debug(...) do { if (Display.debug) fprintf (qerr, __VA_ARGS__), fflush(qerr); } while(0)
 
 #include <netdb.h>
 #include <wsServer/include/ws.h>
@@ -102,6 +98,7 @@ static struct {
   int sock, port;
   char * error;
   Array * controls;
+  bool debug;
 } Display = { .sock = -1 };
 
 static void display_display()
@@ -206,7 +203,7 @@ static void display_command (const char * command)
 static int ws_send_array (int fd, Array * a, int status, int type,
 			  unsigned int * shift)
 {
-@if _MPI
+#if _MPI
   if (pid() == 0) {
     void * p = NULL;
     long len;
@@ -239,10 +236,10 @@ static int ws_send_array (int fd, Array * a, int status, int type,
     if (a->len > 0)
       MPI_Send (a->p, a->len, MPI_BYTE, 0, 23, MPI_COMM_WORLD);
   }
-@else
+#else
   if (status >= 0 && a->len > 0 && ws_send (fd, a->p, a->len) < a->len)
     status = -1;
-@endif
+#endif
   return status;
 }
 
@@ -263,13 +260,13 @@ static int display_send (const char * command, int fd)
 			 VertexBuffer.color->len,
 			 VertexBuffer.index->len}, glens[4];
   int type = VertexBuffer.type, gtype;
-@if _MPI
+#if _MPI
   MPI_Reduce (lens, glens, 4, MPI_UNSIGNED, MPI_SUM, 0, MPI_COMM_WORLD);
   MPI_Allreduce (&type, &gtype, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
-@else
+#else
   for (int i = 0; i < 4; i++) glens[i] = lens[i];
   gtype = type;
-@endif
+#endif
   
   if (gtype < 0)
     len += errorlen;
@@ -311,9 +308,9 @@ static int display_send (const char * command, int fd)
     free (shift);
   }
   
-@if _MPI
+#if _MPI
   MPI_Bcast (&status, 1, MPI_INT, 0, MPI_COMM_WORLD);
-@endif
+#endif
   
   return status;
 }
@@ -554,9 +551,9 @@ void display_onopen (int fd)
   free (interface);
   free (controls);
   
-@if _MPI
+#if _MPI
   MPI_Bcast (&status, 1, MPI_INT, 0, MPI_COMM_WORLD);
-@endif
+#endif
 
   debug ("open %d status %d\n", fd, status);
   
@@ -609,7 +606,7 @@ static void display_update (int i)
     }
 }
 
-@if _MPI
+#if _MPI
 static Array * pack_messages (struct ws_message * messages)
 {
   struct ws_message * msg = messages;
@@ -641,7 +638,7 @@ static struct ws_message * unpack_messages (Array * packed)
   free (array);
   return messages;
 }
-@endif
+#endif
 		 
 int display_poll (int timeout)
 {
@@ -652,7 +649,7 @@ int display_poll (int timeout)
     while (msg && msg->fd >= 0) msg++, nmsg++;
   }
 
-@if _MPI
+#if _MPI
   Array * packed;
   if (pid() == 0)
     packed = pack_messages (messages);
@@ -667,7 +664,7 @@ int display_poll (int timeout)
       messages = unpack_messages (packed);
   }
   array_free (packed);
-@endif
+#endif
 
   msg = messages;
   nmsg = 0;
@@ -703,8 +700,8 @@ void display_url (FILE * fp)
   struct hostent * h = gethostbyname (hostname);
   if (!h)
     fprintf (stderr,
-	     "display_url(): warning: gethostbyname(\"%s\") returned NULL\n",
-	     hostname);
+	     "src/display.h:%d: warning: gethostbyname(\"%s\") returned NULL\n",
+	     LINENO, hostname);
   fprintf (fp, DISPLAY_JS "?ws://%s:%d", h ? h->h_name : "127.0.0.1",
 	   Display.port);
 }
@@ -808,9 +805,9 @@ event refresh_display (i++, last)
   static double poll_elapsed = 0.;
   int refresh = (poll_elapsed <=
 		 display_usage/100.*timer_elapsed (global_timer));
-@if _MPI
+#if _MPI
   MPI_Bcast (&refresh, 1, MPI_INT, 0, MPI_COMM_WORLD);
-@endif
+#endif
   if (refresh) {
     global_timer = timer_start();
     display_update (i);

@@ -344,8 +344,8 @@ int fractions_cleanup (scalar c, face vector s,
     schanged += changed;
   }
   if (changed)
-    fprintf (stderr, "WARNING: fractions_cleanup() did not converge after "
-	     "%d iterations\n", i);
+    fprintf (stderr, "src/embed.h:%d: warning: fractions_cleanup() did not converge after "
+	     "%d iterations\n", LINENO, i);
   return schanged;
 }
   
@@ -705,30 +705,41 @@ double embed_flux (Point point, scalar s, face vector mu, double * val)
 }
 
 /**
-For ease of use, we redefine the Neumann and Dirichlet boundary macros
-so that they can be used either for standard domain boundaries or for
-embedded boundaries. The distinction between the two cases is based on
-whether the `dirichlet` parameter is passed to the boundary function
-(using the `data` parameter). */
+For ease of use, we replace the Neumann and Dirichlet functions with
+macros so that they can be used either for standard domain boundaries
+or for embedded boundaries. The distinction between the two cases is
+based on whether the `dirichlet` parameter is passed to the boundary
+function (using the `data` parameter). */
 
-@undef _neumann
-@def _neumann(expr, ...)   (data ? embed_area_center (point, &x, &y, &z),
-			    *((bool *)data) = false, (expr) :
-			    Delta*(expr) + val(_s,0,0,0))
-@
-@undef _neumann_homogeneous
-@def _neumann_homogeneous(...) (data ? *((bool *)data) = false, (0) :
-				val(_s,0,0,0))
-@
-@undef _dirichlet
-@def _dirichlet(expr, ...) (data ? embed_area_center (point, &x, &y, &z),
-			    *((bool *)data) = true, (expr) :
-			    2.*(expr) - val(_s,0,0,0))
-@
-@undef _dirichlet_homogeneous
-@def _dirichlet_homogeneous(...) (data ? *((bool *)data) = true, (0) :
-				  - val(_s,0,0,0))
-@
+macro2
+double dirichlet (double expr, Point point = point,
+		  scalar s = _s, bool * data = data)
+{
+  return data ? embed_area_center (point, &x, &y, &z),
+    *((bool *)data) = true, expr : 2.*expr - s[];
+}
+
+macro2
+double dirichlet_homogeneous (double expr, Point point = point,
+			      scalar s = _s, bool * data = data)
+{
+  return data ? *((bool *)data) = true, 0 : - s[];
+}
+
+macro2
+double neumann (double expr, Point point = point,
+		scalar s = _s, bool * data = data)
+{
+  return data ? embed_area_center (point, &x, &y, &z),
+    *((bool *)data) = false, expr : Delta*expr + s[];
+}
+
+macro2
+double neumann_homogeneous (double expr, Point point = point,
+			    scalar s = _s, bool * data = data)
+{
+  return data ? *((bool *)data) = false, 0 : s[];
+}
 
 /**
 ## Prolongation for the multigrid solver

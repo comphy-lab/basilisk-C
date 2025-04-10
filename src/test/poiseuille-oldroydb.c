@@ -73,12 +73,9 @@ int main()
   p[right] = dirichlet(0.);
 
   DT = DT_MAX;
-  const scalar lam[] = LAM;
-  lambda = lam;
-  const scalar mupc[] = MUP;
-  mup = mupc;
-  const face vector mus[] = {MUS,MUS};
-  mu = mus;
+  lambda[] = LAM;
+  mup[] = MUP;
+  mu[] = {MUS,MUS};
 #if FENE_P
   lev = 5;
   init_grid (1 << lev);

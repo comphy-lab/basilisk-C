@@ -1,0 +1,81 @@
+~~~bash
+cd $BASILISK/src/test/
+
+CFLAGS='-DSINGLE_PRECISION -DBENCHMARK -fopenmp' make lid.ctst
+cd lid
+
+OpenGL renderer string: Intel Core i7
+
+for i in 64 128 256 512 1024 2048; do OMP_NUM_THREADS=8 ./lid $i 2> /dev/null | grep steps; done
+
+# Multigrid, 300 steps, 4.42842 CPU, 0.5561 real, 2.21e+06 points.step/s, 15 var
+# Multigrid, 300 steps, 6.59194 CPU, 0.8264 real, 5.95e+06 points.step/s, 15 var
+# Multigrid, 300 steps, 12.8195 CPU, 1.604 real, 1.23e+07 points.step/s, 15 var
+# Multigrid, 300 steps, 41.0347 CPU, 5.131 real, 1.53e+07 points.step/s, 15 var
+# Multigrid, 300 steps, 181.98 CPU, 22.75 real, 1.38e+07 points.step/s, 15 var
+# Multigrid, 300 steps, 868.664 CPU, 108.6 real, 1.16e+07 points.step/s, 15 var
+
+cd ..
+CFLAGS=-DBENCHMARK make lid.gpu.tst
+cd lid.gpu
+
+OpenGL renderer string: Mesa Intel(R) UHD Graphics (TGL GT1) (0x9a60)
+Video memory: 3072MB
+
+for i in 64 128 256 512 1024 2048; do ./lid.gpu $i | grep steps; done
+
+# Multigrid (GPU), 300 steps, 0.77206 CPU, 1.645 real, 7.47e+05 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 0.873143 CPU, 2.017 real, 2.44e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 1.36386 CPU, 4.26 real, 4.62e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 3.32161 CPU, 12.2 real, 6.44e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 6.25396 CPU, 40.75 real, 7.72e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 17.7899 CPU, 182.2 real, 6.91e+06 points.step/s, 17 var
+
+OpenGL renderer string: NVIDIA GeForce RTX 3050 Ti Laptop GPU/PCIe/SSE2
+Dedicated video memory: 4096 MB
+
+for i in 64 128 256 512 1024 2048; do nvidia ./lid.gpu $i | grep steps; done
+
+# Multigrid (GPU), 300 steps, 0.540176 CPU, 0.5402 real, 2.27e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 0.597448 CPU, 0.5975 real, 8.23e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 0.931005 CPU, 0.931 real, 2.11e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 1.99594 CPU, 2.002 real, 3.93e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 6.48733 CPU, 6.488 real, 4.85e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 24.9791 CPU, 24.98 real, 5.04e+07 points.step/s, 17 var
+
+OpenGL renderer string: Quadro RTX 6000/PCIe/SSE2
+Dedicated video memory: 24576 MB
+
+for i in 64 128 256 512 1024 2048; do ./lid.gpu $i | grep steps; done
+
+# Multigrid (GPU), 300 steps, 0.427174 CPU, 0.4272 real, 2.88e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 0.430609 CPU, 0.4306 real, 1.14e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 0.600736 CPU, 0.6008 real, 3.27e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 1.03794 CPU, 1.038 real, 7.58e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 2.47181 CPU, 2.472 real, 1.27e+08 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 8.35382 CPU, 8.354 real, 1.51e+08 points.step/s, 17 var
+
+OpenGL renderer string: NVIDIA GeForce RTX 4090/PCIe/SSE2
+Dedicated video memory: 24564 MB
+
+for i in 64 128 256 512 1024 2048; do ./lid.gpu $i | grep steps; done
+
+# Multigrid (GPU), 300 steps, 0.446156 CPU, 0.4469 real, 2.75e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 0.565475 CPU, 0.5657 real, 8.69e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 0.703262 CPU, 0.7046 real, 2.79e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 0.99029 CPU, 0.994 real, 7.91e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 1.62117 CPU, 1.621 real, 1.94e+08 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 5.04805 CPU, 5.049 real, 2.49e+08 points.step/s, 17 var
+
+OpenGL renderer string: NVIDIA GeForce RTX 4090 D/PCIe/SSE2 (stokes.lmm.jussieu.fr)
+Dedicated video memory: 24564 MB
+
+for i in 64 128 256 512 1024 2048; do ./lid.gpu $i | grep steps; done
+
+# Multigrid (GPU), 300 steps, 0.997049 CPU, 0.9971 real, 1.23e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 1.14402 CPU, 1.144 real, 4.3e+06 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 1.60657 CPU, 1.607 real, 1.22e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 2.2603 CPU, 2.26 real, 3.48e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 3.4422 CPU, 3.442 real, 9.14e+07 points.step/s, 17 var
+# Multigrid (GPU), 300 steps, 7.70925 CPU, 7.709 real, 1.63e+08 points.step/s, 17 var
+~~~

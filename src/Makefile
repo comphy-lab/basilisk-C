@@ -11,7 +11,7 @@ SUBDIRS = darcsit ast kdt wsServer gl
 
 .PHONY: subdirs $(SUBDIRS) $(TOPTARGETS)
 
-all: subdirs qcc literatec bview2D bview3D
+all: subdirs qcc literatec bview2D bview3D bview2Dm
 	@chmod +x ppm2mpeg ppm2mp4 ppm2ogv ppm2gif runtest page2html
 	@test -f xyz2kdt || ln -s kdt/xyz2kdt
 	@test -f kdtquery || ln -s kdt/kdtquery
@@ -25,7 +25,7 @@ $(SUBDIRS):
 literatec:
 	cd darcsit && $(MAKE) && cd cgi-bin && $(MAKE)
 
-qcc: qcc.c include.o postproc.o ast/libast.a config
+qcc: qcc.c include.o postproc.o ast/libast.a config ast/ast.h
 	$(CC) $(CFLAGS) -DLIBDIR=\"`pwd`\" \
 		-DCC99="\"$(CC99)\"" \
 		-DCPP99="\"$(CPP99)\"" \
@@ -54,11 +54,14 @@ postproc.o: postproc.c
 # postproc.c: postproc.lex
 #	flex -P post -o postproc.c postproc.lex
 
-bview2D: qcc bview.c draw_get.h display.h view.h draw.h khash.h
+bview2D: bview.c.tags
 	./qcc $(CFLAGS) -autolink bview.c -o bview2D -lfb_tiny -lm
 
-bview3D: qcc bview.c draw_get.h display.h view.h draw.h khash.h
+bview3D: bview.c.tags
 	./qcc $(CFLAGS) -autolink -grid=octree bview.c -o bview3D -lfb_tiny -lm
+
+bview2Dm: bview.c.tags
+	./qcc $(CFLAGS) -autolink -grid=multigrid bview.c -o bview2Dm -lfb_tiny -lm
 
 alltags:
 	cd navier-stokes && $(MAKE) tags

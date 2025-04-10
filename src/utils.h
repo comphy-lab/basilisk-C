@@ -15,10 +15,12 @@ struct {
   long nc;
   // total number of (leaf) cells advanced for all processes
   long tnc;
-  // real time elapsed since the start
-  double t;
+  // real time elapsed since the start, time of the previous step
+  double t, tp;
   // average computational speed (leaves/sec)
   double speed;
+  // instantaneous computational speed (leaves/sec)
+  double ispeed;
   // global timer
   timer gt;
 } perf = {0};
@@ -32,6 +34,8 @@ void update_perf() {
   perf.tnc += grid->tn;
   perf.t = timer_elapsed (perf.gt);
   perf.speed = perf.tnc/perf.t;
+  perf.ispeed = grid->tn/(perf.t - perf.tp);
+  perf.tp = perf.t;
 }
 
 /**
@@ -58,9 +62,9 @@ processes), this function returns the statistics above. */
 timing timer_timing (timer t, int i, size_t tnc, double * mpi)
 {
   timing s;
-@if _MPI
+#if _MPI
   s.avg = mpi_time - t.tm;
-@endif
+#endif
   clock_t end = clock();
   s.cpu = ((double) (end - t.c))/CLOCKS_PER_SEC;
   s.real = timer_elapsed (t);
@@ -72,14 +76,14 @@ timing timer_timing (timer t, int i, size_t tnc, double * mpi)
   }
   else
     s.tnc = tnc;
-@if _GNU_SOURCE
+#if _GNU_SOURCE
   struct rusage usage;
   getrusage (RUSAGE_SELF, &usage);
   s.mem = usage.ru_maxrss;
-@else
+#else
   s.mem = 0;
-@endif
-@if _MPI
+#endif
+#if _MPI
   if (mpi)
     MPI_Allgather (&s.avg, 1, MPI_DOUBLE, mpi, 1, MPI_DOUBLE, MPI_COMM_WORLD);
   s.max = s.min = s.avg;
@@ -91,9 +95,9 @@ timing timer_timing (timer t, int i, size_t tnc, double * mpi)
   s.real /= npe();
   s.avg /= npe();
   s.mem /= npe();
-@else
+#else
   s.min = s.max = s.avg = 0.;
-@endif
+#endif
   s.speed = s.real > 0. ? tnc/s.real : -1.;
   return s;
 }
@@ -103,12 +107,15 @@ This function writes timing statistics on standard output. */
 
 void timer_print (timer t, int i, size_t tnc)
 {
+#if _GPU
+  glFinish(); // make sure rendering is done on the GPU
+#endif
   timing s = timer_timing (t, i, tnc, NULL);
   fprintf (fout,
 	   "\n# " GRIDNAME 
 	   ", %d steps, %g CPU, %.4g real, %.3g points.step/s, %d var\n",
-	   i, s.cpu, s.real, s.speed, (int) (datasize/sizeof(double)));
-@if _MPI
+	   i, s.cpu, s.real, s.speed, (int) (datasize/sizeof(real)));
+#if _MPI
   fprintf (fout,
 	   "# %d procs, MPI: min %.2g (%.2g%%) "
 	   "avg %.2g (%.2g%%) max %.2g (%.2g%%)\n",
@@ -116,7 +123,8 @@ void timer_print (timer t, int i, size_t tnc)
 	   s.min, 100.*s.min/s.real,
 	   s.avg, 100.*s.avg/s.real,
 	   s.max, 100.*s.max/s.real);
-@endif
+#endif
+  fflush (stdout);
 }
 
 /**
@@ -331,96 +339,53 @@ vector lookup_vector (const char * name)
 }
 
 /**
-The function below traverses the set of sub-segments intersecting the
+The macro below traverses the set of sub-segments intersecting the
 mesh and spanning the [A:B] segment. The pair of coordinates defining
 the sub-segment contained in each cell are defined by `p[0]` and
 `p[1]`. */
 
-#if 1 // fixme: foreach_dimension() does not work anymore within macros
-@def foreach_segment(_S,_p) {
-  coord t = {(_S)[1].x - (_S)[0].x, (_S)[1].y - (_S)[0].y};
-  double norm = sqrt(sq(t.x) + sq(t.y));
-  assert (norm > 0.);
-  t.x = t.x/norm + 1e-6, t.y = t.y/norm - 1.5e-6;
-  double alpha = ((_S)[0].x*((_S)[1].y - (_S)[0].y) -
-		  (_S)[0].y*((_S)[1].x - (_S)[0].x))/norm;
-  foreach()
-    if (fabs(t.y*x - t.x*y - alpha) < 0.708*Delta) {
-      coord _o = {x,y}, _p[2];
-      int _n = 0;
-	if (t.x)
-	  for (int _i = -1; _i <= 1 && _n < 2; _i += 2) {
-	    _p[_n].x = _o.x + _i*Delta/2.;
-	    double a = (_p[_n].x - (_S)[0].x)/t.x;
-	    _p[_n].y = (_S)[0].y + a*t.y;
-	    if (fabs(_p[_n].y - _o.y) <= Delta/2.) {
-	      a = clamp (a, 0., norm);
-	      _p[_n].x = (_S)[0].x + a*t.x, _p[_n].y = (_S)[0].y + a*t.y;
-	      if (fabs(_p[_n].x - _o.x) <= Delta/2. &&
-		  fabs(_p[_n].y - _o.y) <= Delta/2.)
-		_n++;
+macro foreach_segment (coord S[2], coord p[2], Reduce reductions = None)
+{
+  double norm = sqrt(sq(S[1].x - S[0].x) + sq(S[1].y - S[0].y));
+  if (norm > 0.) {
+    coord t = {(S[1].x - S[0].x)/norm + 1e-6, (S[1].y - S[0].y)/norm - 1.5e-6};
+    double alpha = S[0].x*t.y - S[0].y*t.x;
+    foreach (reductions)
+      if (fabs(t.y*x - t.x*y - alpha) < 0.708*Delta_x) {
+	coord _o = {x,y}, p[2];
+	int _n = 0;
+	foreach_dimension()
+	  if (t.x)
+	    for (int _i = -1; _i <= 1 && _n < 2; _i += 2) {
+	      p[_n].x = _o.x + _i*Delta_x/2.;
+	      double a = (p[_n].x - S[0].x)/t.x;
+	      p[_n].y = S[0].y + a*t.y;
+	      if (fabs(p[_n].y - _o.y) <= Delta_x/2.) {
+		a = clamp (a, 0., norm);
+		p[_n].x = S[0].x + a*t.x, p[_n].y = S[0].y + a*t.y;
+		if (fabs(p[_n].x - _o.x) <= Delta_x/2. &&
+		    fabs(p[_n].y - _o.y) <= Delta_x/2.)
+		  _n++;
+	      }
 	    }
-	  }
-#if dimension > 1	
-	if (t.y)
-	  for (int _i = -1; _i <= 1 && _n < 2; _i += 2) {
-	    _p[_n].y = _o.y + _i*Delta/2.;
-	    double a = (_p[_n].y - (_S)[0].y)/t.y;
-	    _p[_n].x = (_S)[0].x + a*t.x;
-	    if (fabs(_p[_n].x - _o.x) <= Delta/2.) {
-	      a = clamp (a, 0., norm);
-	      _p[_n].y = (_S)[0].y + a*t.y, _p[_n].x = (_S)[0].x + a*t.x;
-	      if (fabs(_p[_n].y - _o.y) <= Delta/2. &&
-		  fabs(_p[_n].x - _o.x) <= Delta/2.)
-		_n++;
-	    }
-	  }
-#endif
-      if (_n == 2) {
-@
-#else
-@def foreach_segment(_S,_p) {
-  coord t = {(_S)[1].x - (_S)[0].x, (_S)[1].y - (_S)[0].y};
-  double norm = sqrt(sq(t.x) + sq(t.y));
-  assert (norm > 0.);
-  t.x = t.x/norm + 1e-6, t.y = t.y/norm - 1.5e-6;
-  double alpha = ((_S)[0].x*((_S)[1].y - (_S)[0].y) -
-		  (_S)[0].y*((_S)[1].x - (_S)[0].x))/norm;
-  foreach()
-    if (fabs(t.y*x - t.x*y - alpha) < 0.708*Delta) {
-      coord _o = {x,y}, _p[2];
-      int _n = 0;
-      foreach_dimension()
-	if (t.x)
-	  for (int _i = -1; _i <= 1 && _n < 2; _i += 2) {
-	    _p[_n].x = _o.x + _i*Delta/2.;
-	    double a = (_p[_n].x - (_S)[0].x)/t.x;
-	    _p[_n].y = (_S)[0].y + a*t.y;
-	    if (fabs(_p[_n].y - _o.y) <= Delta/2.) {
-	      a = clamp (a, 0., norm);
-	      _p[_n].x = (_S)[0].x + a*t.x, _p[_n].y = (_S)[0].y + a*t.y;
-	      if (fabs(_p[_n].x - _o.x) <= Delta/2. &&
-		  fabs(_p[_n].y - _o.y) <= Delta/2.)
-		_n++;
-	    }
-	  }
-      if (_n == 2) {
-@
-#endif  
-@define end_foreach_segment() } } end_foreach(); }
+	if (_n == 2)
+	  {...}
+      }
+  }
+}
 
 /**
 This function returns a summary of the currently-defined fields. */
 
-void fields_stats()
+void fields_stats (scalar * list = all)
 {
   fprintf (ferr, "# t = %g, fields = {", t);
-  for (scalar s in all)
+  for (scalar s in list)
     fprintf (ferr, " %s", s.name);
   fputs (" }\n", ferr);
   fprintf (ferr, "# %12s: %12s %12s %12s %12s\n",
 	   "name", "min", "avg", "stddev", "max");
-  for (scalar s in all) {
+  for (scalar s in list) {
     stats ss = statsf (s);
     fprintf (ferr, "# %12s: %12g %12g %12g %12g\n",
 	     s.name, ss.min, ss.sum/ss.volume, ss.stddev, ss.max);

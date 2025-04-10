@@ -52,7 +52,7 @@ double e1, e2, omega, Amp;
 We define the *flux* function required by the [generic
 solver](/src/conservation.h). */
 
-void flux (const double * s, double * f, double e[2])
+void flux (const double * s, double * f, double * e)
 {  
   double a = s[0], q = s[1], u = q/a;
   f[0] = q;

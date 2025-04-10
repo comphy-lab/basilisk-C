@@ -26,6 +26,7 @@ instructions](https://gotm.net/software/linux/) for details but
 otherwise follow this recipe:
 
 ~~~bash
+sudo apt install libnetcdff-dev
 wget https://github.com/gotm-model/code/archive/v5.2.1.tar.gz
 tar xzvf v5.2.1.tar.gz
 cd code-5.2.1/src

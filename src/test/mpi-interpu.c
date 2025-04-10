@@ -14,6 +14,7 @@ int main (int argc, char ** argv)
 {
   int maxlevel = argc > 1 ? atoi(argv[1]) : 6;
   int minlevel = argc > 2 ? atoi(argv[2]) : 5;
+  size (1[0]);
   origin (-1, -1);
   init_grid (1);
 

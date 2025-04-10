@@ -101,6 +101,26 @@ event above.
 
 This can also be automated using [continuous monitoring](profiling.h).
 
+# NVTX
+
+https://github.com/NVIDIA/NVTX
+
+Install
+
+~~~bash
+git clone https://github.com/NVIDIA/NVTX.git
+~~~
+
+[NVTX C API Reference](https://nvidia.github.io/NVTX/doxygen/index.html)
+
+~~~bash
+cd src/test/
+CFLAGS='-DTRACE=2 -DNVTX -I/home/popinet/local/src/NVTX/c/include' make advection.gpu.tst
+cd advection.gpu/
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia nsys profile ./advection.gpu 2048
+nsys-ui report*.nsys-rep
+~~~
+
 # See also
 
 * [Built-in memory profiling](README.mtrace)

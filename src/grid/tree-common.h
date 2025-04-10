@@ -316,25 +316,28 @@ astats adapt_wavelet (scalar * slist,       // list of scalars
   return st;
 }
 
-#define refine(cond) do {			                        \
-  int refined;								\
-  do {									\
-    boundary (all);							\
-    refined = 0;							\
-    tree->refined.n = 0;						\
-    foreach_leaf()							\
-      if (cond) {							\
-	refine_cell (point, all, 0, &tree->refined);			\
-	refined++;							\
-	continue;							\
-      }									\
-    mpi_all_reduce (refined, MPI_INT, MPI_SUM);				\
-    if (refined) {							\
-      mpi_boundary_refine (all);					\
-      mpi_boundary_update (all);					\
-    }									\
-  } while (refined);							\
-} while(0)
+macro refine (bool cond)
+{
+  {
+    int refined;
+    do {
+      boundary (all);
+      refined = 0;
+      tree->refined.n = 0;
+      foreach_leaf()
+	if (cond) {
+	  refine_cell (point, all, 0, &tree->refined);
+	  refined++;
+	  continue;
+	}
+      mpi_all_reduce (refined, MPI_INT, MPI_SUM);
+      if (refined) {
+	mpi_boundary_refine (all);
+	mpi_boundary_update (all);
+      }
+    } while (refined);
+  }
+}
 
 static void refine_level (int depth)
 {
@@ -356,30 +359,33 @@ static void refine_level (int depth)
   } while (refined);
 }
 
-#define unrefine(cond) do {						\
-  static const int too_fine = 1 << user;			        \
-  foreach_cell() {							\
-    if (is_leaf(cell))							\
-      continue;								\
-    if (is_local(cell) && (cond))					\
-      cell.flags |= too_fine;						\
-  }									\
-  for (int _l = depth(); _l >= 0; _l--) {				\
-    foreach_cell() {							\
-      if (is_leaf(cell))						\
-	continue;							\
-      if (level == _l) {						\
-	if (is_local(cell) && (cell.flags & too_fine)) {		\
-	  coarsen_cell (point, all);					\
-	  cell.flags &= ~too_fine;					\
-	}								\
-	continue;							\
-      }									\
-    }									\
-    mpi_boundary_coarsen (_l, too_fine);				\
-  }									\
-  mpi_boundary_update (all);						\
-} while (0)
+macro unrefine (bool cond)
+{
+  {
+    static const int too_fine = 1 << user;
+    foreach_cell() {
+      if (is_leaf(cell))
+	continue;
+      if (is_local(cell) && (cond))
+	cell.flags |= too_fine;
+    }
+    for (int _l = depth(); _l >= 0; _l--) {
+      foreach_cell() {
+	if (is_leaf(cell))
+	  continue;
+	if (level == _l) {
+	  if (is_local(cell) && (cell.flags & too_fine)) {
+	    coarsen_cell (point, all);
+	    cell.flags &= ~too_fine;
+	  }
+	  continue;
+	}
+      }
+      mpi_boundary_coarsen (_l, too_fine);
+    }
+    mpi_boundary_update (all);
+  }
+}
 
 trace
 static void halo_face (vectorl vl)
@@ -707,7 +713,7 @@ static void tree_boundary_level (scalar * list, int l)
   if (listdef || listc) {
     boundary_iterate (restriction, list2, depth);
     for (int l = depth - 1; l >= 0; l--) {
-      foreach_coarse_level(l) {
+      foreach_coarse_level(l, nowarning) {
 	for (scalar s in listdef)
 	  restriction_average (point, s);
 	for (scalar s in listc)

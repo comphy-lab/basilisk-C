@@ -258,8 +258,8 @@ static void sweep_x (scalar c, scalar cc, scalar * tcl)
 
   if (cfl > 0.5 + 1e-6)
     fprintf (ferr, 
-	     "WARNING: CFL must be <= 0.5 for VOF (cfl - 0.5 = %g)\n", 
-	     cfl - 0.5), fflush (ferr);
+	     "src/vof.h:%d: warning: CFL must be <= 0.5 for VOF (cfl - 0.5 = %g)\n", 
+	     LINENO, cfl - 0.5), fflush (ferr);
 
   /**
   Once we have computed the fluxes on all faces, we can update the
@@ -302,14 +302,14 @@ static void sweep_x (scalar c, scalar cc, scalar * tcl)
   
   foreach()
     if (cs[] > 0.) {
-      c[] += dt*(flux[] - flux[1] + cc[]*(uf.x[1] - uf.x[]))/Delta;
+      c[] += dt*cs[]*(flux[] - flux[1] + cc[]*(uf.x[1] - uf.x[]))/(cm[]*Delta);
 #if NO_1D_COMPRESSION
       for (t, tflux in tracers, tfluxl)
-	t[] += dt*(tflux[] - tflux[1])/Delta;
+	t[] += dt*cs[]*(tflux[] - tflux[1])/(cm[]*Delta);
 #else // !NO_1D_COMPRESSION
       scalar t, tc, tflux;
       for (t, tc, tflux in tracers, tcl, tfluxl)
-	t[] += dt*(tflux[] - tflux[1] + tc[]*(uf.x[1] - uf.x[]))/Delta;
+	t[] += dt*cs[]*(tflux[] - tflux[1] + tc[]*(uf.x[1] - uf.x[]))/(cm[]*Delta);
 #endif // !NO_1D_COMPRESSION
     }
 #endif // EMBED

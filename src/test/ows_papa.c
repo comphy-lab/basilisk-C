@@ -244,6 +244,7 @@ void init_profile (Point point, const char * fname,
     zc += h[]/2.;
     int i;
     for (i = 1; i < n && zd[i] >= zc; i++);
+    assert (i > 0 && i < n);
     if (i < n)
       s[] = (od[i-1]*(zd[i] - zc) + od[i]*(zc - zd[i-1]))/(zd[i] - zd[i-1]);
     else
