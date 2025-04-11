@@ -52,6 +52,16 @@ Comprehensive documentation is available at [basilisk.fr](http://basilisk.fr), i
 
 For tips on installing Darcs and resolving common issues, please refer to our [Tips.md](Tips.md) file.
 
+### Reporting Issues
+
+We use GitHub Issues to track bugs, installation problems, and feature requests. Please use the appropriate template when creating a new issue:
+
+- [Report a Bug](https://github.com/comphy-lab/basilisk-C/issues/new?template=bug_report.md)
+- [Report an Installation Issue](https://github.com/comphy-lab/basilisk-C/issues/new?template=installation_issue.md)
+- [Request a Feature](https://github.com/comphy-lab/basilisk-C/issues/new?template=feature_request.md)
+- [Report a Generic Issue](https://github.com/comphy-lab/basilisk-C/issues/new?template=generic_issue.md)
+- To discuss with the Basilisk C community, please join the [Google group](https://groups.google.com/d/forum/basilisk-fr).
+
 ### Contributing
 
 While this is a fork maintained for tracking specific issues, we welcome contributions that help improve the codebase. Please ensure your contributions align with the main Basilisk project's coding standards and practices.

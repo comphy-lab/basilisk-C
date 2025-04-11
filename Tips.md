@@ -64,4 +64,4 @@ We've set up a GitHub Actions workflow to automatically sync this repository wit
 4. Pulls all changes from the Darcs repository
 5. Commits and pushes any changes to GitHub
 
-The workflow file is located at `.github/workflows/sync-darcs.yml`. 
+The workflow file is located at `.github/workflows/sync-darcs.yml`.
