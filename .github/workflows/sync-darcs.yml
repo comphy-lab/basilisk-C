@@ -16,16 +16,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install GHC and Cabal
+      - name: Install Darcs from Ubuntu package
         run: |
+          # Try to install Darcs from Ubuntu package first
           sudo apt-get update
-          sudo apt-get install -y ghc cabal-install
-
-      - name: Install Darcs
-        run: |
-          cabal update
-          cabal install darcs
-          echo "$HOME/.cabal/bin" >> $GITHUB_PATH
+          sudo apt-get install -y darcs || true
+          
+          # If that fails, try installing from source with specific Cabal version
+          if ! command -v darcs &> /dev/null; then
+            echo "Installing Darcs from source..."
+            sudo apt-get install -y ghc cabal-install
+            cabal update
+            
+            # Try different versions of Darcs
+            for version in 2.16.5 2.14.2 2.12.5 2.10.2; do
+              echo "Trying Darcs version $version..."
+              if cabal install darcs-$version; then
+                echo "Successfully installed Darcs $version"
+                break
+              fi
+            done
+            
+            echo "$HOME/.cabal/bin" >> $GITHUB_PATH
+          fi
 
       - name: Configure Git
         run: |
