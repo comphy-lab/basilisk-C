@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Basilisk Community
+    url: https://groups.google.com/forum/#!forum/basilisk-fr
+    about: Please ask and answer questions here.
+  - name: Basilisk Documentation
+    url: http://basilisk.fr
+    about: Check the official documentation for answers to common questions. 

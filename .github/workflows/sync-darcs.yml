@@ -16,10 +16,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Darcs
+      - name: Install GHC and Cabal
         run: |
           sudo apt-get update
-          sudo apt-get install -y darcs
+          sudo apt-get install -y ghc cabal-install
+
+      - name: Install Darcs
+        run: |
+          cabal update
+          cabal install darcs
+          echo "$HOME/.cabal/bin" >> $GITHUB_PATH
 
       - name: Configure Git
         run: |
