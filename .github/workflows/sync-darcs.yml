@@ -16,28 +16,44 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Darcs from Ubuntu package
+      - name: Install Darcs
         run: |
-          # Try to install Darcs from Ubuntu package first
-          sudo apt-get update
-          sudo apt-get install -y darcs || true
+          echo "Installing Darcs following official methods from darcs.net..."
           
-          # If that fails, try installing from source with specific Cabal version
-          if ! command -v darcs &> /dev/null; then
-            echo "Installing Darcs from source..."
+          # Method 1: Install using Stack (preferred method according to darcs.net)
+          echo "Installing Stack..."
+          curl -sSL https://get.haskellstack.org/ | sh
+          
+          echo "Installing Darcs with Stack..."
+          stack install darcs
+          export PATH="$HOME/.local/bin:$PATH"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          
+          # Check if Darcs was installed successfully
+          if command -v darcs &> /dev/null; then
+            echo "Darcs installed successfully using Stack"
+            darcs --version
+          else
+            echo "Stack installation failed, trying with Cabal..."
+            
+            # Method 2: Install using Cabal as fallback
+            sudo apt-get update
             sudo apt-get install -y ghc cabal-install
             cabal update
             
-            # Try different versions of Darcs
-            for version in 2.16.5 2.14.2 2.12.5 2.10.2; do
-              echo "Trying Darcs version $version..."
-              if cabal install darcs-$version; then
-                echo "Successfully installed Darcs $version"
-                break
-              fi
-            done
-            
+            echo "Installing Darcs with Cabal..."
+            cabal install darcs
+            export PATH="$HOME/.cabal/bin:$PATH"
             echo "$HOME/.cabal/bin" >> $GITHUB_PATH
+            
+            # Verify installation
+            if command -v darcs &> /dev/null; then
+              echo "Darcs installed successfully using Cabal"
+              darcs --version
+            else
+              echo "Failed to install Darcs. Exiting."
+              exit 1
+            fi
           fi
 
       - name: Configure Git
