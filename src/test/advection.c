@@ -34,13 +34,13 @@ plot 'log' u 1:4 t 'max', 'log' u 1:2 t 'norm1', \
 ~~~
 */
 
-#include "grid/cartesian.h"
+#include "grid/multigrid.h"
 #include "advection.h"
 
 scalar f[];
 scalar * tracers = {f};
 
-int main()
+int main (int argc, char * argv[])
 {
   // coordinates of lower-left corner
   size (1.[0]); // dimensionless
@@ -49,7 +49,7 @@ int main()
   DT = .1;
   // CFL number
   CFL = 0.8;
-  for (N = 64; N <= 256; N *= 2)
+  for (N = 64; N <= (argc == 1 ? 256 : atoi(argv[1])); N *= 2)
     run();
 }
 
@@ -66,7 +66,7 @@ event velocity (i++) {
   foreach_vertex()
     psi[] = - 1.5*sin(2.*pi*t/5.)*sin((x + 0.5)*pi)*sin((y + 0.5)*pi)/pi;
   trash ({u});
-  struct { double x, y; } f = {-1.,1.};
+  coord f = {-1.,1.};
   foreach_face()
     u.x[] = f.x*(psi[0,1] - psi[])/Delta;
 }
@@ -86,3 +86,16 @@ event field (t = 5) {
   if (N == 256)
     output_field ({e}, stdout, N);
 }
+
+#if 0 // Uncomment for real-time display when running on GPUs
+event display (i++)
+{
+  output_ppm (f, fps = 30, map = jet, spread = -1, linear = false, n = 512);
+}
+#endif
+
+/**
+## See also
+
+[Benchmark on GPUs](/src/grid/gpu/Benchmarks.md#time-reversed-advection-in-a-vortex)
+*/

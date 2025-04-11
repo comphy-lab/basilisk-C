@@ -249,14 +249,14 @@ void mem_assign (Memindex m, int i, int j, int k, int len, void * b)
 The `mem_free()` function frees a given index. */
 
 #if dimension == 1
-void mem_free (Memindex m, int i, int len)
+void mem_free (Memindex m, int i, int len, void * b)
 {
   Memalloc mem[] = {{(void **)&m->b, sizeof(char *)},
 		    {NULL}};
   memrange_free (&m->r1, mem, i);
 }
 #elif dimension == 2
-void mem_free (Memindex m, int i, int j, int len)
+void mem_free (Memindex m, int i, int j, int len, void * b)
 {
   Memalloc mem[] = {{(void **)&m->b[i], sizeof(char *)},
 		    {NULL}};
@@ -268,7 +268,7 @@ void mem_free (Memindex m, int i, int j, int len)
   }
 }
 #else // dimension == 3
-void mem_free (Memindex m, int i, int j, int k, int len)
+void mem_free (Memindex m, int i, int j, int k, int len, void * b)
 {
   Memalloc mem[] = {{(void **)&m->b[i][j], sizeof(char *)},		    
 		    {NULL}};
@@ -293,42 +293,48 @@ array `_m` taking into account a periodicity of `_len` (and ghost
 cells). */
 
 #if dimension == 1
-@def foreach_mem(_m, _len, _i) {
+macro foreach_mem (struct _Memindex * index, int len, int _i) {
+  struct _Memindex * _m = index;
+  int _len = len;
   Point point = {0};
-  for (point.i = max(Period.x*GHOSTS, (_m)->r1.start);
-       point.i < min(_len - Period.x*GHOSTS, (_m)->r1.end);
+  for (point.i = max(Period.x*GHOSTS, _m->r1.start);
+       point.i < min(_len - Period.x*GHOSTS, _m->r1.end);
        point.i += _i)
-    if ((_m)->b[point.i]) {
-@
-@define end_foreach_mem() }}
+    if (_m->b[point.i])
+      {...}
+}
 #elif dimension == 2
-@def foreach_mem(_m, _len, _i) {
+macro foreach_mem (struct _Memindex * index, int len, int _i) {
+  struct _Memindex * _m = index;
+  int _len = len;
   Point point = {0};
-  for (point.i = max(Period.x*GHOSTS, (_m)->r1.start);
-       point.i < min(_len - Period.x*GHOSTS, (_m)->r1.end);
+  for (point.i = max(Period.x*GHOSTS, _m->r1.start);
+       point.i < min(_len - Period.x*GHOSTS, _m->r1.end);
        point.i += _i)
-    if ((_m)->b[point.i])
-      for (point.j = max(Period.y*GHOSTS, (_m)->r2[point.i].start);
-	   point.j < min(_len - Period.y*GHOSTS, (_m)->r2[point.i].end);
+    if (_m->b[point.i])
+      for (point.j = max(Period.y*GHOSTS, _m->r2[point.i].start);
+	   point.j < min(_len - Period.y*GHOSTS, _m->r2[point.i].end);
 	   point.j += _i)
-	if ((_m)->b[point.i][point.j]) {
-@
-@define end_foreach_mem() }}
+	if (_m->b[point.i][point.j])
+	  {...}
+}
 #else // dimension == 3
-@def foreach_mem(_m, _len, _i) {
+macro foreach_mem (struct _Memindex * index, int len, int _i) {
+  struct _Memindex * _m = index;
+  int _len = len;
   Point point = {0};
-  for (point.i = max(Period.x*GHOSTS, (_m)->r1.start);
-       point.i < min(_len - Period.x*GHOSTS, (_m)->r1.end);
+  for (point.i = max(Period.x*GHOSTS, _m->r1.start);
+       point.i < min(_len - Period.x*GHOSTS, _m->r1.end);
        point.i += _i)
-    if ((_m)->b[point.i])
-      for (point.j = max(Period.y*GHOSTS, (_m)->r2[point.i].start);
-	   point.j < min(_len - Period.y*GHOSTS, (_m)->r2[point.i].end);
+    if (_m->b[point.i])
+      for (point.j = max(Period.y*GHOSTS, _m->r2[point.i].start);
+	   point.j < min(_len - Period.y*GHOSTS, _m->r2[point.i].end);
 	   point.j += _i)
-	if ((_m)->b[point.i][point.j])
-	  for (point.k = max(Period.z*GHOSTS, (_m)->r3[point.i][point.j].start);
-	       point.k < min(_len - Period.z*GHOSTS, (_m)->r3[point.i][point.j].end);
+	if (_m->b[point.i][point.j])
+	  for (point.k = max(Period.z*GHOSTS, _m->r3[point.i][point.j].start);
+	       point.k < min(_len - Period.z*GHOSTS, _m->r3[point.i][point.j].end);
 	       point.k += _i)
-	    if ((_m)->b[point.i][point.j][point.k]) {
-@
-@define end_foreach_mem() }}
+	    if (_m->b[point.i][point.j][point.k])
+	      {...}
+}
 #endif // dimension == 3

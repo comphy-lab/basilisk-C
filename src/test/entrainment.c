@@ -116,8 +116,7 @@ int main()
   /**
   The surface wind stress is constant. */
   
-  const vector tau_w[] = { 0.1027 };
-  airsea_tau = tau_w;
+  airsea_tau[] = { 0.1027 };
 
   meanflow_maxitz0b = 1;	// default = 10
 

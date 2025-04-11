@@ -45,6 +45,11 @@ event tracer_advection (i++,last) {
 }
 
 /**
+VOF advection happens here. */
+
+event vof (i++, last);
+
+/**
 Diffusion can be added by overloading this hook. */
 
 event tracer_diffusion (i++,last);

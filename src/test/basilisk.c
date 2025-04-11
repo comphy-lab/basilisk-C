@@ -83,7 +83,7 @@ pstoedit -f gnuplot -flat 0.1 basilisk.eps basilisk.gnu
     tt[] = d[] < 0;
   int n = tag (tt);
   output_ppm (tt, file = "tag.png", n = 512, box = {{-5,-5},{100,30}},
-	      map = randomap, min = 0, max = n);
+	      map = randomap, min = 0, max = n, checksum = stderr);
   assert (n == 8);
 
   /**
@@ -120,7 +120,7 @@ pstoedit -f gnuplot -flat 0.1 basilisk.eps basilisk.gnu
   for (double val = -20; val <= 20; val += 2.)
     isoline ("phi", val, lw = 0.5);
   squares ("level", min = 2, max = 12);
-  save ("mesh.png");
+  save ("mesh.png", checksum = stderr);
 
   /**
   ![Adaptive mesh and isolines of distance function.](basilisk/mesh.png)
@@ -133,7 +133,7 @@ pstoedit -f gnuplot -flat 0.1 basilisk.eps basilisk.gnu
   view (fov = 1.64446, tx = -0.309322, ty = -0.0840683,
 	width = 449, height = 303);
   draw_vof ("f", "s");
-  save ("self.png");
+  save ("self.png", checksum = stderr);
   
   /**
   ![The input curve represented through its 

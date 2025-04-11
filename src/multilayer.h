@@ -139,7 +139,7 @@ void vertical_viscosity (Point point, double h, vector * ul, double dt)
     $$
     */
 
-    a[nl-1] = - 2.*nu*dt/(h*(layer[nl-2] + layer[nl-1]));
+    a[nl-1] = - 2.*nu*dt/(h*(layer[max(0,nl-2)] + layer[nl-1]));
     b[nl-1] = layer[nl-1]*h - a[nl-1];
     rhs[nl-1] += nu*dt*dut[];
 
@@ -161,7 +161,7 @@ void vertical_viscosity (Point point, double h, vector * ul, double dt)
     $$
     */
 
-    c[0] = - 2.*dt*nu/(h*(layer[0] + layer[1]));
+    c[0] = - 2.*dt*nu/(h*(layer[0] + layer[min(1,nl-1)]));
     b[0] = layer[0]*h - c[0] + 2.*nu*dt/(2.*lambda_b[] + h*layer[0]);
     rhs[0] += 2.*nu*dt/(2.*lambda_b[] + h*layer[0])*u_b[];
     

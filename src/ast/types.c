@@ -11,7 +11,8 @@ AstTerminal
   ast_void = { {sym_VOID}, .start = "ast_void", .file = __FILE__, .line = __LINE__ },
   ast_float = { {sym_FLOAT}, .start = "ast_float", .file = __FILE__, .line = __LINE__ },
   ast_double = { {sym_DOUBLE}, .start = "ast_double", .file = __FILE__, .line = __LINE__ },
-  ast_function = { {sym_function_definition}, .start = "ast_function", .file = __FILE__, .line = __LINE__ };
+  ast_function = { {sym_function_definition}, .start = "ast_function", .file = __FILE__, .line = __LINE__ },
+  ast_bool = { {sym_BOOL}, .start = "ast_bool", .file = __FILE__, .line = __LINE__ };
 
 Ast * ast_base_type (Ast * type, AstDimensions * d, Stack * stack)
 {

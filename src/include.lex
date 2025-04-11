@@ -41,9 +41,9 @@
   static FILE * fdepend = NULL, * ftags = NULL, * myout = NULL;
   static char * fname;
   
-  static char * paths[100] = { LIBDIR }, grid[80] = "quadtree";
+  static char * paths[100] = { LIBDIR }, grid[80] = "";
   static int npath = 1, hasgrid = 0, debug = 0;
-  static int dimension = 0, bghosts = 0, layers = 0;
+  static int dimension = 0, bghosts = 0, layers = 0, gpu = 0;
   static int incode;    // are we in code (or in a code block)?
   
   static char * strip_path (char * s) {
@@ -280,11 +280,19 @@ FDECL     {ID}+{SP}*\(
 
 ^{SP}*#{SP}*define{SP}+GRIDNAME{WS}+ {
     echo();
-    hasgrid = 1;
-    char * s = fname;
-    while (strchr (s, '/')) s = strchr (s, '/') + 1;
-    strcpy (grid, s);
-    if ((s = strchr (grid, '.'))) *s = '\0';
+    if (grid[0] == '\0' && !hasgrid) {
+      hasgrid = 1;
+      char * s = fname;
+      while (strchr (s, '/')) {
+	s = strchr (s, '/') + 1;
+	if (!strncmp (s, "grid/", 5)) {
+	  s += 5;
+	  break;
+	}
+      }
+      strcpy (grid, s);
+      if ((s = strchr (grid, '.'))) *s = '\0';
+    }
 }
 
 ^{SP}*#{SP}*define{SP}+dimension{WS}+[123]{SP}*$ {
@@ -297,6 +305,10 @@ FDECL     {ID}+{SP}*\(
   char * s = strstr (yytext, "BGHOSTS");
   space(s); nonspace(s);
   bghosts = atoi(s);
+}
+
+^{SP}*#{SP}*define{SP}+_GPU{WS}+1{SP}*$ {
+  gpu = 1;
 }
 
 ^{SP}*#{SP}*define{SP}+LAYERS{WS}+1{SP}*$ {
@@ -560,7 +572,7 @@ static void prepend_path (char * path)
 
 void includes (int argc, char ** argv,
 	       char ** grid1, int * default_grid,
-	       int * dim, int * bg, int * lyrs,
+	       int * dim, int * bg, int * lyrs, int * gpus,
 	       const char * dir)
 {
   int depend = 0, tags = 0, swig = 0;
@@ -672,7 +684,7 @@ void includes (int argc, char ** argv,
     compdir (file, dir);
     if (!hasgrid && is_code (file)) {
       char * path, gridpath[80] = "grid/";
-      strcat (gridpath, grid); strcat (gridpath, ".h");
+      strcat (gridpath, grid[0] != '\0' ? grid : "quadtree"); strcat (gridpath, ".h");
       FILE * fp = openpath (gridpath, "r", &path);
       if (!fp) {
 	fprintf (stderr, "include: invalid grid '%s': ", grid);
@@ -719,6 +731,7 @@ void includes (int argc, char ** argv,
     *dim = dimension;
   *bg = bghosts;
   *lyrs = layers;
+  *gpus = gpu;
   free (basilisk_include_path);
   free_allocator (alloc);
 }

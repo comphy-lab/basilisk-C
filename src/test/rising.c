@@ -13,6 +13,7 @@ axisymmetric or planar version. We can used standard or "reduced"
 gravity. We also test levelset interface tracking and a momentum
 formulation. */
 
+#include "grid/multigrid.h"
 #if AXIS
 # include "axi.h" // fixme: does not run with -catch
 #endif
@@ -20,6 +21,9 @@ formulation. */
 # include "momentum.h"
 #else
 #include "navier-stokes/centered.h"
+#if CASE2
+# define FILTERED 1
+#endif
 #if CLSVOF
 # include "two-phase-clsvof.h"
 #elif LEVELSET
@@ -59,6 +63,7 @@ int main() {
   The domain will span $[0:2]\times[0:0.5]$ and will be resolved with
   $256\times 64$ grid points. */
 
+  dimensions (nx = 4);
   size (2 [1]);
   DT = 1. [0,1];
   init_grid (1 << LEVEL);
@@ -67,7 +72,7 @@ int main() {
   Hysing et al. consider two cases (1 and 2), with the densities, dynamic
   viscosities and surface tension of fluid 1 and 2 given below. */
 
-  rho1 = 1000.[0], mu1 = 10.;  // works also with rho1 = [-3,0,1]
+  rho1 = 1000.[0], mu1 = 10.;  // works also with rho1 = 1000.[-3,0,1]
 #if CASE2
   rho2 = 1., mu2 = 0.1;
 #else
@@ -102,11 +107,6 @@ int main() {
 }
 
 event init (t = 0) {
-
-  /**
-  The domain is a rectangle. We only simulate half the bubble. */
-  
-  mask (y > 0.5 ? top : none);
 
   /**
   The bubble is centered on (0.5,0) and has a radius of 0.25. */
@@ -181,6 +181,15 @@ At $t=3$ we output the shape of the bubble. */
 event interface (t = 3.) {
   output_facets (f, stderr);
 }
+
+#if _GPU && SHOW
+event display (i++) {
+  output_ppm (f, fp = NULL, fps = 30, spread = -1, n = 1024);
+  scalar omega[];
+  vorticity (u, omega);
+  output_ppm (omega, fp = NULL, fps = 30, spread = 6, n = 1024);
+}
+#endif
 
 #if ADAPT
 event adapt (i++) {

@@ -18,7 +18,9 @@
   icons for the web pages (from
   [gitit](http://hackage.haskell.org/package/gitit))
 * [Stéphane Popinet](/sandbox/popinet/README)
-* Clément Robert: [Galilean invariance test](test/galilean_invariance.c)
+* Clément Robert: [Galilean invariance
+  test](test/galilean_invariance.c), [Surface tension for the
+  multilayer solver](layered/hydro-tension.h)
 * [Youssef Saadeh](/sandbox/ysaade/README): [Spherically-symmetric
   coordinates](spherisym.h), [thermal effects for the two-phase
   compressible solver](compressible/thermal.h)

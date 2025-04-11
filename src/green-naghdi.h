@@ -199,7 +199,14 @@ static void relax_GN (scalar * a, scalar * r, int l, void * data)
   scalar * list = (scalar *) data;
   scalar h = list[0], zb = list[1], wet = list[2];
   vector D = vector(a[0]), b = vector(r[0]);
+  
+#if GAUSS_SEIDEL || _GPU
+  for (int parity = 0; parity < 2; parity++)
+    foreach_level_or_leaf (l)
+      if (level == 0 || ((point.i + parity) % 2) != (point.j % 2))
+#else
   foreach_level_or_leaf (l)
+#endif
     foreach_dimension() {
       if (h[] > dry && wet[-1] == 1 && wet[] == 1 && wet[1] == 1) {
 	double hc = h[], dxh = dx(h), dxzb = dx(zb), dxeta = dxzb + dxh;

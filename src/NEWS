@@ -1,0 +1,85 @@
+Note that the detailed ChangeLog is always available using the
+[Development/Recent activity](/src/?history) menu on the web site, as
+well as in the [/src/ChangeLog]() file in the distribution.
+
+# Release '25-02-26 (macros)'
+
+## Macros in qcc and rewrite of grid implementations
+
+The preprocessor and the `grid/*` implementations have been rewritten
+using the new [macro](ast/macro.h) functionality. As a consequence the
+older macro definitions, typically using the syntax
+
+~~~literatec
+@def foreach_mymacro()
+...
+@
+@define end_foreach_mymacro()
+~~~
+
+will not work anymore and need to be rewritten using the
+simpler/cleaner/better new syntax.
+
+In the same context, the special `map()` macros, used in the previous
+implementation for coordinate mapping are now obsolete. See
+[spherical.h]() for an example on how to use the new [macro
+inheritance](ast/macro.h#inheritance) feature to implement this
+mapping.
+
+Similarly expressions using
+
+~~~c
+Point point = ...;
+~~~
+
+which have caused 'obsolete' warnings for a while, will now trigger an
+error. They should be replaced with `foreach_point/foreach_region`
+which are compatible with reductions, GPUs etc.
+
+The `solve()` macro [has been rewritten](solve.h) using the new macro
+functionality and is now a [return macro](ast/macro.h#return-macro)
+i.e. its syntax has changed.
+
+## Generalised support for GPUs
+
+Most of the rewrite above was motivated by a better integration of
+GPUs. Several important test cases and examples now run on GPUs
+including:
+
+* [Stommel gyre](test/stommel-ml.c)
+* [Isopycnal gyres intersecting the bathymetry](test/bleck.c)
+* [The Gulf Stream](examples/gulf-stream.c)
+
+New benchmarks results were done on a high-end "gamers" graphics card
+[RTX4090](grid/gpu/Benchmarks.md): performances for realistic
+applications (e.g. the Gulf Stream) of a single RTX4090 card are
+comparable to that of the 768 AMD cores of the cluster at d'Alembert.
+
+## Non-square/cubic domains on multigrids
+
+It was previously possible to define non-square/cubic domains only when
+using `grid/multigrid` and MPI. This now works also in OpenMP/serial
+and on GPUs. See the [updated Tips](Tips#non-cubic-domains).
+
+Note also that all "dimensions/aspect ratios" must now be specified
+(previously some dimensions were automatically guessed by the MPI
+topology layout engine): this change was made because the previous
+behaviour could cause confusion (i.e. the aspect ratio could change
+when one was not careful to use the appropriate number of MPI
+processes).
+
+## Flexible homogeneous boundary conditions
+
+The definition of "homogeneous" versions of boundary conditions is now
+flexible (previously it required modification of the AST qcc
+engine). See [Basilisk C documentation](/Basilisk%20C#homogeneous-boundary-conditions).
+
+## Other changes
+
+* [lines()](draw.h#lines-from-a-file.) draws lines from a file
+* [vectors()](draw.h##vectors-displays-vector-fields) take a "level"
+  optional argument
+* [dump()](output.h#dump-basilisk-snapshots) has a new 'zero' option
+  to avoid dumping empty fields
+* [Wasm support](README.wasm)
+* [Global tides examples](examples/global-tides.c)

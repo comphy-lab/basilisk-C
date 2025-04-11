@@ -45,6 +45,7 @@ typedef int int32_t;
 typedef unsigned int uint32_t;
 typedef long int64_t;
 typedef unsigned long uint64_t;
+typedef double time_t;
 
 /**
 ## Tricks for AST
@@ -59,13 +60,44 @@ enum AstBoolean { false, true };
 
 Need to know about these implicitly declared variables/macros. */
 
-void point;
 int BGHOSTS, o_stencil;
 double HUGE;
 void * NULL;
 
-void _Variables() {
-  double x, y, z;
-  double Delta;
-  int level;
-}
+/**
+# Functions supported by GLSL */
+
+bool is_constant();
+void dimensional();
+void NOT_UNUSED();
+void neighborp();
+
+double val_diagonal();
+
+double abs (double x);
+double acos (double x);
+double acosh (double x);
+double asin (double x);
+double asinh (double x);
+double atan (double x);
+double atanh (double x);
+double ceil (double x);
+double cos (double x);
+double cosh (double x);
+double exp (double x);
+double fabs(double x);
+double log (double x);
+double log2 (double x);
+double fmax (double a, double b);
+double fmin (double a, double b);
+double mix (double a, double b, double c);
+double mod (double a, double b);
+double modf (double a, double * b);
+double pow (double a, double b);
+double round (double x);
+double sin (double x);
+double sinh (double x);
+double sqrt (double x);
+double tan (double x);
+double tanh (double x);
+double trunc (double x);

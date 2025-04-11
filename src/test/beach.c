@@ -116,14 +116,16 @@ We use gnuplot to display an animation while the simulation is
 running. */
 
 event gnuplot (i += 5) {
-  static FILE * fp = popen ("gnuplot 2> /dev/null", "w");
-  fprintf (fp,
-	   "set title 't = %.2f'\n"
-	   "p [-20:12][-0.2:0.6]'-' u 1:3:2 w filledcu lc 3 t '',"
-	   " '' u 1:(-1):3 t '' w filledcu lc -1\n", t);
-  foreach()    
-    fprintf (fp, "%g %g %g\n", x, eta[], zb[]);
-  fprintf (fp, "e\n\n");
+  if (getenv ("DISPLAY")) {
+    static FILE * fp = popen ("gnuplot 2> /dev/null", "w");
+    fprintf (fp,
+	     "set title 't = %.2f'\n"
+	     "p [-20:12][-0.2:0.6]'-' u 1:3:2 w filledcu lc 3 t '',"
+	     " '' u 1:(-1):3 t '' w filledcu lc -1\n", t);
+    foreach()    
+      fprintf (fp, "%g %g %g\n", x, eta[], zb[]);
+    fprintf (fp, "e\n\n");
+  }
   fprintf (stderr, "%.3f %.3f\n", t, statsf(u.x).max);
 }
 

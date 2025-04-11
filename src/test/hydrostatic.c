@@ -11,8 +11,7 @@ int main() {
 
 event init (i = 0) {
   refine (level == 3 && sq(x) + sq(y) < sq(0.25));
-  const face vector g[] = {0,-1.};
-  a = g;
+  a[] = {0,-1.};
 }
 
 event check (i = 1) {

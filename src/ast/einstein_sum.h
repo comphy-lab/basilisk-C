@@ -35,9 +35,8 @@ mytensor A,B,C;
 Note that the name `mytensor` is arbitrary. However, the name of the structure members must be $x$, $y$ and $z$. Following the Einstein summation convention the scalar product introduced in the previous paragraph can be written in $\texttt{Basilisk C}$ as
 
 ~~~literatec
-einstein_sum(i,j,k) {
-  C.i.j = A.i.k*B.k.j; 
-}
+einstein_sum(i,j,k)
+  C.i.j = A.i.k*B.k.j;
 ~~~
 
 With this macro, the preprocessor of $\texttt{Basilisk C}$ interprets all lines of code within the braces as tensor operations. The letters given within the parenthesis indicate the indices on which the Einstein summation takes place. In this case a summation will be applied on the index $k$ and permutations will be performed on the indices $i$ and $j$. 
@@ -113,9 +112,8 @@ L2 = sqrt (C.i.j*C.i.j);
 Lastly, if no equality sign is identified, the preprocessor will not perform any summation operations. It will only carry the permutation on the current line of code. For example if one wants to print the content of a tensor one may write 
 
 ~~~literatec
-einstein_sum (i,j) {
+einstein_sum (i,j)
   fprintf (stderr, "%g\n", C.i.j);
-}
 ~~~
 
 which gives in $2D$
@@ -150,6 +148,7 @@ This structure carries information about the indices present in the expression. 
 typedef struct {
   int dimension;
   char * current_id, * forbiden_id;
+  int * values_sum, id_N;
 } Einstein_sumData;
 
 /**
@@ -157,14 +156,22 @@ This function appends a block to an expression with a `+` sign separator. */
 
 Ast * ast_add_list_append (Ast * list, int item_sym, Ast * item)
 {
-  ast_set_line (item, ast_right_terminal (list));
+  ast_set_line (item, ast_right_terminal (list), false);
   Ast * parent = list->parent;
   int index = ast_child_index (list);
-  Ast * l =  ast_new_children (ast_new (parent, list->sym),
-			       list, 
-			       ast_terminal_new_char (item, "+"),
-			       ast_new (item, item_sym));
-  ast_attach (l->child[2], item);
+  Ast * l;
+  if (item->sym == item_sym)
+    l = ast_new_children (ast_new (parent, list->sym),
+                          list,
+                          ast_terminal_new_char (item, "+"),
+                          item);
+  else {
+    l =  ast_new_children (ast_new (parent, list->sym),
+                           list,
+                           ast_terminal_new_char (item, "+"),
+                           ast_new (item, item_sym));
+    ast_attach (l->child[2], item);
+  }
   ast_set_child (parent, index, l);
   return l;
 }
@@ -179,7 +186,7 @@ static void einstein_sum_id_list (Ast * n, Stack * stack, void * data)
     if (strlen (t->start) > 1){
       fprintf (stderr,
 	       "%s:%d: error: the args of einstein_sum(...,%s,...) must be of length one\n",
-              t->file, t->line,t->start);
+	       t->file, t->line, t->start);
       exit (1);
     }
     char * id_list = data, first_char[2] = {*t->start, '\0'};
@@ -195,14 +202,12 @@ static char * get_einstein_sum_args (Ast * n, Stack * stack)
   while (strcmp (identifier, "einstein_sum")) {
     ein_macro = ast_parent (n, sym_macro_statement);
     identifier = ast_terminal(ast_schema (ein_macro, sym_macro_statement,
-					  0, sym_function_call,
-					  0, sym_postfix_expression,
-					  0, sym_primary_expression,
-					  0, sym_IDENTIFIER))->start;
+					  0, sym_MACRO))->start;
   }
   // gather the args in the buffer
-  char buffer[100] = {0}; // fixme: buffer overflows??
-  ast_traverse (ein_macro->child[0]->child[2],
+  char buffer[1000] = {0}; // fixme: buffer overflows??
+  ast_traverse (ast_schema (ein_macro, sym_macro_statement,
+			    2, sym_argument_expression_list),
 		stack, einstein_sum_id_list, buffer);
   int length = strlen (buffer);
   buffer[length] = '\0';
@@ -238,7 +243,7 @@ Get all the indicies present in the block (Ast * n). */
 
 static char * get_expression_id (Ast * n, Stack * stack)
 {
-  char buffer[100] = {0}; // fixme: buffer overflows??
+  char buffer[1000] = {0}; // fixme: buffer overflows??
   ast_traverse (n, stack, einstein_sum_get_member_id, buffer);
   int length = strlen (buffer);
   buffer[length + 1] = '\0';
@@ -286,11 +291,29 @@ static void einstein_sum_rotate (Ast * n, Stack * stack, void * data)
                                                 0, sym_IDENTIFIER));
     int len = strlen (t->start);
     Einstein_sumData * d = data;
-    if (len >= 2 && t->start[len - 2] == '_' &&
-	strchr ("xyz", t->start[len - 1]) &&
-        t->start[0] == d->current_id[0]) 
-      t->start[len - 1] = 'x' + (t->start[len - 1] + 1 - 'x') % d->dimension;
+    if (len >= 2 && t->start[len - 2] == '_' && strchr ("xyz", t->start[len - 1]))
+      for (int i = 0; i < d->id_N; i++)
+        if(t->start[0] == d->current_id[i]){
+          t->start[len - 1] = 'x' + d->values_sum[i];
+        }
   }
+}
+
+/**
+Generate the list of all possible permutations for the indices 
+with {0,1,2} corresponding to {x,y,z}. */
+
+static void generates_list_of_permutations(int * LOP,int num_of_index,int dim){
+    int length = pow(dim,num_of_index);
+    int bitval = dim - 1;
+    for(int i=0; i<num_of_index;i++)
+      for(int j=0;j<length;j++){
+        if(!(j % (int) pow(dim,i))){
+          if(bitval == (dim - 1)) bitval =0;
+          else bitval++;
+        }
+        LOP[j*num_of_index + i] = bitval;
+      }
 }
 
 /**
@@ -298,13 +321,19 @@ This function perform the summation step within an expression. */
 
 static void einstein_sum_sum (Ast * n, Stack * stack, void * data)
 {
-  if (n->sym == sym_additive_expression || n == get_right_hand_side (n, stack)) {
+  if (
+    (n->sym == sym_multiplicative_expression 
+    && n->parent->sym == sym_additive_expression) 
+    ||n->sym == sym_additive_expression 
+    || n == get_right_hand_side (n, stack)
+  ) {
     Einstein_sumData * d = data;
 
-    Ast * body = ast_last_child (n);
-    if (n == get_right_hand_side (n, stack))
-    while (body->sym != sym_additive_expression)
-      body = ast_last_child (body);      
+    if (n == get_right_hand_side (n, stack)){
+      while (n->sym != sym_additive_expression)
+        n = ast_last_child(n);      
+    }
+    Ast * body = n;
 
     char * current_id_list = get_expression_id (body, stack);
     // indentify the list of the indicies on the right hand side of the expr 
@@ -330,26 +359,44 @@ static void einstein_sum_sum (Ast * n, Stack * stack, void * data)
       
       sum_id[j] = '\0';
     }
-
-    int id_N = strlen (sum_id);
+    d->id_N = strlen (sum_id);
     if (!j) {
-      id_N = 0;
+      d->id_N = 0;
       sum_id[0] = '\0';
     }
-    d->current_id = malloc (sizeof(char)*2);
-    d->current_id[1] = '\0';
-    for (int i = 0; i < id_N; i++) {
-      d->current_id[0] = sum_id[i];
-      Ast * copy = body;
-      for (int j = 1; j < d->dimension; j++) {
-        // perform the rotation on the index that must be summed 
+    d->current_id = malloc (sizeof(char)*(d->id_N+1));
+    for(int i=0;i<d->id_N;i++) d->current_id[i] = sum_id[i];
+    d->current_id[d->id_N+1] = '\0';
+
+
+    int number_of_terms = pow(d->dimension,d->id_N);
+    int * list_of_permutations = malloc(sizeof(int) * number_of_terms * d->id_N);
+    generates_list_of_permutations(list_of_permutations,
+                                  d->id_N,
+                                  d->dimension);
+
+    // we must permute and add alll multiplicative expr in the additive expr 
+    int mult=0;
+    if(body->sym==sym_multiplicative_expression){
+      body = body->parent;
+      mult=1;
+    }
+    Ast * b = body; 
+    while (b->sym==sym_additive_expression 
+      &&  ast_last_child(b)->sym==sym_multiplicative_expression){
+      Ast * copy = ast_last_child(ast_copy(b)); //first multiplicative 
+      for(int j=1;j<number_of_terms;j++){//we start at j=1 
+        d->values_sum = &list_of_permutations[j * d->id_N];
         copy = ast_copy (copy);
         stack_push (stack, &copy);
         ast_traverse (copy, stack, einstein_sum_rotate, d);
         ast_pop_scope (stack, copy);  
         body = ast_add_list_append (body, copy->sym, copy);
       }
+      b = b->child[0];
+      if(mult) break;
     }
+    free(list_of_permutations);
     strcat (d->forbiden_id, sum_id);
   }
 }
@@ -379,7 +426,6 @@ static void einstein_sum_expression (Ast * n, Stack * stack, void * data)
     Einstein_sumData * d = data;
     
     // transform into block item 
-    Ast * expr_statement = get_expression_statement (n->parent);
     Ast * statement = get_expression_statement (n->parent)->parent;
     Ast * item = ast_block_list_get_item (statement);
     if (!item) item = get_expression_statement (n->parent);
@@ -426,23 +472,30 @@ static void einstein_sum_expression (Ast * n, Stack * stack, void * data)
 	else
           j++;
       }
+    d->id_N = id_N; 
+    d->current_id = malloc (sizeof(char)*(d->id_N +1));
+    for(int i=0;i<d->id_N;i++) d->current_id[i] = id_list_before[id_N - i - 1];
+    d->current_id[d->id_N+1] = '\0';
 
     /**
     The final step is to perform permutations on the remaining indices.*/
+
+    int number_of_terms = pow(d->dimension,d->id_N);
+    int * list_of_permutations = malloc(sizeof(int) * number_of_terms * d->id_N);
+    generates_list_of_permutations(list_of_permutations,
+                                  d->id_N,
+                                  d->dimension);
     
-    d->current_id = malloc (2*sizeof(char));
-    d->current_id[0] = '\0';
-    for (int i = 0; i < id_N; i++) {
-      d->current_id[0] = id_list_before[id_N - i - 1];
-      Ast * copy = expr_statement;
-      for (int j = 1; j < d->dimension; j++) {
-        copy = ast_copy (copy);
-        stack_push (stack, &copy);
-        ast_traverse (copy, stack, einstein_sum_rotate, d);
-        ast_pop_scope (stack, copy);  
-        expr_statement = ast_block_list_append (expr_statement, copy->sym, copy);
-      }
+    Ast * copy = statement;
+    for(int j=1;j<number_of_terms;j++){//we start at j=1 
+      d->values_sum = &list_of_permutations[j * d->id_N];
+      copy = ast_copy (copy);
+      stack_push (stack, &copy);
+      ast_traverse (copy, stack, einstein_sum_rotate, d);
+      ast_pop_scope (stack, copy);  
+      item_list = ast_block_list_append (item_list, sym_block_item, copy);
     }
+    free(list_of_permutations);
     // replace the i_x indicators by the actual member name x,yz...
     stack_push (stack, &item_list);
     ast_traverse (item_list, stack, einstein_sum_replace_id_back, d);
@@ -452,20 +505,32 @@ static void einstein_sum_expression (Ast * n, Stack * stack, void * data)
 
 void einstein_sum_global (Ast * n, Stack * stack, int dimension)
 {
-  Ast * item = ast_block_list_get_item (n->parent->parent);
+  Ast * item = ast_block_list_get_item (ast_ancestor (n, 2));
   Einstein_sumData data = {dimension, NULL, NULL}; 
-  if (n->child[0]->child[2]->sym == token_symbol(')')) {
+  if (!ast_schema (n, sym_macro_statement,
+		   2, sym_argument_expression_list)) {
     AstTerminal * t = ast_left_terminal (n);
     fprintf (stderr,
-            "%s:%d: error: missing summation indices in macro einstein_sum(...)\n",
-            t->file, t->line);
+	     "%s:%d: error: missing summation indices in macro einstein_sum(...)\n",
+	     t->file, t->line);
     exit (1);
   }
-  Ast * body = ast_last_child (n);
+  Ast * body = ast_child (n, sym_statement);
+  if (!ast_schema (body, sym_statement,
+		   0, sym_compound_statement)) {
+    AstTerminal * open = NCB(body, "{"), * close = NCA(body, "}");
+    int index = ast_child_index (body);
+    body = NN(item, sym_statement,
+	      NN(item, sym_compound_statement,
+		 open,
+		 NN(item, sym_block_item_list,
+		    NN(item, sym_block_item,
+		       body)),
+		 close));
+    ast_set_child (n, index, body);
+  }
   stack_push (stack, &body);
   ast_traverse (body, stack, einstein_sum_expression, &data);
   ast_pop_scope (stack, body);
-  // remove macro name and append the body 
   ast_replace_child (item, 0, body);
-  ast_remove (n, ast_left_terminal (body));
 }

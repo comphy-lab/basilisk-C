@@ -131,12 +131,7 @@ i.e. $\dot{\mathbf{u}}_t = 0$, $\mathbf{\lambda}_b = 0$, $\mathbf{u}_b
 = 0$. */
 
 double nu = 0.;
-/*
-fixme: should just be:
 (const) vector lambda_b[] = {0,0,0}, dut[] = {0,0,0}, u_b[] = {0,0,0};
-*/
-const vector lambda0[] = {0,0,0}, dut0[] = {0,0,0}, u_b0[] = {0,0,0};
-(const) vector lambda_b = lambda0, dut = dut0, u_b = u_b0;
 
 /**
 In the [layered solver](hydro.h), vertical viscosity is applied to the
@@ -200,6 +195,54 @@ void horizontal_diffusion (scalar * list, double D, double dt)
     delete (d2sl);
     free (d2sl);
   }
+}
+
+/**
+### Time-implicit integration
+
+When the timestep constraint due to explicit time integration is too
+strong, one can use the time-implicit version below. The diffusion equation
+$$
+h \partial_t s = D \nabla \cdot (h \nabla s)
+$$
+is discretised implicitly as
+$$
+h \frac{s^{n + 1} - s^n}{\Delta t} = \nabla \cdot (Dh \nabla s^{n + 1})
+$$
+which can be reordered as
+$$
+\nabla \cdot (\Delta tDh \nabla s^{n + 1}) - hs^{n + 1} = - hs^n
+$$
+i.e. a Poisson--Helmoltz equation of the form
+$$
+\nabla \cdot (\alpha \nabla s^{n + 1}) + \lambda s^{n + 1} = b
+$$
+which is solved using the [multigrid Poisson--Helmholz solver](/src/poisson.h#user-interface).
+
+The function returns convergence statistics for the multigrid solver. */
+
+#include "poisson.h"
+
+trace
+mgstats implicit_horizontal_diffusion (scalar * list, double D, double dt)
+{
+  mgstats mg = {0};
+  if (D > 0.) {
+    scalar b[], lambda[];
+    face vector alpha[];
+    foreach_layer() {
+      foreach_face()
+	alpha.x[] = 2.*dt*D*hf.x[]*fm.x[]/(cm[-1] + cm[]);
+      foreach()
+	lambda[] = - cm[]*h[];
+      for (scalar s in list) {
+	foreach()
+	  b[] = lambda[]*s[];
+	mg = poisson (s, b, alpha, lambda);
+      }
+    }
+  }
+  return mg;
 }
 
 /**

@@ -1,0 +1,231 @@
+~~~bash
+cd $BASILISK/examples
+
+CFLAGS='-DTRACE=3 -DBENCHMARK' make tsunami.gpu.tst
+
+Device: Mesa Intel(R) UHD Graphics (TGL GT1) (0x9a60)
+...
+Video memory: 3072MB
+
+# Multigrid (GPU), 3333 steps, 40.0668 CPU, 167.6 real, 2.09e+07 points.step/s, 35 var
+   calls    total     self   % total   function
+    6666    42.99    42.83     25.6%   foreach():/src/utils.h:266
+    6666    44.09    37.28     22.2%   foreach():/src/saint-venant.h:275
+    6666    27.15    26.98     16.1%   foreach():/src/saint-venant.h:321
+    3334    13.58    13.53      8.1%   gpu_reduction():/src/utils.h:167
+    6666    12.96    12.75      7.6%   foreach():/src/saint-venant.h:129
+    3334     9.82     9.79      5.8%   gpu_reduction():/src/utils.h:139
+    6666     6.44     6.42      3.8%   gpu_reduction():/src/saint-venant.h:207
+    3334    19.13     5.40      3.2%   foreach():/src/utils.h:175
+    3334     5.37     5.31      3.2%   foreach():tsunami.gpu.c:273
+    3334    12.96     3.07      1.8%   foreach():/src/utils.h:147
+
+OpenGL renderer string: NVIDIA GeForce RTX 3050 Ti Laptop GPU/PCIe/SSE2
+Dedicated video memory: 4096 MB
+
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./tsunami.gpu/tsunami.gpu 2> tsunami.gpu/log
+
+# Multigrid (GPU), 3333 steps, 40.0104 CPU, 20.18 real, 1.73e+08 points.step/s, 35 var
+   calls    total     self   % total   function
+    6666     4.85     3.77     18.7%   foreach():/src/saint-venant.h:275
+    6666     3.22     3.08     15.2%   foreach():/src/saint-venant.h:321
+    6666     2.53     2.34     11.6%   foreach():/src/utils.h:266
+    6666     2.04     1.92      9.5%   foreach():/src/saint-venant.h:129
+    3334     1.47     1.47      7.3%   gpu_reduction():/src/utils.h:167
+    3334     1.16     1.16      5.8%   gpu_reduction():/src/utils.h:139
+       2     0.89     0.89      4.4%   foreach():/src/terrain.h:183
+      22     0.72     0.72      3.6%   load_shader():/src/grid/gpu/grid.h:1067
+    6666     0.69     0.69      3.4%   gpu_reduction():/src/saint-venant.h:207
+    3334     0.72     0.67      3.3%   foreach():tsunami.gpu.c:273
+    6666    11.33     0.66      3.3%   update_saint_venant():/src/saint-venant.h:331
+    3334     2.26     0.66      3.3%   foreach():/src/utils.h:175
+    3334     1.72     0.55      2.7%   foreach():/src/utils.h:147
+      43     0.45     0.45      2.2%   gpu_cpu_sync_scalar():/src/grid/gpu/grid.h:1209
+      10     0.38     0.38      1.9%   foreach():/src/okada.h:173
+   36682     1.38     0.33      1.6%   setup_shader():/src/grid/gpu/grid.h:1721
+
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./tsunami.gpu/tsunami.gpu 11 2> tsunami.gpu/log
+
+# Multigrid (GPU), 6732 steps, 268.803 CPU, 147.3 real, 1.92e+08 points.step/s, 35 var
+   calls    total     self   % total   function
+   13464    38.58    32.59     22.1%   foreach():/src/saint-venant.h:275
+   13464    26.09    25.77     17.5%   foreach():/src/saint-venant.h:321
+   13464    19.05    18.74     12.7%   foreach():/src/utils.h:266
+   13464    15.35    14.93     10.1%   foreach():/src/saint-venant.h:129
+    6733    10.25    10.24      7.0%   gpu_reduction():/src/utils.h:167
+    6733     8.11     8.11      5.5%   gpu_reduction():/src/utils.h:139
+       2     6.55     6.55      4.4%   foreach():/src/terrain.h:183
+    6733     5.39     5.27      3.6%   foreach():tsunami.gpu.c:273
+    6733    15.89     5.09      3.5%   foreach():/src/utils.h:175
+   13464     4.60     4.60      3.1%   gpu_reduction():/src/saint-venant.h:207
+    6733    12.54     4.36      3.0%   foreach():/src/utils.h:147
+   13464    86.76     2.74      1.9%   update_saint_venant():/src/saint-venant.h:331
+      43     1.85     1.85      1.3%   gpu_cpu_sync_scalar():/src/grid/gpu/grid.h:964
+      10     1.77     1.77      1.2%   foreach():/src/okada.h:173
+   74071     4.19     1.71      1.2%   setup_shader():/src/grid/gpu/grid.h:1396
+
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./tsunami.gpu/tsunami.gpu 12 2> tsunami.gpu/log
+
+# Cartesian (GPU), 13501 steps, 1918.92 CPU, 1295 real, 1.75e+08 points.step/s, 35 var
+   calls    total     self   % total   function
+   27002   411.53   353.63     27.3%   foreach():/src/saint-venant.h:275
+   27002   271.92   270.92     20.9%   foreach():/src/saint-venant.h:321
+   27002   158.28   144.87     11.2%   foreach():/src/utils.h:266
+   27002   119.76   118.45      9.1%   foreach():/src/saint-venant.h:129
+   13502    85.10    84.89      6.6%   gpu_reduction():/src/utils.h:167
+   13502    67.00    66.84      5.2%   gpu_reduction():/src/utils.h:139
+   13502   127.24    41.50      3.2%   foreach():/src/utils.h:175
+   13502    40.95    40.67      3.1%   foreach():tsunami.gpu.c:280
+       2    36.61    36.61      2.8%   foreach():/src/terrain.h:182
+   27002    36.56    36.48      2.8%   gpu_reduction():/src/saint-venant.h:207
+   13502   102.44    35.08      2.7%   foreach():/src/utils.h:147
+  108008    16.20    14.36      1.1%   foreach():/src/grid/gpu/cartesian.h:959
+  108008    14.91    13.37      1.0%   foreach():/src/grid/gpu/cartesian.h:962
+
+OpenGL renderer string: Quadro RTX 6000/PCIe/SSE2
+Dedicated video memory: 24576 MB
+
+./tsunami.gpu/tsunami.gpu 2> tsunami.gpu/log
+
+# Multigrid (GPU), 3333 steps, 62.4662 CPU, 8.373 real, 4.17e+08 points.step/s, 35 var
+   calls    total     self   % total   function
+    6666     1.75     1.22     14.5%   foreach():/src/saint-venant.h:275
+    6666     1.06     1.02     12.2%   foreach():/src/saint-venant.h:321
+    6666     0.84     0.81      9.7%   foreach():/src/utils.h:266
+    3334     0.74     0.74      8.8%   gpu_reduction():/src/utils.h:167
+    3334     0.59     0.58      7.0%   gpu_reduction():/src/utils.h:139
+    6666     0.62     0.57      6.9%   foreach():/src/saint-venant.h:129
+    6666     4.33     0.57      6.8%   update_saint_venant():/src/saint-venant.h:331
+      22     0.44     0.44      5.2%   foreach():/src/terrain.h:153
+      43     0.42     0.42      5.0%   gpu_cpu_sync_scalar():/src/grid/gpu/grid.h:977
+      10     0.42     0.42      5.0%   foreach():/src/okada.h:173
+    6666     0.30     0.30      3.5%   gpu_reduction():/src/saint-venant.h:207
+   36682     0.60     0.28      3.3%   setup_shader():/src/grid/gpu/grid.h:1402
+    3334     1.08     0.25      3.0%   foreach():/src/utils.h:175
+    3334     0.24     0.22      2.7%   foreach():tsunami.gpu.c:273
+    3334     0.77     0.18      2.1%   foreach():/src/utils.h:147
+       5     0.27     0.12      1.4%   foreach():/src/okada.h:232
+
+./tsunami.gpu/tsunami.gpu 11 2> tsunami.gpu/log
+
+# Multigrid (GPU), 6643 steps, 235.91 CPU, 47.94 real, 5.81e+08 points.step/s, 35 var
+   calls    total     self   % total   function
+   13286    11.37     8.86     18.5%   foreach():/src/saint-venant.h:275
+   13286     7.66     7.48     15.6%   foreach():/src/saint-venant.h:321
+   13286     5.73     5.55     11.6%   foreach():/src/utils.h:266
+   13286     4.27     4.09      8.5%   foreach():/src/saint-venant.h:129
+    6644     3.55     3.54      7.4%   gpu_reduction():/src/utils.h:167
+    6644     2.81     2.81      5.9%   gpu_reduction():/src/utils.h:139
+   13286    27.46     2.22      4.6%   update_saint_venant():/src/saint-venant.h:331
+      43     1.73     1.72      3.6%   gpu_cpu_sync_scalar():/src/grid/gpu/grid.h:977
+      10     1.68     1.68      3.5%   foreach():/src/okada.h:173
+    6644     5.49     1.56      3.2%   foreach():/src/utils.h:175
+    6644     1.59     1.53      3.2%   foreach():tsunami.gpu.c:273
+   13286     1.51     1.50      3.1%   gpu_reduction():/src/saint-venant.h:207
+      24     1.43     1.43      3.0%   foreach():/src/terrain.h:153
+    6644     4.11     1.27      2.6%   foreach():/src/utils.h:147
+   73092     2.77     0.94      2.0%   setup_shader():/src/grid/gpu/grid.h:1402
+      22     0.67     0.67      1.4%   load_shader():/src/grid/gpu/grid.h:842
+
+./tsunami.gpu/tsunami.gpu 12 2> tsunami.gpu/log
+
+# Multigrid (GPU), 13281 steps, 1062.37 CPU, 341.5 real, 6.52e+08 points.step/s, 35 var
+   calls    total     self   % total   function
+   26562    86.91    70.86     20.7%   foreach():/src/saint-venant.h:275
+   26562    61.42    61.17     17.9%   foreach():/src/saint-venant.h:321
+   26562    41.25    41.03     12.0%   foreach():/src/utils.h:266
+   13282    31.25    31.24      9.1%   gpu_reduction():/src/utils.h:167
+   26562    31.16    30.89      9.0%   foreach():/src/saint-venant.h:129
+   13282    24.65    24.65      7.2%   gpu_reduction():/src/utils.h:139
+   26562    12.57    12.57      3.7%   gpu_reduction():/src/saint-venant.h:207
+   13282    44.53    11.81      3.5%   foreach():/src/utils.h:175
+   13282    11.46    11.36      3.3%   foreach():tsunami.gpu.c:273
+   13282    34.24     9.53      2.8%   foreach():/src/utils.h:147
+   26562   200.53     9.22      2.7%   update_saint_venant():/src/saint-venant.h:331
+      10     6.77     6.77      2.0%   foreach():/src/okada.h:173
+      43     6.62     6.62      1.9%   gpu_cpu_sync_scalar():/src/grid/gpu/grid.h:977
+      26     5.45     5.45      1.6%   foreach():/src/terrain.h:153
+
+OpenGL renderer string: NVIDIA GeForce RTX 4090/PCIe/SSE2
+Dedicated video memory: 24564 MB
+
+/tsunami.gpu/tsunami.gpu 2> tsunami.gpu/log
+
+# Multigrid (GPU), 3333 steps, 74.0061 CPU, 6.195 real, 5.64e+08 points.step/s, 35 var
+   calls    total     self   % total   function
+    6666     1.08     0.66     10.6%   foreach():/src/saint-venant.h:275
+    6666     0.64     0.62     10.1%   foreach():/src/saint-venant.h:321
+    6666     2.88     0.58      9.4%   update_saint_venant():/src/saint-venant.h:331
+      10     0.49     0.49      7.9%   foreach():/src/okada.h:173
+       2     0.48     0.48      7.8%   foreach():/src/terrain.h:186
+    3334     0.48     0.48      7.7%   gpu_reduction():/src/utils.h:167
+    6666     0.45     0.44      7.1%   foreach():/src/utils.h:266
+      43     0.67     0.39      6.4%   gpu_cpu_sync_scalar():/src/grid/gpu/grid.h:1185
+    3334     0.39     0.38      6.2%   gpu_reduction():/src/utils.h:139
+    6666     0.33     0.32      5.1%   foreach():/src/saint-venant.h:129
+       6     0.28     0.28      4.5%   boundary_internal():/src/grid/gpu/../cartesian-common.h:540
+   36682     0.76     0.25      4.0%   setup_shader():/src/grid/gpu/grid.h:1701
+    6666     0.21     0.20      3.3%   gpu_reduction():/src/saint-venant.h:207
+    3334     0.70     0.14      2.2%   foreach():/src/utils.h:175
+    3334     0.50     0.11      1.8%   foreach():/src/utils.h:147
+       5     0.47     0.10      1.6%   foreach():/src/okada.h:232
+    3334     0.10     0.09      1.5%   foreach():tsunami.gpu.c:273
+
+./tsunami.gpu/tsunami.gpu 11 2> tsunami.gpu/log
+
+# Multigrid (GPU), 6732 steps, 291.606 CPU, 33.29 real, 8.48e+08 points.step/s, 35 var
+   calls    total     self   % total   function
+   13464     6.75     5.21     15.6%   foreach():/src/saint-venant.h:275
+   13464     5.02     4.99     15.0%   foreach():/src/saint-venant.h:321
+   13464     3.33     3.30      9.9%   foreach():/src/utils.h:266
+       2     2.87     2.87      8.6%   foreach():/src/terrain.h:186
+   13464     2.74     2.71      8.1%   foreach():/src/saint-venant.h:129
+   13464    17.82     2.26      6.8%   update_saint_venant():/src/saint-venant.h:331
+      10     1.77     1.77      5.3%   foreach():/src/okada.h:173
+    6733     1.62     1.62      4.9%   gpu_reduction():/src/utils.h:167
+      43     1.84     1.56      4.7%   gpu_cpu_sync_scalar():/src/grid/gpu/grid.h:1185
+    6733     1.21     1.20      3.6%   foreach():tsunami.gpu.c:273
+    6733     1.18     1.18      3.5%   gpu_reduction():/src/utils.h:139
+    6733     2.95     0.96      2.9%   foreach():/src/utils.h:175
+   74071     2.11     0.90      2.7%   setup_shader():/src/grid/gpu/grid.h:1701
+   13464     0.74     0.74      2.2%   gpu_reduction():/src/saint-venant.h:207
+    6733     1.92     0.73      2.2%   foreach():/src/utils.h:147
+       5     1.10     0.32      1.0%   foreach():/src/okada.h:232
+
+./tsunami.gpu/tsunami.gpu 12 2> tsunami.gpu/log
+
+# Multigrid (GPU), 13501 steps, 1451.81 CPU, 226 real, 1e+09 points.step/s, 35 var
+   calls    total     self   % total   function
+   27002    49.67    39.41     17.4%   foreach():/src/saint-venant.h:275
+   27002    37.93    37.74     16.7%   foreach():/src/saint-venant.h:321
+   27002    25.07    24.88     11.0%   foreach():/src/utils.h:266
+   27002    21.85    21.69      9.6%   foreach():/src/saint-venant.h:129
+   13502    16.37    16.36      7.2%   gpu_reduction():/src/utils.h:167
+       2    15.13    15.13      6.7%   foreach():/src/terrain.h:186
+   13502    12.58    12.57      5.6%   gpu_reduction():/src/utils.h:139
+   27002   123.10     8.66      3.8%   update_saint_venant():/src/saint-venant.h:331
+   13502     8.54     8.47      3.7%   foreach():tsunami.gpu.c:273
+   13502    25.06     7.23      3.2%   foreach():/src/utils.h:175
+   27002     7.16     7.15      3.2%   gpu_reduction():/src/saint-venant.h:207
+      10     6.86     6.86      3.0%   foreach():/src/okada.h:173
+      43     6.40     6.13      2.7%   gpu_cpu_sync_scalar():/src/grid/gpu/grid.h:1185
+   13502    18.27     5.66      2.5%   foreach():/src/utils.h:147
+  148530     7.78     3.15      1.4%   setup_shader():/src/grid/gpu/grid.h:1701
+
+OMP_NUM_THREADS=8 CFLAGS='-DTRACE=2 -DBENCHMARK' make tsunami.tst
+# Quadtree, 2839 steps, 762.912 CPU, 107 real, 1.6e+06 points.step/s, 34 var
+   calls    total     self   % total   function
+    2880    71.43    43.20     40.4%   adapt_wavelet():/src/grid/tree-common.h:316
+   14271    21.81    21.81     20.4%   tree_boundary_level():/src/grid/tree-common.h:748
+    8554    20.55    20.55     19.2%   halo_face():/src/grid/tree-common.h:420
+    5678    32.09    17.94     16.8%   update_saint_venant():/src/saint-venant.h:331
+    5678     2.04     2.04      1.9%   advance_saint_venant():/src/saint-venant.h:130
+    2840     1.09     1.09      1.0%   logfile():tsunami.c:274
+
+OMP_NUM_THREADS=8 CFLAGS='-DTRACE=2 -DBENCHMARK' make tsunami.ctst
+# Multigrid, 3333 steps, 2213.32 CPU, 276.7 real, 1.26e+07 points.step/s, 34 var
+   calls    total     self   % total   function
+    6666   231.93   230.47     83.3%   update_saint_venant():/src/saint-venant.h:331
+    6666    32.91    32.91     11.9%   advance_saint_venant():/src/saint-venant.h:130
+    3334     9.67     9.67      3.5%   logfile():tsunami.c:274
+~~~

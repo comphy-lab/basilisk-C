@@ -20,6 +20,7 @@ stencils.c:74: dirty: 12:f.x 13:f.y
 stencils.c:80: flux y: 13:f.y
 stencils.c:80: dirty: 11:a
 stencils.c:87: listc: 13:f.y
+boundary_internal: listc: 13:f.y
 stencils.c:87: dirty: 11:a
 stencils.c:94: warning: face vector 'f.x' should be assigned with a foreach_face() loop
 stencils.c:94: dirty: 12:f.x

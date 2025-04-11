@@ -99,7 +99,7 @@ event integration (i++) {
     r[] = - A2[]*beta*Ar[];
     lambda[] = 1. - A2[];
   }
-  mgd1 = diffusion (Ai, dt, r = r, beta = lambda);
+  mgd2 = diffusion (Ai, dt, r = r, beta = lambda);
 }
 
 /**

@@ -13,8 +13,9 @@ $[-180:180]$ degrees and *y* is the latitude within $[-90:90]$
 degrees. $\Delta$ is the characteristic cell length expressed in the
 same units as *Radius*. */
 
-map()
+macro VARIABLES (Point point = point, int _ig = ig, int _jg = jg, int _kg = kg)
 {
+  VARIABLES (point, _ig, _jg, _kg);
   x = x < -180. ? x + 360. : x > 180. ? x - 360. : x;
   Delta_x = Delta_y = Delta;
   Delta *= Radius*pi/180.;

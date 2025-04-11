@@ -89,11 +89,11 @@ b
 double
 size: 17, flags: 1, pointer: 0, scope: 3, value: 2 (unset)  + [test21.c:25: 'b = 2.']
 ===================
--------------------
+------------------- 
 #line 29 "test21.c"
-sq(4)
+4*4
 
-#line 13 "types.c"
-ast_double
-size: 17, flags: 2, pointer: 0, scope: 2, value: 16  + 2*[test21.c:29: '4']
+#line 8 "types.c"
+ast_long
+size: 17, flags: 2, pointer: 0, scope: 2, value: 16
 ===================

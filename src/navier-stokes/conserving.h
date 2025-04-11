@@ -79,13 +79,13 @@ impose boundary conditions which match this definition. This is done
 using the functions below. */
 
 foreach_dimension()
-static double boundary_q1_x (Point neighbor, Point point, scalar q1, void * data)
+static double boundary_q1_x (Point neighbor, Point point, scalar q1, bool * data)
 {
   return clamp(f[],0.,1.)*rho1*u.x[];
 }
 
 foreach_dimension()
-static double boundary_q2_x (Point neighbor, Point point, scalar q2, void * data)
+static double boundary_q2_x (Point neighbor, Point point, scalar q2, bool * data)
 {
   return (1. - clamp(f[],0.,1.))*rho2*u.x[];
 }

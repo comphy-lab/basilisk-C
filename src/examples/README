@@ -42,6 +42,9 @@ examples)"*](/src/test/README#running-and-creating-test-cases-and-examples).
 * [Transcritical flow over a bump](gaussian-ns.c)
 * [A Shallow Water Analogue for the Standing Accretion Shock
   Instability](swasi.c)
+* [The Gulf Stream](gulf-stream.c)
+* [The Global Oceanic Circulation](global.c)
+* [Global tides](global-tides.c)
 
 ## Python interface
 

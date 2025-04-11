@@ -59,7 +59,7 @@ coord mycs (Point point, scalar c)
   /* normalize the set (mx0,my0): |mx0|+|my0|=1 and
      write the two components of the normal vector  */
   mm1 = fabs(mx0) + fabs(my0);
-  coord n = {mx0/mm1, my0/mm1};
+  coord n = {mx0/mm1, my0/mm1, 0};
   
   return n;
 }

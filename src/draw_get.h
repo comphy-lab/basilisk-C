@@ -59,32 +59,6 @@ else if (!strcmp (s, "view")) {
     return false;
   view (tx,ty,fov,quat,sx,sy,sz,width,height,samples,bg,theta,phi,psi,relative,tz,near,far,res,camera,map,cache,p1x,p1y,p2x,p2y,view1);
 }
-else if (!strcmp (s, "begin_translate")) {
-  float x = 0;
-  float y = 0.;
-  float z = 0.;
-  Params params[] = {
-    {"x", pfloat, &x},
-    {"y", pfloat, &y},
-    {"z", pfloat, &z},
-    {NULL}
-  };
-  if (!parse_params (params))
-    return false;
-  begin_translate (x,y,z);
-}
-else if (!strcmp (s, "begin_mirror")) {
-  coord n = {0};
-  double alpha = 0.;
-  Params params[] = {
-    {"n", pdouble, &n, 3},
-    {"alpha", pdouble, &alpha},
-    {NULL}
-  };
-  if (!parse_params (params))
-    return false;
-  begin_mirror (n,alpha);
-}
 else if (!strcmp (s, "draw_vof")) {
   char * c = NULL;
   char * s = NULL;
@@ -183,16 +157,18 @@ else if (!strcmp (s, "vectors")) {
   double scale = 1;
   float lc[3] = {0};
   float lw = 1.;
+  int level = -1;
   Params params[] = {
     {"u", pstring, &u},
     {"scale", pdouble, &scale},
     {"lc", pfloat, lc, 3},
     {"lw", pfloat, &lw},
+    {"level", pint, &level},
     {NULL}
   };
   if (!parse_params (params))
     return false;
-  if (!vectors (u,scale,lc,lw))
+  if (!vectors (u,scale,lc,lw,level))
     return false;
 }
 else if (!strcmp (s, "squares")) {
@@ -324,5 +300,20 @@ else if (!strcmp (s, "labels")) {
   if (!parse_params (params))
     return false;
   if (!labels (f,lc,lw))
+    return false;
+}
+else if (!strcmp (s, "lines")) {
+  char * file = NULL;
+  float lc[3] = {0};
+  float lw = 1.;
+  Params params[] = {
+    {"file", pstring, &file},
+    {"lc", pfloat, lc, 3},
+    {"lw", pfloat, &lw},
+    {NULL}
+  };
+  if (!parse_params (params))
+    return false;
+  if (!lines (file,lc,lw))
     return false;
 }

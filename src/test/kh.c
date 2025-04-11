@@ -95,8 +95,7 @@ int main()
   We use a slip boundary condition at the bottom, rather than the
   default no-slip (the top boundary is slip by default). */
 
-  const vector slip[] = {HUGE};
-  lambda_b = slip;
+  lambda_b[] = {HUGE};
   
   run();
 

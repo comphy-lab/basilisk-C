@@ -12,7 +12,7 @@ qcc [OPTIONS] FILE.c
 
 A summary of the options/switches:
 
-* `-grid=GRID` : specifies the grid to use
+* `-grid=GRID` : specifies the grid to use (overloads any "in file" includes)
 * `-MD` : generates .d dependency file
 * `-tags` : generates .tags file
 * `-python` : generates python wrapper code
@@ -20,6 +20,7 @@ A summary of the options/switches:
 * `-events` : displays a trace of events on standard error
 * `-catch` : catch floating point errors
 * `-source` : generates C99 source file (with an underscore prefix)
+* `-prepost` : as -source but before expansion of postmacros
 * `-autolink` : uses the 'autolink' pragma to link required libraries
 * `-progress` : the running code will generate a 'progress' file
 * `-cadna` : support for CADNA
@@ -50,11 +51,12 @@ All other options will be passed directly to the C compiler. */
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <assert.h>
+#include "ast/ast.h"
 
 int dimension = 2, bghosts = 0, layers = 0;
   
 int debug = 0, catch = 0, cadna = 0, nolineno = 0, events = 0, progress = 0;
-int parallel = 0, cpu = 0;
+int parallel = 0, cpu = 0, gpu = 0;
 static FILE * dimensions = NULL;
 static int run = -1, finite = 1, redundant = 0, warn = 0, maxcalls = 20000000;
 char dir[] = ".qccXXXXXX";
@@ -67,7 +69,7 @@ FILE * dopen (const char * fname, const char * mode);
   
 void includes (int argc, char ** argv,
 	       char ** grid, int * default_grid,
-	       int * dimension, int * bg, int * layers,
+	       int * dimension, int * bg, int * layers, int * gpu,
 	       const char * dir);
 
 FILE * writepath (char * path, const char * mode)
@@ -108,17 +110,13 @@ FILE * dopen (const char * fname, const char * mode)
   return fout;
 }
 
-void * compdir (FILE * fin, FILE * fout, FILE * swigfp, 
-		char * swigname, char * grid)
+AstRoot * compdir (FILE * fin, FILE * fout, FILE * swigfp, 
+		   char * swigname, char * grid)
 {
   FILE * fout1 = dopen ("_endfor.c", "w");
-
-  void * endfor (FILE * fin, FILE * fout,
-		 const char * grid, int dimension,
-		 int nolineno, int progress, int catch, int parallel, int cpu,
-		 FILE * swigfp, char * swigname);
-  void * ast = endfor (fin, fout1, grid, dimension, nolineno, progress, catch, parallel, cpu,
-		       swigfp, swigname);
+  AstRoot * ast = endfor (fin, fout1, grid, dimension, nolineno, progress, catch,
+			  parallel, cpu, gpu, source == 2,
+			  swigfp, swigname);
   fclose (fout1);
   
   fout1 = dopen ("_endfor.c", "r");
@@ -161,29 +159,33 @@ int main (int argc, char ** argv)
       catch = 1;
     else if (!strcmp (argv[i], "-source"))
       source = 1;
+    else if (!strcmp (argv[i], "-prepost"))
+      source = 2;
     else if (!strcmp (argv[i], "-autolink"))
       autolinks = 1;
     else if (!strcmp (argv[i], "-progress"))
       progress = 1;
     else if (!strncmp (argv[i], "-run=", 5))
       run = atoi (argv[i] + 5);
-    else if (!strncmp (argv[i], "-dimensions", 11)) {
-      if (*(argv[i] + 11) == '=') {
-	if (!strcmp (argv[i] + 12, "dims"))
-	  dimensions = stdin;
-	else {
-	  dimensions = fopen (argv[i] + 12, "w");
-	  if (!dimensions) {
-	    perror (argv[i] + 12);
-	    exit (1);
-	  }
-	}
-      }
-      else
-	dimensions = stderr;
-    }
     else if (!strcmp (argv[i], "-disable-dimensions"))
       dimensions = stdout;
+    else if (!strncmp (argv[i], "-dimensions", 11)) {
+      if (dimensions != stdout) { // dimensions have been disabled
+	if (*(argv[i] + 11) == '=') {
+	  if (!strcmp (argv[i] + 12, "dims"))
+	    dimensions = stdin;
+	  else {
+	    dimensions = fopen (argv[i] + 12, "w");
+	    if (!dimensions) {
+	      perror (argv[i] + 12);
+	      exit (1);
+	    }
+	  }
+	}
+	else
+	  dimensions = stderr;
+      }
+    }
     else if (!strcmp (argv[i], "-non-finite"))
       finite = 0;
     else if (!strcmp (argv[i], "-redundant"))
@@ -309,8 +311,10 @@ int main (int argc, char ** argv)
     char * grid = NULL;
     int default_grid;
     includes (argc, argv, &grid, &default_grid,
-	      &dimension, &bghosts, &layers,
+	      &dimension, &bghosts, &layers, &gpu,
 	      dep || tags ? NULL : dir);
+    if (gpu)
+      parallel = 1;
     FILE * swigfp = NULL;
     char swigname[80] = "";
     if (swig) {
@@ -353,6 +357,8 @@ int main (int argc, char ** argv)
       FILE * fout = dopen (cpp, "w");
       if (swig)
 	fputs ("@include <Python.h>\n", fout);
+      if (gpu)
+	fputs ("@define _GPU 1\n", fout);
       fputs ("@if _XOPEN_SOURCE < 700\n"
 	     "  @undef _XOPEN_SOURCE\n"
 	     "  @define _XOPEN_SOURCE 700\n"
@@ -382,8 +388,12 @@ int main (int argc, char ** argv)
       if (default_grid)
 	fprintf (fout, "#include \"grid/%s.h\"\n", grid);
       char s[81];
-      while (fgets (s, 81, fin))
-	fputs (s, fout);
+      while (fgets (s, 81, fin)) {
+	if (default_grid && strstr (s, "#include \"grid/"))
+	  fputs ("\n", fout);
+	else
+	  fputs (s, fout);
+      }
       if (swigfp)
 	fputs ("#include \"python.h\"\n", fout);
       if (progress)
@@ -468,8 +478,11 @@ int main (int argc, char ** argv)
       fin = dopen (file, "r");
       char line[1024];
       // rest of the file
-      while (fgets (line, 1024, fin))
+      while (fgets (line, 1024, fin)) {
+	if (!strncmp (line, "#line 0 ", 8))
+	  line[6] = '1';
 	fputs (line, fout);
+      }
       fclose (fin);
       fclose (fout);
 

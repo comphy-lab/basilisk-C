@@ -34,12 +34,9 @@ int main()
   DT = DT_MAX;
   N = 64;
   init_grid (N);
-  const scalar lamb[] = WI;
-  lambda = lamb;
-  const scalar mupc[] = MUP;
-  mup = mupc;
-  const face vector mus[] = {MUS,MUS};
-  mu = mus;
+  lambda[] = WI;
+  mup[] = MUP;
+  mu[] = {MUS,MUS};
   stokes = true ;
   run();
 }

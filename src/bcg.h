@@ -8,6 +8,7 @@ face metric), a timestep *dt* and a source term field *src*, it fills
 the face vector field *flux* with the components of the advection
 fluxes of *f*. */
 
+trace
 void tracer_fluxes (scalar f,
 		    face vector uf,
 		    face vector flux,
@@ -64,6 +65,7 @@ The function below uses the *tracer_fluxes* function to integrate the
 advection equation, using an explicit scheme with timestep *dt*, for
 each tracer in the list. */
 
+trace
 void advection (scalar * tracers, face vector u, double dt,
 		scalar * src = NULL)
 {

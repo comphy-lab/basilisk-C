@@ -92,12 +92,12 @@ $\mathbf{u}$) are not the conserved variables $h$ and
 $h\mathbf{u}$. */
 
 trace
-static void advance_saint_venant (scalar * output, scalar * input, 
+static void advance_saint_venant (scalar * soutput, scalar * sinput, 
 				  scalar * updates, double dt)
 {
   // recover scalar and vector fields from lists
-  scalar hi = input[0], ho = output[0], dh = updates[0];
-  vector * uol = (vector *) &output[1];
+  scalar hi = sinput[0], ho = soutput[0], dh = updates[0];
+  vector * uol = (vector *) &soutput[1];
 
   // new fields in ho[], uo[]
   foreach() {
@@ -106,24 +106,23 @@ static void advance_saint_venant (scalar * output, scalar * input,
     eta[] = zb[] + ho[];
     if (ho[] > dry) {
       for (int l = 0; l < nl; l++) {
-        vector uo = vector(output[1 + dimension*l]);
-      	vector ui = vector(input[1 + dimension*l]),
-	  dhu = vector(updates[1 + dimension*l]);
+	vector uo = avector (soutput[1 + dimension*l], soutput[2 + dimension*l]);
+      	vector ui = avector (sinput[1 + dimension*l], sinput[2 + dimension*l]),
+	  dhu = avector (updates[1 + dimension*l], updates[2 + dimension*l]);
 	foreach_dimension()
 	  uo.x[] = (hold*ui.x[] + dt*dhu.x[])/ho[];
       }
-
       /**
       In the case of [multiple
       layers](multilayer.h#viscous-friction-between-layers) we add the
       viscous friction between layers. */
-    
+
       if (nl > 1)
 	vertical_viscosity (point, ho[], uol, dt);
     }
     else // dry
       for (int l = 0; l < nl; l++) {
-        vector uo = vector(output[1 + dimension*l]);
+	vector uo = avector (soutput[1 + dimension*l], soutput[2 + dimension*l]);
         foreach_dimension()
 	  uo.x[] = 0.;
       }
@@ -164,7 +163,7 @@ double update_saint_venant (scalar * evolving, scalar * updates, double dtmax)
   by the predictor-corrector scheme). */
 
   scalar h = evolving[0], dh = updates[0];
-  vector u = vector(evolving[1]);
+  vector u = avector (evolving[1], evolving[2]);
   
   /**
   *Fh* and *Fq* will contain the fluxes for $h$ and $h\mathbf{u}$
@@ -198,7 +197,7 @@ double update_saint_venant (scalar * evolving, scalar * updates, double dtmax)
     its gradient (for the first layer the gradient has already been
     computed above). */
     
-    vector u = vector (evolving[1 + dimension*l]);
+    vector u = avector (evolving[1 + dimension*l], evolving[2 + dimension*l]);
     if (l > 0)
       gradients ((scalar *) {u}, (vector *) {gu});
     
@@ -281,10 +280,10 @@ double update_saint_venant (scalar * evolving, scalar * updates, double dtmax)
     We store the divergence of the fluxes in the update fields. Note that
     these are updates for $h$ and $h\mathbf{u}$ (not $\mathbf{u}$). */
   
-    vector dhu = vector(updates[1 + dimension*l]);
+    vector dhu = avector (updates[1 + dimension*l], updates[2 + dimension*l]);    
+    double layerl = layer[l]; // fixme: arrays with length would be nice
     foreach() {
-      double dhl =
-	layer[l]*(Fh.x[1,0] - Fh.x[] + Fh.y[0,1] - Fh.y[])/(cm[]*Delta);
+      double dhl = layerl*(Fh.x[1,0] - Fh.x[] + Fh.y[0,1] - Fh.y[])/(cm[]*Delta);
       dh[] = - dhl + (l > 0 ? dh[] : 0.);
       foreach_dimension()
 	dhu.x[] = (Fq.x.x[] + Fq.x.y[] - S.x[1,0] - Fq.x.y[0,1])/(cm[]*Delta);
@@ -328,7 +327,7 @@ double update_saint_venant (scalar * evolving, scalar * updates, double dtmax)
 
   if (nl > 1)
     vertical_fluxes ((vector *) &evolving[1], (vector *) &updates[1], wl, dh);
-    
+
   return dtmax;
 }
 

@@ -4,10 +4,10 @@ int main (int argc, char * argv[])
 {
   init_grid (N);
   scalar s[];
+  size (1.);
   origin (-0.5, -0.5, -0.5);
   assert (restore (file = "restore-tree.dump", list = {s}));
   output_cells (stdout);
-  double k = 1.;
   foreach()
-    assert (s[] == sin(k*x)*cos(k*y));
+    assert (s[] == sin(x)*cos(y) + 2.*x + y);
 }

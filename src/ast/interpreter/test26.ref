@@ -1,4 +1,12 @@
 test26.c:8: interpreter_verbosity (4): !
+test26.c:11: _set_element_dimensions (0xaddress, 2  + [test26.c:11: '2'])
+ast/interpreter/declarations.h:21: i < len: 1
+ast/interpreter/declarations.h:22: i: 1
+ast/interpreter/declarations.h:22: 0: 0  + [ast/interpreter/declarations.h:22: '0']
+ast/interpreter/declarations.h:22: 'a[i] == a[0]':  + [test26.c:11: '5'] - [test26.c:11: '4'] = [0]
+ast/interpreter/declarations.h:22: a[i] == a[0]: 0
+ast/interpreter/declarations.h:21: i++: 1
+ast/interpreter/declarations.h:21: i < len: 0
 test26.c:12: i: 0 (unset)
 test26.c:12: b[i]: 4  + [test26.c:11: '4']
 test26.c:13: 0: 0  + [test26.c:13: '0']

@@ -23,7 +23,6 @@ int main (int argc, char * argv[])
   for (int l = start; l <= end; l++) {
     init_grid (1 << l);
     int nloops, i;
-    clock_t start, end;
 
     /**
     We fill `a` with a simple function. */
@@ -44,37 +43,38 @@ int main (int argc, char * argv[])
     $$
     using a 5-points Laplacian operator. */
     
-    start = clock();
+    timer start = timer_start();
     while (i--)
       foreach()
 	b[] = (a[0,1] + a[1,0] + a[0,-1] + a[-1,0] - 4.*a[])/sq(Delta);
-    end = clock();
-    printf ("lap %d %g\n", l, 
-	    1e9*(end - start)/(double)CLOCKS_PER_SEC/(nloops*(1 << 2*l)));
+    printf ("lap %d %g\n", l, 1e9*timer_elapsed (start)/(nloops*(1 << 2*l)));
     
     /**
     Something simpler: the sum of `a` over the entire mesh. */
 
+    scalar s[];
+    foreach()
+      s[] = a[];
+    restriction ({b});
+      
     nloops = i = (1 << 25) >> 2*l;
-    double sum = 0.;
-    start = clock();
-    while (i--)
-      foreach()
+    start = timer_start();
+    double sum;
+    while (i--) {
+      sum = 0.;
+      foreach (reduction(+:sum))
 	sum += a[];
-    end = clock();
-    printf ("sum %d %g %g\n", l, 
-	    1e9*(end - start)/(double)CLOCKS_PER_SEC/(nloops*(1 << 2*l)), sum);
+    }
+    printf ("sum %d %g %g\n", l, 1e9*timer_elapsed (start)/(nloops*(1 << 2*l)), sum);
 
     /**
     And finally the restriction operator. */
 
     nloops = i = (1 << 25) >> 2*l;
-    start = clock();
+    start = timer_start();
     while (i--)
       restriction ({b});
-    end = clock();
-    printf ("res %d %g %g\n", l, 
-	    1e9*(end - start)/(double)CLOCKS_PER_SEC/(nloops*(1 << 2*l)), sum);
+    printf ("res %d %g %g\n", l, 1e9*timer_elapsed (start)/(nloops*(1 << 2*l)), sum);
   }
 }
 
@@ -90,7 +90,8 @@ architecture (cache hierarchy etc...).
 ~~~gnuplot Relative speed of simple operations on a tree mesh
 set xlabel 'Level'
 set ylabel 'Cartesian speed / Quadtree speed'
-set key center right
+set key top right
+set logscale y
 plot '< paste out cout | grep lap' u 2:($3/$6) w lp t '5-points Laplacian', \
      '< paste out cout | grep sum' u 2:($3/$7) w lp t 'Sum', \
      '< paste out cout | grep res' u 2:($3/$7) w lp t 'Restriction'         
@@ -102,8 +103,12 @@ implementations is shown below. Note that Cartesian meshes are fast!
 
 ~~~gnuplot Absolute speed of the 5-points Laplacian on Cartesian and tree meshes
 set ylabel 'nanoseconds per grid point'
-set yrange [0:]
-plot '< grep lap out' u 2:3 w lp t 'Quadtree', \
-     '< grep lap cout' u 2:3 w lp t 'Cartesian'
+set yrange [:]
+plot '< grep lap out' u 2:3 w lp t 'Laplacian (Quadtree)', \
+     '< grep lap cout' u 2:3 w lp t 'Laplacian (Cartesian)', \
+     '< grep sum out' u 2:3 w lp t 'Sum (Quadtree)',   \
+     '< grep sum cout' u 2:3 w lp t 'Sum (Cartesian)', \
+     '< grep res out' u 2:3 w lp t 'Restriction (Quadtree)',   \
+     '< grep res cout' u 2:3 w lp t 'Restriction (Cartesian)'
 ~~~
 */

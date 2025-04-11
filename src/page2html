@@ -34,9 +34,6 @@ while test $# -gt 0; do
 	-*)
 	    usage
 	    ;;
-	*.[cm])
-	    page="$1";
-	    javascripts="<script src=\"/js/status.js\" type=\"text/javascript\"></script>";;
 	*)
 	    page="$1";
 	    ;;
@@ -199,6 +196,8 @@ fi
 if test -z "WIKI_TITLE"; then
     WIKI_TITLE=Basilisk
 fi
+
+javascripts="<script src=\"/js/status.js\" type=\"text/javascript\"></script>"
 
 $PREPROC | $PANDOC -s --katex --toc --preserve-tabs            \
 	   -V wikititle="$WIKI_TITLE"				\

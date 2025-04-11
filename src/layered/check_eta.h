@@ -25,8 +25,8 @@ event update_eta (i++)
       eta_p += h[];
     deta[] = eta_p - eta[];
     if (fabs(deta[]) > 1.1*TOLERANCE)
-      fprintf (stderr, "warning: fabs(etap - eta[]) = %g > 1.1*TOLERANCE = %g "
+      fprintf (stderr, "src/layered/check_eta.h:%d: warning: fabs(etap - eta[]) = %g > 1.1*TOLERANCE = %g "
 	       "at %g,%g,%g\n",
-	       fabs(deta[]), 1.1*TOLERANCE, x, y, t);
+	       LINENO, fabs(deta[]), 1.1*TOLERANCE, x, y, t);
   }
 }

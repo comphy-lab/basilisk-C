@@ -55,9 +55,9 @@ plot 'log' index 'F0 = 0.1' u 1:3 w l t 'C grid (Ro = 0.1)', \
   Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/nonlinear.html)
 */
 
+#include "grid/multigrid.h"
 #include <gsl/gsl_integration.h>
 #pragma autolink -lgsl -lgslcblas
-#include "grid/multigrid.h"
 #if ML
 # include "layered/hydro.h"
 # include "layered/implicit.h"
@@ -68,12 +68,12 @@ double F0 = 0.;
 # include "atmosphere.h"
 #endif
 
-int main()
+int main (int argc, char * argv[])
 {
   // coordinates of lower-left corner
   origin (-0.5 + 1e-12, -0.5 + 1e-12);
   // number of grid points
-  init_grid (64);
+  init_grid (argc > 1 ? atoi(argv[1]) : 64);
   // size of the box
   size (1.[0]);
   DT = HUGE[0];
@@ -83,6 +83,10 @@ int main()
   F0 = 0.1;
   // CFL number: the C-grid model is unstable for larger CFL
   CFL = 0.25;
+#if !ML
+  if (N > 256)
+    NU = 1e-4; // need some viscosity to stabilize at high resolutions
+#endif
   for (F0 = 0.; F0 <= 0.1; F0 += 0.1) {
     fprintf (stderr, "# F0 = %g\n", F0);
     run();
@@ -121,7 +125,7 @@ event init (i = 0)
 #if ML
   CFL_H = 0.25;
 #endif
-  foreach() {
+  foreach (cpu) {
     zb[] = - H0;
     h1[] = h[] = (H0 + h0(sqrt (x*x + y*y)));
   }
@@ -182,7 +186,7 @@ event logfile (i += 10; t <= 5.)
   Energy E = energy();
   if (i == 0)
     E0 = E;
-  fprintf (stderr, "%g %g %.12g %.12g\n", t, error(),
+  fprintf (stderr, "%5g %5g %5g %5g\n", t, error(),
 	   E.ke/(E0.ke + E0.pe), E.pe/(E0.ke + E0.pe));
 }
 

@@ -130,10 +130,12 @@ extern int yydebug;
     MAYBECONST = 331,              /* MAYBECONST  */
     NEW_FIELD = 332,               /* NEW_FIELD  */
     TRACE = 333,                   /* TRACE  */
-    FOREACH = 334,                 /* FOREACH  */
-    FOREACH_INNER = 335,           /* FOREACH_INNER  */
-    FOREACH_DIMENSION = 336,       /* FOREACH_DIMENSION  */
-    REDUCTION = 337                /* REDUCTION  */
+    FOREACH_DIMENSION = 334,       /* FOREACH_DIMENSION  */
+    REDUCTION = 335,               /* REDUCTION  */
+    MACRO = 336,                   /* MACRO  */
+    ELLIPSIS_MACRO = 337,          /* ELLIPSIS_MACRO  */
+    MACRODEF = 338,                /* MACRODEF  */
+    foreach_statement = 339        /* foreach_statement  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

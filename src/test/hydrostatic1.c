@@ -16,8 +16,7 @@ p[top] = dirichlet(0);
 
 event init (i = 0) {
   refine (level == 3 && sq(x) + sq(y) < sq(0.25));
-  const face vector g[] = {0,-1.};
-  a = g;
+  a[] = {0,-1.};
   alpha = new face vector;
   foreach_face()
     alpha.x[] = 1./(0.51 - y);

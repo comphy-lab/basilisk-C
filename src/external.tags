@@ -45,3 +45,7 @@ call	show_dimensions		basilisk	dimensional-analysis
 call	dimensional		basilisk	dimensional-analysis
 call	trace			basilisk	tracing-and-profiling
 call	vertex			basilisk	face-and-vertex-fields
+
+call	macro			basilisk	macros
+call	postmacro		basilisk	macros
+call	None			basilisk	macros

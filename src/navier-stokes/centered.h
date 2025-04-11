@@ -126,6 +126,13 @@ void pressure_embed_gradient (Point point, scalar p, coord * g)
 event defaults (i = 0)
 {
 
+  /**
+  We reset the multigrid parameters to their default values. */
+  
+  mgp = (mgstats){0};
+  mgpf = (mgstats){0};
+  mgu = (mgstats){0};  
+  
   CFL = 0.8;
 
   /**

@@ -43,13 +43,7 @@ struct Viscosity {
 	/(fm.x[] + fm.x[1] + fm.y[] + fm.y[0,1] + SEPS)/(cm[] + SEPS)})
 
 #else // not AXI
-# if dimension == 1
-#   define lambda ((coord){0})
-# elif dimension == 2
-#   define lambda ((coord){0.,0.})
-# elif dimension == 3
-#   define lambda ((coord){0.,0.,0.})
-#endif
+# define lambda ((coord){0.,0.,0.})
 #endif
 
 // Note how the relaxation function uses "naive" gradients i.e. not
@@ -64,7 +58,7 @@ static void relax_diffusion (scalar * a, scalar * b, int l, void * data)
   vector u = vector(a[0]), r = vector(b[0]);
 
   double (* embed_flux) (Point, scalar, vector, double *) = p->embed_flux;
-  foreach_level_or_leaf (l) {
+  foreach_level_or_leaf (l, nowarning) {
     double avgmu = 0.;
     foreach_dimension()
       avgmu += mu.x[] + mu.x[1];

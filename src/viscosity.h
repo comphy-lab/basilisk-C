@@ -106,17 +106,11 @@ and $\lambda^* = 0$. */
 
 #if AXI
 # define lambda ((coord){1., 1. + dt/rho[]*(mu.x[] + mu.x[1] + \
-					    mu.y[] + mu.y[0,1])/2./sq(y)})
+					    mu.y[] + mu.y[0,1])/2./sq(y), 0})
 #elif SPHERISYM
-# define lambda ((coord){1. + 2.*dt/rho[]*(mu.x[] + mu.x[1])/sq(x)})
+# define lambda ((coord){1. + 2.*dt/rho[]*(mu.x[] + mu.x[1])/sq(x), 0})
 #else // !AXI && !SPHERISYM
-# if dimension == 1
-#   define lambda ((coord){1.})
-# elif dimension == 2
-#   define lambda ((coord){1.,1.})
-# elif dimension == 3
-#   define lambda ((coord){1.,1.,1.})
-#endif
+# define lambda ((coord){1.,1.,1.})
 #endif
 
 /**
@@ -145,35 +139,57 @@ static void relax_viscosity (scalar * a, scalar * b, int l, void * data)
 #else
   vector w = u;
 #endif
+
+  /**
+  We have the option of using red/black Gauss-Seidel relaxation or
+  "re-use as soon as computed" relaxation. On GPUs (and probably also
+  with OpenMP) red/black Gauss-Seidel converges much better (but
+  requires two foreach() iterations). Note also that, unlike the other
+  option, red/black relaxation should be deterministic. */
   
-  foreach_level_or_leaf (l) {
+#if GAUSS_SEIDEL || _GPU
+  vector ua[];
+  foreach_level (l)
     foreach_dimension()
-      w.x[] = (dt/rho[]*(2.*mu.x[1]*u.x[1] + 2.*mu.x[]*u.x[-1]
-               #if dimension > 1
-			   + mu.y[0,1]*(u.x[0,1] +
-					(u.y[1,0] + u.y[1,1])/4. -
-					(u.y[-1,0] + u.y[-1,1])/4.)
-			   - mu.y[]*(- u.x[0,-1] +
-				     (u.y[1,-1] + u.y[1,0])/4. -
-				     (u.y[-1,-1] + u.y[-1,0])/4.)
-               #endif
-	       #if dimension > 2
-			   + mu.z[0,0,1]*(u.x[0,0,1] +
-					  (u.z[1,0,0] + u.z[1,0,1])/4. -
-					  (u.z[-1,0,0] + u.z[-1,0,1])/4.)
-			   - mu.z[]*(- u.x[0,0,-1] +
-				     (u.z[1,0,-1] + u.z[1,0,0])/4. -
-				     (u.z[-1,0,-1] + u.z[-1,0,0])/4.)
-               #endif
-			   ) + r.x[]*sq(Delta))/
-    (sq(Delta)*lambda.x + dt/rho[]*(2.*mu.x[1] + 2.*mu.x[]
-                                    #if dimension > 1
+      ua.x[] = u.x[];
+  boundary_level ((scalar *){ua}, l);
+  for (int parity = 0; parity < 2; parity++)
+    foreach_level_or_leaf (l)
+      if (level == 0 || ((point.i + parity) % 2) != (point.j % 2))
+#else
+#if dimension > 1
+  vector ua = u;
+#endif
+  foreach_level_or_leaf (l)
+#endif
+  {
+    foreach_dimension()
+      w.x[] = (r.x[]*sq(Delta) + dt/rho[]*(2.*mu.x[1]*u.x[1] + 2.*mu.x[]*u.x[-1]
+#if dimension > 1
+					   + mu.y[0,1]*(u.x[0,1] +
+							(u.y[1,0] + ua.y[1,1])/4. -
+							(u.y[-1,0] + ua.y[-1,1])/4.)
+					   - mu.y[]*(- u.x[0,-1] +
+						     (ua.y[1,-1] + u.y[1,0])/4. -
+						     (ua.y[-1,-1] + u.y[-1,0])/4.)
+#endif
+#if dimension > 2
+					   + mu.z[0,0,1]*(u.x[0,0,1] +
+							  (u.z[1,0,0] + ua.z[1,0,1])/4. -
+							  (u.z[-1,0,0] + ua.z[-1,0,1])/4.)
+					   - mu.z[]*(- u.x[0,0,-1] +
+						     (ua.z[1,0,-1] + u.z[1,0,0])/4. -
+						     (ua.z[-1,0,-1] + u.z[-1,0,0])/4.)
+#endif
+					   ))/
+      (lambda.x*sq(Delta) + dt/rho[]*(2.*mu.x[1] + 2.*mu.x[]
+#if dimension > 1
 				      + mu.y[0,1] + mu.y[]
-                                    #endif
-			            #if dimension > 2
+#endif
+#if dimension > 2
 				      + mu.z[0,0,1] + mu.z[]
-			            #endif
-			     ));
+#endif
+				      ));
   }
 
 #if JACOBI

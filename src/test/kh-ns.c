@@ -41,7 +41,7 @@ int main()
   We define a [rectangular domain using (eight) parallel
   domains](/src/Tips#non-cubic-domains). */
   
-  dimensions (ny = 1);
+  dimensions (nx = 8, ny = 1);
   L0 = npe();
   X0 = -L0/2.;
   N = 64*npe();
@@ -51,8 +51,7 @@ int main()
   
   a = av;
   DT = 0.03;
-  const face vector muc[] = {2e-4,2e-4};
-  mu = muc;
+  mu[] = {2e-4,2e-4};
 
   /**
   This is required due to a problem with the automatic increase in the

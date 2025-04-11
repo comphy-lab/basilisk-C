@@ -2,13 +2,13 @@
 #include <kdt/kdt.h>
 #pragma autolink -L$BASILISK/kdt -lkdt
 
-@if _OPENMP
-@ define NPROC omp_get_max_threads()
-@ define PROC tid()
-@else
-@ define NPROC 1
-@ define PROC 0
-@endif
+#if _OPENMP
+# define NPROC omp_get_max_threads()
+# define PROC tid()
+#else
+# define NPROC 1
+# define PROC 0
+#endif
 
 attribute {
   void ** kdt;
@@ -39,6 +39,7 @@ static int intersects (KdtRect rect, Point * p)
   return intersects_point (rect, *p);
 }
 
+#if MULTIGRID
 static void reconstruct_terrain (Point point, scalar zb)
 {
   KdtSum s;
@@ -77,19 +78,24 @@ void refine_terrain (Point point, scalar zb)
   foreach_child()
     reconstruct_terrain (point, zb);
 }
+#endif // MULTIGRID
 
-static void delete_terrain (scalar zb)
+void delete_terrain (scalar zb)
 {
+  if (!zb.kdt)
+    return;
   for (int i = 0; i < NPROC; i++) {
     for (Kdt ** kdt = (Kdt **) zb.kdt[i]; *kdt; kdt++)
       kdt_destroy (*kdt);
     free (zb.kdt[i]);
   }
   free (zb.kdt);
+  zb.kdt = NULL;
 }
 
 @define CHARP char * // fixme: workaround for va_arg macro
 
+trace
 void terrain (scalar zb, ...)
 {
   zb.kdt = qcalloc (NPROC, void *);
@@ -144,9 +150,42 @@ void terrain (scalar zb, ...)
 #endif
 
   trash ({zb});
+#if MULTIGRID && !_GPU
   for (int l = 0; l <= depth(); l++) {
     foreach_level (l)
       reconstruct_terrain (point, zb);
     boundary_level ({zb}, l);
   }
+#else
+  foreach (cpu) {
+    KdtSum s;
+    int niter = 8;
+    do {
+      kdt_sum_init (&s);
+      KdtRect rect = {{x - Delta_x/2., x + Delta_x/2.},
+		      {y - Delta_y/2., y + Delta_y/2.}};
+      for (Kdt ** kdt = (Kdt **) zb.kdt[PROC]; *kdt; kdt++)
+	kdt_query_sum (*kdt,
+		       (KdtCheck) includes,
+		       (KdtCheck) intersects, &point,
+		       rect, &s);
+      Delta_x *= 2., Delta_y *= 2.;
+    } while (!s.w && niter--);
+    scalar n = zb.nt, dmin = zb.dmin, dmax = zb.dmax;
+    n[] = s.n;
+    if (s.w > 0.) {
+      zb[] = s.H0/s.w;
+      dmin[] = s.Hmin;
+      dmax[] = s.Hmax;
+    }
+    else {
+      zb[] = 0.;
+      dmin[] = nodata;
+      dmax[] = nodata;
+    }
+  }
+#endif
+#if !TREE
+  delete_terrain (zb);
+#endif
 }

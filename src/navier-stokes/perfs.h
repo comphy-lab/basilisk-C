@@ -9,11 +9,14 @@ event perfs (i += 1) {
   if (i == 0)
     fprintf (fp,
 	     "t dt mgp.i mgp.nrelax mgpf.i mgpf.nrelax mgu.i mgu.nrelax "
-	     "grid->tn perf.t perf.speed npe\n");
-  fprintf (fp, "%g %g %d %d %d %d %d %d %ld %g %g %d\n", 
+	     "grid->tn perf.t perf.speed npe perf.ispeed\n");
+  static double start = 0.;
+  if (i > 10 && perf.t - start < 1.) return 0;
+  fprintf (fp, "%g %g %d %d %d %d %d %d %ld %g %g %d %g\n", 
 	   t, dt, mgp.i, mgp.nrelax, mgpf.i, mgpf.nrelax, mgu.i, mgu.nrelax,
-	   grid->tn, perf.t, perf.speed, npe());
+	   grid->tn, perf.t, perf.speed, npe(), perf.ispeed);
   fflush (fp);
+  start = perf.t;
 }
 
 /**

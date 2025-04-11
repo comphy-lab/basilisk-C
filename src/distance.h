@@ -287,7 +287,7 @@ static void update_distance (Point point, coord ** i, scalar d)
     coord * p = NULL;
     array_append (a, &p, sizeof(coord *));
     p = (coord *) array_shrink (a);
-    assert (sizeof(double) >= sizeof(void *));
+    assert (sizeof(real) >= sizeof(void *));
     memcpy (&surface[], &p, sizeof(void *));
 
     int orient;
@@ -488,7 +488,7 @@ void distance (scalar d, coord * p)
   array_append (a, &p, sizeof (coord *));
   p = (coord *) array_shrink (a);
 
-  foreach_level(0)
+  foreach_level (0, noauto)
     update_distance (point, (coord **) p, d);
   free (p);
   

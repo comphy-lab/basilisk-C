@@ -25,9 +25,10 @@ int main()
   display_value (d);
 
   /**
-  Same here, but [e] must also be zero and so [4] is zero. */
+  Here, there is only one constant (3) in the conditional expression,
+  whose dimension must [e] == [-1]. */
   
-  double e = 4;
+  double e = 4 [-1];
   d = c*(b > 0 ? 3 : e);
   display_value (d);
 

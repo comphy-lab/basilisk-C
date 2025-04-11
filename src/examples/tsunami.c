@@ -162,9 +162,12 @@ event init (i = 0)
 {
   terrain (zb, "~/terrain/etopo2", NULL);
 
-  if (restore (file = "dump"))
+#if MULTIGRID  
+  if (restore (file = "restart"))
     conserve_elevation();
-  else {
+  else
+#endif // MULTIGRID
+  {
     conserve_elevation();
     
     /**
@@ -278,7 +281,7 @@ bilinearly onto a *n x n* regular grid and written on standard
 output. */
 
 event snapshots (t += 60; t <= 600) {
-
+#if !BENCHMARK
 #if !_MPI
   printf ("file: t-%g\n", t);
   output_field ({h, zb, hmax}, stdout, n = 1 << maxlevel, linear = true);
@@ -287,7 +290,10 @@ event snapshots (t += 60; t <= 600) {
   /**
   We also save a snapshot file we can restart from. */
 
+#if TREE
   dump (file = "dump");
+#endif
+#endif // !BENCHMARK
 }
 
 /**
@@ -306,7 +312,7 @@ as this one:
 
 ! awk '{ if ($1 == "file:") file = $2; else print $0 > file; }' < out
 
-set term pngcairo enhanced size 700,700 font ",8"
+set term pngcairo enhanced size 1024,1024 font ",8"
 set output 'maximum.png'
 
 # this sets the color palette to "jet"
@@ -343,14 +349,15 @@ We use the *mask* option of *output_ppm()* to mask out the dry
 topography. Any part of the image for which *m[]* is negative
 (i.e. for which *etam[] < zb[]*) will be masked out. */
 
+#if !BENCHMARK
 event movies (t++) {
   scalar m[], etam[];
   foreach() {
-    etam[] = eta[]*(h[] > dry);
+    etam[] = eta[]*(h[] > dry ? 1. : 0.);
     m[] = etam[] - zb[];
   }
   output_ppm (etam, mask = m, min = -2, max = 2, n = 512, linear = true,
-	      file = "eta.mp4");
+	      fps = 30, file = "eta.mp4");
 
   /**
   After completion this will give the following animation
@@ -362,7 +369,7 @@ event movies (t++) {
   (defined by the lower-left, upper-right coordinates). */
   
   output_ppm (etam, mask = m, min = -2, max = 2, n = 512, linear = true,
-	      box = {{91,5},{100,14}}, file = "eta-zoom.mp4");
+	      fps = 30, box = {{91,5},{100,14}}, file = "eta-zoom.mp4");
 
   /**
   ![Animation of the wave elevation. Dark blue is -2 metres and
@@ -370,18 +377,20 @@ event movies (t++) {
   
   And repeat the operation for the level of refinement...*/
 
+#if TREE  
   scalar l = etam;
   foreach()
     l[] = level;
   output_ppm (l, min = MINLEVEL, max = maxlevel, n = 512, file = "level.mp4");
-
+#endif
+  
   /**
   ![Animation of the level of refinement. Dark blue is 5 and dark red
   is 10.](tsunami/level.mp4)
   
   ...and for the process id for parallel runs. */
   
-#if _OPENMP || _MPI
+#if (_OPENMP || _MPI) && !_GPU
   foreach()
     etam[] = tid();
   double tmax = npe() - 1;
@@ -494,7 +503,7 @@ event kml (t += 15)
   fflush (fp);
   scalar m[], etam[];
   foreach() {
-    etam[] = eta[]*(h[] > dry);
+    etam[] = eta[]*(h[] > dry ? 1. : 0.);
     m[] = etam[] - zb[];
   }
   char name[80];
@@ -504,6 +513,7 @@ event kml (t += 15)
   if (t == 600)
     fprintf (fp, "</Folder></kml>\n");
 }
+#endif // !BENCHMARK
 
 /**
 ## Adaptivity

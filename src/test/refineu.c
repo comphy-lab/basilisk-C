@@ -78,6 +78,7 @@ int main (int argc, char ** argv)
 #endif
   }
 
+  size (1[0]);
   origin (-0.5, -0.5, -0.5);
   double R0 = 0.1;
   foreach()

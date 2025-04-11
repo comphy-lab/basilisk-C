@@ -354,19 +354,25 @@ void fractions (vertex scalar Phi, scalar c,
 The convenience macros below can be used to define volume and surface
 fraction fields directly from a function. */
 
-#define fraction(f,func) do {			\
-    vertex scalar phi[];			\
-    foreach_vertex()				\
-      phi[] = func;				\
-    fractions (phi, f);				\
-  } while(0)
+macro fraction (scalar f, double func)
+{
+  {
+    vertex scalar phi[];
+    foreach_vertex()
+      phi[] = func;
+    fractions (phi, f);
+  }
+}
 
-#define solid(cs,fs,func) do {			\
-    vertex scalar phi[];			\
-    foreach_vertex()				\
-      phi[] = func;				\
-    fractions (phi, cs, fs);			\
-  } while(0)
+macro solid (scalar cs, face vector fs, double func)
+{
+  {
+    vertex scalar phi[];
+    foreach_vertex()
+      phi[] = func;
+    fractions (phi, cs, fs);
+  }
+}
 
 /**
 ### Boolean operations
@@ -509,7 +515,7 @@ the volume fraction field, which results in a piecewise continuous
 trace
 void output_facets (scalar c, FILE * fp = stdout, face vector s = {{-1}})
 {
-  foreach()
+  foreach (serial)
     if (c[] > 1e-6 && c[] < 1. - 1e-6) {
       coord n = facet_normal (point, c, s);
       double alpha = plane_alpha (c[], n);

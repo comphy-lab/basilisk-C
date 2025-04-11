@@ -24,8 +24,7 @@ int main() {
 #if REDUCED
   G.y = -9.81;
 #else
-  const face vector g[] = {0,-9.81};
-  a = g;
+  a[] = {0,-9.81};
 #endif
   DT = 5e-3;
   TOLERANCE = 1e-6;
@@ -56,13 +55,6 @@ event interface (t = {0,0.2,0.4,0.8}) {
   output_field ({l}, fp);
   fclose (fp);
 }
-
-#if 0
-event gfsview (i += 10) {
-  static FILE * fp = popen("gfsview2D -s rt.gfv", "w");
-  output_gfs (fp);
-}
-#endif
 
 #if TREE
 event adapt (i++) {

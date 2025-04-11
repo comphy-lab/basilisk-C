@@ -17,7 +17,7 @@ static void rectangular_source (const double U[3], double cosd, double sind,
 
   mulambda = mulambda/(1. + mulambda);
   double logReta = R + eta > 1e-6 ? log (R + eta) : - log (R - eta);
-  double Reta = fabs (R + eta) > 1e-6 ? R + eta : 1e30;
+  double Reta = fabs (R + eta) > 1e-6 ? R + eta : HUGE;
   double I1, I2, I3, I4, I5;
   if (fabs (cosd) > 1e-6) {
     /* formula (28) */
@@ -133,7 +133,7 @@ void okada (scalar d,
                           length, width, U};
     faults = lfaults;
   }
-  foreach() {
+  foreach (cpu) {
     d[] = 0.;
     for (Fault * f = faults; f && f->depth > 0.; f++) {
       double depth = f->depth, dtr = pi/180.;

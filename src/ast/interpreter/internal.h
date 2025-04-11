@@ -14,6 +14,7 @@ char * strcpy (char *dest, const char *src) {}
 char * strcat (char * dest, const char * src) {}
 long strlen (const char * s) {}
 int strcmp (const char * s1, const char * s2) {}
+int strncmp (const char * s1, const char * s2, long size) {}
 
 double fabs (double x) {}
 double sqrt (double x) {}
@@ -36,9 +37,7 @@ double atanh (double a) {}
 double atan2 (double y, double x) {}
 double pow (double x, double y) {}
 
-double sq (double x){}
-double cube (double x){}
-
 void interpreter_verbosity (int verbosity) {}
+void interpreter_maximum_iterations (int maximum_iterations) {}
 void display_value (void * value) {}
-void reset_field_value (double * field, const char * name, double val) {}
+void reset_field_value (real * field, const char * name, real val, int block) {}

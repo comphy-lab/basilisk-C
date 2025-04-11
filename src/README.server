@@ -10,19 +10,16 @@ binaries in
 ~~~bash
 $HOME/lib/libkdt.a
 $HOME/lib/libglutils.a
-$HOME/lib/libfb_osmesa.a
-$HOME/include/kdt/kdt.h
-$HOME/include/gl/framebuffer.h
-$HOME/include/gl/utils.h
-$HOME/include/gl/trackball.h
-$HOME/include/gl/gl2ps/gl2ps.h
+$HOME/lib/libfb_tiny.a
+$HOME/lib/libppr.a
+$HOME/lib/libvofi.a
 $HOME/bin/ppm2mpeg
 $HOME/bin/ppm2mp4
 $HOME/bin/ppm2gif
 $HOME/bin/xyz2kdt
 ~~~
 
-Append this to the start of `.bashrc`
+Create a file called `.bashrc-untrusted` containing:
 
 ~~~bash
 # number of simultaneous Task Spooler jobs
@@ -92,7 +89,7 @@ statustest()
 If you also intend to generate graphics etc... on the server, do
 
 ~~~bash
-sudo apt-get install gnuplot gnuplot-nox imagemagick ffmpeg smpeg-plaympeg graphviz valgrind gifsicle libglu1-mesa-dev libosmesa6-dev
+sudo apt install gnuplot gnuplot-nox imagemagick ffmpeg graphviz valgrind gifsicle libnetcdff-dev
 ~~~
 
 ## Creating the untrusted user
@@ -104,7 +101,15 @@ basilisk ALL=(basilisk-untrusted) NOPASSWD: ALL
 EOF
 chmod 0440 /etc/sudoers.d/basilisk
 useradd basilisk-untrusted -d /nonexistent -s /bin/bash
-service sudo restart
+service sudo restart # may not be necessary
+~~~
+
+Note that `basilisk-untrusted` must have read access to
+`/home/basilisk/.bashrc-untrusted`, for example using:
+
+~~~bash
+sudo chmod o+rx /home/basilisk/
+chmod o+r /home/basilisk/.bashrc-untrusted
 ~~~
 
 ## Using the server

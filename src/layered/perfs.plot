@@ -143,7 +143,7 @@ set y2tics auto
 unset ylabel
 set y2label 'points.step/sec/core'
 set format y '%e'
-plot 'perfs' u 1:($7/$8) every EVERY w boxes lc 0
+plot 'perfs' u 1:($9/$8) every EVERY w boxes lc 0
 
 unset multiplot
 

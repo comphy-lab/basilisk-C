@@ -62,36 +62,35 @@ Array * linear_tree (size_t size, scalar newpid)
   return a;
 }
 
-@def foreach_tree(t, size, list)
+macro2 foreach_tree (Array * t, size_t size, scalar * list, scalar newpid = newpid)
 {
-  const unsigned short _sent = 1 << user, _next = 1 << (user + 1);
-  scalar * _list = list;
-  char * _i = (char *) (t)->p;
-  foreach_cell_all() {
-    Cell * c = (Cell *) _i;
-    if (c->flags & _sent) {
-      _i += size;
-@
-
-@def end_foreach_tree()
+  {
+    const unsigned short _sent = 1 << user, _next = 1 << (user + 1);
+    scalar * _list = list;
+    char * _i = (char *) (t)->p;
+    foreach_cell_all() {
+      Cell * c = (Cell *) _i;
+      if (c->flags & _sent) {
+	_i += size;
+	{...}
+      }
+      else
+	_i += sizeof(Cell);
+      if (c->flags & _next) {
+	assert (c->neighbors);
+	if (!(c->flags & leaf) && is_leaf(cell) &&
+	    (!is_newpid() || !NEWPID()->leaf))
+	  /* refined */
+	  refine_cell (point, _list, 0, NULL);
+	else if (!cell.neighbors)
+	  /* prolongation */
+	  alloc_children (point);
+      }
+      else
+	continue;
     }
-    else
-      _i += sizeof(Cell);
-    if (c->flags & _next) {
-      assert (c->neighbors);
-      if (!(c->flags & leaf) && is_leaf(cell) &&
-	  (!is_newpid() || !NEWPID()->leaf))
-	/* refined */
-	refine_cell (point, _list, 0, NULL);
-      else if (!cell.neighbors)
-	/* prolongation */
-	alloc_children (point);
-    }
-    else
-      continue;
-  } end_foreach_cell_all();
+  }
 }
-@
 
 Array * neighborhood (scalar newpid, int nextpid, FILE * fp)
 {

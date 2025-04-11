@@ -3,78 +3,144 @@
 void (* debug)    (Point);
 
 @define _val_constant(a,k,l,m) ((const double) _constant[a.i -_NVARMAX])
-@define diagonalize(a)
 @define val_diagonal(a,k,l,m) ((k) == 0 && (l) == 0 && (m) == 0)
 
-@undef VARIABLES
-@def VARIABLES
-  double Delta = L0*_DELTA; /* cell size */
-  double Delta_x = Delta; /* cell size (with mapping) */
-#if dimension > 1
-  double Delta_y = Delta; /* cell size (with mapping) */
-#endif
-#if dimension > 2
-  double Delta_z = Delta; /* cell size (with mapping) */
-#endif
-  /* cell/face center coordinates */
-  double x = (ig/2. + _I + 0.5)*Delta + X0; NOT_UNUSED(x);
-#if dimension > 1
-  double y = (jg/2. + _J + 0.5)*Delta + Y0;
-#else
-  double y = 0.;
-#endif
- NOT_UNUSED(y);
-#if dimension > 2
-  double z = (kg/2. + _K + 0.5)*Delta + Z0;
-#else
-  double z = 0.;
-#endif
-  NOT_UNUSED(z);
-  /* we need this to avoid compiler warnings */
-  NOT_UNUSED(Delta);
-  NOT_UNUSED(Delta_x);
-#if dimension > 1
-  NOT_UNUSED(Delta_y);
-#endif
-#if dimension > 2
-  NOT_UNUSED(Delta_z);
-#endif
-  /* and this when catching FPEs */
-  _CATCH;
-@
-
 #include "fpe.h"
+#include "stencils.h"
 
-@define end_foreach_face()
-
-@def foreach_point(...)
+macro2 foreach_point (double _x = 0., double _y = 0., double _z = 0.,
+		      char flags = 0, Reduce reductions = None)
 {
-  int ig = 0, jg = 0, kg = 0; NOT_UNUSED(ig); NOT_UNUSED(jg); NOT_UNUSED(kg);
-  coord _p = { S__VA_ARGS__ };
-  Point point = locate (_p.x, _p.y, _p.z); // fixme
-  if (point.level >= 0) {
-    POINT_VARIABLES
-@
-@define end_foreach_point() }}
+  {
+    int ig = 0, jg = 0, kg = 0; NOT_UNUSED(ig); NOT_UNUSED(jg); NOT_UNUSED(kg);
+    coord _p = { _x, _y, _z };
+    Point point = locate (_p.x, _p.y, _p.z); // fixme
+    if (point.level >= 0)
+      {...}
+  }
+}
 
-@def foreach_region(p, box, n)
-  OMP_PARALLEL() { NOT_UNUSED (p);
-    coord p = {0, 0, box[0].z};
-    OMP(omp for schedule(static))
-      for (int _i = 0; _i < (int) n.x; _i++) {
-	p.x = box[0].x + (box[1].x - box[0].x)/n.x*(_i + 0.5);
-	for (int _j = 0; _j < (int) n.y; _j++) {
-	  p.y = box[0].y + (box[1].y - box[0].y)/n.y*(_j + 0.5);
-	  Point point = locate (p.x, p.y, p.z); // fixme
+macro2 foreach_region (coord p, coord box[2], coord n,
+		       char flags = 0, Reduce reductions = None)
+{
+  {
+    if (n.x < 1) n.x = 1;
+    if (n.y < 1) n.y = 1;
+    if (n.z < 1) n.z = 1;
+    //  OMP(omp for schedule(static))
+    for (int _i = 0; _i < (int) n.x; _i++) {
+      p.x = box[0].x + (box[1].x - box[0].x)/n.x*(_i + 0.5);
+      for (int _j = 0; _j < (int) n.y; _j++) {
+	p.y = box[0].y + (box[1].y - box[0].y)/n.y*(_j + 0.5);
+	for (int _k = 0; _k < (int) n.z; _k++) {
+	  p.z = box[0].z + (box[1].z - box[0].z)/n.z*(_k + 0.5);
+	  Point point = locate (p.x, p.y, p.z);
 	  if (point.level >= 0) {
 	    int ig = 0, jg = 0, kg = 0; NOT_UNUSED(ig); NOT_UNUSED(jg); NOT_UNUSED(kg);
-	    POINT_VARIABLES
-@
-@define end_foreach_region() }}}}
+	    {...}
+	  }
+	}
+      }
+    }
+  }
+}
 
-// field allocation
-//
-// if this routine is modified, do not forget to update /src/ast/interpreter/overload.h
+/**
+Dirichlet and Neumann boundary conditions */
+
+static inline
+double dirichlet (double expr, Point point = point, scalar s = _s)
+{
+  return 2.*expr - s[];
+}
+
+static inline
+double dirichlet_homogeneous (double expr, Point point = point, scalar s = _s)
+{
+  return - s[];
+}
+
+static inline
+double dirichlet_face (double expr)
+{
+  return expr;
+}
+
+static inline
+double dirichlet_face_homogeneous (double expr)
+{
+  return 0.;
+}
+
+static inline
+double neumann (double expr, Point point = point, scalar s = _s)
+{
+  return Delta*expr + s[];
+}
+
+static inline
+double neumann_homogeneous (double expr, Point point = point, scalar s = _s)
+{
+  return s[];
+}
+
+/**
+Register functions on GPUs */
+
+#if _GPU
+#include "khash.h"
+KHASH_MAP_INIT_INT64(PTR, External)
+
+static khash_t(PTR) * _functions = NULL;
+  
+static External * _get_function (long ptr)
+{
+  if (!_functions)
+    return NULL;  
+  khiter_t k = kh_get (PTR, _functions, ptr);
+  if (k == kh_end (_functions))
+    return NULL;
+  return &kh_value (_functions, k);
+}
+
+static void register_function (void (* ptr) (void), const char * name,
+			       const char * kernel, const void * externals)
+{
+  static int index = 1;
+  if (!_functions)
+    _functions = kh_init (PTR), index = 1;
+  int m = 0;
+  for (const External * i = externals; i && i->name; i++, m++);
+  External * copy = NULL;
+  if (m > 0) {
+    copy = malloc ((m + 1)*sizeof (External));
+    memcpy (copy, externals, (m + 1)*sizeof (External));
+  }
+  int ret;
+  khiter_t k = kh_put(PTR, _functions, (long) ptr, &ret);
+  External p = {
+    .name = (char *) name,
+    .type = sym_function_definition,
+    .pointer = (void *)(long) ptr, .nd = index++,
+    .data = (void *) kernel, .externals = copy
+  };
+  kh_value(_functions, k) = p;
+}
+
+#define foreach_function(f, body) do {					\
+    for (khiter_t k = kh_begin(_functions); k != kh_end(_functions); ++k) \
+      if (kh_exist(_functions, k)) {					\
+	External * f = &kh_value(_functions, k);			\
+	body;								\
+      }									\
+  } while(0)
+
+#endif // _GPU
+
+/**
+# Field allocation
+
+If this routine is modified, do not forget to update [/src/ast/interpreter/overload.h](). */
 
 static void init_block_scalar (scalar sb, const char * name, const char * ext,
 			       int n, int block)
@@ -86,7 +152,6 @@ static void init_block_scalar (scalar sb, const char * name, const char * ext,
     baseblock = list_append (baseblock, sb);
   }
   else {
-     // fixme: should use functions compatible with the interpreter
     sprintf (bname, "%s%d%s", name, n, ext);
     sb.block = - n;
   }
@@ -100,7 +165,7 @@ static void init_block_scalar (scalar sb, const char * name, const char * ext,
 scalar alloc_block_scalar (const char * name, const char * ext, int block)
 {
   interpreter_set_int (&block);
-  int nvar = datasize/sizeof(double);
+  int nvar = datasize/sizeof(real);
 
   scalar s = {0};
   while (s.i < nvar) {
@@ -135,7 +200,7 @@ scalar alloc_block_scalar (const char * name, const char * ext, int block)
     init_block_scalar (sb, name, ext, n, block);
   }
   // allocate extra space on the grid
-  realloc_scalar (block*sizeof(double));
+  realloc_scalar (block*sizeof(real));
   trash (((scalar []){s, {-1}})); // fixme: only trashes one block?
   return s;
 }
@@ -255,8 +320,10 @@ static int nconst = 0;
 void init_const_scalar (scalar s, const char * name, double val)
 {
   if (s.i - _NVARMAX >= nconst) {
+    qrealloc (_constant, s.i - _NVARMAX + 1, double);
+    for (int i = nconst; i < s.i - _NVARMAX; i++)
+      _constant[i] = 0.;
     nconst = s.i - _NVARMAX + 1;
-    qrealloc (_constant, nconst, double);
   }
   _constant[s.i - _NVARMAX] = val;
 }
@@ -286,9 +353,8 @@ vector new_const_vector (const char * name, int i, double * val)
 static void cartesian_scalar_clone (scalar clone, scalar src)
 {
   char * cname = clone.name;
-  double (** boundary) (Point, Point, scalar, void *) = clone.boundary;
-  double (** boundary_homogeneous) (Point, Point, scalar, void *) =
-    clone.boundary_homogeneous;
+  BoundaryFunc * boundary = clone.boundary;
+  BoundaryFunc * boundary_homogeneous = clone.boundary_homogeneous;
   assert (src.block > 0 && clone.block == src.block);
   free (clone.depends);
   _attribute[clone.i] = _attribute[src.i];
@@ -305,7 +371,7 @@ static void cartesian_scalar_clone (scalar clone, scalar src)
 scalar * list_clone (scalar * l)
 {
   scalar * list = NULL;
-  int nvar = datasize/sizeof(double), map[nvar];
+  int nvar = datasize/sizeof(real), map[nvar];
   for (int i = 0; i < nvar; i++)
     map[i] = -1;
   for (scalar s in l) {
@@ -391,6 +457,10 @@ void free_solver()
   free (Events); Events = NULL;
   free (_attribute); _attribute = NULL;
   free (_constant); _constant = NULL;
+#if _GPU
+  foreach_function (f, free ((void *) f->externals));
+  kh_destroy (PTR, _functions); _functions = NULL;
+#endif
   free_grid();
   qpclose_all();
 @if TRACE
@@ -468,6 +538,12 @@ void boundary_internal (scalar * list, const char * fname, int line)
       free (listf.x);
   }
   if (listc) {
+#if PRINTBOUNDARY
+    fprintf (stderr, "boundary_internal: listc:");
+    for (scalar s in listc)
+      fprintf (stderr, " %d:%s", s.i, s.name);
+    fputc ('\n', stderr);
+#endif
     boundary_level (listc, -1);
     for (scalar s in listc)
       s.dirty = false;
@@ -487,17 +563,17 @@ void cartesian_boundary_face (vectorl list)
       s.dirty = 2;
 }
 
-static double symmetry (Point point, Point neighbor, scalar s, void * data)
+static double symmetry (Point point, Point neighbor, scalar s, bool * data)
 {
   return s[];
 }
 
-static double antisymmetry (Point point, Point neighbor, scalar s, void * data)
+static double antisymmetry (Point point, Point neighbor, scalar s, bool * data)
 {
   return -s[];
 }
 
-double (* default_scalar_bc[]) (Point, Point, scalar, void *) = {
+BoundaryFunc default_scalar_bc[] = {
   symmetry, symmetry, symmetry, symmetry, symmetry, symmetry
 };
 
@@ -512,21 +588,17 @@ scalar cartesian_init_scalar (scalar s, const char * name)
   else
     pname = s.name;
   int block = s.block;
-  double (** boundary) (Point, Point, scalar, void *) = s.boundary;
-  double (** boundary_homogeneous) (Point, Point, scalar, void *) =
-    s.boundary_homogeneous;
+  BoundaryFunc * boundary = s.boundary;
+  BoundaryFunc * boundary_homogeneous = s.boundary_homogeneous;
   s.name = pname;
   if (block < 0)
     s.block = block;
   else
     s.block = block > 0 ? block : 1;
   /* set default boundary conditions */  
-  s.boundary = boundary ? boundary :
-    (double (**)(Point, Point, scalar, void *))
-    malloc (nboundary*sizeof (void (*)()));
+  s.boundary = boundary ? boundary : (BoundaryFunc *) malloc (nboundary*sizeof (BoundaryFunc));
   s.boundary_homogeneous = boundary_homogeneous ? boundary_homogeneous :
-    (double (**)(Point, Point, scalar, void *))
-    malloc (nboundary*sizeof (void (*)()));
+    (BoundaryFunc *) malloc (nboundary*sizeof (BoundaryFunc));
   for (int b = 0; b < nboundary; b++)
     s.boundary[b] = s.boundary_homogeneous[b] =
       b < 2*dimension ? default_scalar_bc[b] : symmetry;
@@ -549,7 +621,7 @@ scalar cartesian_init_vertex_scalar (scalar s, const char * name)
   return s;
 }
   
-double (* default_vector_bc[]) (Point, Point, scalar, void *) = {
+BoundaryFunc default_vector_bc[] = {
   antisymmetry, antisymmetry,
   antisymmetry, antisymmetry,
   antisymmetry, antisymmetry
@@ -565,7 +637,7 @@ vector cartesian_init_vector (vector v, const char * name)
       cartesian_init_scalar (v.x, cname);
     }
     else
-      init_scalar (v.x, NULL);
+      cartesian_init_scalar (v.x, NULL);
     v.x.v = v;
   }
   /* set default boundary conditions */
@@ -853,6 +925,15 @@ void interpolate_array (scalar * list, coord * a, int n, double * v,
     len++;
   for (int i = 0; i < n; i++) {
     double * w = v;
+#if _GPU
+    coord p = a[i];
+    for (scalar s in list) {
+      double value = nodata;
+      foreach_point (p.x, p.y, p.z, reduction(min:value))
+	value = !linear ? s[] : interpolate_linear (point, s, p.x, p.y, 0.);
+      *(w++) = value;
+    }
+#else // !_GPU
     for (scalar s in list)
       *(w++) = nodata;
     foreach_point (a[i].x, a[i].y, a[i].z, reduction(min:v[:len])) {
@@ -860,6 +941,7 @@ void interpolate_array (scalar * list, coord * a, int n, double * v,
       for (scalar s in list)
 	v[j++] = !linear ? s[] : interpolate_linear (point, s, a[i].x, a[i].y, a[i].z);
     }
+#endif // !_GPU
     v = w;
   }
 }
@@ -872,10 +954,9 @@ bid new_bid()
 {
   int b = nboundary++;
   for (scalar s in all) {
-    s.boundary = (double (**)(Point, Point, scalar, void *))
-      realloc (s.boundary, nboundary*sizeof (void (*)()));
-    s.boundary_homogeneous = (double (**)(Point, Point, scalar, void *))
-      realloc (s.boundary_homogeneous, nboundary*sizeof (void (*)()));
+    s.boundary = (BoundaryFunc *) realloc (s.boundary, nboundary*sizeof (BoundaryFunc));
+    s.boundary_homogeneous =  (BoundaryFunc *)
+      realloc (s.boundary_homogeneous, nboundary*sizeof (BoundaryFunc));
   }
   for (scalar s in all) {
     if (s.v.x.i < 0) // scalar
@@ -893,9 +974,9 @@ bid new_bid()
 
 // Periodic boundary conditions
 
-static double periodic_bc (Point point, Point neighbor, scalar s, void * data)
+static double periodic_bc (Point point, Point neighbor, scalar s, bool * data)
 {
-  return nodata; // should not be used
+  return s[];
 }
 
 static void periodic_boundary (int d)
@@ -941,8 +1022,15 @@ double getvalue (Point point, scalar s, int i, int j, int k)
 
 void default_stencil (Point p, scalar * list)
 {
-  for (scalar s in list)
-    s.input = true, s.width = 2;
+  for (scalar s in list) {
+    if (s.v.x.i != -1) {
+      vector v = s.v;
+      for (scalar c in {v})
+	c.input = c.output = c.nowarning = true, c.width = 2;
+    }
+    else
+      s.input = s.output = s.nowarning = true, s.width = 2;
+  }
 }
 
 /**
@@ -961,9 +1049,20 @@ void stencil_val (Point p, scalar s, int i, int j, int k,
 {
   if (is_constant(s) || s.i < 0)
     return;
+  if (s.block < 0)
+    s.i += s.block;
+  if (!s.name) {
+    fprintf (stderr, "%s:%d: error: trying to access a deleted field\n",
+	     file, line);
+    exit (1);
+  }
   int index[] = {i, j, k};
-  for (int d = 0; d < dimension; d++)
-    index[d] += (&p.i)[d];      
+  for (int d = 0; d < dimension; d++) {
+    if (index[d] == o_stencil)
+      index[d] = 2;
+    else
+      index[d] += (&p.i)[d];
+  }
   bool central = true;
   for (int d = 0; d < dimension; d++) {
     if (!overflow && (index[d] > 2 || index[d] < - 2)) {
@@ -995,8 +1094,18 @@ void stencil_val (Point p, scalar s, int i, int j, int k,
 void stencil_val_a (Point p, scalar s, int i, int j, int k, bool input,
 		    const char * file, int line)
 {
-  if (is_constant(s) || s.i < 0)
-    abort();
+  if (is_constant(s) || s.i < 0) {
+    fprintf (stderr, "%s:%d: error: trying to modify a%s field\n",
+	     file, line, s.i < 0 ? "n undefined" : " constant");
+    exit (1);
+  }
+  if (s.block < 0)
+    s.i += s.block;
+  if (!s.name) {
+    fprintf (stderr, "%s:%d: error: trying to access a deleted field\n",
+	     file, line);
+    exit (1);
+  }
   int index[] = {i, j, k};
   for (int d = 0; d < dimension; d++)
     index[d] += (&p.i)[d];    
@@ -1013,12 +1122,3 @@ void stencil_val_a (Point p, scalar s, int i, int j, int k, bool input,
     s.input = true;
   s.output = true;
 }
-
-/**
-Macros overloaded by the interpreter. */
-
-@define dimensional(...)
-#define show_dimension(...) show_dimension_internal (__VA_ARGS__ + 10293847566574839201.)
-@define show_dimension_internal(...)
-@define display_value(...)
-@define interpreter_verbosity(...)

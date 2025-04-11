@@ -28,6 +28,7 @@ int main (int argc, char ** argv)
   int n = 2048;
   init_grid (n);
 
+  size (1[0]);
   origin (-1, -1);
   foreach()
     h[] = exp(-(x*x + y*y)/(R0*R0));

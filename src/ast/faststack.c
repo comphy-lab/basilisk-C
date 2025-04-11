@@ -27,6 +27,13 @@ Stack * stack_new (int size)
   return s;
 }
 
+static void * realloc_block (void * ptr, size_t nmemb, size_t size, int block)
+{
+  if (!ptr || nmemb % block == 0)
+    return realloc (ptr, (nmemb/block + 1)*block*size);
+  return ptr;
+}
+
 void stack_push (Stack * s, void * p)
 {
   if (s->push)
@@ -55,7 +62,7 @@ void stack_push (Stack * s, void * p)
     }
     else
       index = NULL;
-    index = realloc (index, (m + 2)*sizeof(Index));
+    index = realloc_block (index, m + 2, sizeof(Index), 10);
     index[m + 1].n = -1;
     index[m].n = s->n;
     index[m].ext = 0;
@@ -72,8 +79,8 @@ void stack_push (Stack * s, void * p)
     }
     kh_value (s->h, k) = index;
   }
-  s->n++;
-  s->p = realloc (s->p, s->n*(s->size + sizeof(char *)));
+  s->n++;  
+  s->p = realloc_block (s->p, s->n, s->size + sizeof(char *), 100);
   char * dest = ((char *)s->p) + (s->n - 1)*(s->size + sizeof(char *));
   memcpy (dest, p, s->size);
   memcpy (dest + s->size, &name, sizeof (char *));
@@ -109,9 +116,16 @@ void * stack_pop (Stack * s)
 
 void * stack_index (Stack * s, int i)
 {
-  if (!s->n || i > s->n - 1)
+  if (!s->n || i > s->n - 1 || i < 0)
     return NULL;
   return ((char *)s->p) + (s->n - i - 1)*(s->size + sizeof(char *));
+}
+
+void * stack_indexi (Stack * s, int i)
+{
+  if (!s->n || i > s->n - 1 || i < 0)
+    return NULL;
+  return ((char *)s->p) + i*(s->size + sizeof(char *));
 }
 
 void * fast_stack_find (Stack * s, const char * key)

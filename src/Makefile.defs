@@ -33,13 +33,20 @@ clean:
 .DELETE_ON_ERROR:
 
 %.3D.c: %.c
-	ln -s $< $@
+	ln -s -f $< $@
 %.3D.s:   CFLAGS += -grid=octree
 %.3D.s.d: CFLAGS += -grid=octree
 %.3D.tst: CFLAGS += -grid=octree
 
+%.gpu.c: %.c
+	ln -s -f $< $@
+%.gpu.s:   CFLAGS += -grid=gpu/multigrid
+%.gpu.s: $(BASILISK)/libgpu.a
+%.gpu.s.d: CFLAGS += -grid=gpu/multigrid
+%.gpu.tst: CFLAGS += -grid=gpu/multigrid
+
 %.CADNA.c: %.c
-	ln -s $< $@
+	ln -s -f $< $@
 
 %.CADNA.tst: %.CADNA.s %.CADNA.c
 	@CFLAGS="$(CFLAGS) -cadna" LIBS="$(LIBS) $(CADNALIBS)" OPENGLIBS="$(OPENGLIBS)"\
@@ -62,7 +69,7 @@ clean:
 %.s: %.c $(QCC)
 	@echo qcc -autolink $(CFLAGS) $(subst .3D_,-grid=octree,$(findstring .3D_,$*_)) \
 		-o $*/$* $*.c $(LIBS) -lm
-	@rm -f $*/fail $*/warn
+	@rm -f $*/fail $*/warn $*.dims
 	@OPENGLIBS="$(OPENGLIBS)" $(QCC) -autolink -nolineno $(STRIPFLAGS) 	\
 		-dimensions=dims -non-finite					\
 		$(subst -g ,,$(subst -O2 ,,$(CFLAGS))) 				\
@@ -79,7 +86,7 @@ clean:
 	@chmod -x $@
 	@test ! -s $*.log~ || ( mkdir -p $* && cat $*.log~ > $*/warn && cat $*/warn 2> /dev/stderr )
 	@rm -f $*.log~ $*/fail
-	@test ! -f $*.dims.ref || diff $*.dims $*.dims.ref || (rm -f $@ && exit 1)
+	@test ! -f $*.dims.ref -o ! -f $*.dims || diff $*.dims $*.dims.ref || (rm -f $@ && exit 1)
 #	@rm -f $*.dims
 
 %.prof: %.c
@@ -106,6 +113,14 @@ clean:
 	cd $* && $(AWK) -f $(BASILISK)/gnuplot.awk < ../$*.c > plots && \
 	PNG=$(PNG) sh $(BASILISK)/gnuplot.sh || rm -f plots
 	cd $* && $(AWK) -f $(BASILISK)/python.awk < ../$*.c > plots.py && \
+	python plots.py || rm -f plots
+	@test -f $*/plots || exit 1
+
+%/plots: %.md $(BASILISK)/gnuplot.awk $(BASILISK)/python.awk \
+		$(BASILISK)/gnuplot.sh
+	mkdir -p $* && cd $* && $(AWK) -f $(BASILISK)/gnuplot.awk < ../$*.md > plots && \
+	PNG=$(PNG) sh $(BASILISK)/gnuplot.sh || rm -f plots
+	cd $* && $(AWK) -f $(BASILISK)/python.awk < ../$*.md > plots.py && \
 	python plots.py || rm -f plots
 	@test -f $*/plots || exit 1
 
@@ -198,7 +213,7 @@ LINKCHECKER = linkchecker --no-warnings --no-status --anchors	\
 	$(LINKCHECKER) -r 1 $<
 
 # generated makefiles
-Makefile.tests: $(BASILISK)/tests.sh
+Makefile.tests: $(BASILISK)/tests.sh $(wildcard Makefile)
 	sh $(BASILISK)/tests.sh
 
 %.s.d: %.c $(QCC)

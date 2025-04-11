@@ -29,6 +29,7 @@ Here we implement the multigrid cycle proper. Given an initial guess
 function *relax*, we will provide an improved guess at the end of the
 cycle. */
 
+trace
 void mg_cycle (scalar * a, scalar * res, scalar * da,
 	       void (* relax) (scalar * da, scalar * res, 
 			       int depth, void * data),
@@ -61,20 +62,21 @@ void mg_cycle (scalar * a, scalar * res, scalar * da,
     On all other grids, we take as initial guess the approximate solution
     on the coarser grid bilinearly interpolated onto the current grid. */
 
-    else
+    else {
+      boundary_level (da, l - 1);
       foreach_level (l)
 	for (scalar s in da)
 	  foreach_blockf (s)
 	    s[] = bilinear (point, s);
+    }
     
     /**
     We then apply homogeneous boundary conditions and do several
     iterations of the relaxation function to refine the initial guess. */
 
-    boundary_level (da, l);
     for (int i = 0; i < nrelax; i++) {
-      relax (da, res, l, data);
       boundary_level (da, l);
+      relax (da, res, l, data);
     }
   }
 
@@ -122,6 +124,7 @@ an optional list of fields used to store the residuals. The minimum
 level of the hierarchy can be set (default is zero i.e. the root
 cell). */
 
+trace
 mgstats mg_solve (scalar * a, scalar * b,
 		  double (* residual) (scalar * a, scalar * b, scalar * res,
 				       void * data),
@@ -212,8 +215,8 @@ mgstats mg_solve (scalar * a, scalar * b,
   if (s.resa > tolerance) {
     scalar v = a[0]; // fixme: should not be necessary
     fprintf (ferr, 
-	     "WARNING: convergence for %s not reached after %d iterations\n"
-	     "  res: %g sum: %g nrelax: %d tolerance: %g\n", v.name,
+	     "src/poisson.h:%d: warning: convergence for %s not reached after %d iterations\n"
+	     "  res: %g sum: %g nrelax: %d tolerance: %g\n", LINENO, v.name,
 	     s.i, s.resa, s.sum, s.nrelax, tolerance), fflush (ferr);
   }
     
@@ -272,13 +275,13 @@ static void relax (scalar * al, scalar * bl, int l, void * data)
   (const) scalar lambda = p->lambda;
 
   /**
-  We use either Jacobi (under)relaxation or we directly reuse values
-  as soon as they are updated. For Jacobi, we need to allocate space
-  for the new field *c*. Jacobi is useful mostly as it gives results
-  which are independent of the order in which the cells are
-  traversed. This is not the case for the simple traversal, which
-  means for example that results will depend on whether a tree or
-  a multigrid is used (because cells will be traversed in a different
+  We use either Jacobi (under)relaxation, Gauss-Seidel or we directly
+  reuse values as soon as they are updated. For Jacobi, we need to
+  allocate space for the new field *c*. Jacobi is useful mostly as it
+  gives results which are independent of the order in which the cells
+  are traversed. This is not the case for the simple traversal, which
+  means for example that results will depend on whether a tree or a
+  multigrid is used (because cells will be traversed in a different
   order). The same comment applies to OpenMP or MPI parallelism. In
   practice however Jacobi convergence tends to be slower than simple
   reuse. */
@@ -288,12 +291,25 @@ static void relax (scalar * al, scalar * bl, int l, void * data)
 #else
   scalar c = a;
 #endif
-  
-  /**
-  We use the face values of $\alpha$ to weight the gradients of the
-  5-points Laplacian operator. We get the relaxation function. */
 
-  foreach_level_or_leaf (l) {
+  /**
+  On GPUs, we use red/black Gauss-Seidel relaxation, which requires
+  two loops (for odd/even indices). Note also that, unlike the other
+  option, red/black relaxation should be deterministic. */
+  
+#if GAUSS_SEIDEL || _GPU
+  for (int parity = 0; parity < 2; parity++)
+    foreach_level_or_leaf (l, nowarning)
+      if (level == 0 || ((point.i + parity) % 2) != (point.j % 2))
+#else
+  foreach_level_or_leaf (l, nowarning)
+#endif
+  {
+
+    /**
+    We use the face values of $\alpha$ to weight the gradients of the
+    5-points Laplacian operator. We get the relaxation function. */
+
     double n = - sq(Delta)*b[], d = - lambda[]*sq(Delta);
     foreach_dimension() {
       n += alpha.x[1]*a[1] + alpha.x[]*a[-1];
@@ -389,6 +405,7 @@ $$
 \nabla\cdot (\alpha\nabla a) + \lambda a = b
 $$ */
 
+trace
 mgstats poisson (scalar a, scalar b,
 		 (const) face vector alpha = {{-1}},
 		 (const) scalar lambda = {-1},
@@ -405,11 +422,11 @@ mgstats poisson (scalar a, scalar b,
   provide $\alpha$ and $\beta$ as constant fields. */
 
   if (alpha.x.i < 0)
-    alpha = unityf;
-  if (lambda.i < 0) {
-    const scalar zeroc[] = 0.; // fixme
-    lambda = zeroc;
-  }
+    alpha[] = {1.,1.,1.};
+  if (lambda.i < 0)
+    lambda[] = 0.;
+
+
 
   /**
   We need $\alpha$ and $\lambda$ on all levels of the grid. */

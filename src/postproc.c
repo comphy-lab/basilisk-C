@@ -870,7 +870,7 @@ static int input0 (FILE * yyin)
     
   case '\n': line++; return c;
 
-  case '_': // skip "code strings" i.e. _("...")
+  case '$': // skip "code strings" i.e. $("...")
     if (n == 0) {
       int d = fgetc (yyin); buf[0] = d;
       if (d == '(') {

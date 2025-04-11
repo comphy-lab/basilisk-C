@@ -36,7 +36,7 @@ We also need a function for homogeneous Dirichlet condition. */
 
 static
 double dirichlet_homogeneous_bc (Point point, Point neighbor,
-				 scalar s, void * data) {
+				 scalar s, bool * data) {
   return 0.;
 }
 

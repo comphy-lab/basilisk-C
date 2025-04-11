@@ -56,8 +56,7 @@ int main (int argc, char * argv[])
   The viscosity is constant. The acceleration is defined below. The
   level of refinement is *maxlevel*. */
 
-  const face vector muc[] = {MU,MU,MU};
-  mu = muc;
+  mu[] = {MU,MU,MU};
   a = av;
   N = 1 << maxlevel;
   run();

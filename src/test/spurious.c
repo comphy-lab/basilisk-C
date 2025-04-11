@@ -49,6 +49,7 @@ int main() {
   We neglect the advection terms and vary the Laplace, for a constant
   resolution of 5 levels. */
 
+  DT = HUGE [0];
   TOLERANCE = 1e-6 [*];
   stokes = true;
   c.sigma = 1;
@@ -81,8 +82,7 @@ event init (i = 0) {
   /**
   We set the constant viscosity field... */
 
-  const face vector muc[] = {MU,MU};
-  mu = muc;
+  mu[] = {MU,MU};
 
   /**
   ... open a new file to store the evolution of the amplitude of
@@ -165,13 +165,6 @@ event error (t = end) {
 	   ne.avg, ne.rms, ne.max,
 	   ekmax);
 }
-
-#if 0
-event gfsview (i += 10) {
-  static FILE * fp = popen ("gfsview2D spurious.gfv", "w");
-  output_gfs (fp);
-}
-#endif
 
 /**
 We use an adaptive mesh with a constant (maximum) resolution along the

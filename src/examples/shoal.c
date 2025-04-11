@@ -7,7 +7,6 @@ and try to reproduce the experiment of [Berkhoff et al,
 25^2^ metres and periodic waves are generated on the left-hand side
 and are damped on the right-hand side. */
 
-#include "grid/multigrid.h"
 #if ML
 # include "layered/hydro.h"
 # include "layered/nh.h"
@@ -129,6 +128,14 @@ is useful to check the amount of waves reflected from the outflow. */
 event movie (t += 1) {
   output_ppm (eta, min = -0.04, max = 0.04, n = 512);
 }
+#endif
+
+/**
+When running on GPUs, we display the solution at runtime. */
+
+#if _GPU
+event display (i++)
+  output_ppm (eta, min = -0.04, max = 0.04, fps = 30, fp = NULL);
 #endif
 
 /**
