@@ -48,6 +48,10 @@ Comprehensive documentation is available at [basilisk.fr](http://basilisk.fr), i
 - User guides
 - Technical documentation
 
+### Tips and Troubleshooting
+
+For tips on installing Darcs and resolving common issues, please refer to our [Tips.md](Tips.md) file.
+
 ### Contributing
 
 While this is a fork maintained for tracking specific issues, we welcome contributions that help improve the codebase. Please ensure your contributions align with the main Basilisk project's coding standards and practices.
