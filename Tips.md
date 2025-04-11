@@ -16,6 +16,19 @@ cabal update
 cabal install darcs
 ```
 
+If you encounter dependency conflicts, try installing a specific version of Darcs:
+
+```shell
+# Try different versions until one works
+for version in 2.16.5 2.14.2 2.12.5 2.10.2; do
+  echo "Trying Darcs version $version..."
+  if cabal install darcs-$version; then
+    echo "Successfully installed Darcs $version"
+    break
+  fi
+done
+```
+
 After installation, make sure to add the Cabal binary directory to your PATH:
 
 ```shell
@@ -60,8 +73,20 @@ We've set up a GitHub Actions workflow to automatically sync this repository wit
 
 1. Runs daily at midnight UTC
 2. Can be triggered manually
-3. Installs Darcs using Cabal
-4. Pulls all changes from the Darcs repository
-5. Commits and pushes any changes to GitHub
+3. Tries to install Darcs from the Ubuntu package repository first
+4. If that fails, tries to install Darcs from source using Cabal, attempting multiple versions
+5. Pulls all changes from the Darcs repository
+6. Commits and pushes any changes to GitHub
 
 The workflow file is located at `.github/workflows/sync-darcs.yml`.
+
+## Reporting Issues
+
+When reporting issues with Basilisk-C, please use our issue templates:
+
+1. **Bug Reports**: For software bugs and unexpected behavior
+2. **Installation Issues**: For problems encountered during installation
+3. **Feature Requests**: For suggesting new features or improvements to build on top of Basilisk-C
+4. **Generic Issues**: For other types of issues that don't fit the above categories
+
+These templates help us gather all the necessary information to diagnose and fix issues quickly. When creating a new issue, you'll be prompted to choose the appropriate template.
