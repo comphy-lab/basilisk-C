@@ -16,50 +16,38 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Cache Stack and GHC
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.stack
+            ~/.local/bin
+          key: ${{ runner.os }}-stack-${{ hashFiles('**/*.cabal') }}
+          restore-keys: |
+            ${{ runner.os }}-stack-
+
       - name: Install Darcs
         run: |
-          echo "Installing Darcs following official methods from darcs.net..."
+          echo "Installing Stack and Darcs..."
           
-          # Method 1: Install using Stack (preferred method according to darcs.net)
-          echo "Checking if Stack is installed..."
+          # Install Stack if not cached
           if ! command -v stack &> /dev/null; then
-            echo "Installing Stack..."
             curl -sSL https://get.haskellstack.org/ | sh -s - -f
-          else
-            echo "Stack is already installed"
-            stack --version
+            export PATH="$HOME/.local/bin:$PATH"
+            echo "$HOME/.local/bin" >> $GITHUB_PATH
           fi
           
-          echo "Installing Darcs with Stack..."
-          stack install darcs || echo "Stack install encountered an issue, will try with Cabal next"
-          export PATH="$HOME/.local/bin:$PATH"
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          # Use a specific GHC version and snapshot for faster builds
+          # Add parallel build and use pre-built GHC
+          stack --resolver lts-18.28 --jobs 4 --no-system-ghc install darcs
           
-          # Check if Darcs was installed successfully
+          # Verify installation
           if command -v darcs &> /dev/null; then
-            echo "Darcs installed successfully using Stack"
+            echo "Darcs installed successfully"
             darcs --version
           else
-            echo "Stack installation failed, trying with Cabal..."
-            
-            # Method 2: Install using Cabal as fallback
-            sudo apt-get update
-            sudo apt-get install -y ghc cabal-install
-            cabal update
-            
-            echo "Installing Darcs with Cabal..."
-            cabal install darcs
-            export PATH="$HOME/.cabal/bin:$PATH"
-            echo "$HOME/.cabal/bin" >> $GITHUB_PATH
-            
-            # Verify installation
-            if command -v darcs &> /dev/null; then
-              echo "Darcs installed successfully using Cabal"
-              darcs --version
-            else
-              echo "Failed to install Darcs. Exiting."
-              exit 1
-            fi
+            echo "Failed to install Darcs. Exiting."
+            exit 1
           fi
 
       - name: Configure Git
