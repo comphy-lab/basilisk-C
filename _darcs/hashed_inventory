@@ -1,4 +1,4 @@
-pristine:f18afc2c72dd68ec949161f18016676631e5de605c6f27b437881cae3a08011c
+pristine:e592ba46768bff7222fd4d4b1c0cdb2b4e3079156a32b92ee413198efbfa61d6
 Starting with inventory:
 0000059985-9b08f44c43023087ea323913c98c24d9439dcf35bbcb3f79a06269386ede0ffb
 [TAG release 25-02-26 (macros)
@@ -118,3 +118,8 @@ Stephane Popinet <popinet@basilisk.fr>**20250331163933
  Ignore-this: 74fe89a45f4da2da0a65d75e3cac8d69
 ] 
 hash: 0000000435-3c3e718aa5a03c3f9b8cdf6400fd35ab30d24761ea48e70a98c7b0f6c254572b
+[Added missing header file, this should fix 'unknown type name ‘uint32_t’'
+Stephane Popinet <popinet@basilisk.fr>**20250428165015
+ Ignore-this: 765e06a86d23020fa31f2694dbfa8e32
+] 
+hash: 0000000230-6dbfb1dd7e78146a3be69a335406c9b4ab7285cce9f75d6e8d6b2cd11dda32f9
