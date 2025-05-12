@@ -32,7 +32,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ghc cabal-install
           cabal update
-          cabal install --lib darcs
+          cabal install darcs
           export PATH="$HOME/.cabal/bin:$PATH"
           echo "$HOME/.cabal/bin" >> $GITHUB_PATH
           
