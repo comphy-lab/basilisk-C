@@ -1,0 +1,53 @@
+/**
+# File index 
+
+## Development of AMR methods
+
+Within the PhD of Lucas Prouvost and in collaboration with Anca Belme, we have been working on a metric based AMR method that we have implemented in Basilisk. Check [his PhD manuscript](https://theses.hal.science/tel-03966961) and [PhD defense](https://www.youtube.com/watch?v=9XA-GdbJP-A). You can find the codes and some results in [Lucas' sandbox](http://basilisk.fr/sandbox/prouvost/README).
+
+## Tests and examples for the All-Mach formulation
+
+List of tests and examples of the all-Mach compressible solver [Fuster and Popinet (JCP, 2018)](https://hal.sorbonne-universite.fr/hal-01845218).
+
+The code is now part of the stable release, so you can check the test cases included in the last version of Basilisk [here](http://basilisk.fr/src/test/README#compressible-two-phase-flows)
+
+Below some old links that could be useful
+
+###Related works
+* The work from the PhD of Mandeep Saini which includes a [JFM paper](https://doi.org/10.1017/jfm.2022.705) and [his thesis](https://theses.hal.science/tel-03935878/). You can check [his sandbox](http://basilisk.fr/_edit/sandbox/msaini/README) for more information.
+* Effects of surface tension on the Richtmyer-Meshkov instability in fully compressible and inviscid fluids. [Tang et al PRF, 2021](https://journals.aps.org/prfluids/abstract/10.1103/PhysRevFluids.6.113901)
+* Optimal subharmonic emission of stable bubble oscillations in a tube [Fan et al, PRE, 2020](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.102.013105)
+
+###Single phase 
+
+* [Propagation of a small perturbation in an ideal gas (axisymmetric flow)](Allmach3.0/gaussianaxi.c)
+* [Propagation of a shockwave in an ideal gas](Allmach3.0/shockwave.c)
+* [Double Mach reflection of a Mach 10 shock from a wall](Allmach3.0/InclinedShockBCG.c)
+* [A Mach-3 wind tunnel with a step](Allmach3.0/stepAllMach.c)
+
+###Multiphase simulations
+
+* [Transport of an interface between two fluids at different pressures](Allmach3.0/DiscontinuityAdvection.c)
+* [Perfect transmission of an acoustic wave through an interface between two fluids with acoustic impedance matching](Allmach3.0/reflectionperfect.c)
+* [Reflection/transmission of an acoustic wave through an interface between two fluids with different acoustic impedance](Allmach3.0/reflectiongaussian3.c)
+
+###Flows in the presence of surface tension
+
+* [Circular droplet in equilibrium (influence of Laplace number)](Allmach3.0/spurioustest.c)
+* [Circular droplet in equilibrium (convergence study)](Allmach3.0/spurioustest2.c)
+* [Shape oscillation of an inviscid droplet](Allmach3.0/oscillation.c)
+* [Sessile bubble test with all-Mach solver](http://basilisk.fr/sandbox/msaini/tests/sessilecomp.c)
+
+
+
+## Tests and examples for the All-Mach formulation including thermal effects
+
+List of tests and examples of the extension including thermal effects [Saeede et al (JCP, 2022)](https://arxiv.org/abs/2206.11294)
+
+This code extension can be downloaded [here](http://basilisk.fr/sandbox/ysaade/allMach/src)
+
+* [Expansion of an initially heated bubble](http://basilisk.fr/sandbox/ysaade/allMach/AXI_expansion.c)
+* [Shrinkage of an intially cooled bubble](http://basilisk.fr/sandbox/ysaade/allMach/AXI_shrinkage.c)
+* [Shrinkage of an initially cooled bubble (sph coord)](http://basilisk.fr/sandbox/ysaade/allMach/SPHERISYM_shrinkage.c)
+* [Bubble collapse near a wall](http://basilisk.fr/sandbox/ysaade/allMach/AXI_collapse.c)
+*/

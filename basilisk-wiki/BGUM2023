@@ -1,0 +1,495 @@
+---
+title: Basilisk (Gerris) Users' Meeting 2023
+...
+
+## Sponsors
+
+<table>
+<tr>
+<td>
+[![d'Alembert](/100px-Ijlrda.jpg)](http://www.dalembert.upmc.fr/) 
+</td>
+<td>
+[![Sorbonne](/Sorbonne.png)](http://www.sorbonne-universite.fr/en) 
+</td>
+<td>
+[![CNRS](/100px-Logo_cnrs.jpg)](http://www.cnrs.fr/index.php/en)
+</td>
+<td>
+[![LadHyX](/Ladhyx-H.png)](https://www.ladhyx.polytechnique.fr/en/)
+</td>
+<td>
+[![IFPEN](/100px-IFPENQuadri.png)](https://www.ifpenergiesnouvelles.com)
+</td>
+</tr>
+</table>
+
+## Summary
+
+The meeting was held on the 5--7th July 2023 on the [Pierre et Marie Curie campus](https://www.openstreetmap.org/#map=17/48.84719/2.35601) of [Sorbonne Université](http://www.sorbonne-universite.fr/en) in the center of Paris.
+
+The format was similar to earlier Basilisk/Gerris meetings held in [Paris, France in 2011](http://gerris.dalembert.upmc.fr/gerris_users%27_meeting_2011.html), [Wellington, New Zealand in 2012](http://gerris.dalembert.upmc.fr/gerris_users%27_meeting_2012.html), [Sevilla, Spain in 2014](http://gerris.dalembert.upmc.fr/meeting_on_numerical_challenges_in_two-phase_flows.html), [Princeton, USA in 2017](BGUM2017) and [Paris, France in 2019](BGUM2019). Participants were encouraged to share their work using Basilisk (or Gerris) for applications in fluid mechanics, environmental science, engineering etc...  Students were especially welcome to participate in this informal and friendly gathering.
+
+## Program and presentations
+
+<table>
+<tr><td>**Wednesday 5th July**</td></tr>
+
+
+<tr><td>13:30</td>
+<td>Welcome. Stéphane Popinet, Jose-Maria Fullana and Pierre-Yves Lagrée<hr></td></tr>
+
+<tr><td>14:00</td>
+<td>
+[Stéphane Popinet](/sandbox/popinet/README), [∂'Alembert](http://dalembert.u\
+pmc.fr), Sorbonne Université & CNRS, Paris, France
+<br>
+[*What's new and future plans*](BGUM2023/popinet.pdf)
+<hr></td></tr>
+
+<tr><td>14:20</td>
+<td>
+[Jiarong Wu](/sandbox/jiarongw/README), Princeton University, USA
+<br>
+[*Breaking wave field statistics with a multilayer numerical framework*](BGUM2023/wu.pdf)
+<hr></td></tr>
+
+<tr><td>14:40</td>
+<td>
+Vrionis Panayiotis-Yiannis, The Cyprus Institute, Nicosia, Cyprus
+<br>
+[*Long Wave dynamics in heterogeneous environments*](BGUM2023/vryonis.pdf)
+<hr></td></tr>
+
+<tr><td>15:00</td>
+<td>
+Ayoub Mansar, ENS Paris-Saclay, France
+<br>
+*DNS simulations for the breaking of water waves*
+<hr></td></tr>
+
+<tr><td>15:20</td>
+<td>
+[Andrés Castillo](/sandbox/acastillo/readme), ENS Paris-Saclay, France
+<br>
+[*Induced mixing by Faraday waves*](BGUM2023/castillo.pdf)
+<hr></td></tr>
+
+<tr><td>15:40</td>
+<td>
+[Shuo Liu](/sandbox/shuo/README), [LMFL](https://lmfl.cnrs.fr/), ENSAM & LMFL, Lille, France
+<br>
+[*Shallow water breaking waves on a flat bottom*](BGUM2023/shuo.pdf)
+<hr></td></tr>
+
+
+
+<tr><td>16:00</td>
+<td>
+<center>Coffee break</center>
+<hr></td></tr>
+
+
+
+<tr><td>16:20</td>
+<td>
+[Aliénor Rivière](/sandbox/ariviere/README), [PMMH](https://www.pmmh.espci.fr/?-Accueil-), ESPCI, Paris, France
+<br>
+[*Subcritical bubble breakup*](BGUM2023/riviere.pdf)
+<hr></td></tr>
+
+<tr><td>16:40</td>
+<td>
+[Kaitao Tang](/sandbox/kaitaotang/README), Engineering Science, University of Oxford, UK
+<br>
+[*Collision of liquid cylinders*](BGUM2023/tang.pdf)
+<hr></td></tr>
+
+<tr><td>17:00</td>
+<td>
+Pengyu Shi, IMFT, France
+<br>
+[*Path and wake of a deformable bubble rising close to a vertical wall*](BGUM2023/shi.pdf)
+<hr></td></tr>
+
+<tr><td>17:20</td>
+<td>
+[Jean-Lou Pierson](/sandbox/piersonj/README), [IFP Energies Nouvelles](https://www.ifpenergiesnouvelles.fr/), Solaize, France
+<br>
+[*Film drainage between small bubbles in pure liquids*](BGUM2023/pierson.pdf)
+<hr></td></tr>
+
+<tr><td>17:40</td>
+<td>
+[Nicolas Fintzi](/sandbox/fintzin/Rising-Suspenion/RS.c), [IFP Energies Nouvelles](https://www.ifpenergiesnouvelles.fr/), Solaize, France
+<br>
+[*A phenomenological description of pairwise interactions in emulsions*](BGUM2023/fintzi.pdf)
+<hr></td></tr>
+
+
+
+
+<tr><td>**Thursday 6th July**</td></tr>
+
+<tr><td>8:00</td>
+<td>
+<center>Breakfast</center>
+<hr></td></tr>
+
+
+<tr><td>9:00</td>
+<td>
+[Radu Cimpeanu](https://warwick.ac.uk/fac/sci/maths/people/staff/cimpeanu/), University of Warwick, UK
+<br>
+[*High-speed impact across scales - a hybrid approach*](BGUM2023/cimpeanu.pdf)
+<hr></td></tr>
+
+<tr><td>9:20</td>
+<td>
+Clément Robert, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+<br>
+*Thin liquid films decorated with surfactants with the multilayer solver*
+<hr></td></tr>
+
+<tr><td>9:40</td>
+<td>
+Hamed Vaziri, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+<br>
+*Healing holes in liquid films*
+<hr></td></tr>
+
+<tr><td>10:00</td>
+<td>
+[Oscar Holroyd](https://warwick.ac.uk/fac/sci/hetsys/people/studentscohort3/holroyd/), University of Warwick, UK
+<br>
+[*Falling liquid film control
+via linear quadratic regulation*](BGUM2023/holroyd.pdf)
+<hr></td></tr>
+
+
+
+<tr><td>10:20</td>
+<td>
+<center>Coffee break</center>
+<hr></td></tr>
+
+
+
+<tr><td>10:40</td>
+<td>
+[Wojciech Aniszewski](https://www.researchgate.net/profile/Wojciech-Aniszewski) CORIA Rouen, France
+<br>
+*Laminar oil jet interacting with solids*
+<hr></td></tr>
+
+<tr><td>11:00</td>
+<td>
+Yash Kulkarni, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+<br>
+*Numerical modelling of the three-phase dynamic contact line to investigate wetting processes*
+<hr></td></tr>
+
+<tr><td>11:20</td>
+<td>
+[Lucas Prouvost](/sandbox/prouvost/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+<br>
+[*A constrained AMR method for elliptic equations*](BGUM2023/prouvost.pdf)
+<hr></td></tr>
+
+<tr><td>11:40</td>
+<td>
+[Nicolas Cailler](/sandbox/cailler/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+<br>
+[*Towards self-similar solvers: an application to surface tension driven flows*](BGUM2023/cailler.pdf)
+<hr></td></tr>
+
+
+
+
+
+<tr><td>12:00</td>
+<td>
+<center>Lunch break</center>
+<hr></td></tr>
+
+
+
+<tr><td>14:00</td>
+<td>
+Youssef Saade, [Canon Production Printing B.V.](https://cpp.canon/), Venlo, Netherlands
+<br>
+[*A multigrid solver for the coupled pressure-temperature equations in an all-Mach solver with VoF*](BGUM2023/saade.pdf)
+<hr></td></tr>
+
+<tr><td>14:20</td>
+<td>
+[Mandeep Saini](/sandbox/msaini/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+<br>
+[*Studying cavitation using Basilisk*](BGUM2023/saini.pdf)
+<hr></td></tr>
+
+<tr><td>14:40</td>
+<td>
+[Hui Wang](/sandbox/HuiW/README), [LMFL](https://lmfl.cnrs.fr/), ENSAM & LMFL, Lille, France
+<br>
+[*Splashing of high-energy drop impact*](BGUM2023/wang.pdf)
+<hr></td></tr>
+
+<tr><td>15:00</td>
+<td>
+Linkai WEI, N/A
+<br>
+*Numerical study of drop fragmentation in liquid-liquid configuration*
+<hr></td></tr>
+
+<tr><td>15:20</td>
+<td>
+Pierre-Antoine Maes, LadHyX, Paris, France
+<br>
+[*Three fluids vof method*](BGUM2023/maes.pdf)
+<hr></td></tr>
+
+
+
+<tr><td>15:40</td>
+<td>
+<center>Coffee break</center>
+<hr></td></tr>
+
+
+
+<tr><td>16:00</td>
+<td>
+[Mathilde Tavares](/sandbox/tavares/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole polytechnique, Palaiseau, France
+<br>
+[*A coupling VOF/embedded boundary method applied to phase change*](BGUM2023/tavares.pdf)
+<hr></td></tr>
+
+<tr><td>16:20</td>
+<td>
+Gormit Lyes, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+<br>
+*Dynamics of bubbles inside a vortex*
+<hr></td></tr>
+
+<tr><td>16:40</td>
+<td>
+Ahmed Basil Kottilingal, Sorbonne Université, Paris, France
+<br>
+*Front Tracking Method in Basilisk*
+<hr></td></tr>
+
+<tr><td>17:00</td>
+<td>
+[Gabriele Gennari](/sandbox/ggennari/README), University of Nottingham, UK
+<br>
+[*Bubble dissolution in Taylor-Couette flow*](BGUM2023/gennari.pdf)
+<hr></td></tr>
+
+
+
+<tr><td>19:00</td>
+<td>
+<center>*Apéro dinatoire* on the top floor of [Tour Zamansky](https://fr.wikipedia.org/wiki/Tour_Zamansky)</center>
+<hr></td></tr>
+
+
+
+
+
+<tr><td>**Friday 7th July**</td></tr>
+
+<tr><td>8:00</td>
+<td>
+<center>Breakfast</center>
+<hr></td></tr>
+
+<tr><td>9:00</td>
+<td>
+Corine Kieffer-Roth, Institute of Combustion Technology, German Aerospace Center Stuttgart, Germany
+<br>
+[*Progress in simulation of liquid fuel injection*](BGUM2023/kieffer-roth.pdf)
+<hr></td></tr>
+
+<tr><td>9:20</td>
+<td>
+ [Edoardo Cipriano](/sandbox/ecipriano/README), Politecnico Di Milano, Milan, Italy
+<br>
+[*Modelling evaporation and combustion of fuel droplets using Basilisk*](BGUM2023/cipriano.pdf)
+<hr></td></tr>
+
+<tr><td>9:40</td>
+<td>
+[Jie Zhang](https://www.researchgate.net/profile/Jie-Zhang-228), Xi'an Jiaotong University
+<br>
+[*Numerical modelling of binary solidification by using Basilisk*](BGUM2023/zhang.pdf)
+<hr></td></tr>
+
+<tr><td>10:00</td>
+<td>
+[Jacob Maarek](/sandbox/jmaarek), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+<br>
+*Subgrid scale modeling for species transfer in rising bubbles at large Peclet numbers*
+<hr></td></tr>
+
+
+
+<tr><td>10:20</td>
+<td>
+<center>Coffee break</center>
+<hr></td></tr>
+
+
+
+<tr><td>10:40</td>
+<td>
+[Vatsal Sanjay](https://www.vatsalsanjay.com), [Physics of Fluids group](https://pof.tnw.utwente.nl), University of Twente, the Netherlands
+<br>
+[*Viscous free-surface flows*](BGUM2023/sanjay.pdf)
+<hr></td></tr>
+
+<tr><td>11:00</td>
+<td>
+Guodong Gai, Department of Mathematics, University of British Columbia, Canada
+<br>
+[*Dynamics and wakes of a fixed and freely moving angular particle in an inertial flow*](BGUM2023/gai.pdf)
+<hr></td></tr>
+
+<tr><td>11:20</td>
+<td>
+Giancarlo Esposito, University of Patras, Greece
+<br>
+[*Buoyancy-driven motion of bubbles and drops in elastoviscoplastic fluids*](BGUM2023/esposito.pdf)
+<hr></td></tr>
+
+<tr><td>11:40</td>
+<td>
+[Antoon van Hooft](/sandbox/Antoonvh/README), NA
+<br>
+[*How to converge on a tree grid?*](BGUM2023/vanhooft.pdf)
+<hr></td></tr>
+
+<tr><td>12:00</td>
+<td>
+ [Daniel Fuster](/sandbox/fuster/README), [∂'Alembert](http://dalembert.upmc.fr), CNRS & Sorbonne, Paris, France
+<br>
+*Errors introduced by the one-fluid formulation in the simulation of multiphase flows*
+<hr></td></tr>
+
+
+<tr><td>12:20</td>
+<td>Closing. Stéphane Popinet, Jose-Maria Fullana and Pierre-Yves Lagrée<hr></td></tr>
+
+</table>
+
+## Participants
+
+1. [Stéphane Popinet](/sandbox/popinet/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
+1.  [Jose-Maria Fullana](http://www.lmm.jussieu.fr/~fullana/), [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne & CNRS, Paris, France.
+1. [Vatsal Sanjay](https://www.vatsalsanjay.com), [Physics of Fluids group](https://pof.tnw.utwente.nl), University of Twente, the Netherlands
+1. [Lucas Prouvost](/sandbox/prouvost/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne, Paris, France
+1. [Daniel Fuster](/sandbox/fuster/README), [∂'Alembert](http://dalembert.upmc.fr), CNRS & Sorbonne, Paris, France
+1. [Jean-Lou Pierson](/sandbox/piersonj/README), [IFP Energies Nouvelles](https://www.ifpenergiesnouvelles.fr/), Solaize, France
+1. [Nicolas Fintzi](/sandbox/fintzin/Rising-Suspenion/RS.c), [IFP Energies Nouvelles](https://www.ifpenergiesnouvelles.fr/), Solaize, France
+1. [Alexandre Limare](/sandbox/alimare/README), [ArianeGroup](https://www.ariane.group/fr/), ArianeGroup, Les Mureaux, France
+1. Christophe Josserand, [LadHyX](https://www.ladhyx.polytechnique.fr/), CNRS & Ecole Polytechnique, Institut Polytechnique de Paris Palaiseau, France
+1. [Shuo Liu](/sandbox/shuo/README), [LMFL](https://lmfl.cnrs.fr/), ENSAM & LMFL, Lille, France
+1. [Hui Wang](/sandbox/HuiW/README), [LMFL](https://lmfl.cnrs.fr/), ENSAM & LMFL, Lille, France
+1. [Mandeep Saini](/sandbox/msaini/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Universite, Paris, France
+1. [J.M. López-Herrera](/sandbox/lopez/README), Dept. Ing. Aeroespacial y Mec. de Fluidos, [ETSI](https://www.etsi.us.es/), Universidad de Sevilla, España.
+1. [Kaitao Tang](/sandbox/kaitaotang/README), Engineering Science, University of Oxford, UK
+1. [Aliénor Rivière](/sandbox/ariviere/README), [PMMH](https://www.pmmh.espci.fr/?-Accueil-), ESPCI, Paris, France
+1. Pierre-Antoine MAES, LadHyX, Paris, France 
+1. [Mathilde Tavares](/sandbox/tavares/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole polytechnique, Palaiseau, France
+1. Guillaume Bois, Université Paris-Saclay, CEA, Service de Thermohydraulique et de Mécanique des Fluides, Gif-sur-Yvette, France
+1. Sergio Chibbaro, Université Paris-Saclay, LISN, Orsay, France
+1. Laurent Duchemin, [PMMH](https://www.pmmh.espci.fr/?-Accueil-), ESPCI, Paris, France
+1. [Jacob Maarek](/sandbox/jmaarek), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Universite, Paris, France
+1. [Edoardo Cipriano](/sandbox/ecipriano/README), Politecnico Di Milano, Milan, Italy
+1. [Jieyun Pan](/sandbox/jieyun), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Universite, Paris, France
+1. [Jiarong Wu](/sandbox/jiarongw/README), Princeton University, USA
+1. [Andrés Castillo](/sandbox/acastillo/readme), ENS Paris-Saclay, France
+1. M.A. Herrada, Dept. Ing. Aeroespacial y Mec. de Fluidos, [ETSI](https://www.etsi.us.es/), Universidad de Sevilla, España
+1. [Nicolo Scapin](/sandbox/nscapin/README), Princeton University, USA
+1. Yash Kulkarni, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Universite, Paris, France
+1. Frederic Dias, ENS Paris-Saclay, France
+1. Ayoub Mansar, ENS Paris-Saclay, France
+1. [Jacques Magnaudet](https://www.imft.fr/pages-personnelles/magnaudet-jacques/), [IMFT](https://www.imft.fr/), France
+1. Gerd Mutschke, HZDR, Dresden, Germany
+1. Yifan Han, HZDR, Dresden, Germany
+1. Lars Willas Dreyer, Universitetet i Oslo, Oslo, Norway 
+1. Pengyu Shi, IMFT, France
+1. Ahmed Basil Kottilingal, Sorbonne Universite, France
+1. Zhonghou Xu, NIWA, Hamilton, New Zealand
+1. Canwei Jin, Imperial College London, UK
+1. Alessio Innocenti, Università di Pisa, Italy
+1. Eric Sultan, [∂'Alembert](http://dalembert.upmc.fr), CNRS & Sorbonne, Paris, France
+1. Lucie Champion, ArianeGroup, Les Mureaux, France
+1. Tian Long, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Universite, Paris, France
+1. David Trubatch, Montclair State University, New Jersey, USA
+1. Matthieu Couturier, École polytechnique, Palaiseau, France
+1. [Radu Cimpeanu](https://warwick.ac.uk/fac/sci/maths/people/staff/cimpeanu/), University of Warwick, UK
+1. [Nicolas Cailler](/sandbox/cailler/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne, Paris, France
+1. Si Suo, Flow center, KTH, Sweden
+1. Michael Ndjinga, Université Paris-Saclay, CEA Saclay, Service de Thermohydraulique et de Mécanique des Fluides, Gif-sur-Yvette, France
+1. Alexis Berny, Université Paris-Saclay, CEA Saclay, Service de Thermohydraulique et de Mécanique des Fluides, Gif-sur-Yvette, France
+1. Minh Le, Ecole des Ponts, Laboratoire Saint Venant, Chatou, France
+1. Guillaume Vinay, [IFP Energies Nouvelles](https://www.ifpenergiesnouvelles.fr/), Solaize, France
+1. Victor Boniou, [IFP Energies Nouvelles](https://www.ifpenergiesnouvelles.fr/), Rueil-Malmaison, France
+1. [Oscar Holroyd](https://warwick.ac.uk/fac/sci/hetsys/people/studentscohort3/holroyd/), University of Warwick, UK
+1. [Francesco Picella](https://sites.google.com/view/francescopicella), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
+1. Guodong Gai, Department of Mathematics, University of British Columbia, Canada
+1. Corine Kieffer-Roth, Institute of Combustion Technology, German Aerospace Center Stuttgart, Germany
+1. [Pierre-Yves Lagrée](/sandbox/M1EMN/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
+1. Wei Qin, Institut Polytechnique de Paris, France
+1. [Stéphane Zaleski](https://scholar.google.fr/citations?hl=en&user=no1GX_QAAAAJ&view_op=list_works&sortby=pubdate), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
+1. Sylvain Viroulet, IMFT, France
+1. Damien Thomas, d'Alembert, Sorbonne Université, Paris, France
+1. Cesar Pairetti, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Universite, Paris, France
+1. Tomas Fullana, EPFL, Suisse
+1. [Wojciech Aniszewski](https://www.researchgate.net/profile/Wojciech-Aniszewski) CORIA Rouen, France
+1. Youssef Saade, [Canon Production Printing B.V.](https://cpp.canon/), Venlo, Netherlands
+1. Pierre Van de Velde, ULB, Belgium
+1. Gwendal Léger, intern at [∂'Alembert](http://dalembert.upmc.fr), France
+1. Adèle Poubeau, IFPEN, Rueil-Malmaison, France
+1. Ben Fudge, Engineering Science, University of Oxford, UK
+1. Arman Aykin, intern at [∂'Alembert](http://dalembert.upmc.fr), France
+1. Marie-Jean Thoraval, [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole Polytechnique, Institut Polytechnique de Paris, Palaiseau, France
+1. [Arnaud Antkowiak](http://www.lmm.jussieu.fr/~antkowiak/), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
+1. Clément Robert, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
+1. [Jie Zhang](https://www.researchgate.net/profile/Jie-Zhang-228), Xi'an Jiaotong University, China
+1. [Antoon van Hooft](/sandbox/Antoonvh/README), NA
+1. Linkai Wei, N/A
+1. Hamed Vaziri, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Universite, Paris, France
+1. Giuseppe Fontanarosa, Università di Napoli, Italy
+1. Nicolas Rimbert, LEMTA, Université de Lorraine, France
+1. Giancarlo Esposito, University of Patras, Greece
+1. Shun Miyatake, Tokyo University of Agriculture and Technology, Japan
+1. Hiroaki Kusuno, Tokyo University of Agriculture and Technology, Japan
+1. Vrionis Panayiotis-Yiannis, The Cyprus Institute, Nicosia, Cyprus
+1. Ehsan Mahravan, Aarhus University, Denmark
+1. Alexandre Vierron, Université d'Aix-Marseille, IUSTI, France
+1. Paul-Peter Naanouh, [IFP Energies Nouvelles](https://www.ifpenergiesnouvelles.fr/), Solaize, France
+1. Yann Jobic, Université d'Aix-Marseille, IUSTI, France
+1. Attiglah Mathé A. Jean - Paul, Laboratoire de mathématiques et de mécanique appliquée, Université de Lomé, Togo
+1. Maurice Rossi, [∂'Alembert](http://dalembert.upmc.fr), CNRS & Sorbonne Universite, Paris, France
+1. Claire Beauchesne, Université Paris-Saclay, CEA, Service de Thermohydraulique et de Mécanique des Fluides, Gif-sur-Yvette, France
+1. Ivan Delbende, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+1. Mustapha Aknine, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+1. [Gabriele Gennari](/sandbox/ggennari/README), University of Nottingham, UK
+1. Gormit Lyes, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne Université, Paris, France
+1. Paulin Dempowo Fouelefack, Université Paris-Saclay, CEA, Service de Thermohydraulique et de Mécanique des Fluides, Gif-sur-Yvette, France
+1. [Ayush Kumar Dixit](https://pof.tnw.utwente.nl/people/profile/2068), [Physics of Fluids group](https://pof.tnw.utwente.nl), University of Twente, the Netherlands
+
+## Organisers
+
+* [Stéphane Popinet](/sandbox/popinet/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France.
+* [Jose-Maria Fullana](http://www.lmm.jussieu.fr/~fullana/), [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne & CNRS, Paris, France.
+
+## Previous meetings
+
+* [Basilisk/Gerris Users' Meeting 2019](BGUM2019)
+* [Basilisk/Gerris Users' Meeting 2017](BGUM2017)
+* [Meeting on Numerical challenges in two-phase flows 2014](http://gerris.dalembert.upmc.fr/meeting_on_numerical_challenges_in_two-phase_flows.html)
+* [Gerris users' meeting 2012](http://gerris.dalembert.upmc.fr/gerris_users%27_meeting_2012.html)
+* [Gerris users' meeting 2011](http://gerris.dalembert.upmc.fr/gerris_users%27_meeting_2011.html)

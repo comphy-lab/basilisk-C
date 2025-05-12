@@ -1,0 +1,1134 @@
+1 patch for repository http://basilisk.fr/basilisk:
+
+Tue Apr 25 11:13:10 CEST 2023  <nicolas.fintzi@etu-sorbonne.universite.fr>
+  * Einstein summation notation macro
+
+
+New patches:
+
+[Einstein summation notation macro
+<nicolas.fintzi@etu-sorbonne.universite.fr>**20230425091310
+ Ignore-this: 3df5a0897babb93a359e1cb68907823
+] hunk ./src/ast/translate.c 123
+   return l;
+ }
+ 
++/**
++Appends `item` to (plus-separated) `list`. The list item symbol is
++`+` sign */
++
++Ast * ast_add_list_append (Ast * list, int item_sym, Ast * item)
++{
++  ast_set_line (item, ast_right_terminal (list));
++  Ast * parent = list->parent;
++  int index = ast_child_index (list);
++  Ast * l =  ast_new_children (ast_new (parent, list->sym),
++			       list, 
++			       ast_terminal_new_char (item, "+"),
++			       ast_new (item, item_sym));
++  ast_attach (l->child[2], item);
++  ast_set_child (parent, index, l);
++  return l;
++}
++
+ /**
+ Prepends `item` to (comma-separated) `list`. The list item symbol is
+ `item_sym`. */
+hunk ./src/ast/translate.c 734
+   int constants_index, fields_index, nboundary;
+   Ast * init_solver, * init_events, * init_fields;
+   Ast * boundary;
+-  char * swigname, * swigdecl, * swiginit;
++  char * swigname, * swigdecl, * swiginit, * current_id, * forbiden_id, * id_list_after;
+ } TranslateData;
+ 
+ static Ast * in_stencil_point_function (Ast * n)
+hunk ./src/ast/translate.c 1683
+   return list;
+ }
+ 
++static void einstein_sum_id_list(Ast * n, Stack * stack, void * data){
++  if(n->sym == sym_IDENTIFIER){
++    AstTerminal * t = ast_terminal (n);
++    if(strlen(t->start) > 1){
++      fprintf (stderr,
++              "%s:%d: error: the args of einsc(...,%s,...) must be of length one\n",
++              t->file, t->line,t->start);
++      exit (1);
++    }
++    char * id_list = data;
++    char first_char[2];
++    first_char[0] = *t->start,first_char[1] = '\0';
++    strcat(id_list,first_char);
++  }
++}
++
++static char * get_einstein_sum_args(Ast * n, Stack * stack){    
++  // stop when the macro eintein sum is found
++  Ast * ein_macro = n;
++  char * indentifier = "init";
++  while (strcmp(indentifier,"einstein_sum"))
++  {
++    ein_macro = ast_parent(n, sym_macro_statement);
++    indentifier = ast_terminal(ast_schema (ein_macro, sym_macro_statement,
++                             0, sym_function_call,
++                             0, sym_postfix_expression,
++                             0, sym_primary_expression,
++                             0, sym_IDENTIFIER))->start;
++  }
++  // gather the args in the buffer
++  char buffer[100] = {0};
++  ast_traverse (ein_macro->child[0]->child[2],
++               stack, einstein_sum_id_list , buffer);
++  int length = strlen(buffer);
++  buffer[length] = '\0';
++  char * indices = malloc((length+1) * sizeof(char));
++  strcpy(indices,buffer);
++  return indices;
++}
++
++static void einstein_sum_get_member_id(Ast * n, Stack * stack, void * data){
++  if(n->sym == sym_member_identifier){
++    AstTerminal * t = ast_terminal (ast_schema (n, 
++                                                sym_member_identifier,
++                                                0, sym_generic_identifier,
++                                                0, sym_IDENTIFIER));
++    char * sub_id_list = data;
++    char * id_list = get_einstein_sum_args(n,stack);
++    char first_char[2];
++    first_char[0] = *t->start,first_char[1] = '\0';
++    if(strchr(id_list,*t->start))
++      strcat(sub_id_list,first_char);
++  }
++}
++
++
++static Ast * get_expression_statement(Ast * n){
++  while (n->sym != sym_expression_statement && n->sym == sym_expression)
++    n = n->parent;  
++  return n;
++}
++
++static char * get_expression_id(Ast * n, Stack * stack){
++  char buffer[100] = {0};
++  ast_traverse (n, stack, einstein_sum_get_member_id , buffer);
++  int length = strlen(buffer);
++  buffer[length+1] = '\0';
++  char * sub_id_list = malloc(80 * sizeof(char));
++  strcpy(sub_id_list,buffer);
++  return sub_id_list;
++}
++
++static void einstein_sum_repace_id (Ast * n, Stack * stack, void * data)
++{
++  switch (n->sym) {
++  case sym_member_identifier: {
++    AstTerminal * t = ast_terminal (ast_schema (n, 
++                                                sym_member_identifier,
++                                                0, sym_generic_identifier,
++                                                0, sym_IDENTIFIER));
++    char * id_list = get_einstein_sum_args(n,stack);
++    if (t->start[1] == '\0' && strchr (id_list, *t->start))
++      // char * id_old
++      strcat(t->start,"_x");
++    break;
++  } 
++  }
++}
++
++static void einstein_sum_rotate (Ast * n, Stack * stack, void * data)
++{
++  switch (n->sym) {
++  case sym_member_identifier: {
++    AstTerminal * t = ast_terminal (ast_schema (n, 
++                                                sym_member_identifier,
++                                                0, sym_generic_identifier,
++                                                0, sym_IDENTIFIER));
++    int len = strlen (t->start);
++    TranslateData * d = data;
++    if (len >= 2 && t->start[len - 2] == '_' &&
++	      strchr ("xyz", t->start[len - 1]) &&
++        t->start[0] == d->current_id[0]) 
++      t->start[len - 1] = 'x' + (t->start[len - 1] + 1 - 'x') % d->dimension;
++  }
++  }
++}
++
++static void einstein_sum_sum(Ast * n, Stack * stack,void * data){
++  if(n->sym == sym_additive_expression){
++    TranslateData * d = data;
++    Ast * body = ast_last_child(n);
++
++    char * current_id_list = get_expression_id(body,stack);
++    char * id_list_after = d->id_list_after;
++    char sum_id[80];
++    // tetain only the indicies who appear the number of time they were declared
++    int j=0;
++    for(int i = 0;i<strlen(current_id_list);i++){
++      int k =0; 
++      int m=0;
++      for (int l=0;l<strlen(current_id_list);l++)
++        if(current_id_list[l] == current_id_list[i])
++          k++;
++      for(int l=0;l<strlen(id_list_after);l++)
++        if(id_list_after[l]==current_id_list[i])
++          m++;
++      if(!strchr(d->forbiden_id,current_id_list[i]) && 
++        !strchr(sum_id,current_id_list[i]) && k==m){
++        sum_id[j] = current_id_list[i];
++        j++;
++      }
++      sum_id[j] = '\0';
++    }
++    int id_N = strlen(sum_id);
++    if(!j) {
++      id_N = 0;
++      sum_id[0] = '\0';
++    }
++    d->current_id = malloc(sizeof(char)*2);
++    d->current_id[1]='\0';
++    for(int i = 0; i<id_N; i++){
++      d->current_id[0] = sum_id[i];
++      Ast * copy = body;
++      for (int j = 1; j < d->dimension; j++){ 
++        copy = ast_copy(copy);
++        stack_push (stack, &copy);
++        ast_traverse (copy, stack, einstein_sum_rotate, d);
++        ast_pop_scope (stack, copy);  
++        body = ast_add_list_append(body,copy->sym,copy);
++      }
++    }
++    strcat(d->forbiden_id,sum_id);
++  }
++}
++
++static void einstein_sum_repace_id_back (Ast * n, Stack * stack, void * data)
++{
++  switch (n->sym) {
++  case sym_member_identifier: {
++    AstTerminal * t = ast_terminal (ast_schema (n, 
++                                                sym_member_identifier,
++                                                0, sym_generic_identifier,
++                                                0, sym_IDENTIFIER));
++    char * id_list = get_einstein_sum_args(n,stack);
++    int len = strlen(t->start);
++    if (t->start[len - 2] == '_' &&
++	      strchr ("xyz", t->start[len - 1]) &&
++	      strchr (id_list, t->start[len - 3]))
++        t->start[1] = '\0',t->start[0] = t->start[len - 1] ;
++    break;
++  } 
++  }
++}
++
++static void einstein_sum_expression (Ast * n, Stack * stack, void * data)
++{ 
++  if(n->sym == sym_assignment_expression &&
++    get_expression_statement(n->parent)->sym == sym_expression_statement &&
++    get_expression_statement(n->parent)->parent->sym == sym_statement &&
++    n->parent->sym == sym_expression){
++    TranslateData * d = data;
++    
++    // transform into block item
++    Ast * expr_statement = get_expression_statement(n->parent);
++    Ast * statement = get_expression_statement(n->parent)->parent;
++    Ast * item = ast_block_list_get_item (statement);
++      if(!item) item = get_expression_statement(n->parent);
++    Ast * item_list = item->parent;
++
++    // first we replace the right indices by the componant _x 
++    stack_push (stack, &item);
++    ast_traverse (item, stack, einstein_sum_repace_id, d);
++    ast_pop_scope (stack, item);  
++    
++    // set --> if it is an expression 
++    // set the main braches
++    // check the block is an expression 
++    char * id_list_before = get_expression_id(n,stack);
++    int id_N = strlen(id_list_before);
++    
++    if(ast_child(n,sym_assignment_operator)){
++      Ast * right_hand_side = ast_child(n,sym_assignment_expression);
++      Ast * left_hand_side = ast_child(n,sym_unary_expression);
++      // identify the indices in the body Ast 
++      id_list_before = get_expression_id(left_hand_side,stack);
++      d->id_list_after = get_expression_id(right_hand_side,stack);
++      d->forbiden_id = malloc(sizeof(char)*80);
++      strcpy(d->forbiden_id,id_list_before);
++      stack_push (stack, &right_hand_side);
++      ast_traverse (right_hand_side, stack, einstein_sum_sum, d);
++      ast_pop_scope (stack, right_hand_side);  
++      // then roatte the indices for each dim and indicies
++      id_N = strlen(id_list_before);
++    }
++
++    d->current_id = malloc(2*sizeof(char));
++    d->current_id[0] ='\0';
++    for(int i = 0;i<id_N;i++){
++      d->current_id[0] = id_list_before[id_N -(i+1)];
++      Ast * copy = expr_statement;
++      for (int j = 1; j < d->dimension; j++){ 
++        copy = ast_copy(copy);
++        stack_push (stack, &copy);
++        ast_traverse (copy, stack, einstein_sum_rotate, d);
++        ast_pop_scope (stack, copy);  
++        expr_statement = ast_block_list_append(expr_statement,copy->sym,copy);
++      }
++    }
++    // replace the i_x by x (for all indices and dimension)  
++    stack_push (stack, &item_list);
++    ast_traverse (item_list, stack, einstein_sum_repace_id_back, d);
++    ast_pop_scope (stack, item_list);  
++  }
++}
++
++static void einstein_sum_global (Ast * item, Ast * n, 
++                                Stack * stack, void * data)
++{
++  if(n->child[0]->child[2]->sym == 85){ // 85 correspond to ')' sign
++    AstTerminal * t = ast_left_terminal (n);
++    fprintf (stderr,
++            "%s:%d: error: you must express indices as input in macro : einstein_sum(...) \n",
++            t->file, t->line);
++    exit (1);
++  }
++  Ast * body = ast_last_child (n);
++  stack_push (stack, &body);
++  ast_traverse (body, stack, einstein_sum_expression, data);
++  ast_pop_scope (stack, body); 
++  // remove macro name and append the body 
++  ast_replace_child(item,0,body);
++  ast_remove (n, ast_left_terminal (body));
++}
++
++static void einstein_sum (Ast * n, Stack * stack, void * data)
++{
++  if(n->sym == sym_macro_statement){
++    Ast * identifier = ast_schema (n, sym_macro_statement,
++				   0, sym_function_call,
++				   0, sym_postfix_expression,
++				   0, sym_primary_expression,
++				   0, sym_IDENTIFIER);
++    if (!strcmp (ast_terminal (identifier)->start, "einstein_sum")) {
++      Ast * item = ast_block_list_get_item (n->parent->parent);
++      einstein_sum_global(item ,n ,stack, data);
++    }
++  }
++}
+ /**
+ # First pass: Global boundaries and stencils */
+ 
+hunk ./src/ast/translate.c 4163
+   ast_destroy ((Ast *) init);
+ 
+   stack_push (root->stack, &root);
++  ast_traverse ((Ast *) root, root->stack, einstein_sum, &data);
++  ast_pop_scope (root->stack, (Ast *) root);
++  
++  CHECK ((Ast *) root, true);
++  stack_push (root->stack, &root);
+   ast_traverse ((Ast *) root, root->stack,
+ 		global_boundaries_and_stencils, &data);
+   ast_pop_scope (root->stack, (Ast *) root);
+addfile ./src/test/einstein_sum.c
+hunk ./src/test/einstein_sum.c 1
++#include "grid/cartesian.h"
++#include "utils.h"
+hunk ./src/test/einstein_sum.c 4
++typedef struct{
++  coord x;
++  coord y;
++}mat;
++
++int main ()
++{
++  mat I = {{1,0},{0,1}};
++  mat B = {{1,2},{3,4}};
++  mat A;
++
++  einstein_sum(i,j,k){
++    A.i.j =  I.i.k * B.k.j;
++    fprintf(qerr,"%g\n",A.i.j);
++  }
++
++  return 0;
++}
+addfile ./src/test/einstein_sum.ref
+hunk ./src/test/einstein_sum.ref 1
++1
++2
++3
++4
+
+Context:
+
+[Embedded solids can be combined with metric
+J.M. Lopez-Herrera <jose.lopez.herrera.s@gmail.com>**20230402170251
+ Ignore-this: 4d90f813edf0cb6f1aff139f98344d90
+] 
+[Updated darcsit config
+Stephane Popinet <popinet@basilisk.fr>**20230402163954
+ Ignore-this: 8164e013c0de763cf309fadb848c6b01
+] 
+[Added missing metric terms in the all-Mach and momentum solvers
+J.M. Lopez-Herrera <jose.lopez.herrera.s@gmail.com>**20230402160447
+ Ignore-this: eb435f989428373a6e289192df41fb91
+] 
+[Bview can write (uncompressed) PNG images without ImageMagick
+Stephane Popinet <popinet@basilisk.fr>**20230401111347
+ Ignore-this: 9bae02a19c970af89714b21e8c4482e5
+] 
+[Removed remnants of OSMesa in documentation
+Stephane Popinet <popinet@basilisk.fr>**20230401102615
+ Ignore-this: 5d3df7e8160b4eba257b0d56a97f4843
+] 
+[Makefiles should work with any POSIX-compliant awk
+Stephane Popinet <popinet@basilisk.fr>**20230331160653
+ Ignore-this: 6b0e7d2f8647b61d66431f810d8b8a86
+] 
+[Renamed gl/gl.h into gl/tinygl.h
+arnaud.antkowiak@upmc.fr**20230331145004
+ Ignore-this: 49af89e9745f683cc1f0be59522bcd0ab0137b3b359fe6049d8123d31df4c709b10da6b40fef8393
+] 
+[Apple does not like -D_XOPEN_SOURCE=700
+Stephane Popinet <popinet@basilisk.fr>**20230331103748
+ Ignore-this: c8f9c5faa88ff8592c507f5c9d21250a
+] 
+[Fixed 'unsigned int' conflict in vertexbuffer.h
+Stephane Popinet <popinet@basilisk.fr>**20230331072116
+ Ignore-this: 98c69865d302b141e3e2121e3df142b1
+] 
+[Build system uses C99
+Stephane Popinet <popinet@basilisk.fr>**20230331064747
+ Ignore-this: 763837d1bc2edd31586dc64947bf222
+] 
+[The scope of "maybe const" fields was not properly resolved
+Stephane Popinet <popinet@basilisk.fr>**20230329154826
+ Ignore-this: 50c1e019e168caaadf97b03b765c1e95
+] 
+[Lines need to be drawn before (i.e. "on top")
+Stephane Popinet <popinet@basilisk.fr>**20230329132129
+ Ignore-this: 44ed01901241cb70426ab7f6852a6b85
+] 
+[The CVMix test case is unmaintained
+Stephane Popinet <popinet@basilisk.fr>**20230329125151
+ Ignore-this: f4fb76b2b9ba955a949cf300e6456d2
+] 
+[Restructured the build system
+Stephane Popinet <popinet@basilisk.fr>**20230329123645
+ Ignore-this: 5957c31f88e6449d9f3f304c6bd0a273
+ 
+ * the BASILISK environment variable is not needed anymore for
+ installation
+ * flex and bison are not required for installation anymore
+] 
+[A tiny implementation replaces OpenGL/OSMesa
+Stephane Popinet <popinet@basilisk.fr>**20230329102909
+ Ignore-this: 3dc286e732fd84c2a4d7dab1b1c7b618
+] 
+[Re-implementation of tinyrenderer in C99
+Stephane Popinet <popinet@basilisk.fr>**20230320134659
+ Ignore-this: 7b2cd06255ba3d809edb9973ece87676
+] 
+[Line thickness
+Stephane Popinet <popinet@basilisk.fr>**20230319094730
+ Ignore-this: 7e99753cdf3a7320ce62a558ce246fe6
+] 
+[Line thickness
+Stephane Popinet <popinet@basilisk.fr>**20230319093601
+ Ignore-this: 5f7a4cbf70c7fc0a8a93389633ed423a
+] 
+[Added raster line function (without z-buffering)
+Stephane Popinet <popinet@basilisk.fr>**20230319093534
+ Ignore-this: 5bf6860b52323d1f2a407f58c5746600
+] 
+[Initial import of tinyrenderer
+Stephane Popinet <popinet@basilisk.fr>**20230319093512
+ Ignore-this: f41e540bade8d87d808aa6f6ed50f862
+ 
+ Will utimately replace OSMesa.
+] 
+[Fixed missing whitespace in boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20230314182418
+ Ignore-this: 2207afa797fdc7f4d556e06a0cc642d5
+] 
+[Uncomment the PNG line in config.osx, since pngcairo is available on macs. 
+Stephane Zaleski <stephane.zaleski@upmc.fr>**20230214174056
+ Ignore-this: ae506f5990acdf2b1f3ed5bbcfd097a2
+] 
+[Cleaned some obsolete files
+Stephane Popinet <popinet@basilisk.fr>**20230114140740
+ Ignore-this: 6e0abd04c9583b0507264ac01f0315ef
+] 
+[Fixed obsolete link
+Stephane Popinet <popinet@basilisk.fr>**20230114135413
+ Ignore-this: 67f0265a5f9a204771b3fda802a3387b
+] 
+[Better cleanup for qcc
+Stephane Popinet <popinet@basilisk.fr>**20230108212244
+ Ignore-this: d39db42437bb8a7da168223d04c971d7
+] 
+[Allocator could not allocate large blocks properly
+Stephane Popinet <popinet@basilisk.fr>**20230108211507
+ Ignore-this: c5cda83f53df18d354f803451e36e588
+] 
+[With the new preprocessor 'val()' is not so useful anymore
+Stephane Popinet <popinet@basilisk.fr>**20221028093105
+ Ignore-this: 2e0eed05611f91d94cabf7b2e3eb589
+] 
+[Translate() has changed syntax
+Stephane Popinet <popinet@basilisk.fr>**20221028090348
+ Ignore-this: 1afb94581116ac4b3bbaa2accd12ec80
+] 
+[Too many flux variables in 1D
+Stephane Popinet <popinet@basilisk.fr>**20221028090304
+ Ignore-this: 9dbef109f7fcce00ab11ba2c5b35ffc5
+] 
+[ast_expression_type() knows '->'
+Stephane Popinet <popinet@basilisk.fr>**20220920142932
+ Ignore-this: d5a83778dcdb7f357ac868662287204c
+] 
+[Added missing glLoadMatrixd() to fb_dumb
+Stephane Popinet <popinet@basilisk.fr>**20230320140446
+ Ignore-this: 51960608f0b6a4001345e551d00669a9
+] 
+[libGLU is not necessary anymore
+Stephane Popinet <popinet@basilisk.fr>**20230320130924
+ Ignore-this: 8829c91d24a1883cc3bc515e06badfeb
+] 
+[Several tweaks for installation on OSX/Xcode
+Stephane Popinet <popinet@basilisk.fr>**20230317165203
+ Ignore-this: 9f5d58a7d7ede99fcb1811a511e502b2
+] 
+[More defaults C types in Basilisk C
+Stephane Popinet <popinet@basilisk.fr>**20230313184210
+ Ignore-this: 64a77532834dca7de3605fe98ce55627
+] 
+[Fix for boundary conditions on vertex scalars
+Stephane Popinet <popinet@basilisk.fr>**20230313182106
+ Ignore-this: dce46b0eb3051a9f35b62af6545e2949
+] 
+[new_block_vertex_scalar()
+Stephane Popinet <popinet@basilisk.fr>**20221118171836
+ Ignore-this: 3481edbd50fd805b3e682690b9bbc440
+] 
+[More robust default stencil build
+Stephane Popinet <popinet@basilisk.fr>**20221118151520
+ Ignore-this: 48e6fd91e0641c4e4dd9353668ef14a1
+] 
+[automatic() was not "automatic"
+Stephane Popinet <popinet@basilisk.fr>**20221118124037
+ Ignore-this: 2b3bbf48b0e5d234dc629168bccc2e8
+] 
+[Several fixes for boundary conditions on face and vertex fields on multigrid.h
+Stephane Popinet <popinet@basilisk.fr>**20221022085125
+ Ignore-this: 696ed07f3926680b2263259c855f675e
+] 
+[Grammar needs to check for extraneous children
+Stephane Popinet <popinet@basilisk.fr>**20221010145505
+ Ignore-this: f6e3f8145a9bb394b93ce4d851e65b23
+] 
+[Stencils know about 'neighborp()'
+Stephane Popinet <popinet@basilisk.fr>**20220922084525
+ Ignore-this: fdb4e055847d6aeb5f57fa80ae68c779
+] 
+[qcc crashed when 'static FILE *' was used outside events
+Stephane Popinet <popinet@basilisk.fr>**20220909114235
+ Ignore-this: 451fa9e65a1bbf80e1427ce4a9646adc
+] 
+[TAG release 22-07-05
+Stephane Popinet <popinet@basilisk.fr>**20220909150055
+ Ignore-this: f67de11e160d8b6914806f2582242e9b
+] 
+[Basic parsing error message
+Stephane Popinet <popinet@basilisk.fr>**20220715103752
+ Ignore-this: 662ac954e3cb802ecc7c662e0efabc89
+] 
+[Empty List iterators were not recognized in stencils
+Stephane Popinet <popinet@basilisk.fr>**20220705114619
+ Ignore-this: 48b7499aa991070949bc31bb047cd0c2
+] 
+[Automatic boundaries are not perfect...
+Stephane Popinet <popinet@basilisk.fr>**20220625143536
+ Ignore-this: 6fb93c512d673100d69398a19537cc33
+] 
+[Boundary conditions are necessary for 'colorize()'
+Stephane Popinet <popinet@basilisk.fr>**20220624163702
+ Ignore-this: 3c2652cdf1f311b23de32fcb2925117c
+ 
+ Because automatic stencils are not applied to foreach_visible_plane() iterators.
+] 
+[Updated installation instructions
+Stephane Popinet <popinet@basilisk.fr>**20220624155737
+ Ignore-this: c64c58c5264acb6c34ae7463e7c4c154
+] 
+['point' is a loop-local variable
+Stephane Popinet <popinet@basilisk.fr>**20220624155719
+ Ignore-this: 6238b51e40a2ac36cd74d03c86e5db61
+] 
+[Updated porous3D reference
+Stephane Popinet <popinet@basilisk.fr>**20220624163741
+ Ignore-this: 5aee4c55db37219004c69cc968fd1410
+] 
+[Fixed wrong 'endfor' function prototype
+Stephane Popinet <popinet@basilisk.fr>**20220620094545
+ Ignore-this: 331d8f5f96cb0ab2ac0b6ce2d5b29458
+] 
+[Fixed graph
+Stephane Popinet <popinet@basilisk.fr>**20220616211420
+ Ignore-this: e4f6dcbff5b1a519c4ab4ff72cce838
+] 
+[Added <sys/stat.h> to AST system files
+Stephane Popinet <popinet@basilisk.fr>**20220615190823
+ Ignore-this: 53da4414141417aab51e046e9273cabd
+] 
+[Documentation for rotation test
+Stephane Popinet <popinet@basilisk.fr>**20220610182433
+ Ignore-this: fa4898dd233372c1c72e998c841c92b1
+] 
+[Symbols are required
+Stephane Popinet <popinet@basilisk.fr>**20220610185305
+ Ignore-this: b431752008455d6ac4ffcb204743876a
+] 
+[Documentation for the new Basilisk C preprocessor
+Stephane Popinet <popinet@basilisk.fr>**20220610172420
+ Ignore-this: 5f23837970cf75c718d3d8efdf900ede
+] 
+[Fix a MPI lock bug with `wavelet()` and `inverse_wavelet()`
+Antoon van Hooft <J.A.vanHooft@tudelft.nl>**20220519134340
+ Ignore-this: d1cf0cafe012610164cf5c0a4ed77d05
+] 
+[Rarely used option to remove stencil warnings
+Stephane Popinet <popinet@basilisk.fr>**20220519131246
+ Ignore-this: e9c4c05c8e73cecd870cc5b4846cf9e
+] 
+[Cosmetics
+Stephane Popinet <popinet@basilisk.fr>**20220519125438
+ Ignore-this: cd1476b28561782d3c6664a5fe15ed3
+] 
+[GCC option to show only line numbers
+Stephane Popinet <popinet@basilisk.fr>**20220519073253
+ Ignore-this: cc0efda18edebc25f033b94874933ebb
+] 
+[Stencils check for overflow
+Stephane Popinet <popinet@basilisk.fr>**20220519071342
+ Ignore-this: 89a509b98f3c27b17479cda0172a0c6e
+] 
+[All header files are parsed, system headers excepted
+Stephane Popinet <popinet@basilisk.fr>**20220518111723
+ Ignore-this: 61e38550a91a55ccb22dce711f0d57e0
+] 
+['in' is not a reserved keyword anymore
+Stephane Popinet <popinet@basilisk.fr>**20220518111024
+ Ignore-this: 7fb0acf665c8367a384d7dd8d826faee
+] 
+[The "noauto" option can be useful in some exceptional circumstances
+Stephane Popinet <popinet@basilisk.fr>**20220518082902
+ Ignore-this: b5a37c40ed4ef4be9c1e437b986b2a13
+ 
+ Here to avoid a recursive call inside the tree implementation of
+ boundary conditions.
+] 
+[Take into account the parent foreach for point functions checks
+Stephane Popinet <popinet@basilisk.fr>**20220518082541
+ Ignore-this: 7a824dffd01292fcbe48f175e6334d51
+] 
+[Support for 'complex' in Basilisk C grammar
+Stephane Popinet <popinet@basilisk.fr>**20220518082427
+ Ignore-this: 56f6a105064d6ea9e529a61b2ad00d87
+] 
+[foreach_visible() uses stencils
+Stephane Popinet <popinet@basilisk.fr>**20220517164453
+ Ignore-this: a00db8e00a195c03eb2f2ee19a972d7a
+] 
+[New qcc uses AST
+Stephane Popinet <popinet@basilisk.fr>**20220517164354
+ Ignore-this: 56f0af40958da75936cc0e72bbde9e0d
+] 
+[Adaptations for the new qcc
+Stephane Popinet <popinet@basilisk.fr>**20220517160706
+ Ignore-this: 245099a8db9cbc5626b72271e92cc559
+] 
+[Missing reductions are now errors when compiling parallel code
+Stephane Popinet <popinet@basilisk.fr>**20220517153603
+ Ignore-this: b735c8c47b19bab6e330758a27b47dc6
+] 
+[Typo
+Stephane Popinet <popinet@basilisk.fr>**20220517135539
+ Ignore-this: e094cad3ba02a1b3fcf06e6a777d5f4f
+] 
+[Fix for (more) OSMesa floating-point exceptions
+Stephane Popinet <popinet@basilisk.fr>**20220517122143
+ Ignore-this: 3fcac08e75d382eb23dd6fab91171be1
+] 
+[Updated spheres test case reference
+Stephane Popinet <popinet@basilisk.fr>**20220517121130
+ Ignore-this: 5565dd80e1dd612c4aa66709019525a3
+ 
+ The new qcc detects a necessary boundary conditions which was not detected before.
+ This improves the results.
+] 
+[The new qcc is much more robust and does not require the previous tweaks
+Stephane Popinet <popinet@basilisk.fr>**20220517120432
+ Ignore-this: 9ac6568852fcaa861f1953f024b41bc7
+ 
+ Function pointers are allowed, reductions are not mandatory etc.
+] 
+[The new qcc respects the grammar for 'break' statements
+Stephane Popinet <popinet@basilisk.fr>**20220513170902
+ Ignore-this: 274bbad9064a6d555845f78a716d1bd5
+] 
+[Cleanup of unused variables in automatic stencils
+Stephane Popinet <popinet@basilisk.fr>**20220513153703
+ Ignore-this: e097f345b605b96d1435b7581b232a4f
+] 
+[Automatic stencils completely revised
+Stephane Popinet <popinet@basilisk.fr>**20220509125137
+ Ignore-this: 52197b129f19e10556dbfe9ff8733182
+] 
+[Automatic stencils
+Stephane Popinet <popinet@basilisk.fr>**20220429123839
+ Ignore-this: f228a0133e6058014b8554ed30ff387f
+] 
+[Pointers when tracing function calls
+Stephane Popinet <popinet@basilisk.fr>**20220425111724
+ Ignore-this: 3c16365a639bafb1dd89c6937a5e70bb
+] 
+[Fixed grammar for initializion lists
+Stephane Popinet <popinet@basilisk.fr>**20220425095916
+ Ignore-this: e99c0da152540a5abb35937f54cbd915
+] 
+[Fixed grammatical errors
+Stephane Popinet <popinet@basilisk.fr>**20220422160410
+ Ignore-this: b945aac5074de5757c2c3d911fe98bba
+] 
+[Automatic boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20220421170629
+ Ignore-this: 9fa844bd3728dd91ca5eb9bdda988924
+] 
+[Grammar checker
+Stephane Popinet <popinet@basilisk.fr>**20220421124553
+ Ignore-this: f5cdd6ca28feb970c5a419847f46c13c
+] 
+[Cosmetics
+Stephane Popinet <popinet@basilisk.fr>**20220420082756
+ Ignore-this: f6dc44d8dbe7cb9f792d254588122864
+] 
+[Fix for typedef name in function parameters
+Stephane Popinet <popinet@basilisk.fr>**20220416155811
+ Ignore-this: d6601f74e2bb087d1ca0d972c52f3ca0
+] 
+[-catch and swig options for qcc
+Stephane Popinet <popinet@basilisk.fr>**20220416143234
+ Ignore-this: c491ecf72a3b9ecf0782e500070fcc3a
+] 
+[Fixed memory leaks in qcc
+Stephane Popinet <popinet@basilisk.fr>**20220416131322
+ Ignore-this: d3d31e896d724afb8eba05039d675c44
+] 
+[Fix for unused warning of constant fields
+Stephane Popinet <popinet@basilisk.fr>**20220416123818
+ Ignore-this: 36eb8196a68d2cb1c5ee6d9f6fbe2416
+] 
+[Fix for stencil access to const fields
+Stephane Popinet <popinet@basilisk.fr>**20220416121742
+ Ignore-this: e0ab25ec615fdb7eee849123d2790ee5
+] 
+[Fixes for boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20220415180846
+ Ignore-this: e43bcc1f5608f33fd5daabcab03347a7
+] 
+[Reductions
+Stephane Popinet <popinet@basilisk.fr>**20220414074745
+ Ignore-this: 719c0a3223ba47691dd1e0f96f8ec8c8
+] 
+[Constant field stencil access
+Stephane Popinet <popinet@basilisk.fr>**20220413162657
+ Ignore-this: 52e32009cd2f5013d2e1360849408a00
+] 
+[Various minor fixes for qcc
+Stephane Popinet <popinet@basilisk.fr>**20220413133216
+ Ignore-this: 8beddc529b1fd4404cc3f8eafa545fd9
+] 
+[New 'maxdepth' option for ast_print_tree()
+Stephane Popinet <popinet@basilisk.fr>**20220413133057
+ Ignore-this: 8f211c3d348f5b84b1cb1f75ef375bd4
+] 
+[Maps
+Stephane Popinet <popinet@basilisk.fr>**20220412154613
+ Ignore-this: 983c01ca17f8daf9c75f03980cbc62c8
+] 
+[Basilisk C tolerates empty arguments in function calls
+Stephane Popinet <popinet@basilisk.fr>**20220412095507
+ Ignore-this: 213b90547daed64465d5a47941d42ef5
+] 
+[Allocation of symmetric tensors
+Stephane Popinet <popinet@basilisk.fr>**20220412093442
+ Ignore-this: 91fbb3fb1fb0217b95969575b237da5f
+] 
+[Restructured constant fields combinations
+Stephane Popinet <popinet@basilisk.fr>**20220411152310
+ Ignore-this: 876eec5e3d3fe6a12d1c1531d4854dee
+] 
+[References to global constant field indices.
+Stephane Popinet <popinet@basilisk.fr>**20220411151916
+ Ignore-this: 4965407b7be2eaa8ce77fc5f0987ddbe
+] 
+['first' event keyword
+Stephane Popinet <popinet@basilisk.fr>**20220411151739
+ Ignore-this: 485939a2fc740b68e8d3b8069ff1a90b
+] 
+[Macro statements
+Stephane Popinet <popinet@basilisk.fr>**20220411151721
+ Ignore-this: 8754c4f7236e0c8b6021e3797e81722d
+] 
+[Multiple fixes for boundary conditions (qcc)
+Stephane Popinet <popinet@basilisk.fr>**20220411151603
+ Ignore-this: 1623b6d65cfa1e08e5d7b956d32457e1
+] 
+[Access to .n, .t, .r components within boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20220410092115
+ Ignore-this: aad2d62f99fbd4892c1b7c3a30be8e58
+] 
+[Rotation in one dimension
+Stephane Popinet <popinet@basilisk.fr>**20220410091513
+ Ignore-this: cdb325538e9025ed996e826999074f08
+] 
+[qerr and qout (obsolete but for backward compatibility)
+Stephane Popinet <popinet@basilisk.fr>**20220410091323
+ Ignore-this: 38c521ac360c427c18a108a006d11735
+] 
+[foreach_block_inner()
+Stephane Popinet <popinet@basilisk.fr>**20220410091240
+ Ignore-this: 2f4137cb76c125169b7dbb3c7354b62e
+] 
+[Fix for struct parameters and variable arguments function calls
+Stephane Popinet <popinet@basilisk.fr>**20220410091133
+ Ignore-this: ac22d9125be64931ac81ccb59e36faa8
+] 
+[higher dimension access to tensor fields
+Stephane Popinet <popinet@basilisk.fr>**20220410091033
+ Ignore-this: 45a97010b9fd797138a31aa05d283f8a
+] 
+[diagonalize()
+Stephane Popinet <popinet@basilisk.fr>**20220410090912
+ Ignore-this: 154759aa0d2c742a0551523ee75eee61
+] 
+[Layered fields allocation
+Stephane Popinet <popinet@basilisk.fr>**20220410090754
+ Ignore-this: 22068b357c97246b8cca9022b68cb67e
+] 
+[The "last" property of events must be inherited
+Stephane Popinet <popinet@basilisk.fr>**20220408102807
+ Ignore-this: cd9fb4c273c71207c7dd232f26e97aab
+] 
+[static FILE *
+Stephane Popinet <popinet@basilisk.fr>**20220407145037
+ Ignore-this: e7320a4abb0beb86f91c56ba25d8e182
+] 
+[Boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20220320172514
+ Ignore-this: 26e55dc41124e6541d647a7a28991ac1
+] 
+[Fix for events with array arguments
+Stephane Popinet <popinet@basilisk.fr>**20220320115414
+ Ignore-this: 755d6754ed0f83c13bdfa5b8eff33d95
+] 
+[Fix for missing arguments in child()
+Stephane Popinet <popinet@basilisk.fr>**20220320115343
+ Ignore-this: 13cf8706c745b13d5374d7927ee95f91
+] 
+[Higher-dimension vector field components are set to zero
+Stephane Popinet <popinet@basilisk.fr>**20220318153414
+ Ignore-this: 4e555ae9c96441ec5742c68994aff39
+] 
+[Fixed scope traversal
+Stephane Popinet <popinet@basilisk.fr>**20220318143115
+ Ignore-this: 893f907993f667610df35769be093b46
+] 
+[foreach_block* are inner loops
+Stephane Popinet <popinet@basilisk.fr>**20220316100321
+ Ignore-this: 8ef3c4085dee5708f4972cc4a73aae68
+] 
+[Warnings for Basilisk C parse errors
+Stephane Popinet <popinet@basilisk.fr>**20220316100257
+ Ignore-this: c3f494a62f59a1408854b71e4440ea9a
+] 
+[Calls to functions with optional arguments without any parameter
+Stephane Popinet <popinet@basilisk.fr>**20220316100231
+ Ignore-this: 7aff33c4d5eb8c8f9c1d2ab02b1fa878
+] 
+[Fix for (const) field declarations checks and for ... in loops
+Stephane Popinet <popinet@basilisk.fr>**20220316095855
+ Ignore-this: 710f4667207673c4768b10abb13b7a25
+] 
+[Call methods()
+Stephane Popinet <popinet@basilisk.fr>**20220316090718
+ Ignore-this: 6a9860967b70b1541d23fae81e05254a
+] 
+[External/global field lists
+Stephane Popinet <popinet@basilisk.fr>**20220316085443
+ Ignore-this: 9953a38b09e8bc38b06ab8cc3406ca2
+] 
+[Integer buffers were too small
+Stephane Popinet <popinet@basilisk.fr>**20220313171232
+ Ignore-this: 9b8b4d8fc33d17636b221ca94c7db837
+] 
+[for in type cast
+Stephane Popinet <popinet@basilisk.fr>**20220313170145
+ Ignore-this: 88b2eba51d74b5754047e5a4f5c90111
+] 
+['nolineno' option
+Stephane Popinet <popinet@basilisk.fr>**20220313161910
+ Ignore-this: da54e1e8b7fa9b199af199066e09f28f
+] 
+[(const) fields combinations for Point functions
+Stephane Popinet <popinet@basilisk.fr>**20220313160943
+ Ignore-this: c4fce313fc33c7f3434b3c19c493493e
+] 
+[Replaces '# line' with newlines when possible
+Stephane Popinet <popinet@basilisk.fr>**20220311085908
+ Ignore-this: 337efa5ef6d442f597e70f2e16fd853b
+] 
+[Solver initialization and termination
+Stephane Popinet <popinet@basilisk.fr>**20220309180520
+ Ignore-this: fb6ceabaf461cfbd7fcb8e3efca348be
+] 
+['serial' keyword
+Stephane Popinet <popinet@basilisk.fr>**20220309161635
+ Ignore-this: 78902ec8aeb6dad4fe84e1a82046084d
+] 
+[Automatic field allocation and deallocation
+Stephane Popinet <popinet@basilisk.fr>**20220308144525
+ Ignore-this: 53e68aa791f86c513bb051055de3217
+] 
+[Events
+Stephane Popinet <popinet@basilisk.fr>**20220306182708
+ Ignore-this: 6eef6ff34fb7d349150638d61591d80a
+] 
+[Field lists need extra parenthesis
+Stephane Popinet <popinet@basilisk.fr>**20220306162724
+ Ignore-this: e2f3c9dcfa9c3adf28cd21ace359ae30
+] 
+[Simplified file name allocation
+Stephane Popinet <popinet@basilisk.fr>**20220306105341
+ Ignore-this: 7b2fa390750b549a4e2e4be47e94683e
+] 
+[Simplified child replacement
+Stephane Popinet <popinet@basilisk.fr>**20220305164625
+ Ignore-this: 8d2b6dfce39b77beb652035166a2ca3b
+] 
+[init_solver()
+Stephane Popinet <popinet@basilisk.fr>**20220304193642
+ Ignore-this: c63beffb2b125ba2b288d2dc8d244a2
+] 
+[Cleanup of list append
+Stephane Popinet <popinet@basilisk.fr>**20220304185449
+ Ignore-this: 66d3c88df3a30e835e1564fc5018ce82
+] 
+[Rotations for right, left, top, bottom etc.
+Stephane Popinet <popinet@basilisk.fr>**20220304160135
+ Ignore-this: e22107e46ae6d4ea8edc099b696c4a5c
+] 
+[is_face_x()
+Stephane Popinet <popinet@basilisk.fr>**20220304155626
+ Ignore-this: 5644333a01929d94ca7a38e0e641af3
+] 
+[Automatic fields
+Stephane Popinet <popinet@basilisk.fr>**20220304145953
+ Ignore-this: ebddeed80024c1fa119260f8dfb99e54
+] 
+[Added basilisk.h
+Stephane Popinet <popinet@basilisk.fr>**20220304112759
+ Ignore-this: e92bffff28e692f736cdb5ca69207275
+] 
+[New fields
+Stephane Popinet <popinet@basilisk.fr>**20220304112638
+ Ignore-this: 49025a91fb8b53c62707c303c7be3b29
+] 
+[Breaks within foreach_inner loops
+Stephane Popinet <popinet@basilisk.fr>**20220304100323
+ Ignore-this: fb976abdb42a9d3b3db6baa9f7f63be2
+] 
+[Fix for maybeconst combinations of vector fields
+Stephane Popinet <popinet@basilisk.fr>**20220303181128
+ Ignore-this: cbd4fc38d007b212e9584cb5d6f5402
+] 
+[Macro statements
+Stephane Popinet <popinet@basilisk.fr>**20220303180205
+ Ignore-this: ee313ebf30aef0c0881936b2405ddbba
+] 
+[Fixed argument rotation is 2D
+Stephane Popinet <popinet@basilisk.fr>**20220303165637
+ Ignore-this: a206fced18233915d812331012a0eea4
+] 
+[Field declarations
+Stephane Popinet <popinet@basilisk.fr>**20220303160432
+ Ignore-this: 57dce791bb70ec20ce6a17257dff73bd
+] 
+[Fixed 'vertex scalar' type detection
+Stephane Popinet <popinet@basilisk.fr>**20220303141556
+ Ignore-this: 2ad0130a9bc2b1c9bca4e65c86b592c4
+] 
+[Field lists
+Stephane Popinet <popinet@basilisk.fr>**20220303125148
+ Ignore-this: 312c3da940c3c7f445e1e57c290b40df
+] 
+[Point point
+Stephane Popinet <popinet@basilisk.fr>**20220302153747
+ Ignore-this: 2f983b03074aa72a2e81d51b16d603a3
+] 
+[Constant fields initialization
+Stephane Popinet <popinet@basilisk.fr>**20220302153509
+ Ignore-this: 7fbc55b675028915e1d61e83d306bd0a
+] 
+[Fixed warning for unused fields
+Stephane Popinet <popinet@basilisk.fr>**20220302140910
+ Ignore-this: 40b9daeb2310dab720a95ba8891e2db6
+] 
+[Hide Basilisk C keywords
+Stephane Popinet <popinet@basilisk.fr>**20220302092548
+ Ignore-this: 5562a7cb3c542434d544020cdeb03e0e
+] 
+[forin_declaration_statement
+Stephane Popinet <popinet@basilisk.fr>**20220302090839
+ Ignore-this: 704aadae2fbf2877f0075541c51ef9ed
+] 
+[Forin statement
+Stephane Popinet <popinet@basilisk.fr>**20220301191016
+ Ignore-this: 2ddbbd674fdac1dd87d6ee11b78fcebf
+] 
+[(const) fields combinations
+Stephane Popinet <popinet@basilisk.fr>**20220301153808
+ Ignore-this: b450c874876a10c4ef57867e2b1268c0
+] 
+[foreach_face() statements
+Stephane Popinet <popinet@basilisk.fr>**20220301090325
+ Ignore-this: 3e9bfd0095913ae80aed63e306cc536d
+] 
+[Functions with optional arguments
+Stephane Popinet <popinet@basilisk.fr>**20220228154936
+ Ignore-this: c97752b529bcc8c1529f1e3ff0ea56cf
+] 
+[Line numbers
+Stephane Popinet <popinet@basilisk.fr>**20220228103848
+ Ignore-this: c52bca88ce6cfcf03bb074587a3d3a90
+] 
+[External foreach_dimension()
+Stephane Popinet <popinet@basilisk.fr>**20220227142528
+ Ignore-this: 719f67dee289a47ae6a6f8b14a64457c
+] 
+[Attribute declaration
+Stephane Popinet <popinet@basilisk.fr>**20220227115611
+ Ignore-this: 289a2e0a7db2d54752f787f869324adb
+] 
+[Attribute access
+Stephane Popinet <popinet@basilisk.fr>**20220227103814
+ Ignore-this: eac0b995913b95db8b3c02e652ad43a
+] 
+[Translates foreach_dimension()
+Stephane Popinet <popinet@basilisk.fr>**20220225175551
+ Ignore-this: fd6360f9658d4931515dc764cdbd763d
+] 
+[Preliminary work for foreach_dimension()
+Stephane Popinet <popinet@basilisk.fr>**20220220163144
+ Ignore-this: 6257def11dc50eb5bc13c0e9ce9bba41
+] 
+[Stencil functions
+Stephane Popinet <popinet@basilisk.fr>**20220219114711
+ Ignore-this: 9a9c57a31591ccb9b87f1b3852766b25
+] 
+[Stencil accesses
+Stephane Popinet <popinet@basilisk.fr>**20220215171310
+ Ignore-this: 91d78e2fbcdc783dd0823e90bb89e2ee
+] 
+[Simpler nested foreach check
+Stephane Popinet <popinet@basilisk.fr>**20220215140355
+ Ignore-this: b9c9389d6ac3e7513e4ac68feb423bf3
+] 
+[Stencil access checks
+Stephane Popinet <popinet@basilisk.fr>**20220215122805
+ Ignore-this: 53b25fa8fecdbd66fc02ec5a50d11b16
+] 
+[Use stack typedefs
+Stephane Popinet <popinet@basilisk.fr>**20220214161246
+ Ignore-this: f375b0d928b202c2a5cd37a6abf867f7
+] 
+[Use Allocator rather than malloc for AST nodes
+Stephane Popinet <popinet@basilisk.fr>**20220209113106
+ Ignore-this: 299ce9706e9e91811677a80ba22a1a5a
+] 
+[Differentiates between typedefs and identifiers using "Lexical Tie-ins"
+Stephane Popinet <popinet@basilisk.fr>**20220206180009
+ Ignore-this: 123e1ad5278e7603038c56fb8a54d674
+] 
+[Stack-based parsing
+Stephane Popinet <popinet@basilisk.fr>**20220205100722
+ Ignore-this: e6a3de077de2abc5be6dc779d2ede24f
+] 
+[Declaration stack
+Stephane Popinet <popinet@basilisk.fr>**20220201172745
+ Ignore-this: cc1cb6a3f12e80fd8429b5ef4ad9efa5
+] 
+[Return from trace
+Stephane Popinet <popinet@basilisk.fr>**20220131164408
+ Ignore-this: 104e3360f7b66f397a44cfb14bd7a679
+] 
+[Differentiates between terminal and non-terminale AST nodes
+Stephane Popinet <popinet@basilisk.fr>**20220131085720
+ Ignore-this: 26e2770dd1d33986c9f3072af86b6e6
+] 
+[Renamed 'Node' to 'Ast' (for "Abstract Syntax Tree")
+Stephane Popinet <popinet@basilisk.fr>**20220129161741
+ Ignore-this: 72c4487dd6cc5f58a57598401314d369
+] 
+[File and line numbers
+Stephane Popinet <popinet@basilisk.fr>**20220129154951
+ Ignore-this: b4aa6a3a447a7efd7b62f5eaee420dbc
+] 
+[Improved and simplified allocator
+Stephane Popinet <popinet@basilisk.fr>**20220129134229
+ Ignore-this: 2ad436dab66f91554880ea0afc2b0557
+] 
+[Various bug fixes for qcc/yacc
+Stephane Popinet <popinet@basilisk.fr>**20220129114904
+ Ignore-this: 5e96da5eeb7023b71c57daa3333071cf
+] 
+[Code transformations use full AST
+Stephane Popinet <popinet@basilisk.fr>**20220128210259
+ Ignore-this: c44d72520e67648bc32fa09286a82ac4
+] 
+[Source code buffer is split into substrings
+Stephane Popinet <popinet@basilisk.fr>**20220128145317
+ Ignore-this: 9d8efd06a7553c12d174e482386ac290
+] 
+[Bison/Yacc builds the entire AST
+Stephane Popinet <popinet@basilisk.fr>**20220128131532
+ Ignore-this: 5594082363157d4217fb84f47cde6f9c
+] 
+[Initial revision of yacc-based qcc
+Stephane Popinet <popinet@basilisk.fr>**20220127135118
+ Ignore-this: 680e016c4c2c48945f44e781368b8e2c
+] 
+[C grammar reference
+Stephane Popinet <popinet@basilisk.fr>**20220204111345
+ Ignore-this: 5476b174633f85ec1ce72940396df435
+] 
+[Added error tolerance to yacc grammar
+Stephane Popinet <popinet@basilisk.fr>**20220127110659
+ Ignore-this: f5ecf8c0c3146969ea23ea2e329e0658
+] 
+[Yacc grammar does typedefs
+Stephane Popinet <popinet@basilisk.fr>**20220126120142
+ Ignore-this: 1524e17eaa5b9892cd4c5e6d1eabf05d
+] 
+[Yacc grammar for Basilisk C
+Stephane Popinet <popinet@basilisk.fr>**20220126095201
+ Ignore-this: 6ae2145f9f7835b884b09d33bce37d4e
+] 
+[TAG release 22-04-07
+Stephane Popinet <popinet@basilisk.fr>**20220610174653
+ Ignore-this: 16b1ea720f26a0b524218eb30260f82f
+] 
+Patch bundle hash:
+b1019f6e95e6f26308e5e70d6f88ee2ff05f2274

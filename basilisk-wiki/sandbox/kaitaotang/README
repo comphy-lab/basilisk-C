@@ -1,0 +1,20 @@
+Welcome to the sandbox of Kaitao Tang. Here are the archived Basilisk codes for some problems I have investigated since September 2019.
+
+# Richtmyer-Meshkov (RM) instability with surface tension 
+* Publication: Tang, K., Mostert, W., Fuster, D., & Deike, L. (2021). [Effects of surface tension on the Richtmyer-Meshkov instability in fully compressible and inviscid fluids](https://doi.org/10.1103/PhysRevFluids.6.113901). Physical Review Fluids, 6(11), 113901.
+* Code: [rmst.c](rmst.c).
+
+# Laminar droplet bag breakup with [MD film perforation](http://basilisk.fr/sandbox/lchirco/signature.h) 
+* Publication: Tang, K., Adcock, T. A. A., & Mostert, W. (2023). [Bag film breakup of droplets in uniform airflows](https://doi.org/10.1017/jfm.2023.605). Journal of Fluid Mechanics, 970, A9.
+* Code: [dw14l11.c](dw14l11.c).
+
+# Transverse collision of two perturbed liquid rims
+* Publication: Tang, K., Adcock, T. A. A., & Mostert, W. (2024). [Fragmentation of Colliding Liquid Rims](https://doi.org/10.1017/jfm.2024.392). Journal of Fluid Mechanics, 987, A18.
+* Code: [docoll3d.c](docoll3d.c)
+
+# Turbulent aerobreakup
+* Publication: Tang, K., Adcock, T. A., & Mostert, W. (2025). [Droplet bag formation in turbulent airflows](https://doi.org/10.1103/PhysRevFluids.10.033604). Physical Review Fluids, 10(3), 033604.
+* Code: [turb_inlet_imposed.h](turb_inlet_imposed.h)
+
+# Auxiliary models 
+* Taylor-Culick rim recession on a spherical shell: [stc14l11.c](stc14l11.c).

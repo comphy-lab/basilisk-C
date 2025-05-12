@@ -1,0 +1,7 @@
+
+/**
+# Test case
+
+* [multiple inflows on the same boundary](multiriverinflow.c) 
+* [a more complicated case](morerivers.c)
+*/

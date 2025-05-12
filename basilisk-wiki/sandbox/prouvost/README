@@ -1,0 +1,165 @@
+Organisation of the sandbox
+===========================
+
+In this sandbox I present some work I've done using Basilisk during my PhD thesis (on mesh adaptation) and my post doc (on bubble dynamics).
+
+
+Metric-based Adaptive Mesh Refinement for quad/octree grids and elliptic equations
+----------------------------------------------------------------------------------
+
+Here is some work I've during my PhD on metric-based mesh adaptation.
+
+If a message should be taken home, it would be: Every cursus learning computational methods should have an introduction on mesh and mesh adaptation, to enforce the idea that having a 'good' mesh is complicated, and that a carefully validated mesh adaptation method is a very very very interesting and powerfull tool. It is indeed too easy to manually create an inefficient mesh by hand (or, said differently: the element repartition of an optimal mesh (a mesh which minimizes the total error) is not obvious ! ).
+
+A beautiful example which shows what is mesh adaptation is presented [here](./AMR_examples/basilisk_logo/AMRlogo.c)
+
+### Article and PhD thesis
+
+[AMR article: A metric-based adaptive mesh refinement criterion under constrain for solving elliptic problems on quad/octree grids](https://www.sciencedirect.com/science/article/abs/pii/S0021999124001906). It is available free of charge until May, 9$^{th}$ 2024 at [this link](https://authors.elsevier.com/a/1in%7EY508H%7EBHo), and will be later on HAL.
+
+[my PhD manuscript](https://theses.hal.science/tel-03966961)
+
+### Registered presentations
+
+[PMMH-$\partial$'Alembert interlab visit 2024](https://youtu.be/spUojLZ_EXk): A 2 minutes popularizing science video presenting a numerical experiment of a cavitation bubble collapse. Both mesh adaptation and Arbitrary Lagrangian Eulerian methods are used. No equations are shown.
+
+[$\partial$'Alembertiennes 2023](https://www.youtube.com/watch?v=jgJhhZVfxy4): A 2 minutes video about mesh adaptation and total numerical error minimization.
+
+[BGUM 2023](http://basilisk.fr/BGUM2023/prouvost.pdf)
+
+[my PhD defense](https://www.youtube.com/watch?v=9XA-GdbJP-A)
+
+
+### Comparison with the previously existing AMR method in Basilisk 
+
+Basilisk already contains a wavelet-based AMR method.
+By construction, it only allows $L^\infty$-norm interpolation error estimation.
+However, $L^2$-norms errors are generally recommended when dealing with numerical solutions (sometimes other $L^p$-norms, with $p<\infty$).
+
+Thus, we implemented a metric-based $L^p$-norm interpolation error.
+It is adapted from the anisotropic theory to the case of the isotropic elements of Basilisk quad/octree grids.
+
+After that, we quantified the limits of interpolation error-based AMR criteria in the case of the 2nd order elliptic solver of Basilisk.
+It follows that:
+
+* interpolation error is not always the correct criterion to perform AMR. The total error of the numerical solution can propagate in the whole domain and this is linked with the cell size variation of the mesh.
+
+* by imposing a (non-trivial) minimal cell size, we slightly increase the interpolation error, but we can dramatically decrease the total numerical error, see [this example](./AMR_examples/with_hmin/add_constrain.c).
+
+
+### Basic usage and example
+
+The user simply need to replace 
+
+~~~literatec
+      int maxl = 42;
+      double eps=0.01;
+      adapt_wavelet({psi}, (double[]){eps}, maxlevel=maxl);
+~~~
+
+by
+
+~~~literatec
+      // restriction on the minimum grid size based on compression ratio (optional) 
+      double etaopt = estimate_eta_opt(2, {psi});
+      maxlevel = 0.5*log(Nobj/etaopt)/log(2.);   // maxlevel: global variable. Optional.
+
+      // epsilon criteria for cell refinement/coarsening (mandatory) 
+      AMReps = 0.01;                             // AMReps: global variable
+
+      // AMR 
+      adapt_metric( {psi} );                     // user interface similar to adapt_wavelet()
+~~~
+
+[A simple example to show that the user-interface is easy to use](./AMR_examples/basic_example/bubble.c), and where we solve the laplace equation in axi-symmetric coordinates around a circular embedded boundary.
+
+
+### Some more details on my work  (TO EDIT AND EXPLAIN BETTER)
+
+Let $u$ be the exact solution of a PDE, $u_h$ be the numerical solution of a discretized PDE and $\Pi_h u$ the interpolation of the exact solution on the mesh.
+We try to reduce the total error $||u-u_h||$ which contains local and non-local parts.
+
+The exact solution interpolated on the mesh $\Pi_h u$ doesn't solves the discrete PDE.
+Thus, the numerical solution is modeled as $u_h = \Pi_h u + u'$ with $u'$ a correction.
+From that, the total error becomes $||u-\Pi_h u|| \leq ||u-\Pi_h u|| + ||u'||$ where
+
+* $||u-\Pi_h u||$ is the interpolation error. This error is local (by definition). It is never null (except for linear equations): as soon as an exact solution solution is injected in a discretized mesh, the interpolation error can be defined. 
+
+* $||u'||$ is a non necessarily local component of the total error.
+
+We propose to reduce the total error by reducing the interpolation error.
+We observed the influence of $||u'||$ and from that proposed a method which can restrict the minimal element size of a mesh. It is shown to reduce the total error when $||u'||$ dominates it.
+
+The interpolation error is derived from the metric-based theory and the the continuous mesh framework. It has been adapted to the grids of Basilisk.
+
+
+
+### AMR algorithm files
+
+The links to my AMR algorithm .h files. 
+
+[AMR](./AMR_tools/amr.h): performs AMR + user-interface
+
+[metric-based](./AMR_tools/error_metric.h): tools to perform metric-based mesh adaptation and in particular compute metric-based interpolation errors.
+
+[linalg](./AMR_tools/linalg.h): tools for operation on tensors/matrices.
+
+The last update was made in January 2024.
+It was necessary due to the struct Adapt being removed from src/ during the previous year, as the funtion calls using it were deemed to be done in an obsolete way.
+As a consequence, the current implementation of my code triggers a warning at compilation, but it has no impact on the computations.
+
+
+### More complex examples showing the necessity of the minimal element size constrain
+
+A boundary layer-like function:
+
+In this case, the interpolation error provide optimal meshes, and the constraint slightly penalizes the interpolation error.
+
+[without constraint](./AMR_examples/no_hmin/sharp.c)
+
+[with constraint](./AMR_examples/with_hmin/sharp.c)
+
+An exponential function:
+
+In this case, the interpolaiton error alone does not provide optimal meshes, $||u'||$ dominates and is not related to the interpolation error for meshes with a too high compression ratio. The constraint limits this compression ratio and allows to find nearly optimal meshes.
+
+[without constraint](./AMR_examples/no_hmin/exp.c)
+
+[with constraint](./AMR_examples/with_hmin/exp.c)
+
+[strat from a mesh without constraint and add a constraint](./AMR_examples/with_hmin/add_constrain.c).
+
+A 3D exponential function:
+
+[without constraint](./AMR_examples/no_hmin/3Dexp.c)
+
+[with constraint](./AMR_examples/with_hmin/3Dexp.c)
+
+
+Outputs
+-------
+
+Usefull output functions. 
+
+[vtk outputs](./utils/vtknew_cell.h): .vtk output for AMR grids.
+
+[Integral computation](./utils/gauss_quadrature.h): compute the integral other the domain of either a scalar field or the difference between a scalar field and an analytical function using Gauss quadratures. In particular, I use these functions to compute the total error of numerical solutions when the reference analytical solution is known.
+NB: the current version of Basilisk triggers a warning at the compilation step due to the function calls I used being now deemed obsolete. However, it has no impact on the computation.
+
+
+Miscellaneous
+-------------
+
+### 4th order Runge-Kutta scheme
+
+[4th order Runge-Kutta](./miscellaneous/RK4.h) for a double using Basilisk events.
+
+[Rayleigh-Plesset equation](./miscellaneous/RP_rk4.c) time integration using the RK4 scheme.
+
+[Keller-Miksis equation](./miscellaneous/KM_rk4.c) time integration using the RK4 scheme.
+
+### Other
+
+[mathematica](./utils/mathematica.h): C-functions as written by the C-export of mathematica
+
+[awk is wonderful <3](./miscellaneous/awk.c): awk is so wonderful and so powerful that I want to share examples on how we can use it.

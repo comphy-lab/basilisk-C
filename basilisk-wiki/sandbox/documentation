@@ -1,0 +1,96 @@
+/**
+# Basilisk's documentation
+
+This page aims to provide an overview of the available documentation
+for Basilisk.
+
+<div class="message">
+<div id="msg_logo"><img src="/img/warning.png"></div>
+**Important note on the structure and maintenance of the code and web site**
+
+The web site is a [wiki](https://en.wikipedia.org/wiki/Wiki). It is split into two main parts:
+
+1. **`basilisk.fr/src/`**: this is the *officially-maintained* website and *officially-released* code. Only Basilisk developers are allowed access. The code in `/src/` is maintained, quality-controlled and guaranteed to reproduce the results of the [official test suite](/src/test/README).
+
+2. **everything else**: (including the current page) can be modified by anybody ([after registration](/Help)). The quality of these contributions can be variable and, in particular, there is no guarantee that code not in `/src/` is supported. So do not be surprised if code in the [`sandbox/`](/Help#creating-your-sandbox) does not work anymore (this depends on the level of support provided by each contributor). That said there are also excellent-quality (and working) contributions in the `sandbox/`.
+
+The contributions in the `sandbox/` which have proven their usefulness are meant to eventually move to `/src/` (after code review, quality control etc.) and thus become officially supported.</div>
+
+## Getting started
+
+* [The website frontpage](http://basilisk.fr)
+* [Solvers and functions](/src/README)
+* [Installation instructions](/src/INSTALL) and [for Mac OS X ](/sandbox/INSTALL_MACOS)  
+* [Tutorial](/Tutorial)    
+* [Learn from examples](/src/examples/README)  
+* [Basilisk C](/Basilisk C)
+* [Dimensional Analysis Tutorial](/Tutorial.dimensions)
+
+## Further reading
+
+* [Test cases](/src/test/README)
+* [Some tips](/src/Tips)  
+* [Bug reports](/sandbox/bugs/README)
+* [Discussion group of Basilisk (user forum)](https://groups.google.com/forum/#!forum/basilisk-fr)
+* [Browse the source code](/src/)
+* [Running on GPUs](/src/grid/gpu/grid.h)
+* [Built-in speed performance profiling](/src/README.trace)
+* [Built-in Memory profiling](/src/README.mtrace)
+* [Compatibility matrix](/src/COMPATIBILITY)
+
+## Basilisk view (`bview`)
+
+* [Runtime graphics generation](/src/view.h)
+* [Installation](/src/gl/INSTALL)
+* [The draw commands](/src/draw.h)  
+* [Interactive bview](/src/jview/README)  
+
+## The wiki
+
+* [Introduction to the wiki](/Help)  
+* [How to contribute](/src/Contributing)  
+* [Play in the sandbox](/sandbox/)  
+* [Review recent activity](/_activity)
+
+## Install useful libraries 
+
+* [GOTM for the layered solver](/src/gotm/common.h)
+* [CVMix for the layered solver](/src/cvmix/cvmix.h)
+* [PPR remapping for the layered solver (just `make` it)](/src/ppr/Makefile)
+* [KDT for terrain datasets (installed with Basilisk)](/src/terrain.h)
+* OpenGL (see Basilisk view)
+
+## Documentation in the sandbox
+
+A non-exhaustive list of documentation attempts, mostly writen by
+users.
+
+* [Frequently alphabetic questions (FAQ)](/sandbox/jmf/faq)  
+* [The tree-grid structure in Basilisk](/sandbox/Antoonvh/The_Tree-Grid_Structure_in_Basilisk)  
+* [The wavelet-based adaptation algorithm](/sandbox/Antoonvh/The_adaptive_wavelet_algirthm)  
+* [Another tutorial](/sandbox/jmf/tutorial)  
+* [Yet another tutorial](/sandbox/tutorial_bgum2019/README)
+* [A descriptive take on the centered Navier-Stokes solver](/sandbox/acastillo/readme#numerical-method-2nd-order-global-accuracy)
+* [Another description of the centered Navier-Stokes solver](/sandbox/ecipriano/doc/centered)
+* [Complete installation of bview](/sandbox/aberny/README-gl)  
+* [Install Mesa on a supercomputer](/sandbox/joubert/INSTALL_mesa_supercomputer)
+* [Workaround for a faulty system-maintained OSMesa installation](/sandbox/joubert/libosmesa6-dev_bug_fix)
+
+## Notable publications
+
+* [Stephane Popinet's (2015) Serre-Green-Naghdi paper](https://hal.archives-ouvertes.fr/hal-01163101v2)  
+* [Other publications in Basilisk's bibliography](/Bibliography)  
+
+## Miscellaneous
+
+* [Wish list](/Wishlist)  
+* [To do list and project ideas](/src/TODO)  
+* [The Authors](/src/AUTHORS)  
+* [The license](/src/COPYING)  
+* [Basilisk on GPUs](/GPU)  
+* [Performance profiling with paraver](/src/README.paraver)  
+* [Round-off error estimation with CADNA](/src/README.cadna)  
+* [How to configure a Basilisk server](/src/README.server)  
+* [Basilisk logos](logos)
+
+*/

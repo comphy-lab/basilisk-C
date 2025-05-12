@@ -1,0 +1,175 @@
+/**
+# Can's sandbox
+
+You can find here documentations, examples and test cases related to my implementation
+of a fictitious-domain method within basilisk. 
+
+# Distributed Lagrange multiplier/fictitious domain method for rigid particle laden flows 
+<!-- The basic idea of the method is to fill the particle's domain with a hypothetical fluid similar to the surrounding fluid. The fluid, real and hypothetical, occupies the whole domain, real and fictitious. Thus, the fluid flow equations  -->
+
+<!-- and constraint the hypothetical fluid to move as a solid body.  -->
+
+<!-- occupies the "fictitious" part of the total domain.  -->
+
+
+<!--  and constraint the hypothetical fluid with Lagrange multipliers with a force density field distributed within the .  -->
+<!--  One of the advantages of afictitious-domain methods is -->
+<!-- that the velocities (fluid and particle) are computed implicitly. This -->
+<!-- is a nice feature for moving and colliding particles. -->
+
+We are looking for a numerical approximation for the solution of the
+following equations 
+$$
+\rho\left(\partial_t{\mathbf{u}} +\mathbf{u}\cdot \mathbf{\nabla}\mathbf{u}\right) = -\mathbf{\nabla} p + \mathbf{\nabla} \cdot\left(2\mu\mathbf{D}\right) + \rho\mathbf{a} + \mathbf{\lambda}~\text{over}~\Omega
+$$
+$$
+\left(1-\frac{\rho}{\rho_s}\right)\left(M\left(\partial_t{\mathbf{U}}-\mathbf{g}\right)\right)=-\int_{P(t)} {\mathbf{\lambda}} dv~\text{over}~P(t)
+$$
+$$
+\left(1-\frac{\rho}{\rho_s}\right)\left(\mathbf{I}\partial_t{\mathbf{\omega}} + \mathbf{\omega} \times\mathbf{I}\mathbf{\omega}\right) = -\int_{P(t)}\mathbf{r}\times{\mathbf{\lambda}} dv~\text{over}~P(t)
+$$
+$$
+\mathbf{u}-\left(\mathbf{U}+\mathbf{\omega}\times \mathbf{r}\right)=0~\text{over}~P(t)
+$$
+$$
+\mathbf{\nabla}\cdot\mathbf{u} = \mathbf{0} ~\text{over}~\Omega
+$$
+
+with unknowns $\mathbf{u}, \mathbf{U}, {\mathbf{\omega}}$ and ${\mathbf{\lambda}}$ being respectively the fluid velocity field, the particle's translational velocity, the particle's rotational velocity and the Lagrange multipliers. The particle occupies the domain $P(t)$ with density $\rho_s$, inertia tensor $\mathbf{I}$ and mass $M$. The vector $\mathbf{g}$ is the gravity acceleration here.
+
+From a numerical point of view, this is a complicated problem
+to solve direclty. One has to deal with three main difficulties:
+
+  * an advection-diffusion equation
+  * the imcompressibility contraint with the pressure $p$ as unknown 
+  * the particle's solid body's constraint with the Lagrange
+multipliers as unknow.
+
+The classic strategy is to split (and decouple) the problem into subproblems and
+solve them successively. We chose here a two-steps time-spliting.
+
+## 1st sub-problem: Navier-Stokes
+We are using the centred(.h) solver for this problem.
+
+$$
+\rho\left(\partial_t{\mathbf{u}}+\mathbf{u}\cdot {\mathbf{\nabla}}\mathbf{u}\right) = -{\mathbf{\nabla}}p + {\mathbf{\nabla}}\cdot\left(2\mu\mathbf{D}\right) + \rho\mathbf{a}~\text{over}~\Omega
+$$
+
+$$
+{\mathbf{\nabla}}\cdot\mathbf{u} = \mathbf{0} ~\text{over}~\Omega. 
+$$
+
+
+
+## 2nd subproblem: fictitious-domain problem
+We are solving a fictitious-domain problem given by:
+
+$$
+\rho \partial_t\mathbf{u} = {\mathbf{\lambda}}~\text{over}~\Omega
+$$
+$$
+\left(1-\frac{\rho}{\rho_s}\right)\left(M\left(\partial_t\mathbf{U}-\mathbf{g}\right)\right)=-\int_{P(t)}{\mathbf{\lambda}} dv~\text{over}~P(t)
+$$
+$$
+\left(1-\frac{\rho}{\rho_s}\right)\left(\mathbf{I}\partial_t {\mathbf{\omega}} + {\mathbf{\omega}} \times\mathbf{I}{\mathbf{\omega}}\right) = -\int_{P(t)}\mathbf{r}\times{\mathbf{\lambda}} dv~\text{over}~P(t)
+$$
+$$
+\mathbf{u}-\left(\mathbf{U}+{\mathbf{\omega}}\times \mathbf{r}\right)=0~\text{over}~P(t),
+$$
+
+This leads to a saddle-point problem which is solved with an iterative solver (Uzawa, conjugate gradient algorithm). 
+
+
+## Numerical scheme
+### Navier-Stokes
+Basilisk handles the resolution with its own temporal scheme. It reads:
+
+$$
+\mathbf{u}_{ns}^{n+1}  =  \mathbf{u}_{ns}^{n} + \Delta t (-\mathbf{u}_{ns}^{n+1/2} \cdot \nabla \mathbf{u}_{ns}^{n+1/2}-\nabla p^{n+1}/\rho + \nabla \cdot [2 \mu \mathcal{D}^{n+1}_v] + \mathbf{a}^{n+1}),
+$$
+
+<!-- splitted within the folowing  steps: -->
+
+<!-- 1. a pure advection problem (event advection_term) -->
+<!-- $$ -->
+<!-- \rho\left(\frac{\mathbf{u_a} - \mathbf{u}^{n}}{\Delta t} + \mathbf{u}^{n+1/2}\cdot\mathbf{\nabla}\mathbf{u}^{n+1/2}\right) = \mathbf{0}, -->
+<!-- $$ -->
+<!-- where the convectif term $\mathbf{u}^{n+1/2}\cdot\mathbf{\nabla}\mathbf{u}^{n+1/2}$ is computed before-hand with a BCG scheme.  -->
+<!-- 2. addition of a coupling term $\left(-\mathbf{\nabla}p^{n}+\rho\mathbf{a}^{n}\right)$ (function correction) -->
+<!-- $$ -->
+<!-- \rho\left(\frac{\mathbf{u_r} - \mathbf{u_a}}{\Delta t}\right) = +\left(-\mathbf{\nabla}p^{n}+\rho\mathbf{a}^{n}\right) -->
+<!-- $$ -->
+<!-- 3. a pure diffusion problem (event viscous_term) -->
+<!-- $$ -->
+<!-- \rho\left(\frac{\mathbf{u_v} - \mathbf{u_r}}{\Delta t}\right) =\mathbf{\nabla}\cdot\left(2\mu\mathbf{D\left(\mathbf{u_v}\right)}\right) -->
+<!-- $$ -->
+<!-- 4. substraction of the coupling term (function correction)  -->
+<!-- $$ -->
+<!-- \rho\left(\frac{\mathbf{u_*} - \mathbf{u_v}}{\Delta t} \right) = -\left(-\mathbf{\nabla}p^{n}+\rho\mathbf{a}^{n}\right) -->
+<!-- $$ -->
+<!-- 5. Poisson/Helmoltz equation to enforce the incompressibility constraint (event projection) -->
+<!-- $$ -->
+<!-- \rho\left(\frac{\mathbf{u}^{n+1} - \mathbf{u_*}}{\Delta t}\right) = -\mathbf{\nabla}p^{n+1}+\rho \mathbf{a}^{{n+1}} -->
+<!-- $$ -->
+
+$$
+\mathbf{\nabla}\cdot\mathbf{u}_{ns}^{{n+1}} =\mathbf{0}
+$$
+
+### Fictitious domain
+
+The nunerical scheme for the fictitious domain problem reads:
+$$
+\rho\left(\frac{\mathbf{u}_{fd}^{n+1}-\mathbf{u}_{ns}^{n+1}}{\Delta t}\right) - \mathbf{\lambda}^{n+1} = \mathbf{0} ~\text{over}~\Omega
+$$
+$$
+\left(1-\frac{\rho}{\rho_s}\right)\left(M\left(\left[\frac{\mathbf{U}^{n+1}-\mathbf{U}^n}{\Delta t}\right] -\mathbf{g}\right)\right)=-\int_{P(t)}\mathbf{\lambda}^{n+1}~dv~\text{over}~P(t)
+$$
+
+$$
+\left(1-\frac{\rho}{\rho_s}\right)\left(\mathbf{I}\left(\frac{\mathbf{\omega}^{n+1}-\mathbf{\omega}^n}{\Delta t}\right) + \mathbf{\omega}^{n+1} \times\mathbf{I}\mathbf{\omega}^{n+1}\right) = -\int_{P(t)}\mathbf{r}\times\mathbf{\lambda}^{n+1}\, dv~\text{over}~P(t)
+$$
+$$
+\mathbf{u}_{fd}^{n+1}-\left(\mathbf{U}^{n+1}+\mathbf{\omega}^{n+1}\times \mathbf{r}\right)=0~\text{over}~P(t).
+$$
+
+## Test cases
+### Convergences 
+* [Poiseuille Flow (spatial convergence)](poiseuille.c)
+* [Poiseuille Flow (temporal convergence)](poiseuille-temporal.c)
+
+### Rotation
+* [Freely rotating cylinder in shear flow](shear2D_rot.c)
+* [Stokes flow: freely rotating sphere in simple shear flow, shear along x, rotation along z](shear3D_x_zRotation.c)
+* [Stokes flow: freely rotating sphere in simple shear flow, shear along y, rotation along x](shear3D_y_xRotation.c)
+* [Stokes flow: freely rotating sphere in simple shear flow, shear along z, rotation along y](shear3D_z_yRotation.c)
+* [Sphere with inital rotational velocity with gravity](magnus-sphere.c)
+
+### Translation 
+* [Sphere with inital translational velocity with gravity](balistic-sphere.c)
+
+
+### Stencils and fictititous domains
+* [Colision test 2D](stencil_colision_test.c)
+* [Colision test 3D](stencil_colision_test3D.c)
+* [2-2D overlapping fictitious-domains](multidomain_overlapping_test.c)
+* [3-2D overlapping fictitious-domains](2D-3multidomain_overlapping_test.c)
+* [3-2D Another overlapping fictitious-domains](2D-3multidomain_overlapping_test-2.c)
+
+### Periodicity
+
+* [2D-advection of a solid cylinder in the x-direction in a bi-periodic domain](cylinder-periodic-x.c)
+* [2D-advection of a solid cylinder in the y-direction in a bi-periodic domain](cylinder-periodic-y.c)
+* [2D-advection of a solid cylinder in the (x+y)-directions in a bi-periodic domain](cylinder-periodic-xy.c)
+* [3D-advection of a solid sphere in the (x+z)-directions in a tri-periodic domain](sphere-periodic-xz.c)
+* [3D-advection of a solid sphere in the z-direction in a tri-periodic domain](sphere-periodic-z.c)
+
+## Examples
+* [Stokes flow through a periodic array of spheres](zick_c_0_45.c)
+* [Analyse of a bouncing sphere at St=58](bouncing.c)
+* [Flow past a sphere at Re=20](sphere.c)
+* [Coupling the granular solver Grains3D (c++ code) with basilisk](grains.c)
+* [Flow past a cube at Re=20 with Grains3D](onecube.c)
+* [Starting flow around a cylinder with DLMFD](starting-dlmfd.c)
+* [Unstable flow around a Cylinder](kizner-dlmfd.c)
+*/

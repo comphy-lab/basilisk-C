@@ -1,0 +1,6 @@
+/** Some words in the search box make the results webpage to misbehave.
+
+This only happens for some words. For example "ellipse" triggers the issue, but not "ellipsoid".
+
+A workaround is to introduce an espace at the end of the search box "ellipse "
+*/

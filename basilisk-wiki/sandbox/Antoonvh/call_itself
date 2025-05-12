@@ -1,0 +1,87 @@
+/** 
+# Let Baslisk call itself.
+
+First, an example program that provides quadtree functions:
+ */
+int count_some_cells (void) {
+  init_grid (N);
+  return grid->tn;
+}
+
+int get_dimension (void) {
+  return dimension;
+}
+
+// Read stdin and return the answer
+int main() {
+  int val, a;
+  while (1) {
+    fread (&val, sizeof(int), 1, stdin);
+    if (val == 0) {
+      a = count_some_cells();
+      fwrite (&a, sizeof(int), 1, stdout);
+      fflush (stdout);
+    } else {
+      a = get_dimension(); 
+      fwrite (&a, sizeof(int), 1, stdout);
+      fflush (stdout);
+    }
+  }
+  return 0;
+}
+/**
+## The main program
+
+The hosting (second) program uses an octree. But it can comunicate with the
+quadtree program above.
+ */
+#include "grid/octree.h"
+
+#define ParentRead      read_pipe[0]
+#define ParentWrite     write_pipe[1]
+#define ChildRead       write_pipe[0]
+#define ChildWrite      read_pipe[1]
+
+int main() {
+  int read_pipe[2];
+  int write_pipe[2];  
+  pipe (read_pipe);
+  pipe (write_pipe);
+  pid_t p;
+  p = fork();
+  if (p == 0) {
+    close (ParentRead);
+    close (ParentWrite);
+    dup2 (ChildRead, STDIN_FILENO);
+    dup2 (ChildWrite, STDOUT_FILENO);
+    execl ("qtm", "qtm", NULL);
+  } else {
+    close (ChildRead);
+    close (ChildWrite);
+    int send, rec;
+    send = 1; // Ask for dimension
+    write (ParentWrite, &send, sizeof(send));
+    read (ParentRead, &rec, sizeof(rec));
+    printf ("The dimension of the child program is: %d.\n", rec);
+    send = 0; // Ask for cell count
+    write (ParentWrite, &send, sizeof(send));
+    read (ParentRead, &rec, sizeof(rec));
+    printf ("Its grid has %d cells.\n", rec);
+    kill(p, SIGKILL); // thank you child
+  }
+  printf ("The dimension of this instance is %d.\n", dimension);
+}
+/**
+## Output
+
+it should read:
+
+~~~literatec
+$ qcc first.c -lm -o qtm
+$ qcc second.c -lm
+$ ./a.out
+The dimension of the child program is: 2.
+Its grid has 4096 cells.
+The dimension of this instance is 3.
+~~~
+ */

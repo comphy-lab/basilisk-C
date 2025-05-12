@@ -1,0 +1,29 @@
+/** 
+## README
+
+## Constant density method of [Dodd and  Ferrante,  2014]
+
+Projection method is the most common method for solving incompressible navier stokes equations. However, solving a poisson equation for pressure significantly reduces the speed of calcualtions.  [Dodd and  Ferrante,  2014](http://dx.doi.org/10.1016/j.jcp.2014.05.024) proposed a constand density method for increasing the effciency of solving poisson equation. 
+
+In this method instead of solving a variable coefficient version of poisson equation: 
+
+$$
+\nabla \cdot \left(\frac{1}{\rho^{n+1}}\nabla p^{n+1}\right)= \frac{1}{\Delta t} \nabla \cdot u^{*}
+$$ 
+
+we solve a constant coefficient method as following:
+
+$$
+\nabla ^2 p^{n+1}= \nabla \cdot \left[\left(1-\frac{rho_0}{\rho^{n+1}}\right)\nabla \hat{p}\right]+\frac{\rho_0}{\Delta t} \nabla \cdot u^{*}
+$$ 
+
+You can see details of implementation of this method in [fast-poisson.h](http://basilisk.fr/sandbox/hasansh/fast-capwave/fast-poisson.h)
+
+
+There are two version of constant density method which are called FASTP* and FASTPn. The difference between these methods is calcualtion of $\hat{p}$. For two-phase problems with low density ratios these methods yield accurate results as can be seen in [fast-capwave-density.c](http://basilisk.fr/sandbox/hasansh/fast-capwave/fast-capwave-density.c).
+
+By increasing the density ratio (air-water) we can see that these methods have stability problems and we need to reduce CFL number and TOLERANCE to get acceptable results as it is shown in [fast-capwave-air-water.c](http://basilisk.fr/sandbox/hasansh/fast-capwave/fast-capwave-air-water.c).
+
+The stability problem of this method becomes apparent for oscillating droplet test case  where we used density ration of 1/10 and decreased TOLERANCE to improve the restuls, as can be seen in [fast-oscillation.c](http://basilisk.fr/sandbox/hasansh/fast-oscillation/fast-oscillation.c). This method however have serious problems for density ration of 1/1000 and results are unstable and even by reducing CFL and TOLERANCE we can't obtain accurate results. 
+
+*/

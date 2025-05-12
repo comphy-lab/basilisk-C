@@ -1,0 +1,45 @@
+/**
+This page is work in progress ...
+
+# Performance of Basilisk
+This page aims to provide an order-of-magnitude estimate for the performance of *real-world* Basilisk runs, as diagnosed by it's users. It is intended to extend upon the speed benchmarks for the more elementary operations as presented [here](http://basilisk.fr/src/test/laplacian.c) and [here](http://basilisk.fr/src/test/mpi-laplacian.c). Some may argue that speed benchmarking is impossible due to the variability between the applications and used hardware. Therefore, speed performance benchmarking is quite hard to do thoroughly, and hence always come with many disclaimers that render a single benchmark useless unless you want to redo the exact same thing. The ph of this page is that the speed benchmark results from every application will contribute to gaining a better grasp on the solver speed performance and its variability. This requires a large-enough dataset, so that users may learn if their set-up results in sub-par performance characteristics compared to (similar) other runs and also what hardware configurations work well for different applications. E.G. who knows if i should invest in faster RAM, or rather in a CPU architecture with larger chache memory? Or How much grid cells should you be able to reduce before the overhead of adaptivity pays off?   
+
+For runs using grid adaptivity, my current understanding is dat het performance actually greatly varies depending on the actual grid strucutre. Also convergence characteristics of the Multi-grid solver are offcourse dependend on the problem that is solved for. Therefore, a submission of speed performance should be as complete as possible in order to place the diagnosed speeds in their relevant perspective.
+
+Please modify this page (anywhere) if you wish to contribute... Maybe it is better to also distinguish between the various solvers ... 
+
+## Speed Benchmark Results 
+
+### Single core results
+
+| Case Name and link     | Solver        | Grid type| Number of Cells | (Max) level   |  Performance (Cells x Iterations / sec.)  | Hardware| Comments | User|
+| :------------- |:-------------:| :-----:| :--:|:--: |:--:|:--:|:--:|:--:|
+| [Game of Life](http://basilisk.fr/src/examples/life.c)| See link | Cartesian 2D  |$256^2$| N.A. | $1.50 \pm 0.05 \times 10^7$  | Intel i7-6700 HQ | The system is a Laptop |Antoon|
+| [Ekman Spiral](/Antoonvh/ekman.c)    | [Diffusion](http://www.basilisk.fr/src/diffusion.h)|  Adaptive bitree     |  $\approx$ 2235| 13  |$1.28 \times 10^6$ | Intel i7-6700 HQ | The system is a laptop |Antoon |
+| Add more     | if you wish      |    | | | | |
+
+
+### Parallelized using shared memory (openMP)
+| Case Name and link     | Solver        | Grid type| Number of Cells| (Max) level   |  Performance (Cells x Iterations / sec.) |Cores / threads | Hardware| Comments | User|
+| :------------- |:-------------:| :-----:| :--:|:--: |:--:|:--:|:--:|:--:|:--:|
+| [Von Karman vortex street](http://basilisk.fr/src/examples/karman.c)| [Navier-Stokes](http://www.basilisk.fr/src/navier-stokes/centered.h)| Adaptive Quadtree  |$600-21000$ |9| $5.40 \pm 0.1 \times 10^5$  | 4 / 8|  Intel i7-6700 HQ | The system is a Laptop |Antoon|
+| [Von Karman vortex street](http://basilisk.fr/src/examples/karman.c)| [Navier-Stokes](http://www.basilisk.fr/src/navier-stokes/centered.h)| Adaptive Quadtree  |$600-21000$ |9| $4.23 \times 10^5$  |2 / 4| Intel i7-6700 HQ | The system is a Laptop |Antoon|
+| Add more     | if you wish      |    | | | | |
+
+### Parallelized using distributed memory (MPI) on a shared PCB
+| Case Name and link     | Solver        | Grid type| Number of Cells| (Max) level   |  Performance (Cells x Iterations / sec.)  |Cores / Threads / MPI Tasks| Hardware| Comments | User|
+| :------------- |:-------------:| :-----:| :--:|:--: |:--:|:--:|:--:|:--:|:--:|
+| [2D turbulence](http://www.basilisk.fr/turbulence.c)   | [$\omega-\psi$ solver](stream.h) | Multigrid 2D | $256^2$    | 8 | $1.2 \times 10^7$ | 4 / 8 / 4 |Intel i7-6700 HQ |Performance is better than on a single CPU| Antoon|
+| [2D turbulence](http://www.basilisk.fr/turbulence.c)   | [$\omega-\psi$ solver](stream.h) | Multigrid 2D | $256^2$    | 8 | $5.31 \times 10^6$ | 4 / 8 / 16 | 1 x Intel i7-6700 HQ |The system is a laptop| Antoon|
+| Convective turbulence   | Navier-Stokes + [SGS.h](Antoonvh/SGS.h)      | Adaptive Octree    | $\approx (1 - 5)\times10^6$ |8| $3.1 \times 10^5$  | 6 / 12 / 6 | intel Xeon E5-1650 v2 @ 3.5 Ghz | Workstation | Antoon |
+
+
+### Parallelized using more than one node (super computers)  
+
+| Case Name and link     | Solver        | Grid type| Number of Cells| (Max) level   |  Performance (Cells x Iterations / sec.) |Cores / threads / Tasks / Nodes / Islands / Midplanes | Hardware| Comments | User|
+| :------------- |:-------------:| :-----:| :--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| Add more     | if you wish      |   | | | | | | | |  
+
+## Performance Plots
+If you did scaling analysis of some sort, please [upload](http://basilisk.fr/_upload) your results and plot them below.
+*/

@@ -1,0 +1,29 @@
+# GfsView 3D
+View {
+  tx = 0.008826 ty = 0.116638
+  sx = 1 sy = 1 sz = 1
+  q0 = -0.724061 q1 = -0.00949078 q2 = 0.00920657 q3 = 0.689609
+  fov = 16.0848
+  r = 0.0 g = 0.0 b = 0.0
+  res = 1
+  lc = 0.001
+  reactivity = 0.1
+}
+Linear {
+  r = 1 g = 1 b = 1
+  shading = Constant
+  maxlevel = -1
+  font_size = 1
+  raster_font = 1
+  line_width = 1
+} {
+  n.x = 0 n.y = 1 n.z = 0
+  pos = 0
+} f0 {
+  amin = 0 min = 0
+  amax = 0 max = 0.5
+  cmap = Gray
+} 0 {
+  reversed = 0
+  use_scalar = 1
+}

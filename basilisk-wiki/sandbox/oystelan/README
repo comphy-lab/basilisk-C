@@ -1,0 +1,17 @@
+/**
+# README
+This readme file gives a small description of the content (examples and functions) which is present in my sandbox
+
+Oystein Lande
+
+## Useful Functions
+[waveprobes.h](waveprobes.h) This function can be used to extract time-series of surface elevation from a two-phase flow simulation
+
+[output_vtu_foreach.h](output_vtu_foreach.h) dumps .vtu files (unstructured grid) which is supported by paraview
+
+[adapt_wavelet_leave_interface.h](adapt_wavelet_leave_interface.h) Modified version of adapt_wavelet.h which forces maxlevel refinement in and around cells where the volume fraction is between 0 and 1.
+
+## Examples
+
+[Simple waveflume](waveflume/simple_waveflume.c) Shows how to create a stable implemention of a simple wave maker in 2D
+*/

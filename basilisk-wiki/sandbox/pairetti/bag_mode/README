@@ -1,0 +1,70 @@
+This project aims to simulate bag mode break up present on secondary
+atomization of liquid droplets.
+
+[Problem description](sandbox/pairetti/bag_mode/README#problem-description)
+is a summary of the relevant references in which we based this study.
+
+[Contents](sandbox/pairetti/bag_mode/README#contents) describes the
+tools available in this folder.
+
+# Problem description
+
+During secondary atomization, drops are deformed by the sorrounding air stream.
+If gas Weber number is high enough, they eventually are decomposed in smaller
+droplets. The whole procedure is vastly described in literature
+([Opfer, 2014](/src/references.bib#opfer2014),
+[Jain, 2015](/src/references.bib#jain 2015)).
+
+Simulations conducted here are 2D, axisymmetric and finally, full 3D.
+
+## Plane 2D cases
+First case, which requires less resources, is the one
+based on [Zaleski, 1995](/src/references.bib#zaleski1995).
+
+Then, some cases using real physical problems from [Opfer, 2014](/src/references.bib#opfer2014)
+are set.
+
+
+## Axisymmetric cases
+A more realistic setup can be achieve without increasing resources
+using an axisymmetric domain. First, a reference case
+is solved to be compared with [Han & Trygvasson, 1999](/src/references.bib#han1999).
+
+Again, this setup is tested with the correct physical parameters from [Opfer, 2014](/src/references.bib#opfer2014).
+
+## 3D cases
+The last case is meant to be compared with the data in [Opfer, 2014](/src/references.bib#opfer2014).
+
+# Simulation features
+
+## Local Adaptive Mesh Refinement
+
+In order to avoid refinement away from the droplet, we use the following adapt event:
+
+~~~literatec
+
+event vorticity (i++,first) {
+  foreach()
+    omegaZ[] = (u.y[1] - u.y[-1] - u.x[0,1] + u.x[0,-1])/(2.*Delta);
+}
+
+...
+
+event adapt (i++) {
+  scalar MAXLEVEL;
+  foreach(){
+    if(cellDistanceToDrop[] < predefRadius)
+      MAXLEVEL[] = 12;
+    else
+      MAXLEVEL[] = 10;
+  }
+  adapt_wavelet ({f,omegaZ,p,u}, (double[]){1e-3,1e-3,1e-2,1e-1,1e-1,1e-1}, MAXLEVEL, 6);
+}
+~~~
+
+In this example, near drop zones can get to level 12, and the rest of the domain up to 10.
+Note that the region of max refinement could be moving (and could also expand depending on predefRadius definition)
+This alternative [adapt_wavelet_limited.h](sandbox/pairetti/bag_mode/adapt_wavelet_limited.h) function has been created from
+the one available in the [tree-common.h](src/grid/tree-common.h) file.
+
+Also, vorticity z-component is employed as a field to performed refinement.

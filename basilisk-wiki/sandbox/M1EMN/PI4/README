@@ -1,0 +1,276 @@
+On this page, we present the installation of Basilisk on a Raspberry Pi 4 computer [https://www.raspberrypi.org/products/raspberry-pi-4-model-b/]().
+
+For the Pi 5, we try..
+
+
+For fun, we define the Pi4 as an USB-C gadget. It means that we use the USB-C alimentation as a network interface and run the Pi 4 in a VNC window of our  computer...
+
+... which is a mac. This solves part of the problem of installing Basilisk on a mac.... because we use basilisk on the Pi4! 
+
+
+
+It is then possible either: 
+
+- connect to the Pi4 drive (the SD card) with apple talk and exchange files
+
+- connect to the Pi4 as an USBC network and open remote terminal (unfortunately I did not succeed to open X11 window)
+
+- connect to the Pi4 with VNC and have a full real Pi4 in a virtual window. 
+
+
+
+
+Compared to 2,7 GHz Intel Core i7 the velocity of a 1/3.6
+(a computation of 172 min on a Pi4 1.5 GHz takes  47 Min on 2,7 GHz Intel Core i7 mac and 42 min on a Dell i59500 3GHz). 
+
+Note that a 
+a factor 1/4 is obtained with the [http://basilisk.fr/sandbox/Vierron/raspberry-pi/cluster.md](raspberry-pi cluster) 
+
+
+
+##  Installing Basilisk on Raspberry Pi 4
+
+
+Start by checking that VLC is installed.
+
+
+Installing Basilisk  is straight forward, just follow the standard install
+[http://basilisk.fr/src/INSTALL]()
+
+~~~bash
+sudo apt update
+sudo apt upgrade
+sudo apt full-upgrade
+
+sudo apt install darcs flex bison make gawk
+
+darcs clone http://basilisk.fr/basilisk
+
+cd basilisk/
+darcs pull
+cd src
+export BASILISK=$PWD
+ln -s config.gcc config
+make -k
+echo "export BASILISK=$PWD" >> ~/.bashrc
+echo "export PATH=\$PATH:$BASILISK" >> ~/.bashrc
+##### verif
+sudo apt-get install gnuplot imagemagick
+sudo apt-get install libav-tools
+sudo apt-get install smpeg-plaympeg graphviz valgrind gifsicle pstoedit --fix-missing
+cd $BASILISK/gl
+make
+sudo apt-get install libglu1-mesa-dev libglew-dev libgl1-mesa-dev
+make libglutils.a libfb_osmesa.a
+make libglutils.a libfb_glx.a
+### fatal error: GL/osmesa.h: 
+cd ../examples/
+
+CFLAGS=-DDISPLAY=-1 make karman.tst 
+CFLAGS=-DDISPLAY=-1 make tangaroa.tst
+~~~ 
+ 
+strange problem fixed 
+ 
+~~~bash 
+chmod 777 /home/pi/basilisk/src/ppm2mp4
+chmod +x ./basilisk/src/ppm2mpeg
+~~~
+
+## add the X applications 
+Just for fun, for the pleasure of `xeyes` and `xcalc -rpn`
+
+~~~bash 
+sudo apt-get install xcalc
+sudo apt-get install x11-apps
+~~~ 
+
+
+## Install netatalk to afp Mac protocol
+
+It is usefull to exchange files to have the afp protocol on the raspberry
+[https://pimylifeup.com/raspberry-pi-afp/]() or
+[https://chicagodist.com/blogs/news/using-netatalk-to-share-files-between-a-raspberry-pi-and-mac]()
+
+~~~bash 
+sudo apt update
+sudo apt upgrade
+sudo apt full-upgrade
+reboot
+ 
+sudo apt install netatalk
+~~~
+
+you have to edit `/etc/netatalk/afp.conf`
+
+
+~~~bash
+sudo nano /etc/netatalk/afp.conf
+
+[Global]
+guest account = pi
+[Homes]
+basedir regex = /home
+[My AFP Volume]
+path = /home/pi
+
+ CTRL  X , Y , ENTER
+~~~
+
+then restart Netatalk
+
+~~~bash
+sudo systemctl restart netatalk
+~~~
+
+check IP address
+
+~~~bash
+sudo hostname -I
+~~~
+
+connect with *afp://* from the mac
+
+## Install pi4 as usb-c gadget
+
+Final touch: plugging the Pi4 as an "gadget" allows to connect internet via USB cable.
+
+This is described in
+[https://www.hardill.me.uk/wordpress/2019/11/02/pi4-usb-c-gadget/]()
+which is the magazine MagPi N°16 p54 (it describes how to connect an iPad and a Pi4)
+
+Enable ssh in Configuration/ Interfaces 
+
+
+Add `dtoverlay=dwc2` to the `/boot/config.txt` .
+
+~~~bash
+sudo vi /boot/config.txt
+~~~
+
+Add `modules-load=dwc2` to the end of `/boot/cmdline.txt`
+
+~~~bash
+sudo vi /boot/cmdline.txt
+~~~
+
+Add `libcomposite` to `/etc/modules`
+
+~~~bash
+sudo vi /etc/modules
+~~~
+
+Add `denyinterfaces usb0` to `/etc/dhcpcd.conf`
+
+~~~bash
+sudo vi /etc/dhcpcd.conf
+~~~
+
+then  install
+
+~~~bash
+sudo apt install dnsmasq -y
+~~~
+
+Create `/etc/dnsmasq.d/usb` with in it
+
+~~~bash
+sudo vi /etc/dnsmasq.d/usb
+
+interface=usb0
+dhcp-range=10.55.0.2,10.55.0.6,255.255.255.248,1h
+dhcp-option=3
+leasefile-ro
+~~~
+
+
+
+
+Create `/root/usb.sh`
+
+~~~bash
+sudo vi /root/usb.sh
+
+#!/bin/bash
+cd /sys/kernel/config/usb_gadget/
+mkdir -p pi4
+cd pi4
+echo 0x1d6b > idVendor # Linux Foundation
+echo 0x0104 > idProduct # Multifunction Composite Gadget
+echo 0x0100 > bcdDevice # v1.0.0
+echo 0x0200 > bcdUSB # USB2
+echo 0xEF > bDeviceClass
+echo 0x02 > bDeviceSubClass
+echo 0x01 > bDeviceProtocol
+mkdir -p strings/0x409
+echo "fedcba9876543211" > strings/0x409/serialnumber
+echo "Ben Hardill" > strings/0x409/manufacturer
+echo "PI4 USB Device" > strings/0x409/product
+mkdir -p configs/c.1/strings/0x409
+echo "Config 1: ECM network" > configs/c.1/strings/0x409/configuration
+echo 250 > configs/c.1/MaxPower
+# Add functions here
+# see gadget configurations below
+# End functions
+mkdir -p functions/ecm.usb0
+HOST="00:dc:c8:f7:75:14" # "HostPC"
+SELF="00:dd:dc:eb:6d:a1" # "BadUSB"
+echo $HOST > functions/ecm.usb0/host_addr
+echo $SELF > functions/ecm.usb0/dev_addr
+ln -s functions/ecm.usb0 configs/c.1/
+udevadm settle -t 5 || :
+ls /sys/class/udc > UDC
+ifup usb0
+service dnsmasq restart
+~~~
+
+make it executable 
+
+~~~bash
+sudo chmod +x /root/usb.sh
+~~~~
+
+
+update the task manager
+
+~~~bash
+sudo crontab -e
+~~~~
+
+and add at the end
+
+~~~bash
+@reboot bash /root/usb.sh 
+~~~~
+
+close teh file 
+
+
+
+
+Then turn on VNC on the Pi and download 
+[https://www.realvnc.com/fr/connect/download/viewer/macos/]()
+
+
+and shutdown
+
+~~~bash
+sudo shutdown -h now 
+~~~~
+
+You can then plug the USBC power cable of the Pi to your computer.
+As the IP is fixed 10.55.0.1 you always connect to the Pi4 with this dress trough the OSBC network. With VNC, you have a keyboard, a mouse and a screen. 
+
+
+"en joie" 
+
+
+
+
+## Links
+
+ * Cluster of RPi4, 
+see the RPi4 Cluster project 
+[http://basilisk.fr/sandbox/Vierron/raspberry-pi/cluster.md]() 
+
+ * [https://www.hardill.me.uk/wordpress/2019/11/02/pi4-usb-c-gadget/]()

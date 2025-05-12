@@ -1,0 +1,218 @@
+# Basilisk Monthly Meeting
+
+Planned to occur the last Tuesday of every month. Zoom links are sent on the [forum](http://groups.google.com/d/forum/basilisk-fr) shortly before each meeting. The meetings are 1 hour long, split into two 15 minutes presentation + 15 minutes questions/discussion.
+
+* Tuesday 29th April 2025
+<table>
+<tr><td>
+![Ratul Dasgupta. *Jets from severely deformed air-water interfaces*](29-april-25-1.mp4)(width="100%" link)
+</td><td>
+![Kuntal Patel. *Interface topology, wake structure and lift in liquid-gas flow past a cylinder*](29-april-25-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 25th March 2025
+<table>
+<tr><td>
+![Vatsal Sanjay. *Soft matter singularities*](25-march-25-1.mp4)(width="100%" link)
+</td><td>
+![Arun K Eswara. *Emacs as an Integrated Design Environment for Basilisk Programs*](25-march-25-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+
+* Tuesday 25th Feburary 2025
+<table>
+<tr><td>
+![Pierre Maes. *Roadmap of the chemistry solver implementation*](25-feb-25-1.mp4)(width="100%" link)
+</td><td>
+![Claire Bergin. *A numerical investigation into the interaction between rain and water waves*](25-feb-25-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+     
+* Wednesday 29th January 2025
+<table>
+<tr><td>
+![Palas Kumar Farsoiya. *A hybrid VoF & Phase-Field method to simulate surfactant laden flows and application to rising bubbles*](29-jan-25-1.mp4)(width="100%" link)
+</td><td>
+![Ayoub Mansar. *The Breaking Short-Crested Waves: Breaking Onset and Energy Dissipation*](29-jan-25-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+
+* Friday 29th November 2024
+<table>
+<tr><td>
+![Mathilde Tavares. *A hybrid VOF/embedded boundary method to model two-phase flows on arbitrary solid surfaces*](29-nov-24-1.mp4)(width="100%" link)
+</td><td>
+![Konstantinos Zinelis. *Transition to elasto-capillary thinning dynamics in viscoelastic jets*](29-nov-24-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+
+* Tuesday 29th October 2024
+<table>
+<tr><td>
+![David Harispe. *3D Numerical Prototyping of T-Junction Droplet Generators*](29-oct-24-1.mp4)(width="100%" link)
+</td><td>
+![Boyuan Yu. *Modelling and Simulation of Roll Waves Using Basilisk and Gerris*](29-oct-24-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+
+* Tuesday 24th September 2024
+<table>
+<tr><td>
+![Morhaf Aljber. *Assessment of tidal power potential in Obatake Strait in the Seto Inland Sea, Japan using large eddy simulation with adaptive mesh refinement*](24-sept-24-1.mp4)(width="100%" link)
+</td><td>
+![Victor Boniou. *A multi-VOF strategy to study collision statistics of finite-size monodisperse droplets in homogeneous isotropic turbulence*](24-sept-24-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+
+* Monday 24th June 2024
+<table>
+<tr><td>
+![Mandeep Saini. *Implementation of integral surface tension formulation for volume of fluid method*](24-june-24-1.mp4)(width="100%" link)
+</td><td>
+![Antoine Hajczak. *Preliminary flow simulations using Basilisk to study the aeroacoustics of flute-like musical instruments*](24-june-24-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 21st May 2024
+<table>
+<tr><td>
+![Kevin McTaggart. *Ship forces at steady speed*](21-may-24-1.mp4)(width="100%" link)
+</td><td>
+![Shyam Sunder Yadav. *Phase field method based simulation of three phase flows with phase change*](21-may-24-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Wednesday 3rd May 2023
+<table>
+<tr><td>
+![Chunheng Zhao. *General wetting energy boundary condition in a fully explicit non-ideal fluids solver*](3-may-23-1.mp4)(width="100%" link)
+</td><td>
+![Zied Amama. *Introducing culverts on 2D SWE model and assessment of flood forecasting improvements*](3-may-23-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+
+* Wednesday 22nd March 2023
+<table>
+<tr><td>
+![Kaitao (David) Tang. *Numerical Investigation of Droplet Bag Breakup*](22-mar-23-1.mp4)(width="100%" link)
+</td><td>
+![Zihao Cheng. *An octree-grid adaptive immersed boundary-lattice Boltzmann method for hydrodynamic force and torque modelling in polydisperse suspensions*](22-mar-23-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+
+* Wednesday 14th December 2022
+
+<table>
+<tr><td>
+![Damien Huet. *An adaptive front-tracking solver for immersed elastic capsules*](14-december-22-1.mp4)(width="100%" link)
+</td><td>
+![Ahmed Basil Kottingal. *A Scalale Adaptive Front Tracking Method for Simulation of Multiphase Flows*](14-december-22-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 1st February 2022
+
+<table>
+<tr><td>
+![Corine Kieffer-Roth. *Atomization of a liquid jet in crossflow with the coupled Basilisk DNS and Lagrangian method*](1-february-22-1.mp4)(width="100%" link)
+</td><td>
+![Shyam Sunder Yadav. *3D Electrohydrodynamics and viscoelasticity*](1-february-22-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 7th December 2021
+
+<table>
+<tr><td>
+![Alice Jaccod. *Predator-prey plankton dynamics in turbulent flow past an obstacle*](7-december-21-1.mp4)(width="100%" link)
+</td><td>
+![Evgenii Sharaborin. *The coupled Volume of Fluid and Brinkman penalization methods for simulation of incompressible multiphase flows*](7-december-21-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 5th October 2021
+
+<table>
+<tr><td>
+![Leonardo Chirco. *The signature method for detecting thin structures and its application*](5-october-21-1.mp4)(width="100%" link)
+</td><td>
+![Stanley Ling. *Oscillation of sessile drops on a planar surface: effects of Bond number, contact line mobility, and surface orientation*](5-october-21-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 7th September 2021
+
+<table>
+<tr><td>
+![Palas Kumar Farsoiya. *Bubble-mediated transfer of dilute gas in turbulence*](7-september-21-1.mp4)(width="100%" link)
+</td><td>
+![Yash Kulkarni and Raphaël Villiers. *Atomisation of a pulsed liquid jet*](7-september-21-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 6th July 2021
+
+<table>
+<tr><td>
+![Paul-Peter Naanouh. *Emulsions, non-coalescence and trajectory reconstruction*](6-july-21-1.mp4)(width="100%" link)
+</td><td>
+![Shyam Sunder Yadav. *Dynamics of Bubbles and Droplets Under Externally Applied Electric Fields*](6-july-21-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 1st June 2021
+
+<table>
+<tr><td>
+![Lily Battershill. *Tsunami waves generated by pyroclastic flows: modelling laboratory experiments using Basilisk's Navier--Stokes solver*](1-june-21-1.mp4)(width="100%" link)
+</td><td>
+![Jacob Maarek. *Numerical methods for three-phase mass transfer and a test case applied to metallurgical Processes*](1-june-21-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 4th May 2021
+
+<table>
+<tr><td>
+![Arthur Ghigo. *Embedded boundary method for moving rigid boundaries in incompressible flows*](4-may-21-1.mp4)(width="100%" link)
+</td><td>
+![Wouter Mostert. *Statistics of energetics, bubbles and droplets in breaking waves*](4-may-21-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 6th April 2021
+
+<table>
+<tr><td>
+![Antoon van Hooft. *The particle functionalities in my sandbox*](6-april-21-1.mp4)(width="100%" link)
+</td><td>
+![Youssef Saade. *Thermal effects in the all-Mach solver*](6-april-21-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+* Tuesday 2nd March 2021
+
+<table>
+<tr><td>
+![Stéphane Popinet. *Basilisk View demonstration*](2-march-21-1.mp4)(width="100%" link)
+</td><td>
+![Alexandre Limare. *Melting and crystal growth*](2-march-21-2.mp4)(width="100%" link)
+</td></tr>
+</table>
+
+These videos were generated from the zoom recordings using something like
+
+~~~bash
+ffmpeg -i zoom_0.mp4 -ss 00:04:45 -to 00:35:12 -crf 28 -movflags +faststart 4-may-21-1.mp4
+~~~
+
+where `00:04:45` and `00:35:12` are the start and end times respectively.

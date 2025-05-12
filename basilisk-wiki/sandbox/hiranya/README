@@ -1,0 +1,23 @@
+---
+format: Markdown
+...
+
+
+#Welcome to my sandbox
+
+I welcome you to my sandbox. The list of problems I am currently working on using basilisk are given below. 
+
+My contact
+:   hiranyadeka.mech@gmail.com
+ 
+
+# 1. [Retraction of a viscoplastic sheet](/sandbox/hiranya/viscoplasticsheet.c)
+
+The retraction of liquid sheets is a fundamental problem in fluid mechanics associated with free surface singularities. The phenomena is also important in industrial processes such as atomization and coating. Here we intend to study the retraction dynamics of yield stress fluids. The basilisk code for the retraction of a two-dimensional viscoplastic sheet is available in the my [sandbox](/sandbox/hiranya/viscoplasticsheet.c).
+
+# 2. [Retraction of a viscous liquid sheet](/sandbox/hiranya/viscoplasticsheet.c)
+This study is dedicated to the retraction of a two dimensional liquid sheet in the large $Oh$ regime. We focus on the rectraction dynamics when the inertia effects are negligible and the flow is controlled by the capillary and viscous forces. The basilisk script used for performing the direct numerical simulations is the same as in the case of [viscoplastic fluids](/sandbox/hiranya/viscoplasticsheet.c) with $Pl = 0$.
+
+# 3. [Retraction of a viscoplastic drop](/sandbox/hiranya/viscoplasticdrop.c)
+
+This study is dedicated to the retraction of viscoplastic drops in a Newtonian surroundling fluid with negligible effect on the flow. We consider a axisymmetric geometry to model the flow. The basilisk code for the retraction of a two-dimensional viscoplastic sheet is available in the my [sandbox](/sandbox/hiranya/viscoplasticdrop.c).

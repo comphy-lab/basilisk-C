@@ -1,0 +1,73 @@
+---
+title: Debian virtual appliance
+...
+
+This "virtual appliance" should run on systems where VirtualBox can be
+installed (i.e. Linux, Apple Mac OSX, Microsoft Windows, Solaris). It
+is a Debian GNU/Linux stable distribution with Gerris, basilisk,
+emacs, octave etc... preinstalled and preconfigured. On 64-bits
+Intel/AMD systems (i.e. most systems these days) with support for
+hardware virtualization this should be nearly as fast as a full
+installation on the system (but should be easier).
+
+To try it:
+
+* [Install VirtualBox on your
+  system](https://www.virtualbox.org/wiki/Downloads). On Debian-based
+  systems, just do
+
+~~~bash
+sudo apt-get install virtualbox
+~~~
+  
+* [Download](http://gerris.dalembert.upmc.fr/iso/gerris.ova) the virtual appliance file gerris.ova (1.7 GB)
+* Start the VirtualBox graphical interface
+* Use the "File -> Import Appliance" menu. Select the gerris.ova file
+  and follow the instructions
+* You should then see a "gerris / Powered Off" logo; select it and
+  click on "Start" in the toolbar
+* The login is user: gerris, passwd: gerris 
+
+# Hardware virtualization
+
+Note that some machines disable hardware virtualization by default. To
+turn it on, you need to go into the BIOS before booting the machine.
+
+# 32-bit systems
+
+If your machine uses only a 32-bits processor and/or does not support
+hardware virtualization, you may need to use the 32-bits virtual
+appliance file [gerris_32bits.ova](http://gerris.dalembert.upmc.fr/iso/gerris_32bits.ova), instead of
+the file above.
+
+# French (or non-US) keyboard
+
+By default the virtual systems are configured for a US (qwerty)
+keyboard. If you use a French (azerty) keyboard, click on the American
+flag in the top-right corner to switch to the French keyboard
+layout. You can also add other layouts if you right-click on the flag
+and select the "Properties" menu.
+
+# Apple keyboard
+
+Apple Macs have strange keyboards. To set the correct mappings go in
+"Applications Menu -> Settings -> Keyboard -> Layout" and select
+"MacBook/MacBook pro" in the "Keyboard model" drop-down menu.
+
+# Shared folders
+
+By default the virtual machine does not share any folder with the host
+system. To make it easier to transfer files between the two systems,
+one can setup [shared
+folders](https://www.virtualbox.org/manual/ch04.html#sharedfolders). To
+sum up, you need to
+
+1. Create a folder on the host system for example call it "myshared"
+1. In VirtualBox select "Settings" -> "Shared Folders"
+1. Click on the "+" icon on the top-right corner
+1. For "Folder Path" select the "myshared" folder
+1. Select "Auto-mount"
+1. Click "OK" twice
+1. Start the virtual machine
+1. On the virtual system, the shared folder should be accessible as
+"/media/sf_myshared"

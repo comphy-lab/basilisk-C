@@ -1,0 +1,267 @@
+---
+title: Basilisk (Gerris) Users' Meeting 2025
+...
+
+## Sponsors
+
+<table>
+<tr>
+<td>
+<a href="https://eng.ox.ac.uk/">
+<img src="englogos.png" alt="EngSciOxford" width="280"/>
+</a>
+</td>
+<td>
+<a href="https://warwick.ac.uk/fac/sci/maths/">
+<img src="WarwickLogo.png" alt="Warwick" width="135"/> 
+</a>
+</td>
+<td>
+[![d'Alembert](/100px-Ijlrda.jpg)](http://www.dalembert.upmc.fr/) 
+</td>
+<td>
+[![Sorbonne](/Sorbonne.png)](http://www.sorbonne-universite.fr/en) 
+</td>
+<td>
+[![CNRS](/100px-Logo_cnrs.jpg)](http://www.cnrs.fr/index.php/en)
+</td>
+</tr>
+</table>
+
+## Summary
+
+The meeting will be held on the 7--9th July 2025 at the University of Oxford, United Kingdom.
+
+The format will be similar to earlier Basilisk/Gerris meetings held in [Paris, France in 2011](http://gfs.sourceforge.net/wiki/index.php/Gerris_users%27_meeting_2011), [Wellington, New Zealand in 2012](http://gfs.sourceforge.net/wiki/index.php/Gerris_users%27_meeting_2012), [Sevilla, Spain in 2014](http://gfs.sourceforge.net/wiki/index.php/Meeting_on_Numerical_challenges_in_two-phase_flows), [Princeton, USA in 2017](BGUM2017), [Paris, France in 2019](BGUM2019) and [Paris, France in 2023](BGUM2023). Participants are encouraged to share their work using Basilisk (or Gerris) for applications in fluid mechanics, environmental science, engineering etc. Students are especially welcome to participate in this informal and friendly gathering.
+
+Attendance is free of charge but registration is mandatory.
+
+## Participants
+
+To register simply [edit this page](/_edit/BGUM2025) using either your own Basilisk login or login *guest*, password *bgum2025* and add yourself to the list below. If you intend to give a talk please give a tentative title. Talk slots are usually 20 minutes, depending on the number of participants. Note that the number of participants will be limited to 100, on a first-registered / first-served basis, so please register early!
+
+1. [Wouter Mostert](/sandbox/wmostert/README), Department of Engineering Science, University of Oxford, UK.
+1. [Radu Cimpeanu](/sandbox/rcimpeanu/README), Mathematics Institute, University of Warwick, UK.
+1. [Stéphane Popinet](/sandbox/popinet/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France -- *What's new and future plans*.
+1. Nausheen Basha
+1. [Vatsal Sanjay](https://comphy-lab.org), [Physics of Fluids, Univ. Twente](https://pof.tnw.utwente.nl) -- *Can polymeric flows be the 'Drosophila' of continuum mechanics?*
+1. Riccardo Caraccio, [Politecnico di Milano](https://www.polimi.it/), IT -- *A One-Grid Framework for Pyrolysis of Porous Biomass Particles*
+1. [Kaitao Tang](/sandbox/kaitaotang/), Department of Engineering Science, University of Oxford, UK.
+1. [Nicolo Scapin](/sandbox/nscapin/), [Princeton University](https://www.princeton.edu), US -- 
+*Progress in wind-forced breaking waves*
+1. [Ayush Dixit](https://pof.tnw.utwente.nl/people/profile/2068), [Physics of Fluids, Univ. Twente](https://pof.tnw.utwente.nl) -- *Holey Sheets*
+1. Amin Soltani, [Aarhus University](https://mpe.au.dk/en/research/key-areas-in-research-and-development/fluids-and-energy-mechanical-and-production-engineering-technical-sciences-aarhus-university/heat-and-fluid-flow/people), Denmark -- *Rising bubble in porous medium* 
+1. [Vladimir Kolobov](https://www.researchgate.net/profile/Vladimir-Kolobov). University of Alabama in Huntsville, USA -- *20 years with Gerris and Basilisk*
+1. [Aman Bhargava](https://pof.tnw.utwente.nl/people/profile/2120), [Physics of Fluids, Univ. Twente](https://pof.tnw.utwente.nl) -- *Dancing droplets: the physics of post-impact retraction dynamics*
+1. Thomas Abadie, [University of Birmingham](https://www.birmingham.ac.uk/schools/chemical-engineering), UK
+1. Michele Cattani, [Aarhus University](https://mpe.au.dk/en/research/key-areas-in-research-and-development/fluids-and-energy-mechanical-and-production-engineering-technical-sciences-aarhus-university/heat-and-fluid-flow/people),Denmark -- *On coalescence of bubbles attached to solid surfaces*
+1. [Palas Kumar Farsoiya](https://sites.google.com/view/farsoiya/home?authuser=0), Department of Chemical Engineering, Indian Institute of Technology (IIT), Roorkee, India.
+1. [Giancarlo Esposito](https://scholar.google.it/citations?hl=it&user=kSPP17sAAAAJ), Department of Chemical Engineering, University of Patras, Patras, Greece. -- *Hydrodynamic interactions of pair of viscous drops in elast-visco-plastic materials*
+1. Yuanpeng Zhang, Department of Modern Mechanics, University of Science and Technology of China. -- *Simulation of freezing/melting problem with phase-field method*
+1. Pierre-Antoine Maës, Institute for Combustion Technology, Aachen, Germany. -- *Study of the boundary layer for a solid particle combustion*
+1. [Jnandeep Talukdar](https://pof.tnw.utwente.nl/people/profile/1938), [Physics of Fluids, Univ. Twente](https://pof.tnw.utwente.nl)
+1. Mosayeb Shams, Imperial College London, UK
+1. [Debashis Panda](https://scholar.google.com/citations?user=HQl2AnYAAAAJ&hl=en), [Department of Chemical Engineering, Imperial College London](https://www.imperial.ac.uk/chemical-engineering)
+1. Abdullah M. Abdal, [Department of Chemical Engineering, Imperial College London](https://www.imperial.ac.uk/chemical-engineering)
+1. Tom Sykes, [School of Engineering, University of Warwick](https://tcsykes.com) -- *Droplet impact dynamics on moving pools*
+1. Antoine Aubert, LadHyX, Palaiseau, France -- *Turbulence Modelling using Basilisk*
+1. Atle Jensen, University of Oslo, Norway
+1. Canwei Jin, Imperial College London, UK
+1. Jieyun Pan, Sorbonne & CNRS, Paris, France
+1. Jie Li, University of Cambridge, UK
+1. Ziyao Zhang, Department of Engineering Science, University of Oxford, UK.
+1. [Paul-Peter Naanouh](http://basilisk.fr/sandbox/pnaanouh/README), [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, IFP-Energies Nouvelles, France -- *Study of the marginal pinching of inertial films with the multilayer solver*.
+1. Jean Robin, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne, ArcelorMittal, France -- *Melting of a porous iron particle in slag.*
+1. Wei Qin [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, Paris, France -- *Fluid dynamics of hydrogen production by electrolysis.*
+1. Tianyang Han, Sorbonne University, Paris, France
+1. [Daniel Fuster](/sandbox/fuster/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France -- *Regularization errors in the one-fluid formulation*.
+1. [J.M. Lopez-Herrera](/sandbox/lopez/README), [Dept. Ing. Aeroespacial y Mec. de Fluidos](https://departamento.us.es/iaymdf/), ETSI, U. de Sevilla, Sevilla, España.
+1. M. A. Herrada, [Dept. Ing. Aeroespacial y Mec. de Fluidos](https://departamento.us.es/iaymdf/), ETSI, U. de Sevilla, Sevilla, España.
+1. Mina Jafari ∂'Alembert CNRS Sorbonne Université
+1. [Pierre-Yves Lagrée](/sandbox/M1EMN/README) ∂'Alembert CNRS Sorbonne Université
+1. [Antoine Hajczak](http://basilisk.fr/sandbox/hajczak/) ∂'Alembert CNRS Sorbonne Université
+1. [Jacob Maarek](http://basilisk.fr/sandbox/jmaarek/) ∂'Alembert CNRS Sorbonne Université -- *Towards Modeling Non-Isothermal Sloshing of Liquid Hydrogen*.
+1. [Mathilde Tavares](http://basilisk.fr/sandbox/tavares/README) ∂'Alembert  Sorbonne Université,  -- *Waves impulsed by a granular collapse*.
+1. Pavan Kumar Kirar, ∂'Alembert CNRS Sorbonne Université, Paris, France
+1. Theo Witkamp, Fluids & Flows, Eindhoven University of Technology, Netherlands
+1. [Bruno Deremble](https://bderembl.github.io/), Université Grenoble Alpes, -- *Will the Gulf Stream disappear? (spoiler: No)*. 
+1. Sina Nozarian, Mechanical & Production Engineering Department, Aarhus University, Denmark -- *Numerical investigation of bubble-turbulence interaction near solid walls*
+1. [Ilies Haouche](https://www.linkedin.com/in/ilies-haouche-a862a2192/), Institut d'Electronique de Microélectronique et de Nanotechnologie, University of Lille, France -- *Numerical method to simulate soluble surfactant at high Péclet numbers in Basilisk*
+1. [Hiroya Watanabe](https://researchmap.jp/hiroya_watanabe?lang=en), Tokyo University of Agriculture and Technology, Japan
+1. Mustapha Aknine, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France -- *Study of the effect of Regularization Errors on the developpement of Multiphase Fluid Instabilities*
+1. Eswara Arun Kishore, Marine Engineering, [Indian Maritime University](https://www.imu.edu.in), Kolkata, India -- *Simulation of coupled ship motions and sloshing dynamics*
+1. [Lars Willas Dreyer](http://basilisk.fr/sandbox/larswd/README), Department of Mathematics, [University of Oslo](https://www.mn.uio.no/math), Oslo, Norway -- *What goes in the water? Combining circulation models and sensor data*
+1. [Jiarong Wu](https://jiarong-wu.github.io/), Courant Institute of Mathematical Sciences, New York University -- *Sensitivity of upper ocean state to air-sea fluxes, tested with Basilisk's GOTM implementation* 
+1. [Øystein Lande](http://basilisk.fr/sandbox/oystelan/), [Ocean Oasis AS](https://www.oceanoasis.co) & Department of Mathematics, [University of Oslo](https://www.mn.uio.no/math), Oslo, Norway -- *Validation work on wave breaking with the multilayer wave model*
+1. [Victor Boniou](http://basilisk.fr/sandbox/boniouv/README), IFP-Energies Nouvelles, Rueil-Malmaison, France -- *Collision rate of finite-size monodisperse droplets in homogeneous isotropic turbulence*
+1. [Marc Cordelle Vacher](http://basilisk.fr/sandbox/MCVacher/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), CNRS & Ecole Polytechnique, Palaiseau, France. -- *Jet impinging on a free-surface : jet flutter and self-induced sloshing*
+1. Ricardo Constante-Amores, Department of Mechanical Science and Engineering, University of Illinois Urbana-Champaign, USA.
+1. Alfonso Castrejon-Pita, Department of Engineering Science, University of Oxford, UK.
+1. Ben Fudge, Department of Engineering Science, University of Oxford, UK.
+1. Sherry Majidi, The Royal Grammar School High Wycombe, UK.
+1. Divya Shah, The Royal Grammar School High Wycombe, UK.
+1. Marcus Logothetis, The Royal Grammar School High Wycombe, UK.
+1. Ishar Toor, The Royal Grammar School High Wycombe, UK.
+1. Jens Eggers, School of Mathematics, University of Bristol, UK.
+1. [Arnaud Antkowiak](/sandbox/antko/) ∂'Alembert CNRS/Sorbonne Université
+1. Vyankatesh Mundhada, Department of Chemical Engineering, Indian Institute of Sceience Education and Research, Bhopal. -- *Numerical modeling of macroscopic flows involving moving contact line*
+1. James Sprittles, Mathematics Institute, University of Warwick, UK.
+1. Andriarimina Daniel Rakotonirina, The Ocean Cleanup, The Netherlands -- *Basilisk and Plastic Marine Debris Tracking*.
+1. Miguel A. Quetzeri-Santiago, Instituto de Investigaciones en Materiales, UNAM, Mexico-- *Numerical investigation of jet impact cavity dynamics using Basilisk*.
+1. Fanshuo MA, ∂'Alembert CNRS Sorbonne Université
+1. Ian Roberts, Aerotex UK
+1. Sai Raja Gopal Vadlamudi, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Germany.
+1. [Datong Wang](http://basilisk.fr/sandbox/Datong/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole Polytechnique, Palaiseau, France. -- *Numerical study of drop impact on concave surface: spread, jet, and splash*.
+1. Yifan Han, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Germany -- *Wetting effects on the dynamics of droplets and bubbles at surfaces*.
+1. Gerd Mutschke, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Germany.
+1. Hunter Boswell, Missouri University of Science and Technology, USA.
+1. [Minerva Schuler](https://warwick.ac.uk/fac/sci/hetsys/people/cohort5/minervaschuler/), Department of Engineering, University of Warwick, UK.
+1. Muwanguzi Stephen Kyazze, College of Ocean and Civil Engineering, Shanghai Jiaotong University 
+1. Ahmed Basil KOTTILINGAL, Paris
+1. [Sebastian Dooley](https://warwick.ac.uk/fac/sci/hetsys/people/studentscohort4/dooley/), Department of Engineering, University of Warwick, UK.
+1. [Francesco Picella](/sandbox/fpicella/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France -- *Modelling microswimmer instabilities with embed*.
+1. [Fei He](https://eng.ox.ac.uk/people/fei-he/) Department of Engineering and Science, University of Oxford, UK
+1. Peter Lewin-Jones, Mathematics Institute, University of Warwick, UK
+1. Aston Over, Royal Grammar School High Wycombe, UK
+1. Chandra Shekara G, BMSCollege of Engineering, Bangalore India
+1. [Edoardo Cipriano](/sandbox/ecipriano/README), [Politecnico di Milano](https://www.polimi.it/), IT -- *Current state of gas-liquid phase change modeling in Basilisk*.
+1. [Tianning Tang](www.tim-tang.net), Department of Mechanical and Aerospace Engineering, University of Manchester 
+1. [Xiaosheng Chen](https://eng.ox.ac.uk/people/xiaosheng-shaun-chen/), Department of Engineering Science, University of Oxford, UK.
+1. Zheni Fei, Department of Engineerinng Science, University of Oxford,UK
+1. [Xinyu Liu](https://scholar.google.com/citations?user=vFRuvl4AAAAJ&hl=zh-CN), Department of Engineering Science, University of Oxford, UK
+1. Xinhao Huang, Department of Civil Engineering, Shanghai Jiao Tong University.
+1. Nguyen Quang Chien, University of Edinburgh, Scotland.
+
+
+## Travel scholarships
+
+Depending on our level of sponsorship, we should be able to fund a few "travel scholarships" in the form of paid-for accommodation in Oxford and/or transportation. We hope to be able to confirm this by the end of March 2025. If you are a student and would benefit from this support, please send an application letter to [Wouter Mostert](/sandbox/wmostert/README).
+
+## Preliminary program
+
+<table>
+<tr><td>**Monday 7th July**</td></tr>
+
+<tr><td>12:00</td>
+<td>
+<center>Welcome</center>
+<hr></td></tr>
+
+<tr><td>14:00</td>
+<td>
+Presentations (20 minutes slots)
+<hr></td></tr>
+
+<tr><td>16:00</td>
+<td>
+<center>Coffee break</center>
+<hr></td></tr>
+
+<tr><td>16:20--18:00</td>
+<td>
+Presentations
+<hr></td></tr>
+
+
+
+
+
+<tr><td>**Tuesday 8th July**</td></tr>
+
+<tr><td>8:00</td>
+<td>
+<center>Breakfast</center>
+<hr></td></tr>
+
+<tr><td>9:00</td>
+<td>
+Presentations
+<hr></td></tr>
+
+<tr><td>10:30</td>
+<td>
+<center>Coffee break</center>
+<hr></td></tr>
+
+<tr><td>10:50</td>
+<td>
+Presentations
+<hr></td></tr>
+
+<tr><td>12:00</td>
+<td>
+<center>Lunch break (invited)</center>
+<hr></td></tr>
+
+<tr><td>14:00</td>
+<td>
+Presentations
+<hr></td></tr>
+
+<tr><td>16:00</td>
+<td>
+<center>Coffee break</center>
+<hr></td></tr>
+
+<tr><td>16:20--18:00</td>
+<td>
+Presentations
+<hr></td></tr>
+
+<tr><td>19:00</td>
+<td>
+<center>Welcome reception</center>
+<hr></td></tr>
+
+
+
+
+
+<tr><td>**Wednesday 9th July**</td></tr>
+
+<tr><td>8:00</td>
+<td>
+<center>Breakfast</center>
+<hr></td></tr>
+
+<tr><td>9:00</td>
+<td>
+Presentations
+<hr></td></tr>
+
+<tr><td>10:30</td>
+<td>
+<center>Coffee break</center>
+<hr></td></tr>
+
+<tr><td>10:50</td>
+<td>
+Presentations
+<hr></td></tr>
+
+<tr><td>12:00</td>
+<td>
+<center>Lunch break</center>
+<hr></td></tr>
+
+<tr><td>14:00 -- 17:00</td>
+<td>
+Closing and free time for discussions etc.
+<hr></td></tr>
+
+</table>
+
+## Organisers
+
+* [Wouter Mostert](/sandbox/wmostert/README), Department of Engineering Science, University of Oxford, UK.
+* [Radu Cimpeanu](/sandbox/rcimpeanu/README), Mathematics Institute, University of Warwick, UK.
+* [Stéphane Popinet](/sandbox/popinet/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France.
+
+## Previous meetings
+
+* [Basilisk/Gerris Users' Meeting 2023](BGUM2023)
+* [Basilisk/Gerris Users' Meeting 2019](BGUM2019)
+* [Basilisk/Gerris Users' Meeting 2017](BGUM2017)
+* [Meeting on Numerical challenges in two-phase flows 2014](http://gerris.dalembert.upmc.fr/meeting_on_numerical_challenges_in_two-phase_flows.html)
+* [Gerris Users' meeting 2012](http://gerris.dalembert.upmc.fr/gerris_users'_meeting_2012.html)
+* [Gerris Users' meeting 2011](http://gerris.dalembert.upmc.fr/gerris_users'_meeting_2011.html)

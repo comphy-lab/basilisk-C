@@ -1,0 +1,302 @@
+/**
+This 'README' provides on overview of the content of my sandbox.
+
+# Blood Flow Modeling
+
+## Code
+
+* [1D blood flow model with three 1st-order well-balanced fluxes](artery1D/bloodflow.h)
+* [1D blood flow model with 2nd-order hydrostatic reconstruction](artery1D/bloodflow-hr.h)
+* [Adaptive mesh refinement compatible with hydrostatic reconstruction](artery1D/elevation.h)
+
+## 1D blood flow examples
+
+The following examples are compatible with the three [1D blood flow
+models](artery1D/bloodflow.h).
+
+* [Inviscid wave propagation in an artery](artery1D/wave-propagation.c)
+* [Inviscid tourniquet](artery1D/tourniquet.c)
+* [Inviscid analytic solution by O. Delestre](artery1D/delestre.c)
+* [Viscous wave propagation](artery1D/viscous-dissipation.c)
+* [Thacker solution - Oscillations in an aneurysm](artery1D/thacker.c)
+* [Steady solution in a stenosis](artery1D/steady-state.c)
+* [Inviscid wave propagation in a tapered artery](artery1D/taper.c)
+
+## 1D blood flow examples with 2nd-order hydrostatic reconstruction and mesh adaptation
+
+The following examples are specific to the [1D blood flow model with
+2nd-order hydrostatic reconstruction](artery1D/bloodflow-hr.h).
+
+* Inviscid wave propagation in an artery:
+    - [1st-order](artery1D/hr/wave-propagation.c);
+    - [2nd-order](artery1D/hr/wave-propagation2.c);
+* Inviscid tourniquet:
+    - [1st-order](artery1D/hr/tourniquet.c);
+    - [2nd-order](artery1D/hr/tourniquet2.c);
+    - [1st-order with adaptivity](artery1D/hr/tourniquet-adapt.c);	
+* Inviscid analytic solution by O. Delestre:
+    - [1st-order](artery1D/hr/delestre.c);
+    - [2nd-order](artery1D/hr/delestre2.c);
+* Thacker solution - Oscillations in an aneurysm:
+    - [1st-order](artery1D/hr/thacker.c);
+    - [2nd-order](artery1D/hr/thacker2.c);
+* Steady solution in a stenosis:
+    - [1st-order](artery1D/hr/steady-state.c);
+    - [2nd-order](artery1D/hr/steady-state2.c);
+    - [1st-order with adaptivity](artery1D/hr/steady-state-adapt.c);
+    - [2nd-order with adaptivity](artery1D/hr/steady-state2-adapt.c);		
+* Inviscid wave propagation in a tapered artery:
+    - [1st-order](artery1D/hr/taper.c);
+    - [2nd-order](artery1D/hr/taper2.c);
+    - [1st-order with adaptivity](artery1D/hr/taper-adapt.c);
+    - [2nd-order with adaptivity](artery1D/hr/taper2-adapt.c);
+
+## 3D blood flow example in a network of rigid arteries using embedded boundaries
+
+* Incompressible flow at $Re \approx 10$ in a network of rigid arteries:
+    - [steady](src/test-stl/network-flow.c);
+    - [pulsatile](src/test-stl/network-pulsed.c).    
+
+# Particle-Laden Flows Using A Cartesian Grid Embedded Boundary Method
+
+## Code
+
+#### Embedded boundaries
+
+* [myembed.h](src/myembed.h): modified [embed.h](/src/embed.h).
+* [myembed-tree-moving.h](src/myembed-tree-moving.h): modified
+  [embed-tree.h](/src/embed-tree.h).
+      
+#### Navier-Stokes equations
+
+* [mypoisson.h](src/mypoisson.h): modified [poisson.h](/src/poisson.h)
+  to take into account non-zero face-velocity *uf* boundary conditions
+  on embedded boundary.
+* [myembed-moving.h](src/myembed-moving.h): functions and hooks to the
+  [centered.h](src/mycentered.h) events to account for moving embedded
+  boundaries.
+
+#### Advection-diffusion of a tracer field
+
+* [mytracer.h](src/mytracer.h): modified [tracer.h](/src/tracer.h).
+* [mydiffusion.h](src/mydiffusion.h): modified
+  [diffusion.h](/src/diffusion.h).
+  
+#### Fluid-particle coupling
+
+* [myembed-particle.h](src/myembed-particle.h): functions and hooks to
+  the [centered.h](src/mycentered.h) events to account for moving
+  particles.
+
+## Test cases
+
+#### Poisson equation
+
+* [Poisson equation on a 2D complex domain with Neumann boundary
+  conditions](src/test-poisson/neumann.c);
+* [Poisson equation on a 3D complex domain with Neumann boundary
+  conditions](src/test-poisson/neumann3D.c);
+    
+#### Heat equation
+
+* [Heat equation in a 3D sphere with time-dependent Neumann boundary
+  conditions](src/test-heat/neumann3D.c);
+
+#### Stokes equations
+
+* [Poiseuille flow in a periodic
+  domain](src/test-noembed/poiseuille.c)
+* [Poiseuille flow in a periodic channel inclined at 45
+  degrees](src/test-stokes/poiseuille45.c)
+* [Couette flow between rotating cylinders](src/test-stokes/couette.c)
+* [Wannier flow between rotating excentric
+  cylinders](src/test-stokes/wannier.c)
+* [Flow past a periodic array of
+  cylinders](src/test-stokes/cylinders.c)
+* [Flow past a periodic array of spheres](src/test-stokes/spheres.c)
+* [Stokes flow through a complex 2D porous
+  medium](src/test-stokes/porous.c)
+* [Stokes flow through a complex 3D porous
+  medium](src/test-stokes/porous3D.c)
+* [Stokes flow through a complex 2D porous medium, randomly
+  refined](src/test-stokes/porous1.c)
+* Flow past cylinder moving at the same speed:
+    - [fixed embedded boundaries, uniform
+      mesh](src/test-stokes/cylinder-steady.c)
+    - [moving embedded boundaries, uniform
+      mesh](src/test-stokes/cylinder-steady-moving.c)
+* [Stability of the embedded face velocity
+  interpolation](src/test-stokes/uf.c)
+* [Couette flow past a sphere](src/test-stokes/torque.c)
+* [Sphere moving (but fixed) towards a wall in a quiescent
+  fluid](src/test-stokes/sphere-towards-wall.c)
+* [Spheroid moving (but fixed) parallel to a wall in a quiescent
+  fluid](src/test-stokes/spheroid-parallel-wall.c)
+
+#### Navier-Stokes equations
+
+* [Hydrostatic balance with refined embedded
+  boundaries](src/test-navier-stokes/hydrostatic2.c)
+* [Hydrostatic balance with refined embedded boundaries in
+  3D](src/test-navier-stokes/hydrostatic3.c)
+* Stream flow past cylinder moving at the same speed:
+    - [fixed embedded boundaries, uniform
+      mesh](src/test-navier-stokes/cylinder-steady.c)
+    - [moving embedded boundaries, uniform
+      mesh](src/test-navier-stokes/cylinder-steady-moving.c)
+* [Flow past a circular cylinder for different Reynolds numbers
+  $Re$](src/test-navier-stokes/cylinder-unbounded.c)
+* [Flow past a spheroid for different Reynolds numbers
+  $Re$](src/test-navier-stokes/spheroid-unbounded.c)
+* [Vortex shedding behind different cylinders for different Reynolds
+  numbers $Re$](src/test-navier-stokes/cylinder-strouhal.c)
+* [Flow past a confined circular cylinder for different Reynolds
+  numbers $Re$](src/test-navier-stokes/cylinder-confined.c)
+* Starting flow around a cylinder at the Reynolds number $Re=1000$:
+    - [fixed embedded boundaries, adaptive
+      mesh](src/test-navier-stokes/starting.c)
+    - [moving embedded boundaries, adaptive
+      mesh](src/test-navier-stokes/starting-moving.c)
+* [Rotating cylinder in a steam flow at the Reynolds number
+  $Re=200$](src/test-navier-stokes/cylinder-rotating.c)
+* [Rotating sphere in a steam flow at the Reynolds number
+  $Re=200$](src/test-navier-stokes/sphere-rotating.c)
+* [Accelerating cylinder in a quiescent fluid at the Reynolds number
+  $Re=300$](src/test-navier-stokes/cylinder-accelerating.c)
+* [Accelerating sphere in a quiescent fluid at the Reynolds number
+  $Re=300$](src/test-navier-stokes/sphere-accelerating.c)  
+* [Oscillating cylinder in a quiescent fluid at the Reynolds number
+  $Re=100$ and $KC=5$] (src/test-navier-stokes/cylinder-oscillating.c)
+* [Oscillating sphere in a quiescent fluid at the Reynolds number
+  $Re=40$ and Strouhal number
+  $St=3.2$](src/test-navier-stokes/sphere-oscillating.c)  
+* [Vertically oscillating cylinder in a stream flow at
+  $Re=185$](src/test-navier-stokes/cylinder-oscillating-vertically.c)
+* Starting vortex of a NACA2414 airfoil:
+    - 2D: [naca2414-starting.c](src/test-navier-stokes/naca2414-starting.c)
+    - 3D: [naca2414-starting3D.c](src/test-navier-stokes/naca2414-starting3D.c)
+    - correction: [naca-corrected.c](src/test-navier-stokes/naca.c)
+* [Pitching NACA0015 airfoil](src/test-navier-stokes/naca0015-pitching.c)
+* Incompressible flow at the Reynolds number $Re \approx 10$ in a
+  network of rigid arteries:
+    - [steady](src/test-stl/network-flow.c);
+    - [pulsatile](src/test-stl/network-pulsed.c).
+* [Flow past a wind turbine at the Reynolds number
+  $Re=1000$](src/test-stl/wind-turbine-flow.c)    
+
+#### Freely moving heavy particles
+
+* [Buoyant cylinder advected in a Stokes
+  flow](src/test-particle/cylinder-buoyant.c)
+* [Buoyant cylinder advected in an inviscid
+  flow](src/test-particle/cylinder-buoyant1.c)
+* [Heavy cylinder advected by a pressure-driven flow at a Reynolds
+  number
+  $Re=20$](src/test-particle/cylinder-advection-pressure-gradient.c)
+* [Heavy sphere advected by a pressure-driven flow at a Reynolds
+  number
+  $Re=20$](src/test-particle/sphere-advection-pressure-gradient.c)
+* [Sphere of near-unity density settling in a closed box at low to
+  moderate Reynolds numbers](src/test-particle/sphere-settling.c)
+* Heavy sphere settling in a large box at high Reynolds or Galileo
+  numbers:
+    - [sphere-settling-large-domain.c](src/test-particle/sphere-settling-large-domain.c);
+    - [sphere-settling-large-domain-2.c](src/test-particle/sphere-settling-large-domain-2.c);
+* [Cylinder settling in a channel](src/test-particle-color/cylinder-confined-settling.c);
+* [Cylinder drifting in a channel](src/test-particle-color/cylinder-confined-drifting.c);
+
+# Viscoplastic Flows
+
+## Code
+
+* [myviscosity.h](src/myviscosity.h): modified
+  [viscosity.h](/src/viscosity.h) to account for embedded boundaries
+  and variable viscosity.
+* [myviscosity-viscoplastic.h](src/myviscosity-viscoplastic.h):
+  regularization method for yield stress fluids.
+
+## Test cases
+
+* [Stokes flow in a lid-driven cavity at different Bingham numbers
+  $Bi$](src/test-viscoplastic/lid-driven-cavity.c);
+* [Poiseuille flow in a channel](src/test-viscoplastic/poiseuille.c);
+* [Stokes flow past a cylinder at different Bingham numbers $Bi$](src/test-viscoplastic/cylinder-unbounded.c);  
+
+# Potential Bugs?
+
+* [Spurious velocity at intersections of non-periodic faces in rotational stokes flow](src/bugs/rotationz.c)
+
+## References
+
+~~~bib
+@article{faxen1946,
+  title={Forces exerted on a rigid cylinder in a viscous fluid between two parallel fixed planes},
+  author={Faxen, O.H.},
+  journal={Proc. R. Swed. Acad. Eng. Sci.},
+  volume={187},
+  pages={1--13},
+  year={1946}
+}
+
+@article{okajima1982,
+  title={Strouhal numbers of rectangular cylinders},
+  author={Okajima, A.},
+  journal={Journal of Fluid Mechanics},
+  volume={123},
+  pages={379--398},
+  year={1982},
+  publisher={Cambridge University Press}
+}
+
+@article{dutsch1998,
+  title={Low-Reynolds-number flow around an oscillating circular cylinder at low Keulegan-Carpenter numbers},
+  author={Dutsch, H. and Durst, F. and Becker, S. and Lienhart, H.},
+  journal={Journal of Fluid Mechanics},
+  volume={360},
+  pages={249--271},
+  year={1998},
+  publisher={Cambridge University Press}
+}
+
+@article{guilmineau2002,
+  title={A NUMERICAL SIMULATION OF VORTEX SHEDDING FROM AN OSCILLATING CIRCULAR CYLINDER},
+  author={Guilmineau, E. and Queutey, P.},
+  journal={Journal of Fluids and Structures},
+  volume={16},
+  pages={773--794},
+  year={2002},
+  publisher={Elsevier}
+}
+
+@article{colella2006,
+  title={A Cartesian grid embedded boundary method for hyperbolic conservation laws},
+  author={Colella, Phillip and Graves, Daniel and Keen, Benjamin and Modiano David},
+  journal={Journal of Computational Physics},
+  volume={211},
+  number={1},
+  pages={347--366},
+  year={2006},
+  publisher={Elsevier},
+  url={https://linkinghub.elsevier.com/retrieve/pii/S0021999105002780}
+}
+
+@article{miller2012,
+  title={An embedded boundary method for the Navier–Stokes equations on a time-dependent domain},
+  author={Miller, G. and Trebotich, D.},
+  journal={Communications in Applied Mathematics and Computational Science},
+  volume={7},
+  pages={1--31},
+  year={2012}
+}
+
+@article{schneiders2013,
+  title={An accurate moving boundary formulation in cut-cell methods},
+  author={Schneiders, L. and Hartmann, D. and Meinke, M. and Schroder, W.},
+  journal={Journal of Computational Physics},
+  volume={235},
+  pages={786--809},
+  year={2013},
+  publisher={Elsevier}
+}
+~~~
+*/

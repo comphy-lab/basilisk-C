@@ -1,0 +1,6 @@
+#My Sandbox
+The codes presented here include the research topics of liquid solidification and ice melting. I am using the hybrid level-set/embeded boundary method (LSEB) developed by [/sandbox/alimare](). The very first code here considers the solidification process with density change. Please note that the code presented here is under testing.
+
+### Validation cases
+
+* [Solidification with density change](test_cases/Navisolid.c)

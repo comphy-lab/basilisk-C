@@ -1,0 +1,62 @@
+#include "grid/octree.h"
+#include "navier-stokes/centered.h"
+#include "navier-stokes/perfs.h"
+#include "view.h"
+
+double U = 1., nu = 1.; //fluid velocity and kinematic viscosity
+int maxlevel = 7; //maximum refinement level
+double be = 1, ue = 3e-2; //max. discretisation error
+double Tend = 50; //simulation runtime
+face vector muc[];
+
+int main() {
+  L0 = 8; //domain size (cube sidelength)
+  X0 = Y0 = Z0 = -L0/2.;
+  mu = muc;
+  N = 128;
+  periodic(left); //periodic left-right
+  periodic (front); //and fromt-back boundary conditions
+  run();
+}
+
+//no-slip boundary condition on the bottom plane
+u.n[bottom] = dirichlet (0.);
+u.t[bottom] = dirichlet (0.);
+u.r[bottom] = dirichlet (0.);
+
+//initialise fluid velocity
+event init (t = 0) {
+  foreach()
+    u.x[] = U;
+}
+
+//set fluid viscosity
+event properties (i++) {
+  foreach_face()
+    muc.x[] = fm.x[]*nu; 
+    boundary ((scalar*){muc});
+}
+
+event adapt (i++)
+  adapt_wavelet ((scalar*){u}, (double[]){be, ue, ue}, maxlevel, 4);
+
+//output a central slice of the streamwise velocity field as an text array
+event velocity (t += 1) {
+  char file[99];
+  sprintf (file, "ux1%g", t);
+  FILE * fp = fopen (file, "w");
+  output_slice(list = {u.x}, fp, n = 512, linear = true, plane = {0.5, 1, 1});
+}
+
+//output the vorticity field (pointing outward of vertical slice) with cells
+event movies (i++){
+  scalar omega[];
+  vorticity (u, omega);
+  view (fov = 20, camera = "left");
+  squares ("omega", linear = true, n = {1, 0, 0}, alpha = 0.5);
+  cells(n = {1, 0, 0}, alpha = 0.5);
+  save ("vort.mp4");
+}
+
+event stop (t = Tend) {
+}

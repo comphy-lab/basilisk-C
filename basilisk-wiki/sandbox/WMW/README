@@ -1,0 +1,21 @@
+---
+title: We Make Waves
+...
+
+Welcome to our page! We are a New Zealand Marsden funded project, investigating the generation of volcanic tsunmais through a combined experimental and numerical approach. The two PhD students on the numerical modelling team are Matty Hayward and Lily Battershill. Matty's PhD focuses on the generation of waves by underwater explosions. Lily's work focuses on the generation of tsunami waves through the entrance of pyroclastic density currents (PDCs) into water.
+
+**Background**
+
+* [Underwater explosion generated tsunamis](background_underwater_eruptions)
+* [Pyroclastic density current (PDC) generated tsunamis](background_PDCs)
+
+**Initial experiments**
+
+* [Collapsing cavity makes waves](cavity.c)
+* [Buoyant plume](plume.c)
+* [Cavity created by blowing on a free surface](blow.c)
+
+**Gravity currents**
+
+* [Boussinesq gravity current](gravity.c) 
+

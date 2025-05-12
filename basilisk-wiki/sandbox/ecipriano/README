@@ -1,0 +1,178 @@
+/**
+# Edoardo Cipriano <a href="https://orcid.org/0000-0003-4976-2578" target="_blank"> <img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" alt="ORCID" style="width:16px; height:16px;" /> </a>
+
+
+I am a PhD student at Politecnico di Milano, with the
+[CRECK Modeling group](http://creckmodeling.chem.polimi.it).
+During my PhD, I study the evaporation and combustion
+of fuel droplets using multiphase CFD. Here you can find
+my codes. If you would like to discuss a related topic,
+feel free to email me: `edoardo.cipriano@polimi.it`.
+
+## Publications
+
+For a detailed description of the phase change models in this
+sandbox, please refer to:
+
+~~~bib
+@hal{cipriano2023, hal-04252476}
+
+@hal{cipriano2024, hal-04580590}
+
+@hal{cipriano2025, hal-04962085}
+~~~
+
+## Source Codes
+
+The main modules implemented in my sandbox are reported below.
+The arrow points to the relative tests, where available.
+
+
+#### Navier-Stokes
+
+* [navier-stokes/centered-evaporation.h](src/navier-stokes/centered-evaporation.h):
+  centered Navier-Stokes equations solver with a divergence source term.
+* [navier-stokes/mac-evaporation.h](src/navier-stokes/mac-evaporation.h):
+  mac Navier-Stokes equations solver with a divergence source term.
+* [navier-stokes/centered-doubled.h](src/navier-stokes/centered-doubled.h):
+  obtain a divergence-free extended velocity using a *Double Pressure-Velocity Coupling* approach.
+* [navier-stokes/velocity-potential.h](src/navier-stokes/velocity-potential.h):
+  obtain a divergence-free extended velocity using the *Velocity Potential* appraoch.
+* [navier-stokes/velocity-jump.h](src/navier-stokes/velocity-jump.h):
+  centered Navier-Stokes equations solver for two-phase flows with velocity jump (using GFM).
+
+#### Phase Change
+
+* [evaporation.h](src/evaporation.h):
+  main phase change module, it must be included in every phase change simulation,
+  together with one of the following phase change mechanisms.
+* [fixedflux.h](src/fixedflux.h):
+  constant evaporation rate per unit of surface.
+* [temperature-gradient.h](src/temperature-gradient.h):
+  evaporation driven by a temperature gradient between the interface
+  temperature and the neighboring phases (suitable for boiling).
+* [species-gradient.h](src/species-gradient.h):
+  evaporation driven by a gradient of chemical species mass fractions
+  (suitable for isothermal pure evaporation).
+* [multicomponent.h](src/multicomponent.h):
+  evaporation of a mixture in a non-isothermal environment.
+* [multicomponent-varprop.h](src/multicomponent-varprop.h):
+  extension of the multicomponent model including variable thermodynamic and transport properties.
+
+#### Combustion
+
+* [opensmoke.h](src/opensmoke.h):
+  interface for the OpenSMOKE++ library, which allows detailed kinetics to be managed.
+* [opensmoke-properties.h](src/opensmoke-properties.h):
+  use the OpenSMOKE++ library for the calculation of mixture properties.
+* [chemistry.h](src/chemistry.h):
+  solve the combustion reactions using the OpenSMOKE++ interface.
+* [reactors.h](src/reactors.h):
+  implementation of the ODE system of equations describing batch reactors.
+* [spark.h](src/spark.h):
+  activate the chemical reactions using a spark, described as a local increase of temperature
+  (→ [spark.c](test/spark.c)).
+* [radiation.h](src/radiation.h):
+  radiation models for combustion simulation (→ [radiation.c](test/radiation.c)).
+  
+#### Ghost Fluid Method
+
+* [poisson-gfm.h](src/poisson-gfm.h):
+  extension of poisson solver with ghost fluid method for interface discontinuities (→ [poisson-gfm.c](test/poisson-gfm.c)).
+* [navier-stokes/centered-gfm.h](src/navier-stokes/centered-gfm.h):
+  extension of the centered solver using the ghost fluid method for surface tension (and gravity) (→ [capwave.c](test/capwave.c), [oscillation.c](test/oscillation.c), [spurious.c](test/spurious.c)).
+
+#### Miscellaneous
+
+* [aslam.h](src/aslam.h):
+  extrapolate a tracer field across the interface using constant or linear extrapolation (based on  the levelset approach)
+  (→ [aslam.c](test/aslam.c), [aslamvof.c](test/aslamvof.c)).
+* [fsolve-gsl.h](src/fsolve-gsl.h):
+  high-level interface to *gsl_multiroots*, for the solution of non-linear systems of equations (→ [fsolve-gsl.c](test/fsolve-gsl.c)).
+* [centripetal.h](src/centripetal.h):
+  suspension of a liquid droplet using a centripetal force applied on the liquid volume (→ [centripetal.c](test/centripetal.c)).
+* [icentripetal.h](src/icentripetal.h):
+  suspension of a liquid droplet using a centripetal force applied just on the interface (→ [icentripetal.c](test/icentripetal.c)).
+* [pinning.h](src/pinning.h):
+  suspension of a liquid droplet setting the boundary conditions for the height-function (→ [pinning.c](test/pinning.c)).
+* [balances.h](src/balances.h):
+  automatic calculation of global mass balances.
+
+## Examples
+
+The simulation setup for phase change problems, with
+automatic generation of the results and other test cases,
+are reported below.
+
+#### Phase Change
+
+* [fixedflux.c](run/fixedflux.c):
+  evaporation of a droplet with a constant evaporation rate.
+* [fixedfluxmac.c](run/fixedfluxmac.c):
+  evaporation of a droplet with a constant evaporation rate, using the mac solver.
+* [fixedbubblevelocity.c](run/fixedbubblevelocity.c)
+  expansion of a bubble with a constant evaporation rate using the
+  velocity potential approach, focusing on the velocity field.
+* [stefanproblem.c](run/stefanproblem.c):
+  evaporation of a liquid plane induced by a temperature gradient.
+* [suckingproblem.c](run/suckingproblem.c):
+  planar boiling configuration.
+* [scrivenproblem.c](run/scrivenproblem.c):
+  growth of a bubble in a superheated liquid domain.
+* [bubblerisengrowth.c](run/bubblerisengrowth.c):
+  growth of a bubble in a superheated liquid domain, in normal gravity conditions.
+* [filmboiling.c](run/filmboiling.c):
+  a possible film boiling configuration.
+* [bubblecontact.c](run/bubblecontact.c):
+  growth of a nucleated bubble on a solid wall, with a fixed contact angle.
+* [epsteinplesset.c](run/epsteinplesset.c):
+  isothermal evaporation of a pure droplet in diffusive conditions.
+* [pureisothermal.c](run/pureisothermal.c):
+  isothermal evaporation of a pure droplet.
+* [c7pathak.c](run/c7pathak.c):
+  evaporation of a n-heptane droplet in a non-isothermal environment.
+* [staticbi.c](run/staticbi.c):
+  isothermal evaporation of a binary droplet with different volatilities.
+* [forcedbi.c](run/forcedbi.c):
+  isothermal evaporation of a binary droplet with different volatilities in forced convective conditions.
+* [interfaceregression.c](test/interfaceregression.c):
+  test for the interface regression velocity, in order to better
+  visualize its behavior.
+
+#### Phase Change with Variable-Properties
+
+* [expansion.c](run/expansion.c): thermal expansion of a liquid droplet.
+* [microgravity.c](run/microgravity.c): evaporation of a pure droplet in microgravity conditions.
+* [normalgravity.c](run/normalgravity.c): evaporation of a pure droplet in buoyancy-driven flows.
+
+#### Miscellaneous
+
+* [embedfalldrop.c](run/embedfalldrop.c):
+  impact of a liquid droplet on a curved surface.
+* [fallingdropmrf.c](run/fallingdropmrf.c):
+  falling droplet in a moving reference frame.
+* [radialdiffusion.c](run/radialdiffusion.c):
+  solution of a diffusion equation in a spherically-symmetric domain.
+
+## Improvements
+
+The following list reports known weakness and future steps for the
+models implemented in my sandbox:
+
+1. **Smoothen velocity field**: the point source term in the Poisson equation,
+  related with the density changes in phase change simulations, can lead to
+  oscillations in the velocity field, that disappear using the mac solver.
+  A proper strategy to avoid this phenomena should be developed, without
+  smearing the source term in order to not modify the intensity of the velocity jump.
+
+2. **Velocity Potential**: this is the most elegant way to obtain a divergence-free
+  velocity field in phase change simulations. However, this implementation does
+  not work well for strong density ratio or strong vaporization rates, and it
+  should be improved. At the current state, it works when the velocity of the
+  system is higher than the Stefan flow.
+
+3. **Embedded Boundaries**: the phase change model cannot be combied with
+  embedded solids yet. This extension should not be too difficult.
+
+*/
+

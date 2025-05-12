@@ -1,0 +1,31 @@
+# Sandbox
+[Bradley Boyd's](https://scholar.google.co.nz/citations?user=fEIC4TwAAAAJ&hl=en) sandbox. This page aims to provide an overview of the projects under [/sandbox/BOYD/](). 
+
+# A consistent volume-of-fluid approach for direct numerical simulation of the aerodynamic breakup of a vaporizing drop
+[B. Boyd, Y. Ling, A consistent volume-of-fluid approach for direct numerical simulation of the aerodynamic breakup of a vaporizing drop, Computers & Fluids, 105807, (2023).](https://doi.org/10.1016/j.compfluid.2023.105807)
+
+[<img src="images/vaporizing_breaking_drop.png" alt="drawing" width=70%/>](https://doi.org/10.1016/j.compfluid.2023.105807)
+
+Test cases  ([Section 4](https://www.sciencedirect.com/science/article/pii/S0045793023000324?via%3Dihub#sec4)):
+
+1. [Stefan problem](run/stefan_problem.c) ([Section 4.1](https://www.sciencedirect.com/science/article/pii/S0045793023000324?via%3Dihub#sec4.1))
+
+[<img src="images/stef.png" alt="drawing" width=30%/>](run/stefan_problem.c)
+
+2. [Sucking problem](run/sucking_problem.c) ([Section 4.2](https://www.sciencedirect.com/science/article/pii/S0045793023000324?via%3Dihub#sec4.2))
+
+[<img src="images/suck.png" alt="drawing" width=30%/>](run/sucking_problem.c)
+
+
+3. [Bubble growth in superheated liquid](run/bubble_growth.c) ([Section 4.3](https://www.sciencedirect.com/science/article/pii/S0045793023000324?via%3Dihub#sec4.3))
+    
+[<img src="images/bubble_setup.png" alt="drawing" width=30%/>](run/bubble_growth.c)
+
+4. [Film boiling problem](run/film_boiling.c) ([Section 4.4](https://www.sciencedirect.com/science/article/pii/S0045793023000324?via%3Dihub#sec4.4))
+
+[<img src="images/film_domain.png" alt="drawing" width=30%/>](run/film_boiling.c)
+
+
+# Simulation and modeling of the vaporization of a freely moving and deforming drop at low to moderate Weber numbers
+[B. Boyd, S. Becker, Y. Ling, Simulation and modeling of the vaporization of a freely moving and deforming drop at low to moderate Weber numbers, arXiv, (2023).](https://doi.org/10.48550/arXiv.2305.05160)
+

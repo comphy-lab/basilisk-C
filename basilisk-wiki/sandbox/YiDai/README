@@ -1,0 +1,29 @@
+# Dai's Sandbox
+
+This is the README of Dai’s Sandbox. This page mainly provides an overview of my work using Basilisk. Currently, I am a PhD student at TU Delft, partially under the supervision of [Antoon](http://basilisk.fr/sandbox/Antoonvh/README). I work on the project of fruit frost, aiming at the clarity of fruit frost and quantifying the efficiency of different engineering methods for frost mitigation.
+
+## The fruit frost project
+I mainly investigate the wind machine as a fruit frost mitigation method in my PhD project. During the frost night, the inversion layer develops due to longwave radiation. The wind machines rotating 360 degrees with a slight tilting angle to the surface are used to erode the inversion layer and create air mixing. Thus, quantifying the efficiency of air mixing and understanding the air mixing processes are primarily my objectives. 
+
+### The wind machine parameterization
+I adapted the function of [fan.h](http://basilisk.fr/sandbox/vheusinkveld/fan.c) the wind machine parameterization from [Vincent](http://basilisk.fr/sandbox/vheusinkveld/README)
+
+### The implementation of the wall
+[The wall](http://basilisk.fr/sandbox/YiDai/round_wall.c)
+
+## Level-set method
+The level-set method is generally used for visualizing the complex flow interface such as two phase flow or jet busting with object, statistical analysis of turbulent structure in the field of fluid machanics. Imagining how cartographer illustrate the topography using different level of contours, how hydraulic engineers visualize the flow using streamlines and streamtubes. 
+
+* [level-set function solved using simple upwinding](http://basilisk.fr/sandbox/YiDai/LS_upwind.c)
+
+
+
+
+## The recipe of Basilisk
+I wrote some small example (heat equation, advection equation) to better understand the syntax and architecture of Basilisk. This section includes the *basi*c of PDEs, numerics, *basi*lisk 
+
+* [Run Basilisk on DelftBlue](http://basilisk.fr/sandbox/YiDai/DelftblueB)
+
+* [PDE equations toy ground](http://basilisk.fr/sandbox/YiDai/BASI/BASI_README)
+
+

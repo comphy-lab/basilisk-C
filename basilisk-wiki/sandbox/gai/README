@@ -1,0 +1,20 @@
+/**
+# Guodong's sandbox
+Welcome to my sandbox, I'm Guodong Gai, a PIMS-CNRS postdoc at University of British Columbia. 
+
+## Front-Tracking solver
+I'm currently engaged in the further development of the _front-tracking_ solver, a project initially conceived by my colleague [Dr. D.P. Huet](http://basilisk.fr/sandbox/huet/README). We describe the deformable capsules using an unstructured lagrangian mesh and compute the internal strains and stresses of the membrane. These stresses are transferred to the fluid with the Immersed Boundary Method (IBM), i.e. by means of a regularized Dirac function.
+
+Some new features of the _front-tracking_ solver: 
+
+* Compatible with both octree- and multi- grid
+* Optimized parallelization for capsule suspension 
+* Repulsive nodal force for better numerical stability, etc.
+
+![200 initially spherical capsule in a simple shear flow ](https://raw.githubusercontent.com/GDpatrick/ggai/master/images/200caps_shear.mp4)(width="90%")
+
+### Source code
+
+### Test cases
+
+*/

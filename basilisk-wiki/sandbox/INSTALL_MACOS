@@ -1,0 +1,274 @@
+/**
+This page describes the installation on OSX, it has been tested on Apple M1, M2, and older Apple machines with Intel processors.
+
+The minimal installation uses "native" Apple/OSX tools to get a working version of the Basilisk compiler ([qcc](/src/qcc.c)) and of the default Makefile ([Makefile.defs](/src/Makefile.defs)).
+
+Useful optional tools to generate and manipulate graphics (e.g. gnuplot, Imagemagick etc.) can be installed using either [Brew](https://brew.sh/) or [MacPorts](https://www.macports.org/).
+
+# 1. Native installation
+
+## Download the compiler and command line tools (Apple stuff)
+
+Open a `Terminal` window to enter command lines.  Install  the "Command Line Tools for Xcode": 
+
+~~~bash 
+xcode-select --install
+~~~
+
+or simply type `cc` in the Terminal: a window will show up asking you to install the Xcode command line tools.
+
+All the compilers necessary for basilisk will be installed.
+
+## Download and compile basilisk
+
+As there is no `wget` use `curl` to 
+get the file and to extract the archive where you want to install it (here your home)
+
+~~~bash 
+curl http://basilisk.fr/basilisk/basilisk.tar.gz >> basilisk.tar.gz
+tar xzf basilisk.tar.gz
+~~~
+
+Then select the osx configuration
+
+~~~bash 
+cd basilisk/src
+ln -s config.osx config
+~~~
+
+and compile
+
+~~~bash 
+make
+~~~
+
+To avoid having to type the full path to the [qcc](/src/qcc.c) executable,
+you can add the following 'export' commands to your `$HOME/.zshrc`
+and `$HOME/.zprofile`
+files (or a similar file if you are using another shell). You can
+either edit `$HOME/.zshrc` manually or do
+
+~~~bash
+echo "export BASILISK=$PWD" >> ~/.zshrc
+echo "export PATH=\$PATH:\$BASILISK" >> ~/.zshrc
+echo "export BASILISK=$PWD" >> ~/.zprofile
+echo "export PATH=\$PATH:\$BASILISK" >> ~/.zprofile
+~~~
+
+To check which is the default shell on your machine, you can type the following command:
+
+~~~bash
+echo $0
+~~~
+
+If the default shell is `bash` instead of `zsh` you should export the environment variables in the files `$HOME/.bashrc` and 
+ `$HOME/.bash_profile`  instead of `$HOME/.zshrc` and `$HOME/.zprofile`.
+
+That's it!
+
+## Testing the interactive bview ([jview](/src/jview/README))
+
+The
+[karman.c](/src/examples/karman.c) simulation can be run interactively
+without any other installation. Use a new terminal to check that paths are set.
+First, remove `-fopenmp` line 4 in the `Makefile` (using your favorite editor),
+then do:
+
+~~~bash
+cd $BASILISK/examples
+CFLAGS=-DDISPLAY=-1 make karman.tst
+~~~
+
+This will compile and start the simulation in "paused" mode (see
+[display.h](/src/display.h) for other options). The Basilisk View
+interface can then be opened using the default browser launched in a new terminal
+
+~~~bash
+open $BASILISK/examples/karman/display.html
+~~~
+
+Then select the 'SETTINGS' tab and click on 'RUN' in the 'BASILISK'
+section. See the [jview documentation](/src/jview/README) for more information.
+
+## Testing online bview  
+
+Go in the `test` directory
+
+~~~bash
+cd $BASILISK/test
+~~~
+
+In `Makefile` comment out with a # line 181 and 183 (using your favorite editor)
+
+~~~bash
+# view.tst: CC = mpicc -D_MPI=4
+# view.3D.tst: CC = mpicc -D_MPI=4
+~~~
+
+Run the tests
+
+~~~bash
+make view.tst
+make view.3D.tst 
+~~~
+
+This should produce in the `view` and `view.3D` directories 
+the `out.png` files identical to those in [/src/test/view.c]()
+
+# 2. Installation of optional tools with Brew
+
+## Install [Brew](https://brew.sh/)
+
+Do
+
+~~~bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+~~~
+
+Add the path as explained on the screen, then install  
+
+~~~bash
+brew install imagemagick gnuplot ffmpeg
+~~~
+
+maybe openmp and wget as well.
+
+Look at the next section which is an other possibility,
+and look for the useful tricks and advices in it. 
+
+# 3. Installation with MacPorts
+
+An alternative is to use [MacPorts](https://www.macports.org/). We assume you have MacPorts installed and know how to use it. We start from scratch.
+
+## General issues
+
+If you do not have the Command Line Tools (CLT), install them following 
+[the MacPort instructions](https://guide.macports.org/#installing.xcode).
+
+Agree to the Xcode licence and follow [the other MacPorts installation instructions.](https://www.macports.org/install.php)
+
+As in the general, non-MacPort case, full Xcode installation is not necessary. The Macport instructions say that installation of Apple's Xcode Developer Tools is "optional (and required only) when building some ports from source. MacPorts will let you know if this is the case." 
+
+On MacOS Ventura 13.2, the author of these lines had problems installing the Command Line Tools (CLT) as recommended on the MacPorts instructions 
+
+~~~bash 
+% xcode-select --install
+~~~
+
+so he downloaded the CLT directly from [The apple developer site.](https://developer.apple.com/download/all/?q=Command%20Line%20Tools)
+
+## Download the code using the tarball 
+
+The simplest it just to [use the tarball](/src/INSTALL#using-a-tarball).You may need to install wget, do 
+
+~~~bash 
+% sudo port install wget
+~~~
+
+## Download the code using Darcs
+
+This is the recommended way of installing Basilisk. If you want to use the version control system of Basilisk (darcs) which can be useful to track changes in the code, revert to previsous versions etc., then install darcs using MacPorts:
+
+~~~bash
+% sudo port install darcs
+~~~
+
+The installation is slow (about two minutes). You may encounter warnings such as
+
+~~~bash
+Warning: The macOS 11.2 SDK does not appear to be installed. Ports may not build correctly.
+~~~
+
+This is a complex mac problem that may or may not be related to the next issue: currently on my system this macports darcs installation fails, if you encounter this problem then install the darcs binary and man page from [this page](http://darcs.net/Binaries). Once the darcs binary is downloaded, you need to move it to one of the places in your PATH, for example
+
+~~~bash
+% cd ~/Downloads
+% mv darcs /usr/local/bin/darcs
+% mv darcs.1 /usr/local/man/man1/darcs.1
+~~~
+
+Download the basilisk sources using
+
+~~~bash
+darcs clone http://basilisk.fr/basilisk
+~~~
+
+## Command line and linux for dummies
+
+To use Basilisk, you will need to know how to edit text files. If you are not familiar with text editors such as 
+
+~~~bash
+vim 
+vi
+emacs
+~~~
+
+you are in bad shape. Perhaps you are *too* sophisticated and use commercial tools such as
+
+~~~bash
+Sublime Text
+Visual Studio
+~~~
+
+which is fine and should allow you to work, but if you have no idea what a text editor is, ask a friend who uses them on Mac, Windows or Linux to help you. 
+
+## Actual compilation and installation
+
+Follow the instructions for [native installation](#download-and-compile-basilisk) above. Finally set the paths in your .zshrc file:
+
+~~~bash
+cd basilisk/src
+echo "export BASILISK=$PWD" >> ~/.zshrc
+echo "export PATH=\$PATH:\$BASILISK" >> ~/.zshrc
+~~~
+
+Be careful that it was properly done, double check using "printenv" or
+looking at your ~/.zshrc with your text editor. 
+
+## Testing your installation
+
+To test your installation, try to make a test or example file.
+
+  - First try bump2D:
+
+~~~bash
+cd $BASILISK/test
+make bump2D.tst
+~~~
+
+You may want to check that you have no errors, and to see the graphics output that should be similar to [the bump2D1.c test case output](http://basilisk.fr/src/test/bump2D1.c#results). 
+For that (and for many other things on mac) you shall need to install gnuplot. Unfortunately gnuplot's binary installation does not work on MacOS Big Sur, so you need to install it from source:
+
+~~~bash
+sudo port install -s wxWidgets-3.0 gnuplot
+~~~
+
+(The "-s" option forces installation from source in MacPorts.)
+Then do
+
+~~~bash
+make bump2D/plot.png
+~~~
+
+and then run
+
+~~~bash
+open bump2D/plot.png
+~~~
+
+You should see a nice plot as in the [the bump2D1.c test case output](http://basilisk.fr/src/test/bump2D1.c#results). 
+
+  - Second try : an example with the interactive js view server. First you need to edit the Makefile in src/examples to comment out the -fopenmp directive in CFLAGS (because Macs do not support [OpenMP](https://en.wikipedia.org/wiki/OpenMP)). Either use a text editor (see above) or do
+  
+~~~bash
+cd basilisk/src/examples
+sed -i '' s/-fopenmp/'# -fopenmp'/ Makefile 
+~~~
+
+Then run the karman test and open the view server in your browser as described in [the jview documentation](http://basilisk.fr/src/jview/README)
+
+~~~bash
+cd $BASILISK/examples
+CFLAGS=-DDISPLAY=-1 make karman.tst 
+open $BASILISK/examples/karman/display.html
+~~~

@@ -1,0 +1,24 @@
+
+This page puts together the different test cases that I wrote to progress towards the computation of steady states of the Navier-Stokes equation with a free surface. The final result is below in the code [free_surface_navier_stokes.m](). 
+
+Tests and validations in 1D:
+
+* [domain_derivative_1D.m]() In 1D with a method similar to the "flattening" used for stability of free-surface flows.
+* [domain_derivative_1D_adapt.m]() like the code above, but we adapt the computational domain at each Newton iteration
+* [domain_derivative_1D_mapping.m]() In this version, we use a mapping of the mesh instead of rebuilding the domain and interpolating the previous guess on the new domain.
+
+Tests and validations in 2D:
+
+* [stretching_formula.m]() Where I test the mapping formula for the code above.
+* [jacobian_formula.m]() To validate the expression of the Jacobian of the mapping: how the diferentiation operators depend upon the stretching.
+* [domain_derivative_2D_adapt.m]() like the 1D version but in 2D.
+* [domain_derivative_2D_mapping.m]() like the 1D version but in 2D.
+
+With a free surface and a velocity potential for the flow:
+
+* [free_surface_adapt.m]() To find the nonlinear shape of a free surface with a fluid flow
+* [free_surface_mapping.m]() Instead of using the *flattening*, here the domain mapping is explicitely an unknown of the system. 
+
+With a free surface and Navier-Stokes for the flow
+
+* [free_surface_navier_stokes.m]() With the mapping as part of the unknowns of the system

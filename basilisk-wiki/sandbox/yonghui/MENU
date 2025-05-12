@@ -1,0 +1,64 @@
+## MENU
+Entree is some little, useless, but maybe interesting code
+
+Plat is the main code 
+Plat du jour is the current job
+
+Dessert is just some little remanding for myself, totally useless 
+
+TimeTag : (estime required running time)
+
+ - ! : fast , under 10 min
+ - !! : normal , under 1-2 hours
+ - !!! : slow , over one night
+ - !!!! : some bug still exist  
+
+## Plat Du Jour (Ring Vortex)
+[Rayleigh-Plateau instability](vortex/rpi.c) ! : Rayleigh-Plateau instability simple version()    *Prix:~ 10 min
+
+[RPI_lambda](vortex/rpilbd.c) ! : change wave length   *Prix:~ 1 H
+
+[RPI_mu](vortex/rpimu.c) ! : change viscosity    *Prix:~ 1 H
+
+[RPI_epsilon](vortex/rpiepsl.c) ! : change amplitude    *Prix:~ 1 H
+
+
+Avec chefs   D.F   M.R   I.D
+
+## Entree
+[2Dtube](smalltest/2Dtube.c) ! : compare of axisymetric poiseuile flow solved by axi.h and planar (cylinder coor.) solver
+
+[3Dtube](smalltest/3dtube.c) ! : poiseuile flow in a real 3d cylinder 
+
+[MC rising](smalltest/mcrising.c) !! & [Bubble rising 3D](smalltest/bubble3d.c) !!!  : bubble rising in a cylinder with momentum conserving (Modify version)  &  in real 3D cylinder
+
+[Waterdrop](smalltest/visdrop.c)!! & [MC Waterdrop](smalltest/mcvisdrop.c) !! : falling drops of water in a cylinder with viscous environment  &  with momentum conserving  
+ 
+## Plat Biomeca
+Need certain STL file that you can find in the folders
+
+[WomersleyFlow](biomeca/2dwo.c) ! : Axisymetric womersley flow with different Womersley Number ([Impact of BC](biomeca/2dwoflow.c) ) *Prix:~ 10 min
+
+[TubeWoFlow](biomeca/3dendotube.c) !! : Womersley flow in a real decsending thoracic aorta. and the [comparaison](biomeca/3dtubecompare.c) with a ideal model.
+
+[Resistance + Wo](biomeca/2dworr.c) ! : Axisymetric womersley flow with output resistance condition. (simple version :[R + Poiseuille](biomeca/2drr.c) ) *Prix:~ 10 min
+
+[AFAIRE](biomeca/2dworrc.c) !!!! : Womersley flow + KV model. (simple version :[KV + Poiseuille](biomeca/2drrc.c) ) *Prix:~ 10 min
+
+
+[Torus flow](biomeca/torusrrc.c) !! The simulation of blood flow in a ideal aortic arch model. 
+
+[Aortic Arch](biomeca/3darchrrc.c) !!!! The simulation of blood flow in a real aortic arch model from a patient.
+
+Avec chef   P-Y.L     J-M.F
+
+## Dessert
+
+[ImportMesh](smalltest/ImportMesh) : mesh importing and some bview commande 
+
+[output](smalltest/output) : output commande
+
+[function](smalltest/function) : some basilisk commande 
+
+ 
+

@@ -1,0 +1,16 @@
+# Game with Baslisk
+
+This folder contains some games that rely on Basilisk's tools and
+functions.
+
+## Games
+
+* [Adaptive Snake](snake.c)  
+* [Two-player Adaptive Snake](snake2.c)  
+
+## Code your own game?
+
+* [Howto setup continuous non-blocking keyboard input](karman_mod.c)  
+* [Howto setup a window for real-time rendering](realtime-rendering.c)  
+* [A minimalistic "game"](minimal-game.c)
+

@@ -1,0 +1,161 @@
+%{
+# The capillary Venturi: Gerris simulation
+
+Here is a Gerris simulation of the capillary Venturi. See [capillary_bridge_continuation.m]() for the code for the nonlinear bifurcation branch of the simple capillary bridge, the code you see here is mostly built upon that one.
+The configuration analyzed consists of an initially axisymmetric, mass of fluid held by surface tension forces between two parallel, coaxial, solid pipes of the same diameter. We use the Gerris function "GfsSolid" to define the
+two silod pipes. the system depends on three dimensionless parameters, the aspect ratio $L/R$ of the bridge (defined by the quotient of the gap length between the two pipes and the radius of the pipes), and the volume ratio 
+$V=V_{0}/\pi R^{2}L$ (defined by the quotient of fluid volume $V_{0}$ and the volume $v$ of the cylinder of length $L$ and radius $R$ between the two pipes), and finally the Weber number, $W_{e}=\rho RU^2/\sigma$, 
+where $\sigma$, $\rho$ are respectivelly surface tension and the density of the liquid bridge.
+The simulation is as follows:
+-to define the fluid volume $V_0$, one starts with $V=1$, and then pumpe it with velocity $umax$ until the time $n$. Thus we get the naturally form for the interface of the bridge.
+-after that we define $trelax$ in wich the capillary bridge relaxes.
+-and finally the capillary bridge is subjected to a flow by applying the same velocity $us$ at the input and the output of the two pipes. This velocity will be increased lineary in time and quasistatically untli the breakup.
+
+%}
+
+
+# Define all parameters
+# n defines the time to stop pumping (ie the volum of the bridge)
+# umax: the pumping velocity
+# trelax: the relaxation time of the bridge 
+# us: defines quasistatic velocity (this one increases linearly with time)
+# rho: the liquid density
+# mu: the liquid vicosity
+# R: the tube radius
+# d: the tube thickness
+# ref: maximal refinement
+# minl mininum refinement
+
+Define n 12.                       
+Define umax ((t<=n)? 0.1:0.)       
+Define trelax 5                    
+Define us (25/(3000-0.))*(t-(n+trelax))      
+Define rho 1.                     
+Define mu 0.01                    
+Define R 1.                        
+Define r 0.025                      
+Define d 2*r                      
+Define l (1.+r)	                   
+Define Sm ((x>=-l+r)&& (x<=2*l+r)? T:0 )
+Define ref 4                 
+Define minl 1
+Define ind 0.1                    
+
+12 18 GfsAxi GfsBox GfsGEdge {} {
+  # Stop the simulation at t = 69.5
+    Time {end =69.5}
+
+  # The tracer T is used to track both phases
+    VariableTracerVOFHeight T
+
+  # This defines the inverse of the density of the fluids as a function of T
+  # wich is 100 times greater than that of air
+  PhysicalParams {alpha = 1./(rho*T + (1. - T)*0.01*rho)}
+  
+  # The fluid dynamic viscosity is 100 times greater than that of air
+  SourceViscosity (mu*T +mu*0.01*(1. - T))
+  
+  VariableCurvature K T 
+  SourceTension T 1. K
+
+  # Use an initial refinement of 6 levels (i.e. 2^6=32x32 for each box) for the fluid  
+  Refine 5
+
+  # This function is used to define the solid refinement
+  RefineSolid ((((x-2*l-2*r)*(x-2*l-2*r)+(y-(l+r))*(y-(l+r)))<=d*d || ((x+l+r)*(x+l+r)+(y-(l+r))*(y-(l+r)))<=d*d)? 5:minl)
+
+  # Solid define
+  GfsSolid ((x<=-l)&(y>=1)&(y<=1.+2.*r)? (-1.-2*r+y):-r*r+(x+l)*(x+l)+(y-1.-r)*(y-1.-r))
+  GfsSolid ((x>=2*l+2*r)&(y>=1)&(y<=1.+2*r)? (-1.-2*r+y):-r*r+(x-2*l-2*r)*(x-2*l-2*r)+(y-1.-r)*(y-1.-r))
+
+  # The initial interface form
+  InitFraction T (1.+r-y)
+
+  # Define variable F as vorticity in axisymetry   
+  Variable F
+  Init {istep=1} {F= (dx("V")-dy("U"))*T
+ }
+
+  # Adapt the mesh using the gradient criterion based on variables the volum Sm, the interface T, the vorticity F,
+  # at every timestep
+
+  AdaptGradient {istep =1} { cmax =0.01 minlevel = minl maxlevel =ref} Sm
+  AdaptGradient {istep =1} { cmax =0.01 minlevel = minl maxlevel =ref} T
+  GfsAdaptFunction {istep =1} { minlevel =minl maxlevel =ref cmax = 0.1 } (T > 0 && T < 1 ? 1. : fabs (F)*ftt_cell_size (cell))
+  AdaptFunction {istep =1} { cmax = 0.01 maxlevel =ref minlevel = minl } { return (T > 0. && T < 1.) ? ftt_cell_size (cell)*fabs (K) : 0.; }
+  
+  # This Function is used to maintain a fix mesh level 5 in the inlet and outlet of the bridge 
+  AdaptFunction {istep =1 }{ maxlevel =5 minlevel =minl cmax=0.01} { return ((x<=-2.25 && y<=1)||(x>=3.25 && y<=1))?1. : 0.; }
+
+  # Writes the time and timestep every 0.1 timesteps on standard error
+  OutputTime{step = 1}  stderr
+
+# Save the volume of the bridge every 0.1 timesteps in the file named Sum-L3
+  OutputScalarSum {step = ind} Sum-n{v = Sm}
+ 
+  VariablePosition Y T y
+  OutputScalarNorm { step = ind } { awk '{print $3, 1.+r-$9; fflush(stdout); }' > rmin } { v = (T > 0. && T < 1. ? 1.+r-Y: 0.) }
+
+  # To generate the simulation files
+  OutputSimulation {step = 0.1}  stdout
+
+#Event script to show figure and results at the end of the simulation
+EventScript { start = end} {
+awk '{print $1,($1<=(n+trelax))?0.:((25/3000)*($1-(n+trelax)))**2,$2/l}' < rmin > RminWeber
+rm -f rmin
+cat <<EOF | gnuplot
+set term postscript eps lw 3 solid 20 colour
+set output "fig.eps"
+set xlabel 'Weber Number'
+set ylabel 'Neck Radius'
+plot "RminWeber" u  2:3 with lines linetype 1 title "Rmin"
+EOF}
+}
+
+  # Boundary conditions
+
+  GfsBox {}
+  GfsBox {}
+  GfsBox {}
+  GfsBox {
+  right= Boundary { 
+	BcDirichlet U ((y<=1)&&(t<=n)? umax*(y-1)*(-y-1):(y<=1)&&(t>n+trelax)? us:0)
+	BcDirichlet V 0 }}
+  GfsBox {
+  right = BoundaryInflowConstant -umax/2}
+  GfsBox {}
+  GfsBox {}
+  GfsBox {}
+  GfsBox {}
+  GfsBox {left = GfsBoundaryInflowConstant umax/2}
+  GfsBox {
+  left = Boundary { 
+	BcDirichlet U ( (y<1.)&&(t<=n)? -umax*(y-1)*(-y-1):(y<=1)&&(t>n+trelax)?us:0)
+	BcDirichlet V 0}}
+  GfsBox {}
+
+  1 2 right
+  2 3 right
+  3 4 right
+  4 5 top
+  5 6 left
+  6 7 left
+  7 8 left
+  8 9 left
+  9 10 left
+  10 11 bottom
+  11 12 right
+  12 1 right
+  4 5 top
+  3 6 top
+  2 7 top
+  1 8 top
+  12 9 top
+  11 10 top
+
+
+%{
+# Validation
+Here is the comparison of the Gerris simulation results and the birfurcation diagram for aspect ratio $L/R=3$ and volume $V=0.62$. 
+![Simulation](/Capillary_bridge_simulation_validation.png)
+%}

@@ -1,0 +1,1411 @@
+![](oberwolfach.jpg){width="200px" style="padding: 0 10px; float: left;"}
+I am Stéphane Popinet, the creator
+of [Gerris](http://gerris.dalembert.upmc.fr) and [Basilisk](http://basilisk.fr). Since 2013 I have been
+a ''directeur de recherche'' at Centre National de la Recherche
+Scientifique ([CNRS](http://www.cnrs.fr/index.php)) based at Institut
+Jean le Rond d'Alembert ([∂’Alembert](http://www.dalembert.upmc.fr))
+of [Sorbonne Université](http://www.sorbonne-universite.fr/en), Paris,
+France. From 2001 to 2013 I was a research scientist at the National Institute of Water and Atmospheric research ([NIWA](https://en.wikipedia.org/wiki/National_Institute_of_Water_and_Atmospheric_Research)) based in Wellington, New Zealand, which I joined after completing my PhD in 2000 at [Université Pierre et Marie Curie](https://en.wikipedia.org/wiki/Pierre_and_Marie_Curie_University), Paris, France. I am both a French and New Zealand citizen.
+
+My research interests reflect my double training and career in fluid mechanics and environmental sciences: multiphase flows, oceanic and atmospheric modelling, granular materials, waves, stratified flows, tsunamis etc.
+
+I am particularly interested in developing numerical methods for partial differential equations (PDEs), both as a tool to explore the physics of complex flows using numerical experiments, and as a way to understand the structure and properties of PDES: a kind of *experimental mathematics*.
+
+Having participated in oceanographic campaigns in the southern ocean (and also in Antarctica) ([Smith et al, 2010](#smith2010)) and having designed field experiments ([Popinet et al, 2004](#popinet2004)) and instrumentation ([Stevens et al, 2005](#stevens2005)) I also have a direct experience of experimental methods.
+
+For a list of publications see below. See also [papers written
+by
+Popinet](http://scholar.google.com/scholar?as_q=&num=10&btnG=Search+Scholar&as_epq=&as_oq=&as_eq=&as_occt=any&as_sauthors=popinet&as_publication=&as_ylo=&as_yhi=&as_allsubj=all&hl=en&lr=)
+at Google Scholar and my [HAL
+CV](https://cv.archives-ouvertes.fr/stephane-popinet).
+
+<br clear="left">
+
+## Papers submitted
+
+~~~bib
+@Article{wu2025,
+author={Jiarong Wu and Stephane Popinet and Bertrand Chapron and J. Thomas Farrar and Luc Deike},
+title={Turbulence and energy dissipation from wave breaking},
+journal={Journal of Physical Oceanography},
+year={2025}
+}
+
+@Article{saini2025,
+author={Mandeep Saini and Vatsal Sanjay and Youssef Saade and Detlef Lohse and Stephane Popinet},
+title={Implementation of integral surface tension formulations in a volume of fluid framework and their applications to Marangoni flows},
+journal={Journal of Computational Physics},
+year={2025}
+}
+
+@Article{scapin2024,
+  author = 	 {Nicolò Scapin and Jiarong Wu and J. Thomas Farrar and Bertrand Chapron and Stéphane Popinet and Luc Deike},
+  title = 	 {Momentum fluxes in wind-forced breaking waves},
+  journal = 	 {Journal of Fluid Mechanics},
+  year = 	 {2024}
+}
+
+@Article{fullana2024,
+  author = 	 {Tomas Fullana and Yash Kulkarni and Mathis Fricke and Stéphane Popinet and Shahriar Afkhami and Dieter Bothe and Stéphane Zaleski},
+  title = 	 {A consistent treatment of dynamic contact angles in the sharp-interface framework with the generalized {N}avier boundary condition},
+  journal = 	 {Journal of Fluid Mechanics},
+  year = 	 {2024}
+}
+
+@Article{deoclecio2024,
+  author = 	 {Deoclecio, Lucas and Soares, Edson and Thompson, Roney and Popinet, Stéphane},
+  title = 	 {Drop rise and interfacial coalescence initiation in elasto-viscoplastic materials},
+  journal = 	 {Journal of Fluid Mechanics},
+  year = 	 {2024}
+}
+
+@Article{kulkarni2024,
+  author = 	 {Yash Kulkarni and Cesar Pairetti and Raphaël Villiers and Stéphane Popinet and Stéphane Zaleski},
+  title = 	 {The atomizing pulsed jet},
+  journal = 	 {Journal of Fluid Mechanics},
+  year = 	 {2024}
+}
+~~~
+
+## Published papers
+
+### Atomisation
+
+~~~bib
+@article{shen2025,
+  title={Fragmentation from inertial detachment of a sessile droplet: implications for pathogen transport},
+  author={Shen, Naijian and Kulkarni, Y and Jamin, T and Popinet, S and Zaleski, S and Bourouiba, L},
+  journal={Journal of Fluid Mechanics},
+  volume={1002},
+  pages={A6},
+  year={2025},
+  publisher={Cambridge University Press},
+  doi={10.1017/jfm.2024.874}
+}
+
+@hal{kant2023, hal-04141276}
+
+@hal{pairetti2020, hal-03080699}
+
+@hal{zhang2020, hal-02635319}
+
+@InProceedings{ling2017,
+  author =    {Y. Ling, G. Legros, S. Popinet and S. Zaleski},
+  title =     {Direct numerical simulation of an atomizing biodiesel jet: Impact of fuel properties on atomization characteristics},
+  year =      {2017},
+  booktitle = {ILASS conference, Valencia, Spain, 6-8 September}
+}
+
+@Article{chen2013,
+  author = 	 {X.-D. Chen, D.-J. Ma, V. Yang and S. Popinet},
+  title = 	 {High-Fidelity Simulations of Impinging Jet Atomization},
+  journal = 	 {Atomization and sprays},
+  pages =        {1079-1101},
+  volume =       {23},
+  number =       {12},
+  year = 	 {2013},
+  doi =          {10.1615/AtomizSpr.2013007619},
+  url =          {http://gerris.dalembert.upmc.fr/papers/chen2013.pdf}
+}
+
+@Article{fuster2013,
+  author = 	 {D. Fuster and J.P Matas and S. Marty and S. Popinet and J. Hoepffner and A. Cartellier and S. Zaleski},
+  title = 	 {Instability regimes in the primary breakup region of planar coflowing sheets},
+  journal = 	 {Journal of Fluid Mechanics},
+  year = 	 {2013},
+  volume =       {736},
+  pages =        {150- 176},
+  url =          {http://www.lmm.jussieu.fr/~hoepffner/research/regimes.pdf}
+}
+
+@Article{tomar2010,
+  author = 	 {G. Tomar and D. Fuster and S. Zaleski and S. Popinet},
+  title  =       {Multiscale simulations of primary atomization using Gerris},
+  journal =      {Computers and Fluids},
+  year =         {2010},
+  volume =       {39},
+  number =       {10},
+  pages =        {1864-1874},
+  url =          {http://gerris.dalembert.upmc.fr/papers/tomar2010.pdf}
+}
+
+@Article{bague2010,
+  author = 	 {A. Bagué and D. Fuster and S. Popinet and R. Scardovelli and S. Zaleski},
+  title = 	 {Instability growth rate of two-phase mixing layers from a linear eigenvalue problem and an initial value problem},
+  journal = 	 {Physics of Fluids},
+  year = 	 {2010},
+  volume =       {22},
+  number =       {092104},
+  url =          {http://gerris.dalembert.upmc.fr/papers/bague2010.pdf}
+}
+~~~
+
+### Stratified flows
+
+~~~bib
+@Article{vanhooft2018b,
+author = {van Hooft, J. A. and Popinet, S. and van de Wiel, B. J. H.},
+title = {Adaptive Cartesian meshes for atmospheric single-column models: a study using Basilisk 18-02-16},
+journal = {Geoscientific Model Development},
+volume = {11},
+year = {2018},
+number = {12},
+pages = {4727--4738},
+url = {https://www.geosci-model-dev.net/11/4727/2018/},
+doi = {10.5194/gmd-11-4727-2018}
+}
+
+@Article{ocallaghan2010,
+  author =  {J. O’Callaghan and G. Rickard and S. Popinet and C. Stevens},
+  title =  {The response of buoyant plumes to transient discharges investigated using an adaptive solver},
+  journal =  {Journal of Geophysical Research},
+  year =  {2010},
+  volume = {115},
+  number = {C11025},
+  url =          {http://gerris.dalembert.upmc.fr/papers/ocallaghan2010.pdf}
+}
+
+@Article{rickard2009,
+  author = 	 {G. Rickard and J. O'Callaghan and S. Popinet},
+  title = 	 {Numerical simulations of internal solitary waves interacting with uniform slopes using an adaptive model},
+  journal =      {Ocean Modelling},
+  year = 	 {2009},
+  volume =       {30},
+  pages =        {16-28},
+  url =          {http://gerris.dalembert.upmc.fr/papers/isw.pdf}
+}
+~~~
+
+### Waves
+
+~~~bib
+@hal{wu2023, hal-04157783}
+
+@hal{farsoiya2022, hal-03854121}
+
+@hal{wu2022, hal-03839928}
+
+@hal{mostert2022, hal-03631988}
+
+@hal{popinet2020, hal-02365730}
+
+@Article{beetham2018,
+  author = 	 {E. P. Beetham and P. S. Kench and S. Popinet},
+  title = 	 {Model Skill and Sensitivity for Simulating Wave Processes on Coral Reefs Using a Shock-Capturing Green-Naghdi Solver},
+  journal = 	 {Journal of Coastal Research},
+  year = 	 {2018},
+  url = {https://doi.org/10.2112/JCOASTRES-D-17-00117.1}
+}
+
+@hal{deike2016, hal-01361280}
+
+@Article{beetham2016,
+  author = 	 {E. P. Beetham and P. S. Kench and J. O'Callaghan and S. Popinet},
+  title = 	 {Wave transformation and shoreline water level on Funafuti Atoll, Tuvalu},
+  journal = 	 {Journal of Geophysical Research},
+  year = 	 {2016},
+  volume={121},
+  number={1},
+  pages={311--326},
+}
+
+@Article{deike2015,
+  author = {L. Deike and S. Popinet and K. Melville},
+  title = {Capillary effects on wave breaking and wave dissipation},
+  journal = {Journal of Fluid Mechanics},
+  volume = {769},
+  pages = {541-569},
+  year = {2015},
+  doi = {10.1017/jfm.2015.103},
+  url = {http://gerris.dalembert.upmc.fr/papers/deike2015.pdf}
+}
+
+@Article{tsai2013,
+  author = 	 {C.-C. Tsai and T.-H. Hou and S. Popinet and Y. Y. Chao},
+  title = 	 {Wind wave prediction of tropical cyclones by a quadtree-adaptive model},
+  journal =      {Coastal Engineering},
+  pages =        {108-119},
+  year = 	 {2013},
+  doi =          {10.1016/j.coastaleng.2013.02.011},
+  url =          {http://gerris.dalembert.upmc.fr/papers/tsai2013.pdf}
+}
+
+@Article{popinet2010,
+  author = 	 {S. Popinet and R. M. Gorman and G. J. Rickard and H. L. Tolman},
+  title = 	 {A quadtree-adaptive spectral wave model},
+  journal = 	 {Ocean Modelling},
+  year = 	 {2010},
+  volume =       {34},
+  pages =        {36-49},
+  url =          {http://gerris.dalembert.upmc.fr/papers/wave.pdf}
+}
+~~~
+
+### Drops and bubbles
+
+~~~bib
+@hal{saini2024, hal-04563704v1}
+
+@hal{fintzi2024b, hal-04694017}
+
+@hal{farsoiya2024, hal-04461912}
+
+@hal{cipriano2024, hal-04580590}
+
+@hal{cipriano2023, hal-04252476}
+
+@hal{deoclecio2023, hal-04142183}
+
+@hal{farsoiya2022, hal-03933249}
+
+@hal{joubert2022, hal-03538277}
+
+@hal{berny2022, hal-03480945}
+
+@hal{farsoiya2021, hal-03227997}
+
+@hal{berny2021, hal-03203023}
+
+@Article{innocenti2020,
+  author = 	 {Innocenti, Alessio and Jaccod, Alice and Popinet, Stéphane and Chibbaro, Sergio},
+  title = 	 {{D}irect {N}umerical {S}imulation of bubble-induced turbulence at high {R}eynolds numbers},
+  journal = 	 {Journal of Fluid Mechanics},
+  year = 	 {2020}
+}
+
+@hal{pierson2020, hal-02747137}
+
+@hal{berny2020, hal-02481349}
+
+@article{zhang2019,
+  title = {Short-term oscillation and falling dynamics for a water drop dripping in quiescent air},
+  author = {Zhang, B. and Ling, Y. and Tsai, P.-H. and Wang, A.-B. and Popinet, S. and Zaleski, S.},
+  journal = {Phys. Rev. Fluids},
+  volume = {4},
+  issue = {12},
+  pages = {123604},
+  numpages = {33},
+  year = {2019},
+  month = {Dec},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.4.123604},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.4.123604}
+}
+
+@hal{lopez2018, hal-01912184}
+
+@hal{fuster2018, hal-01845218}
+
+@hal{deike2018, hal-01692897}
+
+@hal{pairetti2018, hal-03150888}
+
+@hal{zhen2017, hal-01653902}
+
+@InProceedings{jian2015,
+  author =    {Z. Jian and C. Josserand and P. Ray and L. Duchemin and S. Popinet and S. Zaleski},
+  title =     {Modelling the thickness of the air layer in droplet impact},
+  year =      {2015},
+  booktitle = {ICLASS 2015, 13 th Triennial International Conference on Liquid Atomization and Spray Systems, Tainan, Taiwan, August 23-27}
+}
+
+@Article{thoraval2012,
+  author = 	 {M.-J. Thoraval and K. Takehara and T. G. Etoh and S. Popinet and P. Ray and C. Josserand and S. Zaleski and S. T. Thoroddsen},
+  title = 	 {von Kármán vortex street within an impacting drop},
+  journal = 	 {Physical Review Letters},
+  year = 	 {2012},
+  volume =       {108},
+  number =       {26},
+  pages =        {264506},
+  url =          {http://link.aps.org/doi/10.1103/PhysRevLett.108.264506}
+}
+
+@article{renardy2003,
+  title={Pyramidal and toroidal water drops after impact on a solid surface},
+  author={Y. Renardy and S. Popinet and L. Duchemin and M. Renardy and S. Zaleski and C. Josserand and M.A. Drumright-Clarke and D. Richard and C. Clanet and D. Quéré},
+  journal={Journal of Fluid Mechanics},
+  volume={484},
+  pages={69-83},
+  year={2003},
+  publisher={Cambridge Univ Press}
+}
+
+@article{popinet2002,
+  title={Bubble collapse near a solid boundary: a numerical study of the influence of viscosity},
+  author={S. Popinet and S. Zaleski},
+  journal={Journal of Fluid Mechanics},
+  volume={464},
+  pages={137-163},
+  year={2002},
+  publisher={Cambridge Univ Press}
+}
+
+@article{duchemin2002,
+  title={Jet formation in bubbles bursting at a free surface},
+  author={L. Duchemin and S. Popinet and C. Josserand and S. Zaleski},
+  journal={Physics of Fluids},
+  volume={14},
+  number={9},
+  pages={3000-3008},
+  year={2002},
+  publisher={AIP Publishing}
+}
+
+@article{menchaca2001,
+  title={Coalescence of liquid drops by surface tension},
+  author={A. Menchaca-Rocha and A.N.R.S. Martinez-Davalos and R. Nunez and S. Popinet and S. Zaleski},
+  journal={Physical Review E},
+  volume={63},
+  number={4},
+  pages={046309},
+  year={2001},
+  publisher={APS}
+}
+
+@article{ory2000,
+  title={Growth and collapse of a vapor bubble in a narrow tube},
+  author={E. Ory and H. Yuan and A. Prosperetti and S. Popinet and S. Zaleski},
+  journal={Physics of Fluids},
+  volume={12},
+  number={6},
+  pages={1268-1277},
+  year={2000},
+  publisher={AIP Publishing}
+}
+~~~
+
+### Shallow-water flows
+
+~~~bib
+@Article{kirstetter2021,
+  author = {Geoffroy Kirstetter and Olivier Delestre and Pierre-Yves Lagrée and Stéphane Popinet and Christophe Josserand},
+  title = {B-flood 1.0: an open-source {S}aint-{V}enant model for flash flood simulation using adaptive refinement},
+  journal = {Geoscientific Model Development},
+  year = {2021}
+}
+
+@hal{devita2019, hal-02295398}
+
+@hal{kirstetter2015, hal-01291414}
+~~~
+
+### Tsunamis and ocean modelling
+
+~~~bib
+@hal{uchida2022, hal-03633661}
+
+@ARTICLE{power2016,
+author={Power, W. and Mountjoy, J. and Lane, E. and Popinet, S. and Wang, X.},
+title={Assessing landslide-tsunami hazard in submarine canyons, using the cook strait canyon system as an example},
+journal={Science of Tsunami Hazards},
+year={2016},
+volume={35},
+number={3},
+pages={145-166},
+url={http://www.tsunamisociety.org/STHVol35N3Y2016.pdf}
+}
+
+@Article{lane2016,
+  author = 	 {Emily M. Lane and Joshu J. Mountjoy and William L. Power and Stephane Popinet},
+  title = 	 {Initialising Landslide-Generated Tsunamis for Probabilistic Tsunami Hazard Assessment in Cook Strait},
+  journal = 	 {International Journal of Ocean and Climate Systems},
+  pages =        {4-13},
+  month =        {January},
+  year = 	 {2016},
+  url =          {http://ocs.sagepub.com/content/7/1/4.full.pdf?ijkey=WECGKMUX5OxpIQ1&keytype=finite}
+}
+
+@Article{lee2015,
+  author = 	 {H. S. Lee and T. Shimoyama and S. Popinet },
+  title = 	 {Impacts of tides on tsunami propagation due to potential Nankai Trough earthquakes in the Seto Inland Sea, Japan},
+  journal = 	 {Journal of Geophysical Research (Oceans)},
+  volume =       {120},
+  number =       {10},
+  year = 	 {2015},
+  url = {http://dx.doi.org/10.1002/2015JC010995},
+  doi = {10.1002/2015JC010995},
+  pages = {6865--6883},
+  keywords = {Tsunamis and storm surges, Surface waves and tides, Hydrodynamic modeling, tsunami-tide interaction, the Seto Inland Sea, the Tokai-Tonankai-Nankai-linked earthquake, the Nankai Trough, adaptive mesh refinement}
+}
+
+@hal{popinet2015, hal-01163101}
+
+@Article{lamarche2015,
+  author = 	 {G. Lamarche and S. Popinet and B. Pelletier and J. Mountjoy and J. Goff and S. Delaux and J. Bind},
+  title = 	 {Scenario-based numerical modelling and paleo-historic records of tsunami in Wallis and Futuna, Southwest Pacific},
+  journal = 	 {Natural Hazards and Earth System Sciences},
+  volume =       {3},
+  pages =        {2283-2346},
+  year = 	 {2015},
+  url =          {http://doi.org/10.5194/nhessd-3-2283-2015}
+}
+
+@Article{popinet2012,
+  author = 	 {S. Popinet},
+  title = 	 {Adaptive modelling of long-distance wave propagation and fine-scale flooding during the Tohoku tsunami},
+  journal = 	 {Natural Hazards and Earth System Sciences},
+  year = 	 {2012},
+  volume =       {12},
+  number =       {4},
+  pages =        {1213-1227},
+  doi =          {10.5194/nhess-12-1213-2012},
+  url =          {http://gerris.dalembert.upmc.fr/papers/popinet2012.pdf}
+}
+
+@Article{popinet2011,
+  author = 	 {S. Popinet},
+  title = 	 {Quadtree-adaptive tsunami modelling},
+  journal = 	 {Ocean Dynamics},
+  year = 	 {2011},
+  url =          {http://gerris.dalembert.upmc.fr/papers/tsunami.pdf},
+  volume =       {61},
+  number =       {9},
+  pages =        {1261-1285}
+}
+
+@Article{popinet2007,
+  author = 	 {S. Popinet and G. Rickard},
+  title = 	 {A tree-based solver for adaptive ocean modelling},
+  journal = 	 {Ocean Modelling},
+  year = 	 {2007},
+  number =       {16},
+  pages =        {224-249},
+  url =          {http://gerris.dalembert.upmc.fr/ocean.pdf}
+}
+~~~
+
+### Environmental fluid dynamics
+
+~~~bib
+@Article{hayward2022,
+AUTHOR = {Hayward, M. W. and Whittaker, C. N. and Lane, E. M. and Power, W. L. and Popinet, S. and White, J. D. L.},
+TITLE = {Multilayer modelling of waves generated by explosive subaqueous volcanism},
+JOURNAL = {Natural Hazards and Earth System Sciences},
+VOLUME = {22},
+YEAR = {2022},
+NUMBER = {2},
+PAGES = {617--637},
+URL = {https://nhess.copernicus.org/articles/22/617/2022/},
+DOI = {10.5194/nhess-22-617-2022}
+}
+
+@hal{battershill2021, hal-03419617}
+
+@hal{vanhooft2018, hal-01689036}
+
+@Article{beetham2017,
+  author = 	 {E. Beetham and P. S. Kench and S. Popinet},
+  title = 	 {Future reef growth can mitigate physical impacts of sea-level rise on atoll islands},
+  journal = 	 {Earth's Future},
+  year = 	 {2017},
+  volume =       {5},
+  number =       {10},
+  pages =        {1002-1014},
+  url =          {http://doi.org/10.1002/2017EF000589}
+}
+
+@Article{delaux2010,
+  author = 	 {S. Delaux and C. L. Stevens and S. Popinet},
+  title = 	 {High-resolution computational fluid dynamics modelling of suspended shellfish structures},
+  journal = 	 {Environmental Fluid Mechanics},
+  year = 	 {2010},
+  url =          {http://gerris.dalembert.upmc.fr/papers/delaux2010.pdf},
+  volume =       {11},
+  number =       {4},
+  pages =        {405-425},
+}
+
+@Article{smith2010,
+  author = 	 {M. J. Smith and D. T. Ho and C. S. Law and P. Schlosser and J. McGregor and S. Popinet},
+  title = 	 {Uncertainties in Gas Exchange Parameterisation during the SAGE experiment},
+  journal = 	 {Deep Sea Research Part II: Topical Studies in Oceanography},
+  year = 	 {2010},
+  volume =       {58}, 
+  number =       {6},
+  pages =        {869-881}
+}
+
+@article{stevens2005,
+  title={{SUCA}: An engine for repetitive autonomous profiling near the ocean surface},
+  author={Stevens, Craig L and Hill, Peter and Smith, Murray J and Popinet, St{\'e}phane},
+  journal={Limnology and Oceanography: Methods},
+  volume={3},
+  number={7},
+  pages={300--307},
+  year={2005},
+  publisher={Wiley Online Library}
+}
+
+@Article{popinet2004,
+  author = 	 {S. Popinet and M. Smith and C. Stevens},
+  title = 	 {Experimental and numerical study of the turbulence characteristics of air flow around a research vessel},
+  journal =      {J. Ocean. Atm. Tech.},
+  year = 	 {2004},
+  volume =       {21},
+  number =       {10},
+  pages =        {1574-1589},
+  url =          {http://gerris.dalembert.upmc.fr/tangaroa.pdf}
+}
+~~~
+
+### Granular flows
+
+~~~bib
+@hal{martin2022, hal-03832494}
+
+@hal{zhou2019, hal-02390428}
+
+@Article{fullard2019,
+  author = 	 {L. Fullard and D. Holland and P. Galvosas and C. Davies and P.-Y. Lagrée and S. Popinet},
+  title = 	 {Quantifying silo flow using MRI velocimetry for testing granular flow models},
+  journal = 	 {Physical Review Fluids},
+  year = 	 {2019}
+}
+
+@article{zhou2017,
+title={Experiments on, and discrete and continuum simulations of, the discharge of granular media from silos with a lateral orifice},
+volume={829}, DOI={10.1017/jfm.2017.543},
+journal={Journal of Fluid Mechanics},
+publisher={Cambridge University Press},
+author={Zhou, Y. and Lagrée, P.-Y. and Popinet, S. and Ruyer, P. and Aussillous, P.},
+year={2017},
+pages={459–485},
+url={https://doi.org/10.1017/jfm.2017.543}
+}
+
+@Article{staron2014,
+  author = {L. Staron and P.-Y. Lagrée and S. Popinet},
+  title = {Continuum simulation of the discharge of the granular silo},
+  journal = {European Physical Journal E},
+  volume = {37},
+  number = {5},
+  year = {2014},
+  url =          {http://gerris.dalembert.upmc.fr/papers/staron2014.pdf},
+  doi = {10.1140/epje/i2014-14005-6}
+}
+
+@Article{staron2013,
+  author = 	 {L. Staron and P.-Y. Lagrée and P. Ray and S. Popinet},
+  title = 	 {Scaling laws for the slumping of a Bingham plastic fluid},
+  journal = 	 {Journal of Rheology},
+  volume =       {57},
+  number =       {1265},
+  year = 	 {2013}
+}
+
+@Article{staron2012,
+  author = 	 {L. Staron and P.-Y. Lagrée and S. Popinet},
+  title = 	 {The granular silo as a continuum plastic flow: the                           hourglass vs the clepsydra},
+  journal = 	 {Physics of Fluids},
+  year = 	 {2012},
+  volume =       {24},
+  pages =        {103301},
+  doi =          {10.1063/1.4757390},
+  url =          {http://gerris.dalembert.upmc.fr/papers/staron2012.pdf}
+}
+
+@Article{lagree2011,
+  author = 	 {P.-Y. Lagrée and L. Staron and S. Popinet},
+  title = 	 {The granular column collapse as a continuum: validity of a Navier-Stokes model with a mu(I)-rheology},
+  journal = 	 {Journal of Fluid Mechanics},
+  year = 	 {2011},
+  volume =       {686},
+  pages =        {378-408},
+  url =          {http://gerris.dalembert.upmc.fr/papers/lagree2011.pdf}
+}
+~~~
+
+### Particules
+
+~~~bib
+@hal{celsuk2020, hal-03007802}
+
+@hal{essmann2020, hal-02903030}
+~~~
+
+### Electrohydrodynamics
+
+~~~bib
+@Article{lopez2015,
+  title = {A VOF numerical study on the electrokinetic effects in the breakup of electrified jets},
+  author = {J. M. Lopez-Herrera and A. M. Ganan-Calvo and S. Popinet and M. A. Herrada},
+  journal = {International Journal of Multiphase Flows},
+  pages = {14-22},
+  volume = {71},
+  year = {2015},
+  doi = {doi.org/10.1016/j.ijmultiphaseflow.2014.12.005},
+  url = {http://gerris.dalembert.upmc.fr/papers/lopez2015.pdf}
+}
+
+@Article{herrada2012,
+  author = 	 {M. A. Herrada and J. M. Lopez-Herrera and E. J. Vega and J. M. Montanero and S. Popinet},
+  title = 	 {Numerical simulation of electrospray in the cone-jet mode},
+  journal = 	 {Physical Review E.},
+  volume =       {86},
+  number =       {2},
+  pages =        {026305},
+  year = 	 {2012},
+  url = {http://gerris.dalembert.upmc.fr/papers/herrada2012.pdf}
+}
+
+@Article{lopez-herrera2011,
+  author = 	 {J. M. Lopez-Herrera and S. Popinet and M. A. Herrada},
+  title = 	 {A charge-conservative approach for simulating electrohydrodynamic two-phase flows using Volume-Of-Fluid},
+  journal = 	 {Journal of Computational Physics},
+  year = 	 {2011},
+  volume =       {230},
+  pages =        {1939-1955},
+  url =          {http://gerris.dalembert.upmc.fr/papers/ehd.pdf}
+}
+~~~
+
+### Microfluidics
+
+~~~bib
+@hal{fullana2020, hal-02953610}
+
+@Article{dziedzic2018,
+  author = 	 {A. Dziedzic and M. Nakrani and B. Ezra and M. Syed and S. Popinet and S. Afkhami},
+  title = 	 {Breakup of finite-size liquid filaments: Transition from no-breakup to breakup including substrate effects},
+  journal = 	 {EPJ E-Soft Matter and Biological Physics},
+  year = 	 {2018}
+}
+
+@hal{ling2016, hal-01312931}
+
+@hal{fullana2015, hal-01176070}
+~~~
+
+### Numerical methods
+
+~~~bib
+@article{pan2024,
+  title={An edge-based interface tracking (EBIT) method for multiphase-flow simulation with surface tension},
+  author={Pan, Jieyun and Long, Tian and Chirco, Leonardo and Scardovelli, Ruben and Popinet S\'{e}phane and Zaleski S\'{e}phane},
+  journal={Journal of Computational Physics},
+  volume={508},
+  pages={113016},
+  year={2024},
+  publisher={Elsevier},
+  pdf = {https://arxiv.org/pdf/2402.13677}
+}
+
+@hal{tavares2024, hal-04581938}
+
+@hal{limare2022, hal-03889680}
+
+@hal{chirco2022, hal-03717210}
+
+@hal{vanhooft2022, hal-03663254}
+
+@hal{estivalezes2022, hal-03419715}
+
+@Article{afkhami2018,
+title = {Transition in a numerical model of contact line dynamics and forced dewetting},
+journal = {Journal of Computational Physics},
+volume = {374},
+pages = {1061 - 1093},
+year = {2018},
+issn = {0021-9991},
+doi = {https://doi.org/10.1016/j.jcp.2018.06.078},
+url =          {https://arxiv.org/abs/1703.07038},
+author = {S. Afkhami and J. Buongiorno and A. Guion and S. Popinet and Y. Saade and R. Scardovelli and S. Zaleski},
+keywords = {Dynamic contact line/angle, Contact line stress singularity, Slip boundary condition, Landau–Levich–Derjaguin film, Wetting/Dewetting, Volume-of-Fluid (VOF)}
+}
+
+@hal{alsaud2018, hal-01706565}
+
+@hal{popinet2018, hal-01528255}
+
+@article{shui2015,
+title = "Direct Numerical Simulation Study of Hydrodynamic Interactions between Immersed Solids and Wall During Flow ",
+journal = "Procedia {IUTAM} ",
+volume = "15",
+number = "0",
+pages = "150 - 157",
+year = "2015",
+note = "{IUTAM} Symposium on Multiphase Flows with Phase Change: Challenges and Opportunities ",
+issn = "2210-9838",
+url = "http://dx.doi.org/10.1016/j.piutam.2015.04.021",
+author = "Pei Shui and Prashant Valluri and Stéphane Popinet and Rama Govindarajan",
+keywords = "hydrodynamic interactions",
+keywords = "6DOF simulations",
+keywords = "immersed boundary method",
+keywords = "\{DNS\} ",
+abstract = "Abstract This work reports a direct numerical simulation study on submerged-solid and fluid flows, using a novel variant of the immersed boundary method under the aegis of Gerris solver. The method handles three-dimensional 6 degree-of-freedom motion of immersed solids of any number and of any shape under the influence of flow. We use it here to study the hydrodynamic interactions (between solid-wall and between soids) in a constant shear flow at low Reynolds number. The study calculates the influence from the solid- wall distance, solid-solid distance and ellipsoid geometrical characteristics. Distinct patterns emerge and the discussion focusses on improving our current understanding on solid migration due hydrodynamic interaction. "
+}
+
+@InProceedings{fuster2011,
+  author =    {D. Fuster and J. Hoepffner and S. Popinet and S. Zaleski},
+  title =     {Parallel simulation of multiphase flows using the volume-of-fluid method},
+  year =      {2011},
+  booktitle = {Proceedings of ASME-JSME-KSME Joint Fluid Conference 2011, July 24-29, 2011, Hamamatsu, Japan},
+  url =       {http://www.lmm.jussieu.fr/~zaleski/Papers/11KSME.pdf}
+}
+
+@Article{agbaghla2011,
+  author = 	 {G. Agbaglah and S. Delaux and D. Fuster and J. Hoepffner and C. Josserand and S. Popinet and P. Ray and R. Scardovelli and S. Zaleski},
+  title = 	 {Parallel simulation of multiphase flows using octree adaptivity and the volume-of-fluid method},
+  journal = 	 {Compte-rendus de l'Académie des Sciences, Paris},
+  year = 	 {2011},
+  url =          {http://gerris.dalembert.upmc.fr/papers/agbaglah2011.pdf},
+  volume =       {339},
+  pages =        {194-207}
+}
+
+@Article{fuster2009b,
+  author = 	 {D. Fuster and G. Agbaglah and C. Josserand and S. Popinet and S. Zaleski},
+  title = 	 {Numerical simulation of droplets, bubbles and waves: state of the art},
+  journal = 	 {Fluid dynamics research},
+  year = 	 {2009},
+  volume =       {41},
+  pages =        {065001},
+  url =          {http://gerris.dalembert.upmc.fr/papers/FDR.pdf}
+}
+
+@Article{popinet2009,
+  author = 	 {S. Popinet},
+  title = 	 {An accurate adaptive solver for surface-tension-driven interfacial flows},
+  journal = 	 {Journal of Computational Physics},
+  year = 	 {2009},
+  volume =       {228},
+  pages =        {5838–5866},
+  url =          {http://gerris.dalembert.upmc.fr/papers/tension.pdf}
+}
+
+@Article{fuster2009a,
+  author = 	 {D. Fuster and A. Bague and T. Boeck and L. Le Moyne and A. Leboissetier and S. Popinet and P. Ray and S. Scardovelli and S. Zaleski},
+  title = 	 {Simulation of primary atomization with an octree adaptive mesh refinement and VOF method},
+  journal = 	 {International Journal of Multiphase Flows},
+  year = 	 {2009},
+  volume =       {35},
+  number =       {6},
+  pages =        {550-565},
+  year = 	 {2009},
+  url =          {http://danielfuster.com/galerias/atomization/publications/paperIJMF.pdf}
+}
+
+@Article{popinet2003,
+  author = 	 {S. Popinet},
+  title = 	 {Gerris: a tree-based adaptive solver for the incompressible Euler equations in complex geometries},
+  journal = 	 {J. Comput. Phys.},
+  year = 	 {2003},
+  volume =	 {190},
+  number =	 {2},
+  pages =	 {572-600},
+  url =          {http://gerris.dalembert.upmc.fr/gerris.pdf}
+}
+
+@article{popinet1999,
+  title={A front-tracking algorithm for accurate representation of surface tension},
+  author={S. Popinet and S. Zaleski},
+  journal={International Journal for Numerical Methods in Fluids},
+  volume={30},
+  number={6},
+  pages={775--793},
+  year={1999},
+  publisher={Wiley Online Library}
+}
+~~~
+
+## Conferences
+
+~~~bib
+@InProceedings{popinet2024a,
+  author =	 {S. Popinet},
+  title =	 {A multilayer model for multiscale flows of thin (and not-so-thin) films
+  	(invited seminar)},
+  year =	 2024,
+  booktitle =	 {Department of Civil Engineering, Oxford University, UK, 3rd December}
+}
+
+@InProceedings{popinet2024b,
+  author =	 {S. Popinet},
+  title =	 {Multiscale models for ocean/atmosphere exchanges (invited talk)},
+  year =	 2024,
+  booktitle =	 {Atelier Mathématiques et Géosciences, Chambéry, 25-27 November}
+}
+
+@InProceedings{popinet2024c,
+  author =	 {S. Popinet},
+  title =	 {Continuum modelling of granular materials (invited talk)},
+  year =	 2024,
+  booktitle =	 {Complex Fluids and Flows Workshop, Lille, 15 November}
+}
+
+@InProceedings{popinet2024d,
+  author =	 {S. Popinet and C. Robert and A. Antkowiak},
+  title =	 {A generalized time-implicit model for film flows with strong surface forces (invited talk)},
+  year =	 2024,
+  booktitle =	 {International Conference of Theoretical and Applied Mechanics, Daegu, Korea, 26-30 August}
+}
+
+@InProceedings{popinet2024e,
+  author =	 {S. Popinet and N. Fintzi and J.-L. Pierson},
+  title =	 {Nearest particule microstructure in rising monodisperse suspensions of drops},
+  year =	 2024,
+  booktitle =	 {International Conference of Theoretical and Applied Mechanics, Daegu, Korea, 26-30 August}
+}
+
+@InProceedings{popinet2024f,
+  author =	 {S. Popinet et al.},
+  title =	 {Basilisk: a programming framework and social network for modelling with partial differential equations (invited talk)},
+  year =	 2024,
+  booktitle =	 {Journées scientifiques ONERA sur les environnements de simulation multiphysiques, Châtillon, 19-20 June}
+}
+
+@InProceedings{fintzi2024,
+  author =	 {N. Fintzi and J.-L. Pierson and S. Popinet},
+  title =	 {Theoretical calculation of the droplet induced agitation (or pseudoturbulence) in buoyant emulsions in the low inertia and dilute regimes},
+  year =	 2024,
+  booktitle =	 {Dispersed Two-Phase Flows (5th edition), Nancy, 8-10 July}
+}
+
+@InProceedings{popinet2024g,
+  author =	 {S. Popinet},
+  title =	 {Multiscale models for ocean atmosphere exchanges (invited talk)},
+  year =	 2024,
+  booktitle =	 {Rencontres annuelles du GDR Défits Théoriques pour les Sciences du Climat, Grenoble, 27-29 May}
+}
+
+@InProceedings{popinet2022f,
+  author =	 {M. Desbrun and S. Popinet},
+  title =	 {Fluid for Thoughts (keynote duet talk)},
+  year =	 2022,
+  booktitle =	 {The first Graphics-Physics Workshop, 2nd edition, Arc-et-Senans, 16-19 october}
+}
+
+@InProceedings{popinet2022e,
+  author =	 {J. Maarek and S. Zaleski and S. Popinet},
+  title =	 {A subgrid-scale modeling framework for convection-dominated interfacial species transport applied to modeling mass transfer in a metallurgical refining ladle},
+  year =	 2022,
+  booktitle =	 {4th International Conference on Numerical Methods in Multiphase Flows, Venice, Italy, 28-30 September}
+}
+
+@InProceedings{popinet2022d,
+  author =	 {M. Tavares and C. Josserand and A. Limare and J.M. Lopez and S. Popinet},
+  title =	 {A coupling VOF/embedded boundary to model arbitrary contact angles on solid surfaces},
+  year =	 2022,
+  booktitle =	 {4th International Conference on Numerical Methods in Multiphase Flows, Venice, Italy, 28-30 September}
+}
+
+@InProceedings{popinet2022c,
+  author =	 {S. Popinet and C. Robert and A. Antkowiak},
+  title =	 {Time-implicit multilayer modelling of gravity and capillary
+waves},
+  year =	 2022,
+  booktitle =	 {4th International Conference on Numerical Methods in Multiphase Flows, Venice, Italy, 28-30 September}
+}
+
+@InProceedings{popinet2022b,
+  author =	 {Stephane Popinet and L. Deike and W. Mostert and J. Wu and B. Deremble and T. Uchida and A. Berny and T. Séon},
+  title =	 {Multiscale fluid mechanics at the ocean-atmosphere interface (invited plenary lecture)},
+  year =	 2022,
+  booktitle =	 {14th European Fluid Mechanics Conference, Athens, Greece, 13-16 September},
+  url = {https://www.blod.gr/lectures/multiscale-fluid-mechanics-at-the-ocean-atmosphere-interface/}
+}
+
+@InProceedings{popinet2022,
+  author =	 {Stephane Popinet and L. Deike and W. Mostert and P. K. Farsoiya and J. Wu and B. Deremble and T. Uchida and A. Berny and T. Séon},
+  title =	 {Toward a multiscale framework for ocean atmosphere turbulence},
+  year =	 2022,
+  booktitle =	 {ERCOFTAC workshop "Turbulence and interface", Lyon, France, 15-17 June}
+}
+
+@InProceedings{popinet2020b,
+  author =	 {S. Popinet},
+  title =	 {A vertically-Lagrangian, non-hydrostatic, multilayer model
+                  for multiscale free-surface flows},
+  year =	 2020,
+  booktitle =	 {COMMODORE Conference, Hamburg, Germany, 28-31 January}
+}
+
+@InProceedings{popinet2019,
+  author =	 {S. Popinet},
+  title =	 {Toward DNS of ocean/atmosphere transfer processes
+                  (keynote lecture)},
+  year =	 2019,
+  booktitle =	 {ERCOFTAC Workshop Direct and Large Eddy Simulation
+                  12, Madrid, Spain, 5-7 June}
+}
+
+@InProceedings{popinet2018a,
+  author =	 {S. Popinet},
+  title =	 {Numerical models of surface tension},
+  year =	 2018,
+  booktitle =	 {11ª Escola de Primavera sobre Transição e
+                  Turbulência (EPTT), Uberlandia, Brazil, 17-21st
+                  September}
+}
+
+@InProceedings{popinet2018b,
+  author =	 {S. Popinet},
+  title =	 {Direct numerical simulations of breaking waves},
+  year =	 2018,
+  booktitle =	 {B'Waves workshop, IRPHE, Marseille, May 28 - June 1}
+}
+
+@InProceedings{popinet2017a,
+  author =	 {S. Popinet},
+  title =	 {A conservative and well-balanced surface tension
+                  model},
+  year =	 2018,
+  booktitle =	 {BIRS-CMO workshop "New Frontiers in Multiphase CFD
+                  for the 21st Century Energy Mix", Oaxaca, Mexico,
+                  August 19th-24th},
+  url =
+                  {https://www.birs.ca/events/2018/5-day-workshops/18w5139/videos/watch/201808211459-Popinet.html}
+}
+
+@InProceedings{popinet2017b,
+  author =	 {S. Popinet},
+  title =	 {Adaptive numerical methods for fluid mechanics
+                  (invited seminar)},
+  year =	 2017,
+  booktitle =	 {PIMS-IAM Distinguished Colloquium, University of
+                  British Columbia, Vancouver, Canada, November 24}
+}
+
+@InProceedings{popinet2017c,
+  author =	 {S. Popinet},
+  title =	 {Numerical models of surface tension (invited
+                  seminar)},
+  year =	 2017,
+  booktitle =	 {Department of Aerospace and Mechanical Engineering,
+                  Princeton University, USA, November 10}
+}
+
+@InProceedings{popinet2017d,
+  author =	 {S. Popinet and Luc Deike and Stéphane Zaleski and Thomas
+                  Seon},
+  title =	 {The dynamics of jets produced by bursting bubbles},
+  year =	 2017,
+  booktitle =	 {APS-DFD, Denver, USA, November 19}
+}
+
+@InProceedings{popinet2016a,
+  author =	 {S. Popinet},
+  title =	 {Generalised Cartesian Grids (keynote lecture)},
+  year =	 2016,
+  booktitle =	 {IMUM 2016, 15th International Workshop on Multiscale
+                  (Un)-structured mesh numerical Modelling, Toulouse,
+                  September 27-30, Toulouse}
+}
+
+@InProceedings{popinet2016b,
+  author =	 {S. Popinet},
+  title =	 {Basilisk: simple abstractions for octree-adaptive
+                  scheme},
+  year =	 2016,
+  booktitle =	 {SIAM conference on Parallel Processing for
+                  Scientific Computing, April 12-15 2016, Paris}
+}
+
+@InProceedings{popinet2014,
+  author =	 {S. Popinet},
+  title =	 {A quadtree-adaptive multigrid solver for the
+                  Serre-Green-Naghdi equations (invited talk)},
+  year =	 2014,
+  booktitle =	 {IMA hot topic workshop: Impact of Waves Along
+                  Coastlines, Minneapolis, October 14 - 17},
+  url =		 {http://www.ima.umn.edu/videos/index.php?id=2792}
+}
+
+@InProceedings{popinet2014b,
+  author =	 {S. Popinet},
+  title =	 {Quadtree-adaptive multigrid (invited talk)},
+  year =	 2014,
+  booktitle =	 {2nd International Conference on Numerical Methods in
+                  Multiphase Flows, Darmstadt, Germany, June 30 - July
+                  2}
+}
+
+@InProceedings{popinet2014c,
+  author =	 {S. Popinet},
+  title =	 {Scale distribution and adaptive simulations of
+                  tsunamis: application to the Tohoku tsunami (keynote
+                  lecture)},
+  year =	 2014,
+  booktitle =	 {Workshop on advanced numerical methods for
+                  earthquake and tsunami simulation on modern HPC
+                  systems, Bayrischzell, Germany, May 20th - 23rd}
+}
+
+@InProceedings{gorman2013,
+  author =	 {Gorman, R. M. and S. Popinet},
+  title =	 {Adaptive mesh refinement in spectral wave modelling},
+  year =	 2013,
+  booktitle =	 {Waves In Shallow Environments meeting, 21-25 April}
+}
+
+@InProceedings{popinet2013,
+  author =	 {S. Popinet},
+  title =	 {Adaptive methods for fluid mechanics: applications
+                  to multiscale problems from microfluidics to
+                  geophysical fluid dynamics (plenary lecture)},
+  year =	 2013,
+  booktitle =	 {Fluids in New Zealand, University of Canterbury, 30
+                  January - 1 February}
+}
+
+@InProceedings{popinet2012,
+  author =	 {S. Popinet},
+  title =	 {Quadtree-adaptive global atmospheric modelling on
+                  parallel systems (invited talk)},
+  year =	 2012,
+  booktitle =	 {Weather and Climate Prediction on Next Generation
+                  Supercomputers, Exeter, UK, 22-25 October}
+}
+
+@InProceedings{shui2012,
+  author =	 {P. Shui and S. Popinet and P. Valluri and S. Zaleski
+                  and M. Crapper},
+  title =	 {Solid-Fluid flows using a variant of Immersed
+                  Boundary method in Gerris},
+  year =	 2012,
+  booktitle =	 {65th Annual Meeting of the APS Division of Fluid
+                  Dynamics},
+  volume =	 57,
+  number =	 17,
+  url =		 {http://meeting.aps.org/Meeting/DFD12/Event/179123}
+}
+
+@InProceedings{agbaglah2012,
+  author =	 {G. Agbaglah and D. Fuster and G. McBain and
+                  S. Popinet and S. Zaleski},
+  title =	 {Numerical simulation in 3D of atomizing coaxial
+                  gas-liquid jets},
+  year =	 2012,
+  booktitle =	 {65th Annual Meeting of the APS Division of Fluid
+                  Dynamics},
+  volume =	 57,
+  number =	 17,
+  url =		 {http://meeting.aps.org/Meeting/DFD12/Event/176840}
+}
+
+@InProceedings{lagree2012,
+  author =	 {P.-Y. Lagrée and L. Staron and A. Grabsh and
+                  S. Popinet},
+  title =	 {The hour-glass: comparisons of discrete granular
+                  flow and continuum plastic flow},
+  year =	 2012,
+  booktitle =	 {65th Annual Meeting of the APS Division of Fluid
+                  Dynamics},
+  volume =	 57,
+  number =	 17,
+  url =		 {http://meeting.aps.org/Meeting/DFD12/Event/178086}
+}
+
+@InProceedings{popinet2012b,
+  author =	 {S. Popinet and S. Zaleski},
+  title =	 {Drops and bubbles simulations using volume of fluid
+                  and octree adaptive refinement (invited lecture)},
+  year =	 2012,
+  booktitle =	 {International Congress of Theoretical and Applied
+                  Mechanics, Beijing, China, 19-24 August},
+}
+
+@InProceedings{lagree2012b,
+  author =	 {L. Staron and P.-Y. Lagrée and S. Popinet},
+  title =	 {Continnum modeling of granular flows: a numerical
+                  application},
+  year =	 2012,
+  booktitle =	 {Dust and Grains in Low Gravity and Space
+                  Environment, European Space Agency, Noordwijk, The
+                  Netherlands, 2-4 April}
+}
+
+@InProceedings{turner2011,
+  author =	 {R. Turner and S. Reese and M. Revell S. Popinet and
+                  A. King},
+  title =	 {Wind hazard and engineering related research at
+                  NIWA, New Zealand},
+  year =	 2011,
+  booktitle =	 {13th International Conference on Wind Engineering,
+                  July 10-15},
+  url =
+                  {http://www.dist.unina.it/proc/2011/ICWE13/start/papers/231_8page_wind_engineering_related_research_at_niwa_new_zealand.pdf}
+}
+
+@InProceedings{popinet2011b,
+  author =	 {S. Popinet},
+  title =	 {Scale distributions of a few oceanic processes:
+                  Implications for adaptive modeling (invited
+                  lecture)},
+  year =	 2011,
+  booktitle =	 {Gordon Research Conference on Coastal Ocean
+                  Modelling, Boston, June 28}
+}
+
+@InProceedings{popinet2011a,
+  author =	 {S. Popinet},
+  title =	 {Quadtree-adaptive tsunami modelling},
+  year =	 2011,
+  booktitle =	 {European Geosciences Union General Assembly, Vienna,
+                  Austria, 3-8 April},
+  url =
+                  {http://presentations.copernicus.org/EGU2011-3010_presentation.pdf}
+}
+
+@InProceedings{gorman2010a,
+  author =	 {R. M. Gorman and S. Popinet},
+  title =	 {An adaptive spectral wave model applied to cyclone
+                  simulations},
+  year =	 2010,
+  booktitle =	 {WISE 2010 - Waves in Shallow Environments meeting,
+                  Brest, France, 25-29 April}
+}
+
+@InProceedings{gorman2010b,
+  author =	 {R. M. Gorman and S. Popinet},
+  title =	 {Spectral wave modelling on an adaptive grid},
+  year =	 2010,
+  booktitle =	 {15th Biennial Conference of the Joint Numerical Sea
+                  Modelling Group, Delft, The Netherlands, 10-12 May}
+}
+
+@InProceedings{staron2009,
+  author =	 {L. Staron and C. Josserand and P.-Y. Lagrée and
+                  D. Lhuillier and S. Popinet and P. Ray},
+  title =	 {The spreading of a granular column from a Bingham
+                  point of view},
+  year =	 2009,
+  pages =	 {535-538},
+  booktitle =	 {Powders and Grains, AIP Conference Proceedings}
+}
+
+@InProceedings{stevens2009,
+  author =	 {C. Stevens and S. Chiswell and M. Hadfield and
+                  D. Plew and G. Rickard and S. Popinet and M. Smith},
+  title =	 {Transport and mixing in Cook Strait, New Zealand},
+  year =	 2009,
+  booktitle =	 {Geophysical Research Abstracts, Vol. 11,
+                  EGU2009-1520, EGU General Assembly}
+}
+
+@InProceedings{gorman2009,
+  author =	 {R. M. Gorman and S. Popinet},
+  title =	 {Application of adaptive quadtree grids in spectral
+                  wave modelling},
+  year =	 2009,
+  booktitle =	 {WISE 2009 - Waves in Shallow Environments meeting,
+                  Ensenada, Mexico, 27-30 April}
+}
+
+@InProceedings{popinet2009b,
+  author =	 {S. Popinet and G. Rickard and J. O'Callaghan},
+  title =	 {Quad/octree adaptive modelling of multiscale
+                  geophysical flows},
+  year =	 2009,
+  booktitle =	 {Newton Institute Scoping Meeting on Multi-scale
+                  Modelling of the Atmosphere and Ocean, University of
+                  Reading, UK, 25-26 March},
+  url =		 {http://gerris.dalembert.upmc.fr/papers/newton.pdf}
+}
+
+@InProceedings{popinet2009a,
+  author =	 {S. Popinet},
+  title =	 {Accurate tree-based adaptive volume-of-fluid for
+                  surface-tension-driven flows},
+  year =	 2009,
+  booktitle =	 {SIAM conference on computational science and
+                  engineering, Miami, 2-6 March}
+}
+
+@InProceedings{smith2009,
+  author =	 {M.J. Smith and S. Popinet and C.L. Stevens},
+  title =	 {Surface ocean physics and air-sea gas exchange},
+  year =	 2009,
+  booktitle =	 {NZ Physical Oceanography Workshop, Wellington,
+                  March}
+}
+
+@InProceedings{gorman2008,
+  author =	 {R.M. Gorman and S. Popinet},
+  title =	 {Spectral wave modelling on an adaptive quadtree
+                  grid},
+  year =	 2008,
+  booktitle =	 {New Zealand Hydrological Society and New Zealand
+                  Meteorological Society Joint
+                  Conference. Shantytown/Greymouth, 18-20 November}
+}
+
+@InProceedings{popinet2008c,
+  author =	 {S. Popinet},
+  title =	 {Adaptive direct numerical simulation of steep water
+                  waves},
+  year =	 2008,
+  booktitle =	 {XXII International Congress of Theoretical and
+                  Applied Mechanics, Adelaide, August}
+}
+
+@InProceedings{zaleski2008,
+  author =	 {S. Zaleski and A. Bague and D. Fuster and L. Lemoyne
+                  and S. Popinet},
+  title =	 {Simulation of atomizing jets with octree adaptive
+                  mesh refinement},
+  year =	 2008,
+  booktitle =	 {XXII International Congress of Theoretical and
+                  Applied Mechanics, Adelaide, August}
+}
+
+@InProceedings{rickard2008,
+  author =	 {G. Rickard and J. O'Callaghan and S. Popinet},
+  title =	 {Non-hydrostatic Adaptive Modelling for Coastal
+                  Waters},
+  year =	 2008,
+  booktitle =	 {Western Pacific Geophysics Meeting}
+}
+
+@InProceedings{popinet2008b,
+  author =	 {S. Popinet},
+  title =	 {Adaptive modelling of complex flows},
+  year =	 2008,
+  booktitle =	 {French-German science workshop, Stuttgart, June}
+}
+
+@InProceedings{stevens2008,
+  author =	 {S. Popinet and C. Stevens},
+  title =	 {Flow variability in an estuarine embayment with
+                  multiple headlands},
+  year =	 2008,
+  booktitle =	 {American Geophysical Union, Ocean Sciences Meeting,
+                  Orlando, March}
+}
+
+@InProceedings{revell2007,
+  author =	 {M. Revell and S. Popinet},
+  title =	 {Modelling wind flow over for optimum siting of
+                  observation towers},
+  year =	 2007,
+  booktitle =	 {Cape Grim Meeting, December}
+}
+
+@InProceedings{smith2007b,
+  author =	 {M.J. Smith and C.L. Stevens and R. Gorman and
+                  D. Plew and S. Popinet},
+  title =	 {Marine renewable energy: quantifying the resource},
+  year =	 2007,
+  booktitle =	 {National Energy Research Institute Conference,
+                  November}
+}
+
+@InProceedings{smith2007,
+  author =	 {M.J. Smith and S. Popinet and C. Law and C. Stevens},
+  title =	 {The air-sea interface and climate},
+  year =	 2007,
+  booktitle =	 {Marine Sciences Society Annual Conference, August}
+}
+
+@InProceedings{bague2007,
+  author =	 {A. Bague and S. Popinet and S. Zaleski},
+  title =	 {Numerical simulation of atomization with adaptive
+                  jet refinement},
+  year =	 2007,
+  booktitle =	 {European Mechanics Society Conference, August}
+}
+
+@InProceedings{popinet2007b,
+  author =	 {S. Popinet},
+  title =	 {The Gerris Flow Solver},
+  year =	 2007,
+  booktitle =	 {Rencontres Mondiales du Logiciel Libre, July}
+}
+
+@InProceedings{popinet2007c,
+  author =	 {S. Popinet},
+  title =	 {Adaptive simulations of free-surface flows},
+  year =	 2007,
+  booktitle =	 {Jean Bataille Colloquium, Lyon, June}
+}
+
+@InProceedings{revell2007b,
+  author =	 {M. Revell and S. Popinet and S. Reid},
+  title =	 {A virtual wind tunnel for flow over steep hills},
+  year =	 2007,
+  booktitle =	 {European Wind Energy Conference, Milan, Italy, May}
+}
+
+@InProceedings{popinet2007e,
+  author =	 {S. Popinet},
+  title =	 {Accurate adaptive Volume-Of-Fluid for surface
+                  tension driven flows},
+  year =	 2007,
+  booktitle =	 {3rd workshop on free-surface flows, University of
+                  Florida, Paris research center, June}
+}
+
+@InProceedings{popinet2007d,
+  author =	 {S. Popinet},
+  title =	 {Accurate adaptive Volume-Of-Fluid for surface
+                  tension driven flows},
+  year =	 2007,
+  booktitle =	 {IUTAM Symposium on Recent Advances in Multiphase
+                  Flows, Istanbul, June}
+}
+
+@InProceedings{smith2007d,
+  author =	 {M. Smith and C. Law and D. Ho and C. Stevens and
+                  S. Popinet},
+  title =	 {Gas exchange parameterisation: the measurement
+                  uncertainties},
+  year =	 2007,
+  booktitle =	 {SOLAS Open Science Conference, Xiamen, March}
+}
+
+@InProceedings{popinet2006,
+  author =	 {S. Popinet},
+  title =	 {Adaptive modelling of complex flows},
+  year =	 2006,
+  booktitle =	 {New Zealand Mathematics Colloquium, Hamilton,
+                  December}
+}
+
+@InProceedings{rickard2006,
+  author =	 {G. Rickard and S. Popinet and M.G. Hadfield},
+  title =	 {Toward an adaptive, baroclinic ocean model for the
+                  NZ EEZ (and beyond)},
+  year =	 2006,
+  booktitle =	 {New Zealand Marine Sciences Society Annual
+                  Conference, Nelson, September}
+}
+
+@InProceedings{popinet2004,
+  author =	 {S. Popinet},
+  title =	 {Airflow distortion by research vessels (plenary lecture)},
+  year =	 2004,
+  booktitle =	 {International Global Atmospheric Chemistry conference,  
+                  Christchurch, New Zealand, 13-17 September}
+}
+
+~~~
+
+## Unpublished preprints
+
+~~~bib
+@hal{ghigo2021, hal-03948786}
+~~~
+
+## Lecture notes
+
+For the lectures given at the [6th Partner University Fund
+Workshop](http://facecouncil.org/puf/inthenews/20-24th-june-2011-6th-workshop-on-the-dynamics-of-bubbles-and-drops-at-the-university-of-florida-gainesville/),
+University of Florida at Gainesville, 20-24th June 2011.
+
+~~~bib
+@InProceedings{popinet2011a,
+  author =    {S. Popinet},
+  title =     {Introduction to numerical methods for interfacial flows},
+  year =      {2011},
+  booktitle = {Lecture notes},
+  url =       {http://gerris.dalembert.upmc.fr/papers/course.pdf}
+}
+
+@InProceedings{popinet2011b,
+  author =    {S. Popinet and A. Antkowiak},
+  title =     {Breakup of cylindrical jets: Singularities and self-similar solutions},
+  year =      {2011},
+  booktitle = {Lecture notes},
+  url =       {http://gerris.dalembert.upmc.fr/papers/course2.pdf}
+}
+~~~

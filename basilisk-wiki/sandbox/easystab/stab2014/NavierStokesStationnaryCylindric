@@ -1,0 +1,211 @@
+clear all; clf; format compact;
+%{ 
+
+# Cylindric ,Stationnary, Uncompressible, Navier-Stokes with Jacobian resolution
+
+Coded by [Stab2014/Lus.m]() and [Stab2014/PaulValcke.m](), as a mix between [ventury.m]() an [/NavierStokesStationnary.m]() code.
+
+This is a little change from [/NavierStokesStationnary.m](), here you have an axiscylindrical flow
+instead of a rectangular one. The derivatives on Y are differents in
+consequences. We just changed the expression of few elements.
+We also changed the written structure.
+
+See [/NavierStokesStationnary.m]()for more details about the structure of the code.
+
+Instead of just doing a classic poiseuille, we added a geometry shape of ventury, see [ventury.m]() an [/geometry.m]() for more informations
+
+%}
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%PHYSICAL PARAMETERS
+Re=1000; % reynolds number, it change the impact of the diffusion term compared to pression 
+
+%GEOMETRIC PARAMETERS
+Lx = 30;
+Ly=2;
+amp=0.8; % radius at venturi
+xpos=8; % position of the neck
+
+%NUMERICAL PARAMETERS
+Nx=50; % number of grid nodes in x
+Ny=10; %number of grid nodes in y
+alpha=0.7; % Under-relaxation
+maxIter = 200; % Maximum number of iteration for Newton method.
+resSTOP = 1e-5; % Precision required to stop convergence
+
+
+%FIXED PARAMETERS OR INTERMEDIATE FORMULAS
+Ymin=-Ly/2;
+pts=5; % number of points in finite difference stencils
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%DIFFERENTIATION MATRIXES%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DIFFERENTIATION 
+ 
+[d.x,d.xx,d.wx,x]=dif1D('fd',0,Lx,Nx,pts);
+[d.y,d.yy,d.wy,y]=dif1D('cheb',Ymin,Ly,Ny);
+[D,l,X,Y,Z,I,NN]=dif2D(d,x,y);
+
+% PLAN TRANSFORMATION
+etay=1-(1-amp)*exp(-((x-xpos)/3).^2); 
+Y=Y.*repmat(etay',Ny,1);  
+
+D=map2D(X,Y,D);
+ym1=spd(1./Y); % FORMULAS ARE EASIER TO WRITE WITH THESES
+ym2=spd(1./Y.^2);
+D.lap=D.yy+D.xx+ym1*D.y; %WE ADD A TERM COMPARED TO CARTESIAN COORDINATES
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%BOUNDARIES GESTION%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%% POSITIONS OF EVERY VECTORS
+u=(1:NN)'; v=u+NN; p=v+NN;
+II=speye(3*NN);
+
+% EXAMPLE OF DIRICHLET ENTRY 
+dirInlet = [l.left];
+
+% PRESSURE CONDITIONS
+neuploc=[l.ctl;l.ctr;l.ctr-Ny];  % where to impose the neumann condition on the pressure
+p0loc=2*Ny; % where to impose zero pressure
+
+% BOUNDARY POSITIONS
+dir=[l.ctl;l.ctr;l.left;l.top;l.bot;]; % where to put Dirichlet on u and v
+
+% Loc will be used to apply boundary condition to the function 
+loc=[u(dir); v(dir);p(p0loc); ... 
+    u(l.right); ...
+    v(l.right); ...
+    p(neuploc)];
+
+%MATRIX OF CONSTRAINTS   
+C=[II([u(dir);v(dir);p(p0loc)],:); % ...     % Dirichlet on u,v,p 
+    D.x(l.right,:), Z(l.right,:), Z(l.right,:); ...   % Neuman on u at outflow
+    Z(l.right,:),  D.x(l.right,:),Z(l.right,:);  ... 
+    -Z(neuploc,:), D.lap(neuploc,:)/Re, -D.x(neuploc,:)]; % Neumann on v at outflow
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%INITIAL GUESS%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Initial condition on U
+U=zeros(NN,1);
+U=(1-2*(Y(:,1)/Ly*ones(1,Nx)).^2);
+
+%Initial condition on V
+V=zeros(NN,1);
+
+%Initial condition on P
+P=-X/Re; %Constant gradient of pressure
+P=P-P(p0loc); %Change of scale
+
+%Initial Solution
+sol0=[U(:);V(:);P(:)];
+
+
+%%%%%%%%%%%%%%%%%RESOLUTION ALGORITHM%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NEWTON ALGORITHM
+sol=sol0;
+solM=sol;
+quit=0;count=0;
+while ~quit     
+ 
+% RELAXATION METHOD
+% DEFINITION OF THE UNKNOWS USED
+    U=alpha.*sol(u) + (1-alpha).*solM(u);
+    V=alpha.*sol(v) + (1-alpha).*solM(v);
+    P=alpha.*sol(p) + (1-alpha).*solM(p);
+    
+% DEFINITION OF THE DERIVATES    
+    Ux=D.x*U; Uy=D.y*U;
+    Vx=D.x*V; Vy=D.y*V; 
+    Px=D.x*P; Py=D.y*P;
+
+    
+%DEFINITION OF THE FUNCTIONS YOU WANT TO RESOLVE
+   f=[-(U.*Ux+V.*Uy)+D.lap*U/Re-Px; ...
+       -(U.*Vx+V.*Vy)+(D.lap*V-ym2*V)/Re-Py; ...
+      D.x*U+(ym1+D.y)*V];
+    
+%JACOBIAN OF THE EQUATIONS
+    A=[-( spd(Ux) + spd(U)*D.x + spd(V)*D.y )+(D.lap)/Re, -spd(Uy), -D.x; ...
+        -spd(Vx),  -(spd(Vy) + spd(V)*D.y + spd(U)*D.x )+(D.lap-ym2)/Re, -D.y; ...
+         D.x, ym1+D.y, Z];
+     
+%BOUNDARY CONDITIONS
+    f(loc)=C*(sol-sol0);
+    A(loc,:)=C;
+    
+%CONVERGENCE TEST
+    res=norm(f);
+    disp([num2str(count) '  ' num2str(res)]);
+    if (count>maxIter) || (res>1e8); disp('no convergence');break; end
+    if res<resSTOP; quit=1; disp('converged'); continue; end
+    
+%NEWTON STEP FOR RESOLUTION
+    solM = sol;
+    sol=solM - A\f;%-gmres( A , f, 1000, 1e-7);   
+    count=count+1; 
+    
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%PLOTTING%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Place here figures you want at each step of the iterations
+
+%Plot of the Module
+    figure(1)
+    subplot(2,1,1);
+    Module = sqrt((U.^2+V.^2));
+    surf(X,Y,reshape(Module,Ny,Nx)); view(2); shading interp; hold on
+    axis ([0,Lx,Ymin,-Ymin])
+    quiver3(X,Y,ones(Ny,Nx).*max(Module),reshape(U,Ny,Nx),reshape(V,Ny,Nx),...
+            zeros(Ny,Nx),'k');    
+    xlabel('x'); ylabel('r'); title('Module of the speed'); grid off;hold off
+    %colorbar;
+    
+    subplot(2,1,2);
+    surf(X,Y,reshape(Px,Ny,Nx)); view(2); shading interp; hold on
+    axis ([0,Lx,Ymin,-Ymin])  
+    xlabel('x'); ylabel('r'); title('Pressure variation Px'); grid off;hold off
+    %colorbar;
+    drawnow
+    
+              set(gcf,'paperpositionmode','auto')
+print('-dpng','-r80','NSRSUmodpre.png')  
+    
+    figure(2)
+    subplot(2,1,1);
+    surf(X,Y,reshape(U-1,Ny,Nx)); view(2); shading interp; hold on
+    sely=1:Ny; selx=1:6:Nx;
+    ww=reshape(V,Ny,Nx); uu=reshape(U,Ny,Nx); 
+    quiver3(X,Y,ones(Ny,Nx).*max(Module),reshape(U,Ny,Nx),reshape(V,Ny,Nx),...
+            zeros(Ny,Nx),'k');  
+    axis([0,Lx,-1,1]);
+    xlabel('z'); ylabel('r'); title('radial velocity U'); grid off;hold off
+    
+    subplot(2,1,2);
+    surf(X,Y,reshape(V,Ny,Nx)); view(2); shading interp; 
+    xlabel('x'); ylabel('r'); title('axial velocity W'); grid off
+    drawnow
+    
+            set(gcf,'paperpositionmode','auto')
+print('-dpng','-r80','NSRSUvelVel.png')
+end
+
+%Place here figures you only want once at the end
+
+%{
+#Figures
+
+Here for the parameters written in the code
+
+![alt text](/NSRSUvelVel.png)
+![alt text](/NSRSUmodpre.png)
+%}
+
+
+
+
+
+
+

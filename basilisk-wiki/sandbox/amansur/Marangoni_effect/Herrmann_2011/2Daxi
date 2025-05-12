@@ -1,0 +1,11 @@
+/**
+By including the 'axi.h' header file, we specify to the solver, that the simulation is in 2D axisymmetric.
+
+**That's the only modification to add to the code, every metric factor or flux factor due to the axisymmetric is taken into account with the [*fm* and *cm*](http://basilisk.fr/sandbox/amansur/Rising/2D_axi#metric)**
+
+Then either use the [Height](http://basilisk.fr/sandbox/amansur/Marangoni_effect/Herrmann_2011/2D_height) computation of the normal or the [Mixed-Young-Centered](http://basilisk.fr/sandbox/amansur/Marangoni_effect/Herrmann_2011/2D_mixed) one in 2D.
+
+Please notice that we can't view the " arround "axi.h", but there are some !
+*/
+
+#include "axi.h"

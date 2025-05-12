@@ -1,0 +1,19 @@
+/**
+# The code in the src/grid folder
+The separation of the low-level grid implementations and the more high-level code seems to be well accomplished and forms an important part of the Basilisk philosophy. After having read the excellently documented solver pages, any mortal that ventures into the more low-level implementations of the Basilisk code under [src/grid](http://www.basilisk.fr/src/grid) is greeted with a disturbing level of complexity and coding abstractions. Anyway, From time to time, one may feel attracted to learn how a specific functionality is implemented in Baslisk. Apart from the aforementioned low-level style of coding, the process of finding what you are looking for is made even more difficult by the fact that there are 26 files, some with illusive names such as "[mempool.h](http://www.basilisk.fr/src/grid/mempool.h)", etc. As such, this page aims to provide some overview of the various files and their function within the Basilisk code.
+
+Fun fact: About 1/3 of the total lines of codes within Basilsk is under src/grid/, wheareas less than 1/10-th of the lines of comments reside there. See Stephane Popinet's BGUM-presentation [slides](http://basilisk.fr/BGUM/popinet.pdf). 
+
+## The grid hierarchy
+Cartesian -> MG -> Tree...
+
+![Overview of most header files in the src/grid](http://www.basilisk.fr/sandbox/Antoonvh/srcgrid.png)
+
+boundaries.h via src/common.h
+linear.h not used? and the .i files. 
+
+## Short discriptions of the different files
+
+## An example approach to an example question
+####How does the "foreach()" loop work? 
+*/

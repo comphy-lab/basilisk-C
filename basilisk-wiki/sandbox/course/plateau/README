@@ -1,0 +1,8 @@
+# Rayleigh-Plateau instability and self-similar solutions
+
+The following exercices are numerical illustrations of the [lecture
+notes](http://gerris.dalembert.upmc.fr/papers/course2.pdf).
+
+1. [Qualitative study of the linear instability](plateau1.c)
+2. [Quantitative study of the linear instability](plateau2.c)
+3. [Self-similar scalings of the pinch-off](plateau3.c)

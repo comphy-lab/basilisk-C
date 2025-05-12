@@ -1,0 +1,109 @@
+# Vidange visqueuse
+
+Nous nous interessons à la manière dont un récipient se vide. ici c'est le cas d'un régime de vidange visqueux, pour lequel ce qui freine l'écoulement du fluide, ce n'est pas son accelération mais sa viscosité. C'est un cas différent et complémentaire du "problème de Torricelli", qui est la vidange d'un récipient qui contient un fluide peu visqueux.
+
+
+J’ai mis de l’huile de colza dans une seringue et je filme comment elle se vidange par le bas. Pour modéliser ce phénomène, je suppose que le débit volumique sortant est proportionnel à la différence de pression entre la surface libre et le bout du tube de sortie du fluide:
+$$
+Q=C\rho g h
+$$
+où C est une constante qui quantifie l’effet de résistance à l’écoulement dû à la viscosité du fluide dans le petit tube de sortie de la seringue. 
+
+Le volume de fluide décroît dans le temps à cause de ce débit sortant. En résolvant une équation différentielle on obtient la loi de vidange:
+$$
+h(t)=h_0\exp(C\rho gt/S)
+$$
+Où $h_0$ est la hauteur initiale et $S$ est la section de la seringue. Nous allons comparer cette théorie à notre expérience et estimer la valeur de la constante C.
+
+
+Voici le dispositif expérimental. Pour le fluide nous avons de l'huile de tournesol, et pour le récipient une seringue dont on a enlevé le piston.
+
+![](vidange visqueuse 1.png)
+
+Et voici une des images prises par la caméra:
+
+![](vidange visqueuse 2.png)
+
+Et voici un montage de l'évolution dans le temps de la vidange:
+
+![](vidange visqueuse 3.png)
+
+<!--
+Pour traiter les données et tracer nos formules, nous vons écrit ce programme en Octave/Matlab:
+
+~~~matlab
+clear all; clf
+ 
+% pour lire l'image et l'afficher 
+% dans la fenêtre graphique
+a=imread('seringue.tif');
+image(a);
+ 
+% Les données mesurées avec ginput
+d=1000*[0.0654    0.1881
+    0.1912    0.2553
+    0.3210    0.3138
+    0.4494    0.3627
+    0.5765    0.4021
+    0.7089    0.4347
+    0.8374    0.4616
+    0.9645    0.4846
+    1.0982    0.5019
+    1.2279    0.5192];
+ 
+% le vecteur temps
+t=((30:50:480)-30)/3;
+h=598-d(:,2);
+ 
+% la taille d'un pixel
+taillepix=28e-3/(377-268);
+h=h*taillepix;
+ 
+% le graphique expérimental
+plot(t,h,'b*-');
+hold on;
+ 
+% une boucle pour tester plusieurs valeurs
+% de la constante
+rho=916;
+g=9.81;
+S=pi*(28e-3/2)^2;
+ 
+tvec=linspace(0,t(end),100);
+for C=logspace(-10,-8,10);
+hh=h(1)*exp(-C*rho*g*tvec/S);
+plot(tvec,hh,'r');
+end
+ylim([0,0.12]);
+xlabel('temps');ylabel('hauteur h');
+title('vidange de la seringue')
+~~~
+
+Qui produit l'image suivante (J'ai copié l'image produite par le programme dans un éditeur d'image (openoffice impress) et j'ai rajouté des informations):
+
+![](vidange visqueuse 4.png)
+
+Ensuite, je cherche un moyen de trouver quelle est la meilleur valeur de la constance $C$. Pour cela, j'ai fait une boucle sur de nombreuses valeurs possibles de $C$ et j'ai mesuré l'erreur entre les données expérimentales et la théorie. Voici le programme:
+
+~~~matlab
+% Valeur de C par les moindres carrés
+for C=logspace(-10,-8,300);
+hh=h(1)*exp(-C*rho*g*t/S);
+E=sum((h-hh').^2);
+loglog(C,E,'b*');
+hold on
+end
+xlabel('Valeur de C');ylabel('erreur e');
+title('Moindres carrés')
+~~~
+
+Et la figure qui est produite (encore une fois, éditée ensuite avec openoffice)
+![](vidange visqueuse 5.png)
+
+
+
+Puis:
+
+-->
+
+

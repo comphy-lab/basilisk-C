@@ -1,0 +1,371 @@
+---
+title: Basilisk/Gerris Users' Meeting 2017
+...
+
+## Sponsors
+
+<table>
+<tr>
+<td>
+[![Princeton Environmental Institute](/pei.png)](https://environment.princeton.edu)
+</td>
+<td>
+[![MAE Princeton](/MAE.png)](http://mae.princeton.edu)
+</td>
+<td>
+[![PRISM Princeton](/prism2.jpg)](http://materials.princeton.edu)
+</td>
+<td>
+[![d'Alembert](/100px-Ijlrda.jpg)](http://www.dalembert.upmc.fr/) 
+</td>
+<td>
+[![UPMC](/170px-LogoUPMC.png)](http://upmc.fr/en/index.html) 
+</td>
+<td>
+[![CNRS](/100px-Logo_cnrs.jpg)](http://www.cnrs.fr/index.php)
+</td>
+</tr>
+</table>
+
+## Summary
+
+The meeting was held at [Princeton University](http://www.princeton.edu), United States on the 15-16th November 2017.
+
+The format was similar to earlier Basilisk/Gerris meetings held in Paris, France in 2011, Wellington, New Zealand in 2012 and Sevilla, Spain in 2014. Participants were encouraged to share their work using Basilisk or Gerris for applications in fluid mechanics, environmental science, engineering etc...  Students were especially welcome to participate in this informal and friendly gathering.
+
+### Conference location
+
+The conference took place in [Maeder Hall](http://www.openstreetmap.org/way/428100744) within the Andlinger Center for Energy and Environment, within the Engineering school and Princeton's campus. 
+
+## Program
+
+<table>
+<tr><td>**Wednesday 15th November**</td></tr>
+
+<tr><td>8:00</td>
+<td>
+<center>Breakfast (outside Maeder Hall)</center>
+<hr></td></tr>
+
+<tr><td>8:30</td>
+<td>Welcome. Luc Deike, Stephane Popinet and Shahriar Afkhami<hr></td></tr>
+
+<tr><td>9:00</td>
+<td>
+[Shahriar Afkhami](http://web.njit.edu/~shahriar/), [New Jersey Institute of Technology](http://www.njit.edu), United States
+<br>
+[*A decade of research with Gerris*](BGUM/afkhami.pdf)
+<hr></td></tr>
+
+<tr><td>9:30</td>
+<td>
+Zhen Jian, [International Center for Applied Mechanics (ICAM)](http://icam.xjtu.edu.cn/), Xi'an Jiaotong University (XJTU), China
+<br>
+[*Dynamics of the central entrapped bubble during drop impact*](BGUM/jian.pdf)
+<hr></td></tr>
+
+<tr><td>10:00</td>
+<td>
+[Hua Tan](https://labs.wsu.edu/hua-tan/), [Washington State University Vancouver](https://www.vancouver.wsu.edu/), United States
+<br>
+[*Gerris: a powerful modeling tool for capillary flows*](BGUM/tan.pdf)
+<hr></td></tr>
+
+<tr><td>10:30</td>
+<td>
+<center>Coffee break (outside Maeder Hall)</center>
+<hr></td></tr>
+
+<tr><td>11:00</td>
+<td>
+[Palas Kumar Farsoiya](http://farsoiya.wixsite.com/mysite), [Indian Institute of Technology, Bombay](http://www.che.iitb.ac.in/online/), India
+<br>
+[*Axisymmetric viscous interfacial waves*](BGUM/farsoiya.pdf)
+<hr></td></tr>
+
+<tr><td>11:30</td>
+<td>
+[Marie-Jean Thoraval](http://gr.xjtu.edu.cn/web/mjthoraval), [International Center for Applied Mechanics (ICAM)](http://icam.xjtu.edu.cn/), Xi'an Jiaotong University (XJTU), China
+<br>
+[*Impact of a drop containing a bubble*](BGUM/thoraval.pdf)
+<hr></td></tr
+
+<tr><td>12:00</td>
+<td>
+A. Castillo Castellanos, A. Sergent and *M. Rossi*, [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+<br>
+[*Some aspects of Rayleigh-Benard dynamics  studied using Basilisk*](BGUM/rossi.pdf)
+<hr></td></tr>
+
+<tr><td>12:30</td>
+<td>
+<center>Lunch break (free time, locations will be suggested)</center>
+<hr></td></tr>
+
+<tr><td>14:00</td>
+<td>
+[Luc Deike](https://sites.google.com/site/lucdeike/), [Princeton University](http://www.princeton.edu), United States
+<br>
+[*Waves and wave breaking with Gerris*](BGUM/deike.pdf)
+<hr></td></tr>
+
+<tr><td>14:30</td>
+<td>
+[Antoon van Hooft](https://www.tudelft.nl/citg/over-faculteit/afdelingen/geoscience-remote-sensing/staff/phd-students/ir-ja-antoon-van-hooft/), [TU Delft](http://www.tudelft.nl/en/), The Netherlands
+<br>
+[*Studying Atmospheric Boundary Layer Processes Using Basilisk*](BGUM/vanhooft.pdf)
+<hr></td></tr>
+
+<tr><td>15:00</td>
+<td>
+[Yue (Stanley) Ling](http://www.ecs.baylor.edu/index.php?id=940802), [Baylor University](http://www.baylor.edu), United States
+<br>
+[*DNS of an Atomizing Biodiesel Jet with Basilisk*](BGUM/ling.pdf)
+<hr></td></tr>
+
+<tr><td>15:30</td>
+<td>
+<center>Coffee break (outside Maeder Hall)</center>
+<hr></td></tr>
+
+<tr><td>16:00</td>
+<td>
+Hans Heimel, [Inst. for appl. devel. in micro sys. eng.](https://www.imtek.de/home-en?set_language=en), Univ. Freiburg & [Festo AG&Co.KG](https://www.festo.com), Esslingen, Germany
+<br>
+[*From research to industry, Gerris for microfluidic multiphase application development*](BGUM/heimel.pdf)
+<hr></td></tr>
+
+<tr><td>16:30</td>
+<td>
+[Ivana Seric](http://web.njit.edu/~is28/), [New Jersey Institute of Technology](http://www.njit.edu), United States
+<br>
+*Variable surface tension flows with Gerris*
+<hr></td></tr>
+
+<tr><td>17:00</td>
+<td>
+[Frederik Brasz](https://www.bu.edu/fluidlab/), [Boston University](http://www.bu.edu), United States
+<br>
+[*Jets and droplets from bursting bubbles*](BGUM/brasz.pdf)
+<hr></td></tr>
+
+
+<tr><td>18:00</td>
+<td>
+<center>Drinks and Dinner at Triumph Brewery</center>
+<hr></td></tr>
+
+
+
+
+
+<tr><td>**Thursday 16th November**</td></tr>
+
+<tr><td>8:00</td>
+<td>
+<center> Breakfast (outside Maeder Hall) </center>
+<hr></td></tr>
+
+<tr><td>9:00</td>
+<td>
+Stéphane Popinet, [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+<br>
+[*Latest news of Basilisk*](BGUM/popinet.pdf)
+<hr></td></tr>
+
+<tr><td>9:30</td>
+<td>
+Rajarshi Roy Chowdhury, [∂'Alembert](http://www.dalembert.upmc.fr), UPMC, Paris, France
+<br>
+[*Higher order methods for Poisson and Advection equations*](BGUM/roy.pdf)
+<hr></td></tr>
+
+<tr><td>10:00</td>
+<td>
+[Daniel Fuster](http://danielfuster.com), [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+<br>
+[*Compressible schemes for multiphase flows on Basilisk*](BGUM/fuster.pdf)
+<hr></td></tr>
+
+<tr><td>10:30</td>
+<td>
+<center>Coffee break (outside Maeder Hall)</center>
+<hr></td></tr>
+
+<tr><td>11:00</td>
+<td>
+[Wojciech (Wojtek) Aniszewski](http://orcid.org/0000-0002-4248-1194), [∂'Alembert](http://www.dalembert.upmc.fr), UPMC, Paris, France
+<br>
+[*Film formation studies using Basilisk*](BGUM/aniszewski.pdf)
+<hr></td></tr>
+
+<tr><td>11:30</td>
+<td>
+[Jie Zhang](http://gr.xjtu.edu.cn/web/j_zhang), China
+<br>
+[*The development of Gerris in simulating multiphase MHD flows*](BGUM/zhang.pdf)
+<hr></td></tr>
+
+<tr><td>12:00</td>
+<td>
+Discussion groups
+<hr></td></tr>
+
+<tr><td>12:30</td>
+<td>
+<center>Lunch break (free time, locations will be suggested)</center>
+<hr></td></tr>
+
+<tr><td>14:00</td>
+<td>
+[Quentin Magdelaine](http://svi.cnrs.fr/spip/spip.php?article146&lang=en), [Surface du Verre & Interfaces](http://svi.cnrs.fr/spip/?lang=en) & [∂'Alembert](http://www.dalembert.upmc.fr), Saint-Gobain Recherche/CNRS/UPMC, Aubervilliers, France
+<br>
+[*Binary mixture & evaporation*](BGUM/magdelaine.pdf)
+<hr></td></tr>
+
+<tr><td>14:30</td>
+<td>
+[J.M. López-Herrera](http://www.us.es/acerca/directorio/ppdi/personal_4998), [Universidad de Sevilla](http://www.us.es), Spain
+<br>
+[*Simulating Viscoelastic flows with Basilisk*](BGUM/lopez-herrera.pdf)
+<hr></td></tr>
+
+<tr><td>15:00</td>
+<td>
+[Emre Turkoz](http://www.princeton.edu/~eturkoz/index.html), [Princeton University](http://www.princeton.edu), United States
+<br>
+[*Viscoelastic jet formation with impulsive boundary motion using Basilisk*](BGUM/turkoz.pdf)
+<hr></td></tr>
+
+<tr><td>15:30</td>
+<td>
+<center>Coffee break (outside Maeder Hall)</center>
+<hr></td></tr>
+
+<tr><td>16:00</td>
+<td>
+[Vladimir Kolobov](https://www.researchgate.net/profile/Vladimir_Kolobov), UAH & CFDRC, Huntsville, AL, USA
+<br>
+[*Plasma simulations with adaptive Cartesian mesh*](BGUM/kolobov.pdf)
+<hr></td></tr>
+
+<tr><td>16:30</td>
+<td>
+[Hiroumi Tani](http://cheme.scripts.mit.edu/green-group/hiroumi-tani/), [JAXA](http://global.jaxa.jp/)/[MIT](http://web.mit.edu/), Japan/United States
+<br>
+[*Reactive two-phase flow simulations using Basilisk*](BGUM/tani.pdf)
+<hr></td></tr>
+
+<tr><td>17:00</td>
+<td>
+[Pierre-Yves Lagrée](http://www.lmm.jussieu.fr/~lagree), [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+<br>
+[*Complex fluids (Bingham and granular) with Basilisk*](BGUM/lagree.pdf)
+<hr></td></tr>
+
+
+<tr><td>18:00</td>
+<td>
+<center>Farewell drinks</center>
+<hr></td></tr>
+
+</table>
+
+## Participants
+
+1. Alistair Adcroft, Princeton University, United States
+1. Kunal Adhia, Middlesex County Academy for Science, Mathematics, and Engineering Technologies, United States
+1. [Shahriar Afkhami](http://web.njit.edu/~shahriar/), [New Jersey Institute of Technology](http://www.njit.edu), United States
+1. [Wojciech (Wojtek) Aniszewski](http://orcid.org/0000-0002-4248-1194), [∂'Alembert](http://www.dalembert.upmc.fr), UPMC, Paris, France
+1. [Yi An](https://www.researchgate.net/profile/Yi_An8), [Institute of Mechanics](http://www.imech.cas.cn), Chinese Academy of Sciences, Beijing, China
+1. Craig Arnold, Princeton University, United States.
+1. Lina Baroudi, Manhattan College, United States 
+1. Alexis Berny, [∂'Alembert](http://www.dalembert.upmc.fr), UPMC, Paris, France
+1. [Frederik Brasz](https://www.bu.edu/fluidlab/), [Boston University](http://www.bu.edu), United States
+1. Christopher Browne, Princeton University, United States
+1. Lingzhi Cai, Princeton Univeristy, United States
+1. Francisco Carrillo, Princeton Univeristy, United States
+1. [Hossain Chizari](http://www.hossainchizari.webs.com), [International Center for Applied Mechanics (ICAM)](http://icam.xjtu.edu.cn/), Xi'an Jiaotong University (XJTU), China
+1. [Anders Damsgaard](https://adamsgaard.dk), [GFDL, Princeton University](http://www.princeton.edu), United States
+1. [Luc Deike](https://sites.google.com/site/lucdeike/), [Princeton University](http://www.princeton.edu), United States
+1. Jens Eggers, University of Bristol, UK
+1. [Soheil Esmaeilzadeh](https://profiles.stanford.edu/soheil-esmaeilzadeh), SUPRI-B, Stanford University, United States
+1. [Palas Kumar Farsoiya](http://farsoiya.wixsite.com/mysite), [Indian Institute of Technology, Bombay](http://www.che.iitb.ac.in/online/), India
+1. [Daniel Fuster](http://danielfuster.com), [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+1. Hans Heimel, [Inst. for appl. devel. in micro sys. eng.](https://www.imtek.de/home-en?set_language=en), Univ. Freiburg & [Festo AG&Co.KG](https://www.festo.com), Esslingen, Germany
+1. Zhen Jian, [International Center for Applied Mechanics (ICAM)](http://icam.xjtu.edu.cn/), Xi'an Jiaotong University (XJTU), China.
+1. Igor Kaganovich, Princeton Plasma Physics Lab, United States
+1. Andrei Khodak, Princeton Plasma Physics Lab, United States
+1. Alexander Khrabry, Princeton Plasma Physics Lab, United States
+1. [Vladimir Kolobov](https://www.researchgate.net/profile/Vladimir_Kolobov), UAH & CFDRC, Huntsville, AL, USA
+1. [Pierre-Yves Lagrée](http://www.lmm.jussieu.fr/~lagree), [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+1. Ching-Yao Lai, [Complex Fluids Group](https://stonelab.princeton.edu), Princeton University, United States
+1. Peter Lehrer, [New Jersey Institute of Technology](http://www.njit.edu), United States
+1. [Jinpin Lin](https://engineering.purdue.edu/NE/people/ptProfile?resource_id=145546), Purdue University, United States
+1. [Yue (Stanley) Ling](http://www.ecs.baylor.edu/index.php?id=940802), [Baylor University](http://www.baylor.edu), United States
+1. Chuanqi Liu, Princeton University, United States
+1. Ying Liu, [Complex Fluids group](https://stonelab.princeton.edu), Princeton University, United States
+1. [Guangyuan Liao](http://web.njit.edu/~gl92/),[New Jersey Institute of Technology](http://www.njit.edu),United States
+1. [J.M. López-Herrera](http://www.us.es/acerca/directorio/ppdi/personal_4998), [Universidad de Sevilla](http://www.us.es), Spain
+1. [Quentin Magdelaine](http://svi.cnrs.fr/spip/spip.php?article146&lang=en), [Surface du Verre & Interfaces](http://svi.cnrs.fr/spip/?lang=en) & [∂'Alembert](http://www.dalembert.upmc.fr), Saint-Gobain Recherche/CNRS/UPMC, Aubervilliers, France
+1. Maksim Mezhericher, [Complex Fluids Group](https://stonelab.princeton.edu), Princeton University, United States
+1. Wouter Mostert, California Institute of Technology, United States
+1. Vivek Mugundhan, King Abdullah University of Science and Technology, Saudi Arabia
+1. M Murray, Independent, Princeton U., United States
+1. Alexander Niewiarowski, Department of Civil and Environmental Engineering, Princeton University
+1. Stéphane Perrard, Laboratoire FAST (Orsay) and Ecole Polytechnique, France
+1. Julien Philippi, [Nonlinear Physical Chemistry Unit](http://www.ulb.ac.be/sciences/nlpc/), Université libre de Bruxelles, Belgium
+1. Stéphane Popinet, [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+1. Roberto Porcu, Princeton University, United States
+1. [Bhargav Rallabandi](https://sites.google.com/site/brallabandi7/home), [Princeton University](http://www.princeton.edu), United States
+1. Xingwei Ren, Princeton University, United States
+1. Maurice Rossi, [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+1. Rajarshi Roy Chowdhury, [∂'Alembert](http://www.dalembert.upmc.fr), UPMC, Paris, France
+1. Daniel Ruth, Princeton University, United States
+1. [Abhishek Saha](https://scholar.princeton.edu/asaha), Princeton University, United States
+1. [Thomas Séon](http://www.ida.upmc.fr/~seon/), [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+1. [Ivana Seric](http://web.njit.edu/~is28/), [New Jersey Institute of Technology](http://www.njit.edu), United States
+1. [Yixuan Sun](http://web.njit.edu/~ys379/), [New Jersey Institute of Technology](http://www.njit.edu), United States 
+1. [Hua Tan](https://labs.wsu.edu/hua-tan/), [Washington State University Vancouver](https://www.vancouver.wsu.edu/), United States
+1. Bofeng Tang, [The University of Alabama in Huntsville](http://www.uah.edu), United States
+1. [Xiaoyu Tang](https://www.researchgate.net/profile/Xiaoyu_Tang), Princeton University, United States
+1. [Hiroumi Tani](http://cheme.scripts.mit.edu/green-group/hiroumi-tani/), [JAXA](http://global.jaxa.jp/)/[MIT](http://web.mit.edu/), Japan/United States
+1. Virgile Thievenaz, [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+1. [Marie-Jean Thoraval](http://gr.xjtu.edu.cn/web/mjthoraval), [International Center for Applied Mechanics (ICAM)](http://icam.xjtu.edu.cn/), Xi'an Jiaotong University (XJTU), China
+1. [Emre Turkoz](http://www.princeton.edu/~eturkoz/index.html), [Princeton University](http://www.princeton.edu), United States
+1. [Antoon van Hooft](https://www.tudelft.nl/staff/j.a.vanhooft/), [TU Delft](http://www.tudelft.nl/en/), The Netherlands
+1. Yu Wei, [International Center for Applied Mechanics (ICAM)](http://icam.xjtu.edu.cn/), Xi'an Jiaotong University (XJTU), China
+1. Suo Yang, [Computational Turbulent Reacting Flow Laboratory (CTRFL)](https://ctrfl.princeton.edu/), [Princeton University](http://www.princeton.edu), United States
+1. [Stéphane Zaleski](http://www.ida.upmc.fr/~zaleski/zaleski.html), [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+1. Yadong Zeng, University of Minnesota, United States
+1. [Jie Zhang](http://gr.xjtu.edu.cn/web/j_zhang), China
+1. Wenxuan Zhang, Princeton University, United States
+1. Lailai Zhu, [Complex Fluids Group](https://stonelab.princeton.edu), Princeton University, United States
+1. Xiaojue Zhu, [Physics of Fluids Group](http://pof.tnw.utwente.nl/), University of Twente, The Netherlands
+
+## Organisers
+
+* [Luc Deike](https://sites.google.com/site/lucdeike/), [Princeton University](http://www.princeton.edu), United States
+* [Shahriar Afkhami](http://web.njit.edu/~shahriar/), [New Jersey Institute of Technology](http://www.njit.edu), United States
+* Stéphane Popinet, [∂'Alembert](http://www.dalembert.upmc.fr), UPMC & CNRS, Paris, France
+
+## Discussion groups
+
+The following discussion were held:
+
+* Do we try to organise a summer school? Where will the next BGUM be?
+* Basilisk/Gerris for industrial applications
+* How could we improve the basilisk tutorial  in a collaborative way leading to a reference manual?
+
+The following dicussions were not held (due mostly to lack of time):
+
+* Who wants to be/should be the next maintainer for Gerris? / future of Gerris
+* What priorities / improvements / new features for Basilisk?
+* Should we start a new "open/libre journal of computational mechanics/physics" 
+  for publication of free software codes, documented/reproducible results etc.
+
+## Previous meetings
+
+* [Meeting on Numerical challenges in two-phase flows 2014](http://gerris.dalembert.upmc.fr/meeting_on_numerical_challenges_in_two-phase_flows.html)
+* [Gerris users' meeting 2012](http://gerris.dalembert.upmc.fr/gerris_users%27_meeting_2012.html)
+* [Gerris users' meeting 2011](http://gerris.dalembert.upmc.fr/gerris_users%27_meeting_2011.html)

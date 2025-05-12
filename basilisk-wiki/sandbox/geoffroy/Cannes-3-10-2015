@@ -1,0 +1,28 @@
+/**
+#Inondation côte d'Azur 
+
+## Résumé
+Nous reproduisons numériquement les violentes inondations ayant touché la côte d’Azur ce samedi 3 Octobre à l'aide du code OpenSource "[Basilisk](/)" développé à $\partial$'Alembert. Pour ce faire, nous simulons les environs de Cannes et de Mandelieu (25x25 km^2^) de 19h30 à 23h30 en prenant en compte l'intensité et la répartition de la pluie ainsi que de l'infiltration dans le sol. 
+
+## Inondations à Cannes
+Nous partageons ci-dessous la vidéo des résultats de la simulation en sur-impression d'une vue satellite de Cannes, les taches représentent des hauteurs d'eau supérieures à 10cm, et donc les zones sinistrées (en bleu : 10 cm et en rouge : 90 cm).  Nous pouvons constater que notre simulation reproduit avec précision les zones les plus durement touchées par l'inondation.
+
+[Zoom sur l'inondation de Cannes](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/basilisk/CannesInondLR.mp4)
+
+[Voir l'inondation de Cannes sur Youtube](https://www.youtube.com/watch?v=4ZoEPpG4RqY)
+
+## Simulation entière
+Ci-dessous :  la vidéo de la simulation sur tout le domaine dont la vidéo précédente est extraite. La couleur bleu représente une hauteur d'eau inférieure ou égale à 10cm, le rouge représente une hauteur d'au moins 90 cm. On peut remarquer la mer Méditerranée en bas à droite.
+
+[Voir la simulation sur tout le bassin versant sur Youtube](https://www.youtube.com/watch?v=owAY4xTH09Q&feature=youtu.be)
+
+Ci-dessous : l'évolution de la résolution spatiale au cours du temps. Le bleu foncé correspond à une cellule de 400x400 m^2^ et le rouge à une résolution de 25x25 m^2^ (la résolution maximale).
+
+
+[Voir l'évolution du maillage sur Youtube](https://www.youtube.com/watch?v=ZBdCc6KQXWE)
+
+## Remerciements
+
++ Cette recherche est soutenue par le Fond AXA pour la recherche ([JRI AXA-UPMC "Modelling the flood peril"](https://www.youtube.com/watch?v=TOA2b-VYOsI&list=PLbLfQYSzQ-h1NyiDoWi7VWaz7CJvOYB8g&index=15) )
++ La topographie, à la résolution de 25 m, nous a été gracieusement fournie par l'IGN, au titre de la licence de Recherche
+*/

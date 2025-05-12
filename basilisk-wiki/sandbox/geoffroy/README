@@ -1,0 +1,25 @@
+/**
+# Geoffroy Kirstetter sandbox
+
+Hello, I'm Geoffroy Kirstetter and you're actually visiting my sand
+box. I store in this location all the work I have done with
+Basilisk. I usually work with the Saint-Venant equations but you can
+also find more generic codes I developed in the [dev](dev/README)
+repertory. My Sandbox is divided in different parts :
+
+## Browser
+
+* [dev](dev/README) : A collection of usefull libraries. It's here you'll
+find the predictor-corrector to use the source terms.
+* [friction](friction/README) : A set of benchmarks to test the friction 
+and the rain in Saint-Venant.
+* [test case](testcase/README) : Different test cases.
+* [sourceterm](sourceterm/README) : A set of source terms.
+
+## Cook book
+
+* [My Cookbook](cookbook)
+
+## Teaching
+* [M2 Polytech'Nice Sophia](teaching/README)
+*/

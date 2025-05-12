@@ -1,0 +1,148 @@
+%{
+# Free-surface: displaying the vector field of the surface
+
+In this code, we take the code that computes the eigenmodes for free surface waves [free_surface_gravity_particles.m](/sandbox/easystab/free_surface_gravity_particles.m) and we plot the vector field to confirm the motion of the particles on the surface that we observe in the animation.
+%}
+
+clear all; clf;
+
+n=100;      % number of gridpoints
+alpha=1;    % wavenumber in x
+L=2;        % Fluid height in y
+rho=1;      % fluid density
+mu=0.0001;    % fuid viscosity
+g=1;        % gravity
+
+% differentiation matrices
+scale=-2/L;
+[y,DM] = chebdif(n,2); 
+D=DM(:,:,1)*scale;    
+DD=DM(:,:,2)*scale^2;    
+y=(y-1)/scale; 
+I=eye(n); Z=zeros(n,n);
+
+% renaming the matrices
+dy=D; dyy=DD;
+dx=i*alpha*I; dxx=-alpha^2*I;
+Delta=dxx+dyy;
+
+% System matrices
+A=[mu*Delta, Z, -dx, Z(:,1); ...
+   Z, mu*Delta, -dy, Z(:,1); ...
+   dx, dy, Z, Z(:,1); ...
+   Z(1,:),I(n,:),Z(1,:),0];
+
+E=blkdiag(rho*I,rho*I,Z,1);
+
+% boundary conditions
+loc=[1,n,n+1,2*n];
+C=[I(1,:),Z(1,:),Z(1,:),0; ... 
+   Z(1,:),I(1,:),Z(1,:),0; ...
+   Z(1,:),Z(1,:),-I(n,:),rho*g; ...
+   dy(n,:),dx(n,:),Z(1,:),0]; 
+
+E(loc,:)=0;  
+A(loc,:)=C;
+
+% compute eigenmodes
+[U,S]=eig(A,E);
+s=diag(S);  [t,o]=sort(-real(s)); s=s(o); U=U(:,o);
+rem=abs(s)>1000; s(rem)=[]; U(:,rem)=[];
+%{
+# The animation
+
+We show the position of the free surface stored in *q(eta)*, and the particles to visualise the motion of the particles when the gravity wave propagates on free surface.
+%}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% particle animation of the eigenmodes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% parameters
+nper=2      % number of periods of oscillation
+nt=100       % number of time steps per period
+nx=40       % number of points in x
+modesel=2;  % which more do animate
+
+% select the eigenmode
+u=1:n; v=u+n; p=v+n; eta=3*n+1;
+q=U(:,modesel); 
+lambda=s(modesel);
+
+% The time and x extent
+tvec=linspace(0,nper*2*pi/abs(lambda),nper*nt); 
+dt=tvec(2)-tvec(1);
+Lx=2*pi/alpha; 
+x=linspace(0,Lx,nx);
+
+% scale mode amplitude 
+q=0.05*q/abs(q(eta)); 
+
+% initialize tracer particles
+[px,py]=meshgrid(linspace(0,Lx,60),linspace(0,L,30)); 
+py=py.*(1+2*real(exp(lambda*tvec(1))*q(eta)*exp(i*alpha*px))/L);
+px=px(:);py=py(:);  
+
+% time loop
+for ind=1:nper*nt
+
+    % expand mode to physical space 
+    qq=2*real(exp(lambda*tvec(ind))*q*exp(i*alpha*x));
+    
+    figure(1)
+    % plot pressure
+    surf(x,y,qq(p,:)-10,'facealpha',0.3); view(2); shading interp; hold on
+    
+    % plot free surface
+    plot(x,L+qq(eta,:),'k-',x,0*x+L,'k--'); hold on
+    
+    % plot the particles
+    plot(mod(px,Lx),py,'k.');
+    
+    % compute velocity at position of particles
+    pu=interp1(y,q(u),py);
+    pv=interp1(y,q(v),py);
+
+    % For particles above L, use Taylor expansion for velocity
+    pu(py>L)=q(u(n))+q(eta)*dy(n,:)*q(u);
+    pv(py>L)=q(v(n))+q(eta)*dy(n,:)*q(v);
+    
+    % expand to physical space
+    puu=2*real(exp(lambda*tvec(ind))*pu.*exp(i*alpha*px));
+    pvv=2*real(exp(lambda*tvec(ind))*pv.*exp(i*alpha*px));
+ 
+    % advect particles
+    px=px+puu*dt;
+    py=py+pvv*dt;
+       
+    xlabel('x');    
+    ylabel('y'); 
+    axis equal; axis([0,Lx,0,1.3*L]); 
+    grid off
+    hold off
+    drawnow
+    end
+    
+    set(gcf,'paperpositionmode','auto');
+    print('-dpng','-r100','free_surface_gravity_particles.png');
+%{
+# Velocity fields
+
+We show the position of the free surface stored in *q(eta)*, and velocity vectors for the top particles of the free surface.  
+%}
+    figure(2)
+    quiver(x',(L+qq(eta,:))',real(qq(u(n),:)),real(qq(v(n),:)),'b'); hold on
+    quiver(x,L+qq(eta,:),imag(qq(u(n),:)),imag(qq(v(n),:)),'r'); hold on
+    plot(x,L+qq(eta,:),'k-',x,0*x+L,'k--');
+
+    set(gcf,'paperpositionmode','auto');
+    print('-dpng','-r100','free_surface_gravity_velocity_field.png');
+
+
+%{
+![The figure at final iteration of the time loop, showing the free surface at the top, the particles in black, and the disturbance pressure field in color ](/sandbox/easystab/freegravitysurfaceparticles.gif)
+
+![Velocity vectors for the top particles of the free surface](/sandbox/easystab/stab2014/free_surface_gravity_velocity_field.png)
+
+From the figure of the velocity vector, we can confirm the motion of the particles. The velocity vectors show that a particle on the free surface will trace out a counter-clockwise circle as the wave travelling from right to left. This is exactly what we observe in the animation of the free surface gravity waves.
+%}

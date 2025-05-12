@@ -1,0 +1,39 @@
+## poisson equation basilisk
+
+here is an exemple of poisson equation 
+[2D poisson](Poisson2D.c)
+
+## Poisson equation in cylindrical coordinate
+here is an exemple of poisson equation in axisymetric cylindrical coordinate
+[2D poisson axisymetric](Poisson2Daxicyl.c)
+
+## poisson equation in a silo basilisk 
+
+here is an exemple of poisson equation to simulate a silo 
+[2D poisson silo](silo.c)
+
+##Granular flows basilisk
+
+here is an simple exemple of sandglass with an lateral orifice:
+
+[2D average](LateralSandglass.c)
+
+
+##Granular flows basilisk
+
+here is an exemple of sandglass with an lateral orifice with moderate friction of the front and back wall and unsymmetric silo H = 3.9L :
+
+
+[2D average un symmetric silo](LateralSandglassUnsym.c)
+
+
+##Granular flows basilisk with injection of air
+
+here is an exemple of sandglass with an injection of air
+we solve Poisson equation and add the force of pressure to simulate the injection of air
+
+
+[2D average air](BottomSandglassDarcy.c)
+
+
+

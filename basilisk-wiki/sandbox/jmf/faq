@@ -1,0 +1,314 @@
+**F**requenting **A**lphabetic **Q**uestions 
+
+Helping you and myself
+
+# A
+## Accuracy
+Basilisk comes with many [solves and functions](http://www.baslisk.fr/src/README), these have often been [tested](http://www.basilisk.fr/src/test/README) for their spatio-temporal convergence properties in limiting cases. Apart from the errors that are directly relatable to the discretized approach, the iterative multigrid [Poisson solver](http://www.basilisk.fr/src/poisson.h) allows a limited `TOLERANCE` on the solution's residuals.   
+
+## Adaptivity 
+
+Basilisk uses quadtrees to allow efficient adaptive grid refinement. The first thing we need to do is to remove the line setting the grid to Cartesian i.e.
+
+~~~c
+#include "grid/cartesian.h"   (to remove!!)
+~~~
+
+and to adapt the resolution according to the (wavelet-estimated) discretisation error of field h at each timestep (i++) we add
+
+~~~literatec
+event adapt (i++) {
+  adapt_wavelet ({h}, (double []){4e-3}, maxlevel = 8);
+}
+~~~
+
+We have just told Basilisk to adapt the resolution according to the (wavelet-estimated) discretisation error of field h. This adaptation is done at each timestep (i++). Whenever the discretisation error is larger than $4. \ 10^{-3}$
+the mesh is refined, down to a maximum of 8 quad tree levels in this case.
+
+
+## Axisymmetric
+
+For problems with a symmetry of revolution around the z-axis of a cylindrical coordinate system. 
+
+* The longitudinal coordinate (z-axis) is x and the radial coordinate (r-axis) is y. 
+* Note that y (and so Y0) cannot be negative.
+
+Use
+
+~~~c
+#include "axi.h"
+~~~
+
+# B
+
+## Backflow
+
+Simple outflow conditions (i.e. constant pressure) can lead to undesirable backflows. This can be avoided by imposing a coarse mesh close to the outflow boundary, for example:
+
+~~~literatec
+event adapt (i++) {
+  adapt_wavelet ({u}, (double[]){3e-2,3e-2}, 9, 4);
+  unrefine (x > 6);
+}
+~~~
+
+## Bview
+### Camera view point
+
+In case you wish to move the camera view point you must alter the default values of tx and ty in *view()*. You must realize that the relationship between the domain point (Xc,Yc) where you wish to center the camera and the parameters tx and ty is tx =-Xc/L0 and ty=-Yc/L0 where L0 is the size of the computational domain. 
+
+For instance, in case you wish to set the camera in the center of the square domain, Xc = X0 + L0/2 and Yc = Y0 + L0/2, you must set tx = -X0/L0-0.5 and ty = -Y0/L0 - 0.5.
+
+![Use of tx and ty](txty_explanation.svg){width="30%"}
+
+## Boundary
+
+How print the boundary values
+
+~~~c
+ foreach_boundary(left)
+    for (int i = -2; i < 0; i++)
+      fprintf (stderr, "%g %g %g\n", x + i*Δ, y, s[i]);
+~~~
+
+## Bugs
+
+To report bugs go to the [basilisk bugs page](http://basilisk.fr/sandbox/bugs/README).
+
+
+# C
+## Compilation
+
+Useful flags
+
+* -fopenmp   (use openmp)
+* -g         (use debugger)
+* -lm        (link with math library) 
+* -Wall      (Warning all)
+* -events    (print order events)
+
+# D
+## Density (and viscosity) variable
+
+The density and viscosity are defined here using the arithmetic average.
+
+~~~literatec
+#define ρ(f) ((f)*rho1 + (1. - (f))*rho2)
+#define μ(f) ((f)*mu1 + (1. - (f))*mu2)
+
+event properties (i++) {
+  foreach_face() {
+    double fm = (f[] + f[-1,0])/2.;
+    alphav.x[] = 1./ρ(fm);
+    muv.x[] = μ(fm);
+  }
+  foreach()
+    alphacv[] = 1./ρ(f[]);
+}
+~~~
+## Dimensions
+
+By default Basilisk runs on a quadtree grid. This also automatically sets a two-dimensional spatial domain.
+
+For the example; 3 Dimensions (octree grid) are defined by an option during the generation of the source file:
+
+```
+qcc -source -grid=octree -D_MPI=1 atomisation.c
+```
+
+So compile with this option, or add:
+
+~~~c
+#include "grid/octree.h"
+~~~
+
+at the top of your simulation file. 
+
+On a one-dimensional (1D) grid, there is the $x$ direction which goes from the `left` to the `right` boundary, located at `x = X0` and `x = X0 + L0`, respectively. On a 2D grid, there also is a
+$y$ direction, which goes from the `bottom` to the `top` boundary, located at `y = Y0` and `y = Y0 + L0`, respectively. Finally, on a 3D grid there exists an aditional $z$ direction: Going from the `back` to the `front` boundary, lozated at `z = Z0` and `z = Z0 + L0`, respectively (i.e. a right-handed coordinate system). 
+
+# G
+## Gravity
+
+Adding gravity force in the *y* direction
+
+~~~literatec
+event acceleration (i++) {
+  face vector av = a;
+  foreach_face(x)
+    av.x[] -= 0.98;
+}
+~~~
+
+#I
+## Initialization
+
+### Face vector
+In some cases, it can be necessary to apply different operations to each component of a **face vector field**. 
+For example let’s assume we need to initialise a face vector field with the components (y,x). 
+This could be done using
+
+~~~literatec
+face vector u[];
+...
+foreach_face(x)
+  u.x[] = y;
+foreach_face(y)
+  u.y[] = x;
+~~~
+
+Note that the coordinates x and y correspond to the center of the face.
+
+### Volume fraction
+
+To initialize the volume fraction 
+
+~~~literatec
+vertex scalar phi[];
+foreach_vertex()
+  phi[] = sq(DIAMETER/2) - sq(x) - sq(y);
+fractions (phi, c);
+~~~
+
+# K
+
+## kdtquery
+
+kdtquery is in the Basilisk release. There is just a missing symbolic link so
+that it's automatically accessible through PATH. We will fix this.
+
+In the meantime just do
+
+```
+% cd $BASILISK
+% ln -s kdt/kdtquery
+% which kdtquery
+```
+
+# M
+
+## Mask
+
+mask() **only** works on trees dont use
+
+~~~C
+#include"grid/multigrid.h"       (to remove!!)    
+~~~
+
+## Macros
+
+Some macros functions are defined in Basilisk (see src/common.h for details)
+
+~~~literatec
+@define max(a,b) ((a) > (b) ? (a) : (b))
+@define min(a,b) ((a) < (b) ? (a) : (b))
+@define sq(x) ((x)*(x))
+@define cube(x) ((x)*(x)*(x))
+@define sign(x) ((x) > 0 ? 1 : -1)
+@define noise() (1. - 2.*rand()/(double)RAND_MAX)
+@define clamp(x,a,b) ((x) < (a) ? (a) : (x) > (b) ? (b) : (x))
+@define swap(type,a,b) { type tmp = a; a = b; b = tmp; }
+~~~
+If you have problems with some macros please read K&R ...
+to understand up more on how to use C preprocessor directives
+(i.e. all the keywords starting with #) correctly.
+
+A few tips:
+
+- always enclose expressions within brackets (see #define clamp)
+- be careful to add dots to floating point constants
+
+## Minimal example
+
+When you have a problem dont say "I have a problem" or "Dont work", first
+take a look to the mailing list and then post a Minimal example please.
+
+[Minimal example](https://en.wikipedia.org/wiki/Minimal_Working_Example)
+
+# O
+## Origin
+
+By default Basilisk place the origin (0,0) at the bottom of the left corner in 2D. To move it
+at the cent of the box we can set
+
+~~~literatec
+X0 = -L0/2;
+Y0 = -L0/2;
+~~~
+
+or the `origin()`function
+
+~~~literatec
+origin (-L0/2, -L0/2.);
+~~~
+
+L0 being the box size.
+
+## Output in parallel (MPI)
+Apart from the [output functions](http://www.basilisk.fr/src/output.h) provided by Basilisk, a serially implemented output fuction may not work naively when using MPI. A few tips are:
+
+* Let only a single thread (`pid()`) write to the disk:
+
+~~~literatec
+if (pid() == 0) 
+  fprintf(fp, "Hallo, this is pid() %d", pid());
+~~~
+
+This requires to properly reduce the various versions of a diagnostic variable using e.g. [a reduction clausule](http://basilisk.fr/Basilisk%20C#parallel-programming) or [a more general reduction operation](http://mpitutorial.com/tutorials/mpi-reduce-and-allreduce/), such that the writing thread has access to the relevant data.
+
+* Let each thread write it's own file.
+
+~~~literatec
+char fname[99];
+sprintf(fname, "output_pid%d", pid());
+FILE * fp = fopen(fname, "w");
+fprintf(fp, "Hallo, this is pid() %d", pid());
+~~~
+
+
+# R
+## Random numbers
+
+The `noise()` function returns random numbers between -1 and 1, example for setting 0 and 1 in a circle
+of center (0,0) and of radius 0.2
+
+~~~literatec
+foreach()
+  a[] = (x*x + y*y < sq(0.2))*(noise() > 0.);
+boundary ({a});
+~~~
+
+To limit the most prominent effects of the deterministic pseudo-random-number generator, you can seed with the [UNIX time stamp](https://www.unixtimestamp.com/)
+
+~~~literatec
+srand(time(NULL));
+~~~
+
+# S
+## Surface tension
+
+The surface tension $\sigma$ and interface curvature $\kappa$ are associated to each VOF tracer. 
+
+The interface is represented by the volume fraction field $c$ by
+
+~~~c
+#include "vof.h"
+#include "tension.h"
+...
+scalar c[], * interfaces = {c};
+~~~
+
+and setting by the way  $\sigma = 1.$ doing
+
+~~~literatec
+c.sigma = 1.;
+~~~
+
+# T
+
+## Teaching
+
+Basilisk is used to teach general computational fluid mechanics, see
+
+- 1st year Master “Environmental Fluid Mechanics” (P-Y Lagrée) [M1EFM](http://basilisk.fr/sandbox/M1EMN/README)
+- ARE course on Saint Venant Equations (G Kirstetter) [StVenant](http://basilisk.fr/sandbox/geoffroy/README)

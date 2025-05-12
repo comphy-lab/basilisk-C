@@ -1,0 +1,137 @@
+#include "grid/octree.h"
+#include "embed.h"
+#include "navier-stokes/centered.h"
+#include "navier-stokes/perfs.h"
+#include "profiles6.h"
+#include "view.h"
+#include "lambda2.h"
+
+//we construct the grass from individual cylinders:
+#define CYL ((z >= h ? 0. : 1.) * (sqrt(sq(x+tx) + sq(y+ty)) - R) + (z >= h ? 1. : 0.) * (sqrt(sq(x+tx) + sq(y+ty) + sq(z-h)) - R))
+
+double R = 0.05, hgrass = 1, U = 1., ue = 3e-2, nu = 1e-4;
+double h = hgrass - L0/2.
+int maxlevel = 8;
+double be = 0.01, ue = ;
+double Tend = 30.;
+face vector muc[];
+
+FILE * fp;
+int main() {
+  L0 = 8;
+  X0 = Y0 = Z0 = -L0/2.;
+  mu = muc;
+  char logname[99];
+  sprintf (logname, "log3rd%g3D%d-%g",Re, maxlevel, c);
+  fp = fopen (logname, "w");
+  N = 128;
+  periodic(left);
+  periodic (top);
+
+  run();
+}
+
+//no-slip boundary condition on embedded surface
+u.n[embed] = dirichlet (0.);
+u.t[embed] = dirichlet (0.);
+u.r[embed] = dirichlet (0.);
+
+
+//this function creates the "grass" by joining cylinders and a plane
+void grass(scalar cs, face vector fs)
+{
+  vertex scalar phi[];
+
+  foreach_vertex(){
+    phi[] =  z + 3.7;
+    for (int i = 0; i < 8; i++){
+      for (int j = 0; j < 8; j++){
+        double tx = i - L0/2 + 0.5;
+        double ty = j - L0/2 + 0.5;
+        phi[] = intersection(phi[], CYL);
+      }
+    }
+  }
+  fractions (phi, cs, fs);
+  fractions_cleanup(cs,fs);
+}
+
+event init (t = 0) {
+  grass(cs,fs);
+  foreach() {
+    u.x[] = cs[] ? U : 0.;
+    u.y[] = noise()*U/200.;
+    u.z[] = noise()*U/200.;
+  }
+}
+
+event properties (i++) {
+  foreach_face()
+    muc.x[] = fm.x[]*nu; 
+  boundary ((scalar*){muc});
+}
+
+event adapt (i++)
+  adapt_wavelet ((scalar*){u, cs}, (double[]){be, ue, ue}, maxlevel, 4);
+
+//output lambda2 isosurface video of flow through domain with cells
+event movies (i++) {
+  scalar l2[];
+  lambda2 (u, l2);
+  view (fov = 30, quat = {0.431384,-0.216693,-0.317091,0.816338},
+	tx = 0, ty = 0, tz = 33, bg = {0.3,0.4,0.6}, width = 1080,
+	height = 1080, samples = 3);
+  isosurface ("l2", -0.01);
+  cells (n = {0,1,0}, alpha = L0/2);
+  cells (n = {1,0,0}, alpha = L0/2);
+  cells (n = {0,0,1}, alpha = -L0/2);
+  draw_vof ("cs", "fs", fc = {0.5,0.1,0.2});
+  save ("flow.mp4");
+}
+
+//output complete velocity field at three heights for turbulent analysis
+event velocity_h05 (t += 1.) {
+  char file[99];
+  sprintf (file, "vel_grass_%g", t);
+  FILE * fp = fopen (file, "w");
+  output_slice(list = {u.x, u.y, u.z}, fp, n = 256, plane = {1, 1, 0.08125});
+}
+
+event velocity_h1 (t += 1.) {
+  char file[99];
+  sprintf (file, "vel_top_%g", t);
+  FILE * fp = fopen (file, "w");
+  output_slice(list = {u.x, u.y, u.z}, fp, n = 256, plane = {1, 1, 0.125});
+}
+
+event velocity_h15 (t += 1.) {
+  char file[99];
+  sprintf (file, "vel_above_%g", t);
+  FILE * fp = fopen (file, "w");
+  output_slice(list = {u.x, u.y, u.z}, fp, n = 256, plane = {1, 1, 0.1875});
+}
+
+//output central vertical slice of vorticity field (magnitude of outward facing component)
+event vort_vertical (i++){
+  scalar omega[];
+  vorticity (u, omega);
+  view (fov = 20, camera = "top");
+  squares ("omega", linear = true, n = {0, 1, 0}, alpha = 0.5);
+  //cells(n = {1, 0, 0}, alpha = 0.5);
+  save ("vort.mp4");
+}
+
+//output horizontal vorticity field slice at the top of the grass
+event vort_top (i++){
+  scalar omega[];
+  vorticity (u, omega);
+  view (fov = 20, camera = "front");
+  squares ("omega", linear = true, n = {0, 0, 1}, alpha = 0.5);
+  squares ("u.x", linear = true, n = {0, 0, 1}, alpha = 1);
+  cells(n = {1, 0, 0}, alpha = 0.5);
+  save ("vort_top.mp4");
+}
+
+ event stop (t = Tend) {
+  fclose (fp);
+}

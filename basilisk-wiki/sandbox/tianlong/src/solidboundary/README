@@ -1,0 +1,10 @@
+# Introduction
+Some of my simulations are performed on non-square domains. As my setup is very simple (the fluid-solid boundary will always be aligned with a grid line), instead of using the embedded method provided by Basilisk, I have implemented my own solid boundary method. This may be more convenient for me in the future as I plan to add conjugate heat transfer inside the solid. It's like the mask feature of Basilisk but can be run in parallel.
+
+# Implementation
+The main principle is to find the two layers of ghost cells, and to fill them with the correct boundary conditions. As Basilisk uses automatic boundary conditions, I have changed the previous source codes a little. Every time the default boundary conditions are performed, the values of the real ghost cells (which are now located inside the domain) will be set according to the boundary condition (Neumann, Dirichlet, etc.).
+
+# Utilization
+Replace the original two header files in $BASILISK/src/grid with the two provided here (tree-common.h and cartesian-common.h). The additional header file mysolid.h should be included in the source file of a specific case.
+
+Two variables need to be set: SOLID_LEN_x and SOLID_LEN_y. Their values indicate the size of the solid domain. When their value is zero, the solid boundary in that direction will not be activated.

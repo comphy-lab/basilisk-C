@@ -1,0 +1,19 @@
+# My Sandbox
+Feel free to email me at dahuang@gmail.com.
+
+# Basilisk Documentation
+I'm crafting this doc for the convience of anyone who is interested in how things go inside Basilisk and those may want to alter the solver.
+Since there are obstacles in translating Tex into Markdown and uploading images, docs in this sandbox provide only basic introduction and associate reference.\
+If you know Chinese, there is a draft in my [GitHub](https://github.com/Langford-H/BasiliskManual) which however contains a lot of mistakes and will no longer be updated.\
+
+------------------------------------------
+
+**See [here](https://github.com/Langford-H/Basilisk-Documentation) for a more detailed version written in tex.**
+
+## NS centered solver
+- [bcg.h](./document/bcg-doc)
+- [poisson.h](./document/poisson-doc)
+- viscosity.h
+
+## Multiphase Flow
+- heights.h

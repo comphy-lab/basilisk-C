@@ -1,0 +1,369 @@
+/**
+# 2D 
+
+## tension_var.h
+*/
+
+#include "curvature.h"
+#include "heights.h"
+#include "geometry.h"
+
+attribute {
+  scalar sigma;
+  scalar kappa;
+}
+
+event defaults (i = 0) {
+
+  if (is_constant(a.x)) {
+    a = new face vector;
+    foreach_face()
+      a.x[] = 0.;
+    boundary ((scalar *){a});
+  }
+
+  for (scalar c in interfaces)
+    if (c.sigma.i && !c.kappa.i) {
+      scalar kappa = new_scalar ("kappa");
+      foreach()
+	kappa[] = 0.;
+      boundary ({kappa});
+      c.kappa = kappa;
+    }
+
+  for (scalar c in interfaces)
+    if (!c.sigma.i) {
+      scalar sigma = new_scalar ("sigma");
+      foreach()
+	sigma[] = 0.;
+      boundary ({sigma});
+      c.sigma = sigma;
+    }
+
+}
+
+event stability (i++) {
+
+  double amin = HUGE, amax = -HUGE, dmin = HUGE;
+  foreach_face (reduction(min:amin) reduction(max:amax) reduction(min:dmin)) {
+    if (alpha.x[]/fm.x[] > amax) amax = alpha.x[]/fm.x[];
+    if (alpha.x[]/fm.x[] < amin) amin = alpha.x[]/fm.x[];
+    if (Delta < dmin) dmin = Delta;
+  }
+  double rhom = ((1./amin + 1./amax)/2.);
+
+  foreach(){
+    for (scalar c in interfaces){
+      scalar sigma = c.sigma;
+      if (sigma[]) {
+        double dt = ( sqrt ( rhom*cube(dmin)/(pi*sigma[]) ) );
+        if (dt < dtmax)
+	    dtmax = dt;
+
+      }
+    }
+  }
+
+  
+  FILE * fp_t = fopen ("t.dat", "a");
+  fprintf(fp_t,"%g %d\n",t,i);
+  fclose(fp_t);
+  
+}
+
+event acceleration (i++){
+
+  scalar *list = NULL;
+
+
+  foreach(){
+    for (scalar c in interfaces){
+    scalar sigma = c.sigma; 
+      if (sigma[]) {
+        list = list_add (list, c);
+        c[] = clamp (c[], 0, 1);
+      }
+    }
+  }
+  
+
+  for (scalar c in interfaces){
+    boundary ({c});
+    assert (c.kappa.i);
+    curvature (c, c.kappa);
+  }
+
+#if QUADTREE
+  for (scalar c in list)
+    c.prolongation = p.prolongation;
+  boundary (list);
+#endif
+
+
+  face vector st = a;
+
+  face vector f_n[];
+  
+  face vector f_t_height[];
+  face vector f_t1_height[];
+  face vector f_t2_height[];
+  
+  face vector f_t_mixed[];
+  face vector f_t1_mixed[];
+  face vector f_t2_mixed[];
+  
+  foreach_face() {
+      f_n.x[] = 0.;
+      f_t_height.x[] = 0.;
+      f_t1_height.x[] = 0.;
+      f_t2_height.x[] = 0.;
+      f_t_mixed.x[] = 0.;
+      f_t1_mixed.x[] = 0.;
+      f_t2_mixed.x[] = 0.;
+  }
+    boundary ((scalar *){f_n, f_t_height, f_t1_height, f_t2_height, f_t_mixed, f_t1_mixed, f_t2_mixed});
+
+vector h[];
+
+vector n_height[];
+vector n_mixed[];
+
+scalar alpha_mixed[];
+scalar alpha_height[];
+		
+scalar ds_int[];
+scalar ds_int_mixed[];
+scalar ds_int_height[];
+
+double ds_tot_mixed = 0.;
+double ds_tot_height = 0.;
+double state = 0.;
+			
+	foreach_face(){
+		n_mixed.x[]=0;
+		n_height.x[] = 0.;		
+	}		
+			
+	foreach(){
+		alpha_height[]=0;
+		alpha_mixed[]=0;
+		ds_int[]=0;
+		ds_int_height[]=0;
+		ds_int_mixed[]=0;				
+	}
+	
+for (scalar c in list){  
+	
+	heights(c,h);
+
+	reconstruction(c,n_mixed,alpha_mixed);	
+
+	foreach(){
+		if ( (c[] > 1e-6 && c[] < 1.-1e-6) ){
+		double Gx_hy = (h.y[1,0] - h.y[-1,0])/2.;
+		double Gy_hx = (h.x[0,1] - h.x[0,-1])/2.;
+		double nn = 0.;
+	
+		if ( fabs(n_mixed.x[]) < fabs(n_mixed.y[]) ){
+			nn = sqrt(Gx_hy*Gx_hy + 1);
+			if(c[0,1]<c[0,-1]){
+				n_height.y[]= (1/nn);
+				n_height.x[]= (-Gx_hy/nn);
+			}
+			else{
+				n_height.y[]= (-1/nn);
+				n_height.x[]= (Gx_hy/nn);
+			}
+		}
+		else{
+			nn = sqrt(Gy_hx*Gy_hx + 1);
+			if(c[1,0]<c[-1,0]){
+				n_height.y[]= (-Gy_hx/nn);
+				n_height.x[]= (1/nn);
+			}
+			else{
+				n_height.y[]= (Gy_hx/nn);
+				n_height.x[]= (-1/nn);
+			}			
+		}
+
+	coord m_height = {n_height.x[],n_height.y[]};
+	coord m_mixed = {n_mixed.x[],n_mixed.y[]};
+	alpha_height[] = line_alpha(c[], m_height) ;
+	alpha_mixed[] = line_alpha(c[], m_mixed) ;
+	coord coord_centroid = {0,0};
+	
+	ds_int_height[] = Delta * line_length_center(m_height, alpha_height[],&coord_centroid);
+	ds_int_mixed[] = Delta * line_length_center(m_mixed, alpha_mixed[],&coord_centroid);
+
+	double nn_mixed = sqrt(n_mixed.x[]*n_mixed.x[] + n_mixed.y[]*n_mixed.y[]);
+	n_mixed.x[] = n_mixed.x[]/nn_mixed;
+	n_mixed.y[] = n_mixed.y[]/nn_mixed;
+
+	ds_tot_height += ds_int_height[];
+	ds_tot_mixed += ds_int_mixed[];
+		
+		
+	double norm_n_height = sqrt(n_height.x[]*n_height.x[] + n_height.y[]*n_height.y[]);
+	double norm_n_mixed = sqrt(n_mixed.x[]*n_mixed.x[] + n_mixed.y[]*n_mixed.y[]);
+		
+	double theta_int = atan(y/x);
+		
+	FILE * fp_ds = fopen ("ds.dat", "a");
+	fprintf(fp_ds,"%f %f %g %g %g %g %g \n \n",x,y,ds_int_height[],ds_tot_height,ds_int_mixed[],ds_tot_mixed,Delta);
+	fclose(fp_ds); 	
+		
+	FILE * fp_height = fopen ("height.dat", "a");
+	fprintf(fp_height,"%f %f %g %g \n",x,y,h.x[],h.y[]);
+	fclose(fp_height); 			
+		
+	FILE * fp_n = fopen ("n.dat", "a");
+	fprintf(fp_n,"%f %f \n %g %g %g \n %g %g %g\n\n",x,y,n_height.x[],n_height.y[],alpha_height[],n_mixed.x[],n_mixed.y[],alpha_mixed[]);
+	fclose(fp_n);		
+		
+
+	FILE * fp_norm = fopen ("norm.dat", "a");
+	fprintf(fp_norm,"%g %g %g \n",state,norm_n_height,norm_n_mixed);
+	fclose(fp_norm);
+	
+	FILE * fp_nx = fopen ("nx.dat", "a");
+	fprintf(fp_nx,"%g %g %g \n",theta_int,n_height.x[],n_mixed.x[]/norm_n_mixed);
+	fclose(fp_nx);			
+
+	state += 1;
+}
+}
+
+
+}	
+	
+
+
+foreach_face(){
+  for (scalar c in list){
+
+    scalar kappa = c.kappa;
+    scalar sigma = c.sigma;
+
+      if (c[] != c[-1] || (c[] > 1e-6 && c[] < 1.-1e-6)){
+	
+
+	
+	double kf = 
+	  (kappa[] < nodata && kappa[-1] < nodata) ?
+	  (kappa[] + kappa[-1])/2. :
+	  kappa[] < nodata ? kappa[] :
+	  kappa[-1] < nodata ? kappa[-1] :
+	  0.;
+	
+    
+        
+
+        double Delta_cx = (c[] - c[-1,0]) ;
+
+        double Delta_sigmax = (sigma[] - sigma[-1,0]) ; 
+        double Delta_sigmay = ( (sigma[-1,1]-sigma[-1,-1]+sigma[0,1]-sigma[0,-1])/4. ) ; 
+        	
+        //~ scalar ds_int[];
+        //~ ds_int[] = ds_int_height[];
+
+
+        // Normal force	
+        st.x[] += ( (alpha.x[]/fm.x[]) * sigma[] * kf * (Delta_cx/Delta) );
+        
+        f_n.x[] = ( (1/fm.x[]) * sigma[] * kf * (Delta_cx/Delta) );
+
+        // Tangential force
+    	st.x[] += ( (alpha.x[]/fm.x[]) * (Delta_sigmax/Delta) * ( ds_int_height[]/(Delta*Delta) ) ) ;
+	    st.x[] -= ( (alpha.x[]/fm.x[]) * ((Delta_sigmax*n_height.x[] + Delta_sigmay*n_height.y[])/(Delta)) * ( (ds_int_height[]/(Delta*Delta))*n_height.x[]) ) ;
+
+		// Height approach
+		f_t1_height.x[] = ( (1/fm.x[]) * (Delta_sigmax/Delta) * ( ds_int_height[]/(Delta*Delta) ) ) ;
+		f_t2_height.x[] = -( (1/fm.x[]) * ((Delta_sigmax*n_height.x[] + Delta_sigmay*n_height.y[])/(Delta)) * (( ds_int_height[]/(Delta*Delta))*n_height.x[])  ) ;
+
+		f_t_height.x[] = f_t1_height.x[] + f_t2_height.x[];
+
+		// Mixed approach
+		f_t1_mixed.x[] = ( (1/fm.x[]) * (Delta_sigmax/Delta) * ( ds_int_mixed[]/(Delta*Delta) ) ) ;
+		f_t2_mixed.x[] = -( (1/fm.x[]) * ((Delta_sigmax*n_mixed.x[] + Delta_sigmay*n_mixed.y[])/(Delta)) * (( ds_int_mixed[]/(Delta*Delta))*n_mixed.x[])  ) ;
+
+		f_t_mixed.x[] = f_t1_mixed.x[] + f_t2_mixed.x[];
+		
+
+		
+    }
+    
+      }
+}
+
+  for (scalar c in list){
+
+	double vol_int = 0.;
+	double inter_length =0.;
+
+  foreach(){
+
+  if (c[] != c[-1] || (c[] > 1e-6 && c[] < 1.-1e-6)){	
+
+        double Delta_cx = (c[] - c[-1,0]) ;
+        double Delta_cy = ( (c[-1,1]-c[-1,-1]+c[0,1]-c[0,-1])/4. ) ; 
+        double c_norm = ( sqrt(Delta_cx*Delta_cx+Delta_cy*Delta_cy) ); 
+
+	vol_int += dv(); 
+
+	// Interface length
+	inter_length +=  ( (c_norm/Delta)*dv() );
+  }
+}
+
+
+	stats vol_b = statsf (c);    
+
+
+	stats Fx_n = statsf (f_n.x);
+	stats Fy_n = statsf (f_n.y);
+	
+	stats Fx_t_height = statsf (f_t_height.x);
+	stats Fy_t_height = statsf (f_t_height.y);	
+	stats Fx_t1_height = statsf (f_t1_height.x);
+	stats Fy_t1_height = statsf (f_t1_height.y);
+	stats Fx_t2_height = statsf (f_t2_height.x);
+	stats Fy_t2_height = statsf (f_t2_height.y);
+	
+	stats Fx_t_mixed = statsf (f_t_mixed.x);
+	stats Fy_t_mixed = statsf (f_t_mixed.y);	
+	stats Fx_t1_mixed = statsf (f_t1_mixed.x);
+	stats Fy_t1_mixed = statsf (f_t1_mixed.y);
+	stats Fx_t2_mixed = statsf (f_t2_mixed.x);
+	stats Fy_t2_mixed = statsf (f_t2_mixed.y);
+
+	
+	
+	
+  FILE * fp_Ft = fopen ("F_t.dat", "a");
+  fprintf(fp_Ft,"%d %f \n %g %g \n %g %g \n %g %g %g \n\n",i,t,Fx_t_height.sum,Fy_t_height.sum,Fx_t_mixed.sum,Fy_t_mixed.sum,vol_b.sum,vol_int,inter_length);
+  fclose(fp_Ft);
+  
+  FILE * fp_Ft1 = fopen ("F_t1.dat", "a");
+  fprintf(fp_Ft1,"%d %f \n %g %g \n %g %g \n %g %g\n\n",i,t,Fx_t1_height.sum,Fy_t1_height.sum,Fx_t1_mixed.sum,Fy_t1_mixed.sum,vol_b.sum,vol_int);
+  fclose(fp_Ft1);
+
+  FILE * fp_Ft2 = fopen ("F_t2.dat", "a");
+  fprintf(fp_Ft2,"%d %f \n %g %g \n %g %g \n %g %g \n\n",i,t,Fx_t2_height.sum,Fy_t2_height.sum,Fx_t2_mixed.sum,Fy_t2_mixed.sum,vol_b.sum,vol_int);
+  fclose(fp_Ft2);
+  
+  FILE * fp_Fn = fopen ("F_n.dat", "a");
+  fprintf(fp_Fn,"%d %f %g %g %g %g \n",i,t,Fx_n.sum,Fy_n.sum,vol_b.sum,vol_int);
+  fclose(fp_Fn); 	 
+  
+ }
+
+     
+      
+#if QUADTREE
+  for (scalar c in list)
+    c.prolongation = fraction_refine;
+  boundary (list);
+#endif
+  free (list);
+}

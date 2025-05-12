@@ -1,0 +1,177 @@
+![Diffusion of a temperature band](/Diffusion.png)
+
+/**
+# Code description
+## Files inclusion
+
+We solve the diffusion of temperature.
+*/
+ 
+#include "diffusion.h"
+
+
+/**
+## Definition of fields
+*/
+scalar T[];
+
+/**
+## Definition of variables
+
+The temperature is a scalar field, which is initially set at 20°C.
+*/
+
+int T_init = 20.;
+int Delta_T = 80.;
+double time_step = 1e-3;
+double t_final = 0.05;
+double dt;
+mgstats mgd;
+
+
+/**
+## Boundary conditions
+
+- X[left] = dirichlet($\alpha$) $\Leftrightarrow$ $X[left] = \alpha$
+- X[left] = neumann($\alpha$) $\Leftrightarrow \vec{\nabla X}[left] \cdot \vec{n}[left] = \alpha$
+*/
+
+T[top]   = neumann(0);
+T[bottom]= neumann(0);
+T[right] = dirichlet(T_init);
+T[left]  = dirichlet(T_init + Delta_T);
+
+
+/**
+## Main
+*/
+
+// Parameters
+int main() {
+  L0 = 1.;
+  N = 64;
+  run();
+}
+
+/**
+## Inital conditions
+*/
+
+// Initial conditions
+event init (i = 0) {  
+  foreach() { 
+    if(x<0.4 && 0.2<x)
+      T[] = T_init + Delta_T;
+    else
+      T[] = T_init;
+  }
+  boundary({T}); 
+}  
+
+
+/**
+## [Diffusion](http://basilisk.fr/src/diffusion.h)
+*/
+// Diffusion
+event integration (i++) {
+  dt = dtnext (t, time_step);
+  mgd = diffusion (T, dt);
+}
+
+
+/**
+## Outputs
+*/
+
+// Results
+event ppm_T(i++){
+  char *outfile2 = NULL;
+  outfile2 = (char *) malloc(sizeof(char) * 256);
+  sprintf(outfile2, "T-%d.png", i);
+  FILE * fp_T = fopen (outfile2, "w");
+  output_ppm(T,fp_T, linear=true);   
+  fclose(fp_T);
+}  
+
+
+event movie (i += 4)
+{
+  static FILE * fp = popen ("ppm2mpeg > diffusion.mpg", "w");
+  output_ppm (T, fp, linear = true);
+}
+
+
+/**
+## End
+
+The end event defines the final iteration of the computation. We can set an end time or an end iteration.
+*/
+
+event end (t = t_final){
+}
+
+/**
+# code
+*/
+
+#include "diffusion.h"
+
+scalar T[];
+int T_init = 20.;
+int Delta_T = 80.;
+double time_step = 1e-3;
+double t_final = 0.05;
+double dt;
+mgstats mgd;
+
+
+T[top]   = neumann(0);
+T[bottom]= neumann(0);
+T[right] = dirichlet(T_init);
+T[left]  = dirichlet(T_init);
+
+// Parameters
+int main() {
+  L0 = 1.;
+  N = 64;
+  run();
+}
+
+// Initial conditions
+event init (i = 0) {
+  foreach() {
+	  if(x<0.4 && 0.2<x)
+	  T[] = T_init + Delta_T;
+	  else
+      T[] = T_init;
+  }
+  boundary ({T});
+}
+
+// Time integration
+event integration (i++) {
+  dt = dtnext (t, time_step);
+  mgd = diffusion (T, dt);
+}
+
+
+// Results
+
+event ppm_T(i++){
+  char *outfile2 = NULL;
+  outfile2 = (char *) malloc(sizeof(char) * 256);
+  sprintf(outfile2, "T-%d.png", i);
+  FILE * fp_T = fopen (outfile2, "w");
+  output_ppm(T,fp_T, linear=true);   
+  fclose(fp_T);
+}  
+
+
+event movie (i += 4)
+{
+  static FILE * fp = popen ("ppm2mpeg > diffusion.mpg", "w");
+  output_ppm (T, fp, linear = true);
+}
+
+event end (t = t_final){
+}

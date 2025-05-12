@@ -1,0 +1,9 @@
+#Simulation of water and oil emulsion 
+
+##Physical insight of the problem
+An emulsion is a dispersed system containing two immiscible phases resulting in the formaiton of drops of one phase in the other. It involves physical phenomena happening at several scales. Because of the free energy driving force, drops tend to coalesce and the system tends to rapidly return to separated phases, unless the coalescence is inhibited, and then the drop dispersion persists for some time, forming what is generally called an emulsion. Stable emulsions are one in which drop dispersion persists, where they dont return to seperated phases.
+I would like to simulate emulsions. To create a stable emulsion there is a need to address the phenomena occuring at multiple scales. One important aspect to look for a stable or unstable emulsion is coalescence. The process of coalescence is mixing of same phases to form larger phase (Just like two drops coming close and mixes to form larger drop). While two drops approach each other very close (say 100 nm), the surrounding fluid entrapped between the drops acts as a thin film. This thin film might eventually drain and rupture allowing drops to coalesce. At the nanometer scale the vanderwaals force (attractive) and some other forces like electric double layer forces (repulsive) and steric forces will become significant in additoin to surface tension and hydrodynamic pressure in the film. This small scale forces all together can be called as a DISJOINING PRESSURE. In stable emulsions there should not be much drainage of thin film and rupture, where as in unstable emulsions there should be drainage and rupture. Disjoining pressure decides if thin film should rupture or not. Disjoining pressure model has to be included when the thin film forms inorder to get stable emulsions.
+
+##Subgrid model 
+
+##Thin film drainage 

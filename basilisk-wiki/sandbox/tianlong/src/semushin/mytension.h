@@ -1,0 +1,134 @@
+#ifndef _MY_TENSION_H
+#define _MY_TENSION_H
+/**
+
+The tension.h is modified to include solid boundries
+
+# Surface tension
+
+Surface tension can be expressed as the interfacial force density
+$$
+\phi\nabla f
+$$
+with $f$ the volume fraction describing the interface and the potential
+$$
+\phi = \sigma\kappa
+$$
+with $\sigma$ the (constant) surface tension coefficient and $\kappa$
+the interface mean curvature. */
+
+#include "iforce.h"
+#include "mycurvature.h"
+
+double CFL_SF = 1.0;
+/**
+The surface tension coefficient is associated to each VOF tracer. */
+
+attribute {
+  double sigma;
+}
+
+/**
+## Stability condition
+
+The surface tension scheme is time-explicit so the maximum timestep is
+the oscillation period of the smallest capillary wave.
+$$
+T = \sqrt{\frac{\rho_{m}\Delta_{min}^3}{\pi\sigma}}
+$$
+with $\rho_m=(\rho_1+\rho_2)/2.$ and $\rho_1$, $\rho_2$ the densities
+on either side of the interface. */
+
+event stability (i++)
+{
+
+  /**
+  We first compute the minimum and maximum values of $\alpha/f_m =
+  1/\rho$, as well as $\Delta_{min}$. */
+
+  double amin = HUGE, amax = -HUGE, dmin = HUGE;
+  foreach_face (reduction(min:amin) reduction(max:amax) reduction(min:dmin))
+    if (fm.x[] > 0.) {
+      if (alpha.x[]/fm.x[] > amax) amax = alpha.x[]/fm.x[];
+      if (alpha.x[]/fm.x[] < amin) amin = alpha.x[]/fm.x[];
+      if (Delta < dmin) dmin = Delta;
+    }
+  double rhom = (1./amin + 1./amax)/2.;
+
+  /**
+  The maximum timestep is set using the sum of surface tension
+  coefficients. */
+
+  double sigma = 0.;
+  for (scalar c in interfaces)
+    sigma += c.sigma;
+  if (sigma) {
+    double dt = CFL_SF * sqrt (rhom*cube(dmin)/(pi*sigma));
+    if (dt < dtmax)
+      dtmax = dt;
+  }
+}
+
+/**
+## Definition of the potential
+
+We overload the acceleration event to define the potential
+$\phi=\sigma\kappa$. */
+#ifndef PUREPC
+event acceleration (i++)
+{
+  
+  /**
+  We check for all VOF interfaces for which $\sigma$ is non-zero. */
+
+  for (scalar f in interfaces)
+    if (f.sigma) {
+      
+      /**
+      If $\phi$ is already allocated, we add $\sigma\kappa$, otherwise
+      we allocate a new field and set it to $\sigma\kappa$. */
+
+      scalar phi = f.phi;
+      if (phi.i)
+      {
+#if USE_MY_SOLID
+        extern const int solid_dir;
+        extern bool IS_SOLID_x;
+        extern bool IS_SOLID_y;
+        extern void boundarySolidNeumman_x(scalar s, int dir);
+        extern void boundarySolidNeumman_y(scalar s, int dir);
+        foreach_dimension()
+        {
+          if(IS_SOLID_x)
+          {
+            phi.boundarySolid_x = boundarySolidNeumman_x;
+          }
+        }
+#endif
+        curvature(f, phi, f.sigma, add = true);
+      }
+      else
+      {
+        phi = new scalar;
+#if USE_MY_SOLID
+        extern const int solid_dir;
+        extern bool IS_SOLID_x;
+        extern bool IS_SOLID_y;
+        extern void boundarySolidNeumman_x(scalar s, int dir);
+        extern void boundarySolidNeumman_y(scalar s, int dir);
+        foreach_dimension()
+        {
+          if (IS_SOLID_x)
+          {
+            phi.boundarySolid_x = boundarySolidNeumman_x;
+          }
+        }
+#endif
+        curvature(f, phi, f.sigma, add = false);
+        f.phi = phi;
+      }
+    }
+}
+#endif
+
+#endif //_MY_TENSION_H

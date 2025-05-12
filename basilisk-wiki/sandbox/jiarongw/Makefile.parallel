@@ -1,0 +1,22 @@
+#SET FILES OF INTEREST
+SRC_FILES = $(addsuffix .c,$(OUTPUT))
+MPI_FILES = $(addprefix _,$(SRC_FILES))
+OBJ_FILES = $(addsuffix .o,$(basename $(SRC_FILES)))
+OUT_FOLDER = .
+
+#SET C FLAGS AND BASILISK COMPILER, LINKING FLAGS
+CC = gcc
+CFLAGS += -source -Wall -O2 -D_MPI=1
+MPICCFLAGS += -Wall -std=c99 -O2 -D_MPI=1 -DLAYERS=1
+BAS=qcc
+MPICC = mpicc
+LDFLAGS = -lm -ldl
+#For multilayer solver where the ppr library is needed
+#LDFLAGS = -lgfortran -L${BASILISK}/ppr -lppr -lm
+OPENGLINC = ${BASILISK}
+OPENGLIBS = -L${BASILISK}/gl -lglutils -lfb_osmesa -lGLU -lOSMesa
+
+#MAKE COMMAND: TAKES ARGUMENT AND MAKES EXECUTABLE IN DESIRED FOLDER
+$(OUTPUT):
+        $(BAS) $(CFLAGS) $(SRC_FILES)
+        $(MPICC) $(MPICCFLAGS) $(MPI_FILES) -I$(OPENGLINC) -o $(OUT_FOLDER)/$(OUTPUT) $(OPENGLIBS) $(LDFLAGS)

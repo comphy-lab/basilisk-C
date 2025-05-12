@@ -1,0 +1,84 @@
+# Media for the BL-meeting presentation of April 23th, 2020
+
+This page presents movies for the BL meeting starting at 14:00. 
+
+* Join the presentation via the link: ~~~[https://meet.jit.si/BL_meeting]()~~~
+* The [Kahoot](www.kahoot.it) quiz pin code is: ~~~5428739~~~
+
+## Waiting lobby clip:
+<div class="figure"> <video controls="" preload="metadata"
+width="70%"> <source
+src="https://surfdrive.surf.nl/files/index.php/s/NnOmq0h7cEj9XE4/download"
+type="video/mp4"> Your browser does not support the video
+tag. </video> <p class="caption">[Collision of two vortex rings](/sandbox/Antoonvh/two_rings.c)</p> </div>
+
+For more examples, [read me](README).
+
+## Gradient sharpening by diffusion
+![Gradient sharpening in 1D canopy model](canopy/mov.mp4)(width=60%) 
+For details, follow [this link](canopy.c).  
+
+## Gradient Sharping by dipolar-vortex self advection
+![Vorticity and scalar field isolines](gradient-sharpening/Re800-overview.mp4) For details, follow [this link](gradient-sharpening.c)  
+
+## Cut-cell boundaries
+![Convection on a small planet](convection_cyl/movie.mp4)
+For details, follow [this link](convection_cyl.c)
+![Lee waves behind a mountain](lee/lee.mp4)
+For details, follow [this link](lee.c)
+
+## Flow past fractal trees
+
+![Plantenna](tree/plantenna/letters.mp4)(autoplay)
+
+
+<div class="figure">
+<video controls="" preload="metadata" width="70%">
+<source src="https://surfdrive.surf.nl/files/index.php/s/6JmnOyn4DsOjoPe/download" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+Flow past a fractal tree with two generations of branches (via surfdrive)
+</p>
+</div>
+
+<div class="figure">
+<video controls="" preload="metadata" width="70%">
+<source src="https://surfdrive.surf.nl/files/index.php/s/OB1HPBote78e98h/download" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+Flow past a fractal tree with three generations of branches (via surfdrive)
+</p>
+</div>
+For details, follow [this link](http://www.basilisk.fr/sandbox/Antoonvh/tree/fractaltree.c)
+
+## Final quiz question:
+
+What is the ratio of the surface area and the frontal area of the tree with three fractal levels?
+
+$$\Pi \stackrel{?}{=} \frac{A_{s}}{A_f} > 1$$
+
+<div class="figure">
+<video controls="" preload="metadata" width="60%">
+<source src="https://surfdrive.surf.nl/files/index.php/s/nnx2yfQCBb3OyG3/download" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+The tree in 3D.
+</p>
+</div>
+
+![A projection and 3D view of the tree](https://surfdrive.surf.nl/files/index.php/s/sKmAUkYPeNAJNDQ/download)
+
+## The (sur)prize!
+
+<div class="figure">
+<video controls="" preload="metadata" width="70%">
+<source src="https://surfdrive.surf.nl/files/index.php/s/LYtiT5CS9pMdDNe/download" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+This movie is a testament to Jonathan, who has won the quiz.
+</p>
+</div>
+
+Watch and download this movie at [3840 x 2160 pixels resolution](https://surfdrive.surf.nl/files/index.php/s/1IbQkOTw47Bp6j7)
+
+For related details, follow [this link](makemov.c).

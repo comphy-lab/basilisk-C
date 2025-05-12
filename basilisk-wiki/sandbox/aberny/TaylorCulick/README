@@ -1,0 +1,44 @@
+# Taylor Culick retraction
+
+##Retraction of a planar liquid sheet
+
+The file [culick.c](culick.c) contain 4 types of simulation.
+
+They are linear combination of those 2 parameters: with or without an impose velocity, and with or without an axisymmetry.
+
+The impose velocity case correspond to a moving frame. We impose the Taylor-Culick velocity everywhere. The fluid then should not move.
+While tracking the velocity of the tip of the internal fluid, we then hope to only see the velocity due to the propagation of capillary wave at the interface of the liquid sheet
+
+Unfortunately, this is not what we observe in the forced case, without the axi part. 
+
+It's also possible to look at the simulation [without dimension](culickAdim.c). Here, all the parameters are dimensionless. We end up with the same kind of problem in our simulation: the 2D forced case retraction velocity does not correspond to the theoretical one. According to numerical simulations from Savva et all (see [here](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/viscous-sheet-retraction/FF854ADC80D28B4EE19C077BE14EA058)), this results is normal, and we should get closer to the theoretical velocity as we increase the value of the Ohnesorge number. Another point to mention is the simulation time. The liquid sheet should reach the retraction velocity after a transciant regime. The characteristical time is $\tau_{vis} = \mu H/2\gamma $. After $t=30\tau_{vis}$ we should reach the stable retraction velocity.
+
+We run several case with different Ohnesorge number, and we obtain tge following curve:
+
+![Retraction velocity](data/retractionVelocity.jpg)
+
+(you can download it, in pdf [here](data/retractionVelocity.pdf))
+
+The most extreme value ($Oh>1$) have to be re-run, with more space in the simulation domain. Indeed, we reach the limit of our simulation domain (with our without impose velocity).
+
+## Retraction of an Axisymmetric Liquid Sheet 
+
+Another type of simulation about the Taylor-Culick retraction lies on the file [liquidRim.c](liquidRim.c). This file is about a circular hole on a liquid sheet.
+
+We are simulating an axisymmetric hole. We expect with this simulation to observe the mean retraction process of a liquid sheet, with a hole in the middle. With this simulation, we want to be able to refind the results from [Savva et Al](ref.bib#savva2009). They observe that the liquid sheet follow an exponential low while retracting. This process was observe for high Ohnesorge number, which haven't been done here.
+
+For a low Ohnesorge number (by default, we set it to $0.1$) we refound the Taylor-Culick retraction velocity. 
+
+We setup a simulation with a long time ($50$ seconds) and an Ohnesorge number of $10$. We want to observe the exponential retraction behaviour of the liquid rim. This behaviour occurs at the beginning of the simulation. We also want to be sure that the simulation reach the Culick velocity when the time goes to infinity. The simulation stopped at $t=23.8656$. The simulation was stopped because of an electrical shutdown. However, we can still try to detect the exponential retracting regime.
+
+Firtsly, we observe the evolution of the liquid rim allong the time.
+
+![Supperposition of several state of the liquid rim](data/InterfaceSupperpositionOh10.png)
+
+We observe a strange behaviour. Indeed, instead of forming a bulge at the hole, the liquid rim is acting like a snake. However, this is not a problem to observe the initial regime. 
+
+If we plot the tip velocity on a loglogscale, we observe:
+
+![Velocity of the tip. u^* = u/u_c t^*=t/t_{vis}](data/TipVelocityOh10.png)
+
+We can observe that the velocity is following a line at the beginning of the simulation, which correspond to what Savva et Al observe in 2009.

@@ -1,0 +1,45 @@
+Define LEVEL 6
+
+1 1 GfsSimulation GfsBox GfsGEdge {} {
+  Time { end = 10. }
+  Refine LEVEL
+  
+  # The VOF for the interface
+  VariableTracerVOF {} T
+
+  # box size and density
+  PhysicalParams {L=boxsize alpha = 1./(T*rho2 + (1. - T)*rho1)}
+
+  # grid refinement
+  AdaptVorticity { istep = 1 } { minlevel = 4 maxlevel = LEVEL cmax = 2e-2 }
+  AdaptGradient { istep = 1 } { maxlevel = LEVEL cmax = 1e-2 } T
+
+  # The viscosity
+  SourceViscosity {} 1./1000.
+ 
+  # We also need gravity
+  Source {} V -1.
+  
+  # surface tension
+  VariableCurvature {istep=1} K T
+  SourceTension {istep=1} T sigma K
+
+  # The initial condition
+  Init {start=0} {U=u.cgd V=v.cgd}
+  InitFraction {} T rayleigh_taylor_shape.gts 
+ 
+  # save interface displacement
+  VariablePosition Y T y
+  OutputScalarNorm { istep = 10 } {
+      awk '{print $3, $9; fflush(stdout); }' > intevo
+  } { v = (T > 0. && T < 1. ? -Y : 0.) }
+
+  # visual outputs
+  OutputTime { istep = 10 } stderr
+  OutputSimulation { step = 1. } stdout
+}
+GfsBox { 
+       bottom=Boundary {BcDirichlet U 0.}
+       top=Boundary {BcDirichlet U 0.}
+}
+1 1 right

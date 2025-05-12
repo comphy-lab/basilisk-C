@@ -1,0 +1,47 @@
+/** 
+# 3D Multigrid restore with MPI
+
+This example produces a simple dump, using 3D multigrid and outputting a single scalar field, and then restores it. The bug is that the restore fails with the error "grid depth does not match."
+
+Files can be found *[here](dumper.c).
+
+*/
+
+#include "grid/multigrid3D.h"
+#include "utils.h"
+/**
+The error is actually independent of level, which is different from what I thought initially. When I first encountered it, it seemed to occur only for refinement levels of 8 and higher.
+*/
+#define LEVEL 7
+/** Define a single scalar field, although this isn't necessary for the bug to appear.*/
+scalar f[];
+
+int main()
+{
+  /** Initialize the grid and set the scalar field.*/
+  init_grid(1 << LEVEL);
+  foreach()
+    f[] = 1.0;
+  /** Dump with a debug message.*/
+  dump("test",{f});
+  fprintf(ferr,"Dump complete.\n");
+  return 1;
+}
+
+
+/** Now in a separate file we restore the dumped data:*/
+#include "grid/multigrid3D.h"
+#include "utils.h"
+
+#define LEVEL 7
+
+scalar f[];
+
+int main()
+{
+  init_grid(1 << LEVEL);
+  restore("test");
+  return 1;
+}
+
+/**This produces the error.*/

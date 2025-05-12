@@ -1,0 +1,19 @@
+This directory organises the results of various simulations performed using [rising-suspension.c](http://basilisk.fr/sandbox/pnaanouh/rising-suspension.c) at different flow conditions.
+
+All the simulations were performed at: 
+
+* Bo=0.5
+* $\rho_r$=1.1668599 
+* Level = 10 
+
+The remaining flow parameters can take one of two values: 
+
+* Ga =75,10
+* $\mu_r$= 0.04237805,0.4237805
+* $\phi$=0.15,0.45 with N=10 and N=17 respectively 
+
+The results in this directory were not produced with the most up to date version of rising-suspension.c and the formatting of the _gl files has changed. Thus only the first seven columns are of any use. 
+The case performed at Ga=75, $\mu_r=0.42$ and $\phi=0.15$ has both outputs in the same file so it needs to be filtered before use
+
+
+

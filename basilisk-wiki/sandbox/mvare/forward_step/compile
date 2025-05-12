@@ -1,0 +1,1 @@
+qcc -fopenmp -Wall -O0 -g forward_step.c -o forward_step.exe -L$BASILISK/gl -lglutils -lfb_osmesa -lGLU -lOSMesa -lm 

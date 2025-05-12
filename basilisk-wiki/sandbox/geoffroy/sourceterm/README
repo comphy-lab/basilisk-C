@@ -1,0 +1,38 @@
+/**
+# Source term for Saint-Venant equations
+
+The Saint-Venant equations, also known as shallow water equations, are
+describing flow with much larger horizontal lenght-scale than the
+vertical lenght-scale. These equations can be written as :
+
+$$
+\begin{array}{cc} \partial_t h + \partial_x q = S_h^i
+\\ \partial_t q + \partial_x \left(\frac{q^2}{h}+ \frac{1}{2} g h^2
+\right) = -gh S_0 + S_q^i \end{array} 
+$$ 
+
+where $S_h^i$ and $S_q^i$ are the different source terms.
+
+For example, in $S_h^i$ we can put a rain source (or any mass source)
+term and we usually put the friction in the term $S_q^i$ (or any
+momentum source).
+
+## The mass source terms
+
+* [rain](rain.h)
+* [infiltration]() (coming soon)
+
+## The momentum source terms
+
+* [Darcy friction](darcy.h)
+* [Manning friction](manning.h)
+* [Poiseuille friction](poiseuille.h)
+
+## Note
+
+These source terms are especially designed to be used with the
+[predictor-corrector-source.h](http://basilisk.fr/sandbox/geoffroy/dev/predictor-corrector-source.h)
+You can use it by downloading it and replacing it in "saint-venant.h"
+
+[Return to home page](http://basilisk.fr/sandbox/geoffroy/README)
+*/

@@ -1,0 +1,31 @@
+#!sh
+# input parameter files
+# each '=' sign must be surrounded by at least one whitespace on each side
+
+# domain size
+N  = 32
+L0 = 600
+npz = 1
+
+# physical parameters
+
+# simple run
+Tsurf = 20
+dTdz0 = 3.916e-3
+Ssurf = 38
+dSdz0 = 0 #-1e-3
+Qnet = -200
+EmP =  0 #4e-7
+tau0 = 0 #6.25e-4
+
+f0_z = 0 #1e-4
+
+# timestepping
+CFL   = 0.2
+DT_MAX = 3.
+tend  = 86400
+dtout = 3600
+
+# HPC stuff
+tel_m = 1e10       # max elapsed time
+NMOUT = 50000

@@ -1,0 +1,15 @@
+/**
+# My Sandbox 
+Welcome to the README of my sandbox, this page aims to provide an overview of the projects under [/sandbox/pairetti/](). The main theme here is turbulent multiphase flow simulation. More specifically, I am interested in liquid atomisation. I hope you can find something that interests you.
+
+-César Pairetti- 
+
+## Atomization
+* [Falling raindrop at stable regime](raindrop/raindrop.c)
+* [Bag mode atomisation of single droplet](bag_mode/bag_mode.c)
+
+## Utilities
+* [Mapping VOF field to pseudo level-set](VOF2LS/testLS.c)
+* [Adaptivity based on indicator function](adapt_values/karman.c)
+
+*/

@@ -1,0 +1,71 @@
+# Electrohydrodynamic
+
+The EHD project is already in the [stable version](/src/README#electrohydrodynamics). Here you can only find some either explored alternatives not incorporated to the stable version and some proposal for improvement of the existing stable release: 
+
+*  [src/implicit.h]() is a version of the implicit scheme which, contrary to the stable version, only creates a face conductivity variable if needed.
+* The explicit scheme version of the ohmic conduction is in [src/ehd.h](). 
+* In this version of the Maxwell electrostatic stress tensor, off-diagonal terms are located at the vertex and diagonal terms are defined at cell centers.  It seems to be the slightly more accurate than the [stable version](/src/ehd/stress.h) although it has round-off problems [src/stress1.h](). 
+* To facilitate the setting of two-phase EHD problems you can use [src/ehd_2phase.h]().
+* Extension of the electrical stresses to consider 3D and embedded domains [src/stress.h](). It uses bilinear interpolations for the embedded cells which are implemented at [src/embed_utils.h]().
+
+## Tests  
+
+* [taylor.c]() is the test case of the stable version but using the above head files:  [src/ehd_2phase.h]() and [src/stress.h]().
+* [ehd_axi_stress.c]() is also a stable test case but using the the proposed [src/stress.h]().
+* [ehdforce.c]() check the convergence with embedded solids.
+
+# Slip
+
+* [slip.c]() serves to check of the implementation of slip conditions in embed geometries. Two approaches have been proposed:
++ [src/embed_A.h]() seems to work well however the convergence of the MG solver is not as efficient and robust as the Stephane's dirichlet implementation for example. The slip BC is set wherever a nodata dirichlet condition is set. The relaxation takes a while (search for a different homogeneous BC?). For some unknown reason the error are larger at the second a fourth cuadrant of the circle. Must be analyzed again.
++ [src/embed_B.h]() does not work in the present form. It is provided in case some find it useful.
+
+# Solid-fluid interaction
+
+A viscoelastic solid can be described in a Eulerian frame. In this frame the deformation tensor (and consequently the stress tensor) obeys the upper convective derivative (UCD). Its governing equation (and the hyperelastic acceleration) can be calculated with the [src/hyperelastic.h]() library. This investigation line although not abandoned has been left aside time ago.
+We have checked that a hyperelastic behaviour is reached with the 
+[Olroyd-B model](/src/log-conform.h) setting the limit properly.
+
+## Tests  
+
+* [oscillation.c]() The walls standing a fluid-solid sandwich oscillates. The problem has analytical solution. Velocity profiles in two instant are collected in [sugiyama]().
+* [ballhyper.c]() A hyperelastic ball rebounds in a wall. It has been solved using the [viscoelastic solver](/src/log-conform.h).
+
+# Compressible flows
+
+* [viscous_compressible.c]() Extra viscous terms appearing in compressible flows has been added to my [src/viscosity_compressible.h](). This c file allows to test the implementation.
+
+* [dissipation.c]() In the energy equation appears the viscous dissipation term, $\Phi_v = \tau_v : \nabla \mathbf{u}$. The library [src/dissipation.h]() compute it (cartesian up to 3D and axisymmetric cylindrical coordinates should work). The c file allows to test the implementation.
+
+* [advect.c]() Shows how to integrate the advection equation with Basilisk explaining which equation is exactly integrated. Also check axisymmetric metrics in this integration.
+
+* [transport.c]() Another trial about transport equation in incompressible vs compressible flows. I propose to add an attribute to switch off the compressible correction term [src/vof.h]()
+
+# Viscous solver for embedded domains with metrics
+
+* [lamb.c]() Viscous flow over an sphere. Yet unripe to be a good test case.
+
+* [poiseuille-embed.c]() Also very unripe...
+
+
+# Miscellanea
+
+Sometimes the face properties are better calculated from the geometrical reconstructed vof. To this end serves [src/fracface.h](). For the moment it is not yet implemented for 3D. The remove droplet is now a function stored at [src/droplet_stat.h](). I think it is cleanest way. 
+
+* [guadalquivir.c]() This a simulation of the estuary of the river Guadalquivir. Can not run in the wiki since the bathimetry is not (yet) available in the server.
+* [fract.c]() Test for [src/fracface.h]().
+* [remove.c]() allows to test the withdrawal of droplets or bubbles.
+* [axidiffusion.c]() This test show how to use the diffusion solver in axisymmetric problems.
+* [contact.c]() I propose a method to anchor the contact line. It is 2D.
+
+# Code used in papers 
+
+* [unsymshock.c]() Reproduce with (relatively) low resolution the numerical simulations of [Eggers et al. (2017)](https://doi.org/10.1017/jfm.2017.205)
+* [layer.c]() Code used in the work of [Dallaston et al (2021)](https://doi.org/10.1017/jfm.2021.286) about the pinching of 2D films.
+
+# Bibliography 
+
+* Tomé, M.F, Castelo, A., Afonso, A.M., Alves, M.A., Pinho, F.T. Application of the log-conformation tensor to three-dimensional time-dependent free surface flows. J. Non-Newtonian Fluid Mech.,175-176, pp 44--54, (2012).
+
+* J. Philippi, P-Y Lagrée A. Antkowiak. Drop impact on a solid surface: short-time self-similarity. J. Fluid Mech., vol. 795, pp.96-135, (2016).
+

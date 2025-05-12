@@ -1,0 +1,19 @@
+# Running Basilisk on Windows 10
+
+Windows 10 users who want to try out Basilisk, but do not want to switch their operating system (yet), can use this page. It is for those who have no experience with Linux systems, and it aims to go through the steps required to  [get started](/sandbox/documentation#getting-started).
+
+For every step presented here, there may be many (better) alternatives. This especially applies to the selection of software packages.    
+
+## Windows Subsystem for Linux
+
+## A Configuration for Debian
+The Windows store comes with a light weight instaltion of Debian. Meaning that many packages which will be useful for our purpose are missing.  
+
+### Intermezzo: `hallo.c`
+
+## Running graphical applications
+
+## A deskstop environment
+
+
+Special thanks to [Vincent Heusinkveld](http://basilisk.fr/sandbox/vheusinkveld/README) for showing that serious Basilisk stuff can be done with WSL.

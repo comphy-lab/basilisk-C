@@ -1,0 +1,26 @@
+/**
+#Website
+
+Recent activity: The highlighted yellow/strike-out markup for changes is good, but clicking 'view' takes me to the previous version (unless its a new page) where I would have expected to view the updated one.
+
+Links : Images and movies could behave the same
+
+Uploading a .c.page file via darcs does not run it automatically
+
+Do files really need the "pagename." prefix if you want to load them in the code.
+
+I would like (the option) to copy & paste in the editor with CUA keys (Ctrl + c , x, v)
+
+Pages should maybe not have to start with a comment block?
+
+[This](/src/grid/tree-mpi.h) bothers me more than it should
+
+gnuplotting is different in the sandbox compared to my local installment (fonts, terminals, default colors etc). 
+
+A progress bar for running would be nice but seems unfeasible? 
+
+Maybe delineate between save/preview and running for some minimal safety? (still not very safe and requires an extra button)
+
+The frontpage could be more concise, possibly linking to some [documentation overview page](/sandbox/documentation)
+
+*/

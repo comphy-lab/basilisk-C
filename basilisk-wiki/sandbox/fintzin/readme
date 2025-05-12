@@ -1,0 +1,20 @@
+---
+format: html
+title: FINTZIN's sandbox
+...
+<div style="font-family: Computer Modern Sans; sans-serif;">
+<h1 style="color:#FF8C00"> 
+  This is the home page of Fintzin's SandBox 
+</h1>
+In this sand box you will find template cases for rising suspension of droplets simulations. 
+All the Basilisk C files are stored in this folder :
+
+![folder](/img/icons/folder.png?1663837849)
+[RS](http://basilisk.fr/sandbox/fintzin/Rising-Suspenion/README)
+
+besides, this sand box contain patches for basilisk. 
+All the Basilisk C patch are stored in this folder :
+
+![folder](/img/icons/folder.png?1663837849)
+[RS](http://basilisk.fr/sandbox/fintzin/Dev/README)
+</div>

@@ -1,0 +1,111 @@
+Here is almost a copy/paste of the instruction written by Quentin Magdelaine that you can find [here](https://groups.google.com/d/msg/basilisk-fr/hVveH54fjdI/IJm8umHIEQAJ)
+to fix off-screen rendering bug using OSMesa after the recent libosmesa update
+on Debian10.1/19.0.2-1ubuntu1.1~18.04.1 distribution.
+
+Instructions.
+First, remove the new OSmesa library which does not work:
+
+~~~bash
+sudo apt remove libosmesa6-dev
+~~~
+
+Then download an older version:
+
+~~~bash
+wget mesa3d.org/archive/mesa-18.2.8.tar.gz
+~~~
+
+
+Then decompress it (change [username] for yours (ex: toto)):
+
+~~~bash
+tar -zxvf mesa-18.2.8.tar.gz
+cd mesa-18.2.8
+./configure --prefix=/home/[username]/local --enable-osmesa \
+            --with-gallium-drivers=swrast                \
+            --disable-driglx-direct --disable-dri --disable-gbm --disable-egl
+~~~
+
+If it doesn't find zlib, install zlib1g-dev with:
+
+~~~bash
+    sudo apt install zlib1g-dev
+~~~
+
+Try again. If it still doesn't work instak pkg-config:
+
+~~~bash
+sudo apt install pkg-config
+~~~
+    and try again, it should work.
+
+
+Compile the library:
+
+~~~bash
+make
+~~~
+
+(This step is quite long.) And install it:
+
+~~~bash
+make install
+~~~
+
+The library is not installed in the standard path (/usr/lib/), so you need to tell gcc and basilisk about it.
+First, enter in your terminal:
+
+~~~bash
+export LD_LIBRARY_PATH=/home/[username]/local/lib:$LD_LIBRARY_PATH
+~~~
+
+and, to not have to do it again as soon as you open a new terminal:
+
+~~~bash
+echo "export LD_LIBRARY_PATH=/home/[username]/local/lib:$LD_LIBRARY_PATH" >> ~/.bashrc
+~~~
+
+Then in the config file in basilisk/src/, change the line
+
+~~~bash
+OPENGLIBS = -lfb_osmesa -lGLU -lOSMesa
+for
+OPENGLIBS = -L/home/[username]/local/lib -lfb_osmesa -lGLU -lOSMesa
+~~~
+
+And in fb_osmesa.c in basilisk/src/gl/, change the line
+
+~~~bash
+#include <GL/osmesa.h>
+for
+#include </home/[username]/local/include/GL/osmesa.h>
+~~~
+
+You can now compile the libraries provided by basilisk in basilisk/src/gl:
+
+~~~bash
+make libglutils.a libfb_osmesa.a
+~~~
+
+and the bview-servers in basilisk/src/:
+
+~~~bash
+make bview-servers
+~~~
+
+You should be able to compile and run successfully all your codes using the standar Makefile of Basilisk.
+Here is a test of the Bview functionnalities.
+
+~~~bash
+cp $BASILISK/test/view.c .
+make view.tst
+~~~
+
+Or if you do not use makefile, you have to use the following compilation line:
+
+~~~bash
+qcc view.c -lm -L/home/[username]/local/lib/ -L$BASILISK/gl/ -lOSMesa -lglutils -lfb_osmesa -lGLU
+~~~
+
+Note that you may experienced some trouble to play with vlc .mp4 videos generated with this fix.
+A quick fix to this is to use cvlc. 

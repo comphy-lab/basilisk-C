@@ -1,0 +1,33 @@
+Welcome to my sandbox, here you will find codes for cavitation from [recent JFM papers](https://doi.org/10.1017/jfm.2022.705) and [my thesis](https://theses.hal.science/tel-03935878/). Currently I am working on the new methods developed for variable surface-tension driven flows, so you will also find some testcases for the same.
+
+/**
+# File index 
+
+## Tests for variable surface-tension flows
+We have two methods, CLSVOF method and HF method developed [shared here](Marangonitests/integralHF.h)
+
+### Test cases for comparison between HF, CLSVOF and HF2D methods
+* [Damping of a Capillary wave](Marangoni/capwave.c)
+* [Spurious currents around a translating interface](Marangoni/spuriousMov.c)
+* [Rising bubble](Marangoni/rising.c)
+* [Marangoni induced translation of drop](Marangoni/marangoni.c)
+* [Interactions of a drop translating due to Marangoni flow with a plane
+wall](Marangoni/marangoniwall.c)
+* [Interaction of two unequal drops translating due to a Marangoni flow](Marangoni/marangoniad2bub.c)
+
+
+## Tests for cavitation using all-Mach
+* [Potential flow solution around a bubble collapsing near wall](tests/embedpotential.c)
+* [Bubble collapse for different contact angle where simulations are started from potential flow solution](tests/collapsewall.c)
+* [Sessile bubble test with all-Mach solver](tests/sessilecomp.c)
+* [Collapse of low pressure bubble under ambient pressure](http://basilisk.fr/sandbox/msaini/tests/collapse.c)
+* [Oscillating bubble under influence of change in pressure](http://basilisk.fr/sandbox/msaini/tests/oscillations.c)
+* [Laser induced bubbles nead solid boundary](http://basilisk.fr/sandbox/msaini/tests/nearwall.c)
+
+### Miscellaneous
+* [Rising bubble](Marangoni/risingHF.c)
+* [Young's bubble](Marangoni/young.c)
+* [Spurious currents testcase](Marangoni/spurious.c)
+* [Bouncing Drop](Marangoni/bouncing.c)
+
+*/

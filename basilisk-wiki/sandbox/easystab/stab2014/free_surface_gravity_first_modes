@@ -1,0 +1,258 @@
+%{
+#Displaying the two first eigenmodes of the free surface gravity wave
+
+Here is a contribution to the free_surface_gravity_particles code : [free_surface_gravity_particles.m](http://basilisk.fr/sandbox/easystab/free_surface_gravity_particles.m)
+
+In this code we check that the first and second eigenmodes of this system correspond to waves propagating in opposite directions. Indeed looking to the theory [theory of the eigen values of the surface waves --> look at the *Validation* part](http://basilisk.fr/sandbox/easystab/free_surface_gravity.m) we have the eigenvalue $s$ :
+$$
+s^2=-\alpha g \tanh(\alpha L)
+$$
+which shows that we have two purely imaginary solutions for $s$, one positive and one negative. The wave velocity is equal to minus the imaginary part of $s$ divided by the wavenumber, so we see that we have two waves, one going to the right and one going to the left, and both with celerity
+$$
+c=\sqrt{\frac{g \tanh(\alpha L)}{\alpha}}
+$$
+
+We take the code that computes the eigenmodes for free surface waves [free_surface_gravity.m]() and we visualize the flow motion of the two first eigenmodes by expanding the solution to physical space and advecting tracer particles, like we did in a simple case in [particles.m]().
+
+%}
+clear all; clf;
+n=100; % number of gridpoints
+alpha=1; % wavenumber in x
+L=2; % Fluid height in y
+rho=1; % fluid density
+mu=0.0001; % fuid viscosity
+g=1; % gravity
+
+% differentiation matrices
+scale=-2/L;
+[y,DM] = chebdif(n,2);
+D=DM(:,:,1)*scale;
+DD=DM(:,:,2)*scale^2;
+y=(y-1)/scale;
+I=eye(n); Z=zeros(n,n);
+
+% renaming the matrices
+dy=D; dyy=DD;
+dx=i*alpha*I; dxx=-alpha^2*I;
+Delta=dxx+dyy;
+
+% System matrices
+A=[mu*Delta, Z, -dx, Z(:,1); ...
+Z, mu*Delta, -dy, Z(:,1); ...
+dx, dy, Z, Z(:,1); ...
+Z(1,:),I(n,:),Z(1,:),0];
+E=blkdiag(rho*I,rho*I,Z,1);
+
+% boundary conditions
+loc=[1,n,n+1,2*n];
+C=[I(1,:),Z(1,:),Z(1,:),0; ...
+Z(1,:),I(1,:),Z(1,:),0; ...
+Z(1,:),Z(1,:),-I(n,:),rho*g; ...
+dy(n,:),dx(n,:),Z(1,:),0];
+E(loc,:)=0;
+A(loc,:)=C;
+
+% compute eigenmodes
+[U,S]=eig(A,E);
+s=diag(S); [t,o]=sort(-real(s)); s=s(o); U=U(:,o);
+rem=abs(s)>1000; s(rem)=[]; U(:,rem)=[];
+
+%{
+
+# The animation
+
+We show the position of the free surface stored in *q(eta)*, and the particles are initialy set as a mesh, and stretched in *y* to fit with the initial position of the free surface for the top prticles.
+
+%}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% particle animation of the eigenmodes
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% parameters first mode
+nper=1 % number of periods of oscillation
+nt=30 % number of time steps per period
+nx=40 % number of points in x
+modesel=1; % which more do animate
+
+% select the eigenmode
+u=1:n; v=u+n; p=v+n; eta=3*n+1;
+q=U(:,modesel);
+lambda=s(modesel);
+
+% The time and x extent
+tvec=linspace(0,nper*2*pi/abs(lambda),nper*nt);
+dt=tvec(2)-tvec(1);
+Lx=2*pi/alpha;
+x=linspace(0,Lx,nx);
+
+% scale mode amplitude
+q=0.05*q/abs(q(eta));
+
+% initialize tracer particles
+[px,py]=meshgrid(linspace(0,Lx,60),linspace(0,L,30));
+py=py.*(1+2*real(exp(lambda*tvec(1))*q(eta)*exp(i*alpha*px))/L);
+px=px(:);py=py(:);
+figure(1)
+filename = 'free_surface_gravity_particles_mode1.gif';
+
+% time loop
+for ind=1:nper*nt
+
+%{
+
+# Expand the solution to physical space
+
+
+%}
+
+% expand mode to physical space
+qq=2*real(exp(lambda*tvec(ind))*q*exp(i*alpha*x));
+
+%{
+
+# Interpolation of the particle positions
+%}
+
+% compute velocity at position of particles
+
+% plot pressure
+surf(x,y,qq(p,:)-10,'facealpha',0.3); view(2); shading interp; hold on
+
+% plot free surface
+plot(x,L+qq(eta,:),'k-',x,0*x+L,'k--'); hold on
+
+%%%% plot the particles
+plot(mod(px,Lx),py,'k.');
+pu=interp1(y,q(u),py);
+pv=interp1(y,q(v),py);
+%{
+
+# The Taylor expansion
+%}
+
+% For particles above L, use Taylor expansion for velocity
+pu(py>L)=q(u(n))+q(eta)*dy(n,:)*q(u);
+pv(py>L)=q(v(n))+q(eta)*dy(n,:)*q(v);
+
+% expand to physical space
+puu=2*real(exp(lambda*tvec(ind))*pu.*exp(i*alpha*px));
+pvv=2*real(exp(lambda*tvec(ind))*pv.*exp(i*alpha*px));
+
+% advect particles
+px=px+puu*dt;
+py=py+pvv*dt;
+xlabel('x');
+ylabel('y');
+title('Free surface gravity - Mode 1');
+axis equal; axis([0,Lx,0,1.3*L]);
+grid off
+hold off
+drawnow
+
+frame = getframe(1);
+im = frame2im(frame);
+[imind,cm] = rgb2ind(im,256);
+if ind == 1;
+imwrite(imind,cm,filename,'gif', 'Loopcount',inf);
+else
+imwrite(imind,cm,filename,'gif','WriteMode','append');
+end
+
+end
+
+% parameters second mode
+nper=1 % number of periods of oscillation
+nt=30 % number of time steps per period
+nx=40 % number of points in x
+modesel=2; % which more do animate
+
+% select the eigenmode
+u=1:n; v=u+n; p=v+n; eta=3*n+1;
+q=U(:,modesel);
+lambda=s(modesel);
+
+% The time and x extent
+tvec=linspace(0,nper*2*pi/abs(lambda),nper*nt);
+dt=tvec(2)-tvec(1);
+Lx=2*pi/alpha;
+x=linspace(0,Lx,nx);
+
+% scale mode amplitude
+q=0.05*q/abs(q(eta));
+
+% initialize tracer particles
+[px,py]=meshgrid(linspace(0,Lx,60),linspace(0,L,30));
+py=py.*(1+2*real(exp(lambda*tvec(1))*q(eta)*exp(i*alpha*px))/L);
+px=px(:);py=py(:);
+figure(2)
+filename = 'free_surface_gravity_particles_mode2.gif';
+
+% time loop
+for ind=1:nper*nt
+
+%{
+
+# Expand the solution to physical space
+%}
+
+% expand mode to physical space
+qq=2*real(exp(lambda*tvec(ind))*q*exp(i*alpha*x));
+
+% plot pressure
+surf(x,y,qq(p,:)-10,'facealpha',0.3); view(2); shading interp; hold on
+
+% plot free surface
+plot(x,L+qq(eta,:),'k-',x,0*x+L,'k--'); hold on
+
+%%%% plot the particles
+plot(mod(px,Lx),py,'k.');
+pu=interp1(y,q(u),py);
+pv=interp1(y,q(v),py);
+
+%{
+
+%}
+
+% For particles above L, use Taylor expansion for velocity
+pu(py>L)=q(u(n))+q(eta)*dy(n,:)*q(u);
+pv(py>L)=q(v(n))+q(eta)*dy(n,:)*q(v);
+
+% expand to physical space
+puu=2*real(exp(lambda*tvec(ind))*pu.*exp(i*alpha*px));
+pvv=2*real(exp(lambda*tvec(ind))*pv.*exp(i*alpha*px));
+
+% advect particles
+px=px+puu*dt;
+py=py+pvv*dt;
+xlabel('x');
+ylabel('y');
+title('Free surface gravity - Mode 2');
+axis equal; axis([0,Lx,0,1.3*L]);
+grid off
+hold off
+drawnow
+
+frame = getframe(1);
+im = frame2im(frame);
+[imind,cm] = rgb2ind(im,256);
+if ind == 1;
+imwrite(imind,cm,filename,'gif', 'Loopcount',inf);
+else
+imwrite(imind,cm,filename,'gif','WriteMode','append');
+end
+
+end
+
+%{
+
+# Animation of the two modes 
+
+![](/sandbox/easystab/stab2014/free_surface_gravity_particles_mode1.gif)
+
+![](/sandbox/easystab/stab2014/free_surface_gravity_particles_mode2(1).gif)
+
+Thus the first and second eigenmodes of this system correspond to waves propagating in opposite directions, confirming the theory.
+%}

@@ -1,0 +1,31 @@
+# Homogeneity
+
+* Have grids that have smallest element first
+* Have fddif and chebdif give grids in the same order
+
+# Fluid
+
+* Optimal transient growth in 1D and for venturi.m
+* Use eigenmodes as initial condition in Gerris/Basilisk
+* Rayleigh-Plateau instability
+* Validate viscous Rayleigh-Taylor on lubrication model
+* Feedback control?
+* Capillary venturi in 2D (based first on [free_surface_2D.m]())
+
+# Elasticity
+* Elastic beam buckling instability
+* Instability of beam on soft substrate
+
+# Collaborations
+* Boundary layers with Pyl
+* Couette with two capillary surfaces with François
+* vortices with Arnaud
+* Nonlinear shape of a 2D and 3D beam (continuation) with Sebastien
+
+# Gerris/Basilisk
+* Make an initial condition of Gerris based on an eigenmode or steady state, also with free surfaces
+* Get differentiation matrices from Basilisk
+
+# Functionalities
+* Run the code as preview
+* edit files with two vertical columns

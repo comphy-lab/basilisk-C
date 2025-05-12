@@ -1,0 +1,87 @@
+# Revisiting the linear forcing of turbulence in two-phase flows
+This foler contains the three solvers used to produce the results of 
+[this paper](https://hal.science/hal-04542895v1):
+
+* [Single-phase forcing of HIT](SP.c)
+* [Two-phase forcing of droplet-laden HIT](TPD.c)
+* [Two-phase forcing of emulsion HIT](TPE.c)
+
+## Section III and IV: single-phase forcing with Basilisk
+For this section, run the [SP](SP.c) test case with the different methods:
+
+* The lundgren's (or constant-$A$) method with `#define TFMETH 0`
+* The Carroll's (or constant-$\mathcal{P}_T$) method with `#define TFMETH 1`
+* The Bassenne's constant-$k$ method with `#define TFMETH 4`
+* The Bassenne's constant-$\epsilon$ method with `#define TFMETH 5`
+* The Bassenne's hybrid method with `#define TFMETH 6`
+* The proposed constant-$k\epsilon$ with `#define TFMETH 7`
+
+## Section V: two-phase forcing
+For this section, run the [TPD](TPD.c) and [TPE](TPD.c) test cases. 
+
+### Exponential growth of kinetic energy
+To test the different form of linear forcing to avoid the growth 
+of mean kinetic energy just modify the parameter the `UMEAN`:
+
+* The Lundgren's form `#define UMEAN 0`
+* The Naso's form `#define UMEAN 1`
+* The Yao's form `#define UMEAN 2`
+
+### Two-phase contributions in the forcing
+To include two-phase contributions in the linear forcing to improve the control
+of $k$ and $\epsilon$ can be done by fixing `#define TFRHSNUM 1`.
+
+## Section VI: indirect computation of budgets
+The method proposed by Duret et al (2012) can be used to improve the results.
+This can be done in the solver by modifying `#define TFRHSNUM 2`.
+
+/**
+## References
+
+~~~bib
+@article{lundgren2003linearly,
+  title={Linearly forced isotropic turbulence},
+  author={Lundgren, Thomas S},
+  journal={Center for Turbulence Research Annual Research Briefs 2003},
+  year={2003}
+}
+@article{carroll2013proposed,
+  title={A proposed modification to Lundgren's physical space velocity forcing method for isotropic turbulence},
+  author={Carroll, Phares L and Blanquart, Guillaume},
+  journal={Physics of Fluids},
+  volume={25},
+  number={10},
+  year={2013},
+  publisher={AIP Publishing}
+}
+@article{bassenne2016constant,
+  title={Constant-energetics physical-space forcing methods for improved convergence to homogeneous-isotropic turbulence with application to particle-laden flows},
+  author={Bassenne, Maxime and Urzay, Javier and Park, George I and Moin, Parviz},
+  journal={Physics of Fluids},
+  volume={28},
+  number={3},
+  year={2016},
+  publisher={AIP Publishing}
+}
+@article{naso2010interaction,
+  title={The interaction between a solid particle and a turbulent flow},
+  author={Naso, Aurore and Prosperetti, Andrea},
+  journal={New Journal of Physics},
+  volume={12},
+  number={3},
+  pages={033040},
+  year={2010},
+  publisher={IOP Publishing}
+}
+@article{yao2021deagglomeration,
+  title={Deagglomeration of cohesive particles by turbulence},
+  author={Yao, Yuan and Capecelatro, Jesse},
+  journal={Journal of Fluid Mechanics},
+  volume={911},
+  pages={A10},
+  year={2021},
+  publisher={Cambridge University Press}
+}
+
+~~~
+*/

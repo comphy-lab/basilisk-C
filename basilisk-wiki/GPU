@@ -1,0 +1,211 @@
+<div class="message">
+<div id="msg_logo"><img src="/img/warning.png"></div>
+This page is kept for historical interest. Current releases of Basilisk use a different [GPU implementation](/src/grid/gpu/grid.h)</div>
+
+This page describes some ideas on how to support offloading of computations to accelerators, in particular to GPUs. The current implementation of GPU support for Basilisk uses OpenACC, details can be found on the [OpenACC implementation](OpenACC) page.
+
+# General considerations
+
+Accelerators, such as GPUs, Intel's Phi accelerator, or highly specialised FPGA and DSP hardware, have been used to speed up particular computational tasks for a long time. GPUs were originally created for speeding up graphical computations, exploiting the fact that image elements can be computed in parallel by many processing units, rather than sequentially by a single unit. Their potential for applications in science and technology was soon realised, as solving equations typically involves applying the same operation on a large amount of independent data elements (SIMD, Single Instruction Multiple Data).
+
+Nvidia's GPUs have been very popular among scientists in the last years. They draw their power from employing a very large number of compute cores: the current Tesla K40 accelerator card uses 15 streaming multiprocessors, each of which has 192 single precision cores and 64 double precision cores. At each point of time, a K40 can perform up to 2880 single precision computations, and 960 double precision computations in parallel. Computations are performed by "kernels", which are code blocks that are executed as parallel threads on the GPU.
+
+However, the catch is that GPU clock speeds are typically far lower than CPU clock speeds: the GK110b multiprocessor that is used on K40 accelerators runs at 745 MHz, compared to about 3.5 GHz clock rate of a current Intel Xeon CPU. While it is possible to run single thread computations on a GPU, they will suffer from severe performance penalties. Moreover, cache size per thread is very small on a GPU compared to CPUs, making memory access an important factor in performance optimisations.
+
+Another major point to consider is the physical separation between host memory and accelerator memory, requiring expensive memory copies across the comparatively slow PCI bus, and requiring programmers to take data locality into account when enabling GPU computations.
+
+GPUs have come along way from supporting only graphics applications with low numerical precision and with little in the way of general purpose programming tools, to the current generation with hardware support for double precision computations, and luxurious IDEs with debuggers and profilers. For Nvidia GPUs, hardware support for computational features is called "compute capability", which is expanded in every revision of microarchitecture. Modern Nvidia GPUs support function calls from a compute kernel on the accelerator, and calling new kernels from a running kernel with different thread setup ("dynamic parallelism").
+
+# Design goals and strategies for enabling GPU offloading
+
+Current GPU programming APIs (CUDA and OpenACC will be discussed here) support almost all features of the C programming language, but impose a few important restrictions with consequences for code design. CUDA is based on C++, which results in any C code having to be fully C++ compliant (as far as I know at least), ruling out some features of C language that are used in Basilisk. The OpenACC standard supports more C language features, but not all of this is available in current implementations, requiring some code changes.
+
+For an existing CPU code like Basilisk, it is desirable to enable computation on a GPU with minimal code changes, to avoid having to maintain and synchronise efforts on two separate branches of code, or to deal with numerous preprocessor branches. Owing to the restrictions in language support and to hardware differences between CPUs and GPUs which may limit performance, branching in the code is not totally avoidable.
+
+With modern GPUs, it would be - in principle - possible to port large parts of, if not an entire code to the GPU as a large number of kernels that call device functions and other kernels. Keeping the limitations in mind - low clock speed, small cache size, memory separation, and branching large parts of code, this may not be the ideal approach to make best use of a CPU's flexibility and a GPU's numerical power.
+
+In the case of Basilisk, it seems best to adopt the offloading strategy, where all data input, output, general administration and scheduling of computations is handled by the CPU, while all numerical computations (and grid operations in case of adaptive grids) are handed off to the GPU. This reduces the amount of code that needs to be ported to small regions. To keep the number of expensive memcopies between host memory and accelerator memory at a minimum, data should only be synchronised when absolutely necessary, e.g., for setting up initial values, obtaining data for output, or for debugging purposes. 
+
+Basilisk-C inherently exposes computations that are suitable for offloading with the "foreach" construct. An implementation can therefore simply piggyback onto this construct and automatically generate code that will run on the GPU. This also reduces the amount of hardware knowledge that users will need to have to run their model on a GPU. Ideally, the only issue that needs to be kept in mind is data locality: users may need to implement memory synchronisation points before accessing field data or the grid (although software support and hardware support for automatic memory synchronisation is already available or will be available soon).
+
+However, not all "foreach" loops can automatically be offloaded - if a loop includes, e.g., a "print" statement or if the loop is not used for an actual scientific computation, it should be executed on the host CPU. It would be therefore beneficial to define a "acc" clause to mark a "foreach(acc)" loop for offloading.
+
+There should also be a general switch in qcc to enable or disable offloading altogether, to make sure than any model can be compiled for CPU-only execution, or for accelerator offloading of numerical computations.
+
+# APIs for Nvidida GPUs
+
+There are two APIs of interest:
+
+* [CUDA](https://en.wikipedia.org/wiki/CUDA)
+* [OpenACC](http://www.openacc-standard.org/)
+
+OpenACC is mainly based on compiler directives (pragmas) and a few API functions, similar to OpenMP. It is in this sense a "higher-level" API than CUDA, which offers more direct access to hardware features, but this needs to be coded explicitly. For example, a reduction operation may be requested by adding a simple clause in OpenACC, while CUDA requires explicit coding of reduction tree. OpenACC is a device-independent standard and therefore allows codes to run on any supported hardware, rather than Nvidia hardware only as in case of CUDA.
+
+A significant drawback is that OpenACC is quite new - compiler support for the standard is still somewhat limited (an overview can be found [here](http://openacc.org/content/tools)), and not all features of the current OpenACC 2.0 standard are available yet. On the hardware side, OpenACC support depends on the compiler. The PGI compilers can generate code for Nvidia and Radeon accelerators, while Cray compilers target Nvidia and Intel Phi accelerators. Work on OpenACC is also being done within [GCC](https://gcc.gnu.org/wiki/OpenACC), but it may still be a while until GCC fully supports offloading. Using OpenACC therefore requires a compiler license, while CUDA is distributed free of charge at this point.
+
+OpenCL is also supported by Nvidia GPUs, but it is not as easy to use as OpenACC and seems to provide less compute performance than CUDA on Nvidia GPUs.
+
+# OpenACC
+
+OpenACC directives can be implemented using pragmas that are very similar to OpenMP. They are typically (but not necessarily) used around large compute loops, which will (hopefully) be compiled as accelerator kernels and executed in parallel by a large number of threads. It is also possible to run code in thread-redundant mode, as in case of OpenMP after a "parallel" directive.
+
+The compiler performs an dependency analysis to verify that loop iterations are truly independent and thus can be executed in parallel, but care must still be taken by the programmer that this is indeed the case - in particular if compiler analysis results are overridden by the programmer, which is sometimes necessary as compilers cannot always easily take the right decision.
+
+OpenACC is still evolving, and the standard is not yet fully supported by current compilers. This results in restrictions on some C language features that may be used in accelerator regions. OpenACC compilers analyse the parallelisable code automatically and kernel. This has the huge advantage that compilers handle the complexities of automatic variable and type analysis, since GPU kernels need to be informed of all variables and variable types that are used in accelerator code. Using CUDA C requires this type of work be done either by `qcc` or manually by the programmer (see CUDA section below).
+
+A `foreach()` loop for the [Cartesian mesh](src/grid/cartesian.h#23) could conceptually look like
+
+~~~c
+@def foreach(clause)
+  #pragma acc parallel present(grid)
+  {
+  int ig = 0, jg = 0; NOT_UNUSED(ig); NOT_UNUSED(jg);
+  Point point = *((Point *)grid);
+  int _k;
+  #pragma acc loop 
+  for (_k = 1; _k <= point.n; _k++) {
+    point.i = _k;
+    #pragma acc loop
+    for (point.j = 1; point.j <= point.n; point.j++) {
+      POINT_VARIABLES
+@
+@define end_foreach() }}}
+~~~
+
+The first pragma "acc parallel" starts a parallel region, and the accelerator executes the following code block in thread-redundant mode. The "present(grid)" clause tells the compiler that "grid" is a device pointer, no data needs to be moved to or from the accelerator for this parallel region. The pragmas "acc loop" tell the compiler that the following for loop(s) should be executed in parallel by individual threads.
+
+Note that this could even be implemented just as a new definition of
+the macros `OMP_PARALLEL()`, `OMP()` and
+`OMP_END_PARALLEL()`. However, as pointed out in the blog, without
+some control of data layout, performance would probably be terrible.
+
+For data layout, the best approach would be to allocate fields by
+default only on the GPU. Presumably this could be done with the
+appropriate directive/functions in
+[`realloc_scalar()`](src/grid/cartesian.h#215).
+
+The problematic functions would be the outputs (e.g. using file system
+functions) which, presumably, cannot be done by the GPU. This would
+require transfer to the CPU of the GPU fields. We could start with
+some adhoc functions for debugging and think about a more general
+solution later.
+
+Once the Cartesian grid version works, quadtrees could presumably use
+similar techniques.
+
+# CUDA C
+
+CUDA C is a propietary extension of the C language for programming Nvidia GPUs. CUDA C provides an API to access various hardware functions on the GPU. Parallel code is implemented using kernels, many copies of which are executed in parallel on a large number of threads.
+
+CUDA C uses a compiler wrapper called `nvcc`, which is based on GCC. The host part of source files that call the CUDA API or implement kernels (.cu files) is compiled using `g++`, which seems to be a requirement of CUDA (this is confirmed by various forum posts, although there might still be a way to change this). At least in its standard setup, `nvcc` enforces C++ compliant syntax in source code; Basilisk models thus cannot be compiled with `nvcc` directly.
+
+One way to work around this problem is to extract CUDA kernels and C++ compliant wrapper functions from the main source files, compile them separately using `nvcc` and link them with the object code. The code for creating kernels and wrapper functions can be implemented using existing mechanisms available in `qcc`.
+
+A "typical" `foreach()` loop such as
+
+~~~c
+...
+double a = 32, b = 5.;
+scalar s[];
+
+foreach()
+  s[] = a*b;
+...
+~~~
+
+would then be turned into something like the following CUDA kernel:
+
+~~~c
+// The following CUDA C code needs to be placed in a separate .cu source file
+// This kernel will be executed in parallel by a larger number of threads
+__global__ void mykernel (Point dev_point, scalar s, double a, double b, size_t datasize)
+{
+    // Determine 2D location for this thread
+    dev_point.i = threadIdx.x + blockIdx.x * blockDim.x;
+    dev_point.j = threadIdx.y + blockIdx.y * blockDim.y;
+    
+    // Check if the thread is within array ranges. An out-of-range thread may still
+    // perform the computation, but results will be dropped.
+    if ( (dev_point.i < dev_point.n) && (dev_point.j < dev_point.n)) {
+    
+        // Body of the foreach() construct is inserted here
+        ((double *)&dev_point.data[((dev_point.i + k)*(dev_point.n + 2) + (dev_point.j + l))*datasize])[s.i] = a*b;
+
+    }
+}
+
+// Need to make the wrapper function callable from C
+extern "C" int run_mykernel(Point, scalar, double, double, size_t);
+
+// Implement the wrapper function
+int run_mykernel(Point host_point, scalar s, double a, double b, size_t datasize) {
+
+    // dev_point will be used on device  
+    Point dev_point = host_point;
+
+    size_t nbytes = ... ; // compute array size here
+    
+    // Create new array on device
+    // dev_point.data will now point to device memory
+    cudaMalloc((void **)&dev_point.data, nbytes);
+
+    // Copy data onto device
+    cudaMemcpy(dev_point.data, host_point.data, nbytes, cudaMemcpyHostToDevice);
+
+    // Compute block size and number of blocks for 2D case
+    ...
+    
+    // Launch kernel
+    mykernel<<<nblocks, nthreads>>>(dev_point, s, a, b, datasize);
+    
+    // Insert error handling here if needed
+    ...
+
+    // Copy data back into host memory
+    cudaMemcpy(host_point.data, dev_point.data, nbytes, cudaMemcpyDeviceToHost);
+
+    // Free device memory
+    cudaFree(dev_point.data);
+    
+    return(err);
+}
+
+
+/* This is a fragment of the main source code */
+...
+double a = 32, b = 5.;
+scalar s[];
+
+CUDA_KERNEL (run_mykernel, a, b, s);
+...
+~~~
+
+where `CUDA_KERNEL()` is a macro that expands into a call of the CUDA wrapper function. Note that the same could also be implemented using the OpenCL API.
+
+The above is example is slightly simplified. In a real-life application, each kernel and wrapper function need to have a unique name, which can be easily implemented using, e.g., enumeration. This example is also completely self-contained in a sense that device (GPU) memory is specifically allocated and memcopy performed for this instance of a `foreach()` construct. This approach incurs large performance penalties due to repeated memcopies. A GPU implementation would aim at performing all computations on the simulation domain in device memory, and perform memcopies only where absolutely necessary (e.g. when output is generated).
+
+The trick here is that `qcc` needs to know which variables are used within the `foreach()` loop body (and their types), as they need to be inserted into the calling interface of the CUDA kernel and its wrapper function. In this example:
+
+~~~c
+double a, double b, scalar s
+~~~
+
+will need to be communicated to the device function. `qcc` already does some of that, but only for fields (i.e. only `s` in
+this example). Doing it in the general case requires an entire *type
+system* within the preprocessor. This is certainly doable but not
+easily with the current implementation of `qcc` (which is quite
+messy). For a first try, it would be doable to only deal with simple
+types (i.e. `double`, `int` etc...). Note that OpenACC needs to perform exactly this type of source code analysis in accelerator regions. While it means re-implementing this kind of work, doing this ourselves could allow us
+to do more and be more efficient, though, as CUDA C allows full access to all Nvidia hardware features, such as explicit handling of GPU threads, using shared memory between threads on GPU multiprocessors, using the GPU texture interpolation facility for lookup tables, using hardware-supported h264 video encoders directly on the device, etc. A first workaround for these complexities would be to ask the programmer to perform the code analysis and define the calling interface manually.
+
+Anyway, this is doable but would require coding something into `qcc`
+(which I can help with).
+
+# Conclusion
+
+Either option is possible. OpenACC seems simpler but has significant
+drawbacks (essentially loss of control) which could be a showstopper
+if some tricky unexpected obstacle arises.
+
+On the other hand having a more complete/robust type system in qcc
+would be worthwhile in itself.

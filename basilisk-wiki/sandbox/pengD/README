@@ -1,0 +1,8 @@
+/** There are some simulation files for the dynamics of air films
+
+* simulation script for two-dimensional air sheet can be found in this folder. [air sheet](/sandbox/pengD/air_sheet/).
+* simulation script for axisymmetric air filament can be found in this folder. [air_filament](/sandbox/pengD/air_filament/).
+*/
+
+Jian, Z., Deng, P. & Thoraval, M-J. Air sheet contraction. Jouranl of Fluid Mechanics,899,A7.
+Deng, P., Jian, Z. & Thoraval, M-J. Air filament contraction. Physics of Fluids.

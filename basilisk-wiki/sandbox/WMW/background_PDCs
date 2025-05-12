@@ -1,0 +1,14 @@
+#What are pyroclastic density currents?
+
+Pyroclastic density currents (PDCs) are a dangerous multiphase flow, resulting from explosive volcanism and are amongst the most hazardous volcanic phenomena on Earth.   Formed  when  hot  mixtures  of  fragmented volcanic ash, rock and gas fail to become positively buoyant with respect to the surrounding air, these ground hugging currents move at speeds up to 150 m/s down-slope away from their source. PDCs normally occur as a result of a lava dome or Plinian eruption column collapse.  Other origins include lateral blasts (inclined or laterally directed decompression jets) and sustained pyroclastic fountaining (where particulate dispersion loses momentum and does not entrain sufficient air to become buoyant, thus following fountain like trajectories to the ground).  The eruption style responsible for generating the PDCs has effects on current concentration, rheology and steadiness.  PDCs are often highly poly-disperse mixtures, capable of transporting microm-eter size ash particles to clasts larger than 1 m. They can also vary in temperatures from afew 10s of◦C up to 800◦C 
+
+Pyroclastic density currents are multiphase flows, often consisting of stratified layers and spanning a range of density configurations. Lithofacies characterisations of PDC deposits and experimental observations have led to the interpretation of two main types of PDCs:
+
+1.  Fully  dilute,  fully  turbulent flows  with  a  very thin  bedload  region generated as a result of sedimentation are referred to as *pyroclastic surges*.
+
+2.  Granular-fluid  based  PDCs  comprising  a  dilute  turbulent  transport  regime (equivalent  to  a  pyroclastic  surge)  overlaying  a thick,  gas-pore-pressure-modified granular flow are referred to as *pyroclastic flows*. 
+
+
+In addition to the direct hazard of the flows themselves, PDCs are known to have significant tsunami wave generation potential upon impact with seawater, causing displacement through a combination of different mechanisms.  Accurately modelling the generation of waves by PDCs becomes a far greater modelling challenge than modelling wave generation by landslide/debris flow. PDCs are generally assumed throughout previous studies to act as a 'sliding block' with little to no incorporation of the true rheology/physics of the currents. 
+
+The understanding of tsunami generation mechanisms by PDC is still in its infancy,  due to  the complexities  and practicalities  associated with  the modelling  of such  phenomena  (both  out  of  the  water  and  upon/after  interaction).   My thesis aims to combine an understanding of the physics associated with PDCs with multiphase numerical modelling, to begin a more detailed investigation into what importance capturing a more accurate PDC rheology has on the associated tsunami wave generation. 

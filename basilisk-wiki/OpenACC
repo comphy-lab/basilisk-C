@@ -1,0 +1,113 @@
+This page describes the current status of the OpenACC implementation in Basilisk for running simulations on GPUs. At the moment, OpenACC support is only implemented for Cartesian grids, and only for a subset of Basilisk modules (mainly those that are needed for running tsunami and flooding simualations with the Saint-Venant solver).
+
+# Introduction
+Parts of Basilisk are being ported to run on graphical processing units (GPU) to speed up simulation runtime with relatively low hardware cost. After some initial exploration (see the [GPU](GPU) page on this Wiki), it was decided to use the OpenACC API for this purpose. OpenACC was derived from OpenMP and uses compiler directives to mark code for "offloading" to an accelerator, such as a GPU. The advantage of using OpenACC over the native CUDA API is the possibility of seemless integration into an existing code base. Moreover, Basilisk's lexer would have needed substantial extension and rework to automatically convert code in a `foreach`-type loop into CUDA kernels for the GPU - this part is performed by the OpenACC compiler, including code optimisation. The downside is that OpenACC support by compilers is currently limited, requiring a commercial compiler such as the PGI accelerator compiler. GCC6 expanded implementations of OpenACC and OpenMP 4.5, but degree of support has not been tested yet and is still likely to be fairly limited, in particular when it comes to more advanced code that involves functions on the accelerator or complex variable types. Transitioning from OpenACC to OpenMP 4.5 should not be too difficult due to the close similarity of their approaches, if OpenACC does not achieve sufficient traction in the future.
+
+# Offload programming model
+Current accelerators, such as Nvidia or AMD GPUs and Intel Xeon Phis, are co-processors that use their own memory and that communicate with the host computer through the PCI bus. The processor used on Xeon Phis is now also available as a CPU ("self-hosted"), but this is not the case for GPU-based accelerators. The implementation used for porting Basilisk follows the "offload" programming model, where only compute loops run on the accelerator, while the rest of the code remains on the host CPU. The CPU thus becomes the "administrator", while the accelerator performs numerically expensive work.
+
+As accelerators use their own high-bandwidth memory and due to the high cost of memcopies across the PCI bus, the implementation needs to minimise the need for memory synchronisation, essentially by keeping large arrays in GPU memory and only using memcopies when output is requested. An important implication of the offload programming model with separate accelerator memory is that data (variables) used in offloaded regions needs to be synchronised with host memory, either one or both ways. While the compiler performs such synchronisation automatically in many cases, explicit synchronisation calls are still necessary for simulation fields and where global variables (e.g., physical constants) are used in "device functions" (functions that are compiled to run on the device). The current implementation takes care of synchronisation to some degree, but users may still need to insert additional synchronisation points.
+
+# Running on the GPU from the user perspective
+An important goal for the implementation is to retain Basilisk's flexibility as much as possible, and to make running a model on a GPU as seemless and as transparent to the user as possible. This was largely achieved with OpenACC, which imposes only few restrictions on typical model codes. When compiling a model, users can activate GPU support by simply setting the flag "-qccacc" in `qcc`, which should produce a model that will offload work to the GPU. With GPU support activated, all `foreach` iterators that are marked with a "@" symbol will be offloaded to the accelerator (see below for more details).
+
+The following restrictions and limitations need to be kept in mind by users:
+
+- **Grids:** only Cartesian grids are currently supported
+- **GPU memory:** the current generations of Tesla GPUs have 12 GB - 16 GB of accelerator memory, which may require users to limit grid resolution or reduce the number of fields used in their simulations
+- **Memory synchronisation:** problems related to memory synchronisation can be difficult to spot and debug for unexperienced users, and all users need to be aware of the need to sychronise certain variables (e.g., when using custom I/O routines, or when new global variables are introduced); this complexity can unfortunately not be avoided until future generations of accelerators provide hardware support for synchronising memory automatically, e.g., in a cache-like manner
+- **Functions inside offloaded loops:** functions are generally supported on the accelerator, but their complexity is still limited to rather simple cases; function pointers are currently not supported
+- **General C language support:** most C language constructs are supported on the accelerator; there is currently no "deep copy" mechanism for structured variables with pointers (programmers need to take care of requesting accelerator memory and associating pointers in accelerator memory)
+- **Compiler maturity:** OpenACC support is still generally incomplete; the PGI compiler is maturing quickly, but workarounds are still often needed where the OpenACC compiler either refuses to compile a valid program that works on the CPU, or where it produces erroneous codes (this can sometimes happen with device functions) 
+- **Basilisk C support:** not all Basilisk C constructs are supported in offloaded `foreach`-type loops - field indexing works, but variable list support is not complete due to limitations in C language support by the compiler - generally speaking, simple code is more likely to work
+- **OpenMP and MPI support:** neither OpenMP nor MPI are supported together with OpenACC at this point.
+
+# Memory layout
+GPU-type accelerators are high-throughput devices with fast high-bandwidth memory buses and typically very little cache space per thread, as opposed to regular CPUs where memory access is slower and cache space per thread is larger. Optimising performance for GPU-type accelerators thus dictates memory layout of model grids: Nvidia GPUs use a hardware-supported memory access technique called "coalescing", which improves memory bandwidth utilisation by aggregating loads and stores of individual threads into fewer loads and store operations with large "superwords". Coalescing requires simple memory layout with stride-1 access for fetching data for thread groups. While there is some hardware support for memory gather-scatter operations needed for stride-n access, performance degrades significantly as n increases. The OpenACC implementation thus uses a different memory layout for the Cartesian grid, where variables are stored in blocks rather than aggregated for each grid cell to enable coalescing.
+
+# Basilisk C and OpenACC
+The "offload" programming model is a perfect match for Basilisk C's `foreach`-type iterators, which naturally expose code that can be offloaded to a "massively parallel" processor, such as a GPU. On the implementation side, this means that OpenACC pragmas are integrated in new `foreach_acc` iterators that will be offloaded to an accelerator - and this will be the only code that runs on the accelarator, with the exception of a few loops where OpenACC pragmas were added directly in the code. Separate host and accelertor iterators are still necessary as users may need to use both in their models, e.g., when an iterator is used for another purpose than computing physical fields.
+
+It is not necessary for a user to use `foreach_acc` iterators directly; inserting "@" into the clause section of an iterator and setting the flag `-qccacc` when compiling a model with qcc will cause the lexer to automatically replace all instances of `foreach` with `foreach_acc`:
+
+~~~c
+// This loop will be offloaded
+foreach(@) {
+  // ... do something...
+}
+
+// This loop will not be offloaded
+foreach() {
+  // ... do something...
+}
+~~~
+
+Setting `-qccacc` will also cause `qcc` to define the `QCCACC` preprocessor macro, which activates code blocks in various modules that are needed to support the OpenACC implementation. The lexer removes all "@" markers from the source code if `-qccacc` is not set, and the `QCCACC` macro is not undefined. Note that code produced with `-qccacc` can still be compiled with a non-OpenACC compiler and it will still run on a regular CPU; the OpenACC pragmas will simply be ignored.
+
+# Regression tests
+The OpenACC implementation can currently be tested for regressions using the following automatic tests:
+
+* bump2Dcartesian
+* humpcartesian
+* multiriverinflow
+
+These tests are combined in test group "acc-tests" (similar to test group "3D-tests") and can be run using the command:
+
+~~~
+make acc-tests
+~~~
+
+The tests require the PGI OpenACC compiler and an Nvidia GPU on the test system to succeed as reference output (with suffix ".acc") was created using this combination of compiler and hardware.
+
+OpenACC support code can still be tested without an OpenACC compiler and without accelerator hardware by running
+
+~~~
+make qccacc-tests
+~~~
+
+Although these tests will not be able to catch OpenACC compiler problems in accelerator regions or synchronisation issues between host memory and accelerator memory, they allow at least some basic degree of compatibility testing when changes are made to Basilisk.
+
+Note that for both test groups, the `#include "grid/cartesian.h"` preprocessor directive will be automatically replaced with `#include grid/cartesianacc.h"` by calling `sed` from the Makefile. This seemed the best solution given that the `-grid` flag in `qcc` cannot override an existing grid setup.
+
+# Individual source files
+
+Source files that contain major changes for implementing OpenACC support are listed here; many files only contain minor changes such as added "@" markers.
+
+## qcc.lex
+- new command line option `-qccacc` sets internal flag `offload_to_acc` to activate accelerator support
+- function `foreachbody` contains extra code to process offloading markers "@": `foreach_xxx`-type statements will be replaced with `foreach_xxx_acc` statements; `foreach_face` is treated separately. The markers are simply removed from the code if `-qccacc` is not set.
+- flex rule for "{" inserts a function call to `_init_accelerator` at the beginning of `main` function when `-qccacc` is set; this is necessary to initialise the accelerator and avoid unwanted context switches when several accelerators are present on the system
+- treatment of homogenous and standard boundary functions needs to work around missing function pointer support in accelerator regions, producing loop-in-function code (for which function pointers can be used as such function calls are made on the host), rather than function-in-loop code (which the PGI compiler does not currently support)
+- function `compdir` produces different boundary function headers to accommodate the switch to loop-in-function code when `-qccacc` is set
+- flex rule for reduction clauses in `foreach`-type statements needs to list all clauses explicitly in offloading pragma to help the PGI compiler, which does not always detect reductions automatically; flex rule behaviour is unchanged when `-qccacc` is not set (in which case only sum reductions are listed explicitly)
+- preprocessor calls in function `main` include macro `_QCCACC` when `-qccacc` is set, which will activate accelerator support code; note that Basilisk can still be compiled and run on a system without accelerator and without OpenACC compiler, as all OpenACC pragmas will simply be ignored
+
+## common.h
+- new code block for accelerator-specific support code, activated with macro `_QCCACC`
+- macro `val` needs to be redefined, accelerator code requires simplified handling of data array without type casting
+- define simple data array `acc_dataarr` which holds all field data (alias to `grid -> d` on the host, but the only pointer on the accelerator); this simplifies data transfer between host and accelerator memory as current OpenACC implementations do not support deep copy of struct members, and manual deep copy is possible but rather shaky
+- define function `_init_accelerator` to choose an accelerator based on macro definitions for `ACCDEVTYPE` and `ACCDEVNUM` (only when an OpenACC compiler is used)
+- add macro definitions for OpenACC pragmas and memory sync for field data
+
+## discharge.h
+- PGI compiler limitations currently require an adapted version of the `locate` function, which returns a `Point`-type variable through its function interface
+
+## grid/cartesian-common.h
+- use adapted boundary function prototypes in function `scalar_clone` to accommodate the switch to loop-in-function code when `-qccacc` is set
+- adapted definitions of functions `symmetry`, `antisymmetry`, `default_scalar_bc`, `default_vector_bc`, and `periodic_bc`
+
+## okada.h
+- function interface of `okada_rectangular_source` needs slight redefinition to work around PGI compiler problem (support for functions in accelerator regions is still somewhat limited)
+
+## saint-venant.h
+- reduction of variable `dtmax` in function `update_saint_venant` needs to be made more explicit in the loop body to help the PGI compiler produce correct code
+
+## utils.h
+- PGI compiler limitations currently require an adapted version of the `gradients` function that does not use function pointers in the loop body; the adapted version is fixed to the `minmod2` limiter
+
+## grid/cartesianacc.h
+- this source file is derived from `grid/cartesian.h`, and it became its own source file due to the large amount of changes required for OpenACC support
+- define new `foreach`-type iterators `foreach_acc` and `foreach_face_acc` which offload loops by inserting OpenACC pragmas
+- use a different, simplified definition for macro `data`, the standard definition causes compiler failures in accelerator regions
+- all functions that operate on model grid take different grid structure into account (variables are stored in blocks, rather than aggregated for each grid cell)
+- some global variables are redefined here to support memory synchronisation between host and accelerator

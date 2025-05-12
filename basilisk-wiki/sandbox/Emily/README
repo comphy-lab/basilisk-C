@@ -1,0 +1,11 @@
+## Introduction
+This folder is for examples in Basilisk compiled by Emily Lane (Emily.Lane@niwa.co.nz). For examples specific to the Volcanic Tsunamis Marsden work please see [We Make Waves](http://basilisk.fr/sandbox/WMW/)
+
+## Two-Layer model
+Developed for modelling submarine landslides. The top layer respresent water and the bottom layer represents the landslide as a dense, viscous fluid. The two layers are not able to mix.
+
+## Multi-Layer model
+A generalisation of the two-layer model to nl layers. Variable density and viscosity are allowed between the layers but the assumption is that the layers are immiscible and that there is no vertical mixing. This differs from the [nl-layer Saint Venant equations](http://basilisk.fr/src/multilayer.h) in that the layers are Lagrangian (i.e. they follow the fluid movement) whereas in the nl-layer Saint Venant the layers are a fixed ratio of the total depth and the fluxes between layers are taken into account.
+
+* [Saint-Venant for my immiscible version of multi-layer](http://basilisk.fr/sandbox/Emily/multilayer/saint-venant_immiscible.h)
+* [Multi-Layer for my immiscible version of multi-layer](http://basilisk.fr/sandbox/Emily/multilayer/multilayer_immiscible.h)

@@ -1,0 +1,58 @@
+{
+  "control": {
+    "R": 12.5,
+    "B": 0.14,
+    "S": 3.0,
+    "D": 0
+  },
+  "fluids": {
+    "atwood": 0.05,
+    "density1": 1.0,
+    "density2": 1.105263158,
+    "viscosity1": 7.5e-4,
+    "viscosity2": 8.289473685e-4,
+    "tension": 20e-3
+  },
+  "geometry": {
+    "aspect_ratio_x": 1.000,
+    "aspect_ratio_y": 1.000,
+    "aspect_ratio_z": 1.000,
+    "width": 6.283185307
+  },
+  "experiment": {
+    "gravity": 456.130560,
+    "velocity": 0,
+    "velocity_prev": 0,
+    "frequency": 6.283185307,
+    "ramp_type": 1,
+    "time_start": 0.00,
+    "shape_m": 0.20,
+    "shape_k": 4.00,
+    "time_end": 0.000,
+    "time_restart": 0.000,
+    "file_restart": "./"
+  },
+  "perturbation": {
+    "eta0": 0.046875,
+    "k0": 64,
+    "delta_k": 8.96,    
+    "min_wavenumber": 59.520,
+    "max_wavenumber": 68.480
+  },
+  "numerics": {
+    "CFL": 0.5,
+    "DT": 0.05,
+    "TOLERANCE": 1e-8,
+    "NITERMIN": 1
+  },
+  "functions": {
+    "density2": "$(bc <<< \"scale=6; $density1 * ( 1 + $atwood )/( 1 - $atwood ) \")",
+    "delta_k": "$(bc <<< \"scale=6; $B * $k0 \")",
+    "min_wavenumber": "$(bc <<< \"scale=6; $k0 - 0.5*$delta_k \")",
+    "max_wavenumber": "$(bc <<< \"scale=6; $k0 + 0.5*$delta_k \")",
+    "eta0": "$(bc <<< \"scale=6; $S / $k0 \")",
+    "gravity": "$(bc <<< \"scale=6; (($R * $viscosity1 / $density1)^2) * ($k0^3) / $atwood \")",
+    "cycles": "$(bc <<< \"scale=4; ($newset + 1)*50 / sqrt( $atwood * $gravity * $k0 ) \")"
+  }
+}
+

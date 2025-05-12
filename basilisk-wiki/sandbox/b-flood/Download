@@ -1,0 +1,29 @@
+/**
+# Download 
+
+## Getting Basilisk 
+
+Before downloading b-flood, basilisk must be installed on your
+machine. To do this, you must go to [the web page dedicated to the
+installation of Basilisk](/src/INSTALL) and follow the
+instructions. Once done, go back to this page and continue the
+installation.
+
+## Getting b-flood 
+
+To install the b-flood code, you have to download [this
+tarball](b-flood.tgz) and decompress it in the basilisk/src/ directory
+using
+
+~~~bash
+cd $BASILISK
+tar xzvf b-flood.tgz
+~~~
+
+Please note that the code is exactly the same as on this website, so
+you can walk around the site to discover the code.
+
+## Link to the homepage
+
+* [Homepage](Readme)
+*/

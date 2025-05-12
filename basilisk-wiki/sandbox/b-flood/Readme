@@ -1,0 +1,25 @@
+/**
+## b-flood : an open source solver to model flash floods
+
+b-flood is a subset of the Basilisk software. This solver is dedicated
+to solving the Saint-Venant equations in the case of floods.
+
+## Download 
+
+* [Download the code](Download)
+
+## Test cases 
+
+* [Fluvial flow to torrential flow with Manning's friction](Testcases/fluv2tor-m.c)
+* [Torrential flow to fluvial flow with Darcy's friction](Testcases/tor2fluv-d.c)
+
+## Examples
+
+* [The Toce valley: fluvial case](ToceFluvial.c)
+* [The Toce valley: urban case](ToceUrban.c)
+* [The flood of October 2015 the French Riviera ](Cannes.c)
+
+## Tutorials
+
+* [The Karamea River tutorial](karamea.c)
+*/

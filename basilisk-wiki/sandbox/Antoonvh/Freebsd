@@ -1,0 +1,114 @@
+![If you say BSD fast enough, it may sound like
+ "Beastie"](https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Daemon-phk.svg/220px-Daemon-phk.svg.png)
+
+# "Install" Basilisk on FreeBSD
+
+I have put "install" in quotation marks as we only focus on getting
+`qcc` with some `bview` support.
+
+## Obtaining the source code
+
+It is best to use `darcs` for this ...
+
+~~~bash
+$ sudo pkg install hs-darcs
+$ darcs get --lazy http://basilisk.fr/basilisk
+~~~
+
+## Install `qcc`
+
+The Basilisk installer scripts is written for GNU + LINUX
+systems. Therefore it seems easiest to install some GNU tools ....
+
+~~~bash
+$ pkg install gcc gmake bash
+~~~
+
+Before we can compile qcc, some additional header file is needed,
+apparently because `BSD libc` behaves different to `glibc`.
+
+~~~bash
+$ cd ~/basilisk/src # changeto the Basilisk directory
+$ sed -i '' 's/<assert.h>/<assert.h>\n#include <signal.h>/' qcc.lex
+~~~
+
+Now `qcc` should compile with the following commands 
+
+~~~bash
+$ export BASILISK=$PWD
+$ export PATH=$PATH:$PWD
+$ ln -s config.gcc config
+$ CC=gcc gmake -k
+$ qcc -v
+... some gcc message ...
+~~~
+
+Further tips include ...
+
+* To install some useful packages
+
+~~~bash
+$ sudo pkg install ImageMagick6 ffmpeg
+~~~
+
+* Enable the image conversion scripts
+
+~~~bash
+$ ln -s $(which bash) /bin/bash
+$ cd $BASILISK
+$ chmod +x ppm2*
+~~~
+
+* Make the `export` commands persistent (which depends on your shell)
+
+## bview
+
+The run-time-graphics installation is quite straight forward. The
+packages required for off-screen rendering can be installed like so
+...
+
+~~~bash
+$ sudo pkg install libGLU libosmesa bison
+~~~
+
+Then the `$BASILISK/config` file should be modified accordingly. To
+finalize it you should do ...
+
+~~~bash
+$ cd $BASILSIK/gl
+$ gmake
+~~~
+
+which should not give any error messages. You can verify if it has
+worked by running a test ...
+
+~~~bash
+$ cd $BASILISK/test
+$ qcc view.c -lm -lGLU -lfb_osmesa -lglutils -lOSMesa -lm -L$BASILISK/gl
+$ ./a.out
+$ display out.png
+~~~
+
+Which should reveal the [test'](/src/test/view.c) result.
+
+#### Interactive bview :(
+
+The websocket Server library can be compiled with the inclusion of an extra header (newer versions of this software are compatible withFreeBSD, but not with `display.h`): 
+
+~~~bash
+$ cd $BASILISK/wsServer/src
+$ sed -i '' '20 i #include <netinet/in.h>
+$ cd ..
+$ gmake
+~~~
+
+Now you can compile Basilisk code with 
+
+~~~bash
+gcc .... -DDISPLAY -L$BASILISK/gl -lws
+~~~
+
+But running the excecutable results in a crash... 
+
+## Using a GNU-free tool chain
+...

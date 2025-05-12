@@ -1,0 +1,22 @@
+#!sh
+# input parameter files
+
+N  = 64
+L0 = 5
+npy = 1
+
+
+h0 = 0.06
+lr = 0.05
+xm = 0.
+N2 = 1.
+Ut = 1.
+mu = 5.e-4
+#kappa = 5.e-4
+
+
+#N=1024,npx = 4, npy=1 -> mu= 5.8125e-4
+
+# timestepping
+tend  = 5.
+dtout = 0.1

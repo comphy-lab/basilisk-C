@@ -1,0 +1,92 @@
+
+# Sandbox of Jieyun
+
+# Edge-Based Interface-Tracking (EBIT) / Semushin method
+
+The Edge-Based Interface Tracking (EBIT) method is a novel Front-Tracking method
+developed by [Chirco and Zaleski, 2022](#chirco2022), [Pan et al., 2024](#pan2024).
+In the EBIT method, the markers are located on the grid edges and
+the interface can be reconstructed without storing the connectivity of the markers. This feature
+allows almost automatic parallelization on a quad/octree grid.
+
+## Publications
+
+~~~bib
+@article{chirco2022,
+  title={An edge-based interface-tracking method for multiphase flows},
+  author={Chirco, Leonardo and Zaleski St\'{e}phane},
+  journal={Int J Numer Meth Fluids.},
+  volume={95(3)},
+  pages={491-497},
+  year={2022},
+  publisher={Wiley},
+  doi={https://doi.org/10.1002/fld.5144}
+}
+
+@article{pan2024,
+  title={An edge-based interface tracking ({EBIT}) method for multiphase-flow simulation with surface tension},
+  author={Pan, Jieyun and Long, Tian and Chirco, Leonardo and Scardovelli, Ruben and Popinet St\'{e}phane and Zaleski St\'{e}phane},
+  journal={Journal of Computational Physics},
+  volume={508},
+  pages={113016},
+  year={2024},
+  publisher={Elsevier},
+  doi={https://doi.org/10.1016/j.jcp.2024.113016},
+  pdf={https://arxiv.org/pdf/2309.00338}
+}
+
+@article{long2024,
+  title={An Edge-based Interface Tracking ({EBIT}) method for multiphase flows with phase change},
+  author={Long, Tian and Pan, Jieyun and Zaleski St\'{e}phane},
+  journal={Journal of Computational Physics},
+  volume={513},
+  pages={113159},
+  year={2024},
+  publisher={Elsevier},
+  doi={https://doi.org/10.1016/j.jcp.2024.113159},
+  pdf={https://arxiv.org/pdf/2402.13677}
+}
+~~~
+
+## Header files
+
+The main header files can be found on the following pages:
+
+* [Interface advection](src/ebit-2d.h)
+* [Two-phase flow with the EBIT method](src/two-phase-ebit.h)
+* [Fitting functions](src/fitting-ebit.h)
+* [Helper functions for EBIT method](src/utils-ebit.h)
+* [EBIT method + AMR](src/ebit-tree.h)
+
+## Verification test cases
+
+Verification test cases can be found on the following pages:
+
+### Benchmark test cases with the EBIT method
+* [Stagnation flow](test/stagnation_ebit.c)
+* [Translation](test/translation_ebit.c)
+* [Single vortex](test/vortex_ebit.c)
+* [Zalesak's disk](test/zalesak_ebit.c)
+* [Capillary wave](test/capillary_ebit.c)
+* [Rayleigh-Taylor instability](test/rti_ebit.c)
+* [Rising bubble](test/rising_ebit.c)
+
+### Relevant test cases with the VOF method
+* [Translation](test/translation_vof.c)
+* [Single vortex](test/vortex_vof.c)
+* [Zalesak's disk](test/zalesak_vof.c)
+* [Rayleigh-Taylor instability](test/rti_vof.c)
+
+### Phase change problems with the EBIT method
+
+Please refer to [Tian's sandbox](http://basilisk.fr/sandbox/tianlong/README)
+
+# Useful postprocessing tools
+* [Facets output in an MPI run](src/output-mpi.h)
+* [Triangulate facets for visualization using Paraview](others/interface.py)
+
+# Documentation
+I spent some time reading the source code to figure out how the tagging function in Basilisk works. 
+I added some comments and figures to the tag.h to make it clearer.
+
+* [Tagging function in Basilisk source code](tag/tag.h)

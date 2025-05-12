@@ -1,0 +1,23 @@
+This directory contains the postprocessing functions for the results that are produced by [rising-suspension.c](http://basilisk.fr/sandbox/pnaanouh/rising-suspension.c)  
+
+There are two versions of these functions: 
+
+* The original MATLAB(R2021a) version
+
+* A translated Python version 
+
+These two functions should produce identical results, but I would recommend the use of the MATLAB version. This is due to the fact that the functions were translated more or less directly from MATLAB and are not optimized for python resulting in a 10-20x increase in the computational time (from ~1h to 20+h on my machine). The python code is only made available to have something that can be used (after some optimization) in the case that a matlab license is not available. 
+
+It should also be noted that the matlab functions are not compatible with octave due to differences in how the min, mean, and histcounts functions work as well as the lack of an equivalent to hiscounts2. Even if these problems are solved it would still be impractical to use octave as it performs even worse than python with the time required to run one of the functions in octave being at least a hundred times greater than that of the same function in matlab. 
+
+There are 5 postprocessing functions:
+
++ find_drops: used to parse the data. It correlates the data of one sample and the next
+
++ drop_statistics: the main postprocessing function computes statistics for different contact reference distances. The most important outputs are the collision frequency and the probability density function of the contact time
+
++ V_fluctuations: Computes the statistics related to the velocity fluctuations 
+
++ r_distribution: computes the radial distribution function 
+
++ r_distribution2D: computes the 2-D pair distribution function

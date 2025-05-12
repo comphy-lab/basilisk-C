@@ -1,0 +1,159 @@
+
+# Instability of nonparallel shear flows.
+
+Preliminary Lecture notes, january 2022
+
+## Phenomenology : noise amplifiers vs. oscillators
+
+Shear flows in open domains (jets and wakes, shear layers) generally display two kind of behaviour related to instabilites :
+
+- A first class of flows behave as "noise amplifiers". 
+Without forcing we observe transition to turbulence characterized by a broadband spectrum ( no dominant frequency / wavelenght). With periodic forcing, a periodic (or almost periodic) behaviour can be obtained. 
+
+Examples : simple jets.
+
+Illustrations :
+
+[Unforced jet](https://www.youtube.com/watch?v=D9MMBT6vF_M)
+
+[forced jet](https://stabfem.gitlab.io/StabFem/PUBLICATION_CASES/HoleImpedance_FabreEtAl/SCRIPT_DNS_PulsatedJet.html)
+
+- A second class of flows behave as "self-sustained oscillators". Here, without the need of a forcing, an oscillating behaviour is observed with a well-defined frequency.
+
+Examples : wakes of blunt body objets, jets with counterflow and/or boyancy effets, ...
+
+Illustrations :
+
+[Wakes and buoyant jets](http://www2.eng.cam.ac.uk/~mpj1001/MJ_forced_oscillators.html)
+
+[Wake of a cylinder](https://www.youtube.com/watch?v=a1iDcEIRmvU)
+
+## Local approaches to weakly nonparallel flows (~1990-2000)
+
+*NB : this paragraph is a short résumé of Lecture 9. A more complete exposition of this topic can be found [here]
+(http://basilisk.fr/sandbox/easystab/LectureNotes_SpatioTemporal.md)
+
+In many cases, the flow is *weakly nonparallel*, and one can expect to characterize the instability mechanisms by studying the parallel flow $U(y)$ (or $U(r)$ in axisymmetric flows), with the framework of chapters 6, 7, 8.
+
+This idea of replacing the full flow by its local parallel flow $U(y)$ 
+is called a **local approach** in the litterature.
+
+
+### Spatial stability analysis : Principle
+
+The starting point of chapters 6 and 7, called the  *temporal approach* in the litterature, consisted of solving for a *complex* $\omega$ as function of a *real* $k$. 
+
+Instead, we now try to characterize the response to a periodic forcing considering a *real* frequency $\omega$. 
+
+We are thus led to considering perturbations with modal dependance 
+
+$$[u',v',p'] =  \hat{q} e^{i k x - i \omega t}.$$
+
+where $k = k_r + i k_i$ is complex. Here $k_r$ is related to the wavelength and $-(k_i)$ is the *spatial amplification rate*.
+
+When injecting in the linearized equations, we can set them in form of a *spatial eigenvalue problem* with the form
+$$
+k {\mathcal B} \hat{q} = {\mathcal A} \hat{q}
+$$
+
+An example of program solving this problem in the case of the tanh shear layer already considerred in Lecture 6 can be found  [here](http://basilisk.fr/sandbox/easystab/KH_spatial_inviscid.m).
+
+
+When trying to apply on the spatial stability approach (solving for $k$ as function of $\omega$) for a real flow (or considering a model equation such as the one considered [here](http://basilisk.fr/sandbox/easystab/SpatioTemporal_ModelEquations.m), one can get two very different situations :
+
+### Significance of the spatial stability approach for **convectively unstable flows**
+
+In a first situation, called **convectively unstable flows** in the litterature, the problem admits to well-defined "branches" of solutions. These solutions belong to two classes: the first are called $k^+$ branches are describe the amplification (or damping) of perturbations propagating in the *downstream direction*. The second are called $k^-$ and are associated to positive and large values of $(-k_i)$. However, one can justify that these solutions do not correspond to spatially amplified perturbations in the downstream direction. Rather, they represent *spatially damped* perturbations propagating in the *upstream direction*.
+
+<span style="color:green">
+The mathematical criterion allowing to distinguish $k^+$ and $k^-$ solutions is very technical and not explained here.
+</span>
+
+The situations where the flow is *locally convectively unstable* at all locations $x$ is usually associated to *noise amplifiers* as defined above. 
+This is effectively the case for *jet flows* in most situations.
+
+
+### Failure of the spatial stability approach for **absolutely unstable flows**
+
+In a second situation, called **absolutely unstable flows** in the litterature, one gets branches of solutions $k(\omega)$ which cross each other, and it is not possible to sort them into $k^+$ or $k^-$ types. This failure signals that the spatial approach is not suited to such situations and that the response of the flow to a forcing will generally not be time-periodic.
+
+The existence of a region of sufficient extend where the flow is *locally absolutely unstable* is a sufficient condition for the flow to act as a *self-sustained oscillator* as defined above. In practice, this is generally associated with the existence of a *recirculation region*  of sufficiently large extend. This situation is thus well suited to explain the onset of oscillations in wakes of blunt bodies.
+
+<span style="color:green">
+The mathematical criterion allowing to distinguish absolutely unstable and convectively unstable situation is rather technical and is not explained here. More details are given in chapter 9.
+</span>
+
+## Global approaches (since 2000).
+
+When the flow is not weakly nonparallel (i.e. when characteristic length describing the evolution of the flow in the axial direction (such as the length of the recirculation region) is comparable to the wavelength of the observed instabilities), it is no longer justified to use a local approach.
+
+
+
+### Global linear stability analysis
+
+Consider 2D flow problems which depend upon both spatial variables $(x,y)$.
+
+
+Global linear stability analysis consists of expanding the flow as follows :
+
+$$
+[u,v,p] =  [u_0(x,y),v_0(x,y),p_0(x,y)] + \epsilon [\hat{u}(x,y),\hat{v}(x,y),\hat{p}(x,y)] e^{ \lambda t}
+$$
+
+Or, written in a more synthetic way :
+
+$$
+{\bf q} = [{\bf u} ,p] =  {\bf q}_0  + \epsilon A \hat{{\bf q}} e^{ \lambda t}
+$$
+
+Here ${\bf q}_0 = [u_0(x,y),v_0(x,y),p_0(x,y)]$ is the *base flow* which is a solution of the steady Navier-Stokes equation, written in a symbolic wy as follows:
+
+$${\mathcal NS}( {\bf q}_0 ) = 0.$$
+
+The eigenmodes $\hat{{\bf q}}$ and associated eigenvalues $\lambda$ are to be solved as the solution of a linearized eigenvalue problem :
+
+$$\lambda \hat{{\bf q}} = {\mathcal NSL} \hat{{\bf q}} $$
+
+where ${\mathcal NSL}$ is the linearized Navier-Stokes operator.
+
+The *global stability approach* consists in a first step in solving the (nonlinear) base-flow problem ${\mathcal NS}( {\bf q}_0 ) = 0$ and in a second step solving the linear eigenvalue problem.
+
+#### Resolution methods.
+
+The problems being 2D, to solve the problem it is first necessary to bluild a 2D mesh, and secondly to discretize the equations over this mesh. **Finite element methods** are particularly suited to such problems. 
+An example of program, belonging to the [StabFem project](https://stabfem.gitlab.io/StabFem) developed at IMFT, can be found [here](https://stabfem.gitlab.io/StabFem_Develop/STABLE_CASES/CYLINDER/CYLINDER_LINEAR.html).
+This program considers the reference problem of instability in the wake of a cylinder.
+
+### Characterization of bifurcation : Weakly nonlinear analysis.
+
+The global linear stability approach described above allows to detect the critical parameters for the onset of instability.
+For instance, 
+in the example of the cylinder wake, the results show that the leading eigenmode is stable ($\lambda_r <0$) for $Re < Re_c = 47.6$ and unstable 
+($\lambda_r > 0$) for $Re > Re_c = 47.6$, indicating that a *Hopf bifurcation* occurs at $Re= Re_c$.
+
+To characterize the bifurcation one also wants to know if the bifurcation is *supercritical* or *subcritical*.
+
+For this, a possible method is to use a *weakly nonlinear approach*. This method starts from an expansion of the flow as 
+$$
+{\bf q} = [{\bf u} ,p] =  {\bf q}_{0,c}  + \epsilon A(t) \hat{{\bf q}} e^{ -i \omega_c t} + \epsilon^2 {\bf q}_2 + \epsilon^3 {\bf q}_3
+$$
+
+where ${\bf q}_{0,c}$ is the base flow at the threshold (for $Re = Re_c$), $\hat{{\bf q}}$ the bifurcating eigenmode, $\omega_c$ the imaginary part of the associated eigenvalue, $A(t)$ its amplitude, and $\epsilon$ a small-amplitude parameter related to the distance to threshold (namely, $\epsilon \approx (Re-Re_c)^{1/2}$). Solving a series of problems at orders $\epsilon^2$ and $\epsilon^3$ then allows to obtain rigourously an *amplitude equation* of the form 
+$$
+\frac{\partial A }{\partial t} = \lambda_r  A - \mu_r |A|^2 A.
+$$
+Here $\lambda_r = \alpha_r (Re-Re_c)$ is the growth rate indicated by the linear global stability analysis, and $\mu_r$ is a coefficient describing the effect of nonlinearity. From lecture 1, it is clear that the bifurcation is supercritical if $\mu_r>0$ and subcritical is $\mu_r <0$. 
+
+The *weakly nonlinear approach* gives a systematic method to compute the coefficient $\mu_r$ and hence to conclude about subcriticality/supercriticality.
+
+(see the research paper available [here](https://gitlab.com/stabfem/stabfem_publications/-/blob/master/Fabre_etal_AMR_2018.pdf) ).
+
+### Characterization of limit cycles beyond bifurcation : Harmonic Balance method.
+
+The weakly nonlinear approach is only applicable in the vicinity of the bifurcation. For instance, in the case of the cylinder wake, for $|Re-Re_c| \ll 1$ with $Re_c = 47.6$.
+
+If one wants to characterize the periodic flow obtained above $Re_c$, a possible method is the *Harmonic balance method*.
+
+(see the research paper available [here](https://gitlab.com/stabfem/stabfem_publications/-/blob/master/Fabre_etal_AMR_2018.pdf) ).
+
+

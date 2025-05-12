@@ -1,0 +1,74 @@
+This page regroups the contributions of David Fabre to the Easystab project.
+
+For info on my other research projects and my full list of publications, 
+see [my professional page](https://www.imft.fr/FABRE-David-136) 
+
+# Discretization methods
+
+* [dif1D.m]() Added a number of options (mapped chebyshev, etc...) 
+
+-> integrated in main project
+
+* [differential_equation_fd_cheb.m]() Comparison of finite-difference and chebyshev (uses dif1D) 
+
+-> to integrate in the main project
+
+* [differential_equation_infinitedomain.m]() Test of discretization methods for resolution of 
+a problem in an infinite domain using mapped chebyshev 
+
+-> to integrate in the main project
+
+
+# Dynamical systems
+
+* [PhasePortrait_NonLinear.m]() Draws phase portraits for an number of classical 2D dynamical systems (lokta-voltera, brusselator, van der pol, pendulum, ...)
+
+* [PhasePortrait_Linear.m]() Classification of equilibrium points for 2D problems
+
+* [Lorenz.m]() Lorenz system
+
+# Instability problems
+
+* [GinsburgLandau.m]() Demonstration of the numerical resolution of an instability problem for a sample 1D problem.
+
+In 2018/2019 this one was splitted in [GinsburgLandau_Linear.m]() and [GinsburgLandau_NonLinear.m]()
+
+
+* [wave_like_Psi.m]() Basic example of wave-like perturbations in a channel ; comparison between UVP formulation (primitive), Psi formulation (Orr-Sommerfeld), and theory for SLIP conditions at the wall.
+
+
+* [wave_like_Psi_noslip.m]() Same but modified for NO-SLIP conditions at the wall.
+
+* [RayleighBenard.m]() No-slip condition, including loops over parameters to draw the neutral curve.
+
+-> already integrated
+
+* [KH_temporal_inviscid.m]() Kelvin-Helmholtz for the tanh shear layer. Uses chebyshev method with coordinate stretching.
+
+-> To integrate in main project 
+
+* [KH_temporal_viscous.m]() Same program in the viscous case. Plots a series of curves for various values of Re.
+
+-> To integrate in main project
+
+* [TS_PlanePoiseuille.m]()
+
+Plane poiseuille : includes loops over k and Re to draw the neutral curve
+
+-> to integrate in the main project
+
+* [KH_temporal_viscous.m]() 
+
+
+
+# Lecture notes for the M2R-DET course
+
+The overview of the course is here : [M2RDET_2018.md]()
+
+Lecture notes for several chapters are available here : 
+
+* [LinearSystems.md]()
+* [DynamicalSystems.md]()
+
+
+Other contributions (to be linked with the rest of the project) are :

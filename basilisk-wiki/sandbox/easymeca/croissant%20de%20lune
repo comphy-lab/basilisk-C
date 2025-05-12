@@ -1,0 +1,18 @@
+# Croissant de lune
+
+L’image «lune.png» représente un très fin croissant de lune, juste après la lune nouvelle. La surface éclairée par le soleil est surexposée sur la photographie de sorte à ce que la luminosité soit adaptée à la visualisation de la face de la lune qui n’est pas éclairée par le soleil. Comment se fait-il que cette face non-éclairée ne soit pas entièrement noire?
+
+La période de la lune nouvelle (la lune n’est pas visible depuis la terre) correspond à la période de «pleine terre» si on est sur la lune Cette lumière qui éclaire la face sombre de la lune, c’est la lumière du soleil reflétée par la terre. La terre est quatre fois plus grande que la lune, donc le clair de terre est 16 fois plus lumineux que le clair de lune. C’est ce qu’on appelle la «lumière cendrée de la lune». 
+
+![](croissant de lune 1.png)
+
+
+je vous propose ici de faire une étude géométrique:
+
+Si on suppose que la lune est une sphère éclairée de côté, quelle est la formule mathématique qui décrit la forme y=f(x) de la limite ombre/lumière vue de la terre? Tracer cette formule sur la photo en identifiant les valeurs des paramètres.
+
+
+Voici l'image de référence:
+
+![](croissant de lune 2.png)
+

@@ -1,0 +1,1016 @@
+"Basilisk C" is the extension of the C programming language used to
+write code in Basilisk. The goal of this extension is to provide a
+simple set of extra C-like constructs useful for writing
+discretisation schemes on Cartesian grids.
+
+[Part I](Basilisk C#part-i-basic-concepts) covers the basic concepts
+which are necessary to setup simple simulations using [pre-defined
+solvers](src/README#solvers).
+
+[Part II](Basilisk C#part-ii-more-advanced-concepts) gives further
+details and is necessary if you want to setup more complex simulations
+and/or write your own discretisation schemes.
+
+The description of the language below assumes a basic knowledge of C
+(e.g. the first four chapters of [*The C programming
+language*](http://en.wikipedia.org/wiki/The_C_Programming_Language)).
+
+# Part I: Basic concepts
+
+## Fields and stencils
+
+*Field* constructs are used to store quantities discretised
+spatially. They can be seen as a generalisation of C arrays. Three
+types of fields can be defined: `scalar`, `vector` and `tensor`.
+
+### Declaration, allocation and deallocation
+
+A new field is declared as an [automatic
+variable](http://en.wikipedia.org/wiki/Automatic_variable) like this:
+
+~~~literatec
+scalar a[];
+~~~
+
+Alternatively, explicit allocation and deallocation can be done like this:
+
+~~~literatec
+scalar a = new scalar;
+...
+delete ({a});
+~~~
+
+where `{a}` is a [list](#lists) (with a single element in this example).
+
+### Iterators
+
+Field values are manipulated using *iterators*, for example:
+
+~~~literatec
+foreach()
+  a[] = 1.;
+~~~
+
+where `foreach()` iterates over all the *stencils* defining the
+discretised field.
+
+Iterators also define several variables (implicitly) such as:
+
+~~~literatec
+double x, y, z; // coordinates of the center of the stencil
+double Delta;   // size of the stencil cell
+~~~
+
+### Stencils
+
+Stencils are used to access field values and their local neighbours. By
+default Basilisk guarantees consistent field values in a 3x3
+neighbourhood (in 2D). This can be represented like this
+
+![3x3 stencil](/src/figures/stencil.svg)
+
+Neighbouring values are accessed using the indexing scheme pictured on
+the figure. For example, computing an approximation of the Laplacian
+
+$$b=\nabla^2 a$$
+
+could be written
+
+~~~literatec
+scalar a[], b[];
+...
+foreach()
+  b[] = (a[1,0] + a[0,1] + a[-1,0] + a[0,-1] - 4.*a[])/sq(Delta);
+~~~
+
+where `a[]` is a shortcut for `a[0,0]`.
+
+### Vectors and tensors
+
+Vector and tensor fields are used in a similar way. Vector fields are
+a collection of $D$ scalar fields (where $D$ is the dimension of the
+spatial discretisation) and tensor fields are a collection of $D$
+vector fields. Each of the components of the vector or tensor fields
+are accessed using the `x`, `y` or `z` field of the corresponding
+structure. For example:
+
+~~~literatec
+vector v[];
+tensor t = new tensor;
+...
+foreach() {
+  v.x[] = 1.;
+  t.x.x[] = (v.x[1,0] - v.x[-1,0])/Delta;
+  t.y.x[] = (v.y[1,0] - v.y[-1,0])/Delta;
+}
+...
+delete ({t});
+~~~
+
+### Boundary conditions
+
+Stencils located close enough to the boundaries of the domain will
+extend beyond it. The stencil values outside the domain (often called
+*ghost values*) need to be initialised. These values can be set in
+order to provide the discrete equivalents of various boundary
+conditions. 
+
+The default boundary condition is *symmetry* and takes into account
+whether the fields are scalars, vectors or tensors. If we consider a 
+boundary, a scalar field `a` and a vector field `v`, symmetry can be 
+expressed on the boundary as:
+
+$$\partial_n a=0$$
+$$\partial_n v_t=0$$
+$$v_n=0$$
+
+with `n` and `t` the normal and tangential directions to the boundary,
+respectively.
+
+Boundary conditions can be changed for each scalar field using the
+following syntax:
+
+~~~literatec
+a[top] = a[];
+~~~
+
+where `a[top]` is the ghost value of the scalar field `a` immediately
+outside the `top` (respectively `bottom`, `right`, `left`)
+boundary. In this example we have set a symmetry condition on scalar
+field `a` on the top boundary (i.e. the default boundary
+condition). This corresponds to a Neumann condition (i.e. a condition
+on the normal derivative of field `a`). To set a Dirichlet condition
+instead (i.e. a condition on the value of the function on the
+boundary), one could use for example:
+
+~~~literatec
+a[left] = 2.*ab - a[];
+~~~
+
+where `ab` is the Dirichlet value on the (left) boundary.
+
+The library also provides functions for common boundary conditions. For
+example the expression for the Dirichlet condition above could also be 
+written
+
+~~~literatec
+a[left] = dirichlet(ab);
+~~~
+
+and the Neumann condition
+
+$$
+\partial_na=a_n
+$$
+
+would be
+
+~~~literatec
+a[left] = neumann(an);
+~~~
+
+(the equivalent discrete expression is left as an exercise).
+
+Note also that using these pre-defined expressions is necessary to
+obtain automatic [*homogeneous boundary 
+conditions*](src/poisson.h#homogeneous-boundary-conditions), which
+is important if scalar `a` is the solution of a Poisson problem (see also [the section below](#homogeneous-boundary-conditions)).
+
+For vector fields, boundary conditions are defined in a coordinate
+system local to the boundary where the `x` and `y` components are
+replaced by the normal `n` and tangential `t` components i.e. imposing
+no-flux of a vector `v` through the `top` and `left` boundary,
+together with a no-slip boundary condition would be written
+
+~~~literatec
+v.n[top] = dirichlet(0);
+v.t[top] = dirichlet(0);
+v.n[left] = dirichlet(0);
+v.t[left] = dirichlet(0);
+~~~
+
+In three dimensions, there is one normal direction `n` and two 
+tangential directions `t` and `r`, the `+z` and `-z` boundaries are 
+called `front` and `back`. Taking the left (`-x`) or right (`+x`)
+boundary as an example, we have the correspondence
+
+~~~
+u.n -> u.x
+u.t -> u.y
+u.r -> u.z
+~~~
+
+The relations for the other boundaries (`top/bottom`, `front/back`) 
+are obtained by rotation of the indices.
+
+### Periodic boundaries
+
+Periodic boundary conditions can be imposed on the right/left, top/bottom 
+and front/back boundaries using for example
+
+~~~literatec
+int main()
+{
+  ...
+  periodic (right); 
+  ...
+}
+~~~
+
+All existing fields and all the fields allocated after the call will
+be periodic in the right/left direction.
+
+## Events
+
+Numerical simulations often need to perform actions (outputs for
+example) at given time intervals. Because the timestep used to
+integrate the numerical scheme can vary, for example due to stability
+requirements, it is generally not trivial to ensure that specific time
+intervals will be respected. To solve this problem Basilisk C provides
+*events*.
+
+The overall syntax of events is similar to that of *for* loops in
+C. For example:
+
+~~~literatec
+event name (t = 1; t <= 5; t += 1) {
+  ...
+}
+~~~
+
+where `name` is the user-defined name of the event, `t = 1` specifies
+the starting time, `t <= 5` is the condition which must be verified
+for the event to carry on and `t += 1` is the iteration operator. The
+event can happen either at specified times `t` or at a specified
+number of timesteps `i`.
+
+Beyond this similarity with *for* loops, the syntax for events is more
+flexible. The order of the initialisation, condition and iteration
+statements can change and/or some of the statements can be
+omitted. For example, these are all valid events:
+
+~~~literatec
+event name (t = 1; t += 1; t <= 5) {
+  // same as previously
+  ...
+}
+
+event example1 (t = 2) {
+  // executes once at t = 2
+  ...
+}
+
+event example2 (i++) {
+  // executes at every timestep
+  ...
+}
+
+event example3 (t = 1; t *= 2) {
+  // executes at t = 1,2,4,8,16,...
+  ...
+}
+~~~
+
+In addition, lists can be used to set specific times/timesteps:
+
+~~~literatec
+event example4 (t = {1.2, 3, 7.6}) {
+  ...
+}
+~~~
+
+and the special `end` keyword can be used for events which should
+happen after completion of the simulation:
+
+~~~literatec
+event example5 (t = end) {
+  ...
+}
+~~~
+
+It is also possible to stop a simulation based on the return value
+from an event. For example:
+
+~~~literatec
+event stop (i += 10) {
+  if (my_stopping_condition())
+    return 1; // any value different from zero will stop the simulation
+  // the default is to return zero
+}
+
+event finalize (t = end) {
+  // this will happen after the simulation has completed due to 
+  // the "stop" event above
+}
+~~~
+
+# Part II: More advanced concepts
+
+## Lists
+
+It is often useful to perform the same operation on several
+fields. Basilisk C provides a simple extension which allows iterations
+over *lists* of fields.
+
+### Declaration and allocation
+
+An automatic list (of scalars) can be declared and allocated like this:
+
+~~~literatec
+scalar * list = {a,b,c,d};
+~~~
+
+### Automatic type casting
+
+Lists can combine elements of different types (e.g. scalar fields and
+vector fields). In this case the type of the resulting list is always
+that of the element with the lowest dimension. For example, these are
+valid list declarations:
+
+~~~literatec
+scalar a[];
+vector v[];
+tensor t[];
+...
+scalar * list1 = {a,v,t};
+vector * list2 = {v,t};
+~~~
+
+however trying
+
+~~~literatec
+vector * list3 = {a,v,t};
+tensor * list4 = {v,t};
+~~~
+
+will give a compilation error.
+
+### Explicit type casting
+
+In a similar way it is sometimes useful to be able to explictly cast
+lists of different types. For example a list of vector fields can be
+cast into a list of scalar fields using:
+
+~~~literatec
+vector * l1 = {a,b,c};
+scalar * l2 = (scalar *) l1;
+~~~
+
+Explicit type casting is only allowed from a type of higher dimension
+down to a type of lower dimension (i.e. tensors to vectors and
+vectors to scalars).
+
+### List iterators
+
+To iterate over all the elements of a list use
+
+~~~literatec
+scalar * list = {a,b,c,d};
+...
+for (scalar s in list)
+  dosomething (s);
+~~~
+
+It is also possible to iterate over two lists (of the same length)
+simultaneously using e.g.:
+
+~~~literatec
+scalar * l1 = ...;
+vector * l2 = ...;
+...
+scalar s; vector v;
+for (s,v in l1,l2)
+  dosomething (s, v);
+~~~
+
+Finally note that it is much more efficient to do:
+
+~~~literatec
+foreach()
+  for (scalar s in list)
+    s[] = ...;
+~~~
+
+rather than
+
+~~~literatec
+for (scalar s in list)
+  foreach()
+    s[] = ...;
+~~~
+
+because fields values for each scalar are usually stored close to one
+another (this is similar to ordering loops properly when accessing
+multidimensional arrays in C or Fortran).
+
+## Face and vertex fields
+
+Discretisation schemes often rely on special arrangements of
+discretisation variables relative to the underlying grid (this is
+sometimes called *variable staggering*). Basilisk provides support for
+the three most common types of staggering: centered (the default),
+face and vertex staggering.
+
+![Example of centered, face and vertex staggering](src/figures/staggering.svg)
+
+How to implement such *staggering* is largely a matter of
+convention. For example, one could just allocate standard fields in
+Basilisk and take as convention that the corresponding variables are
+staggered. While this would work in simple cases, some operations
+performed by Basilisk (such as interpolation and boundary conditions)
+need to know that these fields are staggered. Basilisk C introduces
+two special keywords for this purpose: *face* and *vertex*. For
+example, the fields in the example above would be declared
+
+~~~literatec
+scalar p[];
+face vector u[];
+vertex scalar omega[];
+~~~
+
+### Boundary conditions and stencils
+
+Boundary conditions and stencils are necessarily different when
+considering cell-centered and staggered variables.
+
+For *vertex* fields, Basilisk does not apply any boundary
+conditions. All the vertex values need to be defined using
+[*foreach_vertex()*](Basilisk C#foreach_vertex).
+
+For *face* fields stencil values in the picture below are consistent.
+
+![Stencils for *face* and *vertex* fields](src/figures/stencil_face.svg)
+
+## Homogeneous boundary conditions
+
+When solving linear systems iteratively (e.g. using the [multigrid solver](/src/poisson.h#multigrid-solver)), the homogeneous versions of boundary conditions applied to the unknown field are required.
+
+They can be specified through functions using the `..._homogeneous` postfix. See the definitions of the [dirichlet() and neumann() functions](/src/grid/cartesian-common.h#dirichlet) and their homogeneous versions for an example.
+
+## (Maybe) Constant fields
+
+Partial differential equations often include important particular cases for which one or more fields are constant (in space and/or time) rather than variable. One can think for example of the case of the Navier-Stokes equations with a constant density. To deal with this particular case with an existing variable-density (Navier-Stokes) solver one could simply do something like:
+
+~~~literatec
+const double rho0 = ...;
+foreach()
+  rho[] = rho0;
+~~~
+
+This is obviously not optimal since an entire field is used to store (and access) the same value (`rho0`) for each grid point. A solution would then be to replace every instance of `rho[]` in the source code of the solver with `rho0` but this is very cumbersome since there would now be two solvers. This becomes even worse when more than one field can be constant, since the number of variants grows like the number of constant/variable combinations.
+
+To solve this optimisation problem, the Basilisk C preprocessor automatically generates multiple versions of the source code which dynamically take into account whether the fields used are constant or variable. This "branching code" generation is done only for fields which "may be constant", in order to minimize the combinatorial explosion of branches. These fields are declared using the `(const)` type qualifier like this:
+
+~~~literatec
+(const) scalar s;
+(const) face vector f;
+...
+~~~
+
+They must then be allocated (and initialised) using either a (variable) field allocation e.g. like this:
+
+~~~literatec
+  s = new scalar;
+  foreach()
+    s[] = x;
+  f = new vector;
+  foreach_face()
+    f.x[] = x*y;
+~~~
+
+or a constant field allocation and initialisation like this:
+
+~~~literatec
+  s[] = 1.;
+  f[] = {2,3};
+~~~
+
+Note that the `foreach()` operators must not be specified.
+
+The declaration and initialisation of constant fields can also be combined like this:
+
+~~~literatec
+(const) scalar s[] = 1.;
+(const) face vector f[] = {2,3};
+...
+~~~
+
+## Layers
+
+For some problems for which the aspect ratio (vertical/horizontal) is small --
+like the ocean or the atmosphere -- it might be useful to use a custom vertical
+coordinate. To use this extension, one must define
+
+~~~literatec
+#define LAYERS 1
+~~~
+
+in the header. The number of layers is set by the variable nl (by default 
+`nl = 1` ). You can then declare layered variables via
+
+~~~literatec
+scalar h = new scalar[nl];
+vector u = new vector[nl];
+face vector hu = new face vector[nl];
+...
+~~~
+
+Such layered variables correspond to `nl` stacked 1D or 2D fields. You need to
+cleanup these fields at the end of the execution because they are not automatic
+variables:
+
+~~~literatec
+event cleanup (t = end, last)
+{
+  delete ({h, u, hu});
+}
+~~~
+
+This layered module comes with an iterator `foreach_layer()` which must be
+included within a global field iterator (e.g. `foreach()` etc.)
+
+~~~literatec
+foreach()
+  foreach_layer()
+    a[] = 1.;
+~~~
+
+Within a `foreach()` iterator, you can also access a
+specific layer with the last index in the bracket as shown below for layer 10 on a 2D grid.
+
+~~~literatec
+foreach()
+  a[0,0,10] = 1.;
+~~~
+
+## Field attributes
+
+Scalar field can have associated "attributes" which behave very much 
+like "members" of C structures. To add a new attribute (to all scalar 
+fields) use something like
+
+~~~literatec
+attribute {
+  int myattribute;
+}
+~~~
+
+You can then access this attribute using
+
+~~~literatec
+scalar s[];
+s.myattribute = 2;
+~~~
+
+Of course you are not limited to *int*, you can use any declaration 
+which would be legal in a C structure, provided the new name does 
+not conflict with the names of existing attributes.
+
+If the attribute is not set explicitly, it defaults to "zero".
+
+### Pre-defined attributes
+
+## Point function calls
+
+Using the `Point` variable, It is possible to make stencil accesses
+and use automatic point variables outside iterators. For example,
+
+~~~literatec
+double distance_to_origin (Point point) {
+  return sqrt(sq(x) + sq(y) + sq(z));
+}
+~~~
+
+or, 
+
+~~~literatec
+double sum_right_neighbors_2D (Point point, scalar s) {
+  double a = 0;
+  for (int i = -1; i < 2; i++) 
+     a += s[1,i];
+  return a;	
+}
+~~~
+
+Note that the variable of type `Point` *must* be named `point`.
+
+<div class="message">
+<div id="msg_logo"><img src="/img/warning.png"></div>
+Note that the syntax
+
+~~~literatec
+Point point = locate (...);
+~~~
+
+is deprecated and will be removed in the future. See [`foreach_point()`](#foreach_point) and [`foreach_region()`](#foreach_region) for (better) alternatives. </div>
+
+## More field iterators
+
+We have already seen the basic field iterator `foreach()`. While many
+numerical schemes can be implemented using only this iterator, more
+efficient and elegant implementations can often be designed using
+other iterators provided by Basilisk.
+
+### `foreach_dimension()`
+
+As an example, consider the code required to compute
+
+$$g=\nabla a$$
+
+Using a centered scheme, this could be written:
+
+~~~literatec
+scalar a[];
+vector g[];
+...
+foreach() {
+  g.x[] = (a[1,0] - a[-1,0])/(2.*Delta);
+  g.y[] = (a[0,1] - a[0,-1])/(2.*Delta);
+}
+~~~
+
+It is clear that computing `g.y` is almost identical to computing
+`g.x`, all that is required is a permutation of the indices. Most
+multi-dimensional schemes involve similar permutations. Writing these
+permutations manually, as we did above, is error-prone and leads to
+code duplication. While this may be acceptable for the simple example
+above, this can become very heavy for more complicated schemes. To
+avoid this Basilisk provides the `foreach_dimension()` iterator which
+can be used like this:
+
+~~~literatec
+...
+foreach()
+  foreach_dimension()
+    g.x[] = (a[1,0] - a[-1,0])/(2.*Delta);
+~~~
+
+At compilation, the code block associated with `foreach_dimension()`
+(a single line in this example) will be automatically duplicated for
+each dimension of the problem with the appropriate coordinate
+permutations: `.x` will become `.y`, `.y` will become `.x` (or `.z` in
+3D) etc... and the field indices will be rotated correspondingly.
+
+Any variable or function identifier ending with `_x`, `_y` and `_z`
+will also be rotated.
+
+The `right`, `left`, `top`, `bottom`, `front` and `back` direction 
+indicators will also be rotated.
+
+### `foreach_face()`
+
+The `foreach()` operator can be seen as iterating over the *cells* of
+the grid. When writing *flux-based* schemes it is often useful to
+consider iterations over the *faces* of each cell (because fluxes are
+by definition associated with cell faces).
+
+Implementing an iteration over cell faces using only the `foreach()`
+operator is not easy, even for a one-dimensional problem, due to
+boundary conditions. Things also become more complex when considering
+multi-dimensional and adaptive grids. The `foreach_face()` field
+iterator solves these problems by providing a consistent traversal of
+cell faces in all cases.
+
+For example, computing the components of $\nabla a$ normal to each face
+can be written:
+
+~~~literatec
+scalar a[];
+face vector g[];
+...
+foreach_face()
+  g.x[] = (a[] - a[-1,0])/Delta;
+~~~
+
+Note that a face is defined by convention as separating a cell from
+its *left* neighbour (hence `a[-1,0]` and not `a[1,0]`, see the [Face
+and vertex fields section](Basilisk C#face-and-vertex-fields)
+above). Note also that the duplication/permutation performed by
+`foreach_dimension()` is implicitly included in `foreach_face()`.
+
+In some cases, it can be necessary to apply different operations to
+each component of a face vector field. For example let's assume we
+need to initialise a face vector field with the components
+`(y,x)`. This could be done using
+
+~~~literatec
+face vector u[];
+...
+foreach_face(x)
+  u.x[] = y;
+foreach_face(y)
+  u.y[] = x;
+~~~
+
+Note that the coordinates `x` and `y` correspond to the center of the
+face.
+
+### `foreach_vertex()`
+
+When initialising [vertex fields](Basilisk C#face-and-vertex-fields),
+it is necessary to traverse each vertex of the grid. For example,
+computing vorticity using the components of velocity defined on faces
+could be written
+
+~~~literatec
+face vector u[];
+vertex scalar omega[];
+...
+foreach_vertex()
+  omega[] = (u.y[] - u.y[-1,0] - u.x[] + u.x[0,-1])/Delta;
+~~~
+
+Consistently with the other iterators, the `x` and `y` declared
+implicitly within `foreach_vertex()` loops are the coordinates of the
+vertex.
+
+### `foreach_boundary()`
+
+It is sometimes useful to be able to traverse only the cells which are
+touching a given boundary, for example to compute surface fluxes and
+other diagnostics. While using a combination of `foreach()` and
+conditions on cell coordinates would be possible, it would also be
+inefficient and could be difficult when using adaptive meshes. For
+this reason, Basilisk provides the `foreach_boundary()` iterator which
+can be used like this for example:
+
+~~~literatec
+scalar a[];
+...
+double mu = 1., flux = 0.;
+foreach_boundary (top)
+  flux += sq(Delta)*mu*(a[ghost] - a[])/Delta;
+~~~
+
+where *top* indicates which boundary we want to traverse (the keywords
+are the same as used for [boundary conditions](#boundary-conditions))
+and *ghost* is the index of the corresponding ghost cell: for this
+example `a[ghost] == a[0,1]`.
+
+This example computes the (diffusive) flux of `a` through the top
+boundary. Note that for this to work in parallel you would also need
+to add a [reduction clause](#parallel-programming) on `flux` in
+foreach_boundary().
+
+`foreach_boundary()` iterates over the cells which are
+touching a given boundary but the coordinates `x,y,z` correspond not the center of the cells but the coordinates of a given boundary.
+
+### `foreach_neighbor()`
+
+This iterator is local to a cell, so it must be included within a
+global field iterator (e.g. `foreach()` etc.). It will iterate over
+all the cells belonging to the local stencil i.e. the 5x5 stencil by
+default (in 2D). This can optionally be reduced to a 3x3 stencil
+(i.e. only the nearest neighbors) using the syntax
+`foreach_neighbor(1)`.
+
+### `foreach_point()`
+
+This iterator will only traverse the cell containing the "point" with the given coordinates. For example
+
+~~~literatec
+int main() {
+  init_grid (N);
+  scalar s[];
+  foreach_point (0.4, 0.6)
+    s[] = sqrt(sq(x) + sq(y)); 
+}
+~~~
+
+is a valid (MPI) Basilisk program, where the scalar field `s` is only
+initialized in a single cell.
+
+### `foreach_region()`
+
+This is similar to `foreach_point()` but will traverse the cells containing all the points sampled within a rectangular region. For example
+
+~~~literatec
+coord p;
+coord box[2] = {{0, 0}, {1, 2}};
+coord n = {10, 20};
+foreach_region (p, box, n) {
+  ...
+}
+~~~
+
+will sample 10 x 20 points (with coordinates given by `p`) regularly distributed within [0:1] x [0:2].
+
+## Event inheritance
+
+In contrast with C functions, multiple events can share the same
+name. This is used to implement
+[inheritance](https://en.wikipedia.org/wiki/Inheritance_%28object-oriented_programming%29)
+of existing events and allows to modify and extend the functionality of
+existing solvers.
+
+When two (or more) events have the same name, the order of execution
+of this group is modified. The following rules are applied:
+
+* all events in the group are executed "together",
+* the first event in the group (in order of appearance in the source
+  files), sets the point where the group is executed,
+* within a group, the order of execution is the *inverse* of the order
+  of appearance in the source files.
+
+Although this may seem complicated, these rules work well in practice
+and lead to a reasonably simple inheritance mechanism.
+
+A trace of the order of execution of events can be obtained using the
+compilation option:
+
+~~~bash
+% qcc -events ...
+~~~
+
+The resulting code will then output (on standard error) a trace looking like:
+
+~~~bash
+...
+events (i = 4, t = 0.00191154)
+  logfile                   rising.c:131
+  set_dtmax                 src/navier-stokes/centered.h:163
+  stability                 src/tension.h:59
+  stability                 src/vof.h:44
+  stability                 src/navier-stokes/centered.h:165
+  vof                       src/vof.h:174
+  vof                       src/navier-stokes/centered.h:175
+  tracer_advection          src/navier-stokes/centered.h:176
+...
+~~~
+
+There are two event groups in this example: *stability* and
+*vof*. They correspond to extensions of the initial solver
+[/src/navier-stokes/centered.h](): adding the stability conditions for
+surface tension (at line 59 of [/src/tension.h]()) and for VOF (at
+line 44 of [/src/vof.h]()) and plugging in VOF advection (at line 174
+of [/src/vof.h]()) at the correct location (line 175 of
+[/src/navier-stokes/centered.h]()).
+
+## Grid allocation and deallocation
+
+Hierarchy of grids
+
+### Multigrids
+
+### Adaptive grids
+
+## Metric
+
+## Macros
+
+Basilisk macros are defined using the `macro` keyword. They provide a cleaner and more robust interface than standard C preprocessor macros and can in particular be used to define new [iterators](#iterators). See the documentation in [macro.h](/src/ast/macro.h).
+
+## Diagonalization
+
+The `diagonalize(s)` operator replaces the central stencil value of
+the scalar field `s` (i.e. `s[]`) with one and its other values with
+zero, in all operations within the following C statement. This is
+typically used to automatically construct Jacobi relaxation operators
+for multigrid solutions of linear systems.
+
+## Einstein summation
+
+The `einstein_sum()` operator can be used to perform automatic [Einstein summation](https://en.wikipedia.org/wiki/Einstein_notation) on the components of tensors and vectors. See the documentation in [einstein_sum.h](/src/ast/einstein_sum.h).
+
+## Dimensional Analysis
+
+The Basilisk C preprocessor [qcc](/src/qcc.c) performs sophisticated [Dimensional Analysis](https://en.wikipedia.org/wiki/Dimensional_analysis). Within this framework, the dimensions of numerical constants are given using "standard" C array indexing. For example the following syntax:
+
+~~~literatec
+double g = 9.81 [1,-2];
+~~~
+
+indicates that the constant `9.81` has dimension `[1,-2]` (typically the dimension of an acceleration).
+
+Other useful special functions include `show_dimension()` and `dimensional()`.
+
+Note that these extensions are only used symbolically during preprocessing and do not affect in any way the actual compilation or execution of the program.
+
+See also the [Dimensional Analysis Tutorial](/Tutorial.dimensions) for detailed explanations.
+
+## Named/optional arguments in function calls
+
+C++ allows named and optional arguments in function calls, for example:
+
+~~~c
+void example (float f = 0, double d = 0);
+...
+example (f = 2); // d = 0
+example (d = 4, f = 1.2);
+~~~
+
+Unfortunately this is not allowed in C99. Basilisk C includes an
+extension which provides this functionality.
+
+## Parallel programming
+
+Basilisk can automatically parallelise field iterations
+(i.e. `foreach()` etc...) on systems supporting
+[OpenMP](https://en.wikipedia.org/wiki/OpenMP) or
+[MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface). If the
+*write* operations performed on stencils are purely local
+(i.e. concurrent accesses by several threads are only possible for
+*read* operations), then nothing special needs to be done to
+parallelise the corresponding field iteration.
+
+A classical example where this condition is not verified are
+*reduction operations*. Consider for example the function:
+
+~~~literatec
+double maximum (scalar a) {
+  double maxi = - HUGE;
+  foreach()
+    if (fabs(a[]) > maxi)
+      maxi = fabs(a[]);
+  return maxi;
+}
+~~~
+
+In this example, if the `foreach()` iteration is performed in
+parallel, several threads may try to set the `maxi` variable
+simultaneously (this is a concurrent *write* access). If this happens
+the result returned by the function will be incorrect. 
+
+Similarly, when using MPI parallelism, each process will only hold a local
+`maxi` value, whereas a global value is required.
+
+To cover this common pattern, OpenMP provides [*reduction
+operators*](https://www.openmp.org/spec-html/5.0/openmpsu107.html) 
+which can be used in Basilisk like this:
+
+~~~literatec
+double maximum (scalar a) {
+  double maxi = - 1e100;
+  foreach (reduction(max:maxi))
+    if (fabs(a[]) > maxi)
+      maxi = fabs(a[]);
+  return maxi;
+}
+~~~
+
+It is also possible to reduce an array by indicating its length. For example, one could count the number of leafs cells at each level by writing:
+
+~~~literatec
+  int len = grid->maxdepth + 1, cells[len] = {0};
+  foreach (reduction(+:cells[:len]))
+    cells[level]++;
+~~~
+
+Note that Basilisk generalises reduction operators so that they work
+also with MPI parallelism.
+
+Beyond reduction operations, care must be taken to avoid concurrent
+write accesses when writing Basilik code. Consider the following code
+which makes use of an auxilliary variable to store an intermediate
+result:
+
+~~~literatec
+  double norm;
+  foreach() {
+    norm = sqrt(sq(u.x[]) + sq(u.y[]));
+    a[] = norm;
+    b[] = norm/2.;
+  }
+~~~
+
+The code will work fine in serial (or with MPI), however it will fail
+when using shared-memory parallelism (i.e. OpenMP), because `norm`
+will be shared amongst threads and written to concurrently. The
+solution is simple: just make `norm` a variable local to the loop body
+i.e.
+
+~~~literatec
+  foreach() {
+    double norm = sqrt(sq(u.x[]) + sq(u.y[]));
+    a[] = norm;
+    b[] = norm/2.;
+  }
+~~~
+
+Each thread then has its own private `norm` variable and concurrent
+accesses are avoided. Note that this is also a cleaner/clearer way of
+writing code, even for the serial version. Generally speaking,
+variables should be declared/allocated as closely as possible to where
+they are used.
+
+By default Basilisk will parallelise all iterators. This can be a
+problem, for example when writing data to a file. Serial iterations
+for individual loops can be forced like this:
+
+~~~literatec
+  foreach (serial)
+    printf ("%g %g %g\n", x, y, a[]);
+~~~
+
+## Tracing and profiling
+
+The `trace` keyword is used to indicate that the function immediately
+following should be instrumented for [built-in
+profiling](src/README.trace) or [profiling with
+Paraver](src/README.paraver).  For example one could write
+
+~~~literatec
+trace
+double maximum (scalar a) {
+...
+~~~

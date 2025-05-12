@@ -1,0 +1,41 @@
+# Flux Prolongation
+
+In Basilisk's flux-based solvers on tree grids, the flux at a coarse
+level is found by restriction. Alternatively, the coarse values could
+be prolongated. At this moment, I believe there could be advantages
+for the latter, rooted in the geometric allignment of coarse and fine
+faces.
+
+## Methods
+
+A small subset of the functions need to be (re)defined
+
+* [A modified version of `tree.h`](mytree.h)
+* [A new method for `boundary_flux()`](prolongate_halo_flux.h)
+* [The resulting quadtree implementation](myQT.h)
+* [Centered gradient computation and more](mytree-utils.h)
+* [An MG-accelerated iterative solver for gradient fields](solg.c)
+
+## Solvers
+
+In order not to use Halo-ghost cells, solvers need to be modified.
+
+* [An adaptation of the Shallow-water solver](mySV.h)
+* [An adaptation of `poisson.h`](404)
+
+## Tests
+
+Test of methods
+
+* [Test for the modified face iterator and face prolongation](testmyt.c)
+
+## Examples
+
+* [`bump.c` with periodic boundary conditions](bump.c)
+
+## Todo
+
+* Fix bug with boundary conditions
+* Remove Halo-ghost cells. 
+* Compare against default methods
+* ~~~Design a Multigrid solver around this concept~~~

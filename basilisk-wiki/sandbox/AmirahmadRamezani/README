@@ -1,0 +1,105 @@
+/**
+## bump.c on GPU
+This page contains the instruction for running the bump.c program (from the tutorial) on the GPU using OpenACC and a patch from Wolfgang Hayek.
+
+## Steps for using PGI Compilers
+
+• Install Basilisk normally according to the instructions on the manual.
+
+• Test if it was installed successfully by running the command:
+*/
+which qcc
+
+/**
+• Change to the src directory under Basilisk
+*/
+cd $BASILISK
+
+/**
+Copy “config.pgcc” and paste it as the config
+*/
+cp config.pgcc config
+
+/**
+Open the new config file and add this line:
+*/
+CPP99 = gcc -E.
+
+/**
+• And finally recompile Basilisk.
+*/
+make
+
+/**
+• Now the header files grid/tree-common.h, fractions.h, and draw.h need to be modified.
+
+• Change all the appearances of “+1” in grid/tree-common.h and fractions.h to just “1”.
+
+• Change “float color[3]” in draw.h to “float* color”.
+
+• You can find more details about these changes in <a href="https://groups.google.com/forum/#!topic/basilisk-fr/JRQ2eJ7H8JA"> this Basilsik forum thread</a>
+
+## Steps for using OpenACC and the Patch
+• Now that the PGI compiler has been successfully combined with the Basilisk wrapper, the Wolfgang’s patch can be used to run the codes on GPU.
+
+• The patch has some limitations mentioned. For instance only the *cartesian* grid can be implemented no grid adaptaions can be done yet.
+
+• grid/cartesianacc.h needs to be included before the other header files in the code.
+
+• Put an “@” symbol in the foreach() loops that need to be optimized.
+
+• Make sure to set the flags -qccacc and -acc in the compile command. It should look something like the command below:
+*/
+qcc -O2 bump.c -o bump -qccacc -acc -lm
+
+/**
+• The flag “-Minfo” can be used to see more details about the actions of the compiler.
+
+• The command below can be used for NVIDIA GPUs to watch and make sure that the code is running on the GPU:
+*/
+watch -n 1 nvidia-smi
+
+/**
+## Example code
+The code below can be used to test the bump.c on the GPU:
+*/
+
+ #include <grid/cartesianacc.h>
+ #include "saint-venant.h"
+
+ int LEVEL = 10;
+
+ event init (t = 0) {
+   foreach(@)
+     h[] = 0.1 + 1.*exp(-200.*(x*x + y*y));
+ }
+
+ event graphs (i++) {
+   stats s = statsf (h);
+   fprintf (stderr, "%g %g %g\n", t, s.min, s.max);
+ }
+
+ event images (t += 4./300.) {
+   output_ppm (h, linear = true);
+
+   /*scalar l[];
+   foreach(@)
+     l[] = level;
+
+   static FILE * fp = fopen ("grid.ppm", "w");
+   output_ppm (l, fp, min = 0, max = LEVEL);
+ */}
+
+ event end (t = 4) {
+   printf ("i = %d t = %g\n", i, t);
+ } 
+
+ /*event adapt (i++) {
+   adapt_wavelet ({h}, (double []){4e-3}, maxlevel = LEVEL);
+ }*/
+
+ int main() {
+   origin (-0.5, -0.5);
+   init_grid (1 << LEVEL);
+   run();
+ }

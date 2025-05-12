@@ -1,0 +1,67 @@
+## Welcome
+My name is Ben Alessio and I am a PhD student in mechanical engineering at Stanford University. In my sandbox you can find (so far) codes for diffusiophoresis-enhanced Turing patterns and simple microfluidic flows. Please feel free to write me at balessio@stanford.edu if you have any questions.
+
+## Diffusiophoresis-Enhanced Turing Patterns
+In this section you can find the codes which I used to simulate diffusiophoresis in Turing patterns ([Alessio and Gupta, 2023](#alessio2023)). These codes were originally inspired by (and draw heavily from) Basilisk's [Brusselator example](http://basilisk.fr/src/examples/brusselator.c) where the key difference is the introduction of an advective-diffusive species which is propelled by the chemical gradients.
+
+A diffusiophoretic colloidal species $n$ can be modeled with an advective-diffusion equation:
+
+$$ \frac{\partial n}{\partial t} = \nabla\boldsymbol\cdot\left(D_n\nabla n - \boldsymbol v_\text{DP}n\right) $$
+where the diffusiophoretic velocity $\boldsymbol v_\text{DP}$ depends on the gradients of the solutes $c_i$ as
+$$ \boldsymbol v_\text{DP} = \sum_i M_i\nabla c_i $$
+for non-electrolytes and
+$$ \boldsymbol v_\text{DP} = \Gamma\nabla\log c $$
+for a single binary salt. More complicated forms can be found in the literature for mixtures of electrolytes and other effects. The gradients of the solutes $c_i$ can come from diffusion out of a source or from reaction-diffusion instabilities (i.e. Turing patterns), and they may be modeled with a system of reaction-diffusion equations:
+$$ \frac{\partial c_i}{\partial t} = D_i\nabla^2c_i + r_i $$
+where $r_i$ is a reaction term coupling the various solutes. If $r_i$ is sufficiently nonlinear, Turing patterns are permissible. The three codes I have here simulate the [Brusselator model](http://basilisk.fr/sandbox/benalessio/brusselator_with_DP.c), a [cell-cell interaction model](http://basilisk.fr/sandbox/benalessio/cellCellInteraction_with_DP.c), and the [Gierer-Meinhardt model](http://basilisk.fr/sandbox/benalessio/giererMeinhardt_with_DP.c).
+
+## Viscous flow in a microchannel with a solute
+In this section you can find the code(s; soon to be more) for simulating viscous Stokes flow in a microchannel with an advective-diffusive solute. [This simple example](http://basilisk.fr/sandbox/benalessio/microchannel_viscous_flow_with_solute.c)
+demonstrates a custom aspect-ratio microchannel with a solute that disperses from a thin puck into a diffuse cloud.
+
+## Population migration with chemotaxis
+In this section you can find an [example code](http://basilisk.fr/sandbox/benalessio/fisherkpp.c) for simulating population dynamics from the Fisher-KPP equation modified to include chemotaxis ([Alessio and Gupta, 2024](#alessio2024)). The equations are:
+
+$$\frac{\partial n}{\partial t} = \nabla\boldsymbol\cdot \left(\kappa_n\nabla n - v n  \right) + r_n(n)$$
+$$v = \chi\nabla\phi$$
+$$\frac{\partial \phi}{\partial t} = \nabla\boldsymbol\cdot\left(\kappa_\phi\nabla\phi\right) + r_\phi(\phi)$$
+
+for population density $n$ and attractant $\phi$, with diffusivities $\kappa_n$ and $\kappa_\phi$, growth rates $r_n$ and $r_\phi$, and chemotactic mobility $\chi$.
+
+## References
+~~~bib
+@article{alessio2024,
+  title={A {R}eaction-{D}iffusion-{C}hemotaxis {M}odel for {H}uman {P}opulation {D}ynamics over {F}ractal {T}errains},
+  author={Alessio, Benjamin M and Gupta, Ankur},
+  journal={submitted},
+  volume={45},
+  year={2024},
+}
+@article{alessio2023,
+  title={{D}iffusiophoresis-{E}nhanced {T}uring {P}atterns},
+  author={Alessio, Benjamin M and Gupta, Ankur},
+  journal={Science Advances},
+  volume={45},
+  year={2023},
+  pdf={https://www.science.org/doi/epdf/10.1126/sciadv.adj2457},
+}
+@article{derjaguin1947,
+title={Kinetic phenomena in boundary films of liquids},
+author={Derjaguin, B.V. and Sidorenkov, G.P. and Zubashchenkov, E.A. and Kiseleva, E.V.},
+journal={Kolloidn. zh},
+volume={9},
+number={01},
+year={1947}
+},
+@article{shim2022,
+  title={Diffusiophoresis, diffusioosmosis, and microfluidics: surface-flow-driven phenomena in the presence of flow},
+  author={Shim, Suin},
+  journal={Chemical Reviews},
+  volume={122},
+  number={7},
+  pages={6986--7009},
+  year={2022},
+  publisher={ACS Publications},
+  pdf={https://pubs.acs.org/doi/pdf/10.1021/acs.chemrev.1c00571}
+}
+~~~

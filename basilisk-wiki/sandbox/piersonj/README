@@ -1,0 +1,23 @@
+Welcome to my sandbox !
+
+These are a list of tests and examples I am currently working on with Basilisk.
+
+Jean-Lou Pierson
+  
+# Retraction of a viscous drop
+Retraction of an axisymmetric viscous drop :
+[taylor_culick.c](taylor_culick.c)
+
+# OpenFOAM / Basilisk benchmark
+## 3D static drop
+[spurious.c](spurious.c)
+
+## 3D Hysing bubble
+[hysing3D.c](hysing3D.c)
+
+## Cano-Lozano et al. bubble
+
+![](image.png)
+
+# (Naive) Forced turbulence in a 2D-periodic box with non-coalescing droplets
+[turbulence2D.c](turbulence2D.c)

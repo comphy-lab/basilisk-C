@@ -1,0 +1,107 @@
+# Bulle de Taylor
+
+Je trempe un tube dans l’eau, je bouche le haut avec ma main puis je retire le tube du récipient. Dès que le bas du tube sors de l’eau, il se vide. Dans cette expérience, j’étudie la vitesse à laquelle le liquide se vide du tube. J’ai trois tubes de rayons différents. L’expérience est capturée dans l’image «tube.tif». Il semble d’après l’inspection de l’image que la vitesse augmente lorsque le rayon augmente.
+
+le film est pris à 30 prises de vue par seconde et les numéros des prises de vues sélectionnées sont affichées sur l‘image. 
+
+Voici le dispositif expérimental:
+
+![](bulle de taylor 1.png)
+
+Et voici une des images prises par la caméra:
+
+![](bulle de taylor 2.png)
+
+Et voici un montage fait à partir de la vidéo:
+
+![](bulle de taylor 3.png)
+
+L'image que vous pouvez utiliser pour l'analyse est ici: [tube.tif]().
+
+# Théorie/expérience
+Nous construisons maintenant un modèle basé sur l’analyse dimensionnelle pour décrire la vitesse à laquelle la bulle remonte: on suppose que la viscosité du fluide ne joue pas et que la vitesse de remontée de la bulle est constante, les seuls paramètres qui peuvent influer sur v sont donc g l’accélération de la gravité (m/s²) et R le rayon du tube (m). La seule loi homogène compatible avec ces suppositions est: 
+$$
+v=C\sqrt{gR}
+$$
+où C est une constante numérique (sans dimension) qui dépend de la forme de la bulle. 
+
+
+
+
+Nous avons fait le traitement des données avec le programme Octave/Matlab:
+
+~~~matlab
+ 
+clear all; clf
+ 
+% pour lire l'image et l'afficher 
+% dans la fenêtre graphique
+a=imread('tube.tif');
+image(a);
+ 
+% la taille d'un pixel
+taillepix=50e-3/(607-527);
+ 
+% mesures pour le tube fin
+d=[ 27.3981  385.8359
+  127.1178  353.1641
+  232.0860  324.3359
+  334.4299  291.6641
+  436.7739  258.9922
+  540.4299  224.3984
+  641.4618  187.8828
+  743.8057  155.2109
+  847.4618  122.5391
+  948.4936   93.7109];
+t1=((1:4:37)-1)/30;
+h1=d(:,2); h1=taillepix*(h1(1)-h1)+0.01;
+plot(t1,h1,'b*-');hold on
+ 
+% mesures pour le tube moyen
+d=[   14.2771  852.8516
+  128.4299  797.1172
+  238.6465  747.1484
+  346.2389  695.2578
+  451.2070  641.4453
+  556.1752  589.5547];
+t2=((1:4:21)-1)/30;
+h2=d(:,2); h2=taillepix*(h2(1)-h2);
+plot(t2,h2,'b*-');hold on
+ 
+% mesures pour le tube large
+d=1000*[    0.0340    1.2584
+    0.1416    1.2046
+    0.2505    1.1450
+    0.3554    1.0796
+    0.4683    1.0201];
+t3=((1:4:17)-1)/30;
+h3=d(:,2); h3=taillepix*(h3(1)-h3);
+plot(t3,h3,'b*-');hold on
+ 
+% je trace la formule théorique
+rvec=[16,35,45]*1e-3;
+C=0.42;
+g=9.81;
+t=linspace(0,1.3,100);
+for r=rvec
+    h=C*sqrt(g*r)*t;
+    plot(t,h,'r-');
+end
+    
+% annotations du graphique
+axis([0,1.2,0 0.3])
+xlabel('temps en secondes');
+ylabel('hauteur de remontée h en mètres')
+title('Vidange dynamique')
+~~~
+
+Et ça nous donne la figure suivante:
+
+![](bulle de taylor 4.png)
+
+
+
+
+
+
+

@@ -1,0 +1,3 @@
+Welcome to the README of my sandbox. This page is a brief overview of the projects under /sandbox/KASIAW/.
+
+Currently, the only project here is an implementation of the [subglacial hydrology system of equations, SHAKTI](shakti_big.c) (https://gmd.copernicus.org/articles/11/2955/2018) in Basilisk.

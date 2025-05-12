@@ -1,0 +1,1001 @@
+Tutorial Basilisk
+
+# Introduction (basic) Basilisk
+
+This tutorial is a very very basic introduction to [Basilisk](http://basilisk.fr). We propose a slow journey into Basilisk starting from the study of the diffusion equation, doing a comparison between a classical C code and the equivalent in Basilisk. 
+
+## Example : solving a diffusion equation
+
+So we want to solve the diffusion equation
+
+$$ {\partial A \over \partial t} =  \nabla^2 A $$
+
+using a simple scheme in C (we have supposed that the diffusion coefficient is 1) over a rectangular squared grid
+of NxN points and physical side equal to 1.
+
+In terms of an algorithmic approach we have to
+
+- declare and initialize the variables
+- set the initial and boundary conditions
+- compute the discrete problem
+- write the solution
+
+In a sequential C code we have then
+
+### C code
+~~~c
+    
+    #include <stdio.h>
+    #include <math.h>
+
+int main ()
+{
+  int i,j,k;
+  int N = 256 ;
+  double L = 1. ;
+  double x,y;
+  double dx = L/N ;
+  double dt = 0.00001;
+  double A[N][N];
+  double dA[N][N];
+
+  
+// boundary conditions
+for (i = 0 ; i < N ; i++) A[i][0] = A[i][N-1] = 0. ;
+for (j = 0 ; j < N ; j++) A[0][j] = A[N-1][j] = 0. ;
+
+// initial conditions
+
+  for (i = 0 ; i < N ; i++) 
+    {
+      for (j = 0 ; j < N ; j++)
+	{
+	  x = i*dx - 0.5 ;
+	  y = j*dx - 0.5 ;
+	  A[i][j] = 1./0.1*((fabs(x*x+y*y) < 0.05)) ;
+	}
+    }
+
+ for (j = 0 ; j < N ; j++)
+	{
+	  printf("%f \n",A[(int)N/2][j]);
+	}
+ printf("\n\n");
+
+  // time integration
+
+  for (k = 0 ; k < 10 ; k++)
+    {
+
+  for (i = 1 ; i < N-1 ; i++) 
+    {
+       for (j = 1 ; j < N-1 ; j++)
+	{
+      dA[i][j] = (A[i+1][j] + A[i-1][j] - 2. * A[i][j])/dx/dx +
+	(A[i][j+1] + A[i][j-1] - 2. * A[i][j])/dx/dx ;
+    }
+    }
+
+  // update
+  
+ for (i = 0 ; i < N ; i++) 
+    {
+       for (j = 0 ; j < N ; j++)
+	{
+	  A[i][j] =  A[i][j] + dt* dA[i][j] ;
+	}
+    }
+
+    }
+
+  // print solution (centerline)
+
+       for (j = 0 ; j < N ; j++)
+	{
+	  	  printf("%f \n",A[(int)N/2][j]);
+	}
+    
+}
+~~~
+
+### Basilisk Code
+
+Same code using Basilisk appears more compact in a first sight 
+
+~~~C
+#include "grid/cartesian.h"
+#include "run.h"
+
+scalar A[];
+scalar dA[];
+
+double dt;
+
+int main() {
+  L0 = 1.;
+  N = 256;
+  
+  // stability criteria
+  DT = 0.25*(L0/N)*(L0/N);
+  
+  run();
+}
+
+// boundary conditions
+
+A[left] = 0.0 ;
+A[top] = 0.0 ;
+A[right] = 0.0 ;
+A[bottom] = 0.0 ;
+
+// initial conditions
+event init (t = 0) {
+  foreach()
+    A[] =  1./0.1*(fabs(x*x+y*y)<0.05);
+  boundary ({A});
+}
+
+// integration
+
+event integration (i++) {
+  double dt = DT;
+  foreach()
+    dA[] =  (A[1,0] + A[-1,0] - 2. * A[])/Delta/Delta +
+    (A[0,1] + A[0,-1] - 2. * A[])/Delta/Delta ;
+ // finding the next best time step
+ dt = dtnext(dt);
+ foreach()
+    A[] = A[] + dt*dA[];
+  boundary ({A});
+
+}
+
+// print
+event print (i=10) {
+
+  for (double y = 0 ; y <= L0; y += 0.01){
+    printf("%g %g \n", 
+      y, interpolate (A, 0, y));
+}
+
+}
+
+~~~
+
+### First observations
+
+Observing both piece of code we recognize some differences, about
+
+- Some reserved words (N, L0, … )
+- Automatic grid setting 
+- New types (scalar, ) with automatic memory allocation
+- Function `run()`
+- Boundary conditions
+- Position in the grid : A[1,0], A[-1,0], A[]
+- New "iterators" like foreach() (replacing "for ( …")
+- New method "events" managing code actions
+
+## Exploring the differences
+
+We list now the difference to introduce the Basilisk syntax. 
+
+### Reserved word
+
+Some variables (and consequently their names) are **global** and **reserved** in Basilisk, some of them are
+      
+Words         meaning
+--------  -----------
+u v w         velocities
+p             pressure
+t             time
+N             grid size
+L0            physical size
+
+Table:  Some reserved words
+
+you have to learn them, in particular you could take a look to the solvers to understand what variable is global and reserved. 
+
+### Automatic grid
+
+Basilisk computed equation over a cartesian grid, when you declare in the code
+
+     N = 256
+
+you are setting the grid size. **Attention** N must be multiple of 2. Another way is using the following function 
+
+       init_grid (128);
+
+### New types
+
+Basilisc adds some new types to the classical C types (**double**, **float**, **int**, ...). The first we have seen
+is **scalar**
+
+     scalar A[]; 
+
+which do an implicit allocation. An explicit allocation and deallocation can be done like this:
+
+      scalar A = new scalar;
+      ...
+      delete ({A});
+
+In both cases Basilisk allocates the memory for a *NxN* grid (or *N* if in 1D or *NxNxN* if in 3D) for
+the variable A. In a finite volume approach the elementary cell has several positions to define the
+variables : the center, the sides and the corners. 
+
+>     The scalar A is defined at the center of the cell.
+
+There exist two other types of fields defined in Basilisk : **vector** and **tensor**.
+
+### Function `run()`
+
+The `run()` function implements a generic time loop which executes events until termination.
+The time **t** and time step **dt** can be accessed as global variables.
+
+This function appears in all Basilisk programs, and basically 
+
+1. Set the grid if the variable **N** is done
+2. List all **events** in order until termination
+
+A typical usage is 
+
+    int main() {
+    N = 128
+  
+    init_grid (N);
+    run();
+    }
+    }
+
+### Boundary conditions
+
+Basilisk creates stencil values outside the domain (called ghost cell values) which need to be initialised. 
+These values can be set in order to provide the discrete equivalents of different boundary conditions. In our
+case we use the reserved words **left**, **right**, **top** or **bottom** to impose such values. Doing
+
+     A[left] = dirichlet(0.);
+
+we impose the value zero to the left column in the matrix A *doesn't matter the gird size*. This is equivalent to the C code
+
+~~~C
+ for (j = 0 ; j < N ; j++) A[0][j] = 0.0 ;
+~~~
+
+We can also use a given function of spatial and temporal variables as
+
+     A[left] = dirichlet(y * cos(2 Pi t);
+
+Ghost values usually depend on the values inside the domain (for example when using symmetry conditions). It is necessary to update them when values inside the domain are modified. This can be done by calling
+
+       boundary ({A});
+
+which sets all boundary conditions defined in the code. Normally we must to update the boundary conditions after each change in the stencil.
+
+### Field values over a stencil
+
+Stencils are used to access field values and their local neighbours. By default Basilisk guarantees consistent field values in a 3x3 neighbourhood (in 2D). This can be represented like this
+
+![Stencil 3x3](/sandbox/jmf/img/stencil.svg)
+
+When you are inside of the loop `foreach()` you are every time at [0,0] (the center of the stencil) and you can access to all values over the stencil only calling them by their local position. The neighboring values, necessary to define integration schema, are accessed directly using the indexing scheme of the Figure. Note that A[] is a shortcut of A[0,0]. As an example we can compute a centered spatial 1st derivative 
+
+      (A[-1,0]+A[1,0])/Delta
+
+as well as the 2nd one
+
+       (A[-1,0]+A[1,0]-2. * A[])/Delta/Delta
+
+
+### Iterators
+
+As observed before `foreach()` iterates over the whole grid, in 2D the double loop over **i** and **j** in a C code is 
+
+     for (i = 1 ; i < N-1 ; i++) 
+    {
+       for (j = 1 ; j < N-1 ; j++)
+	{
+         …
+         }
+     }
+
+becomes now in Basilisk
+     
+      foreach() {
+      …
+      }
+
+Note that inside iterators some variables are implicitly defined :
+
+       double x, y; // coordinates of the center of the stencil
+       double Δ;   // size of the stencil cell
+      
+Others iterators are also defined : **foreach_dimension()**, **foreach_face()** and **foreach_vertex()**.
+
+### Events
+
+Numerical simulations need to perform actions (inputs or outputs for example) at given time intervals. Basilisk C provides
+**events** to manage all actions.
+
+The overall syntax of events is
+
+     event name (t = 1; t <= 5; t += 1) {
+     ...
+     }
+
+where **name** is the user-defined name of the event, is this case t = 1 specifies the starting time, t <= 5 is the condition which must be verified for the event to carry on and t += 1 is the iteration operator. We can use both the specified times **t** or a specified number of time steps **i** using a C syntax, like 
+     
+     event othername (i++) {
+     ...
+     }
+
+which means *do it at every iteration*
+
+# Basilisc C (a bit more)
+
+Now we go inside Basilisk syntax a bit more deep
+
+## Types and stencils
+
+Vector and tensor fields are used in a similar way. Vector fields are a collection of D scalar fields and tensor fields are a collection of D vector fields. 
+
+access
+:    Each of the components of the vector or tensor fields are accessed using the x, y or z field of the corresponding structure.
+
+~~~C
+
+vector v[];
+tensor t = new tensor;
+...
+foreach() {
+  v.x[] = 1.;
+  t.x.x[] = (v.x[1,0] - v.x[-1,0])/Δ;
+  t.y.x[] = (v.y[1,0] - v.y[-1,0])/Δ;
+}
+~~~
+
+When we write numerical scheme we need often a special arrangements of discretisation variables relative to grid (this is sometimes called **variable staggering**). Basilisk provides support for the three most common types of staggering: 
+
+1. centered staggering (default case), 
+2. face staggering 
+3. vertex staggering
+
+The following Figure shows the three staggering
+
+![Figure : Types of Staggering](/sandbox/jmf/img/staggering.svg)
+
+In this case we have defined
+
+~~~C
+scalar p[];
+face vector u[];
+vertex scalar ω[];
+~~~
+
+**Important** : some operations performed by Basilisk (such as interpolation and boundary conditions) need to know that these fields are staggered, you need then to know the kind of variable you are using.
+
+list 
+:     A new concept in Basilisk is **list** which can combine elements of different types (e.g. scalar fields and vector fields) is a single row.
+
+By the way an automatic list of scalars can be declared and allocated like this:
+
+     scalar * list = {a,b,c,d};
+
+Lists are used to do a repetitive things, for example to iterate over all the elements of a list use
+
+~~~C
+scalar * list = {a,b,c,d};
+...
+for (scalar s in list)
+  dosomething (s);
+~~~
+
+or setting boundary conditions
+
+~~~C
+boundary({a,b,c,d})
+~~~
+which update all defined boundary conditions for scalars a,b,c,d.
+
+## Boundary conditions
+
+The default boundary condition is symmetry for all the fields : scalars, vectors or tensors.
+
+There exists somme reserved conditions for the boundary condition as the classical **neumann** or **dirichlet** 
+
+### Scalars
+
+Boundary conditions can be changed for scalar fields using the following syntax:
+
+~~~C
+    A[top] = a[];
+~~~
+
+where a[top] is the ghost value of the scalar field a immediately outside the top (respectively bottom, right, left as stated above) boundary. This corresponds to a Neumann condition (i.e. a condition on the normal derivative of field a) which can be written as
+
+~~~C
+     A[top] = neumann(0.0);
+~~~
+
+### Vectors and tensor
+
+For vector fields, boundary conditions are defined in a coordinate system local to the boundary where the x and y components are replaced by the normal **n** and tangential **t** components i.e. imposing no-flux of a vector v through the top and left boundary, together with a no-slip boundary condition would be written
+
+~~~C
+     v.n[top] = dirichlet(0);  
+     v.t[top] = dirichlet(0);  
+     v.n[left] = dirichlet(0);  
+     v.t[left] = dirichlet(0);  
+~~~
+### Periodic
+
+Periodic boundary conditions can be imposed on the right/left and top/bottom boundaries using for example
+
+~~~C
+int main()
+{
+  ...
+  periodic (right); 
+  …
+}
+~~~
+
+Where all existing fields and all the fields allocated after the call will be periodic in the right/left direction.
+Boundary conditions on specific fields can still be set to something else. For example, one could use
+
+~~~C
+int main()
+{
+  ...
+  periodic (right);
+  p[left]  = dirichlet(0);
+  p[right] = dirichlet(1);
+  …
+}
+~~~
+to impose a pressure gradient onto an otherwise periodic domain.
+
+
+### Boundary Internal Domain (bid)
+
+In Basilsik, the simulation domain is by default a square box with right, left, top and bottom associated boundary conditions. It is possible to define domains of arbitrary shape, with an arbitrary number of associated boundary conditions, using the `mask()` function. This function associates a given boundary condition to each cell of the grid.
+
+For example, to turn the domain into a rectangle with the variable *y* between 0 and 0.5
+
+~~~C
+     mask (y > 0.5 ? top : none);
+~~~
+
+Function **mask**
+
+1. The argument of the function is the value of the boundary condition to assign to each cell. In this example, all grid points of our new domain will be assigned the (pre-defined) top boundary condition.
+2. the boundary condition of all other grid points will be unchanged (the **none** value is just ignored).
+
+More complex boundary conditions can be done using the Boundary Internal Domain (or bid) by defining
+
+~~~C
+    bid circle;
+~~~
+
+where circle is a user-defined identifier. For example for a no-slip boundary condition for a vector field u could be defined using
+
+~~~C
+    u.t[circle] = dirichlet(0);
+
+    mask (sq(x - 0.5) + sq(y - 0.5) < sq(0.5) ? circle : none);
+~~~
+
+# Outputs functions
+
+Later when you manage correctly the Basilisk solvers you will need only to know the output functions. You can write yourself your own output function using the standard C as we have done in the 1st Basilsik code
+
+~~~C
+    event print (i=10) {
+
+    for (double y = 0 ; y <= L0; y += 0.01){
+      printf("%g %g \n", 
+      y, interpolate (A, 0, y));
+    }
+    }
+~~~
+
+The function `interpolate()`is very useful to do slices over data, it does a bilinear interpolation over the grid and the syntax is `interpolate(A,x,y)`. 
+
+The following output code write every 10 time units the x,y position of the grid together with the x and y components of the velocity field
+
+~~~C
+    event print (t += 10) {
+
+    foreach(){
+    printf("%f %f %f %f\n",x,y,u.x[],u.y[]);
+    }
+    printf("\n\n");
+    }
+~~~
+the double blank line *printf("\\n\\n");* is useful for using the block notion in **Gnuplot** to graphic vectors, like
+
+~~~bash
+    gnuplot> plot "field" index 1:10 using 1:2:3:4 with vector
+~~~
+
+Basilisk includes several output function, we present some of them
+
+## output_field(): regular grid in a text format
+
+Does interpolation over multiple fields on a regular grid in a text format.
+
+- This function interpolates a list of fields on a n x n regular grid. 
+- The resulting data are written in text format in the file pointed to by fp.
+- The correspondance between column numbers and variables is summarised in the first line of the file.
+- The data are written row-by-row and each row is separated from the next by a blank line.
+
+This format is compatible with the splot command of gnuplot i.e. one could use something like  
+
+~~~bash
+      gnuplot> set pm3d map  
+      gnuplot> splot 'fields' u 1:2:4  
+~~~
+  
+      
+The arguments and their default values are:
+
+- list : is a list of fields to output. Default is all.
+- fp : is the file pointer. Default is stdout.
+- n : is the number of points along each dimension. Default is N.
+- linear : use first-order (default) or bilinear interpolation.
+
+
+~~~C
+event output (t = 5) {
+  char name[80];
+  sprintf (name, "pressure.dat", nf);
+  FILE * fp = fopen (name, "w");
+  output_field ({p}, fp, linear = true);
+  fclose (fp);
+~~~
+
+## output_ppm(): Portable PixMap (PPM) image output
+
+Given a field, this function outputs a colormaped representation as a Portable PixMap image. If ImageMagick is installed on the system, this image can optionally be converted to any image format supported by ImageMagick.
+
+The arguments and their default values are:
+
+- f : is a scalar field (compulsory).
+- fp : is a file pointer. Default is stdout.
+- n : is number of pixels. Default is N.
+- file : sets the name of the file used as output for ImageMagick.
+
+For example, one could use
+~~~C
+    output_ppm (f, file = "f.png");
+~~~
+to get a PNG image. You can use `output_ppm()`to generate movies, like
+
+~~~C
+event movie (t += 0.2; t <= 30) {
+  static FILE * fp = popen ("ppm2mpeg > vort.mpg", "w");
+  scalar ω[];
+  vorticity (u, ω);
+  output_ppm (ω, fp, linear = true);
+}
+~~~
+
+where we supposed that exist a C function `vorticiy()`which computers the vorticity from the velocity field.
+
+## output_vtk - Write data in a VTK format
+
+VTK format are used in softwares as `paraview`or `visit`
+
+The arguments and their default values are:
+
+- list : is a list of fields to output. Default is all.
+- fp : is a file pointer. Default is stdout.
+- n : is number of pixels. Default is N.
+- linear : a boolean for linear or bilinear interpolation
+
+The syntax is
+
+~~~C
+     output_vtk (scalar * list, int n, FILE * fp, bool linear)
+~~~
+
+# Examples using solvers
+
+Basilisk provides an ensemble of solvers (Saint Venant, Navier-Stokes, diffusion, etc) that could be used to solve simple and more complex systems by adding them. Now what's a solver and how do you use it?
+
+1. A solver is a C file which contains variable definitions and functions for solving a specific general problem.
+2. When you include a solver file some variables as well as functions are reserved
+3. You need then first to read the solver file to know the reserved variables and functions.
+4. And you need to know the inputs for the solver!!
+
+## (still) diffusion equation
+We come back to the diffusion equation 
+$$
+\partial_t A = \nabla^2 A 
+$$ 
+
+which is a particular case of a  reaction--diffusion equation
+
+$$
+\theta\partial_tf = \nabla\cdot(D\nabla f) + \beta f + r
+$$ 
+where $\beta f + r$ is a reactive term,  $D$ is the diffusion coefficient and $\theta$ could be a kind of density term. Including the diffusion solver into the program as
+
+      #include "diffusion.h"
+
+you include an implicit solver fro the reaction--diffusion equation,  for a scalar field `f`, scalar fields `r` and $\beta$ defining the reactive term, the time step `dt` and a face vector field containing the diffusion coefficient `D`. By the way a complete calling of the solver is
+
+     diffusion (C, dt, D, r, β);
+
+which solves the diffusion-reaction problem for a scalar C, with a diffusion coefficient D, r and $\beta$ as defined. In particular
+
+ - If `D` or $\theta$ are omitted they are set to one. 
+ - If $\beta$ is omitted it is set to zero. 
+ - Both `D` and $\beta$ may be constant fields.
+
+Then for
+
+$$
+\partial_t A = \nabla^2 A 
+$$ 
+
+the syntax for the `diffusion()` function is
+
+
+    diffusion (A, dt);
+
+For information using a time-implicit backward Euler discretisation, our equation can be written as
+
+$$
+\frac{A^{n+1} - A^{n}}{dt} = \nabla^2 A^{n+1}
+$$
+
+Rearranging the terms we get
+
+$$
+\nabla^2 A^{n+1} + \frac{1}{dt} A^{n+1} =
+- \frac{1}{dt}A^{n} 
+$$
+
+This is a Poisson--Helmholtz problem which can be solved with a multigrid solver. 
+
+
+We can now re-write the Basilsik program
+
+~~~C
+#include "grid/multigrid.h"
+#include "run.h"
+#include "diffusion.h"
+
+scalar A[];
+scalar dA[];
+
+double dt;
+
+int main() {
+  L0 = 1.;
+  N = 256;
+ 
+  run();
+}
+
+
+event init (t = 0) {
+  foreach()
+    A[] =  1./0.1*(fabs(x*x+y*y)<0.05);
+  boundary ({A});
+}
+
+event integration (i++) {
+  
+   diffusion(A,dt);
+  boundary ({A});
+
+}
+
+event print (i=10) {
+
+  for (double y = 0 ; y <= L0; y += 0.01){
+    printf("%g %g \n", 
+      y, interpolate (A, 0, y));
+}
+
+}
+
+~~~
+
+
+## Shallow water equation
+
+For conservation of mass and momentum in the shallow-water context we solve
+
+$$ \partial_t \mathbf{q} + \nabla  \mathbf{f} = 0$$
+
+for the conserved vector $\mathbf{q}$ and flux function $\mathbf{f}(\mathbf{q})$, explicitly 
+
+$$
+  \mathbf{q} = \left(\begin{array}{c}
+    h\\
+    hu_x\\
+    hu_y
+  \end{array}\right), 
+  \;\;\;\;\;\;
+  \mathbf{f} (\mathbf{q}) = \left(\begin{array}{cc}
+    hu_x & hu_y\\
+    hu_x^2 + \frac{1}{2} gh^2 & hu_xu_y\\
+    hu_xu_y & hu_y^2 + \frac{1}{2} gh^2
+  \end{array}\right)
+$$
+where $\mathbf{u}$ is the velocity vector, $h$ the water depth and
+$z_b$ the height of the topography. 
+
+The primary fields are the water depth $h$, the bathymetry $z_b$ and
+the flow speed $\mathbf{u}$. $\eta$ is the water level i.e. $z_b +
+h$. Note that the order of the declarations is important as $z_b$
+needs to be refined before $h$ and $h$ before $\eta$.
+
+~~~literatec
+scalar zb[], h[], eta[]; 
+vector u[];
+~~~
+
+The only physical parameter is the acceleration due to gravity `G`. Cells are 
+considered dry when the water depth is less than the `dry` parameter (very small number).
+
+~~~literatec
+double G = 1.;
+double dry = 1e-10;
+~~~
+
+~~~literatec
+#include "saint-venant.h"
+
+int LEVEL = 9;
+
+/** 
+We define a new boundary for the cylinder. */
+
+
+bid cylinder;
+
+int main() {
+  size (5.);
+  G = 9.81;
+  origin (-L0/2., -L0/2.);
+  init_grid (1 << LEVEL);
+  run();
+}
+
+/**
+We impose height and velocity on the left boundary. */
+
+#define H0 3.505271526
+#define U0 6.29033769408481
+
+h[left]   = H0;
+eta[left] = H0;
+u.n[left] = U0;
+
+event init (i = 0) {
+
+  /**
+  The geometry is defined by masking and the initial step function is
+  imposed. */
+  
+  mask (sq(x - 1.5) + sq(y) < sq(0.5) ? cylinder : none);
+  mask (y > 2.-x*0.2 ? top : y < -2.+x*0.2 ? bottom  : none);
+  foreach() {
+    h[] = (x <= -1 ? H0 : 1.);
+    u.x[] = (x <= -1 ? U0 : 0.);
+  }
+}
+
+event logfile (i++) {
+  stats s = statsf (h);
+  fprintf (ferr, "%g %d %g %g %.8f\n", t, i, s.min, s.max, s.sum);
+}
+
+/** We generate movies of depth and level of refinement. */
+
+event movie (t += 0.005; t < 0.4) {
+  static FILE * fp = popen ("ppm2mpeg > depth.mpg", "w");
+  output_ppm (h, fp,
+	      min = 0.1, max = 6, map = cool_warm, n = 400, linear = true);
+}
+
+
+event adapt (i++) {
+  astats s = adapt_wavelet ({h}, (double[]){1e-2}, LEVEL);
+  fprintf (ferr, "# refined %d cells, coarsened %d cells\n", s.nf, s.nc);
+}
+
+~~~
+
+The movie of the depth of water
+![Animation of the depth of water.](/sandbox/jmf/img/depth.gif)
+
+
+
+## Navier-Stokes equations
+
+
+We simulate the lid-driven cavity problem using the **centered** solver
+
+We wish to approximate numerically the incompressible,
+variable-density Navier-Stokes equations
+$$
+\partial_t\mathbf{u}+\nabla\cdot(\mathbf{u}\otimes\mathbf{u}) = 
+\frac{1}{\rho}\left[-\nabla p + \nabla\cdot(\mu\nabla\mathbf{u})\right] + 
+\mathbf{a}
+$$
+$$
+\nabla\cdot\mathbf{u} = 0
+$$
+
+When we analyze the solver (file `centered.h`) we learn that
+
+1. reserved words 
+
+       scalar p[];  
+       vector u[];   
+       vector g[];  
+
+are reserved variables (all centered, the pressure p and the vectors $\mathbf{u}$ an $\mathbf{g}$) and also
+
+     scalar pf[];
+     face vector uf[];
+
+the auxiliary face velocity field $\mathbf{u}_f$ and the associated centered pressure field $p_f$.
+
+2. parameters
+    a. In the case of variable density, the user will need to define both the face and centered specific volume fields ($\alpha$ and $\alpha_c$ respectively) i.e. $1/\rho$. 
+
+    If not specified by the user, these fields are set to one i.e. the density is unity.
+    b. Viscosity is set by defining the **face** dynamic viscosity $\mu$; default is zero.
+    c. The face field $\mathbf{a}$ defines the acceleration term; default is zero.
+    d. If *stokes* (a boolean variable) is set to *true*, the velocity advection term $\nabla\cdot(\mathbf{u}\otimes\mathbf{u})$ is omitted.   
+
+
+The code is 
+
+~~~C
+#include "grid/multigrid.h"
+#include "navier-stokes/centered.h"
+
+int main()
+{ 
+  // coordinates of lower-left corner
+  origin (-0.5, -0.5);
+  // number of grid points
+  init_grid (64);
+  // viscosity
+
+  const face vector muc[] = {1e-3,1e-3};
+  μ = muc;
+
+  // maximum timestep
+  DT = 0.1;
+  // CFL number
+  CFL = 0.8;
+
+  run();
+}
+
+// boundary condition
+u.t[top] = dirichlet(1);
+u.t[bottom] = dirichlet(0);
+u.t[left]   = dirichlet(0);
+u.t[right]  = dirichlet(0);
+
+event outputfile (i += 100) 
+{
+  output_matrix (u.x, stdout, N, linear = true);
+}
+
+event movie (i += 4; t <= 15.)
+{
+  static FILE * fp = popen ("ppm2mpeg > norm.mpg", "w");
+  scalar norme[];
+  foreach()
+    norme[] = norm(u);
+  boundary ({norme});
+
+  output_ppm (norme, fp, linear = true);
+}
+
+~~~~
+We generate a mpeg file of the norm of the velocity field
+
+![Animation of the norm of the velocity field.](/sandbox/jmf/img/norm.gif)
+
+## Navier Stokes : Flow over a cylinder
+
+An example of 2D viscous flow around a simple solid boundary. Fluid is injected to the left of a channel bounded by solid walls with a slip boundary condition. The Reynolds number is set to 160. 
+
+
+~~~C
+
+
+#include "navier-stokes/centered.h"
+
+
+/**
+The domain is eight units long, centered vertically. */
+
+int main() {
+  L0 = 8.;
+  origin (-0.5, -L0/2.);
+  N = 512;
+  run(); 
+}
+
+/**
+The fluid is injected on the left boundary with a unit velocity. The
+tracer is injected in the lower-half of the left boundary. An outflow
+condition is used on the right boundary. */
+
+u.n[left]  = dirichlet(1.);
+p[left]    = neumann(0.);
+pf[left]   = neumann(0.);
+
+
+u.n[right] = neumann(0.);
+p[right]   = dirichlet(0.);
+pf[right]  = dirichlet(0.);
+
+/**
+We add a new boundary condition for the cylinder. The tangential
+velocity on the cylinder is set to zero. */
+
+bid cylinder;
+u.t[cylinder] = dirichlet(0.);
+
+event init (t = 0) {
+
+  /**
+  To make a long channel, we set the *top* boundary for $y > 0.5$ and
+  the *bottom* boundary for $y < -0.5$. The *cylinder* has a radius of
+  0.0625. */
+
+  mask (y >  0.5 ? top :
+	y < -0.5 ? bottom :
+	sq(x) + sq(y) < sq(0.0625) ? cylinder :
+	none);
+
+  /**
+  We set a constant viscosity corresponding to a Reynolds number of
+  160, based on the cylinder diameter (0.125) and the inflow velocity
+  (1). We also set the initial velocity field and tracer
+  concentration. */
+  
+  const face vector muc[] = {0.00078125,0.00078125};
+  mu = muc;
+  foreach() {
+    u.x[] = 1.;
+  }
+}
+
+/**
+We check the number of iterations of the Poisson and viscous
+problems. */
+
+event logfile (i++)
+  fprintf (stderr, "%d %g %d %d\n", i, t, mgp.i, mgu.i);
+
+
+
+event movies (i += 4; t <= 15.) {
+  static FILE * fp = popen ("ppm2mpeg > vort.mpg", "w");
+  scalar vorticity[];
+  foreach()
+    vorticity[] = (u.x[0,1] - u.x[0,-1] - u.y[1,0] + u.y[-1,0])/(2.*Delta);
+  boundary ({vorticity});
+ 
+ output_ppm (vorticity, fp, box = {{-0.5,-0.5},{7.5,0.5}},
+	      min = -10, max = 10, linear = true);
+}
+
+
+~~~~
+
+We generate a mpeg file of the vorticity
+
+![Animation of the vorticity field.](/sandbox/jmf/img/vort.gif)

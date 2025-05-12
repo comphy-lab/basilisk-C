@@ -1,0 +1,27 @@
+**Welcome to my sandbox !**
+
+/**
+#Oil lens on water
+We want to use three phases in Basilisk for simulating an oil lens on water with air over.   
+We want to reproduce the two cases of Chen Paper (Microfluid Nanofluid (2017) 21:109)    
+with ratios on surface tensions water-air, oil-air, water-oil : 1.0 - 1.0 - 1.0 and 0.8 - 1.0 - 1.4  
+and without gravity.
+
+[case one Chen](/case_one_axi_sig_1_1_1.mpg)   
+    
+[case two Chen](/case_two_axi_sig_0.8_1_1.4.mpg)   
+
+We want to check that there is no separation between phases at the triple point    
+and visualize interfaces (lines air/white, water/red, oil/blue)
+
+[triple point case one](http://bipbip.ida.upmc.fr/~ray/three_phases/mov_one_tripleline.mpg)   
+
+[triple point case two](http://bipbip.ida.upmc.fr/~ray/three_phases/mov_two_tripleline.mpg)   
+
+For doing that we need to use three fields f1,f2,f3 and modifying two-phase.h inside
+Basilisk: [three-phase.h]()
+
+We can now write our own program for oil lens which use three-phase.h: [oil_lens.c]()
+*/
+
+

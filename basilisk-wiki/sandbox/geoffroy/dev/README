@@ -1,0 +1,13 @@
+/**
+# Dev
+
+I store here all my libraries :
+
+* [discharge.h](discharge.h) : a library designed to impose a total inflow on a river. 
+This library is already included in basilisk. 
+* [generic time-incrementator](gen-time-inc.h)  : a time-incrementator where you can chose the order. 
+It's using a low-storage scheme.
+* [predictor-corrector with source](predictor-corrector-source.h) : the predictor-corrector scheme which use the source terms defined [there](http://basilisk.fr/sandbox/geoffroy/sourceterm/README)
+
+[Return to my homepage](http://basilisk.fr/sandbox/geoffroy/README)
+*/

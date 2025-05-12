@@ -1,0 +1,7 @@
+Here is a note about how to create/add new pages in my sandbox.  
+
+* First, go to my README page and ```edit``` it.
+* Second, add the new page at the bottom of the code script in the format  
+`[Page Name](Page Path relative to the current file)`  
+* Then we can click the link on the README page and edit the new page.  
+* For the path format, see [basilisk_help](http://basilisk.fr/Help#wiki-links).

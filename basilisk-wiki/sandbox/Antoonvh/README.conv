@@ -1,0 +1,34 @@
+# Convergence tests
+
+Some convergence tests:
+
+## 1D Diffusion [(2nd-order accurate multi-grid scheme)](http://www.basilisk.fr/src/diffusion.h)
+* [Description and the convergence rate with an equidistant grid](diffgausspulse.c)
+* [Convergence rate with a locally-refined grid](diffgausspulse2.c)
+* [Convergence rate with decreasing refinement criteria using an adaptive grid](diffgausspulse3b.c)
+
+## 1D Advection [(2nd-order accurate Bell-Colella-Glaz scheme)](http://www.basilisk.fr/src/bcg.h)
+* [Discription and the convergence rate with an equidistant grid](advgausspulse.c)
+* [Convergence rate with decreasing refinement criteria using an adaptive grid](advgausspulse2.c)
+
+## 1D Poisson problem [(2nd-order accurate Multigrid Poisson solver)](http://www.basilisk.fr/src/poisson.h)
+* [Discription of test and the spatial convergence rate witn an equidistant grid](testpoisson.c)
+* [Convergence rate with decreasting refinement criteria using an adapted grid based on the source term](testpoissonadaptivesource.c)
+
+## Accuracy of the Refinement and Prolongation attributes
+* [In 1D](refineing1d.c)
+* [In 2D](refine2D.c)
+* [In 3D](refine3D.c)
+
+## More tests
+* [The temporal accuracy for a viscous flow test case](timeaccuracy.c)
+* [The spatial accuracy for a viscous flow test case](instantaniousplate.c)
+* [Accuracy of the interface reconstruction of a sphere](interface.c)
+* [Calculating the curvature of a circle on various grids](circle.c)
+* Boundary implementations
+    a. [A comparison of four straight and grid-aligned methods](test_straight_boundaries.c)
+    b. [A comparison of three cylinderical-geometry implementations](test_curved_boundaries.c)
+  
+~~~literatec
+ 
+~~~

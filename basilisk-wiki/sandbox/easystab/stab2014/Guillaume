@@ -1,0 +1,36 @@
+# Contribution
+
+## 2 vibrating strings connected by one mass
+
+I used the [the vibrating string](../vibrating_string.m) code and modified it to model [2 strings connected by one mass](two_vibrating_strings_one_mass.m)
+
+![](two_strings.gif)
+
+## 2D brusselator with periodic conditions
+
+I adapted [brusselator.c](http://basilisk.fr/src/examples/brusselator.c) to create a simple matlab solver for [brusselator 2D with periodic conditions](brusselator_2D_periodic.m)
+
+![](brusselator2d_periodic.png)
+
+## Rayleigh benard Marangoni convection
+
+I made [rayleigh_benard_marangoni.m](rayleigh_benard_marangoni.m), which is an extension of [rayleigh_benard.m](../rayleigh_benard.m), adding surface tension and a free surface to the fluid.  
+
+![](rbm.png)
+
+
+# Notes
+
+De la part de Jérôme:
+
+~~~matlab
+domaine	valeur	note
+connectivité 	2	2
+recyclage	2	2
+graphiques	2	2
+théories	4	4
+Originalité	4	4
+note /14	14	14
+~~~
+
+Très belles contributions au wiki, merci!

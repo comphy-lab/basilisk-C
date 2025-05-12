@@ -1,0 +1,33 @@
+# Basic understanding of BASILISK and numerics (BASI)
+
+This is a readme of small and novice examples I made to better understand the building block of BASILISK. 
+
+## Heat equation
+
+* [1D heat equation in cartesian grid](http://basilisk.fr/sandbox/YiDai/BASI/heat1D.c)
+* [1D heat equation in adaptive grid](http://basilisk.fr/sandbox/YiDai/BASI/heat1D_adp.c)
+* [2D heat equation](http://basilisk.fr/sandbox/YiDai/BASI/heat2D.c)
+* [2D heat steady - laplace](http://basilisk.fr/sandbox/YiDai/BASI/heat2D_steady.c)
+* [1D steady state heat equation using relaxation](http://basilisk.fr/sandbox/YiDai/BASI/relax1D.c)
+* [1D steady state heat equation using basilisk relaxation](http://basilisk.fr/sandbox/YiDai/BASI/relax_basi.c)
+* [2D steady state heat equation using relaxation](http://basilisk.fr/sandbox/YiDai/BASI/relax2D.c)
+* [2D steady state heat equation using basilisk relaxation](http://basilisk.fr/sandbox/YiDai/BASI/relax_basi2D.c)
+* [2D steady state heat equation using multi-grid](http://basilisk.fr/sandbox/YiDai/BASI/relax2D_multi.c)
+
+## Advection equation
+
+* [1D advection equation](http://basilisk.fr/sandbox/YiDai/BASI/advec1D.c)
+* [2D advection equation](http://basilisk.fr/sandbox/YiDai/BASI/advec2D.c)
+* [1D advection equation - advection solver](http://basilisk.fr/sandbox/YiDai/BASI/advec1D_basi.c)
+* [2D advection equation - advection solver](http://basilisk.fr/sandbox/YiDai/BASI/advec2D_basi.c)
+
+## Burgers equation
+
+* [Inviscid burgers equation -- different solver](http://basilisk.fr/sandbox/YiDai/BASI/invis_burgers_DS.c)
+* [Inviscid burgers equation -- bcg](http://basilisk.fr/sandbox/YiDai/BASI/invis_burgers.c)
+* [Inviscid burgers equation -- finite volume](http://basilisk.fr/sandbox/YiDai/BASI/invis_burgers_fv.c)
+* [Viscid burgers equation -- finite volume](http://basilisk.fr/sandbox/YiDai/BASI/vis_burgers_fv.c)
+* [Stochastic Burgers' equation](http://basilisk.fr/sandbox/YiDai/BASI/invis_burgers.c)
+
+# Basilisk
+* [Tree grid view](http://basilisk.fr/sandbox/YiDai/BASI/adaptive.c)

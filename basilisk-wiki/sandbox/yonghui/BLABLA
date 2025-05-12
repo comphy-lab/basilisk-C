@@ -1,0 +1,37 @@
+# unofficial README
+Ceci est une page pour moi, pas différente de MENU, merci de laisse tranquille
+
+## Remanding
+
+[ImportMesh](smalltest/ImportMesh) : mesh & [output](smalltest/output) : output  &
+ [function](smalltest/function) :  commande 
+
+## Bubble drop & Co.
+ 
+[2Dtube](smalltest/2Dtube.c) ! : compare of axi.h
+
+[3Dtube](smalltest/3dtube.c) ! : poiseuile flow in a real 3d cylinder 
+
+[MC rising](smalltest/mcrising.c) !! & [Bubble rising 3D](smalltest/bubble3d.c) !!!  : bubble rising in a cylinder with momentum conserving (Modify version)  &  in real 3D cylinder
+
+[Waterdrop](smalltest/visdrop.c)!! & [MC Waterdrop](smalltest/mcvisdrop.c) !! : falling drops of water in a cylinder with viscous environment  &  with momentum conserving  
+ 
+## Biomechanic
+
+[WomersleyFlow](biomeca/2dwoflow.c) ! : axisymetric womersley flow  
+
+[Impact of Wo](biomeca/2dwo.c) ! : Different Womersley Number  
+
+[Resistance + Wo](biomeca/2dworr.c) ! : Womersley flow With output resistance. (simple version :[R + Poi](biomeca/2drr.c) )  
+
+[KV + Wo](biomeca/2dworrc.c) ! : Womersley flow + KV model. (simple version :[KV + Poi](biomeca/2drrc.c) ) 
+
+[TubeWoFlow](biomeca/3dendotube.c) !! : A real decsending thoracic aorte. 
+
+[CompareTube](biomeca/3dtubecompare.c)  !! : The comparison between real model and theory model
+
+![my boss](/sandbox/yonghui/biomeca/pyl.jpeg) 
+
+## Turbulence & Vortex
+
+[RTsimple](smalltest/rtsimple.c)  ! : a very simple version of Rayleigh-Taylor instability

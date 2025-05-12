@@ -1,0 +1,10 @@
+/**
+## Plasma in Basilisk
+This sandbox contains samples of plasma modeling in Basilisk.
+
+## The first sample contains the one-dimensional model of capacitive discharges
+*/
+
+/**
+<a href="http://basilisk.fr/sandbox/vik/fluid-rf.c"> Fluid code </a>
+*/

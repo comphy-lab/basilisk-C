@@ -1,0 +1,21 @@
+/**
+
+# Breaking waves with multilayer solver
+
+This is the code related to the breaking wave cases with multilayer solver.
+
+## Documentation  
+
+## Code   
+* [Random breaking wave field](field_PM.c)
+* [Single breaking stokes wave](stokes.c) 
+
+## Publications   
+
+## To do list and ideas  
+
+* Clean-up the code
+* Include the python code that generates the directional wave spectrum.
+
+
+*/

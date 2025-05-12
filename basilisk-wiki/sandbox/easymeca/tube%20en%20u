@@ -1,0 +1,84 @@
+# oscillations dans un tube en U
+
+C'est une expérience qu'a fait Newton pour comprendre les vagues de la mer. Son but était de comprendre comment un système fluide peut se mettre à osciller, et prédire la fréquence d'oscillation en fonction de sa taille. C'est tout simple, on prend un tube tranparent flexible dans le quel on met de l'eau colorée. Les deux branches du tube en U sont bien verticales. Ensuite on souffle dans une des branches, puis on laisse le fluide revenir par lui même à son état d'équilibre ou le niveau dans les deux branches est à la même altitude. On filme ce phénomène avec un apareil photo.
+
+Voici le dispositif expérimental:
+
+![](tube en u2.png)
+
+Et voici une des images capturée par l'apareil photo:
+
+![](tube en u1.png)
+
+Et voici ce que l'on obtient pour quatres volumes de fluides. nous avons fait un "reslice" d'un ligne de pixel qui coupe l'interface dans la branche de droite pour obtenir ce diagramme spatio-temporel.
+
+Le diamètre du tube est 1,2 cm, et nous avons répété le protocole expérimental pour  quatre volumes V=30ml, 50ml, 70ml et 90ml.
+
+![](tube en u3.png)
+
+
+# Expérience/théorie
+
+L'expérience est caputrée dans l'image [tubu.png]().
+
+Pour modéliser ce système, nous utilisons l'équation de Bernoulli pour relier la pression et la vitesse aux deux points ou la pression est connue: les deux surfaces libres pour lesquelles la pression est égale à la pression atmosphérique.
+
+On en tire la formule
+$$
+P=C\pi\sqrt{\frac{2}{g}L}
+$$
+ou $P$ est la période d'oscillation; $g$ est l'accélération de la gravité, $L$ est la longueur d'eau le long du tuyau et $C$ est une constante proche de $1$ qui traduit les effets de la viscosité du fluide (nous n'allons pas prendre en compte la viscosité dans notre modèle).
+
+Et voici le graphique de comparaison entre la théorie et l'expérience:
+
+![](tube en u4.png)
+
+Le programme Octave que nous avons utilisé pour le traitement des données et le tracé de la formule mathématique est ici:
+
+~~~matlab
+clear all; clf
+ 
+% pour lire l'image et l'afficher 
+% dans la fenêtre graphique
+a=imread('tubu.png');
+image(a);
+ 
+% la durée d'un pixel de temps 
+tempspix=9.13/(906-63);
+ 
+% les données mesurées avec ginput
+d=[  355.4200   83.7722
+  440.3291  238.3492
+  511.6527  441.7926
+  572.7873  646.2333];
+ 
+% on extrait les périodes en secondes
+p=(d(:,1)-63)/4; % j'ai mesuré 4 périodes
+p=p*tempspix; 
+ 
+% on transforme les volumes en longueurs
+v=[30 50 70 90]*1e-6;
+d=1.2e-2; % le diamètre du tube
+l=v/(pi*(d/2)^2); % les longueurs
+plot(l,p,'b*-'); % le graph
+ 
+% la courbe théorique 
+% avec la meilleure valeur de C
+hold on
+C=1.08;
+g=9.81;
+ll=linspace(0,l(end),100);
+plot(ll,C*sqrt(2/g)*pi*sqrt(ll),'m-')
+ 
+% une boucle pour tester plusieurs valeurs de C
+for C=linspace(0.1,2,10);
+plot(ll,C*sqrt(2/g)*pi*sqrt(ll),'r-')
+end
+ 
+% annotations
+xlabel('longueur de fluide en m');
+ylabel('periode en secondes')
+title('expérience/théorie');
+ylim([0,1.4])
+~~~
+

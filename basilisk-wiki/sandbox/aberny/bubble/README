@@ -1,0 +1,57 @@
+You are in the bubble directory.
+
+## Objective
+
+In this directory, we want to simulate various state of a bubble. The main objective is to simulate the bursting of a bubble.
+
+The bubble are defined by there Bond number
+
+$$
+\text{Bo} = \frac{\rho g R_{\text{Bubble}}^2}{\gamma}
+$$
+
+Since a bubble is not always a perfect sphere, the radius that define them is based on their volume. It is the radius of a sphere of the same volume
+
+## Source code
+To simulate the burstin bubble process, we work with the file 
+
+ * [burstingBubble](burstingBubble.c)
+
+This file is a 2D axi-symetric simulation of a bursting bubble.
+
+To simulate a bursting bubble, we need to initialise the geometry. This is done with 2 library:
+
+ * [bubbleShape](bubbleShape.h)
+    - This library compute the shape of a bubble, in 2D. It works with the bottom curvature of the bubble to make the solving part easyer. We are working with the equivalent radius of the bubble, and not it's bottom radius of curvature. That's why we cannot use this library on it's own.
+ * [findBond](findBond.h)
+    - This library is the interface between the bubbleShape solver and the simulations. It will find the radius of curvature at the bottom of the bubble associated with the equivalent radius of the bubble.
+    - Depending on which part of the bubble shape solution you want, this library contains several function. 
+      * You can get the water-air interface, without the top spherical cap of the bubble
+      * You can only get the bubble shape, without the air-water free-surface
+      * You can get the air-water free surface interface with the top spherical cap
+    - This library can also generate a 3D shape from a 2D shape, by rotating it
+
+This folder also contains 2 others simulations:
+
+ * [bursting2D](bursting2D.c)
+ * [bursting3D](bursting3D.c)
+
+Those 2 files are used to simulate the top spherical cap retraction respectively in 2D and in 3D. They are still using the 2 geometric initialisation library to initialise theire geometry.
+
+Finally, all the simulations file share a common tool: [measure](measure.h)
+
+This file is a library performing several measurement on the fluids. It can measure the evolution of some droplets after the bubble burst.
+It can also measure the film retraction.
+
+Each measurement are enabled via keyword defined in the simulations file
+
+## Other files
+
+There is 2 files used as demo for our library:
+
+ * [bubble](bubble.c)
+ * [bubbleRef](bubbleRef.c)
+
+The first one is an example on how to use our bubbleShape generation library.
+
+The second file is a test case. It computes the volume of a bubble and compare it with the references volume.

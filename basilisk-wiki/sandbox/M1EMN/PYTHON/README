@@ -1,0 +1,19 @@
+# examples in python 
+
+
+Minimal examples in python
+
+
+* [http://basilisk.fr/sandbox/M1EMN/PYTHON/flood.py]() Flood wave
+(same than [http://basilisk.fr/sandbox/M1EMN/Exemples/flood.c]())
+
+* [http://basilisk.fr/sandbox/M1EMN/PYTHON/svdb.py]() Ritter Shallow water dam break (same than 
+[http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c]()
+
+* [http://basilisk.fr/sandbox/M1EMN/PYTHON/shdb.py]() Savage Hutter depth averaged collapse of a heap (same than [http://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]())
+
+* [http://basilisk.fr/sandbox/M1EMN/PYTHON/svvisc.py]() Huppert viscous collapse of a heap 
+ (same than [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c]())
+
+
+

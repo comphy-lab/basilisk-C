@@ -1,0 +1,175 @@
+/**
+ * latte_art_2d.c
+ *
+ * コンパイル例:
+ *   qcc -O2 latte_art_2d.c -o latte_art_2d -lbasilisk -lm
+ * 実行例:
+ *   ./latte_art_2d
+ *
+ * 実行後、ppm2mp4 や ffmpeg などを使って出力画像から動画を作成可能。
+ */
+
+#include "navier-stokes/centered.h" // Navier–Stokes solver (centered scheme)
+#include "two-phase.h"             // 二相流(VOF)に必要
+#include "tension.h"               // 表面張力項を扱う
+#include "view.h"                  // 画像・動画出力用（Basilisk内蔵の可視化）
+
+// --------------------------- パラメータ設定 ---------------------------
+
+// 円形カップの半径
+#define R 0.5
+
+// 物性パラメータ(例)
+// ここでは「コーヒー(流体 A)」と「ミルク(流体 B)」を区別
+// Basiliskの二相流では、以下のように定義:
+//   f=1 => 流体 B (ミルク),   f=0 => 流体 A (コーヒー)
+//   ρ, μ は各流体の密度, 動粘度(粘度) または動粘度 μ/ρ を設定する
+
+double rhoA = 1000.;   // コーヒーの密度 [kg/m^3]
+double muA  = 1e-3;    // コーヒーの動粘度 [Pa·s] (水程度を仮定)
+
+double rhoB = 1020.;   // ミルクの密度 (やや重めを仮定)
+double muB  = 2e-3;    // ミルクの動粘度 (コーヒーよりやや粘度高め)
+
+double sigma = 0.03;   // 表面張力係数 [N/m] (水-空気間 ~0.072, ここは適当に)
+
+// 重力加速度
+const vector g = {0., -9.8}; // y下向きに重力
+
+// ミルク注ぎの速度
+double milk_inject_velocity = 0.5; // [m/s] 適当に
+
+// --------------------------- 初期化イベント ---------------------------
+
+// レベル(AMR階層の最大レベル)
+int MAXLEVEL = 8;  // 数値実験用に小さめ(高精度化したい場合は増やす)
+
+// 円形カップ領域を mask(壁) として扱うための関数
+static void make_circle_mask (scalar cs, face vector fs)
+{
+  // ドメイン中央に円を配置したい場合
+  // (X, Y) = (0, 0) を中心とし、半径 R
+  vertex scalar phi[];
+  foreach_vertex() {
+    double dist = sqrt(sq(x) + sq(y));
+    phi[] = dist - R; // 円の内側: phi < 0
+  }
+  // Basilisk の mask() 関数で、phi<0 を流体領域、phi>0 を固体領域にする
+  boundary({phi});
+  mask (phi);
+}
+
+// --------------------------- メイン ---------------------------
+
+int main()
+{
+  // 計算領域(サイズは直径を1としたいので L0=1程度)
+  // ただし円形カップ全域が R=0.5 なので L0=1.0 で十分
+  L0 = 1.0;
+  origin(0., 0.); // ドメイン中心を (0,0) に置く
+  N = 64;         // 初期メッシュ解像度
+
+  // 二相流体パラメータ設定
+  rho1 = rhoA; mu1 = muA;   // コーヒー
+  rho2 = rhoB; mu2 = muB;   // ミルク
+  f.sigma = sigma;          // 表面張力係数
+
+  // 重力を Navier–Stokes ソルバーに与える
+  const face vector gravity[] = {g.x, g.y};
+  acceleration = gravity;
+
+  // 時間ステップなどの設定
+  DT = 1e-3;    // 初期の最大タイムステップ(適宜調整)
+  TOLERANCE = 1e-4;
+
+  // 円形カップのマスク作成
+  make_circle_mask(cs, fs);
+
+  // 実行開始
+  run();
+}
+
+// --------------------------- 初期条件設定 ---------------------------
+
+event init(t = 0)
+{
+  // カップ内はコーヒーで満たされている状態を想定 (f=0)
+  // ただし、上部少し空間を空ける or 全域コーヒーでもOK
+  // ここでは簡単に「全域をコーヒー」で初期化
+  foreach() {
+    f[] = 0.; // f=0 => 流体A(コーヒー)
+  }
+  boundary({f});
+}
+
+// --------------------------- ミルク注ぎの境界条件 ---------------------------
+
+// Basilisk で「外部からの注入」を再現するには、たとえばカップの上端や側面に velocity BC を与える方法があります。
+// しかし円形マスク内の境界は固体壁(Mask)扱いなので、ここではカップの上に“注ぎ口”を想定し、
+// y=+R付近にスリット状に注入する設定にします(実際には状況に合わせて工夫が必要)。
+//
+// 例: y ~ 0.45～0.5 かつ |x| < 0.05 の領域でミルクを注ぐ。
+
+event velocity_injection(i++)
+{
+  // 時刻 t がある程度進むにつれて一定速度でミルクを注ぐ
+  // Basiliskでは固体マスク内には流れ込まないため、円領域の上端付近だけ有効。
+  double inlet_width = 0.05; // スリット半幅
+  foreach_face() {
+    if (y > 0.45 && y < 0.5) {
+      if (fabs(x) < inlet_width) {
+        // ミルクが注がれる（f=1）
+        // face vector uf (速度) に対して、下向きに注入
+        uf.y[] = -milk_inject_velocity;
+        // そのセル内の f 値を上書きして強制的にミルク注入 (少し乱暴ですが簡易的手法)
+        if (y > 0.45) {
+          // volume fraction (cell-centered) も近傍で f=1 に近づける
+          int ic = f.i, jc = f.j; // face から cell idx を推定(やや注意)
+          // 安全のために、face が下向きの場合は cell の index を工夫
+          // ここでは簡単のために下セルを更新
+          if (jc - 1 >= 0) {
+            f[ic, jc-1] = 1.0; 
+          } else {
+            f[ic, jc] = 1.0; 
+          }
+        }
+      }
+    }
+  }
+  boundary({uf});
+  boundary({f});
+}
+
+// --------------------------- AMR(適応格子) ---------------------------
+
+/**
+ * 界面など変化の大きい部分を細かい格子にして計算精度を高める。
+ */
+event adapt(i++) {
+  // VOF界面 f と速度 u を指標に適応細分
+  adapt_wavelet({f, u}, (double[]){1e-3, 1e-2, 1e-2}, MAXLEVEL);
+}
+
+// --------------------------- 出力 & 可視化 ---------------------------
+
+/**
+ * 画像あるいは動画を時々出力
+ */
+event movies(t += 0.01; t <= 2.) {
+  // 背景はコーヒー(f=0, 茶色系) とミルク(f=1, 白系) を連続で塗り分け
+  clear();
+  view (tx = 0., ty = 0., width = 600, height = 600);
+  // セル境界を描画 (調整可)
+  draw_vof("f", edges=true);
+  // カップのマスク(壁)の外はグレー表示
+  cells();
+  save ("frame.png"); // frame-0000.png のように出力される
+}
+
+/**
+ * 一定時間経過後に終了
+ */
+event end(t = 2.) {
+  // 適宜終了時間を調整
+  printf("Done. t=%.3f\n", t);
+}

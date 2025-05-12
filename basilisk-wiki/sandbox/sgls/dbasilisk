@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# SGLS v2.0 09/16/2021
+# script adapted from https://fredrikaverpil.github.io/2016/07/31/docker-for-mac-and-gui-applications/
+# 1st argument (if present): name of directory to be mounted 
+# 2nd argument (if present): name of mounted directory in basilisk
+
+# written for mac; has not been tested on other systems (following line will probably fail)
+IP=$(ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
+xhost +$IP
+dir=$(pwd)
+if [ "$#" -gt "0" ];
+then
+   dir=$1
+fi
+shift
+hostdir=hostdata
+if [ "$#" -gt "0" ];
+then
+   hostdir=$1
+fi
+
+docker run -it  -p 7100:7100 -p 7101:7101 -p 7102:7102 -p 7103:7103 -p 7104:7104 --security-opt seccomp=unconfined -e DISPLAY=$IP:0 -v /tmp/.X11-unix:/tmp/.X11-unix  -v "$dir":/home/basilisk/"$hostdir" sgls/basilisk-docker

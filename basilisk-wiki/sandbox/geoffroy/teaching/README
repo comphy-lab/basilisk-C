@@ -1,0 +1,14 @@
+/**
+# Teaching
+
+Ces cours sont, pour l'instant, divisés en 4 séances de 3 heures plus une séance de mini-projet de 6 heures.
+
+* [Cours/TP](C1.c) : Introduction à Basilisk
+* [TP](C2.c) : Un Tsunami dans la mer méditérannée
+* [Projet Pluie parfaite](http://basilisk.fr/sandbox/geoffroy/teaching/idealrain.c) : un cas test de pluie idéale
+* [Mini - projet](karamea.c) : L'inondation de Karamea
+* [Cours/TP](C5.txt) : L'infiltration de Green-Ampt
+* [Mini - projet](carlisle.txt) : L'inondation de Carlisle
+
+[Retour home](http://basilisk.fr/sandbox/geoffroy/README)
+*/

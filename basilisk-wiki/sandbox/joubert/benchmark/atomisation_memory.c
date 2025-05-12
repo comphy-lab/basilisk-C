@@ -1,0 +1,277 @@
+/**
+# Atomisation memory usage
+
+We use the atomisation example to test the memory usage in 3D low 
+resolution simulation with and without view.h. The code is run on 2 cores.
+We check the memory usage of the code following ([mtrace](/src/README.mtrace 
+on Irene supercomputer and compare results with specific Irene tools.
+
+To compile and run with the right compilation flags on a supercomputer
+you can follow somthing like:
+
+~~~bash
+%localmachine: qcc -source -D_MPI=1 -DMTRACE=1 atomisation_memory.c
+%localmachine: scp _atomisation_memory.c login@supercomputer.org:
+%localmachine: ssh login@supercomputer.org
+%supercomputer.org: mpicc -Wall -std=c99 -O2 -D_GNU_SOURCE=1 _atomisation_memory.c -o atomisation_memory -lm
+~~~
+
+A dense cylindrical liquid jet is injected into a stagnant lighter
+phase (density ratio 1/27.84). The inflow velocity is modulated
+sinusoidally to promote the growth of primary shear
+instabilities. Surface tension is included and ultimately controls the
+characteristic scale of the smallest droplets.
+
+We solve the two-phase Navier--Stokes equations with surface
+tension. We need the *tag()* function to count the number of
+droplets. We generate animations online using Basilisk View. */
+
+#include "navier-stokes/centered.h"
+#include "two-phase.h"
+#include "tension.h"
+#include "tag.h"
+#if VIEW
+#include "view.h"
+#endif
+/**
+We define the radius of the jet, the initial jet length, the Reynolds
+number and the surface tension coefficient. */
+
+#define radius 1./12.
+#define length 0.025
+#define Re 5800
+#define SIGMA 3e-5
+
+/**
+The default maximum level of refinement is 10 and the error threshold
+on velocity is 0.1. */
+
+int counter=0;
+int maxlevel = 8;
+double uemax = 0.1;
+
+/**
+To impose boundary conditions on a disk we use an auxilliary volume
+fraction field *f0* which is one inside the cylinder and zero
+outside. We then set an oscillating inflow velocity on the
+left-hand-side and free outflow on the right-hand-side. */
+
+scalar f0[];
+u.n[left]  = dirichlet(f0[]*(1. + 0.05*sin (10.*2.*pi*t)));
+u.t[left]  = dirichlet(0);
+#if dimension > 2
+u.r[left]  = dirichlet(0);
+#endif
+p[left]    = neumann(0);
+f[left]    = f0[];
+
+u.n[right] = neumann(0);
+p[right]   = dirichlet(0);
+
+/**
+The program can take two optional command-line arguments: the maximum
+level and the error threshold on velocity. */
+
+int main (int argc, char * argv[])
+{
+  if (argc > 1)
+    maxlevel = atoi (argv[1]);
+  if (argc > 2)
+    uemax = atof (argv[2]);
+
+  /**
+  The initial domain is discretised with $64^3$ grid points. We set
+  the origin and domain size. */
+  
+  init_grid (64);
+  origin (0, -1.5, -1.5);
+  size (3.);
+
+  /**
+  We set the density and viscosity of each phase as well as the
+  surface tension coefficient and start the simulation. */
+  
+  rho1 = 1., rho2 = 1./27.84;
+  mu1 = 2.*radius/Re*rho1, mu2 = 2.*radius/Re*rho2;  
+  f.sigma = SIGMA;
+
+  run();
+}
+
+/**
+## Initial conditions */
+
+event init (t = 0) {
+  if (!restore (file = "restart")) {
+
+    /**
+    We use a static refinement down to *maxlevel* in a cylinder 1.2
+    times longer than the initial jet and twice the radius. */
+    
+    refine (x < 1.2*length && sq(y) + sq(z) < 2.*sq(radius) && level < maxlevel);
+    
+    /**
+    We initialise the auxilliary volume fraction field for a cylinder of
+    constant radius. */
+    
+    fraction (f0, sq(radius) - sq(y) - sq(z));
+    f0.refine = f0.prolongation = fraction_refine;
+    restriction ({f0}); // for boundary conditions on levels
+
+    /**
+    We then use this to define the initial jet and its velocity. */
+
+    foreach() {
+      f[] = f0[]*(x < length);
+      u.x[] = f[];
+    }
+    boundary ({f,u.x});
+  }
+}
+
+/**
+## Outputs
+
+We log some statistics on the solver. */
+
+event logfile (i++) {
+  if (i == 0)
+    fprintf (ferr,
+	     "t dt mgp.i mgpf.i mgu.i grid->tn perf.t perf.speed\n");
+  fprintf (ferr, "%g %g %d %d %d %ld %g %g\n", 
+	   t, dt, mgp.i, mgpf.i, mgu.i,
+	   grid->tn, perf.t, perf.speed);
+}
+
+#if VIEW
+/**
+We generate an animation using Basilisk View. */
+
+event movie (t += 1e-2)
+{
+#if dimension == 2
+  scalar omega[];
+  vorticity (u, omega);
+  view (tx = -0.5);
+  clear();
+  draw_vof ("f");
+  squares ("omega", linear = true, spread = 10);
+  box ();
+#else // 3D
+  scalar pid[];
+  foreach()
+    pid[] = fmod(pid()*(npe() + 37), npe());
+  boundary ({pid}); // not used for the moment
+  view (camera = "iso",
+	fov = 14.5, tx = -0.418, ty = 0.288,
+	width = 1600, height = 1200);
+  clear();
+  draw_vof ("f");
+#endif // 3D
+  save ("movie.mp4");
+}
+#endif
+/**
+We save snapshots of the simulation at regular intervals to
+restart or to post-process with [bview](/src/bview). */
+
+event snapshot (t = 0.1; t += 0.1; t <= 3.8) {
+  char name[80];
+  sprintf (name, "snapshot-%g", t);
+  scalar pid[];
+  foreach()
+    pid[] = fmod(pid()*(npe() + 37), npe());
+  boundary ({pid});
+  dump (name);
+}
+
+/**
+## Counting droplets
+
+The number and sizes of droplets generated by the atomising jet is a
+useful statistics for atomisation problems. This is not a quantity
+which is trivial to compute. The *tag()* function is designed to solve
+this problem. Any connected region for which *f[] > 1e-3* (i.e. a
+droplet) will be identified by a unique "tag" value between 0 and
+*n-1*. */
+
+event droplets (t += 0.1)
+{
+  scalar m[];
+  foreach()
+    m[] = f[] > 1e-3;
+  int n = tag (m);
+
+  /**
+  Once each cell is tagged with a unique droplet index, we can easily
+  compute the volume *v* and position *b* of each droplet. Note that
+  we use *foreach_leaf()* rather than *foreach()* to avoid doing a
+  parallel traversal when using OpenMP. This is because we don't have
+  reduction operations for the *v* and *b* arrays (yet). */
+
+  double v[n];
+  coord b[n];
+  for (int j = 0; j < n; j++)
+    v[j] = b[j].x = b[j].y = b[j].z = 0.;
+  foreach_leaf()
+    if (m[] > 0) {
+      int j = m[] - 1;
+      v[j] += dv()*f[];
+      coord p = {x,y,z};
+      foreach_dimension()
+	b[j].x += dv()*f[]*p.x;
+    }
+
+ /**
+ When using MPI we need to perform a global reduction to get the
+ volumes and positions of droplets which span multiple processes. */
+
+#if _MPI
+  MPI_Allreduce (MPI_IN_PLACE, v, n, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Allreduce (MPI_IN_PLACE, b, 3*n, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+#endif
+
+  /**
+  Finally we output the volume and position of each droplet to
+  standard output. */
+
+  for (int j = 0; j < n; j++)
+    fprintf (fout, "%d %g %d %g %g %g\n", i, t,
+	     j, v[j], b[j].x/v[j], b[j].y/v[j]);
+  fflush (fout);
+}
+  
+/**
+## Mesh adaptation
+
+We adapt the mesh according to the error on the volume fraction field
+and the velocity. */
+
+event adapt (i++) {
+  adapt_wavelet ({f,u}, (double[]){0.01,uemax,uemax,uemax}, maxlevel);
+  counter ++;
+  if (counter>=2)
+    return 1;
+}
+
+//event end (t=t) {
+//  printf ("i = %d t = %g\n", i, t);
+//}
+
+/**
+## Results
+
+With view.h
+![Memory usage return by mtrace](atomisation_memory/mtrace_view.png)
+![Memory usage return by Irene tools](atomisation_memory/atomisation_1_core.png)
+
+Without view.h
+![Memory usage return by mtrace](atomisation_memory/mtrace_wtht_view.png)
+![Memory usage return by Irene tools](atomisation_memory/atomisation_wtht_view_1_core.png)
+
+The units of the memory trace reported by Irene tools are Go/cputime (s).
+We can clearly see a difference when we use visualisation it generates some
+overshoot on the memory usage per core.
+Also we can notice that the memory used per core does not seem to be scalable
+with the number of process used..
+*/

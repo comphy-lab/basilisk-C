@@ -1,0 +1,146 @@
+2 patches for repository http://basilisk.fr/basilisk:
+
+patch 64afe53d3942901cf427e3ebd4cd42a66414971c
+Author: j.a.v.hooft@gmail.com
+Date:   Sun Jun 13 11:40:14 CEST 2021
+  * Array reductions 
+
+patch e49a4b6c4b0f47d9514922824d0a7d3f46f19022
+Author: j.a.v.hooft@gmail.com
+Date:   Sun Jun 13 12:02:28 CEST 2021
+  * array reductions test
+
+New patches:
+
+[Array reductions 
+j.a.v.hooft@gmail.com**20210613094014
+ Ignore-this: e2584bd026b4c60f184b30ede04b5084
+] hunk ./src/common.h 649
+-@define mpi_all_reduce_double(v,op)
++@define mpi_all_reduce_double(v,op,elem)
+hunk ./src/common.h 667
+-@define mpi_all_reduce_double(v,op)
++@define mpi_all_reduce_double(v,op,elem)
+hunk ./src/common.h 683
+-@def mpi_all_reduce_double(v,op) {
++@def mpi_all_reduce_double(v,op,elem) {
+hunk ./src/common.h 685
+-  double global, tmp = v;
+-  mpi_all_reduce0 (&tmp, &global, 1, MPI_DOUBLE, op, MPI_COMM_WORLD);
+-  v = global;
++  double global[elem], tmp[elem];
++  for (int i = 0; i < elem; i++) //cast any to double
++    tmp[i] = (v)[i];
++  mpi_all_reduce0 (tmp, global, elem, MPI_DOUBLE, op, MPI_COMM_WORLD);
++  for (int i = 0; i < elem; i++)
++    (v)[i] = global[i];
+hunk ./src/common.h 783
+-@define mpi_all_reduce_double(v,op)
++@define mpi_all_reduce_double(v,op,elem)
+hunk ./src/qcc.lex 91
+-  char reduction[REDUCTMAX][4], reductvar[REDUCTMAX][80];
++  char reduction[REDUCTMAX][4], reductvar[REDUCTMAX][80],
++    reductionstr[REDUCTMAX][99], reduct_elem[REDUCTMAX][80],
++    not_an_array[13] = "not_an_array";
+hunk ./src/qcc.lex 506
+-	if (strcmp (reduction[i], "+"))
++	if (strcmp(reduct_elem[i], not_an_array)) 
+hunk ./src/qcc.lex 508
+-		   "OMP(omp critical) if (_%s %s %s) %s = _%s;\n",
+-		   reductvar[i], strcmp(reduction[i], "min") ? ">" : "<",
+-		   reductvar[i], reductvar[i], reductvar[i]);
++		   "mpi_all_reduce_double (%s, %s, %s);\n",
++		   reductvar[i], 
++		   !strcmp(reduction[i], "min") ? "MPI_MIN" : 
++		   !strcmp(reduction[i], "max") ? "MPI_MAX" : 
++		   "MPI_SUM", reduct_elem[i]);
+hunk ./src/qcc.lex 515
+-		   "OMP(omp critical) %s += _%s;\n",
+-		   reductvar[i], reductvar[i]);
+-	fprintf (yyout,
+-		 "mpi_all_reduce_double (%s, %s);\n",
+-		 reductvar[i], 
+-		 !strcmp(reduction[i], "min") ? "MPI_MIN" : 
+-		 !strcmp(reduction[i], "max") ? "MPI_MAX" : 
+-		 "MPI_SUM");
++		   "mpi_all_reduce_double (&%s, %s, 1);\n",
++		   reductvar[i], 
++		   !strcmp(reduction[i], "min") ? "MPI_MIN" : 
++		   !strcmp(reduction[i], "max") ? "MPI_MAX" : 
++		   "MPI_SUM");
+hunk ./src/qcc.lex 1216
+-	     "OMP(omp parallel) {\n", yyout);
++	     "OMP(omp parallel", yyout);
+hunk ./src/qcc.lex 1219
+-	fprintf (yyout, "%s _%s = %s; ",
+-		 doubletype, reductvar[i], reductvar[i]);
+-      fprintf (yyout, "\n#line %d\n", foreach_line);
++	fprintf (yyout, " %s", reductionstr[i]);
++      fprintf (yyout, ") {\n\n#line %d\n", foreach_line);
+hunk ./src/qcc.lex 2418
+-,?{WS}*reduction{WS}*[(](min|max|\+):{ID}[)] {
++,?{WS}*reduction{WS}*[(](min|max|\+):{ID}(\[({D}+|{ID})?:({D}+|{ID})\])?[)] {
+hunk ./src/qcc.lex 2423
+-  char * s = strchr (yytext, '('), * s1 = strchr (yytext, ':');
+-  *s1 = '\0'; s1++;
++  strcpy (reductionstr[nreduct], yytext); //For OpenMP, parse for MPI:
++  char * s = strchr (yytext, '('), * s1 = strchr (yytext, ':'),
++    * s2 = strrchr (yytext, ':');
++  *s1 = '\0'; // first : -> terminate
++  if (s1 == s2) { // No array reduction
++    yytext[yyleng-1] = '\0';
++    strcpy (reduct_elem[nreduct], not_an_array); 
++  } else {  // Parse array syntax
++    s2--; *s2 = '\0'; s2 += 2; // [ -> terminate
++    yytext[yyleng - 2] = '\0';   // ] -> terminate
++    strcpy (reduct_elem[nreduct], s2);
++  }
+hunk ./src/qcc.lex 2437
+-  yytext[yyleng-1] = '\0';
+-  strcpy (reductvar[nreduct++], s1);
++  strcpy (reductvar[nreduct++], ++s1);
++  if (debug) {
++    int j = nreduct - 1;
++    fprintf (stderr, "nreduct: %d, var: %s, op: %s, elem: %s\n",
++	     j, reductvar[j], reduction[j], reduct_elem[j]);
++  }
+hunk ./src/qcc.lex 2461
+-    int i;
+-    for (i = 0; i < nreduct; i++)
+-      if (!strcmp (yytext, reductvar[i])) {
+-	fputc ('_', yyout);
+-	break;
+-      }
++    ; // I am too afraid to remove this block
++    ; //  '_' prefixes are deprecated here
+
+[array reductions test
+j.a.v.hooft@gmail.com**20210613100228
+ Ignore-this: 41c6590928a202764ab16d1cfb32d180
+] hunk ./src/test/mpi-reduce.c 2
++#define arr_size 10
+hunk ./src/test/mpi-reduce.c 16
++
++  // Array reduction
++  int cells[arr_size] = {0};
++  foreach(reduction(+:cells[:arr_size])) 
++    cells[(int)(10*fabs(x))]++;
++
++  for (int i = 0; i < arr_size; i++) 
++    fprintf (qerr, "%d ", cells[i]);
++  fputc ('\n', qerr);
+hunk ./src/test/mpi-reduce.ref 2
++384 448 384 448 384 384 448 384 448 384 
+hunk ./src/test/mpi-reduce.ref 4
++384 448 384 448 384 384 448 384 448 384 
+hunk ./src/test/mpi-reduce.ref 6
++384 448 384 448 384 384 448 384 448 384 
+
+Context:
+
+[TAG release 21-05-05
+Stephane Popinet <popinet@basilisk.fr>**20210517161606
+ Ignore-this: d57aa73da17d09b1c5e64fb6875586ff
+] 
+Patch bundle hash:
+d6a979d0c7a1dae90aaf9da31b214453759b397b

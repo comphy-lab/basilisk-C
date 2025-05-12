@@ -1,0 +1,32 @@
+![*Waterfall*, M. C. Escher](https://upload.wikimedia.org/wikipedia/en/e/e8/Escher_Waterfall.jpg)
+
+# Nicolas Le Moine sandbox
+
+I am a ''*maître de conférences*'' in hydrology at Sorbonne Université based at [Metis](http://www.metis.upmc.fr) lab, and currently on secondment at [Institut Agro Rennes-Angers](https://www.institut-agro-rennes-angers.fr) (AgroCampus Ouest) in Rennes. I am interested in flood modeling using Saint Venant equations, but also modeling of flow in porous medium and glacier ice flow. From a numerical point of view, I am mainly focusing on the limit cases of weakly inertial or zero-inertial flows (diffusive overland flow, Darcy flow, shallow ice flows, etc.).
+
+## **Ice flow modeling**
+### *Shallow Ice Approximation*
+ 
+* [Halfar 1D similarity solution](ice/halfar1D.c), see [Halfar,1981](https://doi.org/10.1029/JC086iC11p11065)
+* [Halfar 2D radial similarity solution](ice/halfar2D.c), see [Halfar,1983](https://doi.org/10.1029/JC088iC10p06043)
+
+## **Shallow Water Equations**
+### *Boundary conditions for river flow modeling*
+
+* [Inflow routine for use with MPI without masks](SWE/inflow-tilt.h) (work in progress)
+* [Topographic and friction source term with detrended bathymetry](SWE/manning-tilt.h): a procedure allowing to deal more easily with a "uniform flow" downstream boundary condition.
+
+### *Diffusive wave approximation*
+
+* [2D diffusive wave](SWE/diffwave/diffwave.c): zero-inertia approximation to the full Saint-Venant system
+
+### *Stationary, periodic solutions*
+
+* [MacDonald](SWE/MacDonald/subcritical.c)'s test problem #3
+
+## **Darcy flow modeling**
+### *Analytical Element Method*
+* [AEM-based](AEM/envelope/envelope.c) computation of the *Basal Envelope Surface of Talwegs*
+
+### *Numerical cases*
+* [Hydrodynamic modeling of the Meuvaines coastal wetland](groundwater/Meuvaines/meuvaines.c)

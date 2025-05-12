@@ -1,0 +1,439 @@
+/**
+# Documentation for the Centered Navier--Stokes Equations Solver
+
+The [centered.h](/src/navier-stokes/centered.h) solver approximates the
+incompressible Navier--Stokes equations:
+
+$$
+\partial_t\mathbf{u}+\nabla\cdot(\mathbf{u}\otimes\mathbf{u}) = 
+\frac{1}{\rho}\left[-\nabla p + \nabla\cdot(2\mu\mathbf{D})\right] + 
+\mathbf{a}
+$$
+$$
+\nabla\cdot\mathbf{u} = 0
+$$
+with the deformation tensor 
+$\mathbf{D}=[\nabla\mathbf{u} + (\nabla\mathbf{u})^T]/2$.
+
+(Feel free to add things and correct any error, typo, and imprecision in this document).
+
+## Nomenclature
+
+The following list reports the description of the relevant quantities involved
+in the centered solver, with mathematical symbol, location, and the name of the
+relative variable in the implementation.
+
+  * $c$: generic scalar field, tracer, VOF volume fraction (centered, `c`)
+  * $\mathbf{u}$: velocity field (centered, `u`)
+  * $\mathbf{u}_f$: velocity field (face, `uf`)
+  * $p$: pressure field (centered, `p` for $p^{n+1}$ and `pf` for $p^{n+1/2}$)
+  * $\rho$: variable density field (centered, `rho`)
+  * $\rho_f$: variable density field (face, `alpha` where $\alpha = 1/\rho_f$)
+  * $\mu_f$: variable viscosity field (face, `mu`)
+  * $\mathbf{a}_f$: sum of acceleration terms (face, `a`)
+  * $\mathbf{g}$: sum of pressure gradient and accelerations (centered, `g` with $\mathbf{g} = -\nabla p/\rho + \mathbf{a}$)
+  * $\mathbf{g}_f$: sum of pressure gradient and acceleration terms (face, `gf`)
+
+## 0. Advection--Diffusion of Tracer Fields
+
+Before updating the velocity field, we resolve the advection equation for every
+tracer and for every VOF field in the simulation. For $2^{nd}$ order accuracy in
+time, the tracers are assumed to be known at time $n-1/2$ and they are advanced
+by a single time step as:
+
+$$
+  \dfrac{c^{n+1/2} - c^{n-1/2}}{\Delta t} =
+  - \sum_{f=1}^{NF} F_f(\mathbf{u}_f^n)
+$$
+
+If $c$ is the VOF volume fraction, the flux $F_f(\mathbf{u}_f^n)$ is computed
+from the dimensionally-split geometric VOF procedure implemented in
+[vof.h](/src/vof.h). If some tracers are associated to the VOF field, the same
+flux is applied also to the transport of the tracers.
+
+If instead $c$ is a generic scalar field, the flux is computed as:
+
+$$
+  F_f(\mathbf{u}_f^n) = c_f^n \mathbf{u}_f^n\cdot\mathbf{n}_f
+$$
+
+The approximation of the scalar field $c^{n-1/2}$ on the cell face at time n
+$c_f^{n}$ is performed
+using the Bell-Colella-Glaz scheme (see. Section 1.). This procedure is managed
+by the function `advection()` in [bcg.h](src/bcg.h). There are two empty events
+which acts as placeholders for event inheritance at the correct time level. In
+particular the even `vof()` transports all the volume fractions defined in the
+list `interfaces` and, for each volume fraction, the relative tracers. The
+event `tracer_advection()` is used by [tracer.h](/src/tracer.h), which transports
+every tracer (or scalar field) defined in the list `tracers`. The event
+`tracer_diffusion()` is not specifically implemented in any module, and it must
+be overwritten by the user for the specific case being solved.
+
+Be careful: if you are solving the advection of a scalar field using the
+`advection` function you are computing:
+
+$$
+  \partial_t c + \nabla\cdot(c\mathbf{u}) = 0
+$$
+
+which is equivalent to:
+
+$$
+  \partial_t c + \mathbf{u}\cdot\nabla c = 0
+$$
+
+only for incompressible flows. If the divergence is not zero, this is not the
+same. Solving the advection equation for a VOF tracer, instead,
+the equation is directly solved in non-conservative form:
+$\mathbf{u}\cdot\nabla c = \nabla(c\mathbf{u}) - c\nabla\cdot\mathbf{u}$,
+unless the keyword `NO_1D_COMPRESSION` is defined. In that case, the term
+$c\nabla\cdot\mathbf{u}$ is neglected, thus resolving the conservative form.
+
+### 0.1 Properties
+
+After the solution of the tracer fields, the properties (i.e.
+density and vicosity) are updated. By default this event is empty in the
+centered solver, and it must be overwritten by external modules. For example,
+when solving for a two-phase system, the module [two-phase-generic.h](/src/two-phase-generic.h)
+implements the rules for updating the properties as a function of the VOF field
+at time $n+1/2$.
+
+Therefore, the event `properties()` updates density and viscosity getting
+$\rho^{n+1/2}$ and $\mu^{n+1/2}$.
+
+## 1. Advection Step
+
+During the advection step, we want to resolve the advection part of the
+momentum equation:
+
+$$
+  \dfrac{\mathbf{u}^* - \mathbf{u}^n}{\Delta t}
+  + \nabla\cdot(\mathbf{u}\otimes\mathbf{u})^{n+1/2}
+  = 0
+$$
+
+The discretization of the convective term starts from the calculation of the
+face velocity $\mathbf{u}_f$ from $\mathbf{u}$. We use the Bell-Colella-Glaz
+scheme, which can be seen as a ''black box'' which returns the face value of a
+collocated field $\phi$ at the time level $n+1/2$:
+
+$$
+  \phi_f^{n+1/2} = \textbf{bcg}(\phi^n, s^n);
+$$
+
+where $\phi^n$ is the collocated field $\phi$ at time level $n$, while $s^n$ is
+a collocated source term at time $n$. The definition of\textbf{bcg} corresponds
+to the function ```tracer_fluxes()``` in [bcg.h](/src/bcg.h). In practice, the
+BCG scheme, approximaes $\phi_f^{n+1/2}$ using a double Taylor expansion
+truncated at the second order:
+
+$$
+  \phi_f^{n+1/2} = \phi^n + \dfrac{\Delta x}{2}\phi_x^n + \dfrac{\Delta
+    t}{2}\phi_t^n + \mathcal{O}(\Delta x^2, \Delta t^2)
+$$
+
+where $\phi_x^n$ is a slope-limited centered gradient of $\phi$:
+
+$$
+  \phi_x^n = \dfrac{\phi_{i+1,j} - \phi_{i-1,j}}{2\Delta x}
+$$
+
+while the time derivative $\phi_t^n$ is approximated introducing the differential
+equation into the expression for the face value:
+
+$$
+  \phi_t^n = -\mathbf{u}\cdot\nabla\phi
+$$
+
+Details about this algorithm are explained in [Bell-Colella-Glaz, 1989](/src/references.bib#bell89).
+
+### 1.1 Prediction
+
+Using the function $\textbf{bcg}$ we predict the face
+velocity from the centered velocity at the beginning of the time step:
+
+$$
+  \mathbf{u}_{p,f}^{n+1/2} = \textbf{bcg}(\mathbf{u}^n, \mathbf{g}^n);
+$$
+
+where $\mathbf{g}^n$ is provided to predict a velocity which has an order of
+magnitude which is ''more similar'' to that of final velocity. This procedure
+is managed by the function `prediction()`, which implements a variant of the
+BCG scheme.
+
+### 1.2 Projection of the Predicted Velocity
+
+The predicted velocity $\mathbf{u}_{p,f}$ does not respect the divergence-free
+constaint. Therefore, we solve a projection step (for half time-step) to
+enforce the divergence-free condition on the predicted face velocity. To do so,
+we solve the Poisson equation:
+
+$$
+  \nabla\cdot\left(\dfrac{1}{\rho^{n+1/2}}\nabla p^{n+1/2}\right)
+  = \dfrac{\nabla\cdot\mathbf{u}_{p,f}^{n+1/2}}{\Delta t/2}
+$$
+
+therefore, the predicted divergence-free face velocity can be obtained:
+
+$$
+  \mathbf{u}_f^{n+1/2} = \mathbf{u}_{p,f}^{n+1/2}
+  - \dfrac{\Delta t}{2\rho^{n+1/2}}\nabla p^{n+1/2}
+$$
+
+these operations are resolved by the function call `mgpf = project (uf, pf,
+    alpha, dt/2., mgpf.nrelax);`
+
+### 1.3 Solution of the Advection Step
+
+Once the face velocity is known and it respects the continuity equation, we can
+perform the integration of the advection step:
+
+$$
+  \mathbf{u}_A^* = \mathbf{u}^n
+  - \dfrac{\Delta t}{\Delta}\sum_{f=1}^{NF}
+  \mathbf{U}_f^{n+1/2}\left(\mathbf{u}_f^{n+1/2}\cdot\mathbf{n}_f\right)
+$$
+
+where the approximation of the centered velocity on the cell face is called
+$\mathbf{U}_f^{n+1/2}$, to distinguish it from the face velocity calculated at
+the previous section. That value is obtained as:
+
+$$
+  \mathbf{U}_f^{n+1/2} = \textbf{bcg}(\mathbf{u}^n, \mathbf{g}^n);
+$$
+
+In the code, the solution of this step is performed by the line: `advection
+((scalar *){u}, uf, dt, (scalar *){g});`. The user can easily suppress the
+solution of the advection term in case of Stokes flow, by setting the boolean
+`stokes` to true.
+
+Be careful: this convection step takes advantange of the
+incompressible flow approximation. If the divergence of the velocity field is
+not null, then:
+
+$$
+  \nabla\cdot\left( \mathbf{u}\mathbf{u} \right) \neq
+  \left(\mathbf{u}\cdot\nabla\right)\mathbf{u}
+$$
+
+## 2. Viscosity
+
+During the viscous step, we want to resolve the diffuision part of the momentum
+equation:
+
+$$
+  \rho^{n+1/2}\dfrac{\mathbf{u}^{**} - \mathbf{u}^*}{\Delta t} =
+  \nabla\cdot\left(2\mu^{n+1/2}\textbf{D}_V^{**}\right)
+$$
+
+using an implicit-in-time integration, in order to have a scheme which is
+stable for CFL number above 1.
+
+### 2.1 Add Pressure Gradient and Accelerations
+
+We add the pressure gradients and acceleration terms at time $n$ in order to
+integrate the viscous step with a velocity which is more similar to that at the
+final time step.
+
+$$
+  \mathbf{u}^* = \mathbf{u}_A^* + \Delta t \mathbf{g}^n
+$$
+
+this step is performed by the function call: ```correction (dt);```
+
+### 2.2 Solution of the Viscous Step
+
+We write the implicit time integration step as:
+
+$$
+  \mathbf{u}_V^{**} = \mathbf{u}^*
+  + \dfrac{\Delta t}{\rho^{n+1/2}\Delta}\sum_{f=1}^{NF}
+2\mu_f^{n+1/2}\mathbf{D}_{f,V}^{**}\cdot\mathbf{n}_f
+$$
+
+a detailed description of the discretization of the viscous term can be found
+in [viscosity.h](/src/viscosity.h). The viscosity function call: ```mgu =
+viscosity (u, mu, rho, dt, mgu.nrelax);``` is responsible for calling the
+multigrid solver which manages the implicit solution of the viscous step.
+
+### 2.3 Remove Pressure Gradient and Accelerations
+
+We subtract the pressure gradient and acceleration terms from the velocity
+$\mathbf{u}_V^{**}$. It will be re-added in the following step using the
+value of $\mathbf{g}$ at time $n+1$.
+
+$$
+  \mathbf{u}^{**} = \mathbf{u}_V^{**} - \Delta t \mathbf{g}^{n}
+$$
+
+this step is performed by the function call: ```correction (-dt);```
+
+## 3. Projection
+
+Finally, in this section we find the pressure which guarantees that the
+velocity field at time $n+1$ respects the continuity equation. Be careful: the
+divergence-free constraint is respected ''exactly'' just by the face velocity
+$\mathbf{u}_f^{n+1}$. The divergence of the collocated velocity is not exacly
+zero (i.e. approximate projection). We don't care too much about this problem
+because the transport of relevant quantities (such as VOF fraction and scalar
+tracers) makes use of the face velocity $\mathbf{u}_f$.
+
+In this step, we want to approximate the remaining part of the momentum
+equations (including pressure gradient and accelerations) together with the
+divergence-free condition on the final velocity:
+
+$$
+  \dfrac{\mathbf{u}^{n+1} - \mathbf{u}^{**}}{\Delta t}
+  = -\dfrac{\nabla p^{n+1}}{\rho^{n+1/2}} + \mathbf{a}_f^{n+1/2}
+$$
+$$
+  \nabla\cdot\mathbf{u}_f^{n+1} = 0
+$$
+
+The solution of the projection is further splitted in two steps. In the first
+step we add the acceleration term $\mathbf{a}_f^{n+1/2}$. After, we solve the
+projection to find the face velocity which respects the continuity equation.
+This velocity is used to reconstruct the collocated velocity
+$\mathbf{u}^{n+1}$.
+
+### 3.1 Approximation of the Face Velocity
+
+We approximate the value of $\mathbf{u}_f^{**}$ from the collocated velocity
+using a linear approximation between the values of $\mathbf{u}^{**}$ in two
+consecutive cells sharing the same face $_f$. In this step, we also integrate
+the face velocity including the acceleration term at the time level $n+1/2$:
+
+$$
+  \mathbf{u}_f^{**} = \dfrac{\mathbf{u}^{**}[] + \mathbf{u}^{**}[-1]}{2}
+  + \Delta t \mathbf{a}_f^{n+1/2}
+$$
+
+This procedure is managed by the `acceleration()` event.
+
+### 3.2 Projection Step
+
+The remaining part of the momentum equation (with just the pressure gradient),
+and the continuity equation are combined in a Poisson equation:
+
+$$
+  \nabla\cdot\left(\dfrac{1}{\rho^{n+1/2}}\nabla p^{n+1}\right) =
+  \dfrac{\nabla\cdot\mathbf{u}_f^{**}}{\Delta t}
+$$
+
+which is solved in an iterative manner using the multigrid solver. Once the
+pressure $p^{n+1}$ is obtained, the face velocity is reconstructed as:
+
+$$
+  \mathbf{u}_f^{n+1} = \mathbf{u}_f^{**} - \dfrac{\Delta t}{\rho_f^{n+1/2}}\nabla
+  p^{n+1}
+$$
+
+Both steps are performed by the function call `mgp = project (uf, p, alpha, dt,
+mgp.nrelax);`
+
+### 3.3 Reconstruction of Centered Velocity
+
+In this step we want to solve:
+
+$$
+  \dfrac{\mathbf{u}^{n+1} - \mathbf{u}^{**}}{\Delta t} = -\dfrac{\nabla
+    p^{n+1}}{\rho^{n+1/2}} + \mathbf{a}^{n+1/2}
+$$
+
+but for the centered velocity.
+
+First, the term $\mathbf{g}_f^{n+1}$ is updated using the pressure gradient at
+time $n+1$ and the acceleration terms at $n+1/2$:
+
+$$
+  \mathbf{g}_f^{n+1} = \mathbf{a}_f^{n+1/2} + \dfrac{\nabla p^{n+1}}{\rho_f^{n+1/2}}
+$$
+
+The collocated $\mathbf{g}^{n+1}$ is updated from $\mathbf{g}_f^{n+1}$ using a
+linear interpolation:
+
+$$
+  \mathbf{g}^{n+1} = \dfrac{\mathbf{g}_f^{n+1}[1] + \mathbf{g}_f^{n+1}[]}{2}
+$$
+
+Finally, the collocated velocity at the end of the time step is obtained:
+
+$$
+  \mathbf{u}^{n+1} = \mathbf{u}^{**} + \Delta t \mathbf{g}^{n+1}
+$$
+
+exploting again the function `correction(dt)`.
+
+## Overall Scheme
+
+It is often necessary, when writing papers, to include a description of the
+time splitting procedure implemented in the centered solver. The single steps
+explained at the previous sections can be summed up, and the notation can be
+simplified giving a more compact set of equations, which is still
+representativre for the algorithm.
+
+### Including Cell to Face Operations
+
+This first shorter set of equations includes the details about the
+transformations from collocated to face quantities and vice versa. These
+operations are described by the subscript $_{f\rightarrow c}$ (face to cell
+interpolation) or by the opposite operator $_{c\rightarrow f}$ (face to cell
+interpolation).
+
+$$
+  \dfrac{c^{n+1/2} - c^{n-1/2}}{\Delta t} + \nabla\cdot(c^n\mathbf{u}_f^n) = 0
+$$
+
+$$
+  \rho^{n+1/2}\left[\dfrac{\mathbf{u}^{**} - \mathbf{u}^n}{\Delta t}
+  + \nabla\cdot(\mathbf{u}\otimes\mathbf{u})^{n+1/2}\right]
+  = \nabla\cdot\left(2\mu_f^{n+1/2}\textbf{D}_V^{**}\right)
+$$
+
+$$
+  \mathbf{u}_f^{**} = \mathbf{u}_{c\rightarrow f}^{**} + \Delta t
+  \mathbf{a}_f^{n+1/2}
+$$
+
+$$
+  \nabla\cdot\left(\dfrac{1}{\rho^{n+1/2}}\nabla p^{n+1}\right)
+  = \dfrac{\nabla\cdot\mathbf{u}_f^{**}}{\Delta t}
+$$
+
+$$
+  \mathbf{u}_f^{n+1} = \mathbf{u}_f^{**} - \dfrac{\Delta t}{\rho_f^{n+1/2}}\nabla p^{n+1}
+$$
+
+$$
+  \mathbf{u}^{n+1} = \mathbf{u}^{**} + \left[\mathbf{a}_f^{n+1/2} - \dfrac{\nabla
+  p^{n+1}}{\rho_f^{n+1/2}}\right]_{f\rightarrow c}
+$$
+
+### Omitting Cell to Face Operations
+
+If we neglect interpolations between cell-to-face and face-to-cell, the
+algorithm simply reduces to a classical time-splitting Projection method, where
+we relax the distintion between collocated and centered velocity.
+
+$$
+  \dfrac{c^{n+1/2} - c^{n-1/2}}{\Delta t} + \nabla\cdot(c^n\mathbf{u}^n) = 0
+$$
+
+$$
+  \rho^{n+1/2}\left[\dfrac{\mathbf{u}^{**} - \mathbf{u}^n}{\Delta t}
+  + \nabla\cdot(\mathbf{u}\otimes\mathbf{u})^{n+1/2}\right]
+  = \nabla\cdot\left(2\mu^{n+1/2}\textbf{D}_V^{**}\right)
+  + \rho^{n+1/2}\mathbf{a}^{n+1/2}
+$$
+
+$$
+  \nabla\cdot\left(\dfrac{1}{\rho^{n+1}}\nabla p^{n+1} \right) =
+  \dfrac{\nabla\cdot\mathbf{u}^{**}}{\Delta t}
+$$
+
+$$
+  \mathbf{u}^{n+1} = \mathbf{u}^{**} - \dfrac{\Delta t}{\rho^{n+1/2}}\nabla
+  p^{n+1}
+$$
+*/
+

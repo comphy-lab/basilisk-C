@@ -1,0 +1,121 @@
+%{
+
+# OUR CONTRIBUTION TO EASYSTAB
+Welcome to the home page of Natasha Samarakone and Charline Jeanniot. We are students in first year of the Master SDI with the Fluid Mechanics speciality, in the Université Piere et Maris Curie (UPMC - Paris 6).
+As part of the project of professor Jerome Hoepffner, we contribute to this wiki Instability problems.
+Here we show you our work.
+
+# 1) Water waves 1 dimension - 26/01/2015
+The code for this topic is [water_waves_1D.m](/sandbox/easystab/water_waves_1D.m)
+
+We changed the boundary conditions of [vibrating_string.m](/sandbox/easystab/vibrating_string.m) from homogenous Dirichlet conditions to Neumann conditions. 
+To do that, we created the matrix C which contains the homogenous Neumann conditions and we inserted this matrix in the matrix A of the algebro-differential system.
+To validate our curve, we tried to find a theoretical solution which sticks to our numerical solution.
+
+![Figures](water_wave_1D_model_position_veolocity.gif)
+
+![Figures](water_wave_1D_model_theory_numerical.png)
+
+%}
+
+%{ 
+# 2) Finding other test functions to validate the code diffmat_2D.m - 02/02/2015 
+To validate the code [diffmat_2D.m](/sandbox/easystab/diffmat_2D.m), we have created [diffmat_2D_test_functions.m](diffmat2D_test_functions.m).
+
+We added 3 different functions : polynomial, trigonometric and one function with logarithm. We realised that we had to change X and Y matrices so they do not conatin any 0s because we cannot calculate the derivative of functions which are not defined in 0 for example. We also chose a higher number of grid points to have the lowest error bestween the numerical solution and theory. 
+Here are the graphics of the error between the  numerical solution and theory for the chosen 3 functions :
+
+![polynomial](diffmat_2D_test_functions_poly.png)
+
+![trigonometric](diffmat_2D_test_functions_trig.png)
+
+![log-log](diffmat_2D_test_functions_log.png)
+
+%}
+
+%{ 
+
+# 3) Simulation of the non-linear form of Schrödinger's equation for water waves - 09/02/2015  
+
+Based on the code [advection_1D.m](/sandbox/easystab/advection_1D.m), we were working on the resolution of the non-linear form of Schrödinger's equation for water waves using the march in time but our solution diverges. So far, we have been unable to fix this problem. According to our research there is no stable solution. Here is the Wikipedia link for the information we used for this project :
+[NLS for water waves](http://en.wikipedia.org/wiki/Nonlinear_Schr%C3%B6dinger_equation#The_nonlinear_Schr.C3.B6dinger_equation_in_water_waves) 
+
+
+We chose to show our work despite the fact that the solution diverges :[NLschrodinger.m](NLschrodinger.m). Here it is, right before it diverges : 
+
+![NLS diverging solution](divergence_nl_schrodinger.png)
+
+%}
+
+%{ 
+
+# 4) Simulation of the "brusselator" - 16/02/2015 
+
+Our code is [brusselator.m](brusselator.m).
+
+Based on the code [advection_1D.m](/sandbox/easystab/advection_1D.m), we use the march in time as seen previously from [vibrating_string.m](/sandbox/easystab/vibrating_string.m) to find the stable and unstable modes of the bursselator system depending on the values of lamda, a chemical parameter (non linear equation). We then calculated the eigenmodes of the linear system and used them to see the evolution in time of a randomly-generated initial condition. This second methd is based on [diffusion_eigenmodes.m](/sandbox/easystab/diffusion_eigenmodes.m).
+
+In each case, the first graph is for lambda = 2 (stable), the second one is for lambda = 4 (unstable).
+
+i) Here are the figures obtained with the march in time :
+
+![lambda = 2 (stable)](brusselator_march_in_time_lambda2.png)
+
+![lambda = 4 (unstable)](brusselator_march_in_time_lambda4.png)
+
+ii) With the eigenmodes :
+
+![lambda = 2 (stable)](brusselator_eigenmode_lambda2.gif)
+
+![lambda = 4 (unstable)](brusselator_eigenmode_lambda4.gif)
+
+%}
+
+%{
+# 5) March in Time of a 1D wave equation - 18/03/2015 
+
+Our code is [zone_stab.m](zone_stab.m).
+We show the eigenmodes of a 1D wave equation based on the code [diffusion_eigenmodes.m](/sandbox/easystab/diffusion_eigenmodes.m) but our solution diverges, probably because of wrong boundary conditions. So we have solved the equation with the march in time as you can see in [vibrating_string.m](/sandbox/easystab/vibrating_string.m). We did a complete study of the system from finding the stable zones to calculating the eigenmodes.  
+
+![Instability curve](vibrating_string_zones_de_stabilites.png)
+
+For r = 0 : the solution converges 
+
+![r = 0 (stable)](vibrating_string_zones_de_stabilites_r0.png)
+
+For r = 2 : the solution diverges
+
+![r = 2 (unstable)](vibrating_string_zones_de_stabilites_r2.png)
+%}
+
+%{
+# 6) 2D Representation of the Rayleigh-Benard instability - 02/03/2015 
+
+Our code is [rayleigh_benard_profil_temperature.m](rayleigh_benard_profil_temperature.m). Based on the codes [rayleigh_benard.m](/sandbox/easystab/rayleigh_benard.m) and [free_surface_gravity_particles.m](/sandbox/easystab/free_surface_gravity_particles.m), we simulate in 2D the Rayeigh-Benard instability. It's a 1D problem showed in 2D.
+
+What you see here is the temperature and velocity fields of the 1st eigenmode of this instability :
+![Temperature and Velocity fields](rayleigh_benard_velocity_temperature.png)
+%}
+
+
+
+
+
+
+# Notes
+
+De la part de Jérôme
+
+~~~matlab
+domaine	        valeur	note
+connectivité 	2	2
+recyclage	2	2
+graphiques	2	2
+théories	4	3
+Originalité	4	2
+note /14	14	11
+~~~
+
+VOus avez fait beaucoup de choses différentes, merci. Vous avez bien pris le temps d'expliquer ce que vous faites dans les commentaires. Dommage que vous ne soyez pas allées un peu plus loin pour la représentation du champ de vitesse comme vous l'avez fait pour Rayleigh-Bénard. Vous auriez pu bien contribuer à la qualité du wiki en rajoutant ces images pour chacune des instabilités.
+
+

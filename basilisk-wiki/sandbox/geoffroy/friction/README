@@ -1,0 +1,138 @@
+/**
+# Benchmarks
+
+## Friction test cases
+
+Here we test the friction source term in the case of
+fluvial/torrential flows for three differents source terms. The
+original test case is the one of MacDonald[1] and you can find more
+similar test cases in Delestre & al.[2]. The principle is to set the
+topography in order to have an analytical solution for h(x). The
+source term is treated semi-implicitly at the same order than the
+Saint-Venant function, which is at order 2, except for the Darcy 1
+order case.
+ 
+### Case description
+
+We consider a 1D topography $z_b(x)$ which is 1000 metres long. 
+At steady state, the momentum equation of Saint-Venant can be written as :
+
+$$
+\partial_x z_b(x) = (\frac{q^2}{g h^3}-1) \partial_x h(x) - S_f \ ,
+$$ 
+
+where $S_f$ is the friction term. By chosing an analytical function $hex(x)$
+for $h(x)$, we can find the resulting topography with a r-k method.
+
+
+### Fluvial
+
+For the sub-critical case, the analytical water height at steady state is :
+
+$$
+hex(x) = \left( \frac{4}{g} \right)^{1/3} \left( 1 + 0.5\times exp\left( -16\times (\frac{x}{1000}-0.5)^2 \right) \right).
+$$   
+
+The slope is initially dry ($h(x) = u(x) = 0$) and we chose as boundaries conditions :
+
+$$
+q[left] = 1.5 m^2 .s^{-1} \ and \ h[left] = hex(0) ,
+$$
+
+$$
+q[right] = 1.5 m^2 .s^{-1} \ and \ h[right] = hex(1000).
+$$
+
+
+* [Manning](fricfluv_man.c) with $n = 0.033$
+* [Poiseuille](fricfluv_poiseuille.c) with $\nu = 1e-6$
+* [Darcy](fricfluv_darcy.c) with $f = 0.093$
+* [Darcy with a 1 order treatment for the source term](fricfluv_darcy_0.c) with $f = 0.093$
+
+We plot an example of the resulting topography for the Darcy friction  :
+![Resulting topography](/topofluvial_darcy.png)
+
+### Torrential 
+
+For the super-critical case, the analytical water height at steady state is :
+
+$$
+hex(x) = \left( \frac{4}{g} \right)^{1/3} \left( 1 - 0.2\times exp\left( -36\times (\frac{x}{1000}-0.5)^2 \right) \right).
+$$   
+
+The slope is initially dry ($h(x) = u(x) = 0$) and we chose as boundaries conditions :
+
+$$
+q[left] = 2.5 m^2 .s^{-1} \ and \ h[left] = hex(0). 
+$$
+
+* [Manning](frictor_man.c) with $n = 0.04$
+* [Poiseuille](frictor_poiseuille.c) with $\nu = 1e-6$
+* [Darcy](frictor_darcy.c) with $f = 0.065$
+* [Darcy with a 1 order treatment for the source term](frictor_darcy_O.c) with $f = 0.065$
+
+We plot an example of the resulting topography for the Darcy friction  :
+![Resulting topography](/topotorrential_darcy.png)
+
+
+### Order treatment
+
+We compare the convergence of $|h|_1$ for the different source treatment 
+(order 1 and 2), for the torrential case with the darcy friction term : 
+
+![Error Convergence](/tor_darcy10_error.png)
+
+Note that the convergence depends strongly on the chosen source term.
+
+### Subcritical to super-critical
+
+The flow is subcritical upstream and super-critical downstream. The water
+height is :
+
+$$
+h_{ex}(x) = \left( \frac{4}{g} \right)^{1/3} \left( 1 - 3\times tanh\left( -3\times (\frac{x}{1000}-0.5)^2 \right) \right).
+$$
+for $0 < x < 500$ and :
+$$
+h_{ex}(x) = \left( \frac{4}{g} \right)^{1/6} \left( 1 - 6\times  tanh\left( -3\times (\frac{x}{1000}-0.5)^2 \right) \right).
+$$
+for $500 < x < 1000$.
+
+* [Darcy](fricsubsup_darcy.c) with $q0 = 2\ m. s^{-1}$ and $f = 0.042$
+
+## Rain test cases
+
+We add a rain term to the MacDonald test case, as seen in Delestre et
+al.[2]. Write R the constant rain intensity, the flux along the
+channel is written : 
+
+$$ 
+q(x) = q0 + x*R. 
+$$ 
+
+So the topography is now : 
+
+$$ 
+\partial_x z_b(x) = (\frac{q(x)^2}{g h^3}-1) \partial_x h(x) -\frac{2q(x) R}{g h(x)^2}- S_f  
+$$
+
+We take the same function for hex(x) seen with the friction test cases in both torrential
+and fluvial case and we use the Darcy friction term : 
+
+* [Rain in a fluvial flow with Darcy friction](fricfluv_rain_darcy.c) 
+* [Rain in a torrential case with Darcy friction](frictor_rain_darcy.c)
+
+## References
+
+[1] I. MacDonald, M. Baines, N. Nichols, and P. G. Samuels, “Analytic
+Benchmark Solutions for Open-Channel Flows,” no. November,
+pp. 1041–1045, 1997.
+
+[2] O. Delestre, C. Lucas, P. A. Ksinant, F. Darboux, C. Laguerre,
+T. N. T. Vo, F. James, and S. Cordier, “SWASHES: A compilation of
+shallow water analytic solutions for hydraulic and environmental
+studies,” Int. J. Numer. Methods Fluids, vol. 72, pp. 269–300, 2013.
+  
+  
+[Return to home page](http://basilisk.fr/sandbox/geoffroy/README)
+*/

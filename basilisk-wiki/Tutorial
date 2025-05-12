@@ -1,0 +1,1037 @@
+This tutorial is a step by step description on how to setup, compile
+and run your first Basilisk simulation.
+
+What you need:
+
+* You need to have at least a minimal understanding of *[shell
+  commands](http://en.wikipedia.org/wiki/Unix_shell)*. If
+  you don't know what I am talking about, you may want to start with
+  one of the many online tutorials on this subject, such as [Learning
+  the shell](http://linuxcommand.org/lc3_learning_the_shell.php).
+* You will also need a good text editor to write (C) programs in
+  Basilisk. If you do not have a favourite one already, I recommend
+  using emacs. You can install it easily on Debian-like systems by
+  copying and pasting the following command in your shell: 
+
+~~~bash
+sudo apt-get install emacs
+~~~
+
+* Because Basilisk programs are written in a variant of the C
+  language, any prior knowledge of C programming you may have will be
+  very useful. If you have never seen a C program, you may want to
+  read up on the topic, for example:
+
+    + [C Language Tutorial ](https://www.tutorialspoint.com/cprogramming/)
+    + [*The C programming language*](http://en.wikipedia.org/wiki/The_C_Programming_Language)
+
+* You then need to follow the [installation
+  instructions](src/INSTALL) to setup basilisk on your system.
+  
+* If you are using a Mac please see special installation instructions 
+  for [make and gdb](http://basilisk.fr/sandbox/INSTALL_MACOS). 
+
+# Getting started
+
+You first need to open both a terminal and a text editor. On my
+system (Debian), the terminal is hidden in the "Activities ->
+Applications -> Accessories -> Terminal" menu. You can then start the
+text editor in the background by typing:
+
+~~~bash
+emacs &
+~~~
+
+To check that Basilisk is installed properly, do:
+
+~~~bash
+qcc --version
+~~~
+
+which returns on my system
+
+    cc (Debian 10.2.1-6) 10.2.1 20210110
+    Copyright (C) 2020 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.  There is NO
+    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+If instead you get an error message, you need to go back to the
+[installation instructions](src/INSTALL) and check that you did
+everything correctly.
+
+# The simulation
+
+The model problem we will study is a numerical approximation of the
+solution of the Saint-Venant equations in a square box with reflecting
+boundaries.
+
+To create the Basilisk program, use the "File -> Visit New File" menu
+in emacs and type *bump.c* in the *Name* field. Then type the
+following line ...
+
+~~~literatec
+#include "saint-venant.h"
+~~~
+
+... and save the file using the "File -> Save" menu (or the Control-X
+Control-S keyboard shortcut). This C preprocessor command, includes
+the [saint-venant.h](src/saint-venant.h) file into our program. This
+file defines all the variables and functions which are required to run
+the Saint-Venant solver of Basilisk. If you follow the link above, you
+will see that the corresponding code is documented. Now is a good time
+to read the [first two sections](src/saint-venant.h) (up to [*Time
+integration*](src/saint-venant.h#time-integration)) to remind yourself
+of what the equations, variables and parameters are...
+
+## Minimal program
+
+We can now try to compile our program using (in the shell)
+
+~~~bash
+qcc bump.c
+~~~
+
+which produces something like
+
+    (.text+0x20): undefined reference to `main'
+    /tmp/ccueSq1Z.o: In function `normf':
+    bump.c:(.text+0x262d2): undefined reference to `sqrt'
+    ...
+
+The compiler (or more precisely the *linker*), complains that some
+functions are used but not defined. The *sqrt* function for example is
+defined in the standard *math* library which needs to be linked with
+the program. The *main* function however needs to be defined by us.
+Note that all this is not specific to Basilisk, it is just standard C.
+
+To fix this problem, we need to add
+
+~~~literatec
+#include "saint-venant.h"
+
+int main() {
+  run();
+}
+~~~
+
+to *bump.c* (using the text editor). If you have some notions of C
+(i.e. you have done the homework given above...), you will recognise
+the definition of a C function called *main* which takes no parameters
+and just calls the function *run*. The *run()* function is defined by
+the Saint-Venant solver (i.e. is included in
+[saint-venant.h](src/saint-venant.h)).
+
+We can now save the file and recompile using (in the shell)
+
+~~~bash
+qcc bump.c -lm
+~~~
+
+If we now type *ls* in the shell, we will see that this produced a
+file called *a.out* which is the compiled program, which we can launch
+using
+
+~~~bash
+./a.out
+~~~
+
+which gives
+
+    # Quadtree, 0 steps, 0 CPU, 0.001075 real, 0 points.step/s, 5 var
+
+Amazing! we have done our first Basilisk simulation!
+
+If you have compiled C programs before, you will see that all we have
+done here is very standard C, very little is specific to Basilisk. For
+example the *-lm* option is the standard way to link the math library
+(which defines the *sqrt* function i.e. square-root and other math
+functions). More generally, because the *qcc* command calls the C
+compiler in the background, you can use all the options supported by
+the C compiler. For example, if you are using GCC, it is a good idea
+to use
+
+~~~bash
+qcc -O2 -Wall bump.c -o bump -lm
+~~~
+
+where *-O2* turns optimisation on (which makes the code faster),
+*-Wall* turns all compilation warnings on (which allows you to catch
+potential bugs in your program) and *-o bump* renames the compiled
+program to *bump* (rather than *a.out*).
+
+# A more interesting program
+
+Of course our program does not do much yet. So why did we start with
+such a simple program? Because it is always a good idea to start
+simple and add complexity step-by-step. If a problem occurs in a
+single line of code, which you have just added, it is trivial to
+correct it. If this same line is buried within ten other (correct)
+lines, finding the problem can take (much) longer. This rule is true
+whether you are an experienced programmer or a beginner.
+
+To make the program more interesting, it needs to produce some
+*outputs* at specified times. To do so, we can use [events](Basilisk
+C#events); like this for example:
+
+~~~literatec
+#include "saint-venant.h"
+
+event end (i = 10) {
+  printf ("i = %d t = %g\n", i, t);
+}
+
+int main() {
+  run();
+}
+~~~
+
+What we have done here is told the solver to do 10 timesteps and then
+print the number of timesteps and the physical time it reached after
+10 timesteps. If we now recompile using
+
+~~~bash
+qcc -O2 -Wall bump.c -o bump -lm
+~~~
+
+(note that you do not need to retype this command, you can just use
+the up and down keyboard arrows to go through the history of previous
+commands), and run using
+
+~~~bash
+./bump
+~~~
+
+we get something like
+
+    i = 10 t = 1e+11
+    # Quadtree, 10 steps, 0.04 CPU, 0.06103 real, 6.71e+05 points.step/s, 24 var
+
+The first line comes from our code and the second line is the default
+output of basilisk. It gives the number of timesteps performed, the
+CPU time used for the computation, the real time elapsed, the
+corresponding computation speed (based on the real time) and the total
+number of [fields](Basilisk C#fields-and-stencils) allocated by the
+solver.
+
+The syntax of events is specific to Basilisk (it is not standard C),
+however the *body* of the event works just like a standard C
+function. To learn more about events, have a look at the [Basilisk C
+reference manual](Basilisk C#events). Here we have used the standard C
+[printf](http://man7.org/linux/man-pages/man3/printf.3.html#1)
+function to format the output. 
+
+Note that you can access the manual page for this function using
+either the link above or directly using the *man* command in the shell
+or in emacs (use the "Help -> More Manuals -> Read Man Page" menu and
+type "3 printf").
+
+~~~bash
+man 3 printf
+~~~
+
+This can also be used to access the documentation for (almost) any
+command or program (for example [*man
+ls*](http://man7.org/linux/man-pages/man1/ls.1.html#1), [*man
+cp*](http://man7.org/linux/man-pages/man1/cp.1.html#1) etc...) and is
+a good way to learn.
+
+## Initial conditions
+
+For the moment, the solver just uses the default initial conditions of
+the Saint-Venant solver. We need to replace them with our own initial
+conditions.
+
+By default the domain on which the equations are solved is a square
+box with reflective boundaries (i.e. symmetry conditions on scalar,
+vector and tensor fields). The origin of the coordinate system is the
+lower-left corner of the box and the box length is one. We can change
+this using the *origin()* and *size()* functions. For example, we can do:
+
+~~~literatec
+...
+
+int main() {
+  origin (-0.5, -0.5);
+  run();
+}
+~~~
+
+which will center our box on the origin of the coordinate system.
+
+Initial conditions are setup using the *init* event, like this:
+
+~~~literatec
+#include "saint-venant.h"
+
+event init (t = 0) {
+  double a = 1., b = 200.;
+  foreach()
+    h[] = 0.1 + a*exp(- b*(x*x + y*y));
+}
+
+event end (i = 10) {
+  printf ("i = %d t = %g\n", i, t);
+}
+
+int main() {
+  origin (-0.5, -0.5);
+  run();
+}
+~~~
+
+The *init* event will happen only at the beginning of the simulation
+($t=0$). Within the body of the event, we use the Basilisk-specific
+[foreach](Basilisk C#iterators) iterator to set the values of field
+*h* (the depth of the liquid layer as defined and documented in the
+[Saint-Venant solver](src/saint-venant.h)). We use a Gaussian bump of
+characteristic radius $1./\sqrt{200}$ and amplitude one on top of a
+layer of constant depth 0.1. The *x* and *y* coordinates are *double*
+values defined implicitly by the *foreach* operator.
+
+If we now recompile and rerun, we get
+
+    i = 10 t = 0.0701117
+    # Quadtree, 10 steps, 0.06 CPU, 0.09314 real, 4.4e+05 points.step/s, 24 var
+
+## More outputs
+
+For the moment, we don't see much. Some graphical output would be
+nice. To generate simple images, we can use the *output_ppm()*
+function like this
+
+~~~literatec
+...
+
+event images (i++) {
+  output_ppm (h);
+}
+
+event end (i = 10)
+...
+~~~
+
+Recompiling and running, we get something like
+
+    ...
+    �m��m��m��m��m��m�
+    �# Quadtree, 11 steps, 0.25 CPU, 0.5423 real, 8.31e+04 points.step/s, 24 var
+
+What is all this garbage? By default, *output_ppm()* writes images on
+*standard output* (see [Learning the
+shell](http://linuxcommand.org/lc3_learning_the_shell.php) if you don't
+understand what this means). Standard output is the shell (i.e. the
+screen) by default. The strange characters we see on the screen are a
+translation of the binary contents of the images generated (at each
+timestep) by *output_ppm()*. We can change the standard output to a
+file rather than the screen using
+
+~~~bash
+./bump > out.ppm
+~~~
+
+where we used the *.ppm* extension to indicate that this file should
+contain images in [PPM
+format](http://en.wikipedia.org/wiki/Netpbm_format). This format is
+recognised by many image processing
+tools. [ImageMagick](http://www.imagemagick.org) in particular
+provides nice command-line tools to manipulate these images. If you
+have not done so already, now is a good time to install ImageMagick
+and other graphics tools.
+
+~~~bash
+sudo apt-get install gnuplot imagemagick ffmpeg
+~~~
+
+We can now try to use the *display* command of ImageMagick to
+display the images which should be in *out.ppm*.
+
+~~~bash
+display out.ppm
+~~~
+
+which should open a small window looking like this
+
+![h](tuto/h.png)
+
+We can right- or left-click on the window to access various
+menus. Using the space bar of the keyboard, we can cycle through the
+10 images (one for each timestep) contained in *out.ppm*. If you look
+carefully, you will see that the radius of the red disk is slowly
+increasing with time. What we are looking at is a color-coded
+representation of the depth field *h* in the square box. Dark red is
+the maximum (one at the start) and light green is the minimum.
+
+Why is the image so small? By default output_ppm() creates images with
+one pixel per grid point. If you right-click on the image and select
+the "Image Info" menu, you will see that the "geometry" is "64x64"
+i.e. the grid on which the equations are discretised is 64x64 grid
+points. This is the default in Basilisk. We will change it later.
+
+To make things a bit more interesting, we will increase the number of
+timesteps with
+
+~~~literatec
+...
+event end (i = 300) {
+...
+~~~
+
+Then re-compile and run using
+
+~~~bash
+qcc -O2 -Wall bump.c -o bump -lm
+./bump > out.ppm
+~~~
+
+We could use *display* to view each of the 300 images we have now
+generated, but this would be a bit tedious. We will use another
+ImageMagick command instead
+
+~~~bash
+animate out.ppm
+~~~
+
+What we then see is all the images in quick succession. Once the last
+image is reached, the animation loops back to the beginning. This is a
+bit fast, we can use the menu or the '>' keyboard shortcut to increase
+the delay between successive images (i.e. slow things down). We can
+then follow the evolution of the initial Gaussian bump. The circular
+wave propagates until it reaches the reflective walls, bounces back,
+refocuses in the center, bounces off and so on.
+
+## Simple measurements and graphs
+
+Let's assume we are interested in the evolution of the minimum and
+maximum depths as functions of time. We can record these values using
+for example
+
+~~~literatec
+event graphs (i++) {
+  stats s = statsf (h);
+  fprintf (stderr, "%g %g %g\n", t, s.min, s.max);
+}
+
+event images (i++) {
+...
+~~~
+
+In the first line, we call the *statsf()* function of Basilisk which
+fills the structure *s* with statistics on field *h*. In the second
+line, we use the standard C function
+[*fprintf()*](http://man7.org/linux/man-pages/man3/fprintf.3.html#1)
+to write the time, minimum and maximum (of *h*) in the standard C file
+[*stderr*](http://man7.org/linux/man-pages/man3/stderr.3.html#1). This
+stands for "standard error" which by default is the screen.
+
+If we recompile and rerun, we get
+
+    ...
+    3.77319 0.087509 0.195247
+    3.78692 0.0869611 0.192627
+    3.80072 0.0864178 0.189687
+
+We can use file redirection to write these numbers to a file rather
+than on the screen. For example
+
+~~~bash
+./bump > out.ppm 2> log
+~~~
+
+To check what is in *log* we can use
+
+~~~bash
+more log
+~~~
+
+(use the space bar and the *q* key to scroll down or quit *more*).
+
+We can do better than this if we use a plotting tool,
+[gnuplot](http://www.gnuplot.info/) for example. Gnuplot is itself a
+command-line tool which has its own set of commands. You can start
+gnuplot with
+
+~~~bash
+gnuplot
+~~~
+
+You will then get a prompt looking like
+
+~~~bash
+gnuplot>
+~~~
+
+i.e. you are now within gnuplot (not within the shell anymore). To
+quit gnuplot and go back to the shell, just type 'quit'. To display a
+graph of the min and max of *h* you can then do
+
+~~~bash
+gnuplot> set xlabel 'Time'
+gnuplot> set ylabel 'Depth'
+gnuplot> plot 'log' using 1:2 with lines title 'min', 'log' using 1:3 with lines title 'max' 
+~~~
+
+which should produce
+
+![Min and max](tuto/minmax.png)
+
+Read one of the many [tutorials](http://www.gnuplot.info/help.html) if
+you want to know more about gnuplot.
+
+# Increasing the resolution
+
+For the moment our mesh is only 64x64. As we can see in the animation
+and graphs of the maximum depth, the Saint-Venant equations easily
+develop non-linear shocks i.e. sharp discontinuities in the depth
+profile. These shocks are probably not well described on this
+relatively coarse grid.
+
+To increase the resolution, we can simply do
+
+~~~literatec
+...
+int main() {
+  origin (-0.5, -0.5);
+  init_grid (256);
+  run();
+}
+~~~
+
+which will use a 256x256 grid. Why a power of two? Because by default,
+Basilisk uses a quadtree grid, which restricts the resolution to
+powers of two. We will see later that this is not the case for other
+grids.
+
+Before we rerun the simulation, we will save the data we produced at
+low resolution using
+
+~~~bash
+mv log log.64
+mv out.ppm out.64.ppm
+~~~
+
+We can now recompile and rerun the simulation. The first thing we note
+is that it is much slower. This is not surprising since the number of
+grid points has been multiplied by 16 and we can expect the simulation
+to be proportionately slower.
+
+If we redo
+
+~~~bash
+animate out.ppm
+~~~
+
+we get a larger (and sharper) picture of the wave, however it does not
+propagate as far as before (it barely touches the walls of the
+box). Since we do the same number of timesteps, it must mean that each
+timestep is smaller than before. Indeed, the timestep is controled by
+the [CFL
+condition](http://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition)
+for the Saint-Venant system and is thus proportional to the grid
+spacing. In our case we have decreased the grid spacing by a factor of
+four, so that we would need four times as many timesteps to reach the
+same time as in the previous simulation. Putting this together with
+the increase in number of grid points, we can expect the total runtime
+to be $16\times 4=64$ times larger than for the previous simulation...
+
+How can we make things faster without loosing the accuracy of the
+finer grid?
+
+We could use a faster computer and/or use more processors (use
+*parallel* computing).
+
+## Changing the grid
+
+With Basilisk, we also have the choice of the type of grid used to
+discretise the equations. Simpler grid structures usually run faster.
+
+To have an idea of how long the simulation took, we can do
+
+~~~bash
+tail -n1 out.ppm
+~~~
+
+which gives on my machine
+
+    ...
+    # Quadtree, 301 steps, 47.85 CPU, 53.98 real, 3.65e+05 points.step/s, 24 var
+
+i.e. the program can do one timestep for 365 000 grid points in one
+second (The *tail -n1* command displays the last line of file
+*out.ppm*; you can do [*man
+tail*](http://man7.org/linux/man-pages/man1/tail.1.html#1) to learn
+more about this). You also see that this was running on a quadtree
+grid implementation (but at constant spatial resolution).
+
+To change the grid used by Basilisk, we can edit the code as
+
+~~~literatec
+#include "grid/cartesian.h"
+#include "saint-venant.h"
+...
+~~~
+
+which will force Basilisk to use a pure Cartesian grid
+implementation. If we now recompile, rerun and recover the last line
+with
+
+~~~bash
+qcc -O2 -Wall bump.c -o bump -lm
+./bump > out.ppm 2> log
+tail -n1 out.ppm
+~~~
+
+we get
+
+    ...
+    # Cartesian, 301 steps, 22.05 CPU, 25.14 real, 7.85e+05 points.step/s, 24 var
+
+i.e. the Cartesian grid implementation is about twice as fast as the
+quadtree implementation (for the same result).
+
+## Setting time intervals
+
+Because the timestep is controlled by the spatial resolution, it is
+generally not a good idea to output physical results at regular
+intervals expressed in number of timesteps. It makes more sense to
+output results at intervals expressed in physical time units.
+
+For example, in our case, we know that our initial simulation ran to a
+time of about $t=4$ (see the graph above) and that the 300 images we
+generated were sufficient to get a nice animation of the wave
+propagation. If we want to reproduce these results at higher
+resolution, it thus makes sense to modify our program like this
+
+~~~literatec
+...
+event images (t += 4./300.) {
+  output_ppm (h);
+}
+
+event end (t = 4) {
+  printf ("i = %d t = %g\n", i, t);
+}
+...
+~~~
+
+where the output intervals are now specified in units of physical time.
+
+We can now recompile, rerun etc... Since this is going to take a
+while, it would be nice to be able to follow where the simulation is
+at. To do this, you can open a new terminal (for example using the
+"File -> Open Tab" menu), and type in the new terminal
+
+~~~bash
+tail -f log
+~~~
+
+In this case the *tail* command displays what is being written in file
+*log*. The left column is the time (which needs to reach 4). You can
+exit from *tail* using the Ctrl-C key.
+
+Another way to follow the simulation is to open gnuplot in another
+terminal and display the graphs for *h* as we did before. Using the
+'replot' command, or clicking on the blue circular arrow in the graph
+window, or hitting the 'e' key in the graph window, will refresh the
+curves as the simulation progresses.
+
+We can also use *animate* on *out.ppm* while the simulation is
+running.
+
+## A rough check for convergence
+
+How do we know if we need to increase the resolution further? A good
+way to estimate the numerical accuracy of the solution is to compare
+results obtained at different resolutions. We can do this "visually"
+with gnuplot
+
+~~~bash
+gnuplot> set xlabel 'Time'
+gnuplot> set ylabel 'Depth'
+gnuplot> plot 'log.64' using 1:2 with lines title 'min (64)', \
+              'log.64' using 1:3 with lines title 'max (64)', \
+              'log' using 1:2 with lines title 'min (256)', \
+              'log' using 1:3 with lines title 'max (256)'
+~~~
+
+which gives
+
+![Convergence](tuto/convergence.png)
+
+We see that the peaks and discontinuities are definitely sharper at
+higher resolution. Although other parts of the graphs are reasonably
+close, we may want to try an even higher resolution to see if the
+amplitudes of the peaks converge.
+
+# Using adaptive grid refinement
+
+From the animation and graphs, we intuitively get the sense that the
+*characteristic spatial scales* of the waves we are studying are not
+constant. Some areas are very smooth with no significant features,
+while other areas include fine details (interacting shocks for
+example). Clearly, high resolution is not needed everywhere and the
+computation could probably be made faster if the resolution was
+adapted to the solution. This variable resolution also needs to evolve
+in time to follow the moving details.
+
+Basilisk uses quadtrees to allow efficient adaptive grid
+refinement. The first thing we need to do is to remove the line
+setting the grid to Cartesian i.e.
+
+~~~literatec
+#include "grid/cartesian.h"
+...
+~~~
+
+We can then add
+
+~~~literatec
+...
+event adapt (i++) {
+  adapt_wavelet ({h}, (double []){4e-3}, maxlevel = 8);
+}
+
+int main() {
+...
+~~~
+
+We have just told Basilisk to adapt the resolution according to the
+(wavelet-estimated) discretisation error of field *h*. This adaptation
+is done at each timestep (*i++*). Whenever the discretisation error is
+larger than $4\times 10^{-3}$, the mesh is refined, down to a maximum of 8
+quadtree levels (i.e. $2^8=256$ points per dimension).
+
+Before we rerun the simulation, we first save the previous results
+
+~~~bash
+mv out.ppm out.256.ppm
+mv log log.256
+~~~
+
+and then recompile and rerun.
+
+The first thing we note is that the simulation runs significantly
+faster. Which is confirmed by
+
+~~~bash
+tail -n1 out.ppm
+~~~
+
+which gives
+
+    # Quadtree, 1474 steps, 52.15 CPU, 61.65 real, 1.6e+05 points.step/s, 24 var
+
+compared to (*tail -n1 out.256.ppm*)
+
+    # Cartesian, 1485 steps, 96.76 CPU, 113.9 real, 8.54e+05 points.step/s, 24 var
+
+on the regular Cartesian grid i.e. roughly twice as fast with adaptivity.
+
+This looks good at first, however the animation reveals that things
+are a bit more complex. In particular, the animation does not look as
+smooth; as shown on the following frame
+
+![First-order image interpolation](tuto/out-first.png)
+
+What is happening is that because the resolution varies, there isn't a
+one-to-one mapping between grid points and pixels in the image
+generated by *output_ppm()*. So interpolation is required. By default
+*output_ppm()* uses only first-order interpolation: all the pixels
+within a quadtree cell encode the same value so have the same
+color. The animation now shows information about both the field (the
+color) and the adaptive quadtree grid (the sharp changes in color).
+
+That's interesting but does not look very good. To use bilinear
+interpolation instead, we need to call *output_ppm()* like this
+
+~~~literatec
+...
+event images (t += 4./300.) {
+  output_ppm (h, linear = true);
+}
+...
+~~~
+
+then recompile, rerun etc... The animation now looks good.
+
+Are the results close to that obtained when using the regular
+Cartesian grid? As for the convergence study above, we can use gnuplot
+to find out
+
+~~~bash
+gnuplot> set xlabel 'Time'
+gnuplot> set ylabel 'Depth'
+gnuplot> plot 'log.256' using 1:2 with lines title 'min', \
+              'log.256' using 1:3 with lines title 'max', \
+              'log' using 1:2 with lines title 'min (adaptive)', \
+              'log' using 1:3 with lines title 'max (adaptive)'
+~~~
+
+which gives
+
+![Comparison between adaptive and Cartesian simulations](tuto/adaptive.png)
+
+The results are close but not identical. Finding the right balance
+between computing time and accuracy is an important part of setting up
+numerical simulations.
+
+## Displaying the grid
+
+Although our animation now looks good, we lost the information about
+grid size which was (partly) encoded in the first animation. Can we
+generate an animation of the grid being used during the simulation?
+
+One way to do this is to animate a field containing the *level* of the
+quadtree cells rather than the depth *h*. Such a field does not exist
+by default (even though we can access the value *level*, as well as
+the coordinates $x$ and $y$, within [foreach](Basilisk C#iterators)
+loops). We thus need to allocate a new field and fill it with the
+values of *level*. We will then be able to generate the corresponding
+animation using *output_ppm()* with this field.
+
+We can do all this with the following code
+
+~~~literatec
+...
+event images (t += 4./300.) {
+  ...
+  scalar l[];
+  foreach()
+    l[] = level;
+  static FILE * fp = fopen ("grid.ppm", "w");
+  output_ppm (l, fp, min = 0, max = 8);
+}
+...
+~~~
+
+We first [declare and allocate](Basilisk
+C#declaration-allocation-and-deallocation) a new scalar field
+*l*. This field is a local, automatic variable i.e. it will be
+accessible only within the *images* event. The memory necessary to
+store the field values will be automatically freed when the code
+leaves this function.
+
+We then loop over all the cells and set the values of *l* to the level
+of the cell.
+
+The next line declares a *static variable* i.e. a variable which is
+kept in memory between calls to *images* (in contrast to automatic
+variables). This variable is set only once, the first time *images* is
+called, and points to a new file called *grid.ppm* in which we will
+*write* ("w") things. This is done using the standard C function
+[fopen()](http://man7.org/linux/man-pages/man3/fopen.3.html#1).
+
+We can now call *output_ppm()* using *l* as the field to
+display. Rather than writing images to the standard output, we use our
+file pointer *fp*. We also set the minimum and maximum values of the
+colorscale to avoid changes in color during the animation.
+
+After recompiling and re-running, we can now do
+
+~~~bash
+animate grid.ppm
+~~~
+
+which gives an animation looking like
+
+![Adaptive grid](tuto/grid.png)
+
+# Using Makefiles
+
+By now, you are probably tired of typing
+
+~~~bash
+qcc -O2 -Wall bump.c -o bump -lm
+./bump > out.ppm 2> log
+~~~
+
+You may also have made the mistake of doing only the second command
+(running the code) and wondered why nothing changed in the ouput
+(while you had edited *bump.c*).
+
+[Makefiles](https://www.cs.colby.edu/maxwell/courses/tutorials/maketutor/) are a very useful tool
+to automate such a *processing chain* (i.e. *log* and *out.ppm* both
+depend on *bump* which in turns depends on *bump.c*).
+
+Basilisk comes with a predefined Makefile which you can reuse for your
+own computations. You just need to create a new text file called
+*Makefile* (e.g. using the "File -> Visit New File" menu in emacs) and
+type
+
+~~~Makefile
+CFLAGS += -O2
+include $(BASILISK)/Makefile.defs
+~~~
+
+Save the file and type in the shell
+
+~~~bash
+rm bump
+make bump.tst
+~~~
+
+This should produce something like
+
+    .../Makefile.defs:9: Makefile.tests: No such file or directory
+    .../Makefile.defs:93: Makefile.deps: No such file or directory
+    Updating Makefile.deps
+    sh /home/popinet/basilisk/src/tests.sh
+    updating Makefile.tests
+    .../Makefile.defs:93: Makefile.deps: No such file or directory
+    .../qcc -MD -o bump.s.d bump.c
+    Updating Makefile.deps
+    qcc -O2 -Wall -o bump/bump bump.c -lm
+    [bump.tst]
+
+Do not worry about the first lines, they come from the initial setup
+and will not be repeated when you invoke *make* again.
+
+If you now do *ls* in the shell, you will see that a new directory
+called *bump* has been created. This directory contains both the
+executable (also called *bump*) and all the files produced when
+running the program in this directory.
+
+~~~bash
+ls bump/*
+~~~
+
+The standard output has been redirected to *bump/out* and the standard
+error to *bump/log*. As before, we can then run the animation using
+
+~~~bash
+animate bump/out
+~~~
+
+and display *bump/log* with gnuplot. Note that it is a good idea to
+open a new terminal, *cd* to *bump* and leave gnuplot running in this
+terminal. You will then be able to re-run the simulation using *make
+bump.tst* in one terminal and display the results (while the
+simulation is running) using *replot* in the other (gnuplot) terminal.
+
+If you now redo
+
+~~~bash
+make bump.tst
+~~~
+
+you will get
+
+    make: `bump.tst' is up to date.
+
+The Makefile detected that nothing was modified which required
+recompiling and/or rerunning the simulation.
+
+The default Makefile in Basilisk does much more than this. Read
+[*"Running and creating test cases (and
+examples)"*](/src/test/README#running-and-creating-test-cases-and-examples)
+if you want to know more.
+
+# Using macros
+
+I mentioned above that it would be a good idea to study the numerical
+convergence of our example a bit more seriously. To do this, we need
+to run the same code while varying the resolution. We could edit the
+code by hand, changing each reference to resolution, recompile, rerun
+etc... but that would be quite tedious and error-prone. A better way
+to do this is to use standard *C macros* (which you should have
+encountered already during your preparatory work).
+
+If we look at our code, we see that the resolution or level of
+refinement occur three times. Once as an argument to *output_ppm()*,
+once as an argument to *adapt_wavelet()* and once as an argument of
+*init_grid()* in the *main()* function.
+
+Rather than changing these three values manually, we can write instead
+
+~~~literatec
+#include "saint-venant.h"
+
+#define LEVEL 8
+...
+  output_ppm (l, fp, min = 0, max = LEVEL);
+...
+  adapt_wavelet ({h}, (double []){4e-3}, maxlevel = LEVEL);
+...
+  init_grid (1 << LEVEL);
+...
+~~~
+
+That is, the macro *LEVEL* will be replaced by 8 in all three
+places. The *<<* operator in C is a bit-shifting operation. All we
+need to know here is that *1 << LEVEL* is identical to $2^{LEVEL}$. If
+we want to change the resolution of the simulation, all we need to do
+now is change the single value at the top of the file.
+
+# Wrapping up
+
+If you have followed the tutorial, your *bump.c* file should look like
+
+~~~literatec
+#include "saint-venant.h"
+
+#define LEVEL 8
+
+event init (t = 0) {
+  double a = 1., b = 200.;
+  foreach()
+    h[] = 0.1 + a*exp(- b*(x*x + y*y));
+}
+
+event graphs (i++) {
+  stats s = statsf (h);
+  fprintf (stderr, "%g %g %g\n", t, s.min, s.max);
+}
+
+event images (t += 4./300.) {
+  output_ppm (h, linear = true);
+
+  scalar l[];
+  foreach()
+    l[] = level;
+  static FILE * fp = fopen ("grid.ppm", "w");
+  output_ppm (l, fp, min = 0, max = LEVEL);
+}
+
+event end (t = 4) {
+  printf ("i = %d t = %g\n", i, t);
+}
+
+event adapt (i++) {
+  adapt_wavelet ({h}, (double []){4e-3}, maxlevel = LEVEL);
+}
+
+int main() {
+  origin (-0.5, -0.5);
+  init_grid (1 << LEVEL);
+  run();
+}
+~~~
+
+# Further reading
+
+I have made several references to the [Basilisk C]() manual. Now is a
+good time to go through the manual and get more familiar with the
+concepts, keywords and functions which are specific to Basilisk. Note
+that you won't need all the features of the language if you just want
+to use pre-defined solvers. The most important concepts and keywords
+have been covered in this tutorial.
+
+For more examples of applications, post-processing, graphs etc..., you
+can also look at the
+
+* [Examples](src/examples/README)
+* [Test cases](src/test/README)
+
+Note also that in these examples, as in the pieces of code above,
+various keywords will be linked either to the documentation for
+standard C functions or to the documentation of Basilisk keywords and
+functions. You can learn a lot by following these links.
+
+If you want to know what Basilisk can be used for, have a look at the
+various [solvers](src/README#solvers) available. Again, if you just
+want to use these pre-defined solvers, reading only the first few
+sections should be sufficient (as we did for
+[saint-venant.h](src/saint-venant.h)), but feel free to dig deeper if
+you are interested. Note also that the "Usage" section at the end of
+each page contains links to various applications of the solvers.
+
+* [Tutorial for Dimensional Analysis](Tutorial.dimensions)

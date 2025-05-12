@@ -1,0 +1,8 @@
+# Welcome to my sandbox !
+
+## M2 Internship: Growth of hydrothermal vents 
+
+* [Diffusion equation + Self-Similar Solution](verifDiff.c)
+* [Diffusion equation + Self-Similar Solution (ML)](verifDiff-ML.c)
+* [Growth of a reactive wall](adsorption.c)
+* [Buoyant plume](plume_buoyant.c) (artistic)

@@ -1,0 +1,65 @@
+/**
+
+<img src="test_cases/post_processing/two_cylinders_vorticity.png" alt="drawing" width=49%/>
+<img src="test_cases/post_processing/two_cylinders_grid.png" alt="drawing" width=49%/>
+
+# My sandbox
+
+## Overview
+Hello fellow CFDers! Welcome to my sandbox!
+
+I'm currently a PhD student in the research group of Prof. [Anthony Wachs](https://personal.math.ubc.ca/~wachs/) at the University of British Columbia. My research pertains to the fully-resolved simulation of particle-laden flows using the Immersed Boundary-Lattice Boltzmann Method (IB-LBM). In this sandbox, I provide the source files which enable the implementation of IB-LBM based on Basilisk, and a series of test cases involving fluid-particle interactions in both 2D and 3D. For a detailed description of the numerical method and more quantitative analysis of the simulation results, please refer to [this paper](https://www.sciencedirect.com/science/article/pii/S002199912200732X).
+
+## Methods
+### Lattice Boltzmann Method
+* [LBM.h](src/LBM.h): A standard implementation of the Lattice Boltzmann Method (LBM) with a multiple relaxation time collision operator. To fit the octree-grid refinement framework, a finite-difference type streaming operator is adopted.
+
+### Immersed Boundary method
+* [ibm.h](src/ibm.h): Foundamentals of the Immersed Boundary Method, including the Lagrangian point-stencil structure, stencil update function, simulation restart function, meomry management and initialization subroutine.
+* [lag_stencil.h](src/lag_stencil.h): Some classic and modified Dirac delta functions used in stencil operations.
+* [lag_to_eul.h](src/lag_to_eul.h) and [eul_to_lag.h](src/eul_to_lag.h): Information exchange between the lagrangian points on immersed body surfaces and the Eulerian grid centers.
+
+## Test cases
+* [Simple Poiseuille flow](test_cases/Poiseuille.c):
+* [2D wall-bounded flow past a cylinder](test_cases/Cylinder_bounded.c):
+* [2D inline oscillating cylinder in a fluid at rest](test_cases/Oscillating_cylinder.c):
+* [2D Neutrally bouyant cylinder in a planar Couette flow](test_cases/Neutrally_bouyant_Couette.c):
+
+### Publications
+~~~bib
+@article{Cheng2022,
+title = {An immersed boundary/multi-relaxation time lattice {B}oltzmann method on adaptive octree grids for the particle-resolved simulation of particle-laden flows},
+journal = {Journal of Computational Physics},
+volume = {471},
+pages = {111669},
+year = {2022},
+issn = {0021-9991},
+doi = {https://doi.org/10.1016/j.jcp.2022.111669},
+url = {https://www.sciencedirect.com/science/article/pii/S002199912200732X},
+author = {Zihao Cheng and Anthony Wachs},
+keywords = {Lattice Boltzmann method, Immersed boundary method, Adaptive mesh refinement, Parallel computing, Particle-laden flow, Fluid-solid interaction},
+}
+
+@Article{Cheng2023,
+  author   = {Cheng, Zihao and Wachs, Anthony},
+  journal  = {International Journal of Multiphase Flow},
+  title    = {Hydrodynamic force and torque fluctuations in a random array of polydisperse stationary spheres},
+  year     = {2023},
+  issn     = {0301-9322},
+  pages    = {104524},
+  volume   = {167},
+  doi      = {10.1016/j.ijmultiphaseflow.2023.104524},
+  keywords = {Lattice Boltzmann method, Immersed boundary method, Octree grid, Polydisperse suspension, Force and torque fluctuations},
+  url      = {https://www.sciencedirect.com/science/article/pii/S0301932223001453},
+}
+
+@misc{Cheng2023pinn,
+      title={Physics-informed neural network for modelling force and torque fluctuations in a random array of bidisperse spheres}, 
+      author={Zihao Cheng and Anthony Wachs},
+      year={2023},
+      eprint={2305.03326},
+      archivePrefix={arXiv},
+      primaryClass={physics.flu-dyn}
+}
+~~~
+*/

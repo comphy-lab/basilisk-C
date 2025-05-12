@@ -1,0 +1,17 @@
+%{
+
+# Page de Alexandre Nazarians et Tony Spriet
+
+## Projets développés
+
+We studied a wave propagation on a string which lenght is L = 2 pi.
+However we have defined different boundaries conditions from the original code : [../vibrating_string.m]()
+
+One sinusoidal excitation on x = 0, and one straight point on the other end x= L
+This can be translated mathematically by these expressions : 
+ 
+$$f(x=0,t)= sin(\frac{t}{2\pi})$$
+$$f(x=L,t)= 0$$
+
+[../vibrating string forced.m]()
+}%

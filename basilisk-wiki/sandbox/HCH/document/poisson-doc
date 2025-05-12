@@ -1,0 +1,148 @@
+# Introduction and Background
+[**poisson.h**](/src/poisson.h) serves as toolbox which provides functions to construct
+V-cycle iteration solver for implicit equations. A specific one for
+solving poisson equation is constructed within the headfile as an
+example. We shall first introduce the constructing toolbox.
+
+Assuming the governing equation can be written as
+
+$$f( x) = y \quad (1)$$
+
+where $y$ is the known variable, $x$ is the desired variable and $f$
+represents linear operator that satisfies 
+
+$$ f( x_a+ x_b) = f( x_a) + f(x_b) \quad (2)$$
+
+Now consider the discrete form of operator $\hat{f}$ which takes all desired variable from every cell (suppose the total number of cell is $n$) to express the local known
+variable $y_i$ then yields the implicit equation group
+
+$$ \hat{f}(x_1,x_2,x_3,\cdots,x_n) = y_i \quad i = 1,2,\cdots,n \quad (3)$$
+
+which can be solved by indirective iterative method such as Jacobi method, G-S
+method ([Moin, 2010](#moin2010)) etc. Moreover, constraints equation (2)
+provide another perspective to construct equation group. Use
+$x_1^e,x_2^e,\cdots,x_n^e$ to denote exact solution of equation (3) and
+$x_1^k,x_2^k,\cdots,x_n^k$ to represent result of $k$th iteration.
+Following equation (2) we have
+
+$$\hat{f}(\delta x_1^k,\delta x_2^k,\cdots, \delta x_n^k) = RES^k \quad (4)$$
+
+where $\delta x_i^k = x_i^e - x_i^k$, $RES^k = \hat{f}(x_1^e,x_2^e,\cdots,x_n^e) - \hat{f}(x_1^k,x_2^k,\cdots,x_n^k)$. The criterion of solution then becomes $|RES^k|_{\infty}<\epsilon$ where $\epsilon$ is a setting tolerance.
+
+There are many techniques to accelerate the convergence of iteration,
+and multigrid method ([Wesseling et.al. , 1995](#wesseling1995)) may be one of the most famous which employs iterations on every layer of the mesh to reduce the
+residual of corresponding wavenumber. A similar methodology is applied
+by quadtree/octree in Basilisk. Take quadtree as an exapmle. Consider
+tree architecture in left panel in figure 1, the actual calculating rules for this problem
+is shown in right panel in figure 2 where black spot represents leaf cells
+(the finest cell at this area and is not divided by higher level) and
+the value it carrying is the the final value shown in the result called
+active value. Blue spot represents ghost cell served as boundary
+condition whose value is computed by bilinear interpolation. Finally
+red spot represents value carried by parent cell. The parent cell,
+indicated by its name, will be divided into 4(8) children cells in finer
+layer (level in Basilisk) ([Van Hooft et.al., 2018](#vanhooft2018)).
+
+A single round of iteration is accomplished by two procedures. First,
+from highest level to lowest one, assign residual to each cell of
+current level which form the R.H.S. of equation (4). Second, starting from lowest level to the highest, obtain the result after few iterating (by Jacobi method or GS method) on current level and use it to compute initial value on next level. We shall first dive into
+second procedure which is more sophisticated.
+
+Calculations happens at every level shown in
+figure 1, when it comes to higher level the boundary
+condition is first set and then undergoes the iteration on cells at same
+level instead of whole domain. Moreover, the initial value on each level
+is obtained by prolongation (bilinear mostly) from previous mesh level.
+
+In order to facilitate equation (4) we also need residual, which only exists at leaf cell, of every cell at each level. This procedure is achieve by restricting ([Popinet, 2015](#popinet2015)) (averaging mostly) value on 4(8) children cells, which is much simpler compared to bilinear that use in previous description.
+
+![Figure 1: 2D quadtree example. Left: Calculation for each level. Right: Quadtree example. Arrow in (b) indicates calculating sequence.](https://drive.google.com/thumbnail?id=1u89ECm4B4Vd42p4pvwPpF61OFtLIe5Du&sz=w500)
+
+After introducing the mesh architecture, we shall now step a little
+further to see the solver structure provided by 'poisson.h' and to
+perceive the overall workflow.
+
+![Figure 2: Architecture of the solver. Nested relationship of functions is
+indicated by box containing relationship](https://drive.google.com/thumbnail?id=1DWKc6wIE-bAIeSql-Zatvt3Oi7KhXOKH&sz=w500)
+
+Figure 2 displays whole system as well as its workflow. As can be seen from the
+sketch, the whole solver consists of four functions, [*mg_solve*](/src/poisson.h#mg_solve), [*mg_cycle*](/src/poisson.h#mg_cycle), [*relax*](/src/poisson.h#relax) and [*residual*](/src/poisson.h#residual). Their nesting relating is shown by corresponding position. Detailed workflow is also presented, after
+inputting $\mathbf{x}^0, \mathbf{y}$ before the residual actually meet
+the tolerance $\epsilon$, [*mg_solve*](/src/poisson.h#mg_solve) plays as a manager to make rest functions collaborate, $\mathbf{x}^k$ is conveyed between [*mg_cycle*](/src/poisson.h#mg_cycle) and [*residual*](/src/poisson.h#residual) to renew. Number
+behind each step represents the order within the loop.
+$\mathbf{x}^k, \mathbf{y}$ is first sent to residual to compute residual
+$RES^k$ which served as parameter in . $\mathbf{x}^k$ and $n$ are also
+taken into where $n$ controls iteration number on each mesh level.
+$\mathbf{x}^{k+1}$ is obtained by first solving equation (4) for
+$\delta \mathbf{x}^k$ then execute update 
+
+$$\mathbf{x}^{k+1} = \mathbf{x}^k + \delta \mathbf{x}^{k+1} \quad (5)$$ 
+
+Loop will break out either residual satisfies tolerance constraint or number of
+round exceed setting threshold. Readers may notice there is no
+parameters conveyed within [*mg_cycle*](/src/poisson.h#mg_cycle), this is because relationship between [*relax*](/src/poisson.h#relax) and [*mg_cycle*](/src/poisson.h#mg_cycle)
+ cannot be simply abstracted as 'linear' as depicted in this figure.
+ 
+![Figure 3: Combination between *mg_solve* and *relax*. The 'round' of iteration described before is
+also demonstrated in a detailed way. *relax* herein is embed into every level of
+the mesh and is executed several times (depends on parameter $n$) on
+each level to accelerate convergence.](https://drive.google.com/thumbnail?id=1F70k6REPsNj7IoK0dpav6P49k4w--jAm&sz=w500)
+
+Structure inside [*mg_cycle*](/src/poisson.h#mg_cycle) is demonstrate in figure 3 as
+described before residual is assigned to each level then relax is called
+at each level multiple times updating $\delta \mathbf{x}^k$ in the form
+(condition varies according to iteration method) 
+
+$$
+\delta x^{k+1}_i = F(\delta x^k_1,\delta x^k_2,\cdots,\delta x^k_{i-1},\delta x^k_{i+1},\cdots,\delta x_n^k, RES^k) \quad (6)$$
+
+Back to [*mg_solve*](/src/poisson.h#mg_solve), readers may notice from figure 2
+that all the function within [*mg_solve*](/src/poisson.h#mg_solve), including itself, are divided into three layer by dashed line and each layer is named by Roman number from top to
+bottom. Higher the layer, more irreplaceable the function is. Therefore,
+functions at can be changed or altered based on one's purpose. In
+another word, users can choose their own and based on equation they cope
+with. The governing equation for [**poisson.h**](/src/poisson.h) is
+
+$$ L(a)=\nabla\cdot(\alpha\nabla a) + \lambda a =b \quad (7)$$ 
+
+where $L$ is a linear operator. Based on above discussion such equation can be solved
+by multigrid solver only if one constructs appropriate and function.
+Another example is referred to headfile [**viscosity.h**](/src/viscosity.h) where same
+solver construction is used for totally different linear equation.
+
+# References
+
+~~~bib
+@book{moin2010,
+  title={Fundamentals of engineering numerical analysis},
+  author={Moin, Parviz},
+  year={2010},
+  publisher={Cambridge University Press}
+}
+
+@techreport{wesseling1995introduction,
+  title={Introduction to multigrid methods},
+  author={Wesseling, Pieter},
+  year={1995}
+}
+
+@article{vanhooft2018,
+  title={Towards adaptive grids for atmospheric boundary-layer simulations},
+  author={Van Hooft, J Antoon and Popinet, St{\'e}phane and Van Heerwaarden, Chiel C and Van der Linden, Steven JA and De Roode, Stephan R and Van de Wiel, Bas JH},
+  journal={Boundary-layer meteorology},
+  volume={167},
+  pages={421--443},
+  year={2018},
+  publisher={Springer}
+}
+
+@article{popinet2015,
+  title={A quadtree-adaptive multigrid solver for the Serre--Green--Naghdi equations},
+  author={Popinet, St{\'e}phane},
+  journal={Journal of Computational Physics},
+  volume={302},
+  pages={336--358},
+  year={2015},
+  publisher={Elsevier}
+}
+~~~

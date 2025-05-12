@@ -1,0 +1,162 @@
+---
+toc: no
+...
+My name is Wouter Mostert, I am an associate professor at Oxford in the Department of Engineering Science. Previously, I studied at the University of Queensland in Australia (under Vincent Wheatley) where I got my BEng (Mechanical & Aerospace, 2012) and PhD (2015) degrees; I did postdoctoral research at Caltech (with Dale Pullin) and Princeton (with Luc Deike), and spent some time as an assistant professor at the Missouri University of Science and Technology.
+
+My interests are in fluid mechanics, namely in air-sea interaction concerning mass, momentum and energy primarily due to wave breaking, along with the associated dynamics of bubbles and droplets, which play a large role in these kinds of problems. Waves in shallow water environments are also of interest, especially the dynamics and energetics of breaking solitary waves, and more broadly around the effects of ocean wave systems on sediment and pollutant transport, along with better understanding wave loadings on civil infrastructure. 
+
+Other interests include problems in compressible gases and continuum plasma models, especially dynamics and geometrical stability of material interfaces and of shock waves in such systems, and potential analogues in water wave systems.
+
+### Some problems
+*[A shoaling and breaking solitary wave](shallow.c)
+
+*[A shoaling and breaking solitary wave in the presence of wind](windshoaling.c) (due especially to hard work by Kentaro Hanson - see also [Falk Feddersen's sandbox](http://basilisk.fr/sandbox/ffeddersen/) )
+
+*[Deformation of a bubble in a turbulent environment](turbulent_bubble.c)
+
+*[Breaking Stokes wave](http://basilisk.fr/sandbox/popinet/wave.c) (from [Stephane Popinet's sandbox](http://basilisk.fr/sandbox/popinet))
+
+*[Droplet bag-breakup in a cross-flow](http://basilisk.fr/sandbox/kaitaotang/dw14l11.c) (from [Kaitao Tang's sandbox](http://basilisk.fr/sandbox/kaitaotang) and, crucially, using the manifold death algorithm from [Leonardo Chirco's sandbox](http://basilisk.fr/sandbox/lchirco/))
+
+*[Transverse collision of two liquid rims](http://basilisk.fr/sandbox/kaitaotang/docoll3d.c) (from [Kaitao Tang's sandbox](http://basilisk.fr/sandbox/kaitaotang))
+
+*[Richtmyer-Meshkov instability of an interface with surface tension](http://basilisk.fr/sandbox/kaitaotang/rmst.c) (from [Kaitao Tang's sandbox](http://basilisk.fr/sandbox/kaitaotang))
+
+### Published work using Basilisk
+~~~bib
+
+@article{feddersen2024,
+  title={Modelling wind-induced changes to overturning wave shape},
+  author={Feddersen, Falk and Hanson, Kentaro and Mostert, Wouter and Fincham, Adam},
+  journal={Journal of Fluid Mechanics},
+  volume={1000},
+  pages={A48},
+  year={2024},
+  DOI={10.1017/jfm.2024.1012},
+  publisher={Cambridge University Press}
+}
+
+@article{tang2024, 
+  title={Fragmentation of colliding liquid rims}, 
+  volume={987}, 
+  DOI={10.1017/jfm.2024.392}, 
+  journal={Journal of Fluid Mechanics}, 
+  author={Tang, K. and Adcock, T.A.A. and Mostert, W.}, 
+  year={2024}, 
+  pages={A18}
+}
+
+@article{erinin2023,
+  title={The effects of surfactants on plunging breakers},
+  author={Erinin, MA and Liu, C and Liu, X and Mostert, W and Deike, L and Duncan, JH},
+  journal={Journal of Fluid Mechanics},
+  volume={972},
+  pages={R5},
+  year={2023},
+  publisher={Cambridge University Press}
+}
+
+@article{tang2023, 
+title={Bag film breakup of droplets in uniform airflows}, 
+volume={970}, 
+DOI={10.1017/jfm.2023.605}, 
+journal={Journal of Fluid Mechanics}, 
+author={Tang, K. and Adcock, T.A.A. and Mostert, W.}, 
+year={2023},
+month = {September}, 
+pages={A9}}
+
+@article{boswell2023,
+  title={Characterizing energy dissipation of shallow-water wave breaking in a storm surge},
+  author={Boswell, Hunter and Yan, Guirong and Mostert, Wouter},
+  journal={Physical Review Fluids},
+  volume={8},
+  number={5},
+  pages={054801},
+  year={2023},
+  publisher={APS}
+}
+
+@article{riviere2022,
+  title = {Capillary driven fragmentation of large gas bubbles in turbulence},
+  author = {Rivi\`ere, Ali\'enor and Ruth, Daniel J. and Mostert, Wouter and Deike, Luc and Perrard, St\'ephane},
+  journal = {Phys. Rev. Fluids},
+  volume = {7},
+  issue = {8},
+  pages = {083602},
+  numpages = {11},
+  year = {2022},
+  month = {Aug},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.7.083602},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.7.083602}
+}
+
+@hal{mostert2022, hal-03631988}
+
+@article{tang2021,
+  title = {Effects of surface tension on the Richtmyer-Meshkov instability in fully compressible and inviscid fluids},
+  author = {Tang, Kaitao and Mostert, Wouter and Fuster, Daniel and Deike, Luc},
+  journal = {Phys. Rev. Fluids},
+  volume = {6},
+  issue = {11},
+  pages = {113901},
+  numpages = {23},
+  year = {2021},
+  month = {Nov},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.6.113901},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.6.113901}
+}
+
+@article{perrard2021, 
+  title={Bubble deformation by a turbulent flow}, 
+  volume={920}, 
+  DOI={10.1017/jfm.2021.379}, 
+  journal={Journal of Fluid Mechanics}, 
+  publisher={Cambridge University Press}, 
+  author={Perrard, St{\'e}phane and Rivi{\`e}re, Ali{\'e}nor and Mostert, Wouter and Deike, Luc},
+  year={2021}, 
+  pages={A15}
+}
+
+@article{riviere2021, 
+  title={Sub-Hinze scale bubble production in turbulent bubble breakup}, 
+  volume={917}, 
+  DOI={10.1017/jfm.2021.243}, 
+  journal={Journal of Fluid Mechanics}, 
+  publisher={Cambridge University Press}, 
+  author={Rivi{\`e}re, Ali{\'e}nor and Mostert, Wouter and Perrard, St{\'e}phane and Deike, Luc},
+  year={2021}, 
+  pages={A40}
+}
+
+@article{mostert2020, 
+  title={Inertial energy dissipation in shallow-water breaking waves}, 
+  volume={890}, 
+  DOI={10.1017/jfm.2020.83}, 
+  journal={Journal of Fluid Mechanics}, 
+  publisher={Cambridge University Press}, 
+  author={Mostert, Wouter and Deike, Luc}, 
+  year={2020}, 
+  pages={A12}
+  }
+  
+@article{ruth2019,
+	Author = {Ruth, Daniel J. and Mostert, Wouter and Perrard, St{\'e}phane and Deike, Luc},
+	Doi = {10.1073/pnas.1909842116},
+	Eprint = {https://www.pnas.org/content/116/51/25412.full.pdf},
+	Issn = {0027-8424},
+	Journal = {Proceedings of the National Academy of Sciences},
+	Number = {51},
+	Pages = {25412--25417},
+	Publisher = {National Academy of Sciences},
+	Title = {Bubble pinch-off in turbulence},
+	Url = {https://www.pnas.org/content/116/51/25412},
+	Volume = {116},
+	Year = {2019},
+	Bdsk-Url-1 = {https://www.pnas.org/content/116/51/25412},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1073/pnas.1909842116}}
+~~~
+
+(More to be added, as ever!)

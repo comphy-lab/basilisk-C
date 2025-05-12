@@ -1,0 +1,127 @@
+/**
+# 3D simulation
+
+It is almost the same code as in [2D](http://basilisk.fr/sandbox/amansur/Rising/2D), but the compiling command in the Terminal changes to :
+*/
+
+> CFLAGS='-grid=octree' make rising.tst
+
+/**
+By defaults, Basilisk runs the code in 2D (or quadtree), if you want to run a simulation in 3D, you'll have to mention it !
+
+Also, for the outputs, you have to add the values for the third dimension if you want to analyse them.
+*/
+  
+/**
+# rising.c
+*/
+  
+#include "navier-stokes/centered.h"
+#include "vof.h"
+#include "tension.h"
+
+# define R 1e-3 
+# define L (15.0*R)
+# define x_min (3*R)
+
+# define mu1 1.8e-5
+# define mu2 1e-3
+# define rho1 1.225
+# define rho2 1e3
+
+# define LEVEL 6
+
+scalar c[];
+scalar *interfaces = {c};
+scalar rhov[];
+face vector alphav[];
+face vector muv[];
+
+u.n[top]    = dirichlet(0); 
+u.t[top]    = neumann(0); 
+u.n[bottom] = dirichlet(0); 
+u.t[bottom] = neumann(0); 
+u.n[back]    = dirichlet(0); 
+u.t[back]    = neumann(0); 
+u.n[front] = dirichlet(0); 
+u.t[front] = neumann(0); 
+u.n[right] = neumann(0); 
+u.t[right] = dirichlet(0); 
+u.n[left] = neumann(0); 
+u.t[left] = dirichlet(0); 
+
+int main() 
+{
+  origin (-x_min, -L/2, -L/2);
+  L0 = L;
+  
+  TOLERANCE = 1e-6;
+  alpha = alphav;
+  rho = rhov;
+  mu = muv;
+  c.sigma = 0.07;
+  init_grid (1 << LEVEL);
+  run();
+}
+
+event init_interface (i = 0) 
+{  
+    vertex scalar phi[];
+    foreach_vertex()
+      phi[] = sq(R) - sq(x) - sq(y) - sq(z);
+    fractions (phi, c);
+}
+
+#define rho(c) (rho1*c + (1. - (c))*rho2)
+#define mu(c)  (mu1*c + (1. - (c))*mu2)
+
+event properties (i++) 
+{
+  foreach_face() 
+  {
+    double cm = (c[] + c[-1])/2.;
+    alphav.x[] = fm.x[]/rho(cm);
+    muv.x[] = (fm.x[]*mu(cm));
+  }
+  foreach(){
+    rhov[] = cm[]*rho(c[]);
+  }
+}
+
+event vof (i++, first);
+
+event acceleration (i++) {
+  face vector av = a;
+  foreach_face(x)
+    av.x[] -= 9.81;
+}
+
+face vector u_bubble[];
+event output_velocity(t+=0.002){
+  
+  foreach_face() {
+    u_bubble.x[] = (c[]*u.x[]);
+  }
+	
+  stats vx_bubble = statsf (u_bubble.x);
+  stats vy_bubble = statsf (u_bubble.y);	
+  stats vz_bubble = statsf (u_bubble.z);
+  	
+  stats vol_bubble = statsf (c);
+
+  FILE * fp_vb = fopen ("v.dat", "a");
+  fprintf(fp_vb,"%d %f %g %g %g\n",i,t,vx_bubble.sum/vol_bubble.sum,vy_bubble.sum/vol_bubble.sum,vz_bubble.sum/vol_bubble.sum);
+  fclose(fp_vb);
+  
+  char *outfile1 = NULL;
+  outfile1 = (char *) malloc(sizeof(char) * 1024);
+  sprintf(outfile1, "c-%g.png", t*1e3);  
+  FILE * fp_c = fopen (outfile1, "w");
+  output_ppm(c, fp_c, linear=true);
+  fclose(fp_c);
+}
+
+
+
+event end(t = 0.1) {
+}

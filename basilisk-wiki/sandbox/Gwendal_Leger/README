@@ -1,0 +1,37 @@
+# Greetings
+Hello and
+welcome to my sandbox !
+
+This is where I will put all my programms, coded during my internship at [Institut ∂'Alembert](http://www.dalembert.upmc.fr) in 2023 which was supervised by
+[Stéphane Popinet](http://www.basilisk.fr/sandbox/popinet/README) and
+[Julie Deshayes](https://juliedeshayes.github.io/).
+I also thank [Guillaume Michel](http://www.dalembert.upmc.fr/home/michel/) for his help during my time at ∂'Alembert.
+
+# Contents of this sandbox
+
+[<img style = float:right src="Beach_topo_basilisk/beach_topo/animation.gif" alt="drawing" width="256px"/>](Beach_topo_basilisk/beach_topo.c)
+
+* The first *real* code I made is called
+[beach_topo](Beach_topo_basilisk/beach_topo.c),
+and it is basically [beach.c](http://basilisk.fr/src/test/beach.c)
+but with a custom bathymetry we can implement as we want.
+
+* Then I tried using wave theory derived from the dispersion relation $\omega=\sqrt{gk\tanh(kH)}$
+with the [waves1D](waves_1D/) example.
+See the comparison of the Saint-Venant model (non dispersive) and the multilayer model (dispersive),
+respectively in the [waves1D.c](waves_1D/waves1D.c) and [waves1D_SV.c](waves_1D/waves1D_SV.c) codes.
+
+<table>
+<tr><td>
+[<img style = float:left src="waves_1D/waves1D/animation.gif" alt="drawing" width="256px"/>](waves_1D/waves1D.c)
+</td><td>
+[<img style = float:left src="waves_1D/waves1D_SV/animation.gif" alt="drawing" width="256px"/>](waves_1D/waves1D_SV.c)
+</td></tr>
+</table>
+
+* My third test, called [beach_waves](Beach_waves/beach_waves.c) is the sum of the two first works : waves dispersion above a custom bathymetry.
+
+* The [fourth work](http://basilisk.fr/sandbox/Gwendal_Leger/Port_waves/) corresponds to the most important work I've done during my internship:
+a 2D simulation of waves in the port of Boulogne-sur-mer.
+
+* Finally, I also studied the behaviour of different boundary conditions while propagating waves during a "long" run, in a setup similar to the one in [beach.c](http://basilisk.fr/src/test/beach.c). The comparison of the Dirichlet, radiation and "manual" radiation boundary conditions are presented with the code titled [Dirichlet_vs_Radiation](etude_dirichlet_radiation/Dirichlet_vs_Radiation.c).

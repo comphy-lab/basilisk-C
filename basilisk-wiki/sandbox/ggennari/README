@@ -1,0 +1,16 @@
+/**
+
+# My Sandbox
+Welcome to the `README` of my sandbox. This page provides an overview of my projects.
+
+## Soluble species in two-phase flows
+
+* [A solver for diffusion-driven phase-change flows of pure soluble species](phase_change/phase_change_pure_species.h)
+* Test cases:
+    a. [2D](phase_change/test_cases/constant_2D.c) and [axisymmetric](phase_change/test_cases/constant_axi.c) bubbles with constant mass transfer rate
+    b. [The Stefan problem](phase_change/test_cases/stefan.c)
+    c. [Scriven's solution for expanding bubbles](phase_change/test_cases/scriven.c)
+    d. [Epstein-Plesset solution for dissolving bubbles](phase_change/test_cases/epstein-plesset.c)
+
+
+*/
