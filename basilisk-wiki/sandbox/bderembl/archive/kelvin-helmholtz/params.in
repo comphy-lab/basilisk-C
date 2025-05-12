@@ -1,0 +1,27 @@
+#!sh
+# input parameter files
+# each '=' sign must be surrounded by at least one whitespace on each side
+
+# domain size
+N  = 64
+L0 = 25.0
+
+# physical parameters
+Re = 5e3
+Ri = 0.01
+Pr = 1
+
+# lagrangian particles total number of particles is npt**2
+npt = 128
+
+# timestepping
+CFL   = 0.6
+DT    = 10.0
+tend  = 100
+dtout = 0.01
+tel_m = 1e10       # max elapsed time
+NMOUT = 50000
+
+# misc
+# tol_T = 5e-4
+# tol_u = 2e-1

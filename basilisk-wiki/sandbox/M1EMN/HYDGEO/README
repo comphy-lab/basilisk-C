@@ -1,0 +1,30 @@
+# Some examples of flows for hydrology
+
+
+
+## Files 
+
+ * [http://basilisk.fr/sandbox/M1EMN/HYDGEO/toddbear59.c]() Darcy flow in a fully saturated porous media due to a river
+ 
+ * [http://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuit2D.c]() Aquifere 2D flow between two rivers 
+ 
+ * [http://basilisk.fr/sandbox/M1EMN/HYDGEO/richards.c]() Richards Imbibition 1D problem
+
+ * [http://basilisk.fr/sandbox/M1EMN/HYDGEO/vauclin.c]() flow in a partialy saturated porous media due to rain and formation of an aquifere
+ 
+ 
+ 
+ 
+ 
+## Bibliography
+ 
+ * Joseph Bear "Dynamic of fluids in porous media" 
+ 
+ * [Lagrée P-Y](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/MFEnv_aquifere.pdf)
+ "Ecoulements en milieux naturels: écoulements en milieux souterrains" Cours MSF12, M1 UPMC
+ 
+
+
+OK confine 2020
+ 
+ 

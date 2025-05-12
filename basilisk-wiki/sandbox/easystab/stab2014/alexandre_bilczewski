@@ -1,0 +1,20 @@
+%{
+# My page of contributions
+1. Using [../vibrating_string.m]() , I did a convergence study of the time step : [./vibrating_string_time_convergence]()
+2. Using [../vibrating_string.m]() and using the code for the backward Euler march in time of [./vibrating_string_forward_backward_euler.m]() to replace the crank-Nicolson scheme, I did a convergence study of the time step : [vibrating_string_convergence_time_euler_backward.m]()
+
+# Notes
+
+De la part de Jérôme
+
+~~~matlab
+domaine	valeur	note
+connectivité 	2	2
+recyclage	2	2
+graphiques	2	1
+théories	4	0
+Originalité	4	0
+note /14	14	5
+~~~
+
+Ce que tu as fait est bien, c'est quantitatif. Mais tu en est resté à l'étape de l'analyse numérique, tu n'a rien fait sur la stabilité.

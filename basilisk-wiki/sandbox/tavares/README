@@ -1,0 +1,29 @@
+# My Sandbox
+
+Welcome to my sandbox. My topic of research is the development of numerical tools for wetting and phase change problems in multiphase flows.
+I am using a coupled VOF/embedded boundary method to model two-phase flows on arbitrary solid surfaces.\\
+I am also working on a hybrid level-set/embedded boundary numerical method (LSEB) originally developed by [/sandbox/alimare](). The idea is to couple this method with the VOF method to deal with contact angle and triple line evolution in solidification problem. \\
+Please note that this method is under testing.
+
+# Hybrid VOF/embedded boudary method
+
+## Code
+
+### Contact angle on embedded boundary
+
+* [contact-embed.h](contact-embed.h): modified version of [contact-embed.h](/sandbox/popinet/contact/contact-embed.h).
+
+### Navier boundary condidition on embed
+
+* [embed-navier.h](embed-navier.h): modified version of [embed.h](/src/embed.h).
+
+## Validation test cases
+Validation test cases can be found on the following pages:
+
+* [sessile + embed contact angle](test_cases/sessile_embed.c).
+* [slot case + contact angle](test_cases/slot_contact_embed.c).
+* [droplet on embedded cylinder](test_cases/droplet-cylinder-embed.c)
+* [sessile droplet under gravity + embed](test_cases/sessile-embed-gravity.c).
+* [3D sessile + embed](test_cases/sessile_embed3D.c).
+* [droplet impact on thin fiber](test_cases/impact-thin-fiber.c).
+

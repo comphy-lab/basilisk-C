@@ -1,0 +1,19 @@
+
+tar -zxvf mesa-17.2.4.tar.gz
+cd mesa-17.2.4
+./configure --prefix=/home/vierron/local --enable-osmesa \
+	    --with-gallium-drivers=swrast                \
+            --disable-driglx-direct --disable-dri --disable-gbm --disable-egl
+make
+make install
+cd ..
+
+tar -zxvf glu-9.0.0.tar.gz
+cd glu-9.0.0
+./configure --prefix=/home/vierron/local 
+make
+make install
+cd ..
+
+cd gl
+CFLAGS+='-I/home/vierron/local/include' make libglutils.a libfb_osmesa.a

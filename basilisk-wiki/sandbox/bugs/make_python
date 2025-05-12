@@ -1,0 +1,113 @@
+This is solved, see below.
+
+Thanks for this great product. I'm new here, but I'm already finding it very useful.
+
+I encontered a problem when trying to use the python integration.
+
+The steps to reproduce are the following
+<pre>
+cd basilisk/src/
+make stream.py
+</pre>
+
+The same happens when manually creating stream.c elsewhere.
+
+The error is the following
+<pre>
+$ make stream.py
+/home/dd22/basilisk/src/Makefile.defs:8: Makefile.tests: No such file or directory
+/home/dd22/basilisk/src/Makefile.defs:180: Makefile.deps: No such file or directory
+sh /home/dd22/basilisk/src/tests.sh
+updating Makefile.tests
+updating Makefile.deps
+/home/dd22/basilisk/src/qcc -MD -o atomisation.s.d atomisation.c
+/home/dd22/basilisk/src/qcc -MD -o brusselator.s.d brusselator.c
+/home/dd22/basilisk/src/qcc -MD -o bubble.s.d bubble.c
+/home/dd22/basilisk/src/qcc -MD -o distance.s.d distance.c
+/home/dd22/basilisk/src/qcc -MD -o ginzburg-landau.s.d ginzburg-landau.c
+/home/dd22/basilisk/src/qcc -MD -o hele-shaw.s.d hele-shaw.c
+/home/dd22/basilisk/src/qcc -MD -o inversion.s.d inversion.c
+/home/dd22/basilisk/src/qcc -MD -o isotropic.s.d isotropic.c
+/home/dd22/basilisk/src/qcc -MD -o karman.s.d karman.c
+/home/dd22/basilisk/src/qcc -MD -o life.s.d life.c
+ln -s madsen.c madsen-sv.c
+/home/dd22/basilisk/src/qcc -MD -o madsen-sv.s.d madsen-sv.c
+/home/dd22/basilisk/src/qcc -MD -o madsen.s.d madsen.c
+/home/dd22/basilisk/src/qcc -MD -o shoal.s.d shoal.c
+/home/dd22/basilisk/src/qcc -MD -o sphere.s.d sphere.c
+/home/dd22/basilisk/src/qcc -MD -o stream.s.d stream.c
+/home/dd22/basilisk/src/qcc -MD -o swasi.s.d swasi.c
+/home/dd22/basilisk/src/qcc -MD -o tangaroa.s.d tangaroa.c
+/home/dd22/basilisk/src/qcc -MD -o tides.s.d tides.c
+/home/dd22/basilisk/src/qcc -MD -o tsunami.s.d tsunami.c
+/home/dd22/basilisk/src/qcc -MD -o turbulence.s.d turbulence.c
+/home/dd22/basilisk/src/qcc -MD -tags BENCHMARK.page
+/home/dd22/basilisk/src/qcc -MD -tags README.page
+/home/dd22/basilisk/src/qcc -MD -tags atomisation.c.page
+/home/dd22/basilisk/src/qcc -MD -tags brusselator.c.page
+/home/dd22/basilisk/src/qcc -MD -tags bubble.c.page
+/home/dd22/basilisk/src/qcc -MD -tags distance.c.page
+/home/dd22/basilisk/src/qcc -MD -tags ginzburg-landau.c.page
+/home/dd22/basilisk/src/qcc -MD -tags isotropic.c.page
+/home/dd22/basilisk/src/qcc -MD -tags karman.c.page
+/home/dd22/basilisk/src/qcc -MD -tags life.c.page
+/home/dd22/basilisk/src/qcc -MD -tags madsen.c.page
+/home/dd22/basilisk/src/qcc -MD -tags poisson.py.page
+/home/dd22/basilisk/src/qcc -MD -tags shoal.c.page
+/home/dd22/basilisk/src/qcc -MD -tags sphere.c.page
+/home/dd22/basilisk/src/qcc -MD -tags swasi.c.page
+/home/dd22/basilisk/src/qcc -MD -tags tangaroa.c.page
+/home/dd22/basilisk/src/qcc -MD -tags tsunami.c.page
+/home/dd22/basilisk/src/qcc -MD -tags turbulence.c.page
+/home/dd22/basilisk/src/qcc -MD -tags turbulence.py.page
+updating Makefile.deps
+/home/dd22/basilisk/src/qcc -O2 -fopenmp -g -Wall -pipe -D_FORTIFY_SOURCE=2 -python -c -fpic -I/usr/include/python2.7 stream.c
+qcc: warning: OpenMP cannot be used with Python (yet): switching it off
+stream-cpp.c:1:20: fatal error: Python.h: No such file or directory
+compilation terminated.
+/home/dd22/basilisk/src/Makefile.defs:140: recipe for target 'stream.i' failed
+make: *** [stream.i] Error 1
+make: *** Deleting file 'stream.i'
+</pre>
+
+My environment variables are
+<pre>
+HOSTNAME=runner-cb3ac902-project-215-concurrent-0
+OLDPWD=/home/dd22
+BASILISK=/home/dd22/basilisk/src
+PWD=/home/dd22/basilisk/src/examples
+HOME=/home/dd22
+SHLVL=1
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/dd22/basilisk/src
+_=/usr/bin/env
+</pre>
+
+This is a docker container, but I don't think the problem is related with docker.
+
+I did the installation using wget, on 2018-oct-10. By the way, how can I get a specific tag of the code using wget?
+
+---------------
+
+UPDATE:
+
+If I copy this file http://basilisk.fr/src/navier-stokes/stream.i to my local directory, the error is different.
+<pre>
+swig -I/home/dd22/basilisk/src -python  stream.i
+No module name specified using %module or -module.
+</pre>
+
+---------------
+
+UPDATE [SOLVED]:
+
+I didn't say before, the OS is debian/stretch. I solved this problem with 
+<pre>
+apt-get install libpython2.7-dev python-numpy python-matplotlib
+</pre>
+
+Moreover, since the is no display in my container, it was also necessary to 
+<pre>
+export MPLBACKEND=Agg
+</pre>
+and to add plt.savefig("{}.png".format(i)) to the graph function.
+

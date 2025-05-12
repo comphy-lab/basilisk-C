@@ -1,0 +1,15 @@
+## Exemple (hors sujet) pour un cours de Licence 1
+
+* [Tracé d'un cadran solaire](sundial.c)
+
+
+
+## Exemples simples de base  pour le cours de Master 1
+
+Exemple pour commencer avec les volumes finis
+
+* [équation d'advection 1D (downstream/centrée) en Basilisk](advecte.c)   
+* [équation d'advection 1D (Flux)  en Basilisk](advecte1.c)
+* [équation d'advection 1D (Flux)en C standard](advecte1c.c)
+* [équation dde la chaleur en Basilisk](heat.c)
+* [équation kpz 1D](kpz.c)

@@ -1,0 +1,26 @@
+%{http://basilisk.fr/sandbox/easystab/stab2014/alois&antoine
+
+#Our contributions
+
+* We've been working on the [../diffmat_2D.m]() code. We have verified the crossed and second derivatives, we also did a convergence study on the size of the meshgrid. [./diffmat_2d_crossed_derivatives.m]()
+
+* Here [./diffusion_eigenmodes_2D.m]() you shall find the visualisation of the Eigenmodes for the diffusion equation in 2D for which we used the [../diffmat_2D.m]() as a base.
+
+* WORK IN PROGRESS [./vibrating_string_2D.m]() Our work on the vibrating string [../vibrating_string.m]() consisted in coding the 2D problem
+
+# Notes 
+
+De la part de Jérôme
+
+~~~matlab
+domaine	        valeur	note
+connectivité 	2	2
+recyclage	2	2
+graphiques	2	1
+théories	4	0
+Originalité	4	2
+note /14	14	7
+~~~
+
+Les codes que vous avez fait sont pas mal, mais tout cela n'est vraiment pas très clairement présenté. 
+L'état dans lequel vous avez laissé votre page de contribution montre bien comment vous avez baissé les bras. Dommage.

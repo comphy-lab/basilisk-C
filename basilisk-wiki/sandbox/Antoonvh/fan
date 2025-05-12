@@ -1,0 +1,50 @@
+/**
+# Mixing an uniformly stratified fluid
+
+Disk-shaped fans of size $V = \pi R^2 \times w$ at a height $h$ above
+the surface ($h>R$) are located on a $L \times L$ infinite-grid layout
+($L>R$ is the periodicity length scale). Each fan accelerates the
+hosting (Bounsinesq) atmosphere thet is initially at rest and has a
+reference density $\rho_0$ according to a kinetic-energy input rate
+$P$ (i.e. effective power). The resulting fan's jets are affected by
+the presence of a constant vertical density gradient. Due to gravity
+it is so-called `stable' and can be associated with a the
+Brunt-Vaisala frequency ($N$).
+
+We *can* define a kinematic-power scale (i.e. $\mathcal{P}$ with
+units $\mathrm{m}^2 / \mathrm{s}^3$),
+
+$$\mathcal{P}=\frac{P}{\rho_0V}.$$
+
+The six system parameters $R, w, h, L, \mathcal{P}$ and $N$, with
+units of length and/or time give rise to four
+dimensionless groups. E.g.:
+
+Three geometrical groups,
+
+$$\Pi_1 = w/R$$
+$$\Pi_2 = L/R$$
+$$\Pi_3 = h/R$$
+
+Being the dimensioness width, periodicity length scale and
+height. Furthermore, there is a group that concerns the mixing capacity
+of a fan: 
+
+$$\Pi_4 = \frac{\mathcal{P}}{R^2N^3}$$
+
+Noting that the `mixing capacity' should be interpreted with respect
+to the geometrical parameters.
+
+## Additional complexity
+
+The orientation of the fan is described by it's angles with respect to
+some reference coordinate system.  In general a fan can be rotated
+over three angles (say $\theta, \phi, \psi$). If,
+
+$$ \{\theta, \phi, \psi\} = \overrightarrow{f}(t)$$
+
+Then the formulation of $\overrightarrow{f}(t)$ is an important system
+specification that affects mixing aswell. However, addional complexity
+arises as the functional form of $f$ may not live in an ordered
+parameter space.
+*/

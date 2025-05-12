@@ -1,0 +1,491 @@
+% !TEX encoding = UTF-8 Unicode
+\documentclass[a4paper,11pt]{article}
+\usepackage[francais]{babel}		% typographie franaise (french marche aussi)
+%\usepackage[mac]{inputenc}		% lettres accentuées
+\usepackage{color}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx, amsmath, amssymb}
+
+\setlength{\textheight}{26cm}
+\setlength{\topmargin}{-20mm}
+\setlength{\textwidth}{18cm}
+\setlength{\oddsidemargin}{-10mm} % marge gauche (im)paire = 1in. + x1mm
+%\setlength{\evensidemargin}{0mm} % book : marge gauche paire = 1in. + x2mm
+\setlength{\parskip}{1.2ex plus 0.9ex minus 0.4ex}
+
+\newcommand{\dd} {\textrm d}   
+\newcommand{\im} {\mathrm i}   
+\newcommand{\e}  {\textrm e}   
+\newcommand{\dpa}[2]  {\frac {\partial #1} {\partial #2}}   
+\newcommand{\ddpa}[2] {\frac {\partial^{2} #1} {\partial #2 ^{2}}}   
+\newcommand{\dto}[2]  {\frac {{\textrm d} #1} {{\textrm d} #2}}   
+\newcommand{\ddto}[2] {\frac {\textrm{d}^{2} #1} {\textrm{d} #2 ^{2}}}
+
+%-----------------------------------------------------------------------
+\begin{document}
+{\Large
+\noindent
+%M2R DET,
+
+\begin{center}
+
+{\bf M2R DET \\
+ Examen de seconde session du cours d'instabilités \\ 
+ 15 septembre  2020
+ } \\
+{\it \small Durée 2 heures. La qualité de la présentation de la copie sera prise en compte. 
+%Barme indicatif : I : 3 points, II 5 points, III : 12 points. %Présentation : 2 points.
+} \\
+%{\it \small Documents autorisés : tous documents manuscrits.}
+\end{center}
+}
+
+%\medskip
+%-----------------------------------------------------------------------
+%\textbf{I. Questions de cours}
+%
+
+\section{Question de cours}
+
+
+
+\begin{enumerate}
+
+\item Qu'appelle-t-on une {\em bifurcation } d'un système dynamique ? quels sont les principaux types de bifurcations ? Illustrez votre réponse en donnant (si possible) un exemple de chaque type parmi les instabilités 
+vues en cours.
+
+
+\item A partir des equations d'Euler linéarisées autour d'un écoulement moyen $U(y)$ et en considérant des perturbations proportionnelles à $e^{i k (x - c t)}$, démontrez l'équation de Rayleigh:
+$$
+(U(y)-c) \left( \partial_y^2 - k^2 \right) \hat{\psi}  + U''(y)  \hat{\psi} =0
+$$
+
+\item Pour un écoulement moyen $U(y)$ occupant un espace $y\in [a,b]$ où $y=A$ et $y=b$ sont des {\em murs rigides}, démontrez le critère de Rayleigh. Précisez dans la démonstration où interviennent les conditions aux limites en $a$ et $b$.
+ 
+
+$$
+\includegraphics[width=.55\linewidth]{FigureEcoulementsParalleles.png}
+$$
+
+\item 
+On considère 4 exemples d'écoulement parallèle d'un fluide incompressible représentés par les profils $(a)$, $(b)$, $(c)$, $(d)$ ci-dessus.
+Pour chacun des cas, expliquez la signification physique de l'écoulement (dans quels contextes ou applications ce type d'écoulement est-il rencontré)
+puis discutez ses propriétés de stabilité. A quel type d'instabilités peut-on s'attendre ?  Argumentez en vous basant sur le critère de Rayleigh.
+
+\item Un système dynamique {\em exponentiellement instable} peux-t-il conduire à une croissance d'énergie ?
+Donnez un exemple de système de ce type. Expliquez dans quels types d'écoulement de telles croissances d'énergies peuvent se produire.
+
+\item Quel est le principe d'une étude de {\em stabilité spatiale} d'un écoulement parallèle cisaillé ?
+Sous quelle(s) hypothèse(s) les résultats d'une telle étude sont-ils justifiés ?
+
+
+\end{enumerate}
+
+\clearpage
+
+
+%\section{Phénomène de croissance transitoire ; étude d'une équation modèle}
+
+
+
+
+
+\section{Exercice : le Brusselator}
+
+
+%\subsection{Brusselator homogène}
+
+Le "Brusselator" est un système dynamique modélisant certaines réactions chimiques donnant lieu à des comportements complexes.
+Ce modèle correspond au système suivant :
+
+
+%Consider the "Brusselator" 2D dynamical system:
+
+$$\frac{dx}{dt} = 1 + x^2 y - (B+1) x$$
+
+$$\frac{dy}{dt} = B x-x^2 y $$
+
+%This dynamical system is a classical model initially inttroduced to model an oscillating chemical reaction. Here $x$(t) and $y(t)$ correspond to the concentrations of two chemical products, and $A$ and $B$ are constants.
+
+\begin{enumerate}
+
+\item Montrez que ce système admet un point fixe unique  $[x,y] = [x_0,y_0]$, et donnez l'expression de $x_0$ et y_0$ en fonction du paramètre $B$.
+
+\item On étudie la stabilité linéaire du système en posant $[x,y] = [x_0,y_0] + [x',y']$ ou $x'$, $y'$ sont supposées de faible amplitude.
+
+Montrez que $[x',y]$ obéit a un système linéaire de la forme 
+$$
+d / dt \left [ \begin{array}{c} x' \\ y' \end{array} \right] = {\cal A} \left [ \begin{array}{c} x' \\ y' \end{array} \right]
+$$
+où $\cal A$ est une matrice dont vous donnerez l'expression en fonction du paramètre $B$.
+
+\item 
+On cherche des solutions sous forme de modes propres. Montrez que les valeurs propres $\lambda$ sont solutions du polynôme caractéristique suivant :
+
+$$
+\lambda^2 - (B-2) \lambda + 1 = 0
+$$
+ 
+\item Justifiez que le système subit une bifurcation lorsque le paramètre $B$ dépasse la valeur seuil $B_c=2$. De quel type de bifurcation s'agit-il ? à quel type de comportement peut-on s'attendre pour $B>2$ ?
+
+
+\end{enumerate}
+
+\end{document}
+
+
+%$$
+%\frac{d x_1}{dt}  = −(\beta +1)x_1+x_1^2 x_2+\alpha,
+%$$
+%$$
+%\frac{d x_2}{dt} = \beta x_1 - x_1^2 x_2;
+%$$
+
+
+
+
+
+
+%\end{enumerate}
+
+\section{Diagramme de bifurcation d'une équation modèle (Charru, exercice 11.7.12)}  
+
+On étudie l'équation différentielle suivante pour la fonction $x(t)$:
+$$
+\dot{x}  =  4 x \left( (x^2-1)^2-\mu -1\right) 
+$$
+
+\begin{enumerate}
+\item Déterminez les points d'équilibre de cette équation (c.a.d. les solutions stationnaires de la forme $x(t) = x_s$). On montrera qu'il y a une seule solution pour $\mu<-1$ et trois pour $\mu>-1$.
+
+\item Etudiez la stabilité de ces solutions d'équilibre.
+
+\item Tracez le diagramme de bifurcations. Quelles bifurcations classiques reconnait-on dans ce diagramme ?
+
+\end{enumerate}
+
+
+\section{Instabilité de Rayleigh-Taylor}
+
+On étudie les propriétés de stabilité d'un état de base correspondant à un fluide incompressible de masse volumique $\rho$ occupant le demi-espace $y>0$, le demi-espace $y<0$ étant occupé un gaz de masse volumique négligeable. La gravité $\vec g$ est dirigée dans la direction $-\vec{e}_y$. On néglige la viscosité.
+
+
+\begin{enumerate}
+
+\item Justifiez physiquement pourquoi la situation considérée est instable.
+
+\item On néglige tout d'abord la tension de surface. Démontrez que des perturbations de la 
+surface de la forme 
+$$
+y = \eta(x,t) = C e^{i kx - i \omega t}
+$$  sont gouvernées par une relation de dispersion de la forme suivante : 
+$$\omega^2 = -gk$$ 
+Justifiez que cette relation prédit bien une instabilité.
+
+\item On admet que dans le cas de perturbations de faible amplitude la courbure de la surface libre est donnée par $K = \partial^2 \eta / \partial x^2$.
+Comment faut-il modifier la relation de dispersion écrite plus haut pour tenir compte de l'effet de la tension de surface ?
+Que peut-on en conclure concernant l'effet de la tension de surface sur l'instabilité ?
+
+\end{enumerate}
+
+
+\clearpage
+
+\section{Etude théorique et numérique d'une équation modèle conduisant à des instabilités}
+
+
+On étudie l'équation aux dérivées partielles suivante, 
+gouvernant l'évolution de la fonction scalaire $\phi(x,t)$, définie dans l'intervalle $x\in [0,L]$ et $t\in [0,\infty]$ :
+
+\begin{equation}
+\frac{\partial \phi}{\partial t} =  \sigma_0 \phi + \kappa \frac{\partial^2 \phi}{\partial x^2}  
+\quad \quad (\alpha >0)
+\end{equation}
+
+associée aux conditions limites 
+$$\phi(0,t) = \phi(+L,t) = 0$$ 
+
+et à la condition initiale $$\phi(x,0) = \phi_0(x).$$
+
+Ce modèle peut décrire par exemple l'évolution d'une population de micro-organismes, en présence d'une source de nourriture $\sigma$ homogène, les bactéries subissant de plus une diffusion due à leurs déplacements aléatoires (modélisée par le terme de dérivée seconde).
+
+On cherche à étudier la stabilité de ce problème à l'aide d'une approche de stabilité linéaire, en considérant des solutions sous forme de modes propres de la forme
+
+$$
+\phi(x,t) = \hat{\phi}(x) e^{\lambda t}
+$$
+
+
+
+\subsection{Etude théorique}
+
+\begin{enumerate}
+
+\item Montrez que les valeurs propres de ce système sont données par l'expression suivante :
+
+$$
+\lambda_n = \sigma - \kappa n^2 \pi^2 / L^2 \qquad ( n = 1,2,...) 
+$$ 
+
+Et donnez l'expression des fonctions propres $ \hat{\phi}_n(x)$ correspondantes.
+
+%(indication: chercher les fonctions propres $\hat{\phi}(x)$ sous forme d'une fonction harmonique (sinus ou cosinus) vérifiant les conditions aux limites indiquées).
+
+\item A quelle condition sur les paramètres $\sigma, \kappa$ et $L$ le système est-il instable ?
+
+\item Dans le cas ou le système est instable, quel comportement non physique est visible dans la solution de type "mode propre" ? Que manque-t-il à l'équation modèle pour corriger ce défaut ?
+
+\end{enumerate}
+
+\subsection{Etude numérique}
+
+
+%\begin{enumerate}
+
+%\item 
+
+Proposez une méthode de discrétisation du problème ramenant l'étude de stabilité linéaire à la résolution d'un problème aux vecteurs propres de la forme $A X = \lambda B X$, ou $A$ et $B$  sont des matrices carrées dont vous expliquerez la structure.
+
+
+%\item Ecrire l'ébauche d'un programme (dans un language de votre choix ou sous forme d'algorithme) 
+%calculant les valeurs propres du problème.
+
+%\end{enumerate}
+
+
+\end{document}
+
+
+
+%\section{Le Brusselator}
+
+
+%\subsection{Brusselator homogène}
+
+%Le "Brusselator" est un système dynamique modélisant certaines réactions chimiques donnant lieu à des comportements complexes.
+%Ce modèle correspond au système suivant :
+
+%$$
+%\frac{d x_1}{dt}  = −(\beta +1)x_1+x_1^2 x_2+\alpha,
+%$$
+%$$
+%\frac{d x_2}{dt} = \beta x_1 - x_1^2 x_2;
+%$$
+
+\end{document}
+
+
+%-----------------------------------------------------------------------
+\section{Modèle de Lorenz de la convection de Rayleigh-Bénard} \label{sec:lorenz}
+
+Le système de Lorenz est une modélisation extrême de la convection thermique de Rayleigh-Bénard, qui reproduit certains comportements observés expérimentalement, notamment l'apparition de rouleaux de convection au-delà d'une valeur critique du nombre de Rayleigh. Ce système s'écrit
+\begin{eqnarray*}
+\dot{x} &=& - P x + P y \\
+\dot{y} &=& - y + r x - z x  \\
+\dot{z} &=& - b z + x y,
+\end{eqnarray*}
+
+%où $x$ est une vitesse caractéristique, et $y$ et $z$ deux températures caractéristiques. $P$ est un nombre sans dimension analogue au nombre de Prandtl, $r$ correspond à un nombre de Rayleigh réduit, et $b$ correspond au nombre d'onde de la perturbation. On considère ici $r$ comme le paramètre variable, et les deux autre paramètres fixés aux valeurs classiques $P = 10$ et $b = 8/3$. 
+
+\begin{enumerate}
+
+\item Rappelez le lien entre ce système et la convection de Rayleigh-Bénard. Que représentent les 3 variables dynamiques $x$, $y$, $z$ ? A quoi correspondent les
+paramètres $r$, $P$ et $b$ ?
+
+Dans la suite on prendra les valeurs classiques $P = 10$ et $b = 8/3$ et on considèra $r$ comme paramètre de contrôle.
+
+\item Etudiez la stabilité de la solution triviale $[x,y,z]$ = $[0,0,0]$. Montrez que celle-ci subit une bifurcation pour $r>1$. De quel type de bifurcation s'agit-il ?
+
+\item Déterminer les points fixes non triviaux (notés $[x_p,y_p,z_p]$) du système apparaissant pour $r>1$. 
+
+A quelles structures d'écoulement du problème de convection ces solutions correspondent-elles ?
+
+\item Etudiez la stabilité linéaire des points fixes apparaissant pour $r>1$ en posant $[x,y,z] = [x_p,y_p,z_p] + \epsilon [\hat{x},\hat{y},\hat{z}] e^{\lambda t}$ 
+avec $\epsilon \ll 1$.
+
+Ecrire le polynôme caractéristique dont les racines sont les valeurs propres $\lambda$.
+
+\item On admettra que le polynôme écrit précédemment a trois solutions, dont l'une est réelle et négative, et les deux autres complexes conjuguées de partie réelle négative lorsque $r < 24,74$ et positive lorsque $r>24.74$. 
+A quel type de bifurcation peut-on s'attendre ?
+   
+\item Décrire en quelques mots la nature des solutions rencontrées pour $r>24.74$ et la signification physique de ces solutions pour le problème de convection.   
+
+\end{enumerate}
+
+
+
+
+\section{Instabilité d'une couche de mélange d'épaisseur nulle entre deux fluides non miscibles de même densité}
+
+
+On étudie une couche de mélange (discontinuité de vitesse) entre deux fluides {\em non miscibles} 
+mais {\em de masse volumique $\rho$ identique} .
+
+Par exemple le demi-espace $y<0$ est rempli d'huile de parafine de vitesse $u =-U$ et le demi-espace $y>0$ est rempli d'alcool de vitesse
+$ u = +U$ (deux liquides de densité sensiblement égale).
+
+On note $\gamma$ la tension de surface ; les masses volumiques étant identiques {\em on pourra négliger la gravité }.
+
+On souhaite étudier la stabilité linéaire de perturbations de longueur d'onde $\lambda = 2 \pi /k $ dans la direction $x$.
+On suppose pour cela que l'interface est déplacée d'une amplitude $y = \eta(x,t) = C e^{i k x - i \omega t}+ c.c.$.
+
+On admettra que la courbure d'une interface ainsi définie est donnée par $K \approx \partial^2 \eta/ \partial x^2$.
+  
+
+
+
+\begin{enumerate}
+
+\item Montrez que des perturbations de nombre d'onde $k$ dans la direction $x$ sont gouvernées par la relation de dispersion suivante :
+\begin{equation}
+(k U + \omega)^2 + ( kU - \omega)^2 - \frac{\gamma}{\rho}  k^3 = 0
+\end{equation} 
+
+Vous utiliserez la démarche de votre choix pour établir cette relation mais veillerez à bien préciser et justifier les hypothèses faites dans la modélisation.
+
+\item Représentez graphiquement $\omega_i$ en fonction de $k$ et $c_r = \omega_r/k$ en fonction de $k$.
+
+\item Montrez qu'on a deux régimes différents correspondant à $k<k_c$ et $k>k_c$ avec $k_c = 2 \rho U^2 / \gamma$. 
+Interprétez physiquement chacun de ces deux régimes.
+
+\item Calculez la longueur d'onde $\lambda_{\max}$ correspondant au mode le plus amplifié, ainsi que le taux d'amplification $\omega_{i,max}$ correspondant.
+
+\end{enumerate}
+
+
+
+
+\section{Evolution d'une population animale : étude de stabilité}
+
+
+
+On étudie l'équation aux dérivées partielles suivante, gouvernant l'évolution de la fonction scalaire $\phi(x,t)$, définie dans l'intervalle $x\in [-L,L]$ et $t\in [0,\infty]$ :
+
+\begin{equation}
+\frac{\partial \phi}{\partial t} + U \frac{\partial \phi}{\partial x} =  \sigma(x) \phi + k \frac{\partial^2 \phi}{\partial x^2}  
+\quad \quad (\alpha >0)
+\end{equation}
+
+
+associée aux conditions limites $\phi(-L,t) = \phi(+L,t) = 0$ et à la condition initiale $\phi(x,0) = \phi_0(x)$.
+
+Ce modèle peut décrire par exemple l'évolution d'une population de micro-organisme dans une rivière, en présence d'une source de nourriture $\sigma(x)$ inhomogène, les bactéries subissant de plus une diffusion due à leurs déplacements aléatoires (modélisée par le terme de dérivée seconde) ainsi qu'une advection par le courant moyen (de vitesse uniforme $U$).
+
+On cherche à étudier la stabilité de ce problème à l'aide d'une approche de stabilité linéaire, en considérant des perturbations modales de la forme
+$\phi(x,t) = \hat{\phi}(x) e^{\lambda t}$.
+
+
+
+\begin{enumerate}
+
+
+\item Proposez une stratégie de résolution numérique du problème linéaire précédent, permettant de ramener l'étude à la recherche de valeurs propres 
+d'une matrice $A$. 
+
+(On ne demande pas d'écrire un programme complet mais d'expliquer comment construire la matrice $A$ et de préciser les principales étapes de la résolution numérique).
+
+
+\item Dans le cas où il existe une valeur propre $\lambda$ de partie réelle positive, que prédit la solution linéaire ? Comment pourrait-on améliorer le modèle pour corriger ce défaut ?
+
+
+%\item 
+%Lorsque le paramètre de contrôle $r$ est varié, à quel type de comportement peut-on s'attendre ?
+%et le choix de la condition initiale $F_0(x)$, a quel type de comportement peut-on s'attendre concernant la solution du problème non linéaire ? Illustrez votre réponse par des figures correspondant aux divers cas que vous pourrez imaginer. 
+
+
+\end{enumerate}
+
+
+\end{document}
+
+
+
+\item Donner la solution du système différentiel $\dot{\bf x} = A {\bf x}$, ${\bf x}(0) = {\bf x}_0$, pour les deux matrices suivantes : 
+\begin{equation}
+A = \left(
+\begin{array}{cc}
+a & 0 \\
+0 & b
+\end{array} \right) ; \qquad
+A = \left(
+\begin{array}{cc}
+\sigma & -\omega \\
+\omega & \sigma
+\end{array} \right).
+\end{equation}
+
+%\item Soit le système différentiel $\dot{\bf x} = A {\bf x}$, $A = {\rm diag}(\lambda_1, \lambda_2)$. Tracer le portrait de phase pour $(\lambda_1, \lambda_2) = (Ð1,1)$ ; préciser le type du point fixe, et à quelle valeur propre correspond chaque direction propre.
+
+%\item  Soit le système différentiel $\dot{\bf x} = A {\bf x}$, $A = {\rm diag}(\lambda_1, \lambda_2)$. Tracer le portrait de phase pour $(\lambda_1, \lambda_2) = (2,1)$ ; préciser le type du point fixe, et à quelle valeur propre correspond chaque direction propre.
+
+%\item Les systèmes des deux questions précédentes sont-ils conservatifs ?
+
+\item Donner la définition dÕun point fixe hyperbolique. Donner la définition de lÕéquivalence topologique de deux systèmes. Donner la condition de lÕéquivalence topologique dÕun système non linéaire et du système linéarisé en un point fixe.
+
+\item On considère le système différentiel
+\begin{eqnarray*}
+\dot{x} = x (2 Ð x Ð y), \\
+\dot{y} = y (3 Ð x Ð 2y).
+\end{eqnarray*}
+\begin{enumerate}
+\item Déterminer les régions du plan $(x,y)$ o le flot défini par ce système est contractant ou dilatant. 
+\item Déterminer les points fixes, leur stabilité, et leur type. 
+\item Déterminer les directions propres pour chacun des points fixes. 
+\item \'Ebaucher le portrait de phase au voisinage des points fixes. 
+\item Compléter le portrait de phase, après avoir tracé le champ de vecteurs $(\dot{x}, \dot{y})$ sur les axes $x = 0$ et $y = 0$, sur les courbes telles que $\dot{x} = 0$ ou $\dot{y} = 0$, et déterminé les régions du plan o $\dot{x} > 0$ et $\dot{y} > 0$, $\dot{x} > 0$ et $\dot{y} < 0$, etc.
+\end{enumerate}
+
+\item On considère lÕoscillateur de Dffing dissipatif 
+\begin{equation}
+\ddto{x}{t} + \epsilon \dto{x}{t} +  x - a x^3 = 0
+\label{eq:0731bis}
+\end{equation}
+avec $\epsilon$ réel, $a >0$. Déterminer les points fixes dans lÕespace des phases. Déterminer le type du point fixe $(0, 0)$ selon la valeur de $\epsilon$.
+
+%\item Quelle est la condition de stabilité linéaire dÕun point fixe $x_*$ d'un système différentiel $\dot{\bf x} = A {\bf x}$, ${\bf x} \in  \mathbb{R}^n$. Pour $n=2$, représenter les valeurs propres dans le plan complexe (a) pour $x_*$ stable, (b) pour $x_*$ instable.
+
+\item Quelle est la condition de stabilité linéaire dÕun point fixe $x_*$ dÕune application ${\bf x}_{k+1} = f({\bf x}_k)$, ${\bf x} \in  \mathbb{R}^n$ ? Pour $n = 2$, représenter le spectre des valeurs propres dans le plan complexe (a) pour $x_*$ stable, (b) pour $x_*$ instable.
+
+\item Déterminer les points fixes de lÕapplication 
+\begin{equation}
+x_{k+1} = x_k (1 + \mu - x_k),
+\end{equation}
+ainsi que leur stabilité, selon la valeur de $\mu$ réel.
+
+\item \`A quelles condition un point fixe dÕune application est-il dit hyperbolique ? Pour quelles valeurs de $\mu$ les points fixes de lÕapplication ci-dessus sont-ils non hyperboliques ?
+
+\item Déterminer les points périodiques de période minimale 2 de lÕapplication ci-dessus.
+
+
+\end{enumerate}
+
+
+\end{document} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+NOM - Prénom :	4 mars 1998
+
+Phénomènes non linéaires Ð Contrle continu n¡ 2
+
+
+6. Soit A = BBC[(AARHS2CO 2(a; b;c; d)) la matrice jacobienne dÕune application, calculée en un point fixe. Quelles inégalités les invariants de cette matrice doivent-ils vérifier pour que le point fixe soit un noeud stable ?
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+NOM - Prénom :	Date : 18 mars 1998
+
+Physique non linéaire Ð Contrle continu n¡ 3
+
+1. système O(x;¥) = f(x) : donner la forme normale et le diagramme de bifurcation dÕune bifurcation noeud-col.
+
+2. système O(x;¥) = f(x) : donner la forme normale et le diagramme de bifurcation dÕune bifurcation fourche.
+
+3. Soit le système O(x;¥) = mx Ð x2. Tracer le diagramme de bifurcation et préciser la nature de la bifurcation.
+
+4. système O(w;¥) = f(w ) : Donner la forme normale et le diagramme de bifurcation dÕune bifurcation de Hopf.
+
+5.Quel type de bifurcation lÕapplication xn+1 = mxn Ð xO(n;2)  subit-elle en m = 1.Tracer le diagramme de bifurcation. 
+
+6. On considère une application xn+1 = f(xn) dont un point fixe perd son hyperbolicité pour m = 0 avec l = Ð1. A quel type de bifurcation peut-on sÕattendre ? Quelle condition f(x) doit-elle remplir pour quÕil en soit ainsi ?
+

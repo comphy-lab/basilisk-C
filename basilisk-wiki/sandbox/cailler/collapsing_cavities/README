@@ -1,0 +1,630 @@
+---
+  title: Simulations of conical collapsing cavities
+---
+
+A bubble has just burst at the ocean free surface, then, collapses: 
+the conical formed cavity develops a self-similar evolution leading to a 
+*finite-time singularity* coming from the balance between inertia and capillary 
+forces. As already shown in [`keller_miksis`](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c) 
+and [`sierou_lister`](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c) 
+projects, this collapse evolves according to the power law $(t_0 - t)^{2/3}$, 
+where $t_0$ is the time of singularity (divergence of velocity and pressure 
+fields). 
+
+# Achilles and the tortoise
+
+<figure style=float:right>
+  <img
+  src="img_collapsing/collapsing_zenon_tortoise.png"
+  alt="Achilles and the tortoise"
+  width="300px"
+  />
+  <figcaption class="figure-caption text-center">
+  <i>Achilles and the tortoise paradox</i> by
+  <a href="https://www.martingrandjean.ch/bergson-paradoxes-zenon-achille-tortue/">
+  M. Grandjean</a>
+  </figcaption>
+</figure>
+
+If we assume that the collapse does not leave the self-similar route, 
+the same interface shape should recur indefinitely, without even 
+reaching the singularity, since there exists an infinity of scales between 
+$t_0$ and the time under consideration. To put it in other words, it would be 
+*impossible* to go *beyond* the singularity. 
+
+This problem of infinite divisibility of space and time was first stated as the 
+*Achilles and the tortoise paradox* by 
+[*Zeno of Elea*](https://en.wikipedia.org/wiki/Zeno_of_Elea) (Vth--century BC 
+Greek philosopher). In his argument, the famous hero *Achilles* is in a footrace 
+with a tortoise having initially some advance on him. For the Eleatic, although 
+*Achilles* is able to reach the initial position of the tortoise, the latter has 
+covered a finite distance during the same duration of time keeping the hero at 
+bay. *Achilles* reaches again quickly the new reptile's position, but the tortoise 
+has moved forward so that a gap still exists bteween the two runners. 
+
+By iterating the process, the philosopher declares that it is **impossible** for 
+*Achilles* to catch up with the tortoise, as it will always have a head start on 
+the hero, no matter the infinitesimal scale.
+
+However, this paradox is easily solved by noticing the **finiteness** of time 
+during which *Achilles* reaches the tortoise, so that timesteps between each 
+process described by *Zeno of Elea* tend to *zero*.
+
+Going back to our problem, it means that to solve numerically a finite-time 
+singularity of a collapsing cavity -- that is to say forming a *perfect cone* -- 
+one should approach it indefinitely as the likes of *Achilles* and the tortoise; 
+therefore having an *infinite mesh resolution* $\Delta$. Nonetheless, due to the 
+[CFL condition](http://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition), 
+it also means that corresponding timesteps $\Delta t$ are becoming infinitesimal, 
+so calculations never end! 
+An arbitrarily infinite numerical precision being not scaled for human time, 
+the finiteness of the grid resolution necessarily implies to cross the fictitious 
+horizon of the cone by some "numerical defect", leaving then the self-similar 
+route by artificial/non-physical means.
+
+Luckily for the expected numerical work to be done, collapsing cavities of 
+bursted bubbles ends experimentally (and numerically too!) to **liquid jets** 
+formation, *i.e.* in reality, something physically happens *beyond* the 
+singularity at $t_0$ that can not be predicted by the self-similar solution. 
+This scale invariance is therefore *physically* left in its ultimate moments, 
+when the curvature reversal occurs, allowing to pass from a conical structure 
+to a jet one. 
+
+Hence, we are let to figure out the physical mechanism for crossing the singularity 
+horizon by a numerical approach, and not only by some "numerical defect". 
+
+
+# "Ultraviolet cutoffs"
+
+Indeed, in the experiment of *Faraday waves* developed by 
+[Zeff *et al.*, (2000)](#zeff2000), a topological diversity of collapsing cavity shapes 
+close to the curvature singularity is exhibited and linked with various jet 
+velocities (*see figure below*): 
+
+![Different surface depressions for various surface wave amplitudes ([Zeff *et al.*, 2000](#zeff2000))](img_collapsing/collapsing_zeff_cavities.png){width="32%"}
+
+When wave amplitudes $h$ are less than a critical threshold $h_c$, the cavity 
+interface close to the singularity keeps a smooth curvature evolution, and the 
+jets produced are of moderate speed $(7 \text{ m/s})$. 
+For amplitudes around $h_c$, the cavity walls are becoming parallel to the 
+symmetry axis, and the resulting jet can reach $50 \text{ m/s}$! 
+Finally, for $h > h_c$, *bubble pinchoffs* are observed and are responsible for 
+the velocity drop occurring at the jet's tip $(6 \text{ m/s})$. 
+
+The authors also remark that with the increase of the flow velocity, the apex 
+of the collapsing cone becomes *blunt*. To explain this change of topology and 
+the saturation of the jets velocities instead of the expected self-similar 
+singularity, a *viscous "ultraviolet cutoff"* argument -- happening right before 
+the curvature reversal -- is developed.
+
+
+<figure style=float:left>
+  <img
+  src="img_collapsing/collapsing_bartolo.png"
+  alt="Drop impacts on superhydrophobic surfaces"
+  width="250px"
+  />
+  <figcaption class="figure-caption text-center">
+  Drop impacts on a superhydrophobic surface
+  </figcaption>
+</figure>
+
+A similar argument of "*cutoff mechanism*" can be found in the paper of 
+[Bartolo *et al.*, (2006)](#bartolo2006) where drop impacts on a superhydrophobic 
+surface have been studied (see adjacent figure). 
+In this experiment, liquid jets' formation can be preceded by trapped bubbles, 
+depending on the velocity impact. In the latter case, complex topological events 
+occurr and from which emerge thin and very fast jets. 
+The authors suggest an analogy between these shape changes and the divergence of 
+the velocity of the jets with the capillary-inertial singularities of 
+[Zeff *et al.*, (2000)](#zeff2000) or the simulated bursting bubbles of 
+[Duchemin *et al.*, (2002)](#duchemin2002), since they observe approximately 
+over a time decade a self-similar behaviour scaling as $(t_0 - t)^{2/3}$ for 
+the liquid jets profiles.
+
+However, without any experimental device fast enough to follow the extremely rapid 
+dynamics of the collapsing cavity prefiguring the jet's formation, the question 
+remains for a capillary-inertial self-similar collapse concerning the drop impacts, 
+even though the authors claim that:
+
+> "*Theoretically there is no reason why the length scales [of the ultrafast collapse dynamics]* 
+*should not follow the same* $|t - t_0|^{2/3}$ *behavior after the singularity.*"
+
+Nonetheless, this claim is nuanced by the suggestion of an intrinsic length 
+scale responsible for the *ultraviolet cutoff* of the singularity. 
+Consequently, the issue of the regularization mechanism is still not addressed.
+
+
+# How can we numerically prepare a *singular state*?
+
+In both experiments of [Zeff *et al.*, (2000)](#zeff2000) and 
+[Bartolo *et al.*, (2006)](#bartolo2006), the authors have great difficulties 
+to capture the ultimate moments linking the cavity collapse to the liquid jet. 
+But their measured jet's velocities are **finite**, therefore imply a 
+*physical regularization* of the singularity at the curvature reversal; to put 
+it in other words, the capillary-inertial self-similar regime *has to be left*. 
+In that case, how could we understand the origin of this physical mechanism?
+
+
+## Time reversals of recoiling cones
+
+In another project ([`sierou_lister`](http://basilisk.fr/sandbox/cailler/sierou_lister/)), 
+the self-similar recoil of a 3D--AXI cone submitted to strong negative
+[*dipolar flows*](http://basilisk.fr/sandbox/cailler/sierou_lister/README) 
+highlighted the development of [*jet structures*](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c#discussion). 
+This important result was an extension of the paper of [Sierou \& Lister, (2004)](#sierou2004) 
+and will be widely used in our simulations. 
+But another fundamental aspect of *Sierou \& Lister*'s work still not exploited 
+is the following crucial remark: 
+
+<div class="message">
+<div id="msg_logo"><img src="/img/warning.png"></div>
+**Fundamental Remark**
+
+  <p style="text-align: center">
+  For potential flows, collapsing cavities of bursting bubbles correspond to a 
+  **time reversal** of a surface tension driven recoil of conical interfaces 
+  having an open angle $\theta_0$ with their axis of symmetry larger than $90$°.
+  </p>
+</div>
+
+Actually, for an irrotational, inviscid and incompressible flow, the following 
+dynamic and kinematic boundary conditions in self-similar form are found to be, 
+according to [*this note*](http://basilisk.fr/sandbox/cailler/sierou_lister/README#far-field-self-similar-asymptotic-expansions) (see notations there):
+
+$$
+- \dfrac{1}{3}{\overline{\phi}^-} 
+  + \dfrac{2}{3} \overline{R} \, \partial_{\overline{R}} \overline{\phi}^-
+  + \dfrac{1}{2} \left[
+    \left(
+      \partial_{\overline{R}} \overline{\phi}^- 
+    \right)^2
+    + \dfrac{1}{{\overline{R}}^2} \left(
+      \partial_{\theta} \overline{\phi}^- 
+    \right)^2
+  \right]
+  + \overline{\kappa} 
+  = 0
+$$
+$$
+- \overline{R} \, \partial_{\overline{R}} \overline{\phi}^\pm \, 
+\partial_{\overline{R}} \overline{F} 
++ \dfrac{1}{\overline{R}} \partial_{\theta} \overline{\phi}^\pm  
+- \dfrac{2}{3} {\overline{R}}^2 \, \partial_{\overline{R}} \overline{F} 
+= 0
+$$
+
+The very same equations are recovered for the *pre-pinching* of drops, or similarly 
+for collapsing cavities. 
+Now, the change of variable $(t_0 - t) \to (t - t_0)$ leads to 
+$\overline{\phi}^\pm \to - \overline{\phi}^\pm$, so 
+$\mathbf{\overline{u}}^\pm \to - \mathbf{\overline{u}}^\pm$, hence the *Laplace* 
+equation $\boldsymbol{\nabla} \overline{\phi}^\pm = 0$ is let invariant. 
+However, the boundary conditions are now equivalent to a *post-pinching* formulation 
+used for simulating recoiling cones:
+
+$$
+\dfrac{1}{3}{\overline{\phi}^-} 
+  - \dfrac{2}{3} \overline{R} \, \partial_{\overline{R}} \overline{\phi}^-
+  + \dfrac{1}{2} \left[
+    \left(
+      \partial_{\overline{R}} \overline{\phi}^- 
+    \right)^2
+    + \dfrac{1}{{\overline{R}}^2} \left(
+      \partial_{\theta} \overline{\phi}^- 
+    \right)^2
+  \right]
+  + \overline{\kappa} 
+  = 0
+$$
+$$
+\overline{R} \, \partial_{\overline{R}} \overline{\phi}^\pm \, 
+\partial_{\overline{R}} \overline{F} 
+- \dfrac{1}{\overline{R}} \partial_{\theta} \overline{\phi}^\pm  
+- \dfrac{2}{3} {\overline{R}}^2 \, \partial_{\overline{R}} \overline{F} 
+= 0
+$$
+
+Consequently, we do have the conclusion that a recoiling cone is no more than the 
+time reversal of a collapsing cavity (at least for the inviscid case).
+
+
+## New physical interpretation for dipolar flows
+
+From the numerical studies upon a recoiling liquid cone submitted to a far-field 
+dipolar flow (see [`sierou_dipolar_flow.c`](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c) and [`sierou_neg_dipolar_flow.c`](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c)), we have seen that (for $\theta_0 > 90$°):
+
+  * for $\widetilde{\mu}_0 > 0$, beyond a given threshold $\widetilde{\mu}_0^*$ 
+  depending on the initial cone angle, the dipolar flow overcomes the capillary 
+  one, therefore the obtuse cone *moves back*;
+  * for $\widetilde{\mu}_0 \leqslant 0$, the dipolar flow strengthens the capillary 
+  one, so that the obtuse liquid cone *moves forward*, developping potentially 
+  jet structures;
+  * the more $|\widetilde{\mu}_0|$ increases, the bigger the displacements of 
+  the apex for $\widetilde{\mu}_0 < 0$ (for the opposite sign of 
+  $\widetilde{\mu}_0$, the displacement are getting smaller). 
+
+Given now that these movements are related to a kinematic reversal of a collapsing 
+cavity, the dipolar flow $\mu_d$ can be linked to a **draining flow** of the 
+said cavity, close to the singularity, as shown on the below figure:
+
+![Illustration of the link between $\widetilde{\mu}_0$ and the time reversal](img_collapsing/collapsing_time_reversal.png){width="40%"}
+
+Indeed, if $\widetilde{\mu}_0 > 0$ is larger than the threshold value 
+$\widetilde{\mu}_0^*(\theta_0 > 90$°$)$, then an initially still obtuse liquid 
+cone *recoils* due to the dipolar flow counteracting force against the surface 
+tension ones, and moves *away* from its initial singular state (*left figure*). 
+By applying the change of variable $t \to - t$ (*time reversal*), 
+a **kinematic reversal** $\mathbf{u} \to - \mathbf{u}$ occurs, and consequently 
+$\widetilde{\mu}_0 \to - \widetilde{\mu}_0 < 0$ (*centered figure*). Now, the 
+recoiling cone has become a finite-time singularity represented by the collapse 
+of a cavity of air. After the reformation of the singular state, a *jet structure* 
+appears in the post-singular state, with still $\widetilde{\mu}_0 < 0$ (*right figure*).
+
+
+## General method for approaching a singularity
+
+Thanks to the previous results, we are now able to build a numerical protocol 
+allowing us to simulate the convergence of a cavity towards a perfect cone. 
+The very first step will be to verify the kinematic invariance for inviscid 
+flows between a recoiling cone and a collapsing conical interface (by using 
+the idea illustrated in the first two sub-figures of the previous scheme). 
+Then, with the help of physical quantities of interest, like the liquid density, 
+its viscosity and surface tension, a *viscous length scale* $\ell_\mu$ and a 
+*viscous time scale* $t_\mu$ can be built to characterize viscous collapses. 
+At time $t_0 - t \approx t_\mu$ and length $\kappa^{-1} \approx \ell_\mu$, 
+we can reasonably expect viscosity to play a dominant role. 
+
+Hence, we will be able to study if crossing physically the singularity's 
+horizon is possible via a regularization mechanism triggered at viscous scales.
+
+
+# Comparing inviscid and viscous simulations
+
+Our goal being to characterize the possible viscosity effects close to the 
+finite-time singularity, having a method to compare with inviscid simulations 
+is therefore essential.
+
+## Viscous scales and orders of magnitude
+
+Adding viscosity effects to our simulations is responsible for the emergence 
+of typical space and time scales. The liquid phase is described by its density 
+$\rho_l$, its dynamic viscosity $\mu_l$, the gas phase by $\rho_g$ and $\mu_g$, 
+and the interface separating them by the surface tension $\sigma$. We can then 
+build a *viscous length scale*:
+
+$$
+\ell_\mu = \dfrac{{\mu_l}^2}{\rho_l \sigma}
+$$
+
+equating to $10 \text{ nm}$ in water and $0.1 \text{ mm}$ for a one-hundred more 
+viscous oil than water. Obviously, a *viscous time scale* can also be built:
+
+$$
+t_\mu = \dfrac{{\mu_l}^3}{\rho_l \sigma^2}
+$$
+
+equating $10^{-10} \text{ s}$ in water and $0.1 \text{ ms}$ in the same oil. By 
+dividing these two typical scales, a *viscous velocity* is easily formed:
+
+$$
+V_\mu = \dfrac{\ell_\mu}{t_\mu} 
+$$
+
+equating $70 \text{ m/s}$ in water, and $0.5 \text{ m/s}$ in the specific oil. 
+Finally, an estimate of the maximum pressure developed in presence of viscosity 
+can be made thanks to the following principle: for a collapsing cavity of a 
+bursted bubble, it is reasonable to consider that the capillary-inertial 
+self-similar evolution stops when the viscous length scale is reached. 
+Mathematically, it means that:
+
+$$
+\left(
+  \dfrac{\sigma (t_0 - t)^2}{\rho_l} 
+\right)^{1/3}
+\sim 
+\dfrac{{\mu_l}^2}{\rho_l \, \sigma} \equiv \ell_\mu
+\Rightarrow 
+(t_0 - t) \sim \dfrac{{\mu_l}^3}{\rho_l \, \sigma^2} 
+\equiv t_\mu
+$$
+
+Thus, in a self-similar description, the maximum pressure developed into the 
+liquid phase at viscous times is approximately:
+
+$$
+p_{max} \sim \rho_l \left(
+  \dfrac{\sigma^2}{{\rho_l}^2 \, (t_0 - t)^2}
+\right)^{1/3} 
+\sim \rho_l \left(
+  \dfrac{\sigma}{\mu_l}
+\right)^2
+$$
+
+equating to $100 \text{ bar}$ in water, and $10^{-2} \text{ bar}$ in the oil.
+
+
+
+## Dimensional Analysis 
+
+In the presence of surface tension, inertia, viscosity, and a far-field dipolar 
+flow $\mu_d$, every field $X$ characterizing the axisymmetric flow depends on the 
+following parameters:
+
+$$
+  X = f(r, z, t, \rho_l, \rho_g, \sigma, \mu_l, \mu_g, \theta_0, \mu_d) 
+$$
+
+with only $3$ independent dimensions (length, mass, time) needed to describe the 
+problem. According to the *Vaschy--Buckingham* theorem, this relation can be 
+rewritten in function of $11 - 3 = 8$ dimensionless quantities. We choose then 
+the three quantities $(\rho_l, \sigma, \mu_l)$ dimensionally independent in order 
+to build the following dimensionless quantities:
+
+$$
+\Pi 
+  = \Phi\left(
+  \dfrac{r}{\ell_\mu}, \dfrac{z}{\ell_\mu}, \dfrac{t}{t_\mu}, 
+  \dfrac{\rho_g}{\rho_l}, \dfrac{\mu_g}{\mu_l}, \theta_0, 
+  \dfrac{\mu_d}{{\ell_\mu}^2/t_\mu }
+\right)
+  = \Phi\left(
+    \tilde{r}, \tilde{z}, \tilde{t}, 
+    \dfrac{\rho_g}{\rho_l}, \dfrac{\mu_g}{\mu_l}, \theta_0, 
+    \widetilde{\mu}_d
+  \right)
+$$
+
+
+
+## Link between viscous and inviscid non-dimensionalizations 
+
+We are now able to compare the different contributions of capillary-inertial 
+forces and viscous forces to the *Navier--Stokes* equations that are expressed 
+in `Basilisk` by:
+
+$$
+\left\{\begin{array}{rcl}
+  \rho_l \left( 
+  \partial_t \mathbf{u} 
+  + \left( \mathbf{u} \cdot \boldsymbol{\nabla}\right) \mathbf{u}
+  \right)
+  &=&
+  - \boldsymbol{\nabla} p + \mu_l \boldsymbol{\nabla}^2 \mathbf{u} 
+  + \sigma \kappa \boldsymbol{\nabla} C 
+  \quad \text{in the liquid}\\
+  \rho_g \left( 
+  \partial_t \mathbf{u} 
+  + \left( \mathbf{u} \cdot \boldsymbol{\nabla}\right) \mathbf{u}
+  \right)
+  &=&
+  - \boldsymbol{\nabla} p + \mu_g \boldsymbol{\nabla}^2 \mathbf{u} 
+  + \sigma \kappa \boldsymbol{\nabla} C 
+  \quad \text{in the gas}
+\end{array}
+\right.
+$$
+
+recalling that $C$ stands for the volume fraction. 
+To do so, we will non-dimensionalize this set of equations depending on the 
+choice made (inviscid or viscous simulation).
+
+
+### Viscous non-dimensionalization
+
+If we non-dimensionalize the problem with the triplet $(\rho_l, \sigma, \mu_l)$, 
+then we have the following dimensionless quantities (represented with a *tilde*):
+
+$$
+\mathbf{u} = \dfrac{\sigma}{\mu_l} \, \mathbf{\widetilde{u}}
+\quad ; \quad 
+t = \dfrac{{\mu_l}^3}{\rho_l \, \sigma^2} \, \tilde{t} 
+\quad ; \quad 
+p = \rho_l \, \left( \dfrac{\sigma}{\mu_l} \right)^2 \, \tilde{p}
+\quad ; \quad 
+\kappa = \dfrac{\rho_l \, \sigma}{{\mu_l}^2} \, \widetilde{\kappa} 
+$$
+$$
+r = \dfrac{{\mu_l}^2}{\rho_l \, \sigma} \, \tilde{r} 
+\quad ; \quad
+z = \dfrac{{\mu_l}^2}{\rho_l \, \sigma} \, \tilde{z} 
+\quad ; \quad 
+\Delta = \dfrac{{\mu_l}^2}{\rho_l \, \sigma} \, \widetilde{\Delta} 
+\quad ; \quad 
+C = \widetilde{C}
+$$
+
+and the previous set of *Navier--Stokes* equations becomes:
+
+$$
+\left\{\begin{array}{rcl} 
+  \partial_{\tilde{t}} \mathbf{\widetilde{u}} 
+  + \left( \mathbf{\widetilde{u}} \cdot \widetilde{\boldsymbol{\nabla}}\right) 
+  \mathbf{\widetilde{u}}
+  &=&
+  - \widetilde{\boldsymbol{\nabla}} \tilde{p}
+  + \widetilde{\boldsymbol{\nabla}}^2 \mathbf{\widetilde{u}} 
+  + \widetilde{\kappa} \, \widetilde{\boldsymbol{\nabla}} \widetilde{C} 
+  \quad \text{in the liquid}\\
+  \partial_{\tilde{t}} \mathbf{\widetilde{u}} 
+  + \left( \mathbf{\widetilde{u}} \cdot \widetilde{\boldsymbol{\nabla}}\right) 
+  \mathbf{\widetilde{u}}
+  &=&
+  \textcolor{Orchid}{\dfrac{\rho_l}{\rho_g}} \left(
+  - \widetilde{\boldsymbol{\nabla}} \tilde{p} 
+  + \textcolor{orange}{\dfrac{\mu_g}{\mu_l}} \, 
+  \widetilde{\boldsymbol{\nabla}}^2 \mathbf{\widetilde{u}} 
+  + \widetilde{\kappa} \, \widetilde{\boldsymbol{\nabla}} \widetilde{C} 
+  \right)
+  \quad \text{in the gas}
+\end{array}
+\right.
+$$
+
+
+
+### Inviscid non-dimensionalization
+
+In an inviscid modelling, without any characteristic length scale, it is 
+necessary to introduce a typical length to non-dimensionalize the variables. 
+Let $L$ be this arbitrary length, so that, by using the triplet 
+$(\rho_l, \sigma, L)$, we do have the following dimensionless quantities:
+
+$$
+\mathbf{u} = \sqrt{\dfrac{\sigma}{L \, \rho_l}} \, \mathbf{\widetilde{u}}
+\quad ; \quad 
+t = \sqrt{\dfrac{L^3 \, \rho_l}{\sigma}} \, \tilde{t} 
+\quad ; \quad 
+p = \dfrac{\sigma}{L} \, \tilde{p}
+\quad ; \quad 
+\kappa = \dfrac{1}{L} \, \widetilde{\kappa} 
+$$
+$$
+r = L \, \tilde{r} 
+\quad ; \quad
+z = L \, \tilde{z} 
+\quad ; \quad 
+\Delta = L \, \widetilde{\Delta} 
+\quad ; \quad 
+C = \widetilde{C}
+$$
+
+and the dimensionless *Navier-Stokes* equations read as:
+
+$$
+\left\{\begin{array}{rcl} 
+  \partial_{\tilde{t}} \mathbf{\widetilde{u}} 
+  + \left( \mathbf{\widetilde{u}} \cdot \widetilde{\boldsymbol{\nabla}}\right) 
+  \mathbf{\widetilde{u}}
+  &=&
+  - \widetilde{\boldsymbol{\nabla}} \tilde{p}
+  + \textcolor{red}{\mathrm{Oh}} \, 
+  \widetilde{\boldsymbol{\nabla}}^2 \mathbf{\widetilde{u}} 
+  + \widetilde{\kappa} \, \widetilde{\boldsymbol{\nabla}} \widetilde{C} 
+  \quad \text{in the liquid}\\
+  \partial_{\tilde{t}} \mathbf{\widetilde{u}} 
+  + \left( \mathbf{\widetilde{u}} \cdot \widetilde{\boldsymbol{\nabla}}\right) 
+  \mathbf{\widetilde{u}}
+  &=&
+  \textcolor{Orchid}{\dfrac{\rho_l}{\rho_g}} \left(
+  - \widetilde{\boldsymbol{\nabla}} \tilde{p} 
+  + \textcolor{orange}{\dfrac{\mu_g}{\mu_l}} \,
+  \textcolor{red}{\mathrm{Oh}} \, \, 
+  \widetilde{\boldsymbol{\nabla}}^2 \mathbf{\widetilde{u}} 
+  + \widetilde{\kappa} \, \widetilde{\boldsymbol{\nabla}} \widetilde{C} 
+  \right)
+  \quad \text{in the gas}
+\end{array}
+\right.
+$$
+
+where $\mathrm{Oh}$ is the *Ohnesorge number* of the liquid:
+
+$$
+\mathrm{Oh} = \dfrac{\mu_l}{\sqrt{\sigma \, \rho_l \, L}}
+$$
+
+
+### Non-dimensionalization used and why
+
+As we can see, the inviscid and viscous non-dimensionalizations of the 
+*Navier--Stokes* equations solved in `Basilisk` only differ from the presence 
+or absence of the *Ohnesorge* number $\mathrm{Oh}$. Consequently:
+
+  * for inviscid simulations, $\mu_l = \mu_g = 0 \Rightarrow \mathrm{Oh} = 0$ 
+  and the arbitrary length $L$ introduced does not play any role;
+  * let $\mathrm{Oh} = 1$ be in the inviscid formulation: doing so, we recover 
+  the *viscous* non-dimensionalization, providing that $\ell_\mu$ becomes the 
+  characteristic length scale, since $L \equiv \ell_\mu \Leftrightarrow \mathrm{Oh} = 1$. 
+
+
+<div class="message">
+<div id="msg_logo"><img src="/img/warning.png"></div>
+**Fundamental Remark**
+
+  <p style="text-align: center">
+  To compare viscous simulations with inviscid ones, we choose to 
+  non-dimensionalize our variables according to the **capillary-inertial description** 
+  that is independent of the simulation size domain when viscosity is zero. 
+  We can then place ourselves directly at the characteristic length scale of the 
+  viscous problem, $L = \ell_\mu$, to match the inviscid non-dimensionalization 
+  with the viscous one when $\mu_l, \, \mu_g \neq 0$. 
+  This allows us to rigorously take the same size domain and grid resolution for 
+  our numerical experiments.
+  </p>
+</div>
+
+One can notice also the strict equivalence of the dimensionless times between 
+both formulations, since plugging $\ell_\mu$ into the capillary-inertial time 
+$t_\sigma := \sqrt{L^3 \rho_l / \sigma}$, we get the viscous time 
+$t_\mu = {\mu_l}^3 / (\rho_l \sigma^2)$.
+
+
+### Conclusion
+
+The conceptual difficulty comes from the fact we are using specific viscous scales 
+to set/design general parameters for our simulations (grid size, resolution, 
+time reversal...) while we are relying on the 
+[inviscid non-dimensionalization formulation](#inviscid-non-dimensionalization) 
+of a scale invariant problem in order to compare the two types of simulations 
+(viscous/inviscid).
+
+
+
+# References 
+/**
+~~~bib
+@article{zeff2000,
+  title={Singularity dynamics in curvature collapse and jet eruption on a fluid surface},
+  author={Zeff, Benjamin W and Kleber, Benjamin and Fineberg, Jay and Lathrop, Daniel P},
+  journal={Nature},
+  volume={403},
+  number={6768},
+  pages={401--404},
+  year={2000},
+  url = {https://complex.umd.edu/papers/nature2000.pdf},
+  doi = {doi: 10.1038/35000151},
+  publisher={Nature Publishing Group UK London}
+}
+
+@article{duchemin2002,
+  title={Jet formation in bubbles bursting at a free surface},
+  author={Duchemin, Laurent and Popinet, St{\'e}phane and Josserand, Christophe and Zaleski, St{\'e}phane},
+  journal={Physics of fluids},
+  volume={14},
+  number={9},
+  pages={3000--3008},
+  url = {https://laurentduchemin.gitlab.io/Papers/dpjz.pdf},
+  year={2002},
+  doi = {https://doi.org/10.1063/1.1494072},
+  publisher={American Institute of Physics}
+}
+
+@article{sierou2004,
+  author = {Sierou, A. and Lister, J. R.},
+  title = {Self-similar recoil of inviscid drops},
+  journal = {Physics of Fluids},
+  volume = {16},
+  number = {5},
+  pages = {1379-1394},
+  year = {2004},
+  month = {05},
+  issn = {1070-6631},
+  doi = {10.1063/1.1689031},
+  url = {https://doi.org/10.1063/1.1689031},
+  eprint = {https://pubs.aip.org/aip/pof/article-pdf/16/5/1379/19153172/1379\_1\_online.pdf},
+}
+
+@article{bartolo2006,
+  title={Singular jets and bubbles in drop impact},
+  author={Bartolo, Denis and Josserand, Christophe and Bonn, Daniel},
+  journal={Physical review letters},
+  volume={96},
+  number={12},
+  pages={124501},
+  year={2006},
+  doi={https://doi.org/10.1103/PhysRevLett.96.124501},
+  publisher={APS}
+}
+~~~
+*/

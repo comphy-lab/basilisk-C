@@ -1,0 +1,5 @@
+Hello, welcome to my sandbox. I am currently a PhD student at Sorbonne Université (France). The topic of my PhD thesis is the numerical simulation of  bubbly flow in electrolysis. But I also have some interests in bubble, drop and other two-phase flow.  The codes for part of my work are provided here. Feel free to contact me if you have any problems or if you have something to discuss with me. Email: wei.qin@dalembert.upmc.fr
+
+
+* [Bubble entrapment problem](http://basilisk.fr/sandbox/WeiQIN/test/drop_impact.c)
+* [Bubble grwoth in electrolysis](http://basilisk.fr/sandbox/WeiQIN/test/electrolysis_axi.c)

@@ -1,0 +1,127 @@
+# Movies for *Adaptive grids for atmospheric turbulence*
+
+Join the quiz: [Click here](https://joinmyquiz.com/?gc=352347)
+
+## Head-on vortex ring collision
+
+<div class="figure"> <video controls="" preload="metadata"
+width="70%"> <source
+src="https://surfdrive.surf.nl/files/index.php/s/nO24GK69hygChL0/download"
+type="video/mp4"> Your browser does not support the video
+tag. </video> <p class="caption">Head-on collision of two vortex rings from [Lim and Nickels (1992)](https://www.nature.com/articles/357225a0)</p> </div>
+
+<div class="figure"> <video controls="" preload="metadata"
+width="80%"> <source
+src="https://surfdrive.surf.nl/files/index.php/s/NnOmq0h7cEj9XE4/download"
+type="video/mp4"> Your browser does not support the video
+tag. </video> <p class="caption"> 400000 dye particles. For details see [here](two_rings.c) </p> </div>
+
+## Growth and decay of convective turbulence
+
+<div class="figure">
+<video controls="" preload="metadata" width="900">
+<source src="https://surfdrive.surf.nl/files/index.php/s/Hqma5zKlTvsb2B7/download
+" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+$\lambda_2$ vortex detection isosurfaces. For more info see [Van Hooft et al. (2018)](https://link.springer.com/article/10.1007/s10546-018-0335-9)
+</p>
+</div>
+
+## Lagrangian tracking for the diurnal cycle
+
+![Diurnal evolution of the atmospheric boundary layer](https://media.springernature.com/lw685/springer-static/image/art%3A10.1007%2Fs10546-018-0335-9/MediaObjects/10546_2018_335_Fig1_HTML.gif)
+
+<div class="figure">
+<video controls="" preload="metadata" width="900">
+<source src="https://surfdrive.surf.nl/files/index.php/s/NK50qHqgrs6UoGF/download" type="video/mp4
+" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+Mixing of Lagrangian tracers. For details on the case see [Van Hooft et al. (2019)](https://journals.ametsoc.org/view/journals/atsc/76/12/jas-d-19-0023.1.xml?tab_body=fulltext-display)
+</p>
+</div>
+
+
+## Fruit frost mitigation
+
+![A fan in an orchard](https://www.treefruit.com.au/media/k2/items/cache/feb7e9c589993a5a644987614f09b605_XL.jpg)
+
+<div class="figure">
+<video controls="" preload="metadata" width="900">
+<source src="https://surfdrive.surf.nl/files/index.php/s/VCtSjzNiFylslLh/download
+" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+$\lambda_2$ vortex detection isosurfaces. More info via [Yi Dai](https://www.tudelft.nl/citg/over-faculteit/afdelingen/geoscience-remote-sensing/staff/phd-students/y-yi-dai/)
+</p>
+</div>
+
+The paper of [V. Heusinkveld et al. (2020)](https://www.sciencedirect.com/science/article/pii/S0168192319304848) also provides more details.
+
+
+## Cloud dynamics
+
+![A rising cumulus cloud. Image via [`wideopen spaces`](https://cdn0.wideopenspaces.com/).](https://cdn0.wideopenspaces.com/wp-content/uploads/2014/11/bigstock-Cumulonimbus-71055340.jpg)
+
+<div class="figure">
+<video controls="" preload="metadata" width="900">
+<source src="https://surfdrive.surf.nl/files/index.php/s/xsUF3CMV9etQgmA/download
+" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+Volumetric rendering of the cloud (liquid water field). For details see [here](subsiding-shell.c) and the paper of [V. Nair et al. (2019)](https://doi.org/10.1175/JAS-D-19-0018.1)
+</p>
+</div>
+
+## Flow over Greenland's rough icesheet
+
+![Greenland's icesheet via/by [Maurice van Tiggelen](https://www.uu.nl/medewerkers/MvanTiggelen)](https://surfdrive.surf.nl/files/index.php/s/Ltec15gftwH7RSF/download)
+
+<div class="figure">
+<video controls="" preload="metadata" width="1200">
+<source src="https://surfdrive.surf.nl/files/index.php/s/En39Gc3VinV7XAD/download
+" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+>$\Lambda_2$ vortex detection isosurfaces. More info via [Maurice van Tiggelen](https://www.uu.nl/medewerkers/MvanTiggelen)
+</p>
+</div>
+
+## Induvidual roughness elements
+
+![A tree exchanges momentum with the atmosphere. Image via [Pixabay](https:/pixabay.com)](https://cdn.pixabay.com/photo/2018/03/14/09/49/tree-3224754__340.jpg)
+
+<div class="figure">
+<video controls="" preload="metadata" width="1200">
+<source src="https://surfdrive.surf.nl/files/index.php/s/OB1HPBote78e98h/download
+" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+>$\lambda_2$ vortex detection isosurfaces. For more info see [here](tree/README)
+</p>
+</div>
+
+## Gradient sharpening in the Stable Atmospheric boundary layer
+
+![Gradient sharpening in the Stable atmospheric boundary layer](https://media.springernature.com/full/springer-static/image/art%3A10.1007%2Fs10546-020-00516-x/MediaObjects/10546_2020_516_Fig1_HTML.png)
+
+![Scalar gradient and grid. ](http://basilisk.fr/sandbox/Antoonvh/gradient-sharpening/Re800-grid.mp4)
+ For details see this note: [Van Hooft (2020)](https://link.springer.com/article/10.1007%2Fs10546-020-00516-x)
+
+## An Adaptive 4th order accurate solver the NS equations
+
+![A vortex trefoil generated in the lab of [D. Kleckner and W. T. M. Irvine](http://dx.doi.org/10.1038/nphys2560)​](https://d2r55xnwy6nx47.cloudfront.net/uploads/2013/12/trefoil_vortex_web.jpg)
+
+<div class="figure">
+<video controls="" preload="metadata" width="1200">
+<source src="https://surfdrive.surf.nl/files/index.php/s/gVqk1Aw0yIPaCpg/download
+" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+>4th-order adaptive solver result. For details see [here](http://basilisk.fr/sandbox/Antoonvh/trefoil4.c) (Manuscript in preparation)
+</p>
+</div>
+
+
+

@@ -1,0 +1,6 @@
+To output in hdf5 format (in parallel) using the output_hdf5.h of my sandbox compile your application using **h5pcc**: 
+
+    CC99='h5pcc -std=c99' qcc -O2 -D_MPI=1 filename.c -L$BASILISK/gl 
+    -L/$HDF5/openmpi -lOSMesa -lGLU -lglutils -lfb_osmesa -lm -lhdf5
+
+For example, on Ubuntu 18.04, \$HDF5 is /usr/lib/x86_64-linux-gnu

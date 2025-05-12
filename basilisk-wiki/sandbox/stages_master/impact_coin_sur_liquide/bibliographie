@@ -1,0 +1,89 @@
+# Bibliographie 
+
+Dans le cadre de notre stage ayant pour intitulé : "Impact d'un coin sur une surface liquide", nous nous sommes appuyées sur plusieurs ouvrages et articles afin d’enrichir nos connaissances et de mieux appréhender le sujet. Nous avons établi une bibliographie que nous allons enrichir tout au long de notre stage. Ces recherches vont nous permettre de mieux comprendre les phénomènes d’impact sur une surface libre. Cette bibliographie sera composée d’articles de journaux scientifique, de thèse ou bien même d’articles de conférence.
+Notre bibliographie se compose de la manière suivante :
+
+[1] S.D. Howison, J.R. Ockendon, S .K Wilson, “Incompressible water-entry problems at small deadrise angles”, Journal of Fluid Mechanics, vol.222, pp.215-230, 1991.
+
+Résumé : Cet article présente des solutions analytiques pour un modèle d’impact d’un corps quasiment parallèle à la surface libre (angle faible entre le corps en translation et la surface libre). Pour ce modèle, l’impact est si rapide que la gravité peut être négligée. De plus, le fluide est considéré comme non visqueux et incompressible, de l’eau ici, la tension de surface est également négligée. Une solution pour la distribution de pression est proposée pour un écoulement bidimensionnel. Il délimite notamment trois zones identifiables ayant une distribution distincte les une des autres. Concernant le problème tridimensionnel, une formulation vibrationnelle fournit un algorithme numérique. Cet article traite également des effets de l’air sur la solution, ainsi que sa stabilité. Ces travaux sont basés sur de nombreux Wagner (1932) pour le problème bidimensionnelle, Cointe & Armand (1987) pour leur recherche sur les raccordements asymptotiques et Korobkin (1982) pour le modèle tridimensionnel.
+
+[2] Z.N. Dobrovol’skaya, “One some problems of similarity flow of fluid with free surface”, Journal of Fluid Mechanics, vol.36, pp.805-829, 1969.
+
+Résumé : Cet article nous renseigne sur la méthode de résolution de problème hydrodynamique auto similaire, d’un écoulement incompressible bidimensionnel à la surface libre. Le fluide est supposé non visqueux et la gravité est négligée. Des caractéristiques sans dimensions hydrodynamiques sont exprimés en fonction des rapports  ,  , avec x et y les coordonnées cartésiennes, t le temps et  est une vitesse constante.
+La méthode se base sur la fonction de Wagner (1932), et peut être appliquée aux problèmes où la région d'écoulement est délimitée par des surfaces libres et des limites imperméables rectilignes et mobiles (ou fixes). Cette fonction permet de réduire la solution à une intégral singulière qui est : 
+
+$$f(s)=\frac{1}{\pi}\frac{c_{0}^2}{c^2} \ \int_{0}^s \frac{(1-t)^{1-\alpha} \ exp \left[t \int_{0}^1 \frac{f(\tau)}{\tau(\tau -t) } \ d \tau  \right] } { \int_{t}^1 T^{\frac{-3}{2}} (1-T)^{\frac{-1}{2}+\alpha} \ exp \left[-T \int_{0}^1 \frac{f(\tau)}{\tau(\tau -t)} \ d \tau \right] \ dT } \ dt  (1) $$ 
+
+Avec $\alpha=\frac{\alpha_0}{\pi}$ , $\alpha_0$ étant l’angle du demi dièdre de l’objet impactant le fluide. Et :
+
+$$\frac{c_{0}^2}{c^2}=\frac{\int_{\ \frac  {1}{2}}^{\ 1} \ r^{\frac{-3}{2}} (1-r)^{\frac{-1}{2}+\alpha} (2r-1)^{-\alpha} exp \left\{ - \int_{\ 0}^{\ 1} \frac {f(\tau)}{\tau \left[ \tau (2-\frac{1}{r})-1\right]} \right\} \ dr }{\int_{\ \frac  {1}{2}}^{\ 1} \ (1-r)^{-1-\alpha} (2r-1)^{-1+\alpha} exp \left\{  \int_{\ 0}^{\ 1} \frac {f(\tau)}{\tau \left[ \tau (2-\frac{1}{r})-1\right]} \right\} \ dr}$$
+
+Et vérifie les conditions limites suivantes :
+
+•	Condition cinématique à la surface libre qui se traduit par le fait qu’une la particule au préalable à la surface libre y reste :
+
+$$ \frac{\partial \Phi}{\partial \eta}-\eta^'(\xi)\frac{\partial \Phi}{\partial \xi} + \xi \eta^'(\xi) -\eta(\xi) $$
+
+
+•	Condition cinématique à la surface libre qui se traduit par le fait que la pression a la surface est égale a la pression atmosphérique :
+
+$$ \Phi -\xi \frac{\partial \Phi}{\partial \xi}-\eta(\xi)\frac{\partial \Phi}{\partial \eta} + \frac{1}{2}\left( \frac{\partial \Phi}{\partial \xi}\right)^2 + \frac{1}{2}\left( \frac{\partial \Phi}{\partial \eta}\right)^2=0$$
+
+
+
+•	Condition de glissement, la vitesse normale du fluide est égale a celle du corps considéré :
+
+$$\frac{\partial \Phi}{\partial \xi} \cos(\alpha_0)-\frac{\partial \Phi}{\partial \eta}\sin(\alpha_0)=\sin(\alpha_0)$$
+
+Avec $\phi$ le potentiel des vitesses définit tel que $\phi(x,y,t)=v_0^2 t \Phi(\xi,\eta)$, $v_0$ la vitesse du corps, $\xi=\frac{x}{v_0 t}$, $\eta=\frac{y}{v_0 t}$ et $\Phi(\xi,\eta)$ est une fonction harmonique indépendante du temps. 
+
+
+
+
+
+
+
+[3] E. Cumberbatch, “The impact of a water wedge on a wall”, Journal of Fluid Mechanics, vol.7, pp.353-374, mars 1969.
+
+Résumé : Cet écrit vise à donner des indications sur les forces d’impact d’une vague d’eau sur un mur. La vague d’eau est sous forme d’un cône 2D. A t = 0, cette vague percute un mur à une vitesse V. L’étude est faite sur un intervalle de temps très court, les effets de la gravité sont donc négligés.
+Le choix de la forme de la vague permet de définir une solution autosimilaire, en introduisant les variables λ =x/Vt, μ =y/Vt. Le problème est étudié en termes de potentiel de vitesse (l’écoulement est considéré incompressible et irrotationnel). Les équations obtenus sont le Laplacien du potentiel de vitesse ainsi que les conditions limites sur la surface libre qui sont au nombre de deux.
+Après avoir transporté les différentes équations de l’écoulement dans l’espace autosimilaire, on introduit une fonction ψ qui permet de simplifier les équations.
+Dans un premier temps, on fait l’hypothèse d’être loin du mur. Cela permet des simplifications par des approximations de la fonction ψ. Grâce à des substitutions on arrive à transformer les équations du second ordre du problème en équations du premier ordre. Une réduction peut être obtenue en faisant des changements de variables. Ces changements correspondent à l’utilisation des comportements asymptotiques de la solution. Cela réduit les équations au nombre de deux. Les équations sont enfin intégrées numériquement.
+Ensuite on étudie ce qui se passe près du mur. La méthode est la même que pour le cas éloigné. Cependant les variables indépendantes λ et μ sont inter changées, car cette fois on étudie un cône dont l’axe est tangent au mur et le sommet, le point de collision. Les équations de l’écoulement sont à nouveau réduites à deux équations du premier ordre.
+La solution finale est donc obtenue en réunissant les cas éloigné et proche du mur.
+
+
+
+[4] Th. Von Karman, “The impact of seaplane floats during landings” ; NACA Technical notes”, National Advisory Comittee for Aeronautics, UNT Libraries Government Documents Department, 1 octobre 1969.
+
+Résumé : Dans Von Karman s’est intéresser à l’impact lors de l’atterrissage d’hydravion, notamment aux forces de pression qui sont exercées sur les flotteurs durant l’impact. Il fut en mesure de déterminer la pression maximale que le flotteur puisse supporter en fonction de la géométrie des flotteurs ainsi que de la vitesse d’impact. Il remarqua que sa formule théorique était en accord avec les résultats expérimentaux. Pour cela, il se base sur la seconde loi de Newton et sur des considérations géométriques. Il a trouvé la répartition de pression moyenne suivante : $p=\frac{\rho V_0^2}{2} \frac{\pi\ cot \alpha}{\left(1+\frac{\gamma \pi x^2}{2 W}\right)}$,  avec $\rho$  la masse volumique du fluide, $V_0$ vitesse au moment du premier contact, W poids par unité de longueur, $\alpha$ angle entre le flotteur et la surface libre et $\gamma=\rho g$ . Il en déduit également que la pression est maximale au milieu du flotteur lors du premier contact avec le fluide soit :$p_{max}=\frac{\rho V_0^2}{2} \left(\frac{2c}{V_0}\right)$ .
+Pour un angle plat, les effets d’incompressibilité sont à prendre en considération. La pression est exprimée de la manière suivante :, avec $c$ la vitesse du son dans le fluide.
+
+
+[5] J. Philippi, “Impact d’une goutte sur une surface solide”, Thèse de doctorat, Institut Jean le Rond d’Alembert, Paris, 2015.
+
+Résumé :
+
+
+[6] J. Wang, O.D. Faltinsen “Improved numerical solution of Dobrovol’skaya’s boundary integral equations on similarity flow for uniform symmetrical entry of wedges”, Applied Ocean Research, vol.66, pp.23-31, juin 2017.
+
+Résumé : Cet article met en avant les différents travaux qui ont été effectués sur le sujet au fil du temps.
+
+Notamment les travaux effectués par Dobrovol’skaya, par lesquels il fut en mesure de trouver une solution auto similaire pour un corps ayant des bords symétriques impactant l’eau à une vitesse constante et l’écoulement étant incompressible. La solution implique une intégrale qui est d’autant plus difficile à résoudre numériquement que l’angle formé entre le bord de l’objet et la surface libre est petit. En effet, plus l’angles est petit, plus le jet formé par l’écoulement est fin et long. Cette solution auto similaire est applicable quelle que soit l’angle. Son existence et son unicité fut démontré par Fraenkel and Keady. La solution auto similaire de Dobrovol’skaya est une référence pour l’étude théorique des problème d’impact à la surface libre, cette solution est utilisé dans le développement de code numérique pour des problème d’impact fortement non-linéaire.
+Cet article présente également une méthode numérique itérative pour résoudre l’intégrale non linéaire singulière de Dobrovol’skaya défini par l’équation (1) plus haut. La résolution numérique consiste à introduire des fonctions successives suivit d’une résolution itérative.
+
+Pour de petits angles l’écoulement d’air va provoquer l’élévation de la surface libre. Alors de petites cavités d’air vont se former sous le coin. Outre cela la compressibilité peut être prise en compte.
+Zhao and Faltinsen ont eux réussi à proposé des résultats satisfaisant pour des angles jusqu’à 1°, en comparant aux solutions asymptotiques pour des petits angles et avec la méthode des éléments finis de frontière pour les angles plus élevés. Cependant, ils on relevés une différence de la distribution du champ de pression sur la surface.  Ils ont également proposé des solutions asymptotiques pour le cas en trois dimensions.
+Wagner fut l’un des premiers à étudier ce phénomène. Il a mis en avant les singularités de pression aux niveaux des bords à l’aide de l’approximation de plaque plane.
+Cointe et Armand ainsi que Howison ont combiné des solutions asymptotiques aux solutions de Wagner du domaine de l’écoulement intérieur afin de supprimer les singularités de pression. Cependant, leurs résultats sont satisfaisant seulement pour de petits angles.
+Faltinsen a pour sa part étudier ce problème pour des angles plus élevés, en cherchant une solution analytique aux cas 2-D.
+Semenov et Lafati on eux proposé une solution autosimilaire pour le problème d’impact de bord axisymétrique sans séparation de l’écoulement.
+Scolan et Korobkin ont trouvé la solution exacte au problème de Wagner.
+
+
+
+[7] H. Wagner “Phenomena associated with Impacts and Sliding on liquid surfaces”, Applied Ocean Research, NACA Translation, 1 août 1932.
+
+Résumé :
+Wagner chercha à trouver les forces générées par l’impact des flotteurs d’hydravion sur le fluide lors d’un atterrissage ou bien les forces exercées par le fluide sur la carène d’un bateau lors d’une croisière.
+Il modélisa le problème, par l’impact d’une plaque plane sur le fluide.

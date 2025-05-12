@@ -1,0 +1,77 @@
+# GfsView 2D
+View {
+  tx = 0.00157456 ty = 0.205131
+  sx = 1 sy = 1 sz = 1
+  q0 = 0 q1 = 0 q2 = -0.706761 q3 = 0.707451
+  fov = 14.8102
+  r = 0.3 g = 0.4 b = 0.6
+  res = 1
+  lc = 0.001
+  reactivity = 0.1
+}
+VOF {
+  r = 0 g = 0 b = 0
+  shading = Constant
+  maxlevel = -1
+  font_size = 1
+  raster_font = 1
+  line_width = 6
+} {
+  n.x = 0 n.y = 0 n.z = 1
+  pos = 0
+} P {
+  amin = 1
+  amax = 1
+  cmap = Jet
+} f {
+  reversed = 0
+  use_scalar = 0
+  draw_edges = 0
+  interpolate = 0
+}
+Linear {
+  r = 1 g = 1 b = 1
+  shading = Constant
+  maxlevel = -1
+  font_size = 1
+  raster_font = 1
+  line_width = 1
+} {
+  n.x = 0 n.y = 0 n.z = 1
+  pos = 0
+} f {
+  amin = 0 min = 0.478
+  amax = 0 max = 0.515
+  cmap = Cool
+} 0 {
+  reversed = 0
+  use_scalar = 1
+}
+Boundaries {
+  r = 0 g = 0 b = 0
+  shading = Constant
+  maxlevel = -1
+  font_size = 1
+  raster_font = 1
+  line_width = 4
+}
+VOF {
+  r = 0 g = 0.0379339 b = 1
+  shading = Constant
+  maxlevel = -1
+  font_size = 1
+  raster_font = 1
+  line_width = 6
+} {
+  n.x = 0 n.y = 0 n.z = 1
+  pos = 0
+} P {
+  amin = 1
+  amax = 1
+  cmap = Jet
+} f {
+  reversed = 0
+  use_scalar = 0
+  draw_edges = 0
+  interpolate = 0
+}

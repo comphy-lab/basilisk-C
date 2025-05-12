@@ -1,0 +1,133 @@
+# Boule roulant sur un cylindre
+
+Une boule roule sur un cylindre. Si on la pose exactement au sommet, la boule reste en équilibre instable: elle ne bouge pas, mais cependant à la moindre perturbation, elle se met à rouler de plus en plus vite. C’est un cas typique d’instabilité. On mesure la position de la boule grâce à l’angle α que fait avec la verticale la ligne qui lie le point de contact et le centre du cylindre (voir figure 1 ci dessus). En supposant que α soit assez petit pour pouvoir linéariser les équations de l’inertie pour la boule, on prédit une croissance exponentielle de α dans le temps:
+$$
+\alpha=\alpha_0\exp(Kt)
+$$
+Où α0 est l’angle initial et K est le taux de croissance exponentiel que nous allons mesurer sur nos données expérimentales.
+
+Voici le descriptif de l'expérience
+
+![](boule sur cylindre 1.png)
+
+Et voici la capture de l'expérience:
+
+![](boule sur cylindre 2.png)
+
+* Lisez l’image boulecylindre.tif et affichez-la dans une fenêtre graphique.
+* Avec la fonction ginput, mesurez les positions successives (xc,yc) du point de contact. On ne prend pas en compte les images pour lesquelles la boule ne touche plus le cylindre. Tracez ces points de mesure sur l’image originelle avec un marqueur rouge pour vérifier que ces mesures sont bien prises.
+* Avec la fonction ginput, mesurez les positions successives du centre du référentiel (x0,y0). Tracez ces points de mesure sur l’image originelle avec un marqueur bleu pour vérifier que ces mesures sont bien prises.
+
+* Calculez la taille d’un pixel de l’image en prenant pour étalon de longueur le rayon du cylindre qui est 17cm.
+* Le vecteur temps: Le film est pris à 300 prises de vue par seconde. Et le numéro des prises de vue est indiqué sur l’image. Construisez le tableau «tvec» qui contient les valeurs successives du temps en secondes pour notre séquence d’images. 
+* Opérez au changement de référentiel de sorte à tracer l’évolution de xc  et yc (en mètres) en fonction du temps (en secondes). Sur ce graphique on voit que le point de contact se déplace sur un cercle de rayon 17cm. 
+* Grâce à vos mesures de x et y, tracez l’évolution de l’angle α dans le temps (vous pouvez calculer l’angle α grâce à la trigonométrie). Annotez votre graphique: labels et titre. Voici notre courbe expérimentale.
+
+Nous allons maintenant comparer ce graphique expérimental avec la formule théorique.
+
+* Superposez la courbe expérimentale avec la formule théorique pour 16 valeurs de K entre 1 et 15, vous prendrez α0=0.0237 radians.
+* Tracez le graphique qui montre comment l’erreur théorie-expérience selon les moindres carrés dépend de K.
+
+
+Voici le programme que nous avons utilisé pour le traitement des données et les graphiques:
+
+~~~matlab
+% grosse boule qui roule sur le cylindre
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+a=imread('films_matlab/grossecylindre.tif');
+subplot(1,3,1)
+image(a);
+ 
+% positions successives du point de contact
+d=1000*[ 0.1177    0.0680
+    0.5341    0.0680
+    0.9488    0.0698
+    1.3703    0.0698
+    0.1210    0.3417
+    0.5408    0.3417
+    0.9623    0.3417
+    1.3787    0.3417
+    0.1379    0.6191
+    0.5628    0.6191
+    0.9893    0.6209
+    1.4192    0.6263
+    0.1834    0.9036
+    0.6201    0.9162
+    1.0567    0.9288
+    1.5001    0.9540
+    0.2745    1.2638];
+hold on; 
+X=d(:,1);
+Y=d(:,2);
+% on trace les points sur l'image
+plot(X,Y,'r.','markersize',15);
+ 
+% positions successives du centre du référentiel
+d=1000*[ 0.1109    0.2589
+    0.5240    0.2589
+    0.9421    0.2589
+    1.3585    0.2589
+    0.1092    0.5326
+    0.5257    0.5308
+    0.9421    0.5308
+    1.3585    0.5326
+    0.1109    0.8064
+    0.5257    0.8046
+    0.9421    0.8046
+    1.3585    0.8046
+    0.1109    1.0783
+    0.5257    1.0783
+    0.9421    1.0783
+    1.3585    1.0783
+    0.1109    1.3520];
+X0=d(:,1);
+Y0=d(:,2);
+% on trace les points sur l'image
+plot(X0,Y0,'b.','markersize',15);
+ 
+ 
+% Changement de référentiel
+% le rayon du cylindre mesure 17cm
+taillepix=0.17/(300-110);
+x=taillepix*(X-X0)
+y=-taillepix*(Y-Y0)
+
+% on trace les valeurs successives de x et y
+subplot(1,3,2);
+plot(x,y,'b*-');
+axis equal
+% on rajoute un cercle de rayon 17cm
+th=linspace(0,2*pi,200);
+rr=0.17;
+hold on
+plot(rr*cos(th),rr*sin(th),'k--')
+xlabel('x'); ylabel('y');
+ 
+ 
+% extraction de l'angle 
+alpha=atan(x./y);
+t=((1:10:161)-1)/300;
+ 
+% theorie et choix de K  
+K=7.1;
+a0=0.0237; % angle initial
+atheo=a0*exp(t*K);
+ 
+subplot(1,3,3);
+plot(t,alpha,'k.--',t,atheo,'k-');
+ 
+ 
+% variation en boucle de la valeur de K
+hold on
+for K=linspace(1,15,16);
+atheo=a0*exp(t*K);
+plot(t,atheo,'r-');
+end
+ylim([0,1.2]);
+xlabel('temps');
+ylabel('angle alpha');
+~~~
+
+Et voici la figure produite, avec quelques explications:
+
+![](boule sur cylindre 3.png)

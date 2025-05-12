@@ -1,0 +1,2 @@
+/**
+The objective of this code is to implement a wall in vincent case. The plan is to first understand 2D von karman case, then modify it to 3D case, then change the geometry to a wall, finally implement the wall in SBL*/

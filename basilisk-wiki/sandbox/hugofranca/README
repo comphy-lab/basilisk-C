@@ -1,0 +1,32 @@
+/**
+# My Sandbox
+Welcome to the README of my sandbox.
+Here I provide an overview of the projects under [/sandbox/hugofranca/](). I mainly work with flows involving droplets of Non-Newtonian fluids. 
+
+Hugo França<br/>
+Postdoc at the [FluidLab](https://www.fluidlab.nl/) group, University of Amsterdam<br/>
+Email: [franca.hugo1@gmail.com](mailto:franca.hugo1@gmail.com)<br/>
+
+# Flows of Saramito Elastoviscoplastic Fluids
+<img src="https://lh3.googleusercontent.com/d/1zlcSSX7BA3eFdWXeh9hGeKIvahGqcx69" alt="drawing" width=100%/>
+
+The standard log-conform solver was used in order to simulate flows of Elastoviscoplastic materials according to the Saramito model. In this section we provide the source code for the simulations performed in our paper "[Elasto-viscoplastic spreading: From plastocapillarity to elastocapillarity](https://doi.org/10.1103/PhysRevResearch.6.013226)".
+
+
+- [EVP droplet spreading](saramito_droplet_spreading/droplet_spreading.c)
+
+- [EVP 2D droplet under a shear flow](saramito_droplet_shear/droplet_shear.c)
+
+- [Rheology test: simple and oscillatory shear flow](saramito_shear/shear.c)
+
+
+# VTK Visualization
+I made a few personal functions to export Basilisk quadtree data into VTK files. This works also with MPI and OpenMP. The resulting files can be opened with any software capable of opening standard VTK files, such as Paraview or the Python library pyvista.
+
+- [A set of functions for outputting mesh and interface data using the Legacy VTK format](vtk_visualization/)
+
+- [VTK visualization example: 2D-Axissymetric viscoelastic droplet impact](vtk_visualization/fall_vtk.c)
+
+- [VTK visualization example: 3D droplet impact](vtk_visualization/fall3D_vtk.c)
+
+*/

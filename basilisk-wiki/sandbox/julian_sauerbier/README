@@ -1,0 +1,18 @@
+# Welcome
+
+I am a Masters' student at TU Delft working with the "Fruitfrost" group under supervision of Bas (Prof. van de Wiel) and [Yi Dai](http://basilisk.fr/sandbox/YiDai/README). This Sandbox acts as the repository for the project and contains code of most simulations performed.
+
+# The 2D Simulations
+Here the collection of simulations performed in 2D, starting from a suddenly accelerated flow over a smooth, no-slip boundary to a suddenly accelerated flow over a boundary containing surface elements.
+
+[Smooth Surface](https://basilisk.fr/sandbox/julian_sauerbier/2D_smooth.h)\
+[Rough Surface](https://basilisk.fr/sandbox/julian_sauerbier/2D_rough.h)\
+
+
+# The 3D Simulations
+This page contains the 3D counterpart to the 2D simulations, i.e. a suddenly accelerated flow above a smooth no-slip plate to the introduction of surface roughness elements.
+
+[Smooth Surface](https://basilisk.fr/sandbox/julian_sauerbier/3D_smooth)\
+[Rough Surface](https://basilisk.fr/sandbox/julian_sauerbier/3D_rough)\
+\
+Please feel free to contact me under "j.sauerbier@student.tudelft.nl" for any questions.

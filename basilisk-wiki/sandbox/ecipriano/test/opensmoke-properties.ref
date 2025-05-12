@@ -1,0 +1,102 @@
+Gas Properties
+rho2 = 1.171970
+mu2 = 0.000019
+lambda2 = 0.026414
+cp2 = 1011.418494
+Dmix[CO2] = 0.000016
+Dmix[CH4] = 0.000023
+Dmix[CH3] = 0.000023
+Dmix[CH2] = 0.000023
+Dmix[CH2(S)] = 0.000023
+Dmix[CH3OH] = 0.000015
+Dmix[CH3O] = 0.000016
+Dmix[CH2OH] = 0.000016
+Dmix[CH2O] = 0.000016
+Dmix[HCO] = 0.000016
+Dmix[N2] = 0.000023
+Dmix[H2] = 0.000080
+Dmix[H] = 0.000125
+Dmix[O2] = 0.000020
+Dmix[O] = 0.000033
+Dmix[H2O] = 0.000023
+Dmix[OH] = 0.000032
+Dmix[H2O2] = 0.000021
+Dmix[HO2] = 0.000021
+Dmix[CO] = 0.000021
+
+Liquid Properties
+rho1 = 789.008270
+mu1 = 0.000524
+lambda1 = 0.199406
+cp1 = 2544.900000
+pvap[CH3OH(L)] = 18482.866411
+dhev[CH3OH(L)] = 1171400.120998
+sigma[CH3OH(L)] = 0.020423
+Gas Properties
+rho2 = 1.171970
+mu2 = 0.000019
+lambda2 = 0.026414
+cp2 = 1011.418494
+Dmix[CO2] = 0.000016
+Dmix[CH4] = 0.000023
+Dmix[CH3] = 0.000023
+Dmix[CH2] = 0.000023
+Dmix[CH2(S)] = 0.000023
+Dmix[CH3OH] = 0.000015
+Dmix[CH3O] = 0.000016
+Dmix[CH2OH] = 0.000016
+Dmix[CH2O] = 0.000016
+Dmix[HCO] = 0.000016
+Dmix[N2] = 0.000023
+Dmix[H2] = 0.000080
+Dmix[H] = 0.000125
+Dmix[O2] = 0.000020
+Dmix[O] = 0.000033
+Dmix[H2O] = 0.000023
+Dmix[OH] = 0.000032
+Dmix[H2O2] = 0.000021
+Dmix[HO2] = 0.000021
+Dmix[CO] = 0.000021
+
+Liquid Properties
+rho1 = 789.008270
+mu1 = 0.000524
+lambda1 = 0.199406
+cp1 = 2544.900000
+pvap[CH3OH(L)] = 18482.866411
+dhev[CH3OH(L)] = 1171400.120998
+sigma[CH3OH(L)] = 0.020423
+Gas Properties
+rho2 = 1.171970
+mu2 = 0.000019
+lambda2 = 0.026414
+cp2 = 1011.418494
+Dmix[CO2] = 0.000016
+Dmix[CH4] = 0.000023
+Dmix[CH3] = 0.000023
+Dmix[CH2] = 0.000023
+Dmix[CH2(S)] = 0.000023
+Dmix[CH3OH] = 0.000015
+Dmix[CH3O] = 0.000016
+Dmix[CH2OH] = 0.000016
+Dmix[CH2O] = 0.000016
+Dmix[HCO] = 0.000016
+Dmix[N2] = 0.000023
+Dmix[H2] = 0.000080
+Dmix[H] = 0.000125
+Dmix[O2] = 0.000020
+Dmix[O] = 0.000033
+Dmix[H2O] = 0.000023
+Dmix[OH] = 0.000032
+Dmix[H2O2] = 0.000021
+Dmix[HO2] = 0.000021
+Dmix[CO] = 0.000021
+
+Liquid Properties
+rho1 = 789.008270
+mu1 = 0.000524
+lambda1 = 0.199406
+cp1 = 2544.900000
+pvap[CH3OH(L)] = 18482.866411
+dhev[CH3OH(L)] = 1171400.120998
+sigma[CH3OH(L)] = 0.020423

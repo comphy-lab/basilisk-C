@@ -1,0 +1,146 @@
+/**
+# Formation of thin filaments in microfluidics
+
+We want to study the formation of a thin filament when two flows of different viscosity and flow rate cross in channels. */
+
+#include "embed.h"
+#include "navier-stokes/centered.h"
+#include "navier-stokes/perfs.h"
+#include "tracer.h"
+#include "diffusion.h"
+
+scalar f[];
+scalar * tracers = {f};
+int maxlevel = 7;
+face vector muv[];
+
+//Parameters
+double tend =  1.;
+double Re1 = 2., Re2 = 5.; // Reynolds number in both channels
+double D=1.e-2; //Diffusion coefficient
+const face vector CD[]= {D};
+
+int main()
+{
+/**
+The channels are 8 units long and the origin is placed at the center of the intersection.*/
+
+  L0 = 8. [1];
+  origin (-1., -L0/2.);
+  N = 512;
+  mu = muv;
+  stokes=true;
+  DT = 1e-2 [0];
+  TOLERANCE = HUGE;
+  
+  //display_control (maxlevel, 6, 12);
+  
+  run(); 
+}
+
+double U1 = 1.; // Speed Channel 1
+double U2 = 1.; // Speed Channel 2
+double H1=1.; // Horizontal channel diameter
+double H2=1.; // Vertical channel diameter
+
+
+/**
+We set the viscosity in the channel */
+
+event properties (i++){
+   double mu1 =1./Re1, mu2 = 1./Re2; 	
+   foreach_face(){
+        muv.x[] = fm.x[]*((mu2 - mu1) * ((clamp(f[], 0, 1) + clamp(f[-1], 0, 1)) / 2.0) + mu1);
+		 }
+}
+
+/**
+The right, left, top and bottom walls are free-slip */
+u.n[embed] = dirichlet(0.);
+u.t[embed] = dirichlet(0.);
+
+event init (t = 0)
+{
+//Horizontal
+//solid (cs,fs,intersection(-y+H/2. ,+y+H/2.));
+
+//Vertical
+//solid (cs,fs,intersection(-x+H/2. ,+x+H/2.));
+
+//En croix
+solid (cs, fs,  union (intersection(-y+H1/2. ,+y+H1/2.), intersection(-x+H2/2. ,+x+H2/2.)));
+			  			  
+u.n[embed] = dirichlet(0.);
+u.t[embed] = dirichlet(0.);
+
+//Horizontal boundary conditions
+
+u.n[left]  = dirichlet(U1* (1. - sq(y))); // Poiseuille flow
+p[left]    = neumann(0.);
+pf[left]   = neumann(0.);
+
+u.n[right] = neumann(0.);
+p[right]   = dirichlet(0.);
+pf[right]  = dirichlet(0.);
+
+//Vertical boundary conditions
+
+u.n[bottom] = dirichlet(U2* (1. - sq(x))); // Poiseuille flow
+p[bottom]   = neumann(0.);
+pf[bottom]  = neumann(0.);
+f[bottom]   = dirichlet(x < 0.5);
+
+u.n[top] = dirichlet(-U2* (1. - sq(x))); // Poiseuille flow
+p[top]   = neumann(0.);
+pf[top]  = neumann(0.);
+f[top]   = dirichlet(x<0.5);
+
+/**
+  We set the initial velocity field. */
+  
+  foreach(){
+  	u.x[] = u.y[]= 0.;
+           }
+}
+
+event tracer_diffusion (i++)
+{
+  diffusion (f,dt,CD);
+}
+
+event logfile (i++){
+  fprintf (stderr, "%d %g \n", i, t);
+  }
+  
+/**
+We produce an animation */
+
+event movies (i += 4.; t <= tend)
+{
+  scalar omega[], m[];
+  vorticity (u, omega);
+  foreach()
+    m[] = cs[] - 0.5;
+  output_ppm (f, file = "f.mp4", box = {{-1,-4},{7,4}},
+	      linear = false, min = 0, max = 1, mask = m);
+}
+
+event adapt (i++) {
+  adapt_wavelet ({cs,u,f,g}, (double[]){1e-2,3e-2,3e-2,3e-2}, maxlevel, 4);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

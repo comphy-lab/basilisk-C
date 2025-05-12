@@ -1,0 +1,7 @@
+At the moment, compiling bump.c bursts into flames:) - W.A.
+
+Can you explain please? -- Stéphane
+
+I made compilation errors on a 32-bit system. Now on a x86 64 everyting is fine. -- Wojtek
+
+On 32 bits systems, you need to use config.gcc.32bits as note [here](src/INSTALL#compilation).

@@ -1,0 +1,91 @@
+
+texte en **gros**, *italique*
+
+
+*A priori*, the flowate $Q$  depends on the following quantities:
+$$
+Q = f\left(\rho, \mu, h, \gamma, \rho_\text{air}, \mu_\text{air}, g\right)
+$$
+
+Assuming that the surrounding air has little influence on the dynamics of the film, and further surface tension does not play any role for the film is flat, we  are left with:
+
+$$
+Q = f\left(\rho, \mu, h, g\right)
+$$
+
+Which can be rewritten using Buckingham $\pi$- theorem as :
+
+$$
+Q = h^{3/2} g^{1/2} F{\text(Ar)},
+$$
+
+Where Ar is Archimedes number Ar = $\frac{\rho\sqrt{gh}h}{\mu}$.
+
+But it is difficult to go beyond this formal relationship on mere dimensional grouds.
+
+## Hydrodynamic analtsis
+
+Nondimensionalising the problem with the natual scales $h, \rho$ and $g$ we write the nondimensional variables:
+$$
+x = h \, \bar x, \\[.5em]
+y = h \, \bar y ,\\[.5em]
+u = \sqrt{gh} \, \bar u,\\[.5em]
+v = \sqrt{gh} \, \bar v,\\[.5em]
+p = \rho g h \, \bar p
+
+
+###Governing equation
+
+
+
+Upon using steadiness and invariance along the $y$-direction, the momentum equations read:
+$$
+\bar u \frac{\partial \bar u}{\partial \bar x} = -\frac{\partial \bar p}{\partial \bar x} + \frac{1}{\text{Ar}} \frac{\partial^2 \bar v}{\partial \bar x^2}-1
+$$
+Similarly, the mass conservation reads:
+$$
+\frac{\partial \bar u}{\partial \bar x} = 0
+$$
+
+
+### Boundary conditions
+
+And the boundary conditions are:
+
+* *Adherence at the wall*
+
+$$
+\bar u = \bar v = 0 \quad \text{ ar the wall } \bar x = 0
+$$
+
+* *Stess continuity at the free surface*  $\bar x = 1$
+$$
+\bar p = 0 \quad\text{(normal stress continuity)}\\[.5em]
+\frac{\partial \bar v }{\partial \bar x} = 0 \quad\text{(tangential stress continuity)}\\
+$$
+
+### Parabolic flow profile
+
+Upon using mass conservation, we see $\bar u$ does not depend on $\bar x$,
+and therefore $\bar u = \bar u (\bar x = 0) = 0$. As a onsequence the $\bar x$-momentum equation reduces to:
+
+$$
+\frac{\partial \bar p}{\partial \bar x} = 0
+$$
+
+Similarly we find $\bar p$ vanishes throughout the film.
+
+
+We readily obtain the  following solution for $\bar v$:
+$$
+\bar v = \frac{1}{2} \text
+$$
+where the constants can be identified with the boundary conditions:
+
+
+$$
+
+
+
+
+$$

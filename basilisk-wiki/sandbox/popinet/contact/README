@@ -1,0 +1,13 @@
+# Contact angles on embedded boundaries
+
+This directory contains code related to imposing contact angles for
+[VOF interfaces](/src/vof.h), on [embedded solid
+boundaries](/src/embed.h).
+
+The implementation is documented in [contact-embed.h]().
+
+## Test cases
+
+* [Sessile drop on a horizontal embedded boundary](sessile.c)
+* [Sessile drop on an embedded boundary inclined at 45
+  degrees](sessile-inclined.c)

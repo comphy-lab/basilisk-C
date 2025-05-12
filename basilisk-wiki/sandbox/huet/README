@@ -1,0 +1,221 @@
+/**
+# Damien's sandbox
+Welcome to my sandbox, I am Damien Huet, a former PhD student at the [University
+of British Columbia](https://www.math.ubc.ca/), now working at 
+[Type One Energy](https://www.typeoneenergy.com). Here, I provide 
+documentation, test cases and references related to the implementation of 
+immersed elastic capsules - such as red blood cells - in inertial and 
+non-inertial flow conditions. This work is the fruit of the second part of my 
+PhD and is described in detail in part II of my 
+[PhD thesis](https://open.library.ubc.ca/soa/cIRcle/collections/ubctheses/24/items/1.0432797).
+
+**Please note that I am no longer working on this project**. [Guodong Gai](https://www.researchgate.net/profile/Guodong-Gai-2) is now actively improving this solver: he has already corrected several minor bugs and is working towards a more efficient parallelism. As such, while the code on this sandbox is up to date with the results we published (none of which were affected by the minor bugs), if you would like to use this solver you may want to take a look at [Guodong's sandbox](http://basilisk.fr/sandbox/gai/README).
+
+![Initially spherical capsule flowing through a constricted channel](https://damienhuet.github.io/images/basilisk_sandbox_files/constricted_channel/channel.mp4)(width="80%")
+
+## Lagrangian framework
+In the Lagrangian description, also referred to as _front-tracking method_, we
+follow the membrane using an unstructured mesh, which we use to compute the
+internal strains and stresses of the membrane. These stresses are transferred to
+the fluid with the Immersed Boundary Method (IBM), i.e. by means of a
+regularized Dirac function as introduced by Peskin. The present Lagrangian
+implementation is implemented in two and three dimensions. More information 
+about the development of this approach can be found in our 
+[paper](https://www.sciencedirect.com/science/article/abs/pii/S0021999123005193).
+
+### Source files
+The suffix "ft" stands for "front-tracking" and is meant to distinguish
+header files dedicated to this front-tracking capsule solver from other header
+files of Basilisk.
+
+* [capsule-ft.h](src/lagrangian_caps/capsule-ft.h): definition of the Lagrangian 
+mesh, computation of geometrical quantities, advection of the mesh.
+* [capsule-ft-mpi.h](src/lagrangian_caps/capsule-ft-mpi.h): a helper function
+for compatibility with MPI.
+* [geometry-ft.h](src/lagrangian_caps/geometry-ft.h): helper functions for
+triangulated meshes.
+* [ibm-ft.h](src/lagrangian_caps/ibm-ft.h): Implementation of the immersed
+boundary method. Because we use the Cache structures, the code in this sandbox
+is only compatible with quadtree and octree grids.
+* [elasticity-ft.h](src/lagrangian_caps/elasticity-ft.h): Implementation of the
+membrane elasticity in the front-tracking framework. In 3D, this is an explicit
+finite element method.
+* [neo-hookean-ft.h](src/lagrangian_caps/neo-hookean-ft.h): Implementation of the
+neo-Hookean elatic law.
+* [skalak-ft.h](src/lagrangian_caps/skalak-ft.h): Implementation of the
+Skalak elatic law, describing lipid-bilayer biological membranes.
+* [ho-neo-hookean-ft.h](src/lagrangian_caps/ho-neo-hookean-ft.h):
+Implementation of the higher-order neo-Hookean elastic force, for extreme
+deformation of red blood cells.
+* [bending-ft.h](src/lagrangian_caps/bending-ft.h): Implementation of a bending
+force.
+* [curvature-ft.h](src/lagrangian_caps/curvature-ft.h): Implementation of the
+nodal curvature computations for 2D and 3D membranes, by fitting polynomial to
+the nearest neighbors (and using the ordinary least-squares method in 3D).
+* [smallest_root_cubic.h](src/lagrangian_caps/smallest_root_cubic.h):
+a function that computes the smallest real root of a third-order polynomial,
+useful for the volume conservation routine.
+* [volume-conservation-ft.h](src/lagrangian_caps/volume-conservation-ft.h): 
+Implementation of a volume correction routine based on an optimization problem.
+* [viscosity-ft.h](src/lagrangian_caps/viscosity-ft.h): Allows non-unity
+viscosity ratios between the fluids inner and outer to the capsule. Based on the
+method of Tryggvason et al.
+* [view-ft.h](src/lagrangian_caps/view-ft.h): Allows visualization of the
+Lagrangian mesh using bview.
+* [dump-ft.h](src/lagrangian_caps/dump-ft.h): Save and restore capsules in order
+to restart simulations.
+* [post-processing-ft.h](src/lagrangian_caps/post-processing-ft.h): Paraview
+output function and plain output of nodes and triangles.
+* [common-shapes-ft.h](src/lagrangian_caps/common-shapes-ft.h): Some pre-defined
+initial shapes for the capsules.
+* [matrix-toolbox.h](src/lagrangian_caps/matrix-toolbox.h): An implementation in
+C of the inversion of matrices using LU-decomposition, copy-pasted entirely
+from this
+[Wikipedia page](https://en.wikipedia.org/wiki/LU_decomposition#C_code_example).
+
+### Validation cases
+* [uniaxial_stretch.c](tests/lagrangian_caps/uniaxial_stretch.c): tests the
+computation of 3D elastic tensions for a flat membrane, for both the
+neo-Hookean and Skalak laws.
+* [biconcave_curvatures.c](tests/lagrangian_caps/biconcave_curvatures.c) tests
+the computations of the mean, Gaussian, surface Laplacian and total Helfrich's
+bending force on a 3D biconcave membrane in the absence of reference curvature.
+* [nh_shear.c](tests/lagrangian_caps/nh_shear.c): tests the general
+3D implementation, including the neo-Hookean elastic law, and compares the
+result to various authors.
+* [bending_shear.c](tests/lagrangian_caps/bending_shear.c): same test as
+[nh_shear.c](tests/lagrangian_caps/nh_shear.c) with the addition of a bending
+stress. Results are compared to various authors.
+* [rbc_shear.c](tests/lagrangian_caps/rbc_shear.c): Red blood cell (RBC) in a 
+shear flow. Qualitative comparison with a Yazdani \& Bagchi.
+* [constricted_channel.c](tests/lagrangian_caps/constricted_channel.c): tests
+the Skalak elasticty law, the interaction with embedded boundaries and compares
+quantitatively the deformation of the capsule to that of Park \&
+Dimitrakopoulos.
+* [caps_interception.c](tests/lagrangian_caps/caps_interception.c): tests the
+interaction of two elastic capsules, and compares to the work of Lu and
+Barthès-Biesel, JFM, 2007.
+* [caps_interception_inertia.c](tests/lagrangian_caps/caps_interception_inertia.c):
+tests the interaction of two elastic capsules in the presence of inerta
+($Re = 3, 10, 50$), and compares to the work of Doddi \& Bagchi (2008).
+
+### Original results
+* [narrow_constriction.c](cases/lagrangian_caps/narrow_constriction.c):
+same case as [constricted_channel.c](tests/lagrangian_caps/constricted_channel.c) 
+but with a narrower constriction size, a finer grid
+resolution, and the addition of bending effects.
+* [helix.c](cases/lagrangian_caps/helix.c): a demonstration case in a large 3D
+domain featuring a helicoidal channel. Inertial migration of a capsule is
+observed for $Re = 10, 50$.
+* [caps_corner.c](cases/lagrangian_caps/caps_corner.c): an extensive parametric 
+study of the deformation of interacting capsules in a sharp corner in the 
+presence of inertia.
+* [contraction20.c](cases/lagrangian_caps/contraction20.c): a highly inertial
+configuration where a capsule flows through a 20:1 contraction at $Re = 2000$.
+* [corner_low_confinement.c](cases/lagrangian_caps/corner_low_confinement.c):
+same case as [caps_corner.c](cases/lagrangian_caps/caps_corner.c) but with a
+lower confinement ratio and a train of about 40 capsules in a moderately 
+inertial regime ($Re = 25$).
+* [suspension.c](cases/lagrangian_caps/suspension.c): a suspension of 50 
+capsules in a bi-periodic shear flow. Various volume fractions are studied
+from $5\%$ to $30\%$ and the increased bulk viscosity is measured.
+
+### Test suite
+* [create-capsule-sphere.c](tests/regression-tests/create-capsule-sphere.c):
+tests most functions in [geometry-ft.h](src/lagrangian_caps/geometry-ft.h) and
+some functions in [capsule-ft.h](src/lagrangian_caps/capsule-ft.h).
+* [create-capsule-biconcave.c](tests/regression-tests/create-capsule-biconcave.c):
+tests most functions in [geometry-ft.h](src/lagrangian_caps/geometry-ft.h) and
+some functions in [capsule-ft.h](src/lagrangian_caps/capsule-ft.h).
+* [draw-sphere.c](tests/regression-tests/draw-sphere.c): tests 
+[view-ft.h](src/lagrangian_caps/view-ft.h).
+* [stress-strain-neo-hookean.c](tests/regression-tests/stress-strain-neo-hookean.c):
+tests [elasticity-ft.h](src/lagrangian_caps/elasticity-ft.h) and 
+[neo-hookean-ft.h](src/lagrangian_caps/neo-hookean-ft.h).
+* [stress-strain-skalak.c](tests/regression-tests/stress-strain-skalak.c)
+tests [elasticity-ft.h](src/lagrangian_caps/elasticity-ft.h) and 
+[skalak-ft.h](src/lagrangian_caps/skalak-ft.h).
+* [curvature-biconcave.c](tests/regression-tests/curvature-biconcave.c): tests
+[bending-ft.h](src/lagrangian_caps/bending-ft.h), 
+[curvature-ft.h](src/lagrangian_caps/curvature-ft.h) and
+[matrix-toolbox.h](src/lagrangian_caps/matrix-toolbox.h).
+* [advect-sphere.c](tests/regression-tests/advect-sphere.c): tests
+[ibm-ft.h](src/lagrangian_caps/ibm-ft.h),
+[capsule-ft.h](src/lagrangian_caps/capsule-ft.h).
+* [advect-sphere-mpi.c](tests/regression-tests/advect-sphere-mpi.c): tests
+[capsule-ft-mpi.h](src/lagrangian_caps/capsule-ft-mpi.h).
+* [advect-viscosity.c](tests/regression-tests/advect-viscosity.c): tests 
+[caps-viscosity.h](src/lagrangian_caps/caps-viscosity.h).
+* [caps-dump-restore.c](tests/regression-tests/caps-dump-restore.c): tests
+dump and restore functions in 
+[dump-ft.h](src/lagrangian_caps/dump-ft.h).
+* [caps-paraview.c](tests/regression-tests/caps-paraview.c): tests
+paraview functions in [post-processing-ft.h](src/lagrangian_caps/post-processing-ft.h).
+
+### Limitations and known bugs
+* The development of the 2D version of this solver has stopped: the latest 
+versions of this solver are developed and tested in 3D only. 
+While the 2D version of the solver was useful in its early 
+development stage, it has little physical interest and has therefore 
+been abandoned.
+* The bending force has never been tested with periodic boundaries
+* Multigrid: since the Cache structure is used in the IBM implementation, the
+code on this sandbox is compatible with octree grids but not Cartesian or
+multigrid.
+* Visualization tools: visualizing the edges of the mesh in 3D is necessary to
+get some visual perspective because the textures on triangular faces (i.e. the
+shades) have not been implemented.
+* The solver has never been tested with OpenMP.
+
+### To do list
+* **Test bending force with periodic boundaries**, and possibly fix some periodicity-related bugs
+* **Compatibility with the javascript visualization**
+* **Better MPI parallelism**: right now there is only one MPI communication per time step during the interpolation of the velocity from the octree grid to the membrane nodes (two if the RK2 scheme is used), but it comes at the price of having every processor compute the motion of every node of every capsule. This is highly inefficient and could be made better by (i) using "bounding boxes" for our capsules, such that only processors that deal with fuid cells close to a capsule see it; or (ii) implement our surface triangulation locally on grid cells one the `scalar` quantity allows to consider `struct` rather than `double` (in this case we would have a scalar that is an array of arrays of nodes, edges and triangles).
+* **Shading effect in bview**: right now the triangles are outputted in bview in plain white color, so it is necessary to draw the edges in order to get the impression of 3D.
+* **Compatibility with multigrid**: because our Lagrangian stencils are stored in `Cache` structures, the code is only compatible with tree grids. If we want to study non adaptive cases, i.e. a constant level of refinement everywhere, using multigrids is more efficient and the code could be made compatible with it by not relying on Caches and using a more efficient way to access the cells in the stencil thant the `locate()` function.
+* **Stencils spanning cells of variable levels**: it can be useful in some selected configurations, and could be performed by requiring the stencils to remain isotropic and simply averaging of the velocity/force. If this approach is too naive, I don't see why yet. For more information, see Appendix C of [my thesis](https://open.library.ubc.ca/soa/cIRcle/collections/ubctheses/24/items/1.0432797).
+* **More efficient computation of indicator function**: this is useful only if we consider a viscosity ratio inside/outside of the capsules. In this case, we can tweak the Poisson solver to only iterate through the cells located close to the membrane, because we know that the indicator function away from the membrane will remain constant.
+* **Output capsules in Paraview in binary files**: requires to find a good documentation of the Paraview file format.
+* **Wall-aware IBM stencils**: renormalize the convolution operations in the IBM when some cells of the stencil are located outside of the fluid domain.
+* **Predefined output functions**: provide the code user with functions to output typical quantities such as capsule centroids, average and maximum stress, etc.
+* **Allow creation of biconcave membranes with viscosity jumps in an arbitrary angular position**: right now the pre-defined function to create a red blood cell only allows their axis of rotation symmetry to be aligned with the $y$-axis.
+* ~~**Elegant volume conservation correction**: we could use the approach of Mendez et al., JCP, 2014 to impose a constant volume of the capsules by solving a (simple) optimization problem. It performs better than simply pulling on the nodes in the normal direction, and can be seen as a correction for the non-conservativity of the velocity interpolation of the IBM.~~
+* ~~**Compatibility with the new bview**~~
+* ~~**Add a test suite with reference files**~~
+* ~~**Reorganize the source files**: currently, some mesh-related functions are in capsule-ft.h and post-processing-ft.h and it could be organized in a more intuitive way.~~
+* ~~**Stick to a naming convention**: right now the terms `caps` or `capsules`, and `mb` or `membranes` are used interchangeably in the source files, but one single term should be used.~~ `The script `update-source-file.sh` automatically updates a `.c` file to comply to the new naming convention.
+* ~~**Correct the .c files in this sandbox that were written prior to a solver update and would lead to compilation errors**~~
+
+## Eulerian framework
+In the Eulerian framework, we do not mesh the capsules. The source files
+below aimed at reproducing and improving the method of Ii et al (2012, 2018).
+However, they did not lead to quantitatively satisfactory results and this
+approach has been abandoned. As explained in my thesis, I believe that this
+approach would require extremely accurate normal vectors (at least 4th order 
+accurate), which is not well-suited for the Volume of Fluid (VOF) method.
+
+The Eulerian approach uses the VOF framework provided by Basilisk to track the position of the membrane. It has the main advantage of requiring only one common mesh for the background fluid and the capsules, thus greatly simplifying the implementation when adaptive mesh refinement (AMR) is considered. We can expect that for a large number of capsules, such an Eulerian description provides better computational performances than the Lagrangian alternative representation. Quantifying this improvement would have been one of the sub-goals of this study.
+
+
+### Source files
+* [capsule.h](src/eulerian_caps/capsule.h): definition of the membrane region by smoothing the VOF function, application of the body-force from the membrane to the fluid.
+* [elasticity.h](src/eulerian_caps/elasticity.h): definition, advection and projection of the (modified) surface left Cauchy-Green deformation tensor $\mathbf{G}$ and the surface Jacobian $J$.
+* [neo_hookean.h](src/eulerian_caps/neo-hookean.h): computation of the elastic stress for a Neo-Hookean membrane using $\mathbf{G}$, $J$ and the projector onto the membrane surface $\mathbf{P}$.
+* [normal_extension.h](src/eulerian_caps/normal_extension.h): extension of scalar quantities defined in interfacial cells to the extended membrane region along the normal direction, using a Hamilton-Jacobi equation. Also, extension of normal vectors themselves.
+* [navier-stokes/my_centered.h](src/navier-stokes/my_centered.h): same as navier-stokes/centered.h, with addition of the *pp_vof* event (standing for "post-processing VOF") onto which capsule.h can hook.
+* [grid/\*.h](src/grid): Modification of cartesian_commons.h in order to allow the definition of 3D tensors. All the other .h files in this folder need to point to the new cartesian_commons.h.
+
+
+### Test cases
+* constant_elongation.h: (not uploaded yet) tests the computation of the source terms of the advection equations for $J$ and $\mathbf{G}$, as well as the computation of the stress tensor.
+* linear_elongation.h: (not uploaded yet) tests the full advection equation for $J$ and $\mathbf{G}$, since the gradient terms are non zero. Also tests the computation of the acceleration.
+* normal_scalar_extension.h: (not uploaded yet) tests the extension of a scalar quantity from the interfactial cells to the rest of the extended membrane region along the normals.
+* normal_vector_extension.h: (not uploaded yet) tests the extension of normal vectors themselves from the interfacial cells to the rest of the membrane region.
+
+
+### Known bugs
+* __It never reproduced quantitatively acceptable results__. Don't use these Eulerian source files unless you want to fix the implementation/the method yourself.
+* The normal vectors provided *on* the interface by the height functions are assumed to be provided at the center of the interfacial cells by the current implementation.
+* Default boundary conditions of 3D tensors are not defined. This is fine as long as the developers/users are aware of it.
+
+*/

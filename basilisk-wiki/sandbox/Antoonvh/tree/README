@@ -1,0 +1,38 @@
+![A tree exchanges momentum with the atmosphere. Image via [Pixabay](https:/pixabay.com)](https://cdn.pixabay.com/photo/2018/03/14/09/49/tree-3224754__340.jpg)
+
+# The aerodynamic drag of a tree
+
+This folder contains pages that concern the aerodynamic modeling of leafless trees. This is part of a bigger research project named [Plantenna](https://www.4tu.nl/plantenna/en/).
+
+![](plantenna/letters.mp4)(autoplay style="pointer-events: none; )
+
+## Simulations
+
+* [Flow past a 2D cylindrical branch](cyl2d.c)
+* [Flow past two 2D cylindrical branches](2cyl2d.c)
+* [A rapidly growing tree](add_branches.c)
+* [Flow past a 3D cylindrical branch](cyl3d.c)
+* [Flow past a fractal tree](fractaltree.c)
+* [Flow past a space-colonized tree](404)
+* (some increasingly complex pages)  
+* [Flow past realistic tree geometries](404)  
+
+## Cell-fraction embedded-tree pages 
+* [A Simple fractal](tree-test.c)  
+* [A tree generated with space colonization](colonizedtree.c)  
+* [A "real tree" from line-segment skeleton (via `QSMTREE`)](realtree.c)  
+* [A "real tree" from a `.stl` file (via `Adtree`)](mekel.c)  
+
+## Methods
+* [Generate a fractal tree and volume fractions from line-segment skeleton](treegen.h)
+* [Minimal example of $\Delta \propto R^{-0.5}$ with `adapt_wavelet()`](rc2.c)
+* [Example of $\Delta R^{-1} = c \times Re^{-0.5}$ on 3 branches](branchrefine.c)
+* [Frontal area of a fractal tree](projecttree2D.c)
+* [Space colonization](colonization.h)
+
+## Miscellaneous pages  
+* [A model for a growing plant root](tc.c)
+* [Write "Plantenna" with a growing plant-root font](plantenna.c)
+
+
+

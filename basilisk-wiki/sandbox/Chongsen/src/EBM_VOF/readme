@@ -1,0 +1,20 @@
+# Introduction
+The supplied header files fully support the implementation of the contact angle boundary condition for liquid/gas interfaces on embedded boundaries in Basilisk (October 2023 release).
+
+Further details regarding the algorithm’s implementation can be found in [Huang et al., 2025](#HUANG2025113975).
+
+
+## Publications
+
+~~~bib
+@article{HUANG2025113975,
+  title = {A 2D sharp and conservative VOF method for modeling the contact line dynamics with   hysteresis on complex boundary},
+  journal = {Journal of Computational Physics},
+  volume = {533},
+  pages = {113975},
+  year = {2025},
+  publisher={Elsevier},
+  doi = {https://doi.org/10.1016/j.jcp.2025.113975}
+}
+~~~
+

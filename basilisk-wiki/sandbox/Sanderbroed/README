@@ -1,0 +1,29 @@
+# Combat fruit frost, using Vortex rings
+
+Hello, 
+
+for my Bachelor thesis (Civil engineering) I investigated the opportunity to use vortex rings to protect fruit against freezing. The numerical models used in this research can be found below. 
+
+The research consists of four parts where numerical models are used.:
+
+1. Vortex ring generation with a cross flow
+
+2. Vortex rings through a shearing atmosphere
+
+3. Vortex rings through a stratified atmosphere
+
+4. Fruit frost based example
+
+Enjoy reading!
+
+Sander Broeders
+
+## Links to codes
+
+* [1. Vortex ring generation with a cross flow](crosswind.c)
+* [2. Vortex rings through a shearing atmosphere](shear.c)
+* [3. Vortex rings through a stratified atmosphere](stratified.c)
+* [4. Fruit-frost based example](disk.c)
+
+
+

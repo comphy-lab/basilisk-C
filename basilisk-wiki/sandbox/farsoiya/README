@@ -1,0 +1,35 @@
+/**
+
+# My Sandbox
+Welcome to the README for my sandbox. This page serves as your gateway to exploring the exciting projects within [/sandbox/farsoiya/]. My aim is to offer you an informative overview of these endeavors, and I hope you discover something that captivates your interest. Feel free to use these codes without worrying about authorship, I just request you to cite the papers where I have introduced the numerical method.
+
+-*Palas Kumar Farsoiya*- 
+
+## Viscous droplet breakup in Homogeneous and Isotropic Turbulent flow
+
+* [The role of viscosity in droplet breakup](viscous_droplet_breakup.c)
+
+## Mass transfer of dilute gas across the two phases
+The mass transfer module developed [henry.h](/src/henry.h)
+
+
+* [Mass transfer of dilute gas from static bubble](/src/test/static_bubble.c)
+* [Mass transfer of dilute gas from axisymmetric rising bubble](axi_rising_bubble_periodic.c)
+* [Mass transfer of dilute gas from 3D rising bubble](3D_rising_bubble_dilute_gas_transfer.c)
+
+## Mass transfer of single component from gas to liquid phase
+
+* [Stefan Problem- Interfacial movement test for phase change](phase_change/stefan_problem.c)
+* [Epstein-Plesset test-Mass transfer of pure gas static bubble with phase change](phase_change/epstein-plesset.c)
+* [Mass transfer of pure gas rising bubble with phase change](phase_change/rising_bubble.c) 
+
+
+## Capillary jet
+
+* [Jet forming oscillations of circular wave](capillary_gravity_jetting.c)
+
+
+## Contact
+
+If you like to discuss a specific topic, feel free to e-mail me:
+farsoiya-AT-gmail.com. */

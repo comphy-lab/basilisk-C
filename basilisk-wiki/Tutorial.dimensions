@@ -1,0 +1,851 @@
+This tutorial is about [Dimensional
+Analysis](https://en.wikipedia.org/wiki/Dimensional_analysis) as
+implemented within [Basilisk C]() and the associated preprocessor
+[qcc](/src/qcc.c). It assumes that you are already familiar with
+Basilisk. See the [Tutorial]() first if you are not.
+
+# Introduction
+
+We have all learned in introductory physics classes that the
+mathematical expressions used to model physical processes must be
+*homogeneous* or *dimensionally consistent* (or again that the
+quantities involved in expressions must be *commensurable*). We have
+also been taught that checking this consistency is useful to detect
+errors, both trivial calculation errors and more complex erroneous
+modelling assumptions. This checking is one of the simplest aspect of
+[Dimensional Analysis](https://en.wikipedia.org/wiki/Dimensional_analysis).
+
+Interestingly, while this is clearly a very useful tool when doing
+calculations with pen and paper, dimensional analysis is rarely used
+to check for errors in computer programs implementing physical
+models. Basilisk C brings Dimensional Analysis to the class of
+programs implementable within Basilisk, and in particular most of its
+[solvers](/src/README).
+
+Consider for example the (very) simple code:
+
+~~~literatec
+int main() {
+  double g = 9.81, h = 3, u = 1;
+  double c = g*h, w = u + c;
+}
+~~~
+
+The code is clearly correct both *from a mathematical and programming
+point of view*. However, if we now say that `g` is the acceleration
+(e.g. of gravity), `h` is a length (i.e. the water depth), `u` is the
+velocity (of the fluid), then it is easy to see that, *from this
+physical point of view*, the code is not correct. Indeed, we cannot
+add `u` with `c` to get `w` since `u` and `c` are not *commensurable*:
+`u` is a velocity by definition (e.g. with SI units m.s^-1^) and `c`
+has the *dimension* of an acceleration times a length e.g. m^2^.s^-2^
+in SI units. This basic reasoning also gives a way to fix the problem
+(i.e. make the code dimensionally-consistent), we see that the
+expression for `c` should rather be `c = sqrt(g*h)`.
+
+## Notations for dimensions
+
+In this reasoning, we have done exactly what we do when checking
+expressions with pen and paper. If we want to automate it, we first
+need appropriate notations which can be used to add the missing
+information within the code (i.e. the physical meaning/dimensions of
+`g`, `h`, `u` etc.). Note that these notations can also be used to
+reason formally about dimensions (i.e. write equations dealing with
+the dimensions of quantities, not the quantities themselves). You
+probably are already familiar with them if you have had classes on
+dimensional analysis.
+
+A good way to represent the dimensions of quantities is through a
+*vector of dimensional exponents*, as we will explain later. Using
+this notation, the missing physical information in our example could
+be expressed (in pseudo-code or on paper) as:
+
+~~~literatec
+[g] = [1,-2]
+[h] = [1, 0]
+[u] = [1,-1]
+~~~
+
+where `[x]` means "dimension of x" and the components of the vectors
+on the right-hand-side are the exponents of the corresponding *base
+dimensions*. In our case the *base dimensions* are only "length" L and
+"time" T which we chose (arbitrarily) to associate with the first and
+second component of the dimension vector. We then see that `g` indeed
+has the dimensions of L^1^ multiplied by T^-2^, that `h`
+has dimensions of L^1^ multiplied by T^0^ etc.
+
+It is important to note that we are talking about "dimensions" and not
+"units", because they are different concepts (often confused).
+
+The vector notation is useful because it readily exposes the
+relationship between arithmetic operations on quantities and the
+corresponding operations on their dimensions. We see for example that
+
+~~~literatec
+[g*h] = [1,-2] + [1,0] = [2,-2]
+[g^n] = n*[1,-2]
+[sqrt(g*h]] = 0.5*[2,-2] = [1,-1]
+~~~
+
+i.e. multiplication of quantities corresponds with addition of their
+dimension vectors while exponentiation corresponds with multiplication
+of the dimension vector by the exponent.
+
+## A simple application
+
+Let's now apply this notation to our code within Basilisk. We write:
+
+~~~literatec
+int main() {
+  double g = 9.81 [1,-2], h = 3 [1], u = 1 [1,-1];
+  double c = g*h, w = u + c;
+}
+~~~
+
+which associates dimensions with the values of the *constants* `9.81`,
+`3` and `1` used to initialize `g`, `h` and `u`. Note that it is
+indeed constants (i.e. values) which have dimensions, not the
+variables `g`, `h` and `u`. This is what makes most sense in a
+computer program since, unlike in mathematics, variables in programs
+can hold values whose "meaning" (here dimensions) can change. A
+stricter convention could be adopted, where variables would hold only
+values with the same dimension (see
+[dimension.c](/src/ast/interpreter/dimension.c) for a more detailed
+discussion), but this would break a large number of existing codes.
+
+We can now try to compile this code using the [Basilisk C
+compiler](/src/qcc.c) i.e. do
+
+~~~bash
+qcc test.c -lm
+~~~
+
+which will return
+
+~~~bash
+test.c:2: error: the dimensional constraints below are not compatible
+test.c:2: '1 [1,-1]'
+	└─ [test.c:2: 'u = 1 [1,-1]'] = [1,-1]
+test.c:3: 'u + c'
+	└─ [test.c:2: 'u = 1 [1,-1]'] = [2,-2]
+~~~
+
+clearly indicating that something is wrong... To understand the
+details of the error message it is useful to have a general
+understanding of how Basilisk C proceeds to check dimensional
+consistency. At compilation time Basilisk C executes a simplified
+version of the code and records the conditions (i.e. *dimensional
+constraints*) that each operation must verify. It then tries to solve
+the resulting linear system of equations (the unknowns being the
+dimensions of each constant in the code). In case of failure it
+reports an error message as in the present example (a more detailed
+explanation is given in
+[dimension.c](/src/ast/interpreter/dimension.c)).
+
+In the error message, the last two lines starting with `test.c:2` and
+`test.c:3` give the origin of the constraint and the associated
+expressions (here `1 [1,-1]` and `u + c`), while the `└─` symbol
+(which could be read "implies") gives the associated *dimensional
+consequence*. In our example the error message could thus be read
+
+"The code is not dimensionally consistent because the two statements
+below are incompatible"
+
+"Expression '1 [1,-1]' at line 2 of `test.c` implies that the
+dimension of 'u = 1' at line 2 of `test.c` equals [1,-1]"
+
+"Expression 'u + c' at line 3 of `test.c` implies that the dimension
+of 'u = 1' at line 2 of `test.c` equals [2,-2]"
+
+This error checking is clearly useful, even for our simple example,
+but is of course applicable to much more complex programs (entire
+solvers) for which dimensional errors are much less obvious.
+
+## Checking for the physical consistency of all dimensions
+
+Note however that, while being dimensionally consistent is absolutely
+necessary, it is not sufficient to ensure that the code is physically
+consistent: the dimensions of quantities and associated operations
+could form a consistent system but with the dimensions of quantities
+not matching their physical meaning (for example with some quantity
+being an acceleration rather than a velocity).
+
+Let's consider the slightly more complex example:
+
+~~~literatec
+double Frc = 1;
+
+int main() {
+  double g = 9.81 [1,-2], h = 3 [1], u = 1 [1,-1];
+  double c = g*h, Fr = u/c;
+  if (Fr > Frc)
+    printf ("The flow is supercritical!\n");
+}
+~~~
+
+This example now compiles without any problem (because we have removed
+the expression `w = u + c`), even though we now know (from the
+previous example) that the expression for `c` is incorrect (if `c`
+should still be a velocity). To detect the error we need to go one
+step further in the analysis and check the dimensions of *all* the
+constants used by the program. To do so we compile using:
+
+~~~bash
+qcc -dimensions test.c -lm
+~~~
+
+which gives
+
+~~~bash
+10 constraints, 10 unknowns
+Dimensions of finite constants
+  [1]
+    test.c:4: 'h = 3 [1]'
+  [-1,1]
+    test.c:1: 'Frc = 1'
+  [1,-1]
+    test.c:4: 'u = 1 [1,-1]'
+  [1,-2]
+    test.c:4: 'g = 9.81 [1,-2]'
+~~~
+
+The first line gives the number of dimensional constraints
+(i.e. linear equations) and the number of unknowns (i.e. the number of
+constants having unknowns dimensions). Since they are equal, the
+linear system has a unique solution. Then follows a list of all
+(finite) constants and their dimensions, in order of increasing
+"dimensional complexity". We see that the system has
+
+* a single length (i.e. dimension [1]) which is 'h = 3',
+* a single velocity (i.e. dimension [1,-1]) which is 'u = 1'
+* and a single acceleration (i.e. dimension [1,-2]) which is 'g = 9.81'.
+
+We are not surprised since we explicitly specified them. However we
+now also have
+
+* the "inverse of a velocity" (i.e. dimension [-1,1]) which is 'Frc = 1'.
+
+This is obviously incorrect (from a physical point of view) since we
+know that flows are supercritical when the Froude number is
+larger than a critical value (`Frc`) which is indeed one, but that the
+Froude number (and thus also `Frc`) are dimensionless numbers, not the
+"inverse of a velocity".
+
+Let's assume for pedagogical reasons that we don't already know how to
+fix this. If we suspect that the problem comes from the Froude number,
+it would be nice to be able to check the dimensions of the expressions
+used to compute it. To do so, we can add
+
+~~~literatec
+double Frc = 1;
+
+int main() {
+  double g = 9.81 [1,-2], h = 3 [1], u = 1 [1,-1];
+  double c = g*h, Fr = u/c;
+  show_dimension (u/c);
+  show_dimension (u);
+  show_dimension (c);
+  if (Fr > Frc)
+    printf ("The flow is supercritical!\n");
+}
+~~~
+
+and recompile, which will give
+
+~~~bash
+13 constraints, 13 unknowns
+Dimensions of constants
+  [1]
+    test.c:4: 'h = 3 [1]'
+  [-1,1]
+    test.c:1: 'Frc = 1'
+  [1,-1]
+    test.c:4: 'u = 1 [1,-1]'
+  [1,-2]
+    test.c:4: 'g = 9.81 [1,-2]'
+Dimensions of expressions
+  [-1,1]
+    test.c:6: 'u/c'
+  [1,-1]
+    test.c:7: 'u'
+  [2,-2]
+    test.c:8: 'c'
+~~~
+
+We now have the (unsurprising) confirmation that 'u/c' and thus 'Fr'
+and thus 'Frc' have the dimensions of "inverse velocities", but more
+importantly that 'c' does not have the dimension of a velocity, and
+that this can be fixed by adding a square root. If we now do so
+i.e. compile
+
+~~~literatec
+double Frc = 1;
+
+int main() {
+  double g = 9.81 [1,-2], h = 3 [1], u = 1 [1,-1];
+  double c = sqrt (g*h), Fr = u/c;
+  if (Fr > Frc)
+    printf ("The flow is supercritical!\n");
+}
+~~~
+
+we get
+
+~~~bash
+10 constraints, 10 unknowns
+Dimensions of constants
+  [0]
+    test.c:1: 'Frc = 1'
+  [1]
+    test.c:4: 'h = 3 [1]'
+  [1,-1]
+    test.c:4: 'u = 1 [1,-1]'
+  [1,-2]
+    test.c:4: 'g = 9.81 [1,-2]'
+~~~
+
+which is consistent with our physical interpretation.
+
+### Another way
+
+Note that we could also have chosen to write
+
+~~~literatec
+double Frc = 1 [0];
+
+int main() {
+  double g = 9.81 [1,-2], h = 3 [1], u = 1 [1,-1];
+  double c = g*h, Fr = u/c;
+  if (Fr > Frc)
+    printf ("The flow is supercritical!\n");
+}
+~~~
+
+which would have directly given the following error
+
+~~~bash
+test.c:4: error: the dimensional constraints below are not compatible
+test.c:4: '1 [1,-1]'
+	└─ [test.c:4: 'u = 1 [1,-1]'] = [1,-1]
+test.c:6: 'Fr > Frc'
+	└─ [test.c:4: 'u = 1 [1,-1]'] = [2,-2]
+~~~
+
+i.e. an error very similar to that in our first example.
+
+An important difference between these two approaches is that here we
+have directly supplied the dimensions of *all* the constants used in
+the program. The "solution" of the linear system of constraints then
+becomes just a check that the particular combination we provided is
+indeed a solution of the system (which is not the case
+here). Practical applications (i.e. using complex solvers) often use
+hundreds or even thousands of constants and it would be extremely
+impractical to have to specify the dimensions of each of these. Using
+the second approach (also known as "Dimensional Inference") allows to
+recover the dimensions of all constants (and thus check their
+consistency) while explicitly specifying the dimensions of only a few
+input constants.
+
+# A more realistic application
+
+As a non-trivial example, we will consider the [transcritical flow
+over a bump](/src/test/layered.c) test case.
+
+For pedagogical reasons, let's first remove the explicit specification
+of any dimension in the code i.e. do
+
+~~~bash
+cd /tmp
+cp $BASILISK/test/layered.c .
+edit layered.c and replace:
+layered.c:27: "L0 = 21. [1];" with   "L0 = 21.;"
+layered.c:63: "1.[0]"         with   "1."
+~~~
+
+if we now compile using
+
+~~~bash
+qcc -dimensions layered.c -lm
+~~~
+
+we get something like:
+
+~~~bash
+125 constraints, 127 unknowns
+There are 2 unconstrained constants within the following 12
+  ....
+  (We will just ignore this part for now)
+Dimensions of finite constants
+  [0,1]
+    layered.c:106: '0.1'
+~~~
+
+The good news is that there is no dimensional inconsistency in the
+code (no error is reported), however the dimensions of only one
+constant can be determined: `layered.c:106: '0.1'` with dimension
+[0,1]. If we look at the corresponding line in the source code, we see
+that this corresponds with the time increment for event `logfile` (`t
++= 0.1`) and so [0,1] must be the dimension for "time" or equivalently
+that the second component of the dimension vector is the exponent of
+the "time" base dimension.
+
+## Default dimensions and conventions
+
+How was this determined by the solver? By default, Basilisk defines
+only two base dimensions: space and time, which are assigned (by
+convention) to the first and second component of the dimension
+vector. In practice this is done by setting the dimensions of the
+initial values of (only) two variables: the domain size `L0` and the
+maximum timestep `DT`.
+
+This suggests a simple way to override this default: just set the
+initial value of DT to a constant with a different dimension. For
+example, we could just add the line
+
+~~~literatec
+  DT = HUGE [1];
+~~~
+
+at line 30 in `layered.c`. `HUGE` is the standard default value for
+`DT` but we have changed its dimension from [0,1] to just [1] i.e. we
+have now chosen the convention that the first component of the
+dimension vector is the exponent of time (rather than the
+second). Note also that dimensions can only be associated with
+(numerical) constants, not variables, so it looks like this should not
+work (since `HUGE` looks like a variable name, not a constant). This
+works because HUGE is not a variable but a preprocessor macro defined
+as a numerical constant.
+
+If we compile the modified code, we get as expected
+
+~~~bash
+129 constraints, 131 unknowns
+There are 2 unconstrained constants within the following 14
+  ....
+  (We will just ignore this part for now)
+Dimensions of finite constants
+  [1]
+    layered.c:106: '0.1'
+~~~
+
+## Adding missing constraints
+
+Let's get back to the default convention i.e. just remove the line `DT
+= HUGE [1];` we just added and recompile to get
+
+~~~bash
+125 constraints, 127 unknowns
+There are 2 unconstrained constants within the following 12
+  layered.c:27: 'L0 = 21.'
+  layered.c:63: '10.'
+  layered.c:23: 'Ho = 0.6'
+  layered.c:108: '1e-4'
+  /src/saint-venant.h:57: 'dry = 1e-10'
+  layered.c:35: 'nu = 0.01'
+  layered.c:18: 'Q = 1.'
+  layered.c:28: 'G = 9.81'
+  layered.c:61: 'b = 5.75/2.'
+  layered.c:63: '1.'
+  layered.c:61: 'a = 0.2'
+  layered.c:98: 'S = 25.'
+Dimensions of finite constants
+  [0,1]
+    layered.c:106: '0.1'
+~~~
+
+We see that the linear system of unknown dimensions is
+under-determined
+(or "[rank-deficient](https://en.wikipedia.org/wiki/Rank_(linear_algebra))"):
+we have 127 unknown dimensions and only 125 "dimensional constraints"
+(i.e. linearly-independent equations). To be able to uniquely
+determine the dimensions of all constants, we need to set the
+dimensions of (at least) two well-chosen constants in the list of 12
+given. Choosing which constants to set is not necessarily trivial and
+choosing them one-by-one can help.
+
+From the previous section we know that the constants used to
+initialize `DT` and `L0` are particularly important since they set the
+default dimensions of time and space. We also note that we are
+changing the value of `L0` at line 27 of `layered.c` to the constant
+`21.` and that no dimension is specified. This has the important
+consequence that "space" has now been eliminated from the system of
+dimensions. It seems a good idea to put it back i.e. write instead
+
+~~~literatec
+  L0 = 21. [1];
+~~~
+
+and recompile to get
+
+~~~bash
+126 constraints, 127 unknowns
+There is 1 unconstrained constant within the following 3
+  layered.c:61: 'b = 5.75/2.'
+  layered.c:63: '1.'
+  layered.c:61: 'a = 0.2'
+Dimensions of finite constants
+  [1]
+    /src/saint-venant.h:57: 'dry = 1e-10'
+    layered.c:23: 'Ho = 0.6'
+    layered.c:27: 'L0 = 21. [1]'
+    layered.c:63: '10.'
+    layered.c:108: '1e-4'
+  [0,1]
+    layered.c:106: '0.1'
+  [0.333333,-1]
+    layered.c:98: 'S = 25.'
+  [2,-1]
+    layered.c:18: 'Q = 1.'
+    layered.c:35: 'nu = 0.01'
+  [1,-2]
+    layered.c:28: 'G = 9.81'
+~~~
+
+Since we have added only 1 constraint (the dimension of `21.`) the
+system is still rank-deficient, but most constants can now be
+determined. Before fixing this missing constraint, it is worth
+checking that the dimensions of these constants are indeed what we
+expect:
+
+* 'dry', 'Ho', 'L0', '10.' and '1e-4' have the dimension of length,
+  which is correct since they are respectively: the film thickness
+  below which the substrate is "dry", the outflow depth, the size of
+  the domain, the position of the bump and the threshold for
+  convergence of the fluid depth.
+
+* '0.1' has the dimension of time, which is consistent as we have seen
+  before.
+
+* 'Q = 1.' and 'nu = 0.01' have dimension [2,-1] which is correct
+  since 'Q' is a (two-dimensional) flow rate and 'nu' is a kinematic
+  vicosity.
+
+* 'G = 9.81' has the dimension of an acceleration (of gravity).
+
+* and finally the coefficient 'S = 25.' has the somewhat mysterious
+  and non-trivial dimension [1/3,-1], but this is indeed the dimension
+  of the
+  [Manning-Strickler](https://en.wikipedia.org/wiki/Manning_formula)
+  friction coefficient 'S'. Note that other (and better) friction
+  formulations (analytical or empirical) exist which involve more
+  consistent and physically-understandable coefficients
+  (e.g. dimensionless coefficients or roughness lengths etc.)
+
+We will now add the last missing constraint. As indicated, we need to
+set one of the three constants listed ('a', 'b' or '1.'), which all
+appear between lines 61 and 63 i.e. in the expression used to
+initialize 'zb[]'. First of all, let's note that it is not surprising
+that the dimensions of these constants cannot be uniquely
+determined. If we redo with "pen and paper" what is done by the
+compiler, we can write:
+
+~~~bash
+[a*(1. - sq((x - 10.)/b))] = [zb[]]
+~~~
+
+which can be further decomposed into the two constraints
+
+~~~bash
+[a] + [1.]               = [zb[]]
+[sq((x - 10.)/b)] - [1.] = [0]
+~~~
+
+which can be further simplified into
+
+~~~bash
+[a] + [1.]     = [zb[]]
+- 2*[b] - [1.] = - 2*[10.]
+~~~
+
+(where we have used [sq(x)] = 2*[x]). This is a linear system with
+unknowns [a], [b] and [1.] where the right-hand-side is known ([zb[]]
+= [1] and [10.] = [1]). One equation is clearly missing to close the
+system. We can set for example the dimension of '1.' to zero
+(dimensionless) using
+
+~~~literatec
+    zb[] = max(0., a*(1.[0] - sq((x - 10.)/b)));
+~~~
+
+If we recompile we now get the fully-determined solution
+
+~~~bash
+127 constraints, 127 unknowns
+Dimensions of finite constants
+  [0]
+    layered.c:63: '1.[0]'
+  [1]
+    /src/saint-venant.h:57: 'dry = 1e-10'
+    layered.c:23: 'Ho = 0.6'
+    layered.c:27: 'L0 = 21. [1]'
+    layered.c:61: 'a = 0.2'
+    layered.c:61: 'b = 5.75/2.'
+    layered.c:63: '10.'
+    layered.c:108: '1e-4'
+  [0,1]
+    layered.c:106: '0.1'
+  [0.333333,-1]
+    layered.c:98: 'S = 25.'
+  [2,-1]
+    layered.c:18: 'Q = 1.'
+    layered.c:35: 'nu = 0.01'
+  [1,-2]
+    layered.c:28: 'G = 9.81'
+~~~
+
+with 'a' and 'b' parameters with dimension of length.
+
+Note that this list of constants and their dimensions is generally
+useful, beyond what it says about dimensional consistency:
+
+* the physical interpretation of what the solver does is clearer,
+  since one now knows what each constant/variable stands for (e.g. 'Q'
+  is a flow rate, 'nu' is a viscosity, 'G' is an acceleration
+  etc.). Using the `show_dimension()` function (see above) one can
+  also explore the dimensions and meaning of more complex expressions.
+
+* having an exhaustive list of the input parameters and their
+  dimensions is the first step toward true dimensional analysis, for
+  example applying the [Bertrand--Vaschy--Buckingham π
+  theorem](https://en.wikipedia.org/wiki/Buckingham_%CF%80_theorem) to
+  express the independent dimensionless parameters controlling the
+  system.
+
+## Making everything dimensionless
+
+In some cases one may wish to turn off dimensional analysis
+altogether. Note that the cases where this is justified are few and
+that I do not recommend doing it unless you really know what you are
+doing. Turning off dimensional analysis means that the system you are
+considering does not have a physical interpretation i.e. that it is a
+purely mathematical construct where quantities are not related to
+physical quantities.
+
+You may object that the dimensionless form of the equations is the
+most relevant system (also from a physical perspective) since it only
+involves independent parameters. This is true but hides the fact that
+fundamental information about the dimensions of quantities has been
+lost in the process. One can perfectly work using the relevant
+independent dimensionless parameters while keeping the system of
+equations dimensional. The standard and intuitive way for doing this
+is to setup the problem so that the reference length, time,
+etc. are unity.
+
+With these caveats in mind, if you still want to proceed, there are
+two ways of making the system dimensionless:
+
+* the "brute force way": just turn off analysis at the compiler level
+  using the option `-disable-dimensions`.
+* a better way: just set the dimensions of space, time (and any other
+  base type) to zero.
+
+In our example we just have to do
+
+~~~literatec
+  L0 = 21. [0];
+  DT = HUGE [0];
+~~~
+
+which gives after compilation
+
+~~~bash
+128 constraints, 128 unknowns
+Dimensions of finite constants
+  [0]
+    layered.c:18: 'Q = 1.'
+    layered.c:23: 'Ho = 0.6'
+    layered.c:27: 'L0 = 21. [0]'
+    layered.c:29: 'G = 9.81'
+    layered.c:36: 'nu = 0.01'
+    layered.c:62: 'a = 0.2'
+    layered.c:62: 'b = 5.75/2.'
+    layered.c:64: '1.[0]'
+    layered.c:64: '10.'
+    layered.c:99: 'S = 25.'
+    layered.c:107: '0.1'
+    layered.c:109: '1e-4'
+~~~
+
+so everything is indeed dimensionless. An advantage compared with the
+first option is that we still get the list of input constants.
+
+# Dimensioning a solver
+
+Most of the time nothing needs to be done to "dimension a solver". In
+some cases, adding pre-defined dimensional constraints within a solver
+can simplify its usage (the user will need to explicitly define fewer
+constants).
+
+When adding these constraints care must be taken not to assume that a
+particular convention for dimensions has been taken. This can easily
+be done by respecting the following rules:
+
+* add only dimensionless constraints or ...
+* ... add only constraints expressed using the dimensions of the default
+  "base dimensions"
+* avoid as much as possible dimensional constants in generic
+  solvers. If required these constants must be set by the user, not by
+  the solver.
+
+For example, one can find in [saint-venant.h](/src/saint-venant.h#404):
+
+~~~literatec
+event init (i = 0)
+{
+  foreach() {
+    eta[] = zb[] + h[];
+    dimensional (h[] == Delta);
+    dimensional (u.x[] == Delta/DT);
+  }
+}
+~~~
+
+The `dimensional()` function calls are just empty macros (which are
+ignored at runtime), what is important is their arguments i.e.
+
+* `h[] == Delta`: this forces the dimension of `h[]` to be identical
+  to that of `Delta` (the grid size).
+* `u.x[] == Delta/DT`: this forces the dimension of `u.x[]` to be that
+  of `Delta/DT` i.e. a velocity.
+
+Note that we could have used `L0` instead of `Delta` as a length
+scale, however `L0` is not guaranteed to be a length scale when using
+[coordinate mapping](/src/README#general-orthogonal-coordinates).
+
+Note also that we apply these constraints only *after* user
+initialization (i.e. in the `init` event rather than the `defaults`
+event, otherwise they would be overridden).
+
+Finally note that the Saint-Venant solver violates the third rule
+since it defines the constant `dry = 1e-10` which is dimensional, as
+we have seen in the previous example.
+
+# Conventions, rules, tips and pitfalls
+
+Everything we have done so far depends on respecting a few conventions
+and rules when writing code. Some of them are imposed by dimensional
+consistency, others are choices made in the design of Basilisk.
+
+* **The arguments (and values) of transcendental functions
+    (exponential, logarithm, trigonometric functions etc.) must be
+    dimensionless**:
+    this is not specific to Basilisk and is just a
+    direct consequence of dimensional homogeneity: since
+    transcendental functions can be expressed as infinite sums of
+    powers of their argument, the argument (and the resulting value)
+    must be dimensionless. For example, if space is dimensional this makes 
+    it (dimensionally) impossible to write
+
+    ~~~literatec
+    cos(x)
+    ~~~
+
+    one needs to write instead
+
+    ~~~literatec
+    double k = 1.;
+    cos(k*x)
+    ~~~
+    
+* **Constants in multiplicative expressions are dimensionless
+    (unless otherwise specified)** :
+    for example writing
+   
+    ~~~literatec
+    foreach()
+      u.x[] = 0.2*cos(k*x);
+    ~~~
+
+    implies that `u.x[]` is dimensionless (since `cos(k*x)` is
+    dimensionless and `0.2` is a multiplicative constant), which is not
+    what one wants if `u` is a velocity. There are two ways of fixing
+    this:
+
+    ~~~literatec
+    foreach()
+      u.x[] = 0.2 [1,-1]*cos(k*x);
+    ~~~
+     
+    which explicitly sets the dimension of `0.2`, or much better:
+     
+    ~~~literatec
+    double u0 = 0.2;
+    foreach()
+      u.x[] = u0*cos(k*x);
+    ~~~
+     
+    which does not assume any dimension for `0.2`.
+
+* **Undefined conditional branches cannot define different dimensions**:
+    For example, it is not possible to write
+
+    ~~~literatec
+    foreach()
+      if (s[] > 0)
+        b = Delta;
+      else
+        b = Delta/DT;
+    ~~~
+
+    See also [test19.c](/src/ast/interpreter/dimension-tests/test19.c).
+
+* **Only `float`, `double` and `long int` can have dimensions**: all 
+    other numerical types (`int`, `short` etc.) are dimensionless.
+
+* **The special notation [*] means "any dimension"**: The
+    corresponding constant and the associated constraints will just be
+    ignored. This is a workaround used only for legacy code which was
+    badly designed (most notably the `TOLERANCE` for the [Poisson
+    solver](/src/poisson.h) which takes different incompatible
+    dimensions within the same solver). This should not be used. The
+    code should be fixed instead.
+
+* **Dimensionless constants are only listed for .c files**:
+    Dimensionless constants appearing in header files (.h files
+    i.e. solvers) are not listed by default. To list them use the
+    `-non-finite` option of [qcc](/src/qcc.c).
+
+## Tips
+
+*   Be careful when using the shortcut
+  
+    ~~~literatec
+    h = u = 0;
+    ~~~
+  
+    This automatically means that `h` and `u` must have the same dimensions.
+    It's always safer to use
+    
+    ~~~literatec
+    h = 0, u = 0;
+    ~~~
+
+*   Use `const double` declarations rather than macros.
+    For example do
+
+    ~~~literatec
+    const double T0 = 10.;
+    ...
+    event logfile (t += T0/10; t <= T0)
+    ...
+    ~~~
+
+    rather than
+
+    ~~~literatec
+    #define T0 10.
+    ...
+    event logfile (t += T0/10; t <= T0)
+    ...  
+    ~~~
+
+    This is because dimensional analysis will consider (correctly) every
+    instance of the T0 macro as a new constant, which is probably not
+    what you want.
+
+# Further reading
+
+* [How it's done within the preprocessor](/src/ast/interpreter/dimension.c)
+* [Dimensional test cases](/src/ast/interpreter/dimension-tests/)
+* [Dimensional adaptations of the solvers](/src/?changes=20230908155736)
+* [Dimensional adaptations of the test cases](/src/?changes=20230903131459)

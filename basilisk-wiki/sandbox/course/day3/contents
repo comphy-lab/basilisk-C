@@ -1,0 +1,22 @@
+---
+toc: no
+...
+
+# Introduction to numerical methods for multiphase flows in fluid mechanics
+
+##A problem set:
+
+Approximation of the first derivative of a function
+
+* [See approximation of the first derivative of a function](problem1a.c)
+* [Convergence for the first derivative of a function](problem1b.c)
+
+Error on the advection of a smooth Level Set function
+
+* [Advection of a not well resolved smooth function](problem2a.c)
+* [Advection of a well resolved smooth function](problem2b.c)
+* [Influence of the smoothing and resolution on the error of the advection of a function](problem2c.c)
+
+Errors on the advection of a sharp function
+
+* [Comparison of methods for the advection of a sharp function](problem3.c)

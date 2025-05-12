@@ -1,0 +1,168 @@
+/**
+# Capillary wave for fluids with different densities using new poisson solver
+
+
+We use a constant-resolution grid, the Navier--Stokes solver with VOF
+interface tracking and surface tension. Since we're using the new fast poisson solver we include *fast-navierstokes.h* instead of *navier-stokes/centered.h* 
+
+*/
+
+#include "grid/multigrid.h"
+#include "fast-navierstokes.h"
+#include "two-phase.h"
+#include "tension.h"
+#include "prosperetti-air-water.h"
+
+/**
+We make sure that the boundary conditions for the face-centered
+velocity field are consistent with the centered velocity field (this
+affects the advection term). */
+
+uf.n[left]   = 0.;
+uf.n[right]  = 0.;
+uf.n[top]    = 0.;
+uf.n[bottom] = 0.;
+
+/**
+We will store the accumulated error in *se* and the number of samples
+in *ne*. */
+
+double se = 0; int ne = 0;
+
+int main() {
+
+  /**
+  The domain is 2x2 to minimise finite-size effects. The surface
+  tension is one. */
+
+  L0 = 2.;
+  Y0 = -L0/2.;
+  f.sigma = 1;
+
+   /**
+  We reduce *TOLERANCE* and *CFL* numbers to get better results
+ */
+  TOLERANCE = 1e-14;
+  CFL=1e-4;
+   /**       
+   We are using viscosity and density ratios corresponding to an air-water interface. 
+   */
+  rho1=1;
+  rho2=0.0012;
+  mu1= 0.0182571749236;
+  mu2= 0.0182571749236*(1.8e-5/1.003e-3);
+  /**
+    $\rho_0$ is defined as minimum of $\rho_1$ and $\rho_2$.
+  */
+  rho0 = min(rho1,rho2); 
+  /**
+   We change method and resolution to compare convergnece of FastPn, FastP*, and Basilisk methods.   
+  */
+  for(int iter= unsplit; iter<=fastpstar;iter++){      
+     for (N = 16; N <= 128; N *= 2) {
+     se = ne = 0;
+     run();
+     }
+  poisson_solver=iter+1;
+  } 
+}
+
+/**
+The initial condition is a small amplitude plane wave of wavelength
+unity. */
+
+event init (t = 0) {
+  fraction (f, y - 0.01*cos (2.*pi*x));
+}
+
+/**
+By default tracers are defined at $t-\Delta t/2$. We use the *first*
+keyword to move VOF advection before the *amplitude* output i.e. at
+$t+\Delta/2$. This improves the results. */
+
+event vof (i++, first);
+
+/**
+We output the amplitude at times matching exactly those in the
+reference file. */
+
+event amplitude (t += 0.00198785108553814829; t <= 1.58928694288774963184) {
+
+  /**
+  To get an accurate amplitude, we reconstruct the height function
+  field and take the corresponding maximum. */
+
+  vector h[];
+  heights (f, h);
+  double max = - HUGE;;
+  foreach() 
+    if (f[] > 0 && f[] < 1) {
+      double yi = y + height(h.y[])*Delta;
+      if (yi > max)
+	max = yi;
+    }
+
+  /**
+  We output the corresponding evolution in a file indexed with the
+  number of grid points *N*. */
+
+   char name[80];
+  sprintf (name, "wave-%i-%d",poisson_solver ,N);
+  static FILE * fp = fopen (name, "w");
+  fprintf (fp, "%g %g\n", t*15.7402, max);
+  fflush (fp);
+
+  /**
+  To compute the RMS error, we get data from the reference file
+  *prosperetti-air-water.h* and add the difference to the accumulated error. */
+
+  se += sq(max - prosperetti[ne][1]); ne++;
+}
+
+
+/**
+At the end of the simulation, we output on a file, indexed with the method, the resolution (number of grid points per wavelength) and the relative RMS error. */
+
+event error (t = end){
+  char name[80];
+  sprintf (name, "convergence-%i",poisson_solver); 
+  FILE * fp = fopen (name, "a");
+  if (fp!=NULL){
+  	fprintf (fp, "%g %g\n", N/L0, sqrt(se/ne)/0.01);
+  	fflush (fp);    
+  }
+  else{
+        FILE * fp = fopen (name, "w");
+  	fprintf (fp, "%g %g\n", N/L0, sqrt(se/ne)/0.01);
+  	fflush (fp);    
+  }
+
+}
+
+/**
+## Results
+
+~~~gnuplot Evolution of the amplitude of the capillary wave as a function of non-dimensional time $\tau=\omega_0 t$
+set output 'amplitude.png'
+set xlabel 'tau'
+set ylabel 'Relative amplitude'
+plot '../prosperetti-air-water.h' u 2:4 w l t "Prosperetti", \
+     'wave-0-128' every 10 w p t "Basilisk",\
+     'wave-1-128' every 10 w p t "FastPn",\
+     'wave-2-128' every 10 w p t "FastP*"
+~~~
+
+~~~gnuplot Convergence of the RMS error as a function of resolution (number of grid points per wavelength)
+set output 'convergence.png'
+set xlabel 'Number of grid points'
+set ylabel 'Relative RMS error'
+set logscale y
+set logscale x 2
+set grid
+plot [5:200][1e-4:1] 2./x**2 t "Second order",'convergence-0' t "Basilisk" w lp,'convergence-1' t "FastPn" w lp, 'convergence-2' t "FastP*" w lp
+~~~
+
+## See also
+
+* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/capwave.html#air-water)
+*/

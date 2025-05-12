@@ -1,0 +1,290 @@
+clear all; clf; format compact;
+%{ 
+
+# Cartesian ,Stationnary, Uncompressible, Navier-Stokes with Jacobian resolution
+
+Coded by [stab2014/Luis.m]() and [stab2014/PaulValcke.m](), on the initial [venturi.m]() code.
+
+We took the Ventury code, initially created for cylindrical pipe flow. 
+We changed the expression of the jacobian to adapt it to cartesian
+coordinates.
+
+This version explain all the structure of the code, there are alternates
+version of the code here :
+
+* Cartesian, **Unstationnary**, Uncompressible, Navier-Stokes with Jacobian
+resolution
+* **Cylindrical** ,Stationnary, Uncompressible, Navier-Stokes with Jacobian
+resolution
+
+We present here a Poiseuille flow, we developped the code also for :
+* BackwardFacingStep :
+* DrivenCavity :
+* WindedCavity :
+
+We make some different geometries, like :
+* Ventury
+* Sinusoidal cavity
+* Rugous cavity (with smooth rugosity)
+* Pi/4 Cavity (like aort artery at the exit of the heart)
+
+Theses results will be published later
+
+#Used Codes : you may find theses codes in diffpack :
+* [chebdif.m]()
+* [fddif.m]()
+* [mapping2D.m]()
+* [spd.m]() for sparse diagonal matrices
+* [dif1D.m]()
+* [dif2D.m]()
+* [map2D.m]()
+
+#How does this code works ?
+
+I you are not totally familiar with the structures of codes in this website, you should read first [pedagogy.m]()
+
+* First, we define the physical and numerical parameters of our simulation. We then calculate the differentiation matrixes : they contains all the information of the schemes you can use. 
+They replace continous operators like derivates with Matrixes. 
+The type of matrixe you use define the kind of interpolation polynoms you use (Tchebitchev, Fourier, Finite
+differences...). See [diffmat.m]() and [pedagogy.m]() for more informations
+* We do geometric transformation of our domain, transforming rectangular
+initial domain to the form we want. See [Geometry.m]() (how to use it) and [map2D.m] (what is the tool) for more informations.
+New differentiations matrixes are calculated according to plan
+transformation.
+* We define our Boundary conditions : we select all the index of boundaries
+in "dir" and this kind of parameters. [pedagogy.m]() will explain you in details the theory
+* We then define our initial guess. All our unknowns are on the same vectors,
+one after the other one (for Navier-Stokes, we have U,V,P). We stock all of
+them in the same vector Sol, u,v,p contain only the indexes of U,V,P in
+Sol. (again, [pedagogy.m]() for more informations).
+* We are now on the convergence loop
+We define the functions we solve, in f, one after the other one (Here,
+momentum conservation on x-axis, y-axis, mass conservation). 
+We then define the jacobi of the functions, this matrix contains all the
+informations about the derivates. It's a kind of ultimate tool for
+linearisation, as it contains every slope you may ever need on your
+problem. 
+We apply our boundary conditions of the Jacobi and the function
+We then do Newton iterations to find the solution, (see wikipedia page here
+: ). As the jacobi is the general notion for the derivate, it works the
+same.
+We use relaxation method, wich imply more iteration to converge but it is
+more stable.
+
+# Comments
+
+We take on purpose a very bad initial guess, just to show that it still
+converge easily
+
+We have a constant input, wich imply a zone where the flow is not
+established.
+
+We need to publish the figure, to check the form of the velocity, and to
+check how long (in meters) it takes to correspond to poiseuille flow.
+
+
+# The code
+%}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%PARAMETERS %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%PHYSICAL PARAMETERS
+Re=100; % reynolds number, it change the impact of the diffusion term compared to pression 
+Uentry=0.1;
+
+%GEOMETRIC PARAMETERS
+Lx = 0.1;
+Ly = 0.01;
+
+%NUMERICAL PARAMETERS
+Nx=50; % number of grid nodes in x
+Ny=10; %number of grid nodes in y
+alpha=0.7; % Under-relaxation
+maxIter = 200; % Maximum number of iteration for Newton method.
+resSTOP = 1e-5; % Precision required to stop convergence
+
+
+%FIXED PARAMETERS OR INTERMEDIATE FORMULAS
+%Uinlet = Re*1.79e-5/(1.225*DiamInlet);
+pts=5; % number of points in finite difference stencils
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%DIFFERENTIATION MATRIXES%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DIFFERENTIATION 
+% We create here our matrixes of differentiatons of our system, on a
+% rectangle domain. 
+[d.x,d.xx,d.wx,x]=dif1D('fd',0,Lx,Nx,pts);
+[d.y,d.yy,d.wy,y]=dif1D('fd',0,Ly,Ny,pts);
+[D,l,X,Y,Z,I,NN]=dif2D(d,x,y);
+
+% PLAN TRANSFORMATION
+%You can transform X and Y as done in geometry
+
+% We use Map2D to change our differentiations matrixes according to the
+% transformation of X and Y
+ D=map2D(X,Y,D);
+ D.lap=D.xx+D.yy;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%BOUNDARIES GESTION%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%We always proceed on the same way : we localise all the coordinates of the
+%boundaries we are looking for, then we put them in the matrix C. 
+%For Neumann, use D.vector
+%For DIRICHLET, use vector
+
+%%%% POSITIONS OF EVERY VECTORS
+%u,v,p contain only the position u,v,p will have in SOL. 
+u=(1:NN)'; v=u+NN; p=v+NN;
+II=speye(3*NN);
+
+%%%% EXAMPLE OF DIRICHLET ENTRY
+dirInlet = [l.left];
+
+% PRESSURE CONDITIONS
+% Actually, we don't have any condition on Pressure and it works.
+%neuploc=[l.ctl;l.ctr;l.ctr-Ny];  % where to impose the neumann condition on the pressure
+% p0loc=2*Ny; % where to impose zero pressure
+
+% BOUNDARY POSITIONS
+%l.ctl correspond to the point at corner top left, cbr  corner bottom right...
+%l.bot cotains all the indexes of point of the bottom but corner
+dir=[l.ctl;l.ctr;l.cbl;l.cbr;l.left;l.top;l.bot;]; % where to put Dirichlet on u and v
+
+% Loc will be used to apply boundary condition to the function 
+loc=[u(dir); v(dir); 
+    u(l.right); ...
+    v(l.right)];
+
+%MATRIX OF CONSTRAINTS   
+C=[II([u(dir);v(dir)],:); % ...     % Dirichlet on u,v 
+    D.x(l.right,:), Z(l.right,:), Z(l.right,:); ...   % Neuman on u at outflow
+    Z(l.right,:),  D.x(l.right,:),Z(l.right,:)]; % ...    % Neumann on v at outflow
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%INITIAL GUESS%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%It needs to satisfy the boundary conditions, otherwise it will be very
+%hard to converge to the good results. The best your initial guess is, the
+%fastest your algorithm will work. If you have no convergence, try to do a
+%better initial guess, this will help.
+%Initial condition on U
+U = 0*ones(NN,1);
+U(dirInlet)= Uentry;
+
+%Initial condition on V
+V=zeros(NN,1);
+V(dirInlet) = 0;
+
+%Initial condition on P
+P=ones(NN,1);% P=P-P(p0loc); % pressure zero at p0loc
+
+%Initial Solution
+sol0=[U(:);V(:);P(:)];
+
+
+%%%%%%%%%%%%%%%%%RESOLUTION ALGORITHM%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NEWTON ALGORITHM
+sol=sol0;
+solM=sol;
+quit=0;count=0;
+while ~quit     
+ 
+% RELAXATION METHOD
+% We take a mix between the two last iteration on convergence into do a
+% relaxation. The solution converge slower but more easily.
+% DEFINITION OF THE UNKNOWS USED
+    U=alpha.*sol(u) + (1-alpha).*solM(u);
+    V=alpha.*sol(v) + (1-alpha).*solM(v);
+    P=alpha.*sol(p) + (1-alpha).*solM(p);
+    
+% DEFINITION OF THE DERIVATES    
+    Ux=D.x*U; Uy=D.y*U;
+    Vx=D.x*V; Vy=D.y*V; 
+    Px=D.x*P; Py=D.y*P;
+
+    
+%DEFINITION OF THE FUNCTIONS YOU WANT TO RESOLVE
+%if you have some coupled equations, just add them with ;
+%If they aren't coupled, copy and paste this section for each equations
+    f=[-(U.*Ux+V.*Uy)+(D.lap*U)/Re-Px; ...
+       -(U.*Vx+V.*Vy)+(D.lap*V)/Re-Py; ...
+      D.x*U+D.y*V];
+    
+%JACOBIAN OF THE EQUATIONS
+%separate with , for every unknow of the equation, ; for every equations
+    A=[-( spd(Ux) + spd(U)*D.x + spd(V)*D.y )+(D.lap)/Re, -spd(Uy), -D.x; ...
+        -spd(Vx),  -(spd(Vy) + spd(V)*D.y + spd(U)*D.x )+(D.lap)/Re, -D.y; ...
+         D.x, D.y, Z];  
+     
+%BOUNDARY CONDITIONS
+    f(loc)=C*(sol-sol0);
+    A(loc,:)=C;
+    
+%CONVERGENCE TEST
+    res=norm(f);
+    disp([num2str(count) '  ' num2str(res)]);
+    if (count>maxIter) || (res>1e8); disp('no convergence');break; end
+    if res<resSTOP; quit=1; disp('converged'); continue; end
+    
+%NEWTON STEP FOR RESOLUTION
+    solM = sol;
+    sol=solM - A\f;%-gmres( A , f, 1000, 1e-7);   
+    count=count+1; 
+    
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%PLOTTING%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Place here figures you want at each step of the iterations
+
+%Module and pressure variation
+    figure(1)
+    subplot(2,1,1);
+    Module = sqrt((U.^2+V.^2));
+    surf(X,Y,reshape(Module,Ny,Nx)); view(2); shading interp; hold on
+    axis ([0,Lx,Ymin,-Ymin])
+    quiver3(X,Y,ones(Ny,Nx).*max(Module),reshape(U,Ny,Nx),reshape(V,Ny,Nx),...
+            zeros(Ny,Nx),'k');    
+    xlabel('x'); ylabel('y'); title('Module of the speed'); grid off;hold off
+    colorbar;
+    
+    subplot(2,1,2);
+    surf(X,Y,reshape(Px,Ny,Nx)); view(2); shading interp; hold on
+    axis ([0,Lx,Ymin,-Ymin])  
+    xlabel('x'); ylabel('y'); title('Pressure variation Px'); grid off;hold off
+    colorbar;
+    drawnow
+    
+%Vertical and horizontal velocity    
+    figure(2)
+    subplot(2,1,1);
+    surf(X,Y,reshape(U-1,Ny,Nx)); view(2); shading interp; hold on
+    sely=1:Ny; selx=1:6:Nx;
+    ww=reshape(V,Ny,Nx); uu=reshape(U,Ny,Nx); 
+    quiver(X(sely,selx),Y(sely,selx),ww(sely,selx),uu(sely,selx),'k');
+    axis([0,Lx,-1,1]);
+    xlabel('z'); ylabel('r'); title('radial velocity U'); grid off;hold off
+    
+    subplot(2,1,2);
+    surf(X,Y,reshape(V,Ny,Nx)); view(2); shading interp; 
+    xlabel('x'); ylabel('y'); title('axial velocity W'); grid off
+    drawnow
+    
+end
+
+%Place here figures you only want once at the end
+
+%{ 
+# Contribute !
+
+* Please do a mesh convergence 
+* Please compare the flow to theory
+* Please compare the length of non-established zone to boundary layer theory
+* Please do some experiments with geometry
+
+
+
+
+
+
+

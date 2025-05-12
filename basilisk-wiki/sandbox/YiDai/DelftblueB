@@ -1,0 +1,142 @@
+# Running Basilisk on DelftBlue
+I am currently running simulation on DelftBlue. If you have assess to DelftBlue, the following instructions may be helpful. 
+
+## Install Basilisk and other packages
+
+### load modules and PATH in .bashrc
+~~~literatec
+module load 2022r2
+module load openmpi/4.1.1
+
+module unload ffmpeg/4.3.2
+module load bison/3.8.2
+module load gnuplot/5.4.2
+module load valgrind/3.17.0
+
+export BASILISK=/home/netid/basilisk/src
+export PATH=$PATH:/home/netid/basilisk/src
+export LD_LIBRARY_PATH=/home/netid/local/lib:$LD_LIBRARY_PATH
+
+export PATH=$PATH:/home/netid/local/bin
+~~~
+
+### Basilisk
+
+~~~sh
+wget http://basilisk.fr/basilisk/basilisk.tar.gz
+tar xzf basilisk.tar.gz
+~~~
+
+### OpenGL & OSMesa (for view.h)
+The [instuction](http://basilisk.fr/src/gl/INSTALL#installing-osmesaglu-from-source) here works, but you need to set the [PATH](https://groups.google.com/g/basilisk-fr/c/hVveH54fjdI/m/IJm8umHIEQAJ), which is already in your bashrc
+
+~~~sh
+export LD_LIBRARY_PATH=/home/netid/local/lib:$LD_LIBRARY_PATH
+~~~
+change the config file
+
+~~~sh
+OPENGLIBS = -L/home/netid/local/lib -lfb_osmesa -lGLU -lOSMesa
+~~~
+change the fb_osmesa.c in basilisk/src/gl/
+
+~~~sh
+#include </home/netid/local/include/GL/osmesa.h>
+~~~
+
+in basilisk/src/gl/
+
+~~~literatec
+make libglutils.a libfb_osmesa.a
+~~~
+
+### Then you will be able to compile
+
+### ffmpeg on DelftBlue
+ffmpeg version on DelftBlue is not ideal (lack of libx264). We [install](https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu) it in our home directory.
+
+First nasm:
+
+~~~sh
+cd ~/ffmpeg_sources && \
+wget https://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05.tar.bz2 && \
+tar xjvf nasm-2.15.05.tar.bz2 && \
+cd nasm-2.15.05 && \
+./autogen.sh && \
+PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
+make && \
+make install
+~~~
+
+Then libx264:
+
+~~~sh
+cd ~/ffmpeg_sources && \
+git -C x264 pull 2> /dev/null || git clone --depth 1 https://code.videolan.org/videolan/x264.git && \
+cd x264 && \
+PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --enable-static --enable-pic && \
+PATH="$HOME/bin:$PATH" make && \
+make install
+~~~
+
+Then ffmpeg:
+
+~~~sh
+cd ~/ffmpeg_sources && wget -O ffmpeg-snapshot.tar.bz2 https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && tar xjvf ffmpeg-snapshot.tar.bz2 && cd ffmpeg && PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure   --prefix="$HOME/ffmpeg_build"   --pkg-config-flags="--static"   --extra-cflags="-I$HOME/ffmpeg_build/include"   --extra-ldflags="-L$HOME/ffmpeg_build/lib"   --extra-libs="-lpthread -lm"   --ld="g++"   --bindir="$HOME/bin"   --enable-gpl  --enable-libx264  && PATH="$HOME/bin:$PATH" make && make install && hash -r
+~~~
+
+### [Imagemagick](https://imagemagick.org/script/advanced-linux-installation.php)
+download the [package](https://imagemagick.org/archive/ImageMagick.tar.gz)
+
+~~~sh
+tar xvzf ImageMagick.tar.gz
+cd ImageMagick-7.1.0-51
+./configure --prefix=/home/[netid]/local
+make 
+make install
+~~~
+
+After that, add the PATH, which is already in .bashrc
+
+~~~sh
+export PATH=$PATH:/home/netid/local/bin
+~~~
+
+## Run a jobscript on DelftBlue
+If you are using OPENMP, the following jobscript should work
+
+~~~sh
+#!/bin/sh
+#
+#SBATCH --job-name="jobname"
+#SBATCH --partition=compute
+#SBATCH --time=24:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=48
+#SBATCH --mem-per-cpu=1G
+#SBATCH --account=research-<faculty>-<department>
+
+module load 2022r2
+module load bison/3.8.2
+
+module load gnuplot/5.4.2
+module load openmpi/4.1.1
+module load valgrind/3.17.0
+
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+
+srun ./a.out
+~~~
+
+
+
+
+
+
+
+
+
+
+
+

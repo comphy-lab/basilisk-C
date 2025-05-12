@@ -1,0 +1,41 @@
+# Welcome to my sandbox!
+
+I'm a phD student at [PMMH](https://www.pmmh.espci.fr/?-Home-) in Paris. I work on the interaction between turbulent flows and bubbles. 
+
+Here is the link to my [website](http://www.normalesup.org/~ariviere/index.html).
+
+
+## Codes
+**Bubble in turbulence**
+
+* [Single bubble in an homogeneous and isotropic turbulent flow](http://basilisk.fr/sandbox/wmostert/turbulent_bubble.c)
+
+**Model flows**
+
+* [Bubble in a stagnation point flow](stagnation.h)
+
+
+## Tools
+**Various interpolations**
+
+Based on the similar code by Antoon ([slicer](http://basilisk.fr/sandbox/Antoonvh/slicer.h)) to compute a 2D slice in a 3D simulation. All these interpolations work in 3D. 
+
+* [Interpolation on a line](tools/liner-interp.h)
+* [Interpolation on a plane](tools/slicer-interp.h)
+* [Interpolation on a sphere](tools/sphere-interp.h)
+
+**Gaussian curvature**
+
+Modification of *Basilisk* files computing the average curvature to compute the gaussian curvature. 
+
+* [gcurvature](tools/gcurvature.h)
+* [gparabola](tools/gparabola.h)
+
+## Publications with *Basilisk*
+
+
+* [Bubble breakup reduced to a one-dimensional nonlinear oscillator](https://journals.aps.org/prfluids/abstract/10.1103/PhysRevFluids.8.094004), A. Rivière, L. Duchemin, C. Josserand, S. Perrard, PRF, 2023
+* [Capillary driven fragmentation of large gas bubbles in turbulence](https://journals.aps.org/prfluids/abstract/10.1103/PhysRevFluids.7.083602), A. Rivière, D.J. Ruth, W. Mostert, L. Deike, S. Perrard, PRF, 2022
+* [Experimental observations and modelling of sub-Hinze bubble production by turbulent bubble break-up](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/experimental-observations-and-modelling-of-subhinze-bubble-production-by-turbulent-bubble-breakup/B1978FC9D3E60B90B943458B92C5D08C), D.J. Ruth, A.K. Aiyer, A. Rivière, S. Perrard, L. Deike, JFM, 2022
+* [Sub-Hinze scale bubble production in turbulent bubble break-up](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/abs/subhinze-scale-bubble-production-in-turbulent-bubble-breakup/7F8DADA87ABE117F5FE39183417D650B), A. Rivière, W. Moster, S. Perrard, L. Deike, JFM, 2021
+* [Bubble deformation by a turbulent flow](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/abs/bubble-deformation-by-a-turbulent-flow/D6E47109EEE9595E52FDD2E1B9E83A1D), S. Perrard, A. Rivière, W. Mostert, L. Deike, JFM, 2021

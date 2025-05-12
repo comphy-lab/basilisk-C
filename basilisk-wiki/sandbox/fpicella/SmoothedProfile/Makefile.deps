@@ -1,0 +1,100 @@
+# Automatically generated using 'make Makefile.tests'
+# DO NOT EDIT, edit 'Makefile' instead
+ALLTESTS = \
+	single.c \
+
+TESTS = \
+
+SPECIAL_TESTS = \
+
+ALLPAGES = \
+	single.c.page \
+
+single.s:	\
+	/home/fpicella/basilisk/src/embed.h \
+	/home/fpicella/basilisk/src/navier-stokes/centered.h \
+	/home/fpicella/wiki/sandbox/fpicella/src/periodic-shift-treatment.h \
+	/home/fpicella/wiki/sandbox/fpicella/src/tracer-particles-FP.h \
+	/home/fpicella/wiki/sandbox/fpicella/src/SmoothedProfile.h \
+	/home/fpicella/basilisk/src/Antoonvh/particle.h \
+	/home/fpicella/basilisk/src/Antoonvh/particle_multilayer.h \
+	/home/fpicella/basilisk/src/Antoonvh/particle_classic.h \
+	/home/fpicella/basilisk/src/run.h \
+	/home/fpicella/basilisk/src/timestep.h \
+	/home/fpicella/basilisk/src/bcg.h \
+	/home/fpicella/basilisk/src/viscosity-embed.h \
+	/home/fpicella/basilisk/src/viscosity.h \
+	/home/fpicella/basilisk/src/poisson.h \
+	/home/fpicella/basilisk/src/poisson.h \
+	/home/fpicella/basilisk/src/utils.h \
+	/home/fpicella/basilisk/src/output.h \
+	/home/fpicella/basilisk/src/grid/gpu/output.h \
+	/home/fpicella/basilisk/src/fractions.h \
+	/home/fpicella/basilisk/src/embed-tree.h \
+	/home/fpicella/basilisk/src/geometry.h \
+	/home/fpicella/basilisk/src/myc2d.h \
+	/home/fpicella/basilisk/src/myc.h \
+	/home/fpicella/basilisk/src/grid/quadtree.h \
+	/home/fpicella/basilisk/src/grid/tree.h \
+	/home/fpicella/basilisk/src/grid/mempool.h \
+	/home/fpicella/basilisk/src/grid/memindex/range.h \
+	/home/fpicella/basilisk/src/grid/layers.h \
+	/home/fpicella/basilisk/src/grid/foreach_cell.h \
+	/home/fpicella/basilisk/src/grid/neighbors.h \
+	/home/fpicella/basilisk/src/grid/variables.h \
+	/home/fpicella/basilisk/src/grid/tree-common.h \
+	/home/fpicella/basilisk/src/grid/tree-mpi.h \
+	/home/fpicella/basilisk/src/grid/balance.h \
+	/home/fpicella/basilisk/src/grid/multigrid-common.h \
+	/home/fpicella/basilisk/src/grid/variables.h \
+	/home/fpicella/basilisk/src/grid/cartesian-common.h \
+	/home/fpicella/basilisk/src/grid/events.h \
+	/home/fpicella/basilisk/src/grid/fpe.h \
+	/home/fpicella/basilisk/src/grid/stencils.h \
+	/home/fpicella/basilisk/src/khash.h \
+	/home/fpicella/basilisk/src/common.h \
+
+single.c.tags:	\
+	/home/fpicella/basilisk/src/embed.h \
+	/home/fpicella/basilisk/src/navier-stokes/centered.h \
+	/home/fpicella/wiki/sandbox/fpicella/src/periodic-shift-treatment.h \
+	/home/fpicella/wiki/sandbox/fpicella/src/tracer-particles-FP.h \
+	/home/fpicella/wiki/sandbox/fpicella/src/SmoothedProfile.h \
+	/home/fpicella/basilisk/src/Antoonvh/particle.h \
+	/home/fpicella/basilisk/src/Antoonvh/particle_multilayer.h \
+	/home/fpicella/basilisk/src/Antoonvh/particle_classic.h \
+	/home/fpicella/basilisk/src/run.h \
+	/home/fpicella/basilisk/src/timestep.h \
+	/home/fpicella/basilisk/src/bcg.h \
+	/home/fpicella/basilisk/src/viscosity-embed.h \
+	/home/fpicella/basilisk/src/viscosity.h \
+	/home/fpicella/basilisk/src/poisson.h \
+	/home/fpicella/basilisk/src/poisson.h \
+	/home/fpicella/basilisk/src/utils.h \
+	/home/fpicella/basilisk/src/output.h \
+	/home/fpicella/basilisk/src/grid/gpu/output.h \
+	/home/fpicella/basilisk/src/fractions.h \
+	/home/fpicella/basilisk/src/embed-tree.h \
+	/home/fpicella/basilisk/src/geometry.h \
+	/home/fpicella/basilisk/src/myc2d.h \
+	/home/fpicella/basilisk/src/myc.h \
+	/home/fpicella/basilisk/src/grid/quadtree.h \
+	/home/fpicella/basilisk/src/grid/tree.h \
+	/home/fpicella/basilisk/src/grid/mempool.h \
+	/home/fpicella/basilisk/src/grid/memindex/range.h \
+	/home/fpicella/basilisk/src/grid/layers.h \
+	/home/fpicella/basilisk/src/grid/foreach_cell.h \
+	/home/fpicella/basilisk/src/grid/neighbors.h \
+	/home/fpicella/basilisk/src/grid/variables.h \
+	/home/fpicella/basilisk/src/grid/tree-common.h \
+	/home/fpicella/basilisk/src/grid/tree-mpi.h \
+	/home/fpicella/basilisk/src/grid/balance.h \
+	/home/fpicella/basilisk/src/grid/multigrid-common.h \
+	/home/fpicella/basilisk/src/grid/variables.h \
+	/home/fpicella/basilisk/src/grid/cartesian-common.h \
+	/home/fpicella/basilisk/src/grid/events.h \
+	/home/fpicella/basilisk/src/grid/fpe.h \
+	/home/fpicella/basilisk/src/grid/stencils.h \
+	/home/fpicella/basilisk/src/khash.h \
+	/home/fpicella/basilisk/src/common.h \
+

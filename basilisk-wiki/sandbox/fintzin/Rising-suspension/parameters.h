@@ -1,0 +1,70 @@
+#define ratio_bi_disperse 2
+#define CORREC 1
+#define BI_DISPERSE 0
+#define Tsig 0.1027354
+#define Asig 0.1052632
+#define Ca -0.0277778
+#define Fsig 0.1111111
+#define TimeScale 0
+#define DEBUG 0
+#define RAND 0
+const char * dumpfile= "last-dump";
+#define RESTORE 0
+const char * RESTORE_DIR= "RS";
+#define Uv 31.6227766
+#define Tv 0.0316228
+#define F 0.0872665
+#define Mhg 0.0872665
+#define HMT 500
+#define Tg 3.1622777
+#define Ug 0.3162278
+#define COAL 0
+#define St 5.9791113
+#define Re 119.5822256
+#define Oh 0.0149071
+#define Nbsup 100
+const char * para_name= "Ga";
+const char * namestud= "TEST";
+const char * name_of_C_file= "RS";
+#define Drho 0.1111111
+#define nProc 1
+#define Bo 1
+#define Bo1 1.0
+#define Bo2 1.0
+#define Ga 100
+#define Ga1 100.0
+#define Ga2 100.0
+#define rho_r 1.1111111
+#define mu_r 1
+#define PHI 0.3
+#define Nb 9
+#define ndc 6.592413
+#define dtprint 20
+#define dimension 2
+#define G 1.0
+#define D 1.0
+#define rho_d 1.0
+#define LDn 5
+#define N 3
+#define Ls 4.8540648
+#define mu_d 0.0035136
+#define mu_f 0.0035136
+#define LEVEL 5
+#define rho_f 1.1111111
+#define sig 0.1111111
+#define DP 1.6180216
+#define r1 1.0
+#define RND 0.2472086
+#define TMAX 100
+#define FIRSTSTEP 0.1
+const char * nopara= "";
+#define SAVESTEP 666.6666667
+#define MOVIES 1
+#define ndcmin 5
+#define Tsed 0.0316228
+#define Used 31.6227766
+#define Dx 0.1516895
+#define R1 0.5
+#define R2 0.5
+#define VOL 0.7853982
+#define r_m 0

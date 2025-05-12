@@ -1,0 +1,228 @@
+#EasyStab
+
+This document "easystab", is a door open for you to study the  stability and bifurcation of physical systems using octave/matlab, mainly in the domain of fluid mechanics. It may help you for instance to answer the questions:
+
+* What is the velocity of a water wave?
+* When there is a heavy fluid on top af a light fluid with a horizontal interface, what will be the most growing wavelength?
+* What is the height of a capilary meniscus?
+* When does a pendent drop fall?
+
+To find the solution of nonlinear equations we use the Newton iteration, for the stability we compute eigenmodes of matrices. Except on a few instances, it is not presented as a tool for simulation of these systems (time marching). When we need to do time marching, we will use Gerris or Basilisk.
+
+To get a better idea of the technical choices and notations in Easystab, please read [pedagogy]().
+
+It was initiated by Jerome Hoepffner at Université Pierre et Marie Curie to help sharing his computational codes and know-how. It is thought to become a collaborative tool where you can profit and contribute. The project is developed for research, education and popularization purposes. As for education the project has served as the support for two classes:
+
+* ["Introduction to hydrodynamic instability" at Université Pierre et Marie Curie (M1, 2014-2015)](http://basilisk.fr/sandbox/easystab/stab2014/README) 
+* ["Hydrodynamic instabilities" at Université Paul Sabatier (M2 DET, 2017-2020)](/sandbox/easystab/M2DET/Instabilities.md)
+
+All of the codes are based on the idea of the "differentiation matrix", used as the building block to describe many linear and nonlinear equations. 
+
+Most of the pages you will visit on this wiki are effective octave/matlab scripts that you can run for yourself. The presentation follows the idea of Donald Knuth of the "Litterate programming": the comments included in the code are not mere indications on the functonalities of the code, there are a detailed description of the both the physical theory behind the equations and the description of the functionality of the code. This is why the comments are long. The wiki tool that displays these pages have the hability to properly render the comments for readability.  This document is not a theoretical essay in which some codes are included, it is a library of codes in which the theory is described. At the end what matters is to keep together the effective codes and the ideas behind them.
+
+# The standard
+Numerical results are never given bare: 
+- they are compared to formulas that can be obtained by hand in simplified configurations, 
+- they are compared to results published in the litterature, 
+- different models are compared to each-other in the asymptotical limits where they should be equivalent. 
+- The results are compared to numerical simulations. 
+This continuity between all levels of representations (models) of a same phenomenon is the core of easystab.
+
+* **Litterate programming:** we should not separate *coding* from *litterature*. Books have too much theory, codes have too much technicality.
+* **Learn by doing:** you find here many examples that you can copy and paste and modify, and understand them progressivelly as you see them succeed and fail. 
+* **Domain specific language:** inventing a syntax for coding that is built upon the way you think and talk in a given scientific community, thus most of the conceptual steps are already done. Here everything is built upon linear algebra. 
+* **Collaboration and open-source:** by having common tools, we can save a lot of technical work spent by PhD students and Post-docs. Easystab is a wiki.
+* **Education:** the production of students is typically graded then trashed. We should instead invite them to *contribute*.
+* **Reproducibilty:** if most of the technical details of papers are embeded in common collaborative tools like Gerris, Basilisk,  and esaystab, you can include in your papers the files that will allow the reader to reproduce your results. This was not possible when you used a wind-tunnel. It is now possible. 
+
+# How can I learn all this?
+
+To get familiar with easystab, the first thing to do is to read and run and modify [diffmat.m]() where you see how to build  differentiation matrices (using the simplest finite-difference method) and how to use them to compute derivatives. Then you can continue with [differential_equation.m]() where we use the differentiation matrices to write and solve differential equations in 1D. This is also the place where you will see how to impose boundary conditions. To get yet more ease you can continue with [vibrating_string.m]() where we do the marching in time of a vibrating string. 
+Once you are familiar with differenciation matrices optained using the simplest finite difference method, you may try other more powerful methods such as the collocation Checyshev method. See an example here :
+[differential_equation_fd_cheb.m](). 
+
+
+Then it's probably time to read the description of how things are done in [pedagogy]().
+
+Then you will be ripe to read/run about the assumption of wavelike behaviour which we use almost all the time to transform 2D or 3D flow problems into 1D problems. Ths is done in [wave_like.m](). To practice this, have then a look at the computation of the stability of the Poiseuille flow (flat channel flow) in [poiseuille_uvp.m]() and the other codes for stability in 1D. 
+
+If you want to continue, you can learn about how to solve nonlinear 1D differential equations for instance in [meniscus.m](), and then nonlinear 2D differential equations like for instance in [venturi.m]().
+
+# The codes
+
+Before all, you should get the basic functions, they are in [easypack.zip]()
+
+Here are all the file and the folders for navigation: [/sandbox/easystab/]()
+
+The differentiation matrix is at the heart of all these codes. We sometimes build them based on finite differences, but most of the time we use the ones provided in the [Matlab Differentiation Matrix Suite by Weideman and Reddy](http://dip.sun.ac.za/~weideman/research/differ.html). The link to their paper on their web page is broken so I put it here: [matlabdifmatsuite.pdf](/sandbox/easystab/matlabdifmatsuite.pdf).
+
+## Computing and using the derivatives
+Here are the pedagogical introductions to the methods. In [pedagogy](), you will find all the ideas and methods described.
+
+In 1D:
+
+* [diffmat.m]() Showing and testing the differentiation matrices for a 1D mesh.
+* [diffmat_dif1D.m]() The same thing as [diffmat.m]() but using the function [dif1D.m]() to build the differentiation matrices, like we do in most of the other codes.
+* [differential_equation.m]() Showing how to solve 1D linear differential equation with Dirichlet and Neumann boundary conditions, homogeneous and nonhomogeneous.
+* [differential_equation_fd_cheb.m]() Showing how to solve a linear problem using Chebyshev method instead of finite-difference method, and comparing the performances of both methods. 
+* [variable_coef.m]() Solving a differential equation with variable coefficients.
+* [integration.m]() Showing the way we do the integration. 
+* [differential_equation_infinitedomain.m]()  Shows you how to solve a  problem defined on an infinite (or semi-infinite) domain, and introduces and compares several methods (e.g. Hermite and mapped Chebyshev disccretisations). 
+
+In 2D:
+
+* [diffmat_2D.m]() Differentiation matrices for a 2D mesh.
+* [diffmat_2D_dif2D.m]() Like [diffmat_2D.m]() but using the function [dif2D.m]() to build the differentiation matrices like we do in most of the other codes.
+* [poisson2D.m]() Solving a Poisson problem in 2D.
+* [potential.m]() To compute the potential flow solution in a rectangular domain.  
+
+In 3D:
+
+* [diffmat_3D.m]() Showing and testing the differentiation in 3D.
+* [poisson3D.m]() Solving a Poisson problem in 3D.
+
+
+## Differentiation with a non-rectangular mesh
+
+* [diffmat_mapping.m]() Showing and testing the differentiation matrices on a stretched 2D domain. 
+* [diffmat_mapping_map2D.m]() The same as [diffmat_mapping.m](), but using the function [map2D.m]().
+* [poisson2D_mapping.m]() is like [poisson_2D.m]() but with a mapped mesh.
+* [integration_2D.m]() Showing and testing how to integrate in space even with a mapped mesh.
+* [poisson_2D_hollow_disc.m]() Testing a multi-domain mapping for a domain in the shape of a hollow cylinder.
+* [multi_domain_2D_tri.m]() Showing how to patch several rectangular domains to make complex geometries with angles.
+
+
+## Methods
+Here we show a few codes that present some methods.
+
+* [particles.m]() showing how to advect tracer particles for a 2D velocity field
+* [wave_like.m]() is a pedagogical introduction to the assumption of wavelike behaviour that we use almost all the time for stability of fluid flows. You can also have a look at [bruxellator_jerome.m]() for the comparison of computation and theory on a 1D periodic problem.
+* [diffusion_eigenmodes.m]() is a pedagogical introduction to the use of the eigenmodes, here in 1D for the diffusion equation.
+* [GinsburgLandau.m]() is another pedagogical illustration of the use of eigenmodes to predict the behaviour of a partial differential equations problem modelling a biological system, including linear and nonlinear regimes.   
+
+
+## Dynamical systems
+* [PhasePortrait_NonLinear.m]() a pedadogical program drawing phase portraits for a numer of classical 2D dynamical systems, including pendulum, Van Der Pol, Lotka-Volltera, etc...
+* [PhasePortrait_Linear.m]() another pedadogical program studying the stability of fixed-points in 2D systems, and classifying them a nodes, foci, saddles, etc... 
+* [lorenz.m]() Solves classical Lorenz equation modelling thermal convection.
+[lorenz_convection.m]() solves the same problem and in addition plots an animation of the convection patterns predicted by the system. 
+
+## Marching in time
+
+* [vibrating_string.m]() for the march in time of the wave equation (vibrations of a string)
+* [advection_global.m]() is a way to avoid marching systems in time with loops, by solving globally: treating just the same way the time and space derivatives.
+* [stab2014/korteweg_de_vries.m]() The Korteweg-de Vries equation in 1D
+* [stab2014/JetUnsteady.m]() The Navier-Stokes equations in 2D, a jet.
+* [stab2014/CylinderFlow.m]() Flow around a cylinder (Ongoing work...)
+* [stab2014/brusselator_2D_periodic.m]() The Bruxellator in 2D, a pattern-forming dynamic system
+
+
+
+
+## Nonlinear differential equations
+
+* [meniscus.m]() Computing the shape of a simple nonlinear meniscus
+* [meniscus_overturn.m]() For an overturning meniscus 
+* [burgers_global.m]() for the time evolution of the Burgers equation; both using the global approach like in [advection_global.m]() and using time marching.
+* [meniscus_overturn_keller.m]() For an overturning meniscus using Keller's arclength continuation method for the bifurcation branch
+* [capillary_bridge_continuation.m]() For the bifurcation branch of an axisymmetric capillary bridge
+* [capillary_venturi_continuation.m]() For the bifurcation branch of an axisymmetric capillary bridge with throughflow
+* [droplet_inclined_pipe.m]() For the bifurcations of a (flat) droplet comming out of a pipe
+* [pendant_drop_volume.m]() For the bifurcation of the shape of a (flat) pendant droplet 
+* [pendant_drop_surfaceTension.m]() For the bifurcation of the Rayleigh-Taylor instability
+
+## Boundary Layers
+
+* [blasius.m]() For the Blasius boundary layer profile.
+* [hiemenz.m]() For the Hiemenz boundary layer profile.
+* [falkner_skan.m]() For the Falkner Skan solution 
+* [falkner_skan_continuation.m]() For complete Falkner Skan solution 
+* [boundary_layer_pyl.m]()  Interactive Integral Boundary Layer in a pipe
+* [venturi_pyl.m]() Comparing Navier Stokes and Boundary layer in a pipe flow
+* [graetz.m]() For the progressive transition from a plug flow to a Poiseuille flow in a pipe
+* [thermal_entrance.m]() For the progressive transition of temperature for a hot fluid entering a cold pipe
+* [boundary_layer_2D.m]() For a 2D Navier-Stokes computation with the Blasius profile as inflow
+
+## Stability of classical fluid flows
+* [KH_temporal_inviscid.m]() considers the stability of the *tanh* shear layer, working with Rayleigh equation. 
+[KH_temporal_viscous.m]() considers the same problem in the viscous case, starting from primitive (u,v,p) equations. Both these programs use stretched chebyshev discretization to fit the infinite domain. Alternatively, 
+[kelvin_helmholtz_hermite.m]() uses differentiation matrices based on Hermite polynomials instead of Chebychev polynomials. 
+* [KH_spatial_inviscid.m]() and [KH_spatial_viscous.m]() solve the *spatial stability* problem, again for the tanh shear layer.
+* [poiseuille_uvp.m]() considers of the stability of the Poiseuille flow in primitive variables, and compares results with litterature data. [TS_PlanePoiseuille.m]() is a more evolved program which computes the neutral curve of the Tollmien-Schlishting instability in the $Re/k$ plane.
+* [orr_sommerfeld_squire.m]() Again the stability of the plane channel flow, but using the $(v,w)$ formulation: The Orr-Sommerfeld and Squire equations.
+* [couette_uvwp.m]() For the stability of the plane Couette flow in primitive variables with u,v,w, and p as variables, for oblique waves.
+* [pipe_sym.m]() for he stability of the pipe flow, using the symmetry of the variables in the differentiation matrices.
+* [rayleigh_benard.m]() considers the classical Rayleigh-Bénard instability of a fluid layer heated fom below, using "slip" boundary conditions, and validates the approach by comparing  with theoretical results. The second program [RayleighBenard.m]() considers the more realistic case of no-slip conditions, and draws the neutral curve of the instability in the $Ra/k$ plane. 
+
+## Stability with free surfaces (with fluid at rest)
+
+* [free_surface_gravity.m]() for the waves at the top of a fluid at rest (single fluid)
+* [free_surface_gravity_particles.m]() The same as above, but with also an animation of the flow field using particles, in a way similar to [particles.m](). This is a good way to better understand the relation between the physical space solution and the wavelike solution.
+* [free_surface_gravity_twofluids.m]() for the waves at the interface between two fluids at rest (like [free_surface_gravity.m]() but with two fluid domains)
+* [rayleigh_taylor.m]() for the Rayleigh-Taylor instability with two fluids (the heavier on the top), with gravity and surface tension
+* [rayleigh_plateau.m]() For the instability of a liquid cylinder due to the surface tension
+* [free_surface_2D.m]() For capillary linear oscillations in a rectangle, the 2D version of [free_surface_gravity.m](), but with surface tension, and a perfect fluid.
+
+## Stability with free surfaces (with mean flow)
+
+*[FreeSurfaceShearFlow.m]() For the stability of a viscous film flowing along a tilted wall (to be validated).
+
+
+## When the computational domain is itself an unknown
+This is an ongoing work where the shape of the computational domain is also an unknown. For instance this is the case for a flow in a domain bounded by a free-surface. Please see [unknow-domain](). The final result of these codes is [free_surface_navier_stokes.m]().
+
+
+## Nonlinear steady-states of Navier-Stokes in 2D
+
+* [jet_2D.m]() For a 2D Navier-Stokes computation with the jet as inflow
+* [peristalsis.m]() For the newton method to compute the peristaltic flow (pumping induced by wall motion: Navier-stokes equations in 2D).
+* [venturi.m]() For the flow through a pipe with a neck.
+* [stab2014/TaylorCouette.m]() The flow in between rotating coaxial cylinders
+* [stab2014/CavityLidDriven.m]() The classical lid-driven cavity 
+* [stab2014/BackwardsFacingStep.m]() The classical backard-facing step
+
+## Gerris
+Connection with the nonlinear code [Gerris flow solver](http://gerris.dalembert.upmc.fr/main_page.html)
+
+* [kelvin_helmholtz_gerris.m]() For the Kelvin-Helmholtz instability of the shear layer (as in [kelvin_helmholtz_hermite.m]()), using the unstable eigenmode as an initial condition in Gerris.
+* [rayleigh_taylor_gerris.m]() For the Rayleigh-Taylor instability of a heavy fluid above a lighter fluid (as in [rayleigh_taylor.m]()), using the unstable eigenmode as an initial condition in Gerris. Here the technical aspect is: how to save the free interface and accounting for the two flow domains.
+
+# How can I contribute?
+
+Please contribute to easystab by first using the codes for yourself, playing with them and getting familiar with the way the things are coded and presented in the files. Then a good way to start is to look at the bottom of a code which you use or like, where there is a list of exercices and contributions. You may then add a link in this list to your file.
+
+You will first need to create an account by clicking on the "login/et an account" link on the top right of this page. This is very quick.
+Then create your file by typing its name in the URL box. Edit it, then preview and save once your done. Then add the link in the Contribution list to your new file. 
+
+The comments where you put the theory and explanations are in matlab/octave block comments *%{ %}* as well as the figures. To get help on how to foramt these comments (putting links, titles, chapter headings...), look at the [/Help#markdown]() page.
+
+If you would like to contribute with something that is not in the contribution suggestions, plese insert it in the README file that you are reading now.
+
+* Please remember that a code that is not validated cannot be trusted. 
+* Please no space in the filename, use underscore "_" instead.
+* Please remember that the code that you put should be directly executable with Octave (version 4.4.1).
+* Please make the figure small so that it's not larger than the borwser page. (for instance using the command *print('-dpng','-r80','filename.png')* where *'-r80'* sets a proper resolution.
+
+* Figures can now (2019) be automatically generated and dynamically included in the web pages ! For this, just after generating your figure (in .png or .svg), insert a link within a "comment" section, pointing to the name of the figure, preceded by a directory corresponding to the name of your program.
+To generate the figures you should then enter the "edit" mode and click the "run" button  (see how it is done in the existing codes such as [KH_temporal_inviscid.m]() ).
+
+* Alternatively, if you wish to include figures not generated dynamically by the code, you should upload them on the site. In this case make sure to put them in the "/sandbox/easystab" directory and use this full path while inserting them. 
+
+
+# Contributors
+
+* [Jérôme Hoepffner](http://www.ida.upmc.fr/~hoepffner)
+* [Stéphane Popinet](/sandbox/popinet/README)
+* [Pierre-Yves Lagrée](http://www.lmm.jussieu.fr/~lagree/)
+* [Gioelle Balestra](http://people.epfl.ch/gioele.balestra)
+* [Giacomo Gallino](http://people.epfl.ch/giacomo.gallino)
+* Paul Valcke
+* Guillaume De Guyon
+* Luis Bernardos
+* [David Fabre](david/README)
+* Nicolas Villenave 
+* [The students of the class "introduction to hydrodynamic instability 2014-2015" at Université Pierre et Marie Curie](http://basilisk.fr/sandbox/easystab/stab2014/README) 
+
+# What's next?
+
+The [wishlist]().

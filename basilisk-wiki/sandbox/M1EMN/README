@@ -1,0 +1,156 @@
+
+
+## Simple examples 
+
+This page is a compilation of examples first for the illustration of the "Master 1" and "Master 2"  courses of "Ecoulements en Milieux Naturels, [M1EMN shallow water](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/MFEnv.pdf) 
+and 
+ [M1EMN waves](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/MFEhoule.pdf)  and [M2EMN non Newtonian flows](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/mainM2EMN.pdf)" by Pierre-Yves Lagrée, that is why some examples are in french.
+See as well [Résolution numérique de SV ](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/code_C_saintvenant.pdf).
+
+see as well [http://m2.basilisk.dalembert.upmc.fr/sandbox/PYL/README]()
+
+
+## Installation  
+
+[http://basilisk.fr/src/INSTALL]()
+
+
+[http://basilisk.fr/sandbox/M1EMN/HELP/README]()
+
+
+## Simple example to present finite volumes
+
+Advection equation, compare simple code in standard C and Basilisk
+
+* [1D advection equation](BASIC/advecte1.c) explains the notions of advection, test the flux, coded with Basilisk
+* [1D advection equation](BASIC/advecte1c.c) the same than the previous one but with standard C  (std C)
+* [1D advection equation](BASIC/advecte.c) compares centered and decentered
+
+## Simple examples, model equations
+Just a bit more complicated examples, mostly for heat equation
+
+* [1D Heat equation](BASIC/heat.c)
+* [1D Heat equation, implicit with iterations](BASIC/heat_imp.c)
+* [Heat equation in 2D, with mixed condition](BASIC/heat2D.c)
+
+A temptative with dispersion
+
+* [1D capillary waves](BASIC/disperse.c)
+* [1D Boussinesq eq](Exemples/boussinesqc.c), (standard C)
+
+Model equation for surface growth 
+
+* [Diffusion equation in 2D, with mixed condition: MOCVD SAG equation](BASIC/sag.c)
+* [Diffusion equation in 3D, with mixed condition: MOCVD SAG equation](BASIC/sag3D.c)
+* [1D KPZ equation for surface growth](BASIC/kpz.c)
+* [1D diffusion equation with curvature effects (dx2 and dx4) for surface growth](BASIC/dtd2xd4x.c)
+
+
+
+## Navier Stokes
+* [Couette flow with friction Boundary condition with NS](Exemples/couette_muw.c)
+* [Poiseuille axy flow  avec la méthode chinoise](NS/poiseuilleCM.c.page)
+* [Womersley in a axi](NS/wo2Dacc.c.page)
+ 
+## Master1 Exemples waves
+* [Airy swell, with NS](Exemples/houle.c)
+* [Airy swell, with potential](Exemples/airywave.c)
+
+## Master1 Exemples continued (Saint Venant)
+ illustration of the "Master 1" course of "Ecoulements en Milieux Naturels, M1EMN", shallow water examples
+
+* [Flood wave](Exemples/floodwave.c)
+* [Rupture de barrage 1D (std C)](Exemples/svdb.c) 
+* [Embouchure de la Gironde (std C)](Exemples/embouch.c) 
+* [Dam Break 1D](Exemples/damb.c)
+* [Dam Break 1D with turbulent friction, Dressler](Exemples/damb_dressler.c)
+* [Dam Break 2D Navier Stokes to compare with SV 1D](Exemples/dambNS.c)
+* [Standing Hydrolic Jump 1D](Exemples/belanger.c)
+* [Flow over a bump at different Froude 1D](Exemples/bump_trans.c)
+* [Vague qui déferle sur une plage 1D](Exemples/slope.c)
+* [Vagues qui déferlent sur une plage 1D](Exemples/slope_deferle1D.c)
+* [Vague qui déferle sur une plage inclinée 2D](Exemples/slope_inc.c)
+* [Ressaut qui se casse en mascaret](Exemples/ressaut_mascaret.c)
+* [Lave qui sort d'un Volcan 2D](Exemples/volcan.c)
+* [Collapse d'un tas visqueux with Saint Venant](Exemples/viscous_collapse.c)
+* [Viscous Collapse without Saint Venant](Exemples/viscous_collapse_noSV.c)
+* [Collapse d'un tas visqueux sur une pente forte](Exemples/viscolsqrt.c)
+
+* [Marées en France](Exemples/maree_bretagne.c)
+
+## Erosion
+
+* [Flow over a Dune with erosion](Exemples/bump_move.c)
+* [Equilibrium shape of the coast due to erosion of waves](Exemples/bruundean.c)
+
+## for Master 1, "TP" by Geoffroy
+
+* [Cours/TP 1](http://basilisk.fr/sandbox/geoffroy/teaching/C1.c) : Introduction à Basilisk
+* [TP 2](http://basilisk.fr/sandbox/geoffroy/teaching/C2.c) : Un Tsunami dans la mer méditérannée (topographie à télecharger : [topo.kdt](http://basilisk.fr/sandbox/geoffroy/teaching/topo.kdt) )
+* [Cours/TP 3](http://basilisk.fr/sandbox/geoffroy/teaching/C3.c) : Solveurs de Riemann et Cas test
+* [Cours/TP 4](http://basilisk.fr/sandbox/geoffroy/teaching/C4.c) : Les coefficients de frictions et leurs implémentations
+* [Mini - projet](http://basilisk.fr/sandbox/geoffroy/teaching/karamea.c) : L'inondation de Karamea (à faire !)
+
+## Multilayer / RNSP
+Some examples of multilayer and  RNS/P solutions 
+
+two layers
+
+* [1D twolayers Saint-Venant internal Dam break](Exemples/internaldam.c)
+* svvk
+* svvk_3.c
+
+
+more layers
+
+* [RNSP multilayer Saint-Venant Dam break (std C)](Exemples/svdbmult.c)
+* [RNSP multilayer Saint-Venant hydrolic Jump, Higuera (std C)](Exemples/svdbvismult_hydrojump.c)
+* [RNSP multilayer Saint-Venant hydrolic Jump, Higuera (Baz)](Exemples/higuera.c)
+* [RNSP multilayer Saint-Venant viscous collapse](Exemples/viscous_collapse_ML.c)
+* [RNSP multilayer Saint-Venant viscous collapse on a slope](Exemples/viscous_collapsesqrt_ML.c)
+* [RNSP multilayer Saint-Venant Bingham collapse on a incline](Exemples/bingham_collapse_ML.c)
+* [RNSP multilayer Saint-Venant impulsive plate problem](Exemples/stewartson_imp.c)
+* [RNSP multilayer Saint-Venant sub/super/critical flow over a bump](Exemples/MLSWbumpF1.c)
+
+
+
+
+## Porous flows
+Here examples of laplacian for porous flows
+
+* [Darcy flow near a hole in a semi infinite space: Lamb-Sneddon solution](Exemples/darcyLambSneddon.c)
+* [Darcy flow in a silo](Exemples/darcysilo.c)
+* [Darcy Forchheimer flow in a silo](Exemples/forchheimer.c) 
+
+
+## Examples of "complex" flows
+Here flow of concrete with Bingham rheology 
+
+* [Bingham periodic 2D on a slope](Exemples/bingham_simple.c)
+* [Bingham axi 2D in a tube](Exemples/nonnewtube.c)
+* [Bingham concrete 2D slump test](Exemples/column_SCC.c)
+* [Bingham 1D collapse on a incline](Exemples/bingham_collapse_noSV.c)
+* [herschel Bulkley 1D collapse on a incline](Exemples/herschel-column-noSV.c)
+* [Bingham RNSP collapse on a incline](Exemples/bingham_collapse_ML.c)
+
+## Examples of granular flows
+Here granular flows with shallow water (Savage Hutter/ Saint Venant) 
+
+* [Savage Hutter Avalanche of grains 1D](Exemples/savagestaron.c)
+* [Savage Hutter Avalanche of grains 2D](Exemples/bosse_aval_gray.c)
+* [Savage Hutter Avalanche: propagation of the front](Exemples/front_poul_ed.c)
+ 
+ 
+Here granular flows with continuum description
+
+* [Continuum Avalanche Bagnold 2D solution](Exemples/bagnold_periodic.c)
+* [Continuum Avalanche Bagnold 2D solution with segregation](Exemples/bagnold_periodic_segregation.c)
+* [Continuum granular flow axi in pipe](Exemples/nonnewtube.c)
+* [Continuum collapse of a column of grains real 2D, no slip at the base](Exemples/granular_column.c)
+* [Continuum collapse of a column of grains real 2D, friction at the base](Exemples/granular_column_muw.c)
+* [Continuum sand glass of grains real 2D](Exemples/granular_sandglass.c)
+* [Continuum sand glass of grains real 2D, with friction](Exemples/granular_sandglass_muw.c)
+* [Continuum sand glass of grains 2D axi](Exemples/siloaxisl.c)
+* [Continuum sand glass of grains full 3D](http://basilisk.fr/sandbox/yixian/Sandglass3D.c)
+
+

@@ -1,0 +1,59 @@
+I'm Zhonghan XUE, PhD student in Xi'an Jiaotong University, Shannxi 710049, China.
+Email: [xuezhongh.97@stu.xjtu.edu.cn](xuezhongh.97@stu.xjtu.edu.cn)
+
+## Three-phase simulation with orignal VOF codes. 
+
+We consider a system with three immiscible and incompressible fluid phases, typically two liquid ones and a gas. Each phase has its own physical properties (density $\rho_i$, dynamic viscosity $\mu_i$ for phase $i$) and obeys the incompressible Navier-Stokes equations.  For the physical interface formed by phase $i$ and phase $j$, we denote the surface tension coefficient $\sigma_{ij}$. In order to simplify these dimensional quantities and integrate with a non-dimensional numerical implementation, the density, dynamic viscosity, surface tension and length are rescaled by $\rho_3$, $\mu_3$, $\sigma_{12}$ and $l$, a characteristic length (depending on the geometry and varying in the different test cases considered).  A capillary-inertial velocity $U_\rho=\sqrt{\sigma_{12}/\left(\rho_3 l\right)}$ and a capillary-inertial time $\tau_\rho=\sqrt{\rho_3 l^3/\sigma_{12}}$ are introduced to rescale velocities and times.  We can thus write the three-fluids dimensionless incompressible Navier-Stokes equations as 
+$$
+\rho\left(\partial_t \textbf{u}+\textbf{u}\cdot \nabla \textbf{u}\right) = - \nabla p + \mathrm{Oh} \, \nabla \cdot \left(2\mu\textbf{D}\right) + \textbf{T}_s + \mathrm{Bo}\,\rho\textbf{F}
+$$
+$$
+\nabla\cdot \textbf{u}=0
+$$
+
+where $\rho$ is the density, $\textbf{u}$ the velocity vector, $p$ the hydrostatic pressure, $\mu$ the dynamic viscosity and $\textbf{D} = D_{ij} = \left(\partial_i u_j+\partial_j u_i\right)/2$ the deformation tensor. Notice that $\rho$ and $\mu$ are fields function of space and time, following each fluid dynamics.
+
+Given these definitions of the density and viscosity fields, the numerical method is then a simple generalization of the VOF method for two-fluids.
+As an extension of the classical VOF model for two-phase flow, three scalar fields $c_i\left(\textbf{x},t\right)\,\left(i=1,2,3\right)$ are introduced to represent the cell volume fraction of each phase. They are associated to the integral in each cell of the corresponding characteristic function of each phase, inducing the following property:
+$$
+\sum_i^3 c_i\left(\textbf{x},t\right)=1.
+$$
+The density and viscosity function are therefore simply defined by
+$$
+\rho\left(\textbf{x},t\right)\equiv \sum_i^3 c_i\left(\textbf{x},t\right)\rho_i
+\qquad
+\mu\left(\textbf{x},t\right)\equiv \sum_i^3 c_i\left(\textbf{x},t\right)\mu_i,
+$$
+where $\rho_i$ and $\mu_i$ represent the density and viscosity of the phase $i$.
+According to the mass conservation, the volume fractions follow the advection equations
+$$
+\partial_t c_i+ \textbf{u}\cdot\nabla c_i=0,
+$$
+valid for each phase.
+
+The header file is [three-phase.h](./three-phase.h)
+
+## Triple point study
+We first have a deep investigation for triple point presented in the system.
+
+The c file is [triple_point_study.c](./triple_point_study.c)
+
+## Validation cases
+### Liquid lens (lentille)
+
+* Liquid lens without gravity [liquid_lens.c](./liquid_lens.c) and axi case [liquid_lens_axi.c](./liquid_lens_axi.c)
+* Liquid lens with gravity [liquid_lens_gravity.c](./liquid_lens_gravity.c)
+* Introducing more dynamics [liquid_lens_dynamic1.c](liquid_lens_dynamic1.c) and [liquid_lens_dynamic2.c](liquid_lens_dynamic2.c)
+
+### Contact with the solid
+Examine the compatibility with the contact angle (height function) [two_drop_on_solid.c](two_drop_on_solid.c)
+
+### Critical kissing and critical engulfing case
+Examine the critical case for the triple point 
+
+* Engulfing of two drops [two_drop_eng.c](two_drop_eng.c)
+* Kissing of two drops [two_drop_kiss.c](two_drop_kiss.c)
+
+## Post processing
+
+* Some useful norms for triple point study [norm-3p.h](norm-3p.h)

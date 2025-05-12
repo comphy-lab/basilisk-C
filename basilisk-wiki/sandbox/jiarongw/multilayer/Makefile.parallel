@@ -1,0 +1,25 @@
+#SET FILES OF INTEREST 
+SRC_FILES = $(addsuffix .c,$(OUTPUT))
+MPI_FILES = $(addprefix _,$(SRC_FILES))
+OBJ_FILES = $(addsuffix .o,$(basename $(SRC_FILES)))
+#OUT_FOLDER = $(addprefix $(WORK)/f,$(OUTPUT))
+OUT_FOLDER = .
+
+#SET C FLAGS AND BASILISK COMPILER, LINKING FLAGS
+#CC = gcc
+CFLAGS += -D_MPI=1 -DPARAVIEW=0 -O2 -source -events
+#CFLAGS += -DDUMBGL -DDISPLAY=1
+MPICCFLAGS += -Wall -O2 -std=c99 -D_MPI=1
+#MPICCFLAGS += -Wall -std=c99 -O1 -D_MPI=1 -fno-strict-aliasing
+BAS=qcc
+MPICC = mpicc 
+LDFLAGS = -lm -lgfortran -L${BASILISK}/ppr -lppr -lm
+CC99='mpicc -std=c99'
+OPENGLINC = -I${HOME}/local/include
+OPENGLIBS = -L${BASILISK}/gl -lglutils -lfb_osmesa -L${HOME}/local/lib -lGLU -L${HOME}/local/lib -lOSMesa 
+
+#MAKE COMMAND: TAKES ARGUMENT AND MAKES EXECUTABLE IN DESIRED FOLDER
+$(OUTPUT): 
+#	${CC99} $(BAS) $(CFLAGS) $(SRC_FILES) -o $(OUT_FOLDER)/$(OUTPUT) $(LDFLAGS)
+	$(BAS) $(CFLAGS) $(SRC_FILES)
+	$(MPICC) $(MPICCFLAGS) $(MPI_FILES) -I$(BASILISK) ${OPENGLINC} ${OPENGLIBS} -o $(OUT_FOLDER)/$(OUTPUT) $(LDFLAGS)

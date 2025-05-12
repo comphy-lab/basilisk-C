@@ -1,0 +1,88 @@
+# **Wave**
+## Set up for the code 
+* Download [bash.sh](http://basilisk.fr/sandbox/aaykin/wave_code/bash.sh) and [wave.c](http://basilisk.fr/sandbox/aaykin/wave_code/wave.c)
+* Run:
+
+~~~markdown
+
+~~~
+
+## Code
+
+### Libraries used
+~~~markdown
+#include "grid/multigrid1D.h"
+#include "layered/hydro.h"
+#include "layered/nh.h"
+~~~
+
+### Initialisation of variables, main part of the code and exit condition
+
+~~~markdown
+double amp,k=1.0,H=1.0,om,p=128;
+int t_end=10;
+
+int main() {
+  G = 10.;
+  om = sqrt(G*k*tanh(k*H));
+  L0=100.;
+  init_grid(p);
+  amp=0.001;
+  run();
+}
+
+event init (t = 0) {
+   foreach()
+      h[] = H - ((amp*k)/om)*sin(-t*om+k*x)*sinh(k*H);
+     
+}
+
+event end (t = t_end){
+}
+~~~
+
+### outout of the surface
+
+~~~markdown
+#define multi_time 0
+#if !multi_time
+event output (t = t_end) {
+#else 
+event output (t <= t_end;t += 5) {
+#endif
+  static FILE * fp = fopen ("surface.txt", "w");
+  foreach()
+    fprintf (fp, " %g %g %g\n", x, h[], t);
+    fprintf (fp, "\n\n"); 
+    fflush (fp); 
+}
+~~~
+
+### Animation of the wave
+
+~~~markdown
+event plot (t<t_end;t+=0.01) {
+    static FILE * fp = popen ("gnuplot -persist 2> /dev/null", "w");
+#ifdef gnuX
+#else
+    if(t==0) fprintf (fp,"set term gif animate size 1920,1080;set output 'wave.gif';set size ratio 0.5\n");
+#endif
+    fprintf (fp,"\nset grid\n");
+    fprintf (fp,"set title 'Wave at t= %.2lf '\n"
+	  "G = 10.0 \n"
+	  "k = 1.0 \n"
+	  "H = 1.0 \n"
+	  "om = sqrt(G*k*tanh(k*H)) \n"	 
+	  "amp = 0.001 \n"	  
+      "set xrange[0:1] \n"
+      "set yrange[0.95:1.05] \n"
+      "set samples 1000 \n"
+      "z(x) = H - ((amp*k)/om)*sin(-t*om+k*x)*sinh(k*H); t= %.2lf ;\n"
+      "p[%g:%g]  '-' u 1:2 t'free surface' w lp ,"
+      "z(x) t 'z(x)'\n",
+       t,t,X0,X0+L0);
+    foreach()
+    fprintf (fp,"%g %g %g\n", x, h[], t);
+    fprintf (fp,"e\n\n");
+}
+~~~

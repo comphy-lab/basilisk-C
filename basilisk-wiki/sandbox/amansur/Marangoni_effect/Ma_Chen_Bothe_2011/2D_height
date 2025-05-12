@@ -1,0 +1,520 @@
+/**
+# migration.c
+
+This code is written as a 3D simulation, but if not specified in the file or in the Terminal command line, the compiler won't take into account the parameters of the third dimension (*c.f.* [3D simulation](http://basilisk.fr/sandbox/amansur/Rising/3D)).
+*/
+  
+/**
+## Files inclusion
+
+We solve the incompressible, variable-density, Navier-Stokes equations with interfaces and a variable surface tension.
+*/
+
+#include "navier-stokes/centered.h"
+#include "vof.h"
+#include "tension_var.h"
+
+/**
+## Definition of macros
+
+*Macro definitions allow constant values to be declared for use throughout your code.  
+Macro definitions are not variables and cannot be changed by your program code like variables. You generally use this syntax when creating constants that represent numbers, strings or expressions.*
+
+- The equation is non-dimensionalized (*c.f.* [Non_dimensionalization](http://basilisk.fr/sandbox/amansur/Marangoni_effect/Non_dimensionalization)) with the radius of the droplet.  
+
+- We define a viscosity and density for both of the fluids **mu** and **rho**.  
+
+- The **LEVEL** of mesh refinement is set at 6.
+*/
+
+# define R (1.44e-3)
+# define L (4*R)
+// 1 droplet, 2 continuous phase
+# define mu1 (0.012)
+# define mu2 (0.024)
+# define rho1 (250)
+# define rho2 (500)
+# define sigma_T (-2e-3)
+# define sigma_0 (1e-2)
+# define grad_T (200)
+# define x_min (0*R)
+
+# define LEVEL 6
+
+/**
+## Definition of fields
+
+The interface between the two-phases will be tracked with the [volume fraction](http://basilisk.fr/src/fractions.h#volume-fractions) field *c*.  
+We allocate the fields for the variable density and viscosity (*alphav, rhov* and *muv* respectively).  
+
+Notice that *alphav* is a [face vector](http://basilisk.fr/Basilisk%20C#face-and-vertex-fields) which is the flux of 1/*rhov*.
+*/
+
+scalar c[];
+scalar *interfaces = {c};
+scalar sigma[];
+scalar rhov[];
+face vector alphav[];
+face vector muv[];
+
+/**
+## Boundary conditions
+*/
+
+u.n[top]    = dirichlet(0);
+u.t[top]    = neumann(0);
+u.n[bottom]    = dirichlet(0);
+u.t[bottom]    = neumann(0);
+u.n[right] = neumann(0);
+u.t[right] = dirichlet(0);
+u.n[left] = neumann(0);
+u.t[left] = dirichlet(0);
+
+
+/**
+## Main
+
+The density and viscosity are defined by the variable fields we allocated above. The surface tension at the interface of both fluids in set at 0.07.
+
+By default the domain on which the equations are solved is a square box with reflective boundaries (i.e. symmetry conditions on scalar, vector and tensor fields). The origin of the coordinate system is the lower-left corner of the box and the box length is one. We can change this using the **origin()** and **size()** (or **L0 = ..**) functions.
+
+The **TOLERANCE** of the Poisson and viscous solvers is set to 1e-6.
+
+**init_grid** sets the spatial discretization of the simulation.
+The *<<* operator in C is a bit-shifting operation. All we
+need to know here is that *1 << LEVEL* is identical to $2^{LEVEL}$. If
+we want to change the resolution of the simulation, all we need to do
+now is change the single value at the top of the file.
+
+The **run()** function launch the simulation by executing the event with a time step defined in the [tension.h](http://basilisk.fr/src/tension.h#stability-condition) file (oscillation period of the smallest capillary wave).
+*/
+
+int main() 
+{
+  origin (x_min, 0);
+  L0 = L;
+  
+  c.sigma = sigma;
+  TOLERANCE = 1e-6;
+  alpha = alphav;
+  rho = rhov;
+  mu = muv;
+  init_grid (1 << LEVEL);
+  run();
+}
+
+/**
+## Interface definition
+
+First we define the interface with a level-set method. Then we use the [fractions()](http://basilisk.fr/src/fractions.h#computing-volume-fractions-from-a-levelset-function) function, which computes a volume fractions field out of a levelset function.
+
+Here, we define a cercle (in 2D) of radius R.
+*/
+
+event init_interface (i = 0) 
+{  
+    vertex scalar phi[];
+    foreach_vertex()
+      phi[] = sq(R) - sq(x) - sq(y);
+    fractions (phi, c);   
+}
+
+/**
+## Surface tension definition
+* 
+* The surface tension can be defined all over the domain, but will only be used at the interface of the bubble/droplet.
+
+*/
+
+event sigma_field (i++) {
+  foreach() {
+      sigma[] = ( (sigma_T * grad_T * (x - x_min)) + sigma_0 ); 
+  }
+  boundary ({c});  
+}
+
+/**
+## Properties
+
+The density and viscosity are defined using the [VOF method](http://basilisk.fr/src/vof.h).
+
+**cm** is the value of the volume fraction at the x face.  
+*Note that a face is defined by convention as separating a cell from its **left** neighbour (see the [Face and vertex fields section](http://basilisk.fr/Basilisk%20C#face-and-vertex-fields)).*
+*/
+
+#define rho(c) (rho1*c + (1. - (c))*rho2)
+#define mu(c)  (mu1*c + (1. - (c))*mu2)
+
+event properties (i++) 
+{
+  foreach_face() 
+  {
+    double cm = ((c[] + c[-1])/2.);
+    alphav.x[] = (fm.x[]/rho(cm));
+    muv.x[] = (fm.x[]*mu(cm));
+  }
+  foreach(){
+    rhov[] = (cm[]*rho(c[]));
+  }
+}
+
+/**
+## Tracers
+
+By default tracers are defined at t−$\Delta$t/2. We use the first keyword to move VOF advection before the logfile output i.e. at t+$\Delta$/2. This improves the results.
+*/
+
+event vof (i++, first);
+
+
+/**
+## Outputs
+
+The bubble's velocity is the sommation of the velocity field in the bubble. The volume fraction *c* being defined as 1 inside the bubble and 0 outside, the velocity field of the bubble is therefore c[ ]*u.x[ ].  
+The function [statsf](http://basilisk.fr/src/utils.h#134) makes the volumic sommation of a field.  
+We then get the mean velocity of the bubble, that we store in a file named *v_bubble.dat*.  
+
+To observe the evolution of the bubble, we also output the pictures of the volume fraction.
+*/
+
+face vector u_bubble[];
+event velocity(i++){
+  
+	foreach() {
+	  u_bubble.x[] = (c[]*u.x[]);
+	  u_bubble.y[] = (c[]*u.y[]); 
+	}
+	
+	stats vx_bubble = statsf (u_bubble.x);
+	stats vy_bubble = statsf (u_bubble.y);	
+	stats vol_bubble = statsf (c);
+
+  FILE * fp_vb = fopen ("v.dat", "a");
+  fprintf(fp_vb,"%d %f %g %g\n",i,t,vx_bubble.sum/vol_bubble.sum,vy_bubble.sum/vol_bubble.sum);
+  fclose(fp_vb);
+  
+}  
+  
+/**
+## End
+
+The end event defines the final iteration of the computation. We can set an end time or an end iteration.
+*/
+
+event end(i=1500) {
+}
+
+
+/**
+# tension_var.h 
+
+## Files inclusion
+ 
+We will need to compute the curvature of the interface, using its
+Volume-Of-Fluid description.
+*/
+
+#include "curvature.h"
+#include "heights.h"
+#include "geometry.h"
+
+/**
+## Definition of attibute
+The surface tension $\sigma$ and interface curvature $\kappa$ will be
+associated to each VOF tracer. This is done easily by adding the
+following [field attributes](/Basilisk C#field-attributes). 
+
+It takes space and it is time costly to define the same variable for each cell of the domain. 
+Therefore, attributes are define as constant by default, to be able to change them (and increase the space allocated for memory and increasing the time of computation),
+the function "new_scalar" is here to help you !
+ 
+Surface tension is a source term in the right-hand-side of the
+evolution equation for the velocity of the [centered Navier--Stokes
+solver](navier-stokes/centered.h) i.e. it is an acceleration. If
+necessary, we allocate a new vector field to store it. 
+ 
+Each interface for which $\sigma$ is not zero needs a new field to
+store the curvature.
+*/
+
+attribute {
+  scalar sigma;
+  scalar kappa;
+}
+
+
+event defaults (i = 0) {
+
+  if (is_constant(a.x)) {
+    a = new face vector;
+    foreach_face()
+      a.x[] = 0.;
+    boundary ((scalar *){a});
+  }
+
+  for (scalar c in interfaces)
+    if (c.sigma.i && !c.kappa.i) {
+      scalar kappa = new_scalar ("kappa");
+      foreach()
+	kappa[] = 0.;
+      boundary ({kappa});
+      c.kappa = kappa;
+    }
+
+  for (scalar c in interfaces)
+    if (!c.sigma.i) {
+      scalar sigma = new_scalar ("sigma");
+      foreach()
+	sigma[] = 0.;
+      boundary ({sigma});
+      c.sigma = sigma;
+    }
+
+}
+
+
+/**
+## Stability
+ 
+The surface tension scheme is time-explicit so the maximum timestep is
+the oscillation period of the smallest capillary wave.
+$$
+T = \sqrt{\frac{\rho_{m}\Delta_{min}^3}{\pi\sigma}}
+$$
+with $\rho_m=(\rho_1+\rho_2)/2.$ and $\rho_1$, $\rho_2$ the densities
+on either side of the interface.
+
+- We first compute the minimum and maximum values of $\alpha/f_m =
+1/\rho$, as well as $\Delta_{min}$.
+
+- We then consider each VOF interface with an associated value of
+$\sigma$ different from zero and set the maximum timestep.
+*/
+
+event stability (i++) {
+
+  double amin = HUGE, amax = -HUGE, dmin = HUGE;
+  foreach_face (reduction(min:amin) reduction(max:amax) reduction(min:dmin)) {
+    if (alpha.x[]/fm.x[] > amax) amax = alpha.x[]/fm.x[];
+    if (alpha.x[]/fm.x[] < amin) amin = alpha.x[]/fm.x[];
+    if (Delta < dmin) dmin = Delta;
+  }
+  double rhom = ((1./amin + 1./amax)/2.);
+
+  foreach(){
+    for (scalar c in interfaces){
+      scalar sigma = c.sigma;
+      if (sigma[]) {
+        double dt = ( sqrt ( rhom*cube(dmin)/(pi*sigma[]) ) );
+        if (dt < dtmax)
+	    dtmax = dt;
+
+      }
+    }
+  }
+
+  
+  FILE * fp_t = fopen ("t.dat", "a");
+  fprintf(fp_t,"%g %d\n",t,i);
+  fclose(fp_t);
+  
+}
+
+
+
+/**
+## Surface tension term
+
+The calculation of the acceleration is done by this event, overloaded
+from [its definition](navier-stokes/centered.h#acceleration-term) in
+the centered Navier--Stokes solver. 
+
+- We check for all VOF interfaces for which $\sigma$ is non-zero. The
+corresponding volume fraction fields will be stored in *list*.
+
+- To avoid undeterminations due to round-off errors, we remove
+values of the volume fraction larger than one or smaller than
+zero.
+
+- We update the values of $\kappa$ using the height-function
+curvature calculation.
+
+
+- Finally, for each interface for which $\sigma$ is non-zero, we
+compute the surface tension acceleration
+$$
+\sigma\kappa\mathbf{n}\delta_s/\rho \approx \alpha\sigma\kappa\nabla c
+$$ 
+ 
+- We need to compute the curvature *kf* on the face, using its
+values at the center of the cell. If both curvatures are
+defined, we take the average, otherwise we take a single
+value. If all fails we set the curvature to zero: this should
+happen only because of very pathological cases e.g. weird
+boundary conditions for the volume fraction.
+ 
+- Once the normal vector at the interface is calculated with
+$$
+heights(c,h);
+$$
+
+$$
+reconstruction(c,n_mixed,alpha_mixed);	
+$$
+we determine the $\delta_s$ which is the line length divided by the volume.
+We can get the line length by using the function **line_length_center** and multiply the value by $\Delta$ to have it dimensionized.
+
+
+- Finally we free the list of interfacial volume fractions.
+*/
+
+
+
+event acceleration (i++){
+
+  scalar *list = NULL;
+
+
+  foreach(){
+    for (scalar c in interfaces){
+    scalar sigma = c.sigma; 
+      if (sigma[]) {
+        list = list_add (list, c);
+        c[] = clamp (c[], 0, 1);
+      }
+    }
+  }
+  
+
+  for (scalar c in interfaces){
+    boundary ({c});
+    assert (c.kappa.i);
+    curvature (c, c.kappa);
+  }
+
+#if QUADTREE
+  for (scalar c in list)
+    c.prolongation = p.prolongation;
+  boundary (list);
+#endif
+
+
+face vector st = a;
+vector h[];
+
+vector n_height[];
+vector n_mixed[];
+
+scalar alpha_mixed[];
+scalar alpha_height[];
+		
+scalar ds_height[];
+
+			
+	foreach_face(){
+		n_mixed.x[]=0;
+		n_height.x[] = 0.;		
+	}		
+			
+	foreach(){
+		alpha_height[]=0;
+		alpha_mixed[]=0;
+		ds_int[]=0;
+		ds_height[]=0;			
+	}
+	
+for (scalar c in list){  
+	
+	heights(c,h);
+
+	reconstruction(c,n_mixed,alpha_mixed);	
+
+	foreach(){
+		if ( (c[] > 1e-6 && c[] < 1.-1e-6) ){
+		double Gx_hy = (h.y[1,0] - h.y[-1,0])/2.;
+		double Gy_hx = (h.x[0,1] - h.x[0,-1])/2.;
+		double nn = 0.;
+	
+		if ( fabs(n_mixed.x[]) < fabs(n_mixed.y[]) ){
+			nn = sqrt(Gx_hy*Gx_hy + 1);
+			if(c[0,1]<c[0,-1]){
+				n_height.y[]= (1/nn);
+				n_height.x[]= (-Gx_hy/nn);
+			}
+			else{
+				n_height.y[]= (-1/nn);
+				n_height.x[]= (Gx_hy/nn);
+			}
+		}
+		else{
+			nn = sqrt(Gy_hx*Gy_hx + 1);
+			if(c[1,0]<c[-1,0]){
+				n_height.y[]= (-Gy_hx/nn);
+				n_height.x[]= (1/nn);
+			}
+			else{
+				n_height.y[]= (Gy_hx/nn);
+				n_height.x[]= (-1/nn);
+			}			
+		}
+
+	coord m_height = {n_height.x[],n_height.y[]};
+	alpha_height[] = line_alpha(c[], m_height) ;
+	coord coord_centroid = {0,0};
+	
+	ds_int_height[] = Delta * line_length_center(m_height, alpha_height[],&coord_centroid);
+
+}
+}
+
+
+}	
+	
+
+
+foreach_face(){
+  for (scalar c in list){
+
+    scalar kappa = c.kappa;
+    scalar sigma = c.sigma;
+
+      if (c[] != c[-1] || (c[] > 1e-6 && c[] < 1.-1e-6)){
+	
+	double kf = 
+	  (kappa[] < nodata && kappa[-1] < nodata) ?
+	  (kappa[] + kappa[-1])/2. :
+	  kappa[] < nodata ? kappa[] :
+	  kappa[-1] < nodata ? kappa[-1] :
+	  0.;
+	
+    
+    
+        double Delta_cx = (c[] - c[-1,0]) ;
+
+        double Delta_sigmax = (sigma[] - sigma[-1,0]) ; 
+        double Delta_sigmay = ( (sigma[-1,1]-sigma[-1,-1]+sigma[0,1]-sigma[0,-1])/4. ) ; 
+        	
+
+        // Normal force	
+        st.x[] += ( (alpha.x[]/fm.x[]) * sigma[] * kf * (Delta_cx/Delta) );
+        
+
+        // Tangential force
+    	st.x[] += ( (alpha.x[]/fm.x[]) * (Delta_sigmax/Delta) * ( ds_height[]/(Delta*Delta) ) ) ;
+	    st.x[] -= ( (alpha.x[]/fm.x[]) * ((Delta_sigmax*n_height.x[] + Delta_sigmay*n_height.y[])/(Delta)) * ( (ds_height[]/(Delta*Delta))*n_height.x[]) ) ;
+
+
+    }
+    
+      }
+}
+
+    
+      
+#if QUADTREE
+  for (scalar c in list)
+    c.prolongation = fraction_refine;
+  boundary (list);
+#endif
+  free (list);
+}

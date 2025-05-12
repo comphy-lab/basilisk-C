@@ -1,0 +1,6 @@
+Welcome to the `README` of my sandbox. Currently, I'm working on my thesis project spanning from 2022 to 2025, focusing on the cooling of heat exchangers using spray technology.
+
+-Damien THOMAS-
+
+# Droplet dynamic into two parallel plates
+* [2D droplet dynamic](run/channel_clogging.c)

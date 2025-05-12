@@ -1,0 +1,114 @@
+Welcome to my sandbox :)
+
+You will find several type of simulations. I'm currently working on the simulation of a bursting bubble on an air-water interface. The other simulation are some older work.
+
+There is 3 different work:
+
+  * The Taylor-Culick retraction (more information about those simulation [here](TaylorCulick/README))
+  * A simplified case of a bursting bubble
+  * A more general case of a bursting bubble (actual work)
+
+
+# Bursting bubble
+
+## Simplified case
+
+The file [bursting.c](bursting.c) is a simulation based on the article of [Duchemin et Al](ref.bib#duchemin2002).
+This file is outdated and may not work with the current version of basilisk
+(will be patch one day)
+### Setup
+
+On this simulation, we have neglected the gravity effect, leading to a simplified shape of the bubble. In the no-gravity approximation, we consider the bubble shape to be directly a sphere, just under the air-water interface. We create a small holl connecting the bubble with the external air.
+
+We set the density ratio to $998$ (like the air-water density ratio).
+
+We set the viscosity ratio to $55$ (like the air-water viscosity ratio).
+
+We play with the Laplace number.
+
+### Results
+
+We where interested in the evolution of the jet-velocity at $x=0$. This point correspond to the jet, crossing the air-water interface.
+
+The velocity is represented on the following curve:
+
+![Evolution of the jet velocity at $x=0$](data/JetVelocity.jpg)
+
+This curve is very close to the one obtain by Duchemin in 2002. The important point here is that we just performed simulations with a low level of refinement. We have the same behaviour for the linear fit (fit a line on a log-log scale, the exponent was $-0.5$ for Duchemin, here it is $-0.6$). 
+
+We also observe the formation of the first drop. We measure the size of this drop. This evolution is ploted on the following curve:
+
+![Evolution of the drop radius](data/DropRadius.png)
+
+We recover a change in the physics of the jet for Laplace number arround $1500$, which is close to the value of found by Duchemin. Indeed, if we observe the end of each simulation, the first drop is formed slightly before or after the axis $x=0$ for $La<1300$. For $La>1400$, the first drop is formed "far away" from the axis $x=0$.
+
+The major differences between the simulation from 2002 and those one are:
+
+  * Utilisation of a smaller grid size (wich means more points)
+  * Utilisation of an adaptative grid
+
+### Observations
+
+As we mentioned above, the results are similar the one from Duchemin, even if there is some work to do to improve them.
+
+For example, we can observe some very small droplet for high Laplace number. Those droplet are produce when the capillary wave interfer together during the collapsing of the bubble cavity.
+
+The drop size is also 10 times smaller than what we should observe. It's link to how we measure the size of the drop. We didn't pay attention to the metric of basilisk in this simulation file. It has been corrected in the more general case.
+
+## The general Case
+
+We know work with a second simulation file one bursting bubble, call [burstingBubble.c](bubble/burstingBubble.c)
+
+This is the actual simulation we are working on.
+
+We are solving the shape of a bubble at rest, on an air-water interface. We explain the solving process here: [bubbleShape.h](bubble/bubbleShape.h).
+
+All the file need to run this case are:
+
+ * [bubbleShape.h](bubble/bubbleShape.h)
+ * [findBond.h](bubble/findBond.h)
+ * [measure.h](bubble/measure.h)
+ * [acoustic.h](bubble/acoustic.h) (only for accoustic case, see below)
+
+If you just want the shape of a bubble at rest, there is a very simple code explaining the use of the bubbleShape.h library, here: [bubble.c](bubble/bubble.c).
+
+
+
+### Goal
+
+We want to simulate the bursting bubble process. The actual code can perform
+several thing. However, the major goal of this simulation is to observe and
+measure all the droplets coming from the jet that arise from the collapse of the
+bubble cavity
+
+### Different possibility
+
+The bursting bubble code can perform several thing, based on the different
+parameters we have directly into the code. We will only present here the
+important option. In order of apparition, we have:
+
+ * ACOUSTIC: increase the domain size and measure the pressure under the bubble,
+   in order to compare the results obtain with basilisk with experimental ones
+ * Gravity: define a simulation with or without gravity
+ * BRUIT: define a initial random noise in the simulations, on the velocity
+   field. This noise is based on the velocity of the first drop (theoretically
+   obtain by Ganan-Calvo)
+ * AdaptOn: turn on the adaptivity of Basilisk
+ * ROMEO: Track the bubble produce below the cavity
+ * DIV: Observe the evolution of the divergence field
+ * IntTracking: track the interface at the beginning of the simulation
+ * MEASURE: the post-process of the simulation. This is perform while the code
+   is running
+ * ENERGY: measure the energy in the code (not working)
+
+#### Option for the article
+
+For our article "Role of all jet drops in mass transfer from bursting bubbles",
+the options are: Gravity, AdaptOn, MEASURE
+
+For our articles about the noise on the velocity fields, the options are:
+Gravity, BRUIT, AdaptOn, MEASURE
+
+### Results
+
+Our results are published (need link to bibliography)

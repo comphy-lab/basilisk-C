@@ -1,0 +1,71 @@
+---
+  title: Nicolas CAILLER's sandbox
+---
+
+# General Description
+
+<iframe width="311" height="175"  style = float:right src="https://www.youtube.com/embed/wwa9gNFYL7o?si=VJeFzrlS_NUafjN-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+This is *Nicolas Cailler*'s sandbox, in which you will find `Basilisk C` codes 
+upon **self-similar** solutions for the collapse of fluid interfaces and 
+other scale invariant problems. 
+
+The work done with `Basilisk` has been undertaken during a PhD thesis (2021--2024) 
+supervised by [Arnaud ANTKOWIAK](http://www.lmm.jussieu.fr/~antkowiak/) 
+and [Régis WUNENBURGER](https://regiswunenburger.wixsite.com/sitesu) at 
+[Sorbonne Université](https://www.sorbonne-universite.fr/en), in the lab 
+[Institut Jean Le Rond $\partial$'Alembert](http://www.dalembert.upmc.fr/ijlrda/). 
+
+The defense of the PhD is broadcast on 
+[*YouTube*](https://www.youtube.com/watch?v=wwa9gNFYL7o), 
+and the manuscript can be read online on the 
+[HAL portal](https://theses.hal.science/tel-04965377), whereas a 
+summarized presentation of the main goals of the thesis for the 
+[BGUM 2023](http://basilisk.fr/BGUM2023/cailler.pdf) can be found on this 
+very website.
+
+2025-03-11
+
+# Existing Directories
+
+<video controls src="lamb_oseen/selfsim_lamb_blackhole/movie_selfsim_blackhole_N8.mp4" style = float:right width="311px">Collapsing conical cavity</video>
+
+* [`collapsing_cavities`](collapsing_cavities/): We show how the horizon of a 
+  finite-time singularity is crossed for (self-similar) collapsing cavities, 
+  such as a bursting bubble. 
+
+* [`keller_miksis`](keller_miksis/): The surface-tension-driven 
+  recoil of a liquid wedge is investigated, a problem addressed by *Keller \& Miksis* 
+  in 1983. The scale invariant nature of the phenomenon is exhibited, and we 
+  provide with `Basilisk` an update of the authors' results.
+
+* [`lamb_oseen`](lamb_oseen/): A numerical study of the *Lamb--Oseen* vortex, 
+  highlighting the self-similar behaviour of the developing flow, firstly when 
+  working from the physical space, and secondly by performing direct numerical 
+  simulations in the associated self-similar space. 
+
+* [`self_sim_DNS`](self_sim_DNS/): For the first time is implemented and 
+  documented an incompressible *Navier--Stokes* solver directly written in 
+  self-similar coordinates, therefore enabling to spontaneously and 
+  spectacularly converge towards *steady* solutions for scale invariant 
+  phenomena. Performing a DNS in the "right" space allows us to compute 
+  simulations that would not be possible otherwise, in terms of running time.
+
+* [`sierou_lister`](sierou_lister/): The self-similar surface-tension-driven 
+  recoil of a 3D--AXI liquid cone is investigated, a problem addressed 
+  by *Sierou \& Lister* in 2004. We recover and extend the results of the 
+  authors, especially by applying stronger far-field dipolar flows upon 
+  the overall capillary one. In particular, self-similar capillary-inertial 
+  **jet structures** are discovered for the strongest intensities. 
+
+* [`test_cases`](test_cases/): Tests and useful explanations on customized 
+  libraries widely used in the other projects of this *sandbox* are found there. 
+  In particular: 
+
+    + The management of ghost cell volume fraction values for boundaries crossed 
+    by a no-closed, mobile interface, in [`vel_tan`](test-cases/vel_tan/); 
+    + An implementation of *Legendre* polynomials of fractional degree, in 
+    [`legendre_polynomials`](test-cases/legendre_polynomials/).
+
+
+![*Collapsing conical cavity*](collapsing_cavities/collapsing_data/visc-zenon_gas_refined_s50_N8-10_m50_tinv1_amr_unif_R15_p_u.mp4)(height="200")

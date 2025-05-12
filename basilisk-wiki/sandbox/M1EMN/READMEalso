@@ -1,0 +1,468 @@
+ 
+
+
+
+
+This page is just a compilation of examples for the illustration of "Master"  courses of fluid mechanics. All the examples come from the [http://basilisk.fr/sandbox/](sandbox) pages and  [http://basilisk.fr/src/test/README](examples)pages of basilisk.
+
+
+
+## Compressible Ideal flows
+
+* [http://basilisk.fr/src/test/explosion.c]()
+* [http://basilisk.fr/sandbox/fuster/Allmach3.0/shockwave.c]()
+* [http://basilisk.fr/sandbox/fuster/Allmach3.0/InclinedShockBCG.c]()
+* [http://basilisk.fr/sandbox/fuster/Allmach3.0/shockwaveadapt.c]()
+* [http://basilisk.fr/sandbox/fuster/Allmach3.0/stepAllMach.c]()
+* [http://basilisk.fr/sandbox/popinet/step.c]()
+* [http://basilisk.fr/sandbox/popinet/shockimplicit.c]()
+* [http://basilisk.fr/sandbox/popinet/shockimplicitschema2.c]()
+
+
+## Incompressible Navier--Stokes
+
+* [Lid-driven cavity at Re=1000](http://basilisk.fr/src/test/lid.c)
+* [Starting flow around a cylinder](http://basilisk.fr/src/test/starting.c)
+* [http://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting2x.c]()
+ Sympa! C’est la manip de la cuillère dans le récipient 
+
+http://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting1x.c
+
+(je suis pas fan des iso, mais c’est un blocage perso esthétique), on voit bien la couche de cisaillement qui enveloppe l’aille et le tourbillon global
+http://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting2x.c
+
+* [http://basilisk.fr/sandbox/ecipriano/doc/centered]()
+
+
+
+
+## Thermal 
+
+* [http://basilisk.fr/sandbox/ecipriano/run/stefanproblem.c]()
+
+
+## Embedded boundaries
+
+* [Poisson equation on complex domains](neumann.c)
+* [Poisson equation on complex domains in 3D](neumann3D.c)
+* [Stability of the embedded face velocity interpolation](uf.c)
+* [Hydrostatic balance with refined embedded boundaries](hydrostatic2.c)
+* [Hydrostatic balance with refined embedded boundaries in 3D](hydrostatic3.c)
+
+
+
+## Volume-Of-Fluid
+
+* [Computation of volume fractions from a levelset function](fractions.c)
+* [Computation of volume fractions on a variable-resolution grid](fractions1.c)
+* [Fractions in marginal cases](fractions2.c)
+* [Computation of a levelset field from a contour](basilisk.c)
+* [Time-reversed VOF advection in a vortex](reversed.c)
+
+## Surface tension
+
+* [Curvature of a circular/spherical interface](curvature.c)
+* [Circular droplet in equilibrium](spurious.c)
+* [Capillary wave](capwave.c)
+* [Gravity wave](gravity.c)
+* [Shape oscillation of an inviscid droplet](oscillation.c)
+* [Rising bubble](rising.c)
+* [Sessile drop](sessile.c)
+* [3D Sessile drop](sessile3D.c)
+
+* [http://basilisk.fr/sandbox/fuster/Allmach3.0/oscillation.c]()
+
+
+
+
+
+
+## Navier Stokes 
+### Droplets
+
+### Vortices 
+
+* [Merging of two vertices](stream.c)
+* [Merging of two vortices (centered Euler solver)](vortex.c)
+* [Taylor--Green vortices](taylor-green.c)
+* [Hoek's Ring-Vortex Generator](hoek.c)
+* [The Collision of a Dipolar Vortex with a No-slip Wall](lamb-dipole.c)
+* [The Structure of Dipolar Vortices](wong2015.c)
+
+* [A Rayleigh-Taylor instability](rt.c)
+* [Vortex rebound from an opening](rebound2.c)
+* [Unstable flow around a Cylinder](kizner2.c)
+
+
+### instabilities
+* [A Kelvin-Helmholtz instability in 2D](kh.c)  
+
+
+### Couette
+* [Couette flow with friction Boundary condition with NS](Exemples/couette_muw.c)
+
+### Poiseuille
+* [http://basilisk.fr/sandbox/wmostert/poiseuille_inclined.c]()
+* [Poiseuille axy flow  avec la méthode chinoise](NS/poiseuilleCM.c.page)
+* [Womersley in a axi](NS/wo2Dacc.c.page)
+
+#### Atmospheric Flows
+ 
+* [An Adaptive Single-Column Model for the Stable Atmospheric Boundary Layer](GABLS1.c)
+* [Growth and decay of Convection into a Stratified Fluid over a Warm Surface](vhm16.c)
+* [Atmospheric waves induced by a mountain](lee.c)
+* [Shallow cumulus convection](bomex.c)  
+* [A rising moist bubble](moist_bubble.c)  
+* [A convective boundary layer on a small planet](convection_cyl.c)
+* [A section of a subsiding shell](subsiding-shell.c)
+* [The diurnal cycle of the atmosphere](lumpedrob.c)
+
+#### 3D Turbulence
+* [LES of a Vortex Cannon](smokey_puff.c)
+* [LES of Isotropic Turbulence in a Triply Periodic Box](isotropicLES.c)
+* [A Kelvin-Helmholtz instability in 3D](kh3d.c)
+* [The collision of two vortex rings](two_rings.c)
+
+#### 2D Turbulence and Vortex Dynamics
+
+ 
+* [Hoek's Ring-Vortex Generator](hoek.c)
+* [The Collision of a Dipolar Vortex with a No-slip Wall](lamb-dipole.c)
+* [The Structure of Dipolar Vortices](wong2015.c)
+* [A Kelvin-Helmholtz instability in 2D](kh.c)  
+* [A Rayleigh-Taylor instability](rt.c)
+* [Vortex rebound from an opening](rebound2.c)
+* [Unstable flow around a Cylinder](kizner2.c)
+
+#### Multiphase flows
+
+ 
+* [Four Droples in two binary Collisions](coalescence.c)
+* [Droplet splashes in a Pool](splash.c)
+* [The descent of Rain Droplets](rain.c)  
+* [Liquid Planets and their Gravity Field](gravity.c)
+* [A 2D Bouncing Droplet in Space](bounce.c)
+* [An Axisymmetric Bouncing Droplet in Space](axibounce.c)
+* [Droplets resting on a hydrophobic material](rest.c)
+* [A bathtub vortex](bathtub.c)
+* [A plant's capillary](cap.c)
+* [A Droplet water slide](dws.c)
+
+#### Other
+* [Mixing Milk into Coffee](coffee.c)
+* [Internal Waves and the Dispersion Relation](internalwacesMG.c)
+* [Flow over a stress-free mountain (test)](embed-freeslip.c)
+* [Laminar mixing of paint](laminarmixing.c)
+* [Flow in a toroidal geometry](tube.c)
+* [A particle-driven flow](ash.c)
+* [Liquid core convection](core.c)  
+
+
+
+
+
+
+
+
+
+
+
+## General orthogonal coordinates
+
+* [Circular dam break on a sphere](lonlat.c)
+* [Axisymmetric mass conservation](axiadvection.c)
+* [Axisymmetric Poiseuille flow](poiseuille-axi.c)
+* [Convergence of axisymmetric viscous terms](axi.c)
+* [Refinement of axisymmetric metric](refine-axi.c)
+* [Boundary layer on a rotating disk](swirl.c)
+
+
+### Stokes
+
+* [Poiseuille flow in a periodic channel inclined at 45 degrees](poiseuille45.c)
+* [Couette flow between rotating cylinders](couette.c)
+* [Wannier flow between rotating excentric cylinders](wannier.c)
+* [Stokes flow past a periodic array of cylinders](cylinders.c)
+* [Stokes flow past a periodic array of spheres](spheres.c)
+* [Stokes flow through a complex porous medium](porous.c)
+* [Stokes flow through a complex porous medium, randomly refined](porous1.c)
+
+ 
+
+
+## Porous flows
+Here examples of laplacian for porous flows
+
+* [Darcy flow near a hole in a semi infinite space: Lamb-Sneddon solution](Exemples/darcyLambSneddon.c)
+* [Darcy flow in a silo](Exemples/darcysilo.c)
+* [Darcy Forchheimer flow in a silo](Exemples/forchheimer.c) 
+
+
+
+
+
+## Electrohydrodynamics
+
+* [Gouy-Chapman Debye layer](debye.c)
+* [Electrostatic in planar layers](planar.c)
+* [Convergence of axisymmetric EHD stresses](ehd_axi_stress.c)
+* [Charge relaxation in an axisymmetric insulated conducting column](cyl_axi.c)
+* [Charge relaxation in a planar cross-section](cyl_planar.c)
+* [Equilibrium of a droplet suspended in an electric field](taylor.c)
+
+
+## Reaction--Diffusion
+
+* [The SAG equation](sag.c)
+
+## General Ocean Turbulence Model (GOTM)
+
+* [Turbulent Couette flow](couette-gotm.c)
+* [Entrainment](entrainment.c)
+* [Ocean Weather Ship Papa](ows_papa.c)
+
+## MPI
+
+* [Reduction operations](mpi-reduce.c)
+* [Boundary conditions and restriction](mpi-restriction.c)
+* [Z-order indexing](indexing.c)
+* [Parallel scalability](mpi-laplacian.c)
+* [Parallel refinement](mpi-refine.c)
+* [Poisson solver on non-uniform mesh](mpi-circle.c)
+* [Boundary conditions for face fluxes](mpi-flux.c)
+* [Boundary conditions for face vector fields](mpi-interpu.c)
+* [Simple test of Basilisk View](view.c)
+
+## Speed benchmarks
+
+* [Speed of elementary operations on different grids](laplacian.c)
+
+## Other
+
+* [Kuramoto--Sivashinsky equation](kuramoto.c)
+* [Convergence of the Runge--Kutta solvers](runge-kutta.c)
+* [Segment traversal](segment.c)
+* [CVMix KPP interface](cvmix.c)
+
+
+
+
+
+## Simple example to present finite volumes
+
+Advection equation, compare simple code in standard C and Basilisk
+
+* [1D advection equation](BASIC/advecte1.c) explains the notions of advection, test the flux, coded with Basilisk
+* [1D advection equation](BASIC/advecte1c.c) the same than the previous one but with standard C  (std C)
+* [1D advection equation](BASIC/advecte.c) compares centered and decentered
+
+## Simple examples, model equations
+Just a bit more complicated examples, mostly for heat equation
+
+* [1D Heat equation](BASIC/heat.c)
+* [1D Heat equation, implicit with iterations](BASIC/heat_imp.c)
+* [Heat equation in 2D, with mixed condition](BASIC/heat2D.c)
+
+A temptative with dispersion
+
+* [1D capillary waves](BASIC/disperse.c)
+* [1D Boussinesq eq](Exemples/boussinesqc.c), (standard C)
+
+Model equation for surface growth 
+
+* [Diffusion equation in 2D, with mixed condition: MOCVD SAG equation](BASIC/sag.c)
+* [Diffusion equation in 3D, with mixed condition: MOCVD SAG equation](BASIC/sag3D.c)
+* [1D KPZ equation for surface growth](BASIC/kpz.c)
+* [1D diffusion equation with curvature effects (dx2 and dx4) for surface growth](BASIC/dtd2xd4x.c)
+
+
+
+ 
+### Waves
+* [Airy swell, with NS](Exemples/houle.c)
+* [Airy swell, with potential](Exemples/airywave.c)
+* [http://basilisk.fr/sandbox/popinet/wave.c]()
+
+
+
+
+
+
+## Shallow water(Saint Venant)
+
+
+
+### Shallow-water flows
+
+ 
+
+* [Bouncing Saint-Venant bump](bump2D1.c)
+
+
+
+
+* [Drying of a lake](dry.c)
+* [Simple Saint-Venant Riemann problem](bore1.c)
+* [Oscillations in a parabolic container](parabola.c)
+* [Undular bores for the Green-Naghdi equations](bore.c)
+* [Green-Naghdi soliton](soliton.c)
+* [Solitary wave run-up on a plane beach](beach.c)
+* [Solitary wave overtopping a seawall](seawall.c)
+* [Sinusoidal wave propagation over a bar](bar.c)
+* [Runup of a solitary wave on a conical island](conical.c)
+* [Stress test for wetting and drying](ponds.c)
+* [Shock reflection by a circular cylinder](shock.c)
+* [Flow rates for multiple rivers](multiriverinflow.c)
+* [Source of a river](source.c)
+* [Implicit Saint-Venant solutions for waves](implicit.c)
+* [Viscous hydraulic jump](higuera.c)
+* [Transcritical flow over a bump with multiple layers](layered.c)
+* [Wind-driven lake](wind-driven-stvt.c)
+* [Lake flowing into itself](lake-tr.c) 
+
+* [http://basilisk.fr/sandbox/wind_pool.c]()
+
+
+
+
+
+### One layer
+ 
+
+* [Flood wave](Exemples/floodwave.c)
+* [Rupture de barrage 1D (std C)](Exemples/svdb.c) 
+* [Embouchure de la Gironde (std C)](Exemples/embouch.c) 
+* [Dam Break 1D](Exemples/damb.c)
+* [Dam Break 1D with turbulent friction, Dressler](Exemples/damb_dressler.c)
+* [Dam Break 2D Navier Stokes to compare with SV 1D](Exemples/dambNS.c)
+* [Standing Hydrolic Jump 1D](Exemples/belanger.c)
+* [Flow over a bump at different Froude 1D](Exemples/bump_trans.c)
+* [Vague qui déferle sur une plage 1D](Exemples/slope.c)
+* [Vagues qui déferlent sur une plage 1D](Exemples/slope_deferle1D.c)
+* [Vague qui déferle sur une plage inclinée 2D](Exemples/slope_inc.c)
+* [Ressaut qui se casse en mascaret](Exemples/ressaut_mascaret.c)
+* [Lave qui sort d'un Volcan 2D](Exemples/volcan.c)
+* [Collapse d'un tas visqueux with Saint Venant](Exemples/viscous_collapse.c)
+* [Viscous Collapse without Saint Venant](Exemples/viscous_collapse_noSV.c)
+* [Collapse d'un tas visqueux sur une pente forte](Exemples/viscolsqrt.c)
+* [Cours/TP 1](http://basilisk.fr/sandbox/geoffroy/teaching/C1.c) : Introduction à Basilisk
+* [TP 2](http://basilisk.fr/sandbox/geoffroy/teaching/C2.c) : Un Tsunami dans la mer méditérannée (topographie à télecharger : [topo.kdt](http://basilisk.fr/sandbox/geoffroy/teaching/topo.kdt) )
+* [Cours/TP 3](http://basilisk.fr/sandbox/geoffroy/teaching/C3.c) : Solveurs de Riemann et Cas test
+* [Cours/TP 4](http://basilisk.fr/sandbox/geoffroy/teaching/C4.c) : Les coefficients de frictions et leurs implémentations
+* [Mini - projet](http://basilisk.fr/sandbox/geoffroy/teaching/karamea.c) : L'inondation de Karamea (à faire !)
+* [Marées en France](Exemples/maree_bretagne.c)
+
+### Erosion
+
+* [Flow over a Dune with erosion](Exemples/bump_move.c)
+* [Equilibrium shape of the coast due to erosion of waves](Exemples/bruundean.c)
+ 
+
+
+## Multilayer / RNSP
+Some examples of multilayer and  RNS/P solutions 
+
+two layers
+
+* [1D twolayers Saint-Venant internal Dam break](Exemples/internaldam.c)
+* svvk
+* svvk_3.c
+
+
+more layers
+
+## Multilayer model
+
+* [Dispersion relation](dispersion.c)
+* [Solitary wave run-up on a plane beach](beach-ml.c)
+* [Solitary wave overtopping a seawall](seawall.c)
+* [Runup of a solitary wave on a conical island](conical.c)
+* [Stress test for wetting and drying](ponds-ml.c)
+* [Sinusoidal wave propagation over a bar](bar-ml.c)
+* [Oscillations in a parabolic container](parabola.c)
+* [Circular dam break on a sphere](lonlat-ml.c)
+* [Wind-driven lake](wind-driven.c)
+* [Large-amplitude standing wave](large.c)
+* [Transcritical flow over a bump with multiple layers](gaussian.c)
+* [Breaking Stokes wave](stokes.c)
+* [Advection of a rippled interface](galilean_invariance.c)
+
+* [RNSP multilayer Saint-Venant Dam break (std C)](Exemples/svdbmult.c)
+* [RNSP multilayer Saint-Venant hydrolic Jump, Higuera (std C)](Exemples/svdbvismult_hydrojump.c)
+* [RNSP multilayer Saint-Venant hydrolic Jump, Higuera (Baz)](Exemples/higuera.c)
+* [RNSP multilayer Saint-Venant viscous collapse](Exemples/viscous_collapse_ML.c)
+* [RNSP multilayer Saint-Venant viscous collapse on a slope](Exemples/viscous_collapsesqrt_ML.c)
+* [RNSP multilayer Saint-Venant Bingham collapse on a incline](Exemples/bingham_collapse_ML.c)
+* [RNSP multilayer Saint-Venant impulsive plate problem](Exemples/stewartson_imp.c)
+* [RNSP multilayer Saint-Venant sub/super/critical flow over a bump](Exemples/MLSWbumpF1.c)
+
+
+## Axi 1D flows
+
+* [1D arterial flow](artery1D.c)
+* [http://basilisk.fr/sandbox/liquid_jet/rayleigh_plateau_1D.c]()
+
+
+
+## Examples of "complex" flows
+
+
+### Viscoelasticity
+
+* [Transient planar Poiseuille flow for 
+   an Oldroyd-B or FENE-P fluid](poiseuille-oldroydb.c)
+* [Oldroyd-B lid-driven cavity](lid-oldroydb.c)
+* [Viscoelastic 2D drop in a Couette Newtonian shear flow](viscodrop.c)
+* [Impact of a viscoelastic drop on a solid](fall.c)
+
+###  Bingham rheology 
+
+* [Bingham periodic 2D on a slope](Exemples/bingham_simple.c)
+* [Bingham axi 2D in a tube](Exemples/nonnewtube.c)
+* [http://basilisk.fr/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c]()
+* popinet/lid-bingham.c
+
+
+* [Bingham concrete 2D slump test](Exemples/column_SCC.c)
+* [Bingham 1D collapse on a incline](Exemples/bingham_collapse_noSV.c)
+* [herschel Bulkley 1D collapse on a incline](Exemples/herschel-column-noSV.c)
+* [Bingham RNSP collapse on a incline](Exemples/bingham_collapse_ML.c)
+
+
+### Granular flows
+Here granular flows with shallow water (Savage Hutter/ Saint Venant) 
+
+* [Savage Hutter Avalanche of grains 1D](Exemples/savagestaron.c)
+* [Savage Hutter Avalanche of grains 2D](Exemples/bosse_aval_gray.c)
+* [Savage Hutter Avalanche: propagation of the front](Exemples/front_poul_ed.c)
+ 
+ 
+Here granular flows with continuum description
+
+* [Continuum Avalanche Bagnold 2D solution](Exemples/bagnold_periodic.c)
+* [Continuum Avalanche Bagnold 2D solution with segregation](Exemples/bagnold_periodic_segregation.c)
+* [Continuum granular flow axi in pipe](Exemples/nonnewtube.c)
+* [Continuum collapse of a column of grains real 2D, no slip at the base](Exemples/granular_column.c)
+* [Continuum collapse of a column of grains real 2D, friction at the base](Exemples/granular_column_muw.c)
+* [Continuum sand glass of grains real 2D](Exemples/granular_sandglass.c)
+* [Continuum sand glass of grains real 2D, with friction](Exemples/granular_sandglass_muw.c)
+* [Continuum sand glass of grains 2D axi](Exemples/siloaxisl.c)
+* [Continuum sand glass of grains full 3D](http://basilisk.fr/sandbox/yixian/Sandglass3D.c)
+
+
+
+
+
+
+## Coriolis
+
+* [Stommel gyre](stommel-ml.c)
+* [Geostrophic adjustment](geo.c)
+* [Non-linear geostrophic adjustment](nonlinear.c)
+
+<hr>
+Maths 
+
+
+
+

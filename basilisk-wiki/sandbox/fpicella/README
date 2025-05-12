@@ -1,0 +1,9 @@
+# Hello World
+Hi, I'm Francesco, and I'm actually working active colloids.
+
+For this reason, I'm re-adapting [Arthur Ghigo](http://basilisk.fr/sandbox/ghigo/src/) implementation of moving embedded boundaries.
+
+Updated on march 2025
+
+## Forces/Torques on a moving embedded boundary
+- A variation of classic [couette](/src/test/couette.c), but computing torques [couette_torque](test/couette_torque.c)

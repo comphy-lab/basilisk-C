@@ -1,0 +1,5 @@
+# Geopstrophic Adjustement
+
+In the framework of the Fluid Mechanics ResearchInLab UE, some work on geosrophic adjustement are in the [Geostrophic_Adjustement/](Geostrophic_Adjustement/) folder.
+
+The file [linear.c](Geostrophic_Adjustement/linear.c) is solving linearised shallow water equations without coriolis while [linear_coriolis.c](Geostrophic_Adjustement/linear_coriolis.c) add the coriolis force. Finally [linear_coriolis_implicit.c](Geostrophic_Adjustement/linear_coriolis_implicit.c) use the [layered/implicit.h](http://basilisk.fr/src/layered/implicit.h) to compute the height of free surface $\eta$.

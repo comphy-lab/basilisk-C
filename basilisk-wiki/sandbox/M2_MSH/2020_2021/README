@@ -1,0 +1,20 @@
+# cours M2  Ecoulements multiphasiques (AA)
+
+* projets 
+ 
+
+# cours M2 EMN (PYL)
+
+mettre un sous dossier dans votre dossier avec les codes que vous aure créés.
+
+* problème de Huppert 1D en C ou en basislisk: vérifier l'indéperndnace à la forme du tas initial
+
+* problème de Huppert 2D en Basilisk
+
+* problème de Huppert 1D Saint Venant 
+
+* problème de Huppert 2D Saint Venant 
+
+* problème de Bingham 1D etc
+
+* Faire un effondrement de tas 2D en Navier Stokes à viscosité faible, vérifier la similitude 

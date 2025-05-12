@@ -1,0 +1,54 @@
+%{
+#Our contributions
+
+##Forward and Backward Euler march in time schemes for the vibrating string
+[vibrating_string_forward_backward_euler.m](/sandbox/easystab/stab2014/vibrating_string_forward_backward_euler.m)
+
+##Runge Kutta march in time scheme for the vibrating string
+[vibrating_string_RungeKutta.m](/sandbox/easystab/stab2014/vibrating_string_RungeKutta.m)
+
+##Brussellator with nonhomogeneous boundary conditions 
+[brusselator_dirich_non_hom.m](/sandbox/easystab/stab2014/brusselator_dirich_non_hom)
+
+![](brusselator_dirich_non_hom.gif)
+
+##Two first eigenmodes of free surface gravity waves
+
+[free_surface_gravity_first_modes.m](/sandbox/easystab/stab2014/free_surface_gravity_first_modes)
+
+##Adding total pressure to free surface gravity waves
+
+[free_surface_gravity_total_pressure](/sandbox/easystab/stab2014/free_surface_gravity_total_pressure)
+
+##Vector field of free surface gravity 
+[free_surface_gravity_vector_field.m](/sandbox/easystab/stab2014/free_surface_gravity_vector_field)
+
+![](/sandbox/easystab/stab2014/free_surface_gravity_velocity_field.png)
+
+##Free surface waves with no-slip boundary condition 
+[free_surface_2D_no-slip_BC.m](/sandbox/easystab/stab2014/free_surface_no-slip_boundary_condition.m)
+
+##Time evolution of free surface 2D 
+[free_surface_2D_time_evolution.m](/sandbox/easystab/stab2014/free_surface_2D_time_evolution.m)
+
+![Time evolution of the third modes of free surface 2D](/sandbox/easystab/stab2014/free_surface_time_evolution.gif)
+
+
+# Notes
+
+De la part de Jérôme
+
+~~~matlab
+domaine	        valeur	note
+connectivité 	2	2
+recyclage	2	2
+graphiques	2	2
+théories	4	3
+Originalité	4	4
+note /14	14	13
+~~~
+
+OK, c'est interessant. Je crois que vous avez bien compris comment ça marche. Vous êtes discrets mais vous avez bien avancé. Dommage que vous ne mettiez pas un peu plus en valeur ce que vous avez fait, votre page de contribution est très loin d'avoir la qualité requise pour un rapport. 
+
+
+%}

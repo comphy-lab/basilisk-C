@@ -1,0 +1,42 @@
+[Firefox plugin](https://addons.mozilla.org/en-us/firefox/addon/its-all-text/) for editing web form with an external editor
+
+## Server configuration
+
+~~~bash
+mkdir .ssh
+scp .ssh/authorized_keys root@192.162.68.18:.ssh
+apt-get install joe
+adduser popinet
+
+joe /etc/ssh/sshd_config
+  PasswordAuthentication no
+  UsePAM no
+/etc/init.d/ssh restart
+
+dpkg-reconfigure locales
+
+apt-get install darcs bzip2 build-essential cabal-install zlib1g-dev
+
+wget http://www.haskell.org/ghc/dist/7.6.3/ghc-7.6.3-x86_64-unknown-linux.tar.bz2
+tar xjf ghc-7.6.3-x86_64-unknown-linux.tar.bz2 
+cd ghc-7.6.3
+./configure
+make install
+
+cabal update
+export PATH=/usr/bin:/bin:/usr/local/games:/usr/games
+cabal install cabal-install
+export PATH=$HOME/.cabal/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+cabal install gitit
+
+# if the command above runs out of memory (i.e. Exit 9 error code)
+tar xzf ~/.cabal/packages/hackage.haskell.org/gitit/0.10.3.1/gitit-0.10.3.1.tar.gz 
+cd gitit-0.10.3.1/
+cabal configure
+cabal build
+cabal install
+
+add export PATH=$HOME/.cabal/bin:$PATH to .bashrc
+~~~
+
+then see [plugins/INSTALL]()

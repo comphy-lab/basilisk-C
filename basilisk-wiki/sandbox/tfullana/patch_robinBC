@@ -1,0 +1,52 @@
+##Definition of the Robin boundary condition
+
+The Robin boundary condition or mixed boundary condition is defined as follows :
+
+$$ \boldsymbol{u}_{t} = u_{S} - \lambda \frac{\partial{\boldsymbol{u}_{t}}}{\partial \boldsymbol{n}}$$
+	with $\boldsymbol{u}_{t}$ the tangential velocity at the boundary,  $u_{S}$ the prescribe substrate velocity, $\lambda$ the slip length and $\boldsymbol{n}$ the inward normal to the surface.
+        
+##Patch
+
+The patch containing the addition of the **Robin boundary condition** in the list of pre-defined expressions (Dirichelet, Neumann) can be found [here](https://drive.google.com/open?id=1M6XbBgFFntZI8GWFe86w_NZUFoR454ry).
+
+To apply the patch :
+
+~~~bash
+cd $BASILISK
+darcs apply "patchname"
+make clean
+make
+~~~
+
+##Usage
+
+The Robin boundary condition takes the prescribed velocity and the slip length as inputs. For example, consider a moving plate with slip at the bottom of the domain :
+
+~~~literatec
+u.t[bottom] = robin(U_plate,lambda)
+u.n[bottom] = dirichlet(0);
+~~~
+
+##**Warning**
+*Currently working on this issue.*
+
+We define the homogeneous counterpart of the Robin boundary condition as $\boldsymbol{u}$ is solution of the [*Poisson problem*](http://basilisk.fr/src/poisson.h#homogeneous-boundary-conditions). The value of the slip length $\lambda$ of the robin homogeneous boundary condition, found in the file [common.h](http://basilisk.fr/src/common.h), has to be changed **manually**.
+
+For example, for $\lambda = 0.1$ :
+
+~~~literatec
+u.t[bottom] = robin(U_plate,0.1)
+~~~
+
+Go to the robin_homogeneous line in the [common.h](http://basilisk.fr/src/common.h) file :
+
+~~~bash
+cd $BASILISK
+vi +/robin_homogeneous common.h
+~~~
+
+Modify the value of ($\lambda$) so that it's equal to 0.1 :
+
+~~~literatec
+@define robin_homogeneous() ( ((2.*(0.1)-Delta)/(2.*(0.1)+Delta))*val(_s,0,0,0) )
+~~~

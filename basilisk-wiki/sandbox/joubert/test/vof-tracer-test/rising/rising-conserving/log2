@@ -1,0 +1,12 @@
+WARNING: convergence for p not reached after 100 iterations
+  res: 146.614 sum: 4.18107e-10 nrelax: 89
+WARNING: convergence for p not reached after 100 iterations
+  res: 64.8846 sum: -6.09871e-11 nrelax: 100
+WARNING: convergence for p not reached after 100 iterations
+  res: 844154 sum: -5.14984e-11 nrelax: 100
+WARNING: convergence for p not reached after 100 iterations
+  res: 1.94862e+08 sum: -3.99983e-07 nrelax: 100
+WARNING: convergence for p not reached after 100 iterations
+  res: 3.62407e+13 sum: -1.94373e-06 nrelax: 100
+rising-conserving: /home/joubert/basilisk/src/grid/events.h:245: dtnext: Assertion `n < INT_MAX' failed.
+../sysdeps/unix/sysv/linux/raise.c:50:error: Program received signal SIGABRT, Aborted.

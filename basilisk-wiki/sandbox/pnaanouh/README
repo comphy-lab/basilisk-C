@@ -1,0 +1,7 @@
+Welcome to my sandbox!
+
+It contains everything that is required to run simulations of a rising suspension of droplets in a periodic computational domain and to compute various statistics form the results of these simulations. 
+
+* [rising-suspension.c](http://basilisk.fr/sandbox/pnaanouh/rising-suspension.c) is the simulation input file.
+* [postprocessing](http://basilisk.fr/sandbox/pnaanouh/postprocessing/) contains the functions required to compute the statistics from the simulation results in both MATLAB and Python.
+* [results](http://basilisk.fr/sandbox/pnaanouh/results/) contains the outputs of simulations performed a various flow conditions. 

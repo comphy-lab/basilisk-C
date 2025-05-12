@@ -1,0 +1,16 @@
+Sandbox for Yue (Stanley) Ling. 
+
+Here are some problems my students and me have simulated using Basilisk. 
+
+
+# Sessile/pendant drop oscillation with pinned contact lines
+* Paper: J. Sakakeeny, Y. Ling*, “Numerical study of natural oscillations of supported drops with free and pinned contact lines”, Physics of Fluids, 33, 062109 (2021).
+* Code: [sessile_2DAxis_PCL.c](sessile_2DAxis_PCL.c)
+
+# Sessile drop oscillation with mobile contact lines
+* Paper: J. Sakakeeny, Y. Ling*, “Natural oscillations of a sessile drop on flat surfaces with mobile contact lines”, Physical Review Fluids, 5, 123604 (2020). 
+* Code: 
+
+# Atomization of a gasoline surrogate jet with non-zero injection angle
+* Paper: B. Zhang, S. Popinet, Y. Ling, “Modeling and detailed numerical sim- ulation of the primary breakup of a gasoline surrogate jet under non- evaporative operating conditions”, International Journal of Multiphase Flow 130, 103362 (2020).
+* Code: 

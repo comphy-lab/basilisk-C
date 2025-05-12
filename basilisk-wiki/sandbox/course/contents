@@ -1,0 +1,10 @@
+---
+toc: no
+...
+
+# Introduction to numerical methods for fluid mechanics
+
+A series of exercises.
+
+1. [Approximation of the first derivative of a function](first.c)
+2. [Convergence of the approximation](first2.c)

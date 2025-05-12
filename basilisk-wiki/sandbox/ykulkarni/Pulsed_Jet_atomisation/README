@@ -1,0 +1,16 @@
+Welcome! To run the Pulsed Jet case wiith Manifold Death method applied, you need to have GNU scientific library installed. 
+
+Then in your terinal, do 
+
+qcc -source -Wdimensions -D_MPI=1 Pulsed_Jet_MD_10_9.c
+
+Compile using
+
+mpicc -Wall -std=gnu99 -D_GNU_SOURCE -O2 -D_MPI=1 _Pulsed_Jet_MD_10_9.c -o pjet -lm -lgsl -lgslcblas
+
+To run
+
+mpirun -np 32 ./pjet
+
+The code is used in the following publication:
+https://arxiv.org/abs/2405.01959

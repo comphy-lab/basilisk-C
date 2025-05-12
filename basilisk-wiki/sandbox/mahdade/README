@@ -1,0 +1,5 @@
+# Welcome to Mounir Mahdade Sandbox
+I'm Mounir Mahdade and you find here all my works with *Basilisk* and some useful codes developed with Nicolas Le Moine (UMR Metis in Sorbonne University).
+
+# ESRI Binary Float Grid Output and Input
+[esri-binary-grid.h](./esri-binary-grids.h) : This library allows importing inputs and exporting outputs in an ESRI Grid (.flt format) and can be used with MPI.

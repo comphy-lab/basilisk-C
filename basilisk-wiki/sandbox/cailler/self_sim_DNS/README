@@ -1,0 +1,1060 @@
+---
+title: How do we design a "Self-Similar DNS solver" ?
+author: Nicolas CAILLER
+header-includes: |
+    \usepackage[dvipsnames]{xcolor}
+    \usepackage{tikz}
+    \definecolor{UBCblue}{rgb}{0.04706, 0.13725, 0.26667} % UBC Blue (primary)
+    \definecolor{UBCblue2}{rgb}{0.04706, 0.13725, 0.6} % UBC Blue (primary)
+    \definecolor{brownfigs}{rgb}{0.7607843137254902,0.5607843137254902,0.2823529411764706}
+    \definecolor{bluefigs}{rgb}{0.2392156862745098,0.403921568627451,0.4823529411764706}
+    \definecolor{greyfigs}{rgb}{0.6509803921568627,0.6549019607843137,0.6392156862745098}
+    \definecolor{capillary}{RGB}{79,130,220}
+    \definecolor{magdeGreen}{RGB}{90,180,49}
+    \definecolor{magdeGreen2}{RGB}{83,119,71}
+    \definecolor{blue}{rgb}{0.38, 0.51, 0.71} %glaucous, 97,130,181, #6182B5
+    \definecolor{darkblue}{RGB}{17, 42, 60} % 112A3C
+    \definecolor{red}{RGB}{175, 49, 39} % AF3127
+    \definecolor{orange}{RGB}{217, 156, 55} % D99C37
+    \definecolor{green}{RGB}{144, 169, 84} % 90A954
+    \definecolor{palegreen}{RGB}{197, 184, 104} % C5B868
+    \definecolor{yellow}{RGB}{250, 199, 100} % FAC764
+    \definecolor{brokenwhite}{RGB}{218, 192, 166} % DAC0A6
+    \definecolor{brokengrey}{rgb}{0.77, 0.76, 0.82} % {196,194,209}, C4C2D1
+    \definecolor{Gainsboro}{RGB}{220, 220, 220} % DCDCDC
+---
+
+<div class="message">
+<div id="msg_logo"><img src="/img/warning.png"></div>
+**For the impatient reader**
+
+This documentation is an in-depth explanation of almost all 
+the modifications made in the below files, compared to their 
+default counterparts, to perform **self-similar DNS** of the 
+[Keller \& Miksis problem](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c); that is to say simulations directly done 
+in the associated scale invariant  when running the 
+[`selfsim_keller_conv.c`](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_keller_conv.c) or [`selfsim_keller_all.c`](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_keller_all.c) files, thanks to the following libraries:
+
+  * [selfsim_centered_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h);
+  * [selfsim_bcg_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h);
+  * [selfsim_two-phase-generic_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_two-phase-generic_keller.h);
+  * [selfsim_vof_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_vof_keller.h).
+
+If you are not interested in the theoretical developments, you can skip 
+the first part and go directly to the *Modifications* subsections, where 
+the main modified lines are indicated (but do not hesitate to take a look 
+at least in [selfsim_centered_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h) for the treament of boundaries and 
+instantiations of additional vector fields). 
+</div>
+
+#  Preamble
+
+It has been seen in the [following problem](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c) that the surface tension driven recoil 
+of a liquid wedge is a **self-similar** phenomenon leading to the introduction 
+of self-similar coordinates:
+
+$$
+\xi = \left( \dfrac{\rho}{\sigma \, t^2} \right)^{1/3} \, x 
+\quad ; \quad
+\eta = \left( \dfrac{\rho}{\sigma \, t^2} \right)^{1/3} \, y 
+$$
+
+where $\sigma$ is the surface tension, and $\rho$ the liquid density. 
+We call it the "[Keller \& Miksis, (1983)](#keller1983)" problem.
+
+Classically, scale invariant problems are then tackled by transforming 
+the general equations into the associated self-similar coordinates 
+in order to get rid of time. 
+In that case, an equation of the type:
+
+$$
+\overline{f}(\xi, \eta) = 0 
+$$
+
+is solved by the means of *Boundary Integral Methods*. 
+However, it has at least two main disavantages:
+
+  * firstly, only self-similar solutions can be found, that is to say, 
+  *steady* solutions;
+  * also, the use of *BIM* supposes that viscosity is neglected, as it is based 
+  on *potential theory*, and therefore constraining assumptions.
+
+But we do work with `Basilisk`, and in particular we do solve the whole 
+*Navier-Stokes* equations by the means of iterative timesteps procedure! 
+That is to say, we need **time** to solve anything with `Basilisk`. 
+Since time is not present in scale invariant problems, how do we proceed? 
+
+
+## Logarithmic time variable
+
+Following the prescriptions of [Eggers \& Fontelos, (2015)](#eggers2015), 
+it is introduced along with $(\xi, \eta)$ a *logarithmic time*:
+
+$$
+\tau = \ln t
+$$
+
+By doing so, we benefit of the following properties:
+
+  * $\tau$ varies very slowly when $t$ scales over many temporal decades 
+  when approaching a finite-time singularity;
+  * by introducing the time variable $\tau$, it is now possible to search for 
+  **non self-similar** solutions to the problem, under the form 
+  $\overline{f}(\xi, \eta, \tau) = 0$: while the problem is unsteady, the 
+  numerical solution *is not* scale invariant;
+  * when the evolution is perfeclty self-similar, its formulation in the 
+  self-similar space is *steady*, hence independent of $\tau$: each quantity 
+  $\overline{f}$ depends only on $\xi$ and $\eta$. 
+
+It is then possible to perform DNS with `Basilisk` looking for scale invariant 
+phenomena. Moreover, **viscosity** can also be taken into account, which is 
+a big step forward compared to the classical methods found in the litterature.
+
+
+## Change of variables & Notations
+
+From the [previous study](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c) of the *Keller \& Miksis* problem, the following 
+*self-similar functions* can be readily found:
+
+$$
+\mathbf{u}(x,y,t) 
+  = \left(\dfrac{\sigma}{\rho \, t}\right)^{1/3} 
+  \mathbf{\overline{u}}(\xi, \eta, \tau) 
+\quad ; \quad 
+C(x,y,t) = \overline{C}(\xi,\eta,\tau)
+$$
+$$
+p(x,y,t) 
+  = \rho \left(\dfrac{\sigma}{\rho \, t}\right)^{2/3} \overline{p}(\xi, \eta, \tau)     
+\quad ; \quad 
+\kappa(x,y,t) 
+  = \left( \dfrac{\rho}{\sigma \, t^2} \right)^{1/3} 
+  \, \overline{\kappa}(\xi,\eta,\tau)
+$$
+
+where $C$ is the *color function*, $\kappa$ the curvature, and the *overline notation* indicates that the quantity is *self-similar*.
+
+
+## Transforming *Navier-Stokes* equations into the self-similar space
+
+When surface tension is considered, the *Navier-Stokes* equations read:
+
+$$
+\partial_t \mathbf{u} + (\mathbf{u} \cdot \boldsymbol{\nabla}) \mathbf{u}  
+= -\dfrac{1}{\rho} \left[ 
+  \boldsymbol{\nabla} p 
+  + \boldsymbol{\nabla} 
+  \cdot \left(2 \mu \, \textbf{\textsf{S}} \right) 
++ \sigma \kappa \, \boldsymbol{\nabla} C 
+\right]
+$$
+$$
+\boldsymbol{\nabla} \cdot \mathbf{u} = 0 
+$$
+
+where $\textbf{\textsf{S}} 
+= \left(\boldsymbol{\nabla} \mathbf{u} + {}^{\mathrm{t}} 
+\boldsymbol{\nabla} \mathbf{u} \right)/2$ is the *strain tensor* 
+and $\mu$ is the *dynamical viscosity*. 
+By plugging the change of variables above and paying attention to the 
+fact that the *nabla* operator definition changes in the new system of 
+self-similar coordinates:
+
+$$
+  \boldsymbol{\nabla} \equiv \boldsymbol{\nabla}_{(\xi,\eta)} 
+:= (\sigma \, t^2 / \rho)^{1/3} \, \boldsymbol{\nabla}_{(x,y)}
+$$
+
+then the **self-similar *Navier-Stokes* equations** are:
+$$
+\partial_\tau \mathbf{\overline{u}} 
++ \textcolor{Orchid}{
+  \left(\mathbf{\overline{\Lambda}} 
+  \cdot \boldsymbol{\nabla} \right) 
+  \mathbf{\overline{u}}  
+}
+= - \boldsymbol{\nabla} \overline{p} 
+  + \boldsymbol{\nabla} \cdot 
+  \left(2 \, \textcolor{red}{\overline{\nu}} \, \overline{\textbf{\textsf{S}}} \right) \, 
+  \textcolor{red}{\mathrm{e}^{-\tau/3}}   
++ \overline{\kappa} \, \boldsymbol{\nabla} \overline{C} 
++ \textcolor{green}{
+  \dfrac{1}{3} \overline{\mathbf{u}}
+}
+$$
+$$
+\boldsymbol{\nabla} \cdot \overline{\mathbf{u}} = 0 
+$$
+
+where:
+
+$$
+\left\{ 
+  \begin{array}{rcl}
+    \textcolor{Orchid}{\mathbf{\overline{\Lambda}}} 
+    &\textcolor{Orchid}{=}& 
+    \textcolor{Orchid}{\overline{\mathbf{u}} - \dfrac{2}{3} 
+    \, \boldsymbol{\xi}}  \\
+    \boldsymbol{\xi} &=& {}^{\mathrm{t}}(\xi, \, \eta)\\ 
+    \overline{\textbf{\textsf{S}}} 
+    &=& \left( 
+      \boldsymbol{\nabla} \overline{\mathbf{u}} 
+      + {}^{\mathrm{t}} \boldsymbol{\nabla} \overline{\mathbf{u}} 
+    \right)/2 \\
+    \textcolor{red}{\overline{\nu}} 
+    &\textcolor{red}{=}& 
+    \textcolor{red}{\nu \, (\rho / \sigma)^{2/3}} \,\,\,  
+    \text{where } \nu = \mu/\rho  
+  \end{array}
+\right.
+$$
+
+Changes are indicated by colors: *violet* for *advection*, *red* for *diffusion*, 
+and *green* for new *source terms*:
+
+  * the non linear advection term is modified: fluid particles are advected by 
+  a *new velocity*  $\textcolor{Orchid}{\mathbf{\overline{\Lambda}} 
+  = \overline{\mathbf{u}} - \dfrac{2}{3}\, \boldsymbol{\xi}}$. 
+  As $\boldsymbol{\xi} = (\rho /\sigma\, t^{2} )^{1/3} \, \mathbf{x}$, the 
+  Eulerian point of view in the self-similar space corresponds to the one of a 
+  moving observer in the physical space $\mathbf{x} = ( \sigma\, t^{2} / \rho )^{1/3} \, \boldsymbol{\xi}$. The corrected velocity is therefore a **radial flow** 
+  that can be interpreted as a *zoom-in/zoom-out velocity* onto the observer's 
+  origin;
+  * a source term corresponding to the unsteady velocity term of the native 
+  *Navier-Stokes* equations: $\textcolor{green}{\overline{\mathbf{u}}/3}$;
+  * in the capillary-inertial description of scale invariance, viscosity is 
+  weighted by an *exponential decay*.
+
+This finishes this quite long, but necessary preamble, before going into the 
+discretization schemes associated with such changes.
+
+
+# Numerical Modifications for a Self-Similar Solver: *a recipe*
+
+<div class="message">
+<div id="msg_logo"><img src="/img/warning.png"></div>
+**Important note**
+
+From now on, we adopt the notation conventions used by *Eduardo Cipriano* 
+from his [top-notch documentation on the `navier-stokes/centered.h`](http://basilisk.fr/sandbox/ecipriano/doc/centered) solver.</div>
+
+
+Since $\boldsymbol{\nabla} \cdot \mathbf{\overline{\Lambda}} 
+= \boldsymbol{\nabla} \cdot \overline{\mathbf{u}} - (2/3) \boldsymbol{\nabla} 
+\cdot \boldsymbol{\xi} = 0 - (2/3) \, N_d$ with $N_d = 2$ in 2D and 
+$N_d = 3$ in 3D-AXI, then:
+
+$$
+\textcolor{Orchid}{
+  \left(\mathbf{\overline{\Lambda}} 
+  \cdot \boldsymbol{\nabla} \right) \overline{\mathbf{u}} 
+}
+= \boldsymbol{\nabla} \cdot \left(\mathbf{\overline{\Lambda}} 
+\otimes \overline{\mathbf{u}} \right) 
+- \overline{\mathbf{u}} \, \left(\boldsymbol{\nabla} \cdot 
+\mathbf{\overline{\Lambda}} \right)
+= \textcolor{Orchid}{
+  \boldsymbol{\nabla} \cdot \left(\mathbf{\overline{\Lambda}} 
+  \otimes \overline{\mathbf{u}} \right) 
+}
+\textcolor{green}{
+  + \dfrac{2 N_d}{3} \, \overline{\mathbf{u}}
+}
+\quad\quad\quad\quad (*)
+$$
+
+Therefore, the ***discretized self-similar Navier-Stokes equations*** read:
+
+$$
+\dfrac{\mathbf{\overline{u}}^{**} 
+- \mathbf{\overline{u}}^n}{\Delta \tau} 
++ \textcolor{Orchid}{\left[
+  \boldsymbol{\nabla} \cdot 
+  \left(\mathbf{\overline{\Lambda}} 
+  \otimes \overline{\mathbf{u}} \right) 
+\right]^{n+1/2}
+}
+= 
+\boldsymbol{\nabla} \cdot \left(
+  2 \, \textcolor{red}{\overline{\nu}^{n+1/2}}
+  \, \overline{\textbf{\textsf{S}}}^{**}
+\right) 
+\, \textcolor{red}{\mathrm{e}^{-\tau/3}}  
++ \left[\overline{\kappa} \boldsymbol{\nabla} \overline{C} \right]^{n+1/2} 
++ \textcolor{green}{
+  \dfrac{1 - 2 N_d}{3}  \,         
+  \mathbf{\overline{u}}^{n+1/2}
+}
+$$
+$$
+\left.\begin{array}{rcl}
+  \boldsymbol{\nabla} \cdot \boldsymbol{\nabla} \overline{p}^{n+1}
+  &=& \dfrac{\boldsymbol{\nabla} \cdot \mathbf{\overline{u}}^{**}}{\Delta \tau} \\
+  \mathbf{\overline{u}}^{n+1} 
+  &=& \mathbf{\overline{u}}^{**} 
+  - \Delta \tau \boldsymbol{\nabla} \overline{p}^{n+1}
+\end{array}
+\right\} 
+$$
+
+
+## Modifications n°1: Advection Step
+
+Since the advection velocity is different from the one advected, we need 
+to adapt the *Bell-Colella-Glaz$ algorithm ([Bell *et al.*, 1989](#bell1989))
+to suit our needs. 
+To do so, we follow the prescriptions of [Popinet (2003)](#popinet2003). 
+
+Integrating the advection term over a control volume $V$, 
+the *divergence theorem* can be applied to exhibit flux terms on the 
+domain boundaries $\partial V$:
+
+$$
+\displaystyle
+\int_V \left[ 
+  \boldsymbol{\nabla} 
+  \cdot \left(\mathbf{\overline{\Lambda}}
+  \otimes \mathbf{\overline{u}} \right)
+\right]^{n+1/2}
+\, \mathrm{d} V
+=
+\displaystyle
+\oint_{\partial V}
+  \left[\left(\mathbf{\overline{u}} 
+  \otimes \mathbf{\overline{\Lambda}}  
+  \right)\mathbf{n}\right]^{n+1/2} 
+\, \mathrm{d} S
+=
+\displaystyle
+\oint_{\partial V}
+  \mathbf{\overline{u}}^{n+1/2} 
+  \left(\mathbf{\overline{\Lambda}}^{n+1/2}  
+  \cdot \mathbf{n}\right)
+\, \mathrm{d} S
+$$
+
+By definition of $\mathbf{\overline{\Lambda}}$, then:
+$$
+\displaystyle
+\int_V \left[ 
+  \boldsymbol{\nabla} 
+  \cdot \left(\mathbf{\overline{\Lambda}} 
+  \otimes \mathbf{\overline{u}} \right)
+\right]^{n+1/2}
+\, \mathrm{d} V
+=
+\textcolor{olive}{
+  \displaystyle
+  \oint_{\partial V}
+}
+  \textcolor{blue}{\mathbf{\overline{u}}^{n+1/2}}
+  \left(
+    \textcolor{orange}{\mathbf{\overline{u}}^{n+1/2} \cdot \mathbf{n}} 
+    - (2/3) \, 
+    \textcolor{brown}{\boldsymbol{\xi} \cdot \mathbf{n}}
+  \right)
+\, \textcolor{olive}{
+  \mathrm{d} S
+}
+$$
+
+As shown later, the above equation is discretized according to:
+
+$$
+\textcolor{Orchid}{
+  \left[ 
+    \boldsymbol{\nabla} \cdot 
+    \left(\mathbf{\overline{\Lambda}} 
+    \otimes \mathbf{\overline{u}} 
+    \right)
+  \right]^{n+1/2}
+}
+=
+\dfrac{1}{\Delta} 
+\textcolor{olive}{
+  \displaystyle
+  \sum_f \left(\rule{0cm}{.85cm}\right.
+}
+  \displaystyle
+  \sum_{d \in \{\xi, \eta \}}
+\textcolor{blue}{
+  \overline{\mathbf{U}}_{f}^{n+1/2}
+}
+\left(
+  \textcolor{orange}{
+    \overline{u}_{f,d}^{n+1/2}
+  }
+    - \dfrac{2}{3} \,
+  \textcolor{brown}{
+    \xi_{f,d} 
+  }
+\right)
+\textcolor{olive}{\left.\rule{0cm}{.85cm}\right)}
+$$
+
+where we make a clear distinction between 
+$\textcolor{blue}{\overline{\mathbf{U}}_{f}^{n+1/2}}$ the face centered 
+self-similar velocity at time $n+1/2$ on face $f$, and 
+$\textcolor{orange}{\overline{u}_{f,d}^{n+1/2}}$ and 
+$\textcolor{brown}{\xi_{f,d}}$ which are the normal components of the 
+velocity and position vector at the center of $f$ in the direction $d$ 
+at time $n+1/2$.
+
+
+### a. Prediction & projection steps
+
+First of all, we need to *predict* a face value for the velocity in the 
+normal direction to the considered face, but with an advection velocity that 
+differs with the advected one submitted to the continuity equation. 
+It is hence crucial to derive again all the BCG algorithm to understand 
+precisely what are the needed modifications. 
+
+If we have the components in the direction $d$ for the centered source terms 
+$\overline{g}_d$, then by using $(*)$ each component of 
+$\mathbf{\overline{u}}^n$ is advected according to:
+
+$$
+\partial_\tau \overline{u}_d^n 
++ \boldsymbol{\nabla} \cdot \left(\overline{u}_d^n 
+\textcolor{Orchid}{\mathbf{\overline{\Lambda}}^n} \right) 
+= \overline{g}_d^n
+\quad \Leftrightarrow \quad 
+\partial_\tau \overline{u}_d^n 
+=  
+- \textcolor{Orchid}{\mathbf{\overline{\Lambda}}^n} \cdot 
+\boldsymbol{\nabla} \overline{u}_d^n 
++ \overline{g}_d^n 
+\textcolor{green}{ + \dfrac{2 N_d}{3} \, \overline{u}_d^n}    
+\quad\quad\quad\quad (**)
+$$
+
+A *Taylor expansion* for preserving a $2^{nd}$ order scheme is done 
+to move from the center of the cell towards a face, and from time $n$ to 
+time $n+1/2$ to predict the velocity field at faces 
+$\overline{u}_{f,p,d}^{n+1/2}$:
+
+$$
+\overline{u}_{f,p,d}^{n+1/2} 
+= \overline{u}_d^n 
+  + \dfrac{\Delta}{2} \partial_d \overline{u}_d^n 
+  + \dfrac{\Delta \tau}{2}\partial_\tau \overline{u}_d^n 
+  + \mathcal{O}\left(\Delta^2, \Delta \tau^2 \right)
+$$
+
+Plugging $(**)$ into the last expression gives the general modified BCG 
+equation with an advection velocity 
+$\textcolor{Orchid}{\mathbf{\overline{\Lambda}}}$:
+
+$$
+\overline{u}_{f,p,d}^{n+1/2} 
+= \overline{u}_d^n 
++ \dfrac{\Delta}{2} \left[
+  1 - \dfrac{\Delta \tau}{\Delta} \, \textcolor{Orchid}{\overline{\lambda}_d^n}
+\right] \partial_d \overline{u}_d^n  
+- \dfrac{\Delta \tau}{2} \textcolor{Orchid}{\overline{\lambda}_{\perp d}^n} \,
+\partial_{\perp d} \overline{u}_d^n 
++ \dfrac{\Delta \tau}{2} \left[
+  \overline{g}_d^n 
+  \textcolor{green}{ + \dfrac{2 N_d}{3} \, \overline{u}_d^n }
+\right]
+$$
+
+with $\textcolor{Orchid}{\overline{\lambda}_d^n}$ 
+and $\textcolor{Orchid}{\overline{\lambda}_{\perp d}^n}$ the normal 
+components of the $\textcolor{Orchid}{\mathbf{\overline{\Lambda}}}$ vector.
+Consequently, by applying the *upwinding* scheme of the BCG algorithm and 
+projecting the predicted velocity onto the divergence-free space, the 
+following numerical scheme is solved:
+
+$$
+\left| \begin{array}{rcl}
+    \mathbf{\overline{u}}_{f,p}^{n+1/2} 
+    &=& 
+    \mathbf{BCG} \left( 
+      \mathbf{\overline{u}}^n, \,
+      \textcolor{Orchid}{\left.\overline{\lambda}_d^n\right|_{c \to f}}, \,
+      \textcolor{Orchid}{\overline{\lambda}_{\perp d}^n}, \, 
+      \left.\overline{\mathbf{g}}^n\right|_{c \to f} 
+      \textcolor{green}{ + \dfrac{2 N_d}{3} \, \left. 
+        \mathbf{\overline{u}}^n \right|_{c \to f} }
+    \right)\\
+    \boldsymbol{\nabla} \cdot \boldsymbol{\nabla} \overline{p}^{n+1/2} 
+    &=& 
+    \dfrac{\boldsymbol{\nabla} 
+    \cdot \mathbf{\overline{u}}_{f,p}^{n+1/2}}{\Delta \tau /2} \\
+    \textcolor{orange}{\overline{u}_{f,d}^{n+1/2}} 
+    &=& 
+    \left(
+      \mathbf{\overline{u}}_{f,p}^{n+1/2} 
+      - \dfrac{\Delta \tau}{2} \boldsymbol{\nabla} \overline{p}^{n+1/2} 
+    \right) \cdot \mathbf{n}_d
+\end{array}
+\right.
+$$
+reminding that the notation $c \to f$ describes a linear interpolation performed 
+from the cells' **c**enter towards a **f**ace. 
+
+**IN PRATICE -** the above results modify the `navier-stokes/centered.h` file 
+in the following manner:
+
+```C
+// New fields 
+vector xi[];
+face vector uf_temp[], lambdaf[];
+
+#if AXI 
+  double Nd = 3.; // number of dimensions
+#else
+  double Nd = 2.;
+#endif
+
+// Boundary Conditions 
+xi.n[right] = x ; 
+xi.t[right] = y ; 
+xi.n[left] = x ;
+xi.t[left] = y ; 
+
+lambdaf.n[right] = uf.n[ghost] - (2./3.)*fm.n[ghost]*xi.n[ghost] ;
+lambdaf.t[right] = uf.t[ghost] - (2./3.)*fm.t[ghost]*xi.t[ghost] ; 
+lambdaf.n[left] = uf.n[ghost] - (2./3.)*fm.n[ghost]*xi.n[ghost] ;
+lambdaf.t[left] = uf.t[ghost] - (2./3.)*fm.t[ghost]*xi.t[ghost] ;
+
+#  if dimension > 1
+...
+
+xi.n[top] = y ;
+xi.t[top] = x ; 
+xi.n[bottom] = y ;
+xi.t[bottom] = x ; 
+
+lambdaf.n[top] = uf.n[ghost] - (2./3.)*fm.n[ghost]*xi.n[ghost] ;
+lambdaf.t[top] = uf.t[ghost] - (2./3.)*fm.t[ghost]*xi.t[ghost] ;
+lambdaf.n[bottom] = uf.n[ghost] - (2./3.)*fm.n[ghost]*xi.n[ghost] ;
+lambdaf.t[bottom] = uf.t[ghost] - (2./3.)*fm.t[ghost]*xi.t[ghost] ; 
+#  endif
+
+// Initialization of new fields 
+event init (i = 0)
+{
+  trash ({uf});
+  trash ({lambdaf});
+
+  // defining position vector ξ
+  foreach() {
+    xi.x[] = x;
+    xi.y[] = y;
+  }
+  boundary({xi});
+
+  foreach_face()
+    uf.x[] = fm.x[]*face_value (u.x, 0);
+
+  boundary((scalar *){uf});
+  foreach_face()
+    lambdaf.x[] = uf.x[] - (2./3.)*fm.x[]*face_value (xi.x, 0);
+  boundary((scalar *){lambdaf});
+
+  ...
+}
+
+// Prediction step modified
+void prediction_uf()
+{
+  ...
+
+  foreach_face() {
+    double un = (dt/Delta)*((u.x[] + u.x[-1]) - (2./3.)*(xi.x[] + xi.x[-1]))/2.;
+    double s = sign(un);
+    int i = -(s + 1.)/2.;
+    uf.x[] = u.x[i] + ((g.x[] + g.x[-1]) + (2.*Nd/3.)*(u.x[] + u.x[-1]))*dt/4. 
+      + s*(1. - s*un)*du.x[i]*Delta/2.; 
+    #if dimension > 1
+    if (fm.y[i,0] && fm.y[i,1]) {
+      double fyy = (u.y[i] - (2./3.)*xi.y[i]) < 0. ? u.x[i,1] - u.x[i] : u.x[i] - u.x[i,-1];
+      uf.x[] -= (dt/2.)*(u.y[i] - (2./3.)*xi.y[i])*fyy/Delta; 
+    }
+    #endif
+    uf.x[] *= fm.x[];
+  }
+
+  delete ((scalar *){du});
+}
+```
+
+
+### b. Approximations of normal compoennts
+
+For numerical stability reasons, the normal component of the position vector 
+at the face $f$ is simply obtained with a linear interpolation between two 
+adjacent cells in the direction $d$, since there is no causality question 
+when extrapolating space:
+
+$$
+\textcolor{brown}{\xi_{f,d}} 
+= \left.\xi_d^n\right|_{c \to f} 
+= \dfrac{\xi_d^n[\,] + \xi_d^n[-1]}{2}
+$$
+
+We then are able to deduce the predicted *advection* face velocity in direction 
+$d$ at time $n+1/2$: 
+
+$$
+\textcolor{Orchid}{\overline{\lambda}_{f,d}^{n+1/2}} 
+=
+\textcolor{orange}{\overline{u}_{f,d}^{n+1/2}}
+- \dfrac{2}{3} \, \textcolor{brown}{\xi_{f,d}} 
+$$
+
+**IN PRATICE -** the above results modify the `navier-stokes/centered.h` file 
+in the following manner:
+
+```C
+event advection_term (i++,last)
+{
+  if (!stokes) {
+    prediction_uf();
+    boundary({xi});
+    boundary((scalar *){uf});
+
+    mgpf = project (uf, pf, alpha, dt/2., mgpf.nrelax);
+    boundary((scalar *){uf});
+
+    foreach_face(){
+      lambdaf.x[] = uf.x[] - (2./3.)*fm.x[]*face_value (xi.x, 0);
+    }
+    
+    ...
+
+  }
+}
+```
+
+
+### c. Re-prediction 
+
+Thanks to the prediction done for 
+$\textcolor{Orchid}{\overline{\lambda}_{f,d}^{n+1/2}}$ from cell 
+centered values, the face vector 
+$\textcolor{blue}{\overline{\mathbf{U}}_{f}^{n+1/2}}$ can now be build 
+thanks to face centered values of the advection velocity field:
+
+$$
+\textcolor{blue}{\overline{\mathbf{U}}_{f}^{n+1/2}}
+=
+\mathbf{BCG} \left( 
+    \mathbf{\overline{u}}^n, \,
+    \textcolor{Orchid}{\overline{\lambda}_{f,d}^{n+1/2}}, \,
+    \textcolor{Orchid}{\left.\overline{\lambda}_{f, \perp d}^{n+1/2}\right|_{f \to c}}, \, 
+    \left.\overline{\mathbf{g}}^n\right|_{c \to f} 
+    \textcolor{green}{ + \dfrac{2 N_d}{3} \, \left. 
+      \mathbf{\overline{u}}^n \right|_{c \to f} }
+\right)
+$$
+where $\left.{}\right|_{f \to c}$ describes a linear interpolation from *faces* 
+towards *cell centers*.
+
+**IN PRATICE -** the above results modify the `navier-stokes/centered.h` file 
+in the following manner:
+
+```C
+event advection_term (i++,last)
+{
+  if (!stokes) {
+
+    ...
+
+    trash({uf_temp});
+    foreach_face(){
+      uf_temp.x[] = uf.x[];
+    }
+
+    boundary({xi});
+    boundary((scalar *){lambdaf});
+    boundary((scalar *){uf_temp});
+
+    selfsim_advection ((scalar *){u}, lambdaf, dt, Nd, (scalar *){g});
+    boundary((scalar *){lambdaf});
+    boundary((scalar *){u});
+    boundary({xi});
+  }
+}
+```
+
+and the `bcg.h` file with the following **new functions**:
+
+```C
+void selfsim_tracer_fluxes (scalar f,
+		    face vector uf, 
+		    face vector flux,
+		    double dt, 
+                    double Nd, 
+		    (const) scalar src)
+{
+
+  ...
+
+  foreach_face() {
+
+    ...
+
+    double f2 = f[i] 
+      + ( (src[] + src[-1]) + (2.*Nd/3.)*(f[] + f[-1]) )*dt/4. 
+      + s*(1. - s*un)*g.x[i]*Delta/2.;
+
+    ...
+
+  }
+}
+```
+
+and:
+
+```C
+void selfsim_advection (scalar * tracers, face vector u, double dt, double Nd, 
+		scalar * src = NULL)
+{
+
+  ...
+  
+  for (f,source in tracers,src) {
+    face vector flux[];
+    selfsim_tracer_fluxes (f, u, flux, dt, Nd, source);
+
+    ...
+
+  }
+
+  ...
+
+}
+```
+
+
+## Modifications n°2: Viscosity
+
+With the transformed scale invariant *Navier-Stokes* equations, 
+the viscous term is associated with a non-dimensional pseudo-viscosity 
+exponentially decaying with the self-similar time $\tau$:
+
+$$
+\textcolor{red}{
+  \overline{\nu}^{n+1/2} \, \mathrm{e}^{- \tau/3}
+}
+= \nu^{n+1/2} \left(\rho^{n+1/2} / \sigma\right)^{2/3} 
+\, \mathrm{e}^{- \tau/3}
+$$
+
+**IN PRATICE -** the above results modify the `two-phase-generic.h` file 
+in the following manner:
+
+```C
+event properties (i++)
+{
+  foreach_face() {
+    
+    ...
+
+    if (mu1 || mu2) {
+      face vector muv = mu;
+      muv.x[] = alphav.x[]*pow(1./(alphav.x[] * f.sigma), 2./3.) 
+        * fm.x[]*mu(ff) * exp(-t/3.);
+    }
+  }
+  
+  ...
+
+}
+```
+
+
+## Modifications n°3: Source Terms
+
+Source terms have to be taken into account simultaneously with other 
+acceleration terms to ensure that they are well balanced with the 
+pressure gradient. It means that the auxiliary velocity 
+$\mathbf{\overline{u}}_f^{**}$ includes these new terms *before* 
+projection onto the divergence-free space to determine at time $n+1$ the 
+pressure $\overline{p}^{n+1}$:
+
+$$
+\mathbf{\overline{u}}_f^{**} 
+= \dfrac{\mathbf{\overline{u}}^{**}[\,] + \mathbf{\overline{u}}^{**}[-1]}{2} 
++ \Delta \tau \left(
+\left[\overline{\kappa} 
+  \boldsymbol{\nabla} \overline{C}
+\right]^{n+1/2}
+\textcolor{green}{
+  + \dfrac{1-2 N_d}{3} \, \textcolor{orange}{\mathbf{\overline{u}}_{f}^{n+1/2}}
+}
+\right)
+$$
+ 
+**IN PRATICE -** the above results modify the `navier-stokes/centered.h` file 
+in the following manner: 
+
+```C
+event acceleration (i++,last)
+{
+  trash ({uf});
+  foreach_face(){
+      uf.x[] = fm.x[]*(face_value (u.x, 0) + dt*a.x[]) 
+        + dt*((1. - 2.*Nd)/3.)*uf_temp.x[];
+  }
+  boundary((scalar *){uf});
+}
+```
+
+After solving the *Poisson* equation 
+$\boldsymbol{\nabla} \cdot \left(\boldsymbol{\nabla} \overline{p}^{n+1} \right) 
+= \boldsymbol{\nabla} \cdot \mathbf{\overline{u}}_f^{**} / \Delta \tau$, 
+leading to $\mathbf{\overline{u}}_f^{n+1} = \mathbf{\overline{u}}_f^{**} 
+- \Delta \tau \boldsymbol{\nabla} \overline{p}^{n+1}$, 
+it is then possible to update at time $n+1$ the face vector 
+containing pressure gradients and acceleration terms:
+
+$$
+\overline{\mathbf{g}}_f^{n+1} 
+= - \boldsymbol{\nabla} \overline{p}^{n+1} 
++ \left[\overline{\kappa} \boldsymbol{\nabla} \overline{C}\right]^{n+1/2}
+\textcolor{green}{
+  + \dfrac{1-2 N_d}{3} \, \textcolor{orange}{\mathbf{\overline{u}}_{f}^{n+1/2}}
+}
+$$
+
+**IN PRATICE -** the above results modify the `navier-stokes/centered.h` file 
+in the following manner: 
+
+```C
+void centered_gradient (scalar p, vector g)
+{
+  face vector gf[];
+  foreach_face(){
+      gf.x[] = fm.x[]*(a.x[]) + ((1. - 2.*Nd)/3.)*uf_temp.x[]
+        - alpha.x[]*(p[] - p[-1])/Delta ;
+  }
+
+  ...
+
+}
+```
+
+
+## Modifications n°4: CFL condition
+
+Timestep $\Delta \tau$ is computed thanks to the *CFL condition*. 
+Since the advection velocity is $\textcolor{Orchid}{\mathbf{\overline{\Lambda}}}$, 
+we need to compute:
+
+$$
+\Delta \tau \leqslant 
+\dfrac{\Delta}{
+  \Vert\textcolor{Orchid}{\mathbf{\overline{\Lambda}}}\Vert_{\infty}
+}
+$$
+
+**IN PRATICE -** the above results modify the `navier-stokes/centered.h` file 
+in the following manner: 
+
+```C
+event stability (i++,last) {
+  dt = dtnext (stokes ? dtmax : timestep (lambdaf, dtmax));
+}
+```
+
+
+## Modifications n°5: *VoF* scheme
+
+Each fluid particle is distinctly advected in a direction $d$ by 
+$\textcolor{Orchid}{\mathbf{\overline{\Lambda}}_f}$, the face centered 
+advection velocity at time $n$:
+
+$$
+\partial_t \overline{\chi} 
++ \boldsymbol{\nabla}_d  \cdot \left(\overline{\chi} 
+\, \textcolor{Orchid}{\mathbf{\overline{\Lambda}}_{f}^n}\right) 
+= \overline{\chi} \, \boldsymbol{\nabla}_d \cdot 
+\textcolor{Orchid}{\mathbf{\overline{\Lambda}}_{f}^n}
+$$
+
+with the notation $\boldsymbol{\nabla}_d := \partial_{\mathbf{d}}$ and $\chi$ 
+the *Heaviside* function for modelling two-phase problems.
+
+**IN PRATICE -** the above results modify the `vof.h` file 
+in the following manner: 
+
+```C
+// At the beginning of the file, add:
+extern face vector lambdaf;
+
+// Then, all `uf` occurrences have to be replaced by `lambdaf` in the code.
+```
+
+
+
+# Generalization & Conclusion
+
+We derived a self-similar DNS solver in the specific case of 
+the [Keller \& Miksis problem](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c), but obviously the needed modifications exposed here can be 
+generalized for all *self-similar problems of the **first kind***. 
+
+Indeed, suppose that you have a scale invariant problem defined by a self-similar 
+vector: 
+
+$$
+\boldsymbol{\xi} = \dfrac{\mathbf{x}}{t^{\textcolor{red}{\beta}}}
+$$
+
+with ${\textcolor{red}{\beta}}$ a scalar exponent 
+(usually, ${\textcolor{red}{\beta}} \in \mathbb{Q}$). 
+Then, the associated advection velocity for the *radial flow* is given by: 
+
+$$
+\textcolor{Orchid}{
+  \mathbf{\overline{\Lambda}}
+  = 
+  \mathbf{\overline{u}} - {\textcolor{red}{\beta}} \, \boldsymbol{\xi}
+} 
+$$
+
+Hence, we do have the following mathematical relationship:
+
+$$
+\textcolor{Orchid}{
+  \left(\mathbf{\overline{\Lambda}} 
+  \cdot \boldsymbol{\nabla} \right) \overline{\mathbf{u}} 
+}
+= \textcolor{Orchid}{
+  \boldsymbol{\nabla} \cdot \left(\mathbf{\overline{\Lambda}} 
+  \otimes \overline{\mathbf{u}} \right) 
+}
+\textcolor{green}{
+  + {\textcolor{red}{\beta}} \, N_d \, \overline{\mathbf{u}}
+}
+\quad (***)
+$$
+
+with $N_d$ the spatial dimension. 
+
+The non conservative form of the general associated self-similar 
+momentum equation reads as:
+
+$$
+\partial_\tau \mathbf{\overline{u}} 
++ \textcolor{Orchid}{
+  \left(\mathbf{\overline{\Lambda}} 
+  \cdot \boldsymbol{\nabla} \right) \overline{\mathbf{u}} 
+}
+= 
+- \boldsymbol{\nabla} \overline{p} 
+  + \boldsymbol{\nabla} \cdot 
+  \left(2 \, \overline{\textbf{\textsf{S}}} \right) 
++ \mathbf{\overline{a}}  
++ \textcolor{green}{
+  \left(1 - {\textcolor{red}{\beta}} \right)
+  \overline{\mathbf{u}}
+}
+$$
+
+so that, by plugging the expression $(***)$ in the above equation, we have 
+to solve in `Basilisk` the **discretized general self-similar *Navier-Stokes* equations** to perform self-similar DNS:
+
+$$
+\left|
+\begin{array}{rcl}
+  \dfrac{\mathbf{\overline{u}}^{**} 
+  - \mathbf{\overline{u}}^n}{\Delta \tau} 
+  + \textcolor{Orchid}{\left[
+    \boldsymbol{\nabla} \cdot 
+    \left(\mathbf{\overline{\Lambda}} 
+    \otimes \overline{\mathbf{u}} \right) 
+  \right]^{n+1/2}
+  }
+  &=& 
+  \boldsymbol{\nabla} \cdot \left(
+    2 \, \overline{\textbf{\textsf{S}}}^{**}
+  \right) 
+  + \mathbf{\overline{a}}^{n+1/2} 
+  + \textcolor{green}{
+    \left(1 - {\textcolor{red}{\beta}}\, (N_d + 1) \right)  \,         
+    \mathbf{\overline{u}}^{n+1/2}
+  } \\
+  \boldsymbol{\nabla} \cdot \boldsymbol{\nabla} \overline{p}^{n+1}
+  &=& \dfrac{\boldsymbol{\nabla} \cdot \mathbf{\overline{u}}^{**}}{\Delta \tau} \\
+  \mathbf{\overline{u}}^{n+1} 
+  &=& \mathbf{\overline{u}}^{**} 
+  - \Delta \tau \boldsymbol{\nabla} \overline{p}^{n+1}
+\end{array}
+\right.
+$$
+
+Finally, it suffices to follow the exactly same modifications presented in 
+the [second section](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README#numerical-modifications-for-a-self-similar-solver-a-recipe) 
+of this page with the derived general coefficients that 
+suit your scale invariant problem.
+
+
+
+
+
+
+# References
+
+~~~bib
+@article{keller1983,
+  ISSN = {00361399},
+  URL = {http://www.jstor.org/stable/2101434},
+  author = {Joseph B. Keller and Michael J. Miksis},
+  journal = {SIAM Journal on Applied Mathematics},
+  number = {2},
+  pages = {268--277},
+  publisher = {Society for Industrial and Applied Mathematics},
+  title = {Surface Tension Driven Flows},
+  urldate = {2025-02-24},
+  volume = {43},
+  year = {1983}
+}
+
+@article{bell89,
+  author =  {J. B. Bell and P. Colella and H. M. Glaz},
+  title =  {A second-order projection method for the incompressible
+                  Navier-Stokes equations},
+  journal =  {J. Comput. Phys.},
+  year =  {1989},
+  volume = {85},
+  pages = {257-283}
+}
+
+@article{popinet2003,
+  author =  {S. Popinet},
+  title =  {Gerris: a tree-based adaptive solver for the
+                  incompressible Euler equations in complex
+                  geometries},
+  journal =  {J. Comput. Phys.},
+  year =  {2003},
+  volume = {190},
+  number = {2},
+  pages = {572-600},
+  url = {http://gerris.dalembert.upmc.fr/gerris.pdf}
+}
+
+@book{eggers2015,
+  author = {Eggers, J. and Fontelos, M. A.},
+  title = {Singularities: Formation, Structure, and Propagation},
+  year = {2015},
+  publisher = {Cambridge University Press},
+  address = {University Printing House, Cambridge CB2 8BS, United Kingdom},
+  isbn = {978-1-107-09841-1},
+}
+~~~
+
+
+
+
+
+
+
+
+
+
+
+

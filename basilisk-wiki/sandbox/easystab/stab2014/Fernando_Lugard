@@ -1,0 +1,99 @@
+%{
+# Our contribution to EasyStab
+ 
+# Advection difusion equation $f_t+Uf_x=\mu f_{xx}$
+This is our code: [advection-diffusion.m](/sandbox/easystab/stab2014/advection-diffusion.m)
+
+
+We used the code [vibrating_string.m](/sandbox/easystab/vibrating_string.m)  
+To do that, we replace the big matrice A and E with our new equation, so we have  E=I and A=nu*dx+U*dxx. U is the advection factor and nu is the diffusion factor
+
+To validate our code, we find a theoretical solution of diffusion equation for a simple systeme which is the diffusion of an heating source. we modified our initial condition to check the initial condition of the analytical equation, and we compared the numerical and analytical solution.
+
+
+![visualisation of the advected diffused solution ](advection_diffusion.gif)
+
+![error between the numerical and the theoritical solution](advection_diffusion_image.png)
+
+Here we can see that the initial condition is advected and diffused. And also we see that the error between the numerical solution and the analytical solution is low and shade to 2.10e-3
+
+
+# Vibrating String Dissipation
+This is our code: [Vibrating-string_dissipation.m](/sandbox/easystab/stab2014/Vibrating-string_dissipation.m)
+
+
+We used the code [vibrating_string.m](/sandbox/easystab/vibrating_string.m)  
+To do that, we add a new term Alpha, which represent the dissipation factor, to our equation.
+?
+To validate our code, we find a theoretical solution of dissipation equation, and we compared the motion of a point on the numerical and analytical solution.
+?
+
+![evolution of the vibrating string with dissipation](dissipation.gif)
+
+![evolution of the center point](centr-point.jpg)
+
+Here we can see that the motion of a point on the numerical solution is like the motion of the same point on the analytical solution. 
+
+
+
+
+
+# Test other function for diffmat code
+This is our code: [diffmat_other_function_test.m](/sandbox/easystab/stab2014/diffmat_other_funtion_test.m)
+We used the code [diffmat.m](/sandbox/easystab/diffmat.m)  and we just change the initial function.
+
+
+ first test of the computation
+Here is the first figure that is produced by the code
+
+![Comparison of the numerical and exact derivative for the first and second derivative of a polynomial function](/sandbox/easystab/stab2014/diffmat_otherfunction.png)
+
+
+We can notice that for this kind of function, the differentiation matrix is
+very effective.
+
+
+ second test of the computation
+
+
+![Comparison of the numerical and exact derivative for the first and second derivative of a exponentialfunction](/sandbox/easystab/stab2014/diffmat_otherfunction2.png)
+
+# DD and D*D  comparison on a  trigonometric function
+
+In order to check the  differentiation matrices performence for the second derivative we compare DD and D*D on a cosinus in this program [compare.m](/sandbox/easystab/stab2014/compare.m)
+
+![Comparison of the differentiation matrices DD and D times D  of a cosinus](compare1.png)
+
+# Reaction diffusion
+ We take the diffusion equation and we add a no linear term  which characterizes the combustion. So we have adapted the code [diffusion_eigenmodes.m](/sandbox/easystab/diffusion_eigenmodes.m) in order to make [combustion.m](/sandbox/easystab/stab2014/conbustion.m)
+ 
+![](/combustion_last_tau.png)
+
+![](/combustion1st_tau.png)
+
+![combustion, snapshot march in time](/combustion_marcheintime.png)
+
+ 
+ 
+ 
+ 
+# Notes
+
+De la part de Jérôme
+
+~~~matlab
+domaine	        valeur	note
+connectivité 	2	2
+recyclage	2	2
+graphiques	2	1
+théories	4	2
+Originalité	4	1
+note /14	14	8
+~~~
+
+Ce que vous avez fait de plus original c'est l'étude du système de reaction-diffusion. Mais votre exposé ne nous apprend pas grand chose: quand-est-ce que le système est stable? Quand est-il instable? Comment cela dépend il des longueurs d'ondes? Vous avez pourtant tous les outils théorique (et même le corrigé...) pour calculer queld est-ce que ce sera stable ou instable? Et quelles sont les différences entre les deux états stationnaires?
+ 
+Je crois que vous avez un peu trop vite baissé les bras. Dommage. 
+ 
+ 
+%}

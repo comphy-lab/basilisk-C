@@ -1,0 +1,233 @@
+%{
+
+Here we apply nonhomogeneous Dirichlet conditions to the brusselator code : [bruxellator_jerome.m](http://basilisk.fr/sandbox/easystab/bruxellator_jerome.m). Moreover, we also add the marh in time part to visualise the time evolution of the phenomenon.
+
+U and V are the concentrations of two chemicals that varies with time and in the direction $x$. $\lambda$ is a chemical parameter we chose, which will have an impact on the stability of the system. Here is the nonlinear set of equations:
+$$
+\begin{array}{l}
+U_{t} = 1 - (\lambda + 1)U + 2U_{xx} + U²V   (i)\\
+V_{t} = \lambda*U + V_{xx} + U²V          (ii)
+\end{array}
+$$
+%}
+
+clear all; clf
+
+% parameters
+N=50; % number of gridpoints
+L=2*pi; % domain length
+c=1; % wave velocity
+dt=2; % time step
+tmax=50; % final time
+lambda=2.5;
+
+% differentiation matrices
+scale=-2/L;
+[x,DM] = chebdif(N,2); 
+dx=DM(:,:,1)*scale;    
+dxx=DM(:,:,2)*scale^2;    
+x=(x-1)/scale;
+Z=zeros(N,N); I=eye(N); 
+II=eye(2*N);
+
+%{
+
+# Linearization
+
+First, we calculate the steady and uniform state of the system. If the system is stationary, then 
+$U_t = V_t = 0$. Then from (i) we have, $V = \lambda U$ which we replace in (ii), which leaves us with : $1 = (\lambda + 1)U - \lambda U $. We then perturb the system as follows :
+$$
+U = U_b + u , V = V_b + v
+$$
+We now have the linearized equations: 
+$$
+\begin{array}{l}
+U_t = 2U_{xx} + (\lambda - 1)U + V\\
+V_t = -\lambda U + V_{xx} - V
+\end{array}
+$$
+which can be rewritten in the matrix form
+$$ 
+Eq_{t}= Aq
+$$
+with
+$$
+\begin{pmatrix}
+I & Z \\
+Z & I \\
+\end{pmatrix}
+\left(\begin{array}{l}
+u_{t} \\
+v_{t} \\
+\end{array}
+\right)
+=
+\begin{pmatrix}
+(\lambda-1) I+2D_{xx} & I \\
+-\lambda I & D_{xx}-I \\
+\end{pmatrix}
+\left(\begin{array}{l}
+u \\
+v \\
+\end{array}\right)
+$$
+
+%}
+
+
+% system matrices
+E=II;
+A=[(lambda-1)*I+2*dxx,I;-lambda*I,-I+dxx];  
+
+% locations in the state
+v=1:N;
+f=N+1:2*N;
+
+%{
+# Nonhomogeneous Dirichlet boundary conditions
+The original system has one variable and two time derivatives, so we should apply two boundary conditions. We will simply say that the position of the string at its both ends should be fixed: two attachment points. Here, we consider a nonhomogeneous Dirichlet condition applied on the first and last point of the state vector for the state position. (For homogeneous Dirichlet condition, see [bruxellator_jerome.m](http://basilisk.fr/sandbox/easystab/bruxellator_jerome.m))
+For the nonhomogenous Dirichlet condition, we need to add a vector &b& to modify the boundary condition. Thus, our matrix system becomes:
+$$ 
+Eq_{t}= Aq+b
+$$
+%}
+
+% boundary conditions
+b=zeros(2*N,1);
+loc=[1,N,N+1,2*N];
+E(loc,:)=0; 
+A(loc,:)=II(loc,:);
+b(loc)=0.5;
+         
+%{
+# March in time
+
+To write a relation between the state at a given time and the state a little later, we will do a numerical approximation of the time derivative. We use the Crank-Nicolson scheme, which is quite simple and robust. We just integrate in time the evolution equation from time $t$ to time $t+dt$
+$$
+\int_t^{t+dt} E q_t dt=\int_t^{t+dt} Aq dt + \int_t^{t+dt} b dt
+$$ 
+the integral on the left hand side is just $E(q(t+dt)-q(t))$ since $E$ does not change in time in this example, and the right hand side we approximate with the trapezoidal rule for integration
+$$
+E(q(t+dt)-q(t))\approx A dt (q(t+dt)+q(t))/2 + b dt
+$$ 
+since now we want to express the new state $q(t+dt)$ as a function of the old state $q(t)$, we rearrange
+$$
+(E-Adt/2)q(t+dt)\approx (E+A dt/2) q(t) + b dt
+$$ 
+and we build the march-in-time matrix by inverting the left hand side matrix to transform this implicit system into an explicit system
+$$
+q(t+dt)\approx (E-Adt/2)^{-1}(E+A dt/2) q(t) + (E-Adt/2)^{-1}b q(t)
+$$ 
+This matrix inverse is well-defined since we have already imposed the proper boundary conditions. 
+%}
+
+% march in time matrix 
+M=(E-A*dt/2)\(E+A*dt/2);
+bb=(E-A*dt/2)\(b*dt);
+
+%{
+# Initial condition
+We need to describe the state of the system at initial time. We say here that the string is initially deformed as a sinus (this satisfies the boundary conditions), and that the velocity is zero. From that state we then perform a loop to repeatedly advance the state of a short forward step in time. We use *drawnow* to show the evolution of the simulation as a movie when running the code. We store for validation the string position at the midle of the domain, to do this without worrying about the the grid points are, we interpolate $f$ with the function *interp1*. 
+%}
+
+% initial condition
+q=[0.5*cos(2*pi*x/L);0.5*cos(2*pi*x/L)]; 
+
+% marching loop
+tvec=dt:dt:tmax; 
+Nt=length(tvec);
+e=zeros(Nt,1);
+
+figure(1)
+
+filename = 'brusselator_dirich_non_hom.gif';
+
+for ind=1:Nt
+
+      q=M*q-bb; % one step forward
+
+      plot(x,q(f),'b',x,q(v),'r--');
+      axis([0,L,-2,3])
+      title(ind*2)
+      drawnow
+
+      frame = getframe(1);
+
+      im = frame2im(frame);
+
+      [imind,cm] = rgb2ind(im,256);
+
+      if ind == 1;
+
+          imwrite(imind,cm,filename,'gif', 'Loopcount',inf);
+
+      else
+
+          imwrite(imind,cm,filename,'gif','WriteMode','append');
+
+      end
+
+end
+hold on
+% computing eigenmodes
+[U,S]=eig(A,E);
+s=diag(S);  [t,o]=sort(-real(s)); 
+s=s(o); U=U(:,o);
+rem=abs(s)>1000; s(rem)=[]; U(:,rem)=[];
+
+% show the eigenvalues
+figure(2)
+plot(real(s),imag(s),'b.')
+xlim([-20,1])
+xlabel('real part');ylabel('imaginary part');title('eigenvalues');
+grid on; hold on
+
+%{
+![](brusselator_dirich_non_hom.gif)
+%}
+
+%{
+# Validation
+
+To validate this computation, we compare it to the eigenvalues we get by assuming a domain invariant in the *x* direction, solving mode by mode, like we did in [wave_like.m](). We do the wavelike assumption
+$$
+u(x,t)=\hat{u}\exp(i\alpha x+st)+C.C.
+$$
+so the system of equations becomes an eigenvalue problem for eigenvalue $s$
+$$
+s\left(\begin{array}{l}
+\hat{u} \\
+\hat{v} \\
+\end{array}\right)
+=
+\begin{pmatrix}
+\lambda-1-2\alpha^2 & 1 \\
+-\lambda  & \alpha^2-1 \\
+\end{pmatrix}
+\left(\begin{array}{l}
+\hat{u} \\
+\hat{v} \\
+\end{array}\right)
+$$
+The eigenvalues are the roots of the caracteristic polynomial of this system
+$$
+s^2+s(2+3\alpha^2-\lambda)+1+\alpha^2(3-\lambda)+2\alpha^4=0
+$$
+which we compute using the function *roots*. We plot on top of eachother the eigenvalues from the 1D domain and the theoretical eigenvalues. 
+
+For this we need to account for all the periodicities that are alowed by the grid in 1D. Since we have a domain with periodic boundary conditions, we allow waves of wavelength $L, L/2, L/3, L/4 \dots$, that is wavenumbers $2\pi/L, 4\pi/L, 6\pi/L, \dots$. 
+
+We then show as well the eigenvectors, and we see that they indeed correspond to the periodicities we are talking about.
+
+%}
+% validation
+for n=[1,2,3,4,5];
+    k=n*2*pi/L; % wavenumber
+    stheo=roots([1,2+3*k^2-lambda,1+k^2*(3-lambda)+2*k^4]);
+    plot(real(stheo),imag(stheo),'ro');  
+end
+legend('numerical','theorical');
+
+%{
+![Validation](/eigenvalues_brusselator_non_hom.jpg)
+%}

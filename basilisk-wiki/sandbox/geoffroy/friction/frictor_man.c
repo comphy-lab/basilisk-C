@@ -1,0 +1,167 @@
+/**
+# Friction in saint-venant : Torrential test case with Manning
+
+In this example, we reproduce the MacDonald benchmark[1]. We test
+the friction source term in a torrential flow. The leading equations can
+be written as : 
+
+$$ 
+\begin{array}{cc} \partial_t h + \partial_x q = 0
+\\ \partial_t q + \partial_x \left(\frac{q^2}{h}+ \frac{1}{2} g h^2
+\right) = -gh (S_0 + S_f) \end{array} 
+$$ 
+
+$S_0$ is the slope and $S_f$ is the friction term in its kinematic
+form.*/
+/**   
+## Declarations
+
+We call the saint venant solver which takes into account the rain source term.*/
+#include "grid/cartesian1D.h"
+#include "saint-venant.h"
+#include "saintvenant/manning.h"
+
+int LEVEL;
+
+scalar e[];
+double e1 = 0., e2 = 0., emax = 0.;
+int ne = 0;
+double pause, tmax, q0 = 2.5, z0, h0, tb =400 ;
+
+// Analytical solution for h and dh/dx
+double hex(double x){
+  return pow(4/G,1/3.)*(1 - 0.2*exp(-36*pow(-0.5 + x/1000.,2)));
+}
+double dhex(double x){
+  return pow(4/G,1/3.)*0.0144*exp(-36*sq(-0.5 + x/1000.))*(-0.5 + x/1000.);
+}
+
+// Manning friction term in kinematic formulation
+double sf(double x){
+  return  -n*n*q0*q0/pow(hex(x),10/3.);
+}
+
+// Z and dz
+double dzex(double x) {
+  return (q0*q0/(G*pow(hex(x),3))-1)*dhex(x)+sf(x);
+}
+double zex(double x, double z) {
+  double dx = L0/N;  return z + dx/3.*(dzex(x-dx)+dzex(x-0.5*dx)+dzex(x));
+}
+
+/**
+## Parameters
+
+Definition of parameters and calling of the saint venant subroutine run().*/
+int main()
+{
+  n = 0.04;
+  pause = 0.2;
+  L0 = 1000.;
+  X0 = 0;
+  G = 9.81;
+  tmax = 500;
+  for( LEVEL = 7; LEVEL <= 10; LEVEL++){  
+    e1 = e2 = emax = 0.;
+    ne = 0;
+    N = 1 << LEVEL;
+    run();
+    fprintf (stderr, "%d %g %g %g\n", N, e1/ne, sqrt(e2)/ne, emax);
+  }
+}
+
+/** 
+## Boundary condition*/
+
+h[left] = dirichlet(max(hex(0),0));
+eta[left] =  dirichlet(max(hex(0)+zb[],zb[]));
+u.n[left] = dirichlet(max(q0/hex(0),0));
+
+h[right] = dirichlet(max(hex(1000),0));
+eta[right] =  dirichlet(max(hex(1000)+zb[],zb[]));
+u.n[right] = dirichlet(max(q0/hex(1000),0));
+
+/**
+## Initial conditions
+*/
+event init (i = 0)
+{
+  DT = 1e-2;
+  z0=0;
+  foreach(){
+    zb[] = zex(x,z0);
+    z0=zb[];
+    u.x[] = 0;
+    h[]=0;
+  }
+  boundary(all);
+}
+
+/**
+## Computing error
+*/
+event error (i++; t<=tmax) {
+  foreach()
+      e[] = (h[] - hex(x));
+  norm no = normf (e);
+  if(t > tb){
+    e1 += no.avg;
+    e2 += no.rms*no.rms;
+    ne++;
+    if (no.max > emax)
+      emax = no.max;
+  }
+   if( N == 1024){
+    static FILE * fp1 = fopen("ErrorN1024.dat","w");
+    fprintf(fp1,"%g \t %g \t %g \t %g \n",t,no.avg,no.rms,no.max);
+  }
+}
+/**
+## Gnuplot output
+
+We can use gnuplot to produce an animation of the water surface.*/
+/*
+event plot ( t <= tmax; t += 15 ) {
+  if( N == 64 || N == 1024 ){
+    printf("set title 'Manning friction fluvial ----- t= %.3g , N = %i '\n"
+	   "p[%g:%g][-60:1]  '-' u 1:($2+$4) t'free surface' w p pt 1,"
+	   "'' u 1:4 t'topo' w l lt 4,"
+	   "'' u 1:5 t'Analytical' w l lt -1 \n",t,N,X0,X0+L0);
+    
+    foreach()
+      printf (" %g %g %g %g %g %g\n", x, h[], u.x[], zb[], hex(x)+zb[], t);
+    
+    printf ("e\n"
+	    "pause %.4g \n\n",pause);
+  }
+}
+*/
+/**
+Print the water profile along the channel at final time
+*/
+
+event printprofile ( t = 399){
+    char name[100];
+    FILE * fp;
+    sprintf(name,"profil-%i.dat",N);
+    fp=fopen(name,"w");
+    foreach() 
+      fprintf(fp,"%g  \t %g  \t %g \t %g \t %g \t %g  \t %g \n"
+	      ,x,h[],zb[],hex(x),u.x[],u.x[]*h[], h[] > dry ? u.x[]/(sqrt(G*h[])) : 0);
+    fclose(fp);
+}
+
+/**
+## Results
+
+![Error convergence](/tor_man_error.png)
+ 
+![Error versus time](/tor_man_errt.png) 
+
+![Water depth profiles](/tor_man_height.png)
+
+*/
+/**
+## References 
+[1] I. MacDonald, M. Baines, N. Nichols, and P. G. Samuels, “Analytic Benchmark Solutions for Open-Channel Flows,” no. November, pp. 1041–1045, 1997.
+*/

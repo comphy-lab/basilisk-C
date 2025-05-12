@@ -1,0 +1,270 @@
+![Advection \& diffusion of a temperature band](/Advection_diffusion.png)
+
+/**
+# Code description
+## Files inclusion
+*/
+
+#include "navier-stokes/centered.h"
+#include "tracer.h"
+#include "diffusion.h"
+
+/**
+## Definition of macros
+
+*Macro definitions allow constant values to be declared for use throughout your code. Macro definitions are not variables and cannot be changed by your program code like variables. You generally use this syntax when creating constants that represent numbers, strings or expressions.*
+*/
+
+# define mu0 0.1
+# define rho0 0.2
+# define D0 5e-5
+
+
+/**
+## Definition of fields
+*/
+
+scalar T[];
+scalar * tracers = {T};
+scalar rhov[];
+face vector alphav[];
+face vector muv[];
+face vector D[];
+
+
+/**
+## Definition of variables
+*/
+
+int T_init = 20.;
+int Delta_T = 80.;
+double time_step = (1.8e-7);
+double t_final = (1e-5);
+double dt;
+mgstats mgd;
+
+/**
+## Boundary conditions
+
+**For scalar :**
+
+- X[left] = dirichlet($\alpha$) $\Leftrightarrow$ $X[left] = \alpha$
+- X[left] = neumann($\alpha$) $\Leftrightarrow \vec{\nabla X}[left] \cdot \vec{n}[left] = \alpha$
+  
+
+**For vector :**
+
+- u.t[top] = dirichlet($\alpha$) $\Leftrightarrow$ $\vec{u}[top] \cdot \vec{t}[top] = \alpha$
+- u.t[top] = neumann($\alpha$) $\Leftrightarrow \overrightarrow{\nabla \left( \vec{u}[top] \cdot \vec{n}[top]\right)} \cdot \vec{n}[top] = \alpha$
+*/
+//~ Temperature
+T[top]   = neumann(0);
+T[bottom]= neumann(0);
+T[right] = dirichlet(T_init);
+T[left]  = dirichlet(T_init);
+//~ Velocity
+u.n[top]    = dirichlet(0.);
+u.t[top]    = neumann(0.);
+u.n[bottom] = dirichlet(0.);
+u.t[bottom] = neumann(0.);
+u.n[right]  = dirichlet(3.);
+u.t[right]  = neumann(0.);
+u.n[left]   = dirichlet(3.);
+u.t[left]   = neumann(0.);
+
+/**
+## Main
+*/
+
+// Parameters
+int main() {
+	
+  const face vector muv[] = {mu0,mu0};
+  const scalar rhov[] = rho0;
+  const face vector alphav[] = {1./rho0,1./rho0};
+
+  alpha = alphav;
+  rho = rhov;
+  mu = muv;
+  	
+  L0 = (1.e-4);
+  N = 64;
+  run();
+}
+
+/**
+## Initial conditions
+*/
+
+// Initial conditions
+event init (i = 0) {
+  foreach() {
+    u.x[] = 3.;  	  
+    if(x<(0.4*L0) && (0.2*L0)<x)
+      T[] = T_init + Delta_T;
+    else
+      T[] = T_init;
+  }
+  boundary ({T});
+}
+
+/**
+## Tracers
+
+By default tracers are defined at t−$\Delta$t/2. We use the first keyword to move VOF advection before the logfile output i.e. at t+$\Delta$/2. This improves the results.
+*/
+
+event vof (i++, first);
+
+/**
+## Diffusion
+*/
+
+// Time integration
+event integration (i++) {
+  dt = dtnext (t, time_step);
+  const face vector Dv[] = {D0, D0};
+  D = Dv;
+  mgd = diffusion (T, dt, Dv);
+}
+
+/**
+## Outputs
+*/
+
+// Results
+event output_T(i++){
+
+  char *outfile2 = NULL;
+  outfile2 = (char *) malloc(sizeof(char) * 256);
+  sprintf(outfile2, "T-%d.png", i);
+  FILE * fp_T = fopen (outfile2, "w");
+  output_ppm(T,fp_T, linear=true);   
+  fclose(fp_T);
+  
+  
+  FILE * fp_t = fopen ("t.dat", "a");
+  fprintf(fp_t,"%d %g \n",i,t);
+  fclose(fp_t);
+}  
+
+event movie (i += 4)
+{
+  static FILE * fp = popen ("ppm2mpeg > advection_diffusion.mpg", "w");
+  output_ppm (T, fp, linear = true);
+}
+
+/**
+## End
+
+The end event defines the final iteration of the computation. We can set an end time or an end iteration.
+*/
+
+event end (t = t_final){
+}
+
+
+/**
+# code
+*/
+
+#include "navier-stokes/centered.h"
+#include "tracer.h"
+#include "diffusion.h"
+
+# define mu0 0.1
+# define rho0 0.2
+# define D0 5e-5
+
+scalar T[];
+scalar * tracers = {T};
+scalar rhov[];
+face vector alphav[];
+face vector muv[];
+face vector D[];
+
+int T_init = 20.;
+int Delta_T = 80.;
+double time_step = (1.8e-7);
+double t_final = (1e-5);
+double dt;
+mgstats mgd;
+
+
+T[top]   = neumann(0);
+T[bottom]= neumann(0);
+T[right] = dirichlet(T_init);
+T[left]  = dirichlet(T_init);
+
+u.n[top]    = dirichlet(0.);
+u.t[top]    = neumann(0.);
+u.n[bottom] = dirichlet(0.);
+u.t[bottom] = neumann(0.);
+u.n[right]  = dirichlet(3.);
+u.t[right]  = neumann(0.);
+u.n[left]   = dirichlet(3.);
+u.t[left]   = neumann(0.);
+
+// Parameters
+int main() {
+	
+  const face vector muv[] = {mu0,mu0};
+  const scalar rhov[] = rho0;
+  const face vector alphav[] = {1./rho0,1./rho0};
+
+  alpha = alphav;
+  rho = rhov;
+  mu = muv;
+  	
+  L0 = (1.e-4);
+  N = 64;
+  run();
+}
+
+// Initial conditions
+event init (i = 0) {
+  foreach() { 
+	  u.x[] = 3.;	  	  
+	  if(x<(0.4*L0) && (0.2*L0)<x)
+	  T[] = T_init + Delta_T;
+	  else
+      T[] = T_init;
+  }
+  boundary ({T});
+}
+
+event vof (i++, first);
+
+// Time integration
+event integration (i++) {
+  dt = dtnext (t, time_step);
+  const face vector Dv[] = {D0, D0};
+  D = Dv;
+  mgd = diffusion (T, dt, Dv);
+}
+
+
+// Results
+event output_T(i++){
+
+  char *outfile2 = NULL;
+  outfile2 = (char *) malloc(sizeof(char) * 256);
+  sprintf(outfile2, "T-%d.png", i);
+  FILE * fp_T = fopen (outfile2, "w");
+  output_ppm(T,fp_T, linear=true);   
+  fclose(fp_T);
+  
+  
+  FILE * fp_t = fopen ("t.dat", "a");
+  fprintf(fp_t,"%d %g \n",i,t);
+  fclose(fp_t);
+}  
+
+event movie (i += 4)
+{
+  static FILE * fp = popen ("ppm2mpeg > advection_diffusion.mpg", "w");
+  output_ppm (T, fp, linear = true);
+}
+
+event end (t = t_final){
+}

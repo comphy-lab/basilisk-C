@@ -1,0 +1,43 @@
+/**
+
+# Modelling the Atmospheric boundary layer with Basilisk.
+
+This page presents an overview of that what is specificially targeted
+at thee-dimensional Atmospheric Boundary Layer (ABL) simulations.  
+
+## Documentation  
+
+## Examples    
+* [Generate Topographies](tp.c)
+* [Flow over a embedded boundary](example_rough.c)
+
+## Functions    
+* [Perlin's noise](perlin.h)
+* [Rough embedded boundaries](rough-embed.h)
+
+## Publications   
+
+## To do list and ideas  
+
+* Run tests for LES in "fluid dynamics mode" (e.g.)[https://torroja.dmt.upm.es/turbdata/agard/docs/AGARD-AR-345.pdf].  
+* Run tests for seminal ABL LES cases (GABLS1, S&P (2011), RICO-II, etc.)
+* Perform a proper fog simulation.  
+* ~~Embedded rough boundaries (turbulent law of the wall)~~  
+* Various surface-boundary condions (flux, prescribed etc.). 
+* Implement Eight SGS models:   
+ 1. Smagorinsky   
+ 2. Vreman   
+ 3. Dynamic 1.   
+ 4. Dynamic 2.  
+ 5. TKE scheme using 1. for "cascade" term.  
+ 6. 5 but using 2.  
+ 7. 5 but uning 3  
+ 8. 5 but using 4.  
+* Soil-heat schemes  
+* Load real world data for land-surface parameterization.  
+* Plant parameterizations  
+* Forcing with ERA data
+* ~~periodic topographies~~
+
+
+*/

@@ -1,0 +1,427 @@
+---
+format: Markdown
+...
+
+# Navigating
+
+The most natural way of navigating is by clicking wiki links that
+connect one page with another. The "Front page" link in the navigation
+bar will always take you to the Front Page of the wiki. The "All pages"
+link will take you to a list of all pages on the wiki (organized into
+folders if directories are used). Alternatively, you can search using
+the search box. Note that the search is set to look for whole words, so
+if you are looking for "gremlins", type that and not "gremlin".
+
+# Creating and modifying pages
+
+## Registering for an account
+
+In order to modify pages, you'll need to be logged in.  To register
+for an account, just click the "register" button in the bar on top
+of the screen.  You'll be asked to choose a username and a password,
+which you can use to log in in the future by clicking the "login"
+button.  While you are logged in, these buttons are replaced by
+a "logout so-and-so" button, which you should click to log out
+when you are finished.
+
+Note that logins are persistent through session cookies, so if you
+don't log out, you'll still be logged in when you return to the
+wiki from the same browser in the future.
+
+## Editing a page
+
+To edit a page, just click the "edit" button (currently at the top left of the text box).
+
+You can click "Preview" at any time to see how your changes will look.
+Nothing is saved until you press "Save."
+
+Note that you must provide a description of your changes.  This is to
+make it easier for others to see how a wiki page has been changed.
+
+## Page metadata
+
+Pages may optionally begin with a metadata block.  Here is an example:
+
+    ---
+    format: latex+lhs
+    categories: haskell math
+    toc: no
+    title: Haskell and
+      Category Theory
+    ...
+
+    \section{Why Category Theory?}
+
+The metadata block consists of a list of key-value pairs, each on a
+separate line. If needed, the value can be continued on one or more
+additional line, which must begin with a space. (This is illustrated by
+the "title" example above.) The metadata block must begin with a line
+`---` and end with a line `...` optionally followed by one or more blank
+lines.
+
+Currently the following keys are supported:
+
+format
+:   Overrides the default page type as specified in the configuration file.
+    Possible values are `markdown`, `rst`, `latex`, `html`, `markdown+lhs`,
+    `rst+lhs`, `latex+lhs`.  (Capitalization is ignored, so you can also
+    use `LaTeX`, `HTML`, etc.)  The `+lhs` variants indicate that the page
+    is to be interpreted as literate Haskell.  If this field is missing,
+    the default page type will be used.
+
+categories
+:   A space or comma separated list of categories to which the page belongs.
+
+toc
+:   Overrides default setting for table-of-contents in the configuration file.
+    Values can be `yes`, `no`, `true`, or `false` (capitalization is ignored).
+
+title
+:   By default the displayed page title is the page name.  This metadata element
+    overrides that default.
+
+## Creating a new page
+
+To create a new page, just create a wiki link that links to it, and
+click the link.  If the page does not exist, you will be editing it
+immediately.
+
+You can also type the path to and name of the file in the browser URL window. Note that in that case any new directory included in the path will be created but only if you tick the corresponding boxes (in the edit window) to confirm their creation.
+
+## Deleting a page
+
+The "delete" button at the bottom of the page will delete a page.  Note
+that deleted pages can be recovered, since a record of them will still be
+accessible via the "activity" button on the top of the page.
+
+# Markdown
+
+This wiki's pages are written in [pandoc]'s extended form of [markdown].
+If you're not familiar with markdown, you should start by looking
+at the [markdown "basics" page] and the [markdown syntax description].
+Consult the [pandoc User's Guide] for information about pandoc's syntax
+for footnotes, tables, description lists, and other elements not present
+in standard markdown.
+
+[pandoc]: http://johnmacfarlane.net/pandoc
+[pandoc User's Guide]: http://johnmacfarlane.net/pandoc/README.html
+[markdown]: http://daringfireball.net/projects/markdown
+[markdown "basics" page]: http://daringfireball.net/projects/markdown/basics
+[markdown syntax description]: http://daringfireball.net/projects/markdown/syntax 
+
+Markdown is pretty intuitive, since it is based on email conventions.
+Here are some examples to get you started:
+
+<table>
+<tr>
+<td>`*emphasized text*`</td>
+<td>*emphasized text*</td>
+</tr>
+<tr>
+<td>`**strong emphasis**`</td>
+<td>**strong emphasis**</td>
+</tr>
+<tr>
+<td>`` `literal text` ``</td>
+<td>`literal text`</td>
+</tr>
+<tr>
+<td>`\*escaped special characters\*`</td>
+<td>\*escaped special characters\*</td>
+</tr>
+<tr>
+<td>`[external link](http://google.com)`</td>
+<td>[external link](http://google.com)</td>
+</tr>
+<tr>
+<td>`![folder](/img/icons/folder.png)`</td>
+<td>![folder](/img/icons/folder.png)</td>
+</tr>
+<tr>
+<td>Wikilink: `[Front Page]()`</td>
+<td>Wikilink: [Front Page]()</td>
+</tr>
+<tr>
+<td>`H~2~O`</td>
+<td>H~2~O</td>
+</tr>
+<tr>
+<td>`10^100^`</td>
+<td>10^100^</td>
+</tr>
+<tr>
+<td>`~~strikeout~~`</td>
+<td>~~strikeout~~</td>
+</tr>
+<tr>
+<td>
+`$x = \frac{{ - b \pm \sqrt {b^2 - 4ac} }}{{2a}}$`
+</td>
+<td>
+$x = \frac{{ - b \pm \sqrt {b^2 - 4ac} }}{{2a}}$
+</td>
+</tr>
+<tr>
+<td>
+`A simple footnote.^[Or is it so simple?]`
+</td>
+<td>
+A simple footnote.^[Or is it so simple?]
+</td>
+</tr>
+<tr>
+<td>
+<pre>
+> an indented paragraph,
+> usually used for quotations
+</pre>
+</td>
+<td>
+
+> an indented paragraph,
+> usually used for quotations
+
+</td>
+<tr>
+<td>
+pre>
+    #!/bin/sh -e
+    # code, indented four spaces
+    echo "Hello world"
+</pre>
+</td>
+<td>
+
+    #!/bin/sh -e
+    # code, indented four spaces
+    echo "Hello world"
+
+</td>
+</tr>
+<tr>
+<td>
+pre>
+* a bulleted list
+* second item
+    - sublist
+    - and more
+* back to main list
+    1. this item has an ordered
+    2. sublist
+        a) you can also use letters
+        b) another item
+</pre>
+</td>
+<td>
+
+* a bulleted list
+* second item
+    - sublist
+    - and more
+* back to main list
+    1. this item has an ordered
+    2. sublist
+        a) you can also use letters
+        b) another item
+
+</td>
+</tr>
+<tr>
+<td>
+pre>
+Fruit        Quantity
+--------  -----------
+apples         30,200
+oranges         1,998
+pears              42
+
+Table:  Our fruit inventory
+</pre>
+</td>
+<td>
+
+Fruit        Quantity
+--------  -----------
+apples         30,200
+oranges         1,998
+pears              42
+
+Table:  Our fruit inventory
+
+</td>
+</tr>
+</table>
+
+For headings, prefix a line with one or more `#` signs:  one for a major heading,
+two for a subheading, three for a subsubheading.  Be sure to leave space before
+and after the heading.
+
+    # Markdown
+
+    Text...
+ 
+    ## Some examples...
+   
+    Text...
+
+## Wiki links
+
+Links to other wiki pages are formed this way:  `[Page Name]()`.
+(Gitit converts markdown links with empty targets into wikilinks.)
+
+To link to a wiki page using something else as the link text:
+`[something else](Page Name)`.
+
+Note that page names may contain spaces and some special characters.
+They need not be CamelCase.  CamelCase words are *not* automatically
+converted to wiki links.
+
+Wiki pages may be organized into directories.  So, if you have
+several pages on wine, you may wish to organize them like so:
+
+    Wine/Pinot Noir
+    Wine/Burgundy
+    Wine/Cabernet Sauvignon
+
+Note that a wiki link `[Burgundy]()` that occurs inside the `Wine`
+directory will link to `Wine/Burgundy`, and not to `Burgundy`.
+To link to a top-level page called `Burgundy`, you'd have to use
+`[Burgundy](/Burgundy)`.
+
+To link to a directory listing for a subdirectory, use a trailing
+slash: `[Wine/]()` will link to a listing of the `Wine` subdirectory.
+
+# Creating your sandbox
+
+The 'sandbox' is a place where you can share your code and results and more generally communicate about yourself and your work. See for example [Antoon's sandbox](sandbox/Antoonvh/README) for a very comprehensive example.
+
+It is also a good place to put the code necessary to reproduce results published in your scientific articles, thus allowing [reproducible research](https://en.wikipedia.org/wiki/Reproducibility#Reproducible_research). 
+ 
+To create your sandbox, you need to:
+
+* [get an account](#registering-for-an-account) and login.
+* create your own 'README' file in a new sandbox directory. By convention   
+  this file is an entry point to other files/codes you want to share. To 
+  create this new file and directory, you need to edit the URL in your web 
+  browser to read something like
+
+~~~
+http://basilisk.fr/sandbox/YOURNAME/README
+~~~
+
+where `YOURNAME` is obviously replaced with something else. You will then be able to [edit](#editing-a-page) and save this page. Note that you will also be asked to confirm that you want to create the new `YOURNAME` directory. This is to avoid creating new directories when there is a typo in the URL, so please check that the new directory name is correct before validating.
+
+To add new code and files to your sandbox, you can either repeat the process above or better, [create links](#wiki-links) from your README file to the new files you want to add. You can then save the README file and click on the new link to edit the new file.
+
+## Running code on the server
+
+Many of the graphs, videos and other results displayed on the web pages are generated by the page itself i.e. the code you see, for example [here](http://basilisk.fr/src/test/kh.c), is *active*: whenever it changes, the corresponding graphs, movies and results can be automatically regenerated.
+
+This way of doing things has many advantages, some of which are:
+
+* It encourages people to share not only their 'core' computational code but also the way results are post-processed and displayed: something which is often as complicated as the core computation.
+* It motivates people to [document](https://en.wikipedia.org/wiki/Literate_programming) their code: once you have the figures, it is nice to add captions, discussions of the results etc.
+* It allows anyone to reproduce *all* the results, down to the figures published in articles, which is again a requirement for truly [reproducible research](https://en.wikipedia.org/wiki/Reproducibility#Reproducible_research).
+* It makes sure that you can reproduce your own results, something which seems obvious but is not, for example when you are using a modified version of Basilisk on your local machine and have forgotten which modifications you have made (you should read about [darcs](https://darcsbook.acmelabs.space/)). You can thus see your sandbox as a way of storing a *reproducible backup* of your work, which is guaranteed to include all that is required to reproduce your own work.
+
+Running code on the server is simple. When you [edit](#editing-a-page) a file/page which is recognised as executable i.e. files ending with:
+
+* `.c` for [Basilisk C]()
+* `.m` for [Octave](https://www.gnu.org/software/octave/index)
+
+You will have the option to run the code by clicking on the corresponding button. A few important things to note:
+
+* For security reasons, you need to first ask [me](sandbox/popinet/README) to add you to the list of people allowed to run code (email me your login).
+* 'Discarding' the page does not stop the running simulation if the running simulation matches the current version of the page (i.e. if you haven't made any modifications). This allows to re-run simulations "in the background".
+* The simulations run on a server with 16 cores shared by all users.
+* The runtime is limited to three hours, after which the simulation will be brutally terminated, so only use the server for relatively simple/fast calculations. If you want to share 'runnable' code which was used to produce very large/long simulations, you can still do so, for example by running a 2D version or a low-resolution version.
+* The server runs the code exactly as you would do on your own machine [using Makefiles](Tutorial#using-makefiles) i.e. for a file called mycode.c it does
+
+~~~bash
+make mycode.tst mycode/plots
+~~~
+
+* This can be useful for debugging your code/graphics on your local machine before publishing it (see also [how to generate HTML pages](/src/Contributing#generating-local-html-pages)).
+* Similarly, any file generated by the running code (log, out, movies etc.) is available in the corresponding directory, for example in `http://basilisk.fr/sandbox/YOURNAME/mycode/mymovie.mp4` for a file/page called `http://basilisk.fr/sandbox/YOURNAME/mycode.c`.
+
+### Automatic updates
+
+In order to encourage people to maintain codes in their sandboxes, the website automatically updates running (C) codes using the latest release of Basilisk (and any other source code which may have been modified, for examples source files in other sandboxes).
+
+Note that these updates only apply to codes which have been run manually at least once.
+
+I thus encourage you to check on a regular basis if the codes you released are still running properly. Getting an overall view of the status of your codes is easy, using an address like:
+
+[http://basilisk.fr/sandbox/popinet/]()
+
+will give you a colored list of your codes, reflecting their status:
+
+* <div style="color:green">green: the code last ran properly</div>
+* <div style="color:orange">orange: there is a warning of some kind</div>
+* <div style="color:red">red: the code failed to run</div>
+* <div style="color:blue">blue: the code is currently running</div>
+
+# Editing the wiki locally with darcs
+
+The wiki uses [darcs](http://darcs.net) as a backend and can thus be
+edited using a local darcs repository mirroring the web site.
+
+To create a local darcs mirror of the entire wiki (and its history) do
+
+~~~bash
+darcs get --lazy http://basilisk.fr/wiki
+cd wiki/sandbox/YOURNAME/...
+~~~
+
+You can then synchronize your local copy using `darcs pull` etc. Local
+edits are of course possible and can be [darcs
+record](http://darcs.net/Using/Commands#record)ed.
+
+You can also [use
+Makefiles](/Tutorial#using-makefiles), [make
+plots](/src/test/README#graphics), and [generate HTML pages](/src/Contributing#generating-local-html-pages) typically in the
+local copy of your `sandbox/`, to make sure that everything works before
+darcs recording and darcs pushing your changes to the web site.
+
+## Pushing local changes
+
+To be able to push your local changes to the darcs wiki repository on
+the website, you will need write access permissions which you need to
+get from the [site administrator](/sandbox/popinet/README). These
+rights will be granted based on your [SSH public
+key](https://help.ubuntu.com/community/SSH/OpenSSH/Keys).
+
+Once this is done, you can push your local changes using:
+
+~~~bash
+darcs push wiki@shell.basilisk.fr:wiki
+~~~
+
+# How to re-use, modify or fix codes in the `sandbox`
+
+As explained in the [sandbox documentation](sandbox/documentation#basilisks-documentation) anyone (with a login) can access and modify any page in the `sandbox`.
+
+The following list gives a set of "good practices" on how to re-use, modify or fix codes in the `sandbox`. The overall guiding principles are **communication** and **minimize code duplication**. 
+
+1. If you just want to reuse code published in another sandbox, **do not copy it in your sandbox**, just include it using the appropriate path. For example, to re-use the [particles.h](/sandbox/Antoonvh/particles.h) code in Antoon's sandbox, you just have to use
+
+    ~~~literatec
+    #include "Antoonvh/particles.h"
+    ~~~
+
+2. Do not hesitate to fix code directly in somebody else's sandbox, in particular, if you [re-run](#running-code-on-the-server) an existing code and realize it is broken with the current version of the solver. The original author will only be grateful that you fixed their code!
+
+    If you are concerned that you should not modify code without the consent of their original author, just contact them and/or put a note in the    documentation of the code indicating that you made a modification.
+
+    Also remember that, since everything is [version-controlled](#editing-the-wiki-locally-with-darcs), it is always easy to go back to the original version, if necessary.
+    
+3. If modifications are required for the code you want to re-use, first check whether these modifications can be made directly in the original code (i.e. without breaking other uses of the code). If they are, just make them there (**not in a copy in your sandbox**). If you are unsure, check first with the original author.
+
+    Note also that it is often possible to add an *option* (for example by adding a new default parameter to a function, a new compilation flag / `#define` etc.) which adds the new functionality to the existing code while keeping the default behaviour.
+
+4. In the case where the changes are too extensive and *really* require a different version, one should:
+
+    a. Copy the **original code** in one's sandbox and record this change.
+    b. Only then modify this original code. Using darcs/history, this makes it easy to see what has been modified between the two versions.
+    c. **Document the change**: Where does the original code come from? Who is the original author? Why has it been modified? What changes have been made?
+    d. Make a link to this new version (with explanations) **in the documentation of the original code**, so that people using the original version are aware that a new version exists (and why).

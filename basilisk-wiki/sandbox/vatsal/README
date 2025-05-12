@@ -1,0 +1,41 @@
+/**
+# My Sandbox
+Welcome to the README of my sandbox.
+Here I provide an overview of the projects under [/sandbox/vatsal/](). I mainly work with surface tension driven flows.
+
+Vatsal Sanjay ([Web](https://sites.google.com/view/vatsalsanjay))<br/>
+Physics of Fluids Group, University of Twente<br/>
+Email: [vatsalsanjay@gmail.com](mailto:vatsalsanjay@gmail.com)<br/>
+
+## Repositories
+
+### [Drop impact forces]
+Coming soon. This repository contains the code for the paper [Impact Forces of Water Drops Falling on Superhydrophobic Surfaces](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.129.104501).
+
+#### [Bursting Bubble](BurstingBubble/)
+We investigate the classical problem of bubble bursting at a liquid-gas interface, but now in the presence of a viscoplastic liquid medium. [arXiv](https://arxiv.org/abs/2101.07744)<br\>
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/vYxNehfcKac" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+P.S. Embedding videos from youtube works for Safari browser as well. 
+
+#### [Drop on drop impact](DropOnDropImpact/)
+We investigate the dynamics of an oil drop impacting an identical sessile drop sitting on a superamphiphobic surface.<br\>
+
+* [dropOnDropImpact.c](/sandbox/vatsal/DropOnDropImpact/dropOnDropImpact.c)
+* [DropDeposition.c](sandbox/vatsal/DropOnDropImpact/DropDeposition.c): For [dropOnDropImpact.c](/sandbox/vatsal/DropOnDropImpact/dropOnDropImpact.c), assuming the sessile drop to be spherical is inaccurate. In this code, we get the shape of the sessile drop.
+
+#### [Generalized Newtonian Fluids](GenaralizedNewtonian/)
+* [Couette Flow](/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c)
+* [Lid Driven Cavity flow (Bingham Fluid)](/sandbox/vatsal/GenaralizedNewtonian/LidDrivenBingham.c)
+* [Surface capillary waves (Bingham Fluid)](/sandbox/vatsal/GenaralizedNewtonian/SurfaceWavesBingham.c)
+
+#### [Three-phase Contact Line](ThreePhase/)
+This folder contains the simulation for the implementation of three-phase contact line in Basilisk C. The codes present here originated from the discussions [here](https://groups.google.com/forum/#!topic/basilisk-fr/Sj_qNMXOfXE).<br/>
+
+* [Encapsulation Case](/sandbox/vatsal/ThreePhase/Encapsulation.c)
+* [Three-phase properties calculations](/sandbox/vatsal/ThreePhase/three-phase.h)
+* [Three-phase surface tension term](/sandbox/vatsal/ThreePhase/tension_three-phase.h)
+* [Poster](https://www.dropbox.com/s/p9dyqo4yoe1dedj/Vatsal_PosterEncapsulationv4.pdf?dl=0)
+
+*/

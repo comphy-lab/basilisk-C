@@ -1,0 +1,24 @@
+/**
+# Note on using GPUs
+
+Since Moore's law needs adjustment, computations on so-called *accelerated* hardware are often presented as the future of high-performance computing. And it appears that at this moment typically, per unit of your fovourite currency, a GPU offers two to three times more "performance". When using a three dimensional Cartesian grid and a CFL-limited timestep, this facilitates a $(2$ to $3)^{1/4} \approx 20$ to $30 \%$ increase in grid resolution on a similarly costly system. This is neat, but does not seem to match with the exiting stories of enabling unpresidented oppurtunities. This discrepancy may be explained with the additional non-linear reward that computing centers grant to early adopters of more efficient methods. E.g. if you have a two times faster method than the other applicants, the computing centre may provide you with even more 'in-store-credit' when applying for computing time on their system. Meaning that when accelerated-hardware enabled code becomes the norm for a wider range of applications, this important additional benefit may vanish. 
+
+In order to find out if developing methods that run on GPU is indeed worth the long-term investment, the following questions need to be anserwerd. 
+
+* What is the acceptable minimal gain for a coding effort? 
+* How do computing facilities grant their grants?
+* What is the projected future efficiency of GPUs compared to CPUs?
+* Does parralelization between GPU form a fundamental issue?
+* Does the limited Memory available on a GPUs form a fundamental issue?
+* Are there alternative strategies that are more promising?
+
+Other curiosities are,
+
+* Is development with a vendor-specific coding language a good idea? 
+* What does the future look like in general?
+
+Also this is interesting:
+
+* [Basilisk and GPUs](http://basilisk.fr/GPU)
+* [OpenACC and Basilisk](http://basilisk.fr/OpenACC)
+*/

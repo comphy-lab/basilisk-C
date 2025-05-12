@@ -1,0 +1,41 @@
+/**
+#Traitement des conditions de bord dans un modèle 1D : méthode se basant sur les invariants de Riemann
+
+##Traitement des conditions amont
+
+On part de l'équation décrivant l'évolution d'un invariant de Riemann le long d'une cractéristique sortante en amont du domaine (on se situe nécessairement en régime fluvial), en prenant en compte les termes source (Castro-Horgaz & Hager, 2019) :
+$$ \frac{D(U-2c)}{Dt}=g(S_0-S_f) $$
+Celle-ci se réécrit :
+$$ \frac{DU}{Dt}-\frac{g}{c}\frac{Dh}{Dt}=g(S_0-S_f) $$
+On observe l'évolution de l'invariant de Riemann entre le point $(x_1, t^k)$ (premier point à l'intérieur du domaine, au temps précédent) et le point $(x_0, t^{k+1})$ ("ghost cell" à l'entrée du domaine, au temps suivant). On discrétise donc : 
+$$\frac{U_0^{k+1}-U_1^k}{\Delta t}+\frac{g}{c_1^k}\frac{h_0^{k+1}-h_1^k}{\Delta t} = g(S_0-S_f)_1^k$$
+On utilise ensuite les relations $h_0^{k+1}u_0^{k+1}=q_0^{k+1}$ et $c_1^k=\sqrt{gh_1^k}$. On note par ailleurs $g(S_0-S_f)_1^k = S_1^k$. On obtient alors : 
+$$ \frac{g}{c_1^k}(h_0^{k+1})^2-(U_1^k - c_1^k + gS_1^k\Delta t) h_0^{k+1} + q_0^{k+1} = 0 $$
+Cette dernière équation se réécrit sous forme d'un polynôme du second degré :
+$$ A_1^k(h_0^{k+1})^2+B_1^k h_0^{k+1} - q_0^{k+1} = 0$$
+Les coefficients $A_1^k = \frac{g}{c_1^k}$ et $B_1^k = U_1^k - c_1^k + gS_1^k\Delta t$ dépendent uniquement des variables  au point $(x_1,t^k)$, qui sont connues. Par ailleurs, le débit $q_0^{k+1}$ est supposé connu : il s'agit de la valeur de l'hydrogramme à injecter au temps $t^{k+1}$.
+Le discriminant de ce polynôme est supérieur à 0 et égal à :
+$$\delta = (B_1^k)^2 + 4 A_1^k q_0^{k+1}>0$$
+
+
+##Traitement des conditions aval
+On part de l'équation décrivant l'évolution d'un invariant de Riemann le long d'une cractéristique sortante en aval du domaine, en prenant en compte les termes source (Castro-Horgaz & Hager, 2019) :
+$$ \frac{D(U+2c)}{Dt}=g(S_0-S_f) $$
+Celle-ci se réécrit :
+$$ \frac{DU}{Dt}+\frac{g}{c}\frac{Dh}{Dt}=g(S_0-S_f) $$
+On observe l'évolution de l'invariant de Riemann entre le point $(x_N, t^k)$ (juste avant de sortir du domaine, au temps précédent) et le point $(x_{N+1}, t^{k+1})$ (juste à la sortie du domaine, au temps suivant). On discrétise donc : 
+$$\frac{U_{N+1}^{k+1}-U_N^k}{\Delta t}+\frac{g}{c_N^k}\frac{h_{N+1}^{k+1}-h_N^k}{\Delta t} = g(S_0-S_f)_N^k$$
+On utilise ensuite les relations $h_{N+1}^{k+1}u_{N+1}^{k+1}=q_{N+1}^{k+1}$ et $c_N^k=\sqrt{gh_N^k}$. On note par ailleurs $g(S_0-S_f)_N^k = S_N^k$. On obtient alors : 
+$$ \frac{g}{c_N^k}(h_{N+1}^{k+1})^2-(U_N^k + c_N^k + gS_N^k\Delta t) h_{N+1}^{k+1} + q_{N+1}^{k+1} = 0 $$
+Cette dernière équation se réécrit sous forme d'un polynôme du second degré :
+$$ \alpha_N^k(h_{N+1}^{k+1})^2+\beta_N^k h_{N+1}^{k+1} + q_{N+1}^{k+1} = 0$$
+Les coefficients $\alpha_N^k = \frac{g}{c_N^k}$ et $\beta_N^k = -(U_N^k + c_N^k + gS_N^k\Delta t)$ dépendent uniquement des variables  au point $(x_N,t^k)$, qui sont connues. On traite l'unique inconnue $q_{N+1}^{k+1}$ de manière semi-implicite :
+$$q_{N+1}^{k+1}=h_{N+1}^{k+1}u_N^k$$
+Après factorisation par $h_{N+1}^{k+1}$ et en supposant $h_{N+1}^{k+1}>0$, on obtient :
+$$\alpha_{N+1}^{k+1} h_{N+1}^{k+1} + \gamma_{N+1}^{k+1} = 0$$
+avec $\gamma_{N+1}^{k+1} = -(C_N^k+g S_N^k \Delta t)$. On obtient donc finalement :
+$$h_{N+1}^{k+1} = c_N^k (\frac{c_N^k}{g} + S_N^k \Delta t)$$
+C'est à dire :
+$$h_{N+1}^{k+1} = h_N^k + c_N^k S_N^k \Delta t$$
+On remarque qu'on aurait pu obtenir ce résultat beaucoup plus rapidement en faisant dès le départ l'hypothèse $U_{N+1}^{k+1} - U_N^k =0$...
+*/

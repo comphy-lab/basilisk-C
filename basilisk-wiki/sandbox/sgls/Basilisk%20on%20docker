@@ -1,0 +1,13 @@
+This page gives links to a docker image that contains Basilisk. At the moment only the amd64 image is available. Please let me know if you would like another architecture and I will upload it.
+
+The image is hosted on Dockerhub [here](https://hub.docker.com/repository/docker/sgls/basilisk-docker) with an associated project on Github [here](https://github.com/sgllewellynsmith/basilisk-docker), but it is not necessary to consult the source or build the Dockerfile. The image will be pulled by running the [dbasilisk](dbasilisk) script.
+
+Inside the container, the user is called `basilisk` with the usual installation at `/home/basilisk/src`. In addition dbasilisk shares a directory between the host and container. The directories on host and container can be changed using 2 optional arguments: the first gives the name of the directory on the host machine (by default `.`), the second gives the name in the container (by default `/home/basilisk/hostdata`). The script has only been tested on a Mac so far. It should work on other systms with minimal tweaking (please contact me if you are experiencing trouble).
+
+An OpenGL implementation is used for visualization. Please contact me if you have trouble.
+
+There is also a script called [bviewhost-docker](bviewhost-docker) to run Basilisk View interactively on the host machine. The first optional agument gives the number of the simulation (0 by default, accepts 0 to 4). The second optional argument gives the name of the browser (`Safari` by default). It should be possible to adapt this to run remote visualizations from another machine using the appropriate IP address (see the section **Interactive display of a remote simulation** [here](http://basilisk.fr/src/jview/README)). It is also possible to run Basilisk View on a browser inside the container following the usual instructions; `chromium` did not seem to work while `firefox` did.
+
+A number of visualization tools are provided: `gv`, `eog`, `evince`, `vlc.` Please let me know if you would like others to be included.
+
+PPR is installed and works. GOTM and CVmix are installed, but have not been tested. If you would like to use them, please contact me to get them working.

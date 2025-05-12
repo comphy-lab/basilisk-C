@@ -1,0 +1,36 @@
+# This parameter file should be started from kelvin_helmholtz_gerris.m
+
+~~~bash
+Define LEVEL 6
+
+2 3 GfsSimulation GfsBox GfsGEdge {} {
+  Time { end = 40. }
+  Refine LEVEL
+  
+  # adaptive grid
+  AdaptVorticity { istep = 1 } { minlevel = 4 maxlevel = LEVEL cmax = 2e-2 }
+  
+  # box size
+  PhysicalParams { L = boxsize }
+
+  # The viscosity
+  SourceViscosity 1./1000.
+
+  # The initial condition
+  Init { start = 0 } { U = u.cgd V = v.cgd }
+  
+  # save flow perturbation energy
+  OutputScalarSum { istep = 10 } { awk '{ print $3,$5 }' > eevo } { 
+    v = (U-tanh(y - boxsize/2))*(U-tanh(y - boxsize/2))+V*V 
+  }
+
+  # visual outputs
+  OutputTime { istep = 10 } stderr
+  OutputSimulation { step = 0.1 } stdout
+}
+GfsBox {}
+GfsBox {}
+1 2 top
+1 1 right
+2 2 right
+~~~

@@ -1,0 +1,78 @@
+%{
+# Derivation of the equation
+ Here we use Chebychev differentiation matrix chebdif.m and compare with the finite differences
+%}
+%{
+# First we use the finite differences to find the first and second derivation of cos(x)
+%}
+
+
+% finite differences
+% the grid
+% parameters 
+L=4*pi;             % domain length 
+N=50;           % number of grid points
+
+x=linspace(0,L,N)';
+h=x(2)-x(1); % the grid size
+
+% first derivative
+D=zeros(N,N);
+D(1,1:3)=[-3/2, 2, -1/2]/h;
+for ind=2:N-1
+    D(ind,ind-1:ind+1)=[-1/2, 0, 1/2]/h;
+end
+D(end,end-2:end)=[1/2, -2, 3/2]/h;
+
+% second derivative
+DD=zeros(N,N);
+DD(1,1:3)=[1, -2, 1]/h^2;
+for ind=2:N-1
+    DD(ind,ind-1:ind+1)=[1, -2, 1]/h^2;
+end
+DD(end,end-2:end)=[1, -2, 1]/h^2;
+f=cos(x);
+fxx=DD*f;
+fx=D*f;
+
+plot(x,f,'b',x,fx,'r',x,fxx,'g' );
+
+ %{
+Here is the figure of cos(x)(blue) , first derivation of cos(x)(red) and second derivation of cos(x)(green) by using finite differences:
+<center>
+![method infinite difference](/sandbox/easystab/finite fifferences.png)
+
+</center>
+%}
+
+%{
+# Second we use the chebychev to find the first and second derivation of cos(x)
+%}
+
+% test de la matrice de chebychev
+% parameters 
+L=4*pi;             % domain length 
+N=50;           % number of grid points
+
+
+% differentiation and integration 
+scale=-2/L; [x,DM] = chebdif(N,2);
+D=DM(:,:,1)*scale; DD=DM(:,:,2)*scale^2; x=(x-1)/scale;
+
+% build a function 
+f=cos(x);
+fx=D*f;
+fxx=DD*f;
+plot(x,f,'b',x,fx,'k',x,fxx,'g') 
+
+%{
+Here is the figure of cos(x)(blue) , first derivation of cos(x)(black) and second derivation of cos(x) (green)by using chebychev:
+<center>
+![method chebychev](/sandbox/easystab/chebychev.png)</center>
+%} 
+%{
+# Conclusion
+%}
+%{
+We find that these two graphs are exactly the same.So there is no difference between these two methods.
+%}

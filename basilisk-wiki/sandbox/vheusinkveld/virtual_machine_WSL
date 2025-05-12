@@ -1,0 +1,44 @@
+/** 
+# On using windows subsystems for linux or a virtual machine 
+For some info regarding [WSL](https://docs.microsoft.com/en-us/windows/wsl/faq). As a VM I use virtual box from oracle with a standard install of Ubuntu 18.04.
+
+## Pro/Con
+### WSL
+
+Pros:
+
+* Supposedly less overhead compared to a VM
+* Directly integrated in Windows
+
+Cons:
+
+* No support for hardware graphics. [Frequently requested addition](https://wpdev.uservoice.com/forums/266908-command-prompt-console-bash-on-ubuntu-on-windo/suggestions/16108045-opencl-cuda-gpu-support)
+* [Disk performance](https://www.phoronix.com/scan.php?page=article&item=wsl-february-2018)
+
+### Virtual machine
+
+Pros:
+
+* Support for basics of OpenGL via hardware. ([up to version 1.1](https://forums.virtualbox.org/viewtopic.php?f=2&t=82614))
+* Easy to recover when the VM is 'broken'
+
+Cons:
+
+* No 'full' graphics support. It misses an OpenGL extension (GL_EXT_packed_depth_stencil) that is used within basilisk view. 
+* Overhead
+
+## Performance
+The example karman case is run on a single core (Intel 8th gen 3.9 GHz). In WSL 4.1e5 points/s are reached, all while CPU utilisation in windows was sitting around 17% (16 W power consumption). For the VM a performance of 2.1e5 points/s is reached, while CPU utilisation in windows was sitting around 35% (25 W Power consumption), suggesting extra overhead. For both cases utilisation was 100% within the shell (seen by typing top). So on first note, performance seems a factor 4 lower when using a VM over WSL.
+
+More research will be done in the future, for example with my fan.c case in 3D to see how performance scales. It would be interesting to see what happens when RAM needs increase. In some preliminary tests WSL seemed to have a problem with a RAM usage of 4GB (initialized on a way to high res grid). 
+
+*/
+/**
+## Some tips
+### WSL
+To have graphical output to windows an X server can be used (for example [Xming](http://www.straightrunning.com/XmingNotes/)). Typing:
+*/
+export DISPLAY=:0
+/** 
+into bash will set this up correctly when the X server is running on the corresponding host number.
+It is helpful to add this to your respective .bashrc file*/

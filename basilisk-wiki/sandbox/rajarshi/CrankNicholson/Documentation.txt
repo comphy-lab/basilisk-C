@@ -1,0 +1,13 @@
+## DOCUMENTATION MANUAL : A GUIDE TO THE WORK PROGRESS
+
+This case deals with finding the solution of a Poisson Equation to fourth order precision on a heterogenous grid. 
+
+$$
+\nabla^2{A} = B
+$$
+
+The domain is basically a 2D square, centered at the origin. The grid includes 3 different levels of refinement, with the highest refinement at the centre and succesively lower refinements as we move towards the boundaries.
+
+/* Insert Image Here for Grid */
+
+The first test case was run with a full Multigrid Poisson solver utilizing the fourth order relaxation/residual functions of [Poisson-helmholtz4th.h](). The Test case and the code can be studied here at [RefinedMultigrid4thOrder.c](). This test case would end up with the residual blowing up. So the test case was simplified further, by using a uniform grid which would not require a tree structure.

@@ -1,0 +1,838 @@
+---
+title: Modelling far-field flows for 3D-AXI recoiling liquid cones
+author: Nicolas CAILLER
+---
+
+Pinching phenomena are encountered, for instance, in inkjet printing, when 
+two droplets are about to separate from each other. They form an axisymmetric 
+**conical singularity**: in the neighborhood of the bottleneck, the liquid 
+interface takes the form of two cones, one with an acute angle (*satellite drop*), 
+the other one with an obtuse angle (*parent drop*). 
+
+![Pinching, post-pinching, and recoil of an AXI--cone](img_sierou/sierou_post_pinch.png){width="40%"}
+
+It appears ([Day *et al.*, 1998](#day1998); [Sierou \& Lister, 2004](#sierou2004)) 
+that the axisymmetric recoil of a **single** cone (*cf.* third picture above) is 
+a simplification of the *post-pinching* problem, but remains a more 
+complicated one compared to the [2D--recoil of a liquid wedge](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c) of [Keller \& Miksis, (1983)](#keller1983). 
+Indeed, the conical geometry implies an **inhomogeneous** *azimuthal curvature* 
+whose *Laplace* pressure gradient is responsible for a **non-zero flow** 
+in the whole domain (what we can call an "*overall movement*"). 
+
+[Sierou \& Lister, (2004)](#sierou2004) add also a *far-field* 
+**dipolar distribution flow** in order to study its interaction with 
+the *capillary flow*. The reason is to model *complex flows* 
+by considering a **variable** surface vorticity distribution at far-field, the 
+vorticity sheet at the interface being modelled by this *dipolar flow* $\mu_d$ 
+coming from *potential theory* ([Nie \& Baker, 1998](#nie1998)). 
+This has been made possible since a surface vorticity distribution, already 
+observed when looking at capillary waves along the interface in the 
+[Keller \& Miksis, (1983)](#keller1983) problem, is associated with 
+tangential velocity discontinuities in inviscid flows.
+
+
+# General Equations and Dipolar Distribution
+
+Following the notations of the above third scheme, we place ourselves in a 
+spherical-polar coordinate system $(R, \theta)$, where:
+
+$$
+R = \sqrt{r^2 + z^2} 
+\quad ; \quad 
+\tan \theta = r/z
+$$
+
+We consider then the axisymmetric pinching of an inviscid, irrotational and 
+incompressible liquid cone in the air, whose interface is the zero iso-value 
+surface of the function:
+
+$$
+\mathcal{S}(R, \theta, t) := \theta - F(R,t) 
+$$
+
+*i.e.* the interface is described by the parametric function $\theta = F(R,t)$. 
+
+
+## Dynamic Boundary Condition
+
+At the interface:
+
+$$
+\rho \left(
+  \partial_t \phi
+  + \dfrac{1}{2} \left| \boldsymbol{\nabla} \phi \right|^2
+\right)
++
+\sigma \kappa
+= 0 
+\quad \text{at $\mathcal{S}
+  =0$.}
+$$
+
+where the potential $\phi$ defined by $\mathbf{u} = \boldsymbol{\nabla} \phi$ 
+verifies the *Laplace* equation $\boldsymbol{\nabla}^2 \phi = 0$ in the whole 
+fluid domain. $\sigma$ is the surface tension, 
+$\kappa = \boldsymbol{\nabla} \cdot \mathbf{n}$ is the curvature of the 
+interface, and $\mathbf{n}$ is the normal to the interface pointing towards 
+the exterior of the liquid, so that 
+$\mathbf{n} = \boldsymbol{\nabla} \mathcal{S} / \Vert\boldsymbol{\nabla} 
+\mathcal{S} \Vert$.
+
+
+## Kinematic Boundary Condition
+
+At the interface:
+
+$$
+\dfrac{\mathrm{D}\mathcal{S}}{\mathrm{D}t} = 0
+\Leftrightarrow
+\partial_t \mathcal{S} 
++ \boldsymbol{\nabla} \phi \cdot \boldsymbol{\nabla} \mathcal{S} = 0 
+$$
+
+which furthermore requires the *continuity* of the normal component of the 
+velocity through the interface:
+
+$$
+\left( \mathbf{n} \cdot \boldsymbol{\nabla} \phi \right)^{-}
+= \left( \mathbf{n} \cdot \boldsymbol{\nabla} \phi \right)^{+}
+$$
+
+where $( \, \,)^{-}$ and $( \, \,)^{+}$ are respectively used for quantities 
+*inside* the liquid and *outside* of it (in the gas).
+
+
+## Dipolar distribution and Physical meaning
+
+The velocity potential verifying the *Laplace* equation, 
+the *second Green identity* can be applied:
+
+$$
+\forall \, \mathbf{x}', \quad 
+\dfrac{1}{2}\phi(\mathbf{x}')
+= \displaystyle \oint_{S} 
+\phi(\mathbf{x}) \partial_n g(\mathbf{x}, \mathbf{x}') \,\, \mathrm{d}S 
+- \displaystyle \oint_{S}  
+g(\mathbf{x}, \mathbf{x}') \partial_n \phi(\mathbf{x}) \,\, \mathrm{d}S 
+$$
+
+where $g(\mathbf{x}, \mathbf{x}') = -1/(4\pi |\mathbf{x} - \mathbf{x}'|)$ is 
+the *Green function* in spherical axisymmetric coordinates. By defining 
+$\phi_I$ the potential on the interface represented by 
+$\left\{\mathbf{x}_I \,\, | \,\, \mathbf{x}_I \in I\right\}$, and $\phi^{-}$ 
+and $\phi^{+}$ the inner and outer velocity potentials, then:
+
+$$
+\phi_I(\mathbf{x}_I) 
+  = \dfrac{\phi^{-} + \phi^{+}}{2} 
+  = \displaystyle \oint_{S} 
+    \left(
+      \phi^{-} \partial_{n^{-}} g 
+          + \phi^{+} \partial_{n^{+}} g
+    \right) \, \mathrm{d}S 
+    - \displaystyle \oint_{S}  g
+          (\partial_{n^{-}} \phi^{-} + \partial_{n^+} \phi^{+}) \,\, \mathrm{d}S
+$$
+
+Using the continuity of the normal component of the velocity through the 
+interface, and because $\mathbf{n} = \mathbf{n}^+ = - \mathbf{n}^{-}$, the above 
+equation greatly simplifies into:
+
+$$
+\phi_I(\mathbf{x}_I) 
+= \displaystyle \oint_{S} (\phi^{+} - \phi^{-}) \partial_{n} g \,\, \mathrm{d}S 
+$$
+
+We then introduce a ***dipolar distribution*** $\mu_d = \phi^{-} - \phi^{+}$ 
+([Nie \& Baker, 1998](#nie1998)) so that:
+
+$$
+\phi_I(\mathbf{x}_I) 
+= - \displaystyle \oint_{S} 
+\mu_d(\mathbf{x}) \, \partial_{n} g(\mathbf{x}, \mathbf{x}_I) \,\, \mathrm{d}S, 
+\quad \text{with:} \,\, 
+\left\{\begin{array}{rcl}
+  \phi^+ &=& \phi_I - \mu_d/2 \\
+  \phi^- &=& \phi_I + \mu_d/2
+\end{array}
+\right.
+$$
+
+
+![Calculation over a closed contour](img_sierou/sierou_contour.png){width="15%"} 
+
+To give a physical meaning to such a distribution, we can suppose a closed 
+contour $\mathcal{C}$ over the interface in the local system 
+$(\mathbf{n}, \mathbf{n}_\perp, \mathbf{b})$ (see above figure). 
+Now, if we use the notation $\llbracket \,\, \rrbracket^\pm$ for the difference 
+of a physical quantity between the phases $+$ and $-$, then:
+
+$$
+\llbracket \partial_{\perp \! n} \phi \rrbracket^\pm 
+= \left( 
+  \partial_{\perp \! n} \phi_I - \dfrac{1}{2} \partial_{\perp \! n} \mu_d 
+\right)
+- 
+\left( 
+  \partial_{\perp \! n} \phi_I + \dfrac{1}{2} \partial_{\perp \! n} \mu_d 
+\right)
+=
+- \partial_{\perp \! n} \mu_d
+$$
+
+In that case, one can observe that if a dipolar distribution changes, there 
+exists a **tangential velocity** at the interface. 
+However, the vorticity $\boldsymbol{\omega} = \omega \, \mathbf{b}$ is linked 
+with the tangential velocity over the $\mathcal{C}$ contour by:
+
+$$
+\displaystyle \oint_S \boldsymbol{\omega} \cdot \mathbf{b} \,\, \mathrm{d}S 
+= \displaystyle \int_{\mathcal{C}} \mathbf{u} \cdot \mathrm{d} \boldsymbol{\ell}
+=
+- u_{\perp \! n}^{+} \mathrm{d}\ell 
+  - u_n \mathrm{d} h + u_{\perp \! n}^{-} \mathrm{d}\ell
+  + u_n \mathrm{d} h
+\Leftrightarrow
+\omega \, \mathrm{d} h = u_{\perp \! n}^{-} - u_{\perp \! n}^{+}
+$$
+
+Since $u_{\perp \! n}^{-} - u_{\perp \! n}^{+} = - \llbracket \partial_{\perp \! n} \phi \rrbracket^\pm$, we finally have:
+
+$$
+\boxed{
+  \omega =( \partial_{\perp \! n} \mu_d) \,  \delta_S(\mathbf{x}_I) 
+}
+$$
+
+It means that the **dipolar distribution** $\mu_d$ 
+**is related to a *vorticity layer***.
+
+
+## Additional potential theory relations
+
+The velocity $\boldsymbol{\nabla} \phi$ is the sum of a normal contribution 
+$\boldsymbol{\nabla}_n \phi$ and a tangential contribution 
+$\boldsymbol{\nabla}_{\perp \! n} \phi$. Hence, using the definition of the 
+*surface gradient* $\boldsymbol{\nabla}_S = \boldsymbol{\nabla} - \mathbf{n} \left(\mathbf{n} \cdot \boldsymbol{\nabla} \right)$:
+
+$$
+\begin{array}{rcl}
+\llbracket \left. \mathbf{u}\right|_I \rrbracket^\pm
+=
+- \llbracket \boldsymbol{\nabla} \phi \rrbracket^\pm
+&=&
+\left(\boldsymbol{\nabla}_n \phi^- - \boldsymbol{\nabla}_n \phi^+\right)
+  + \left(\boldsymbol{\nabla}_{\perp \! n} \phi^- 
+  - \boldsymbol{\nabla}_{\perp \! n} \phi^+\right)\\
+&=& \boldsymbol{\nabla}_{\perp \! n}\left( \phi^- - \phi^+\right) 
+  \quad \text{by continuity of the normal velocity}\\
+&=& \boldsymbol{\nabla}_{\perp \! n}\left(\phi_I + \dfrac{1}{2}\mu_d 
+- \left(\phi_I - \dfrac{1}{2}\mu_d \right)\right) 
+  \\
+&=& 
+  \boldsymbol{\nabla}_{\perp \! n} \mu_d \equiv \boldsymbol{\nabla}_S \mu_d
+  \quad \text{at the interface}
+\end{array}
+$$
+
+which corresponds to a **tangential velocity jump**. 
+In spherical-polar coordinates, the projection of the normal to the interface 
+$\mathbf{n}$ onto the radial components $n_R$ and azimuthal components 
+$n_\theta$ allows us to obtain a more explicit expression of this jump:
+
+$$
+\left\{\begin{array}{rcl}
+  \partial_R \phi^- - \partial_R \phi^+ &=& (1 - {n_R}^2) \partial_R \mu_d \\
+  R^{-1} \left(\partial_\theta \phi^- - \partial_\theta \phi^+ \right) 
+  &=& - n_R \, n_\theta \, \partial_R \mu_d  
+\end{array}
+\right.
+$$
+
+
+
+# Asymptotic Expansions: *a qualitative justification*
+
+Thanks to the dynamic and kinematic boundary conditions, but also the potential 
+theory equations governing the tangential velocity jump, the axisymmetric 
+flow structures can be justified. 
+
+
+## Asymptotic expansions of far-field potentials 
+
+### a. Dominant Order
+
+As a first approximation, it is reasonable to consider a very slow evolution 
+of the far-field velocity field compared to the rapid capillary recoil of the 
+cone apex. Consequently, far from the apex:
+
+$$
+\partial_t \phi^\pm  \approx 0
+$$
+
+Since $\phi^-$ and $\phi^+$ are verifying the unsteady *Bernoulli* equation 
+at the interface, then the non-linear terms are balanced with the curvature. 
+As $\kappa \sim 1/R$, then $|\boldsymbol{\nabla} \phi^\pm|^2 \sim 1/R$, hence:
+
+$$
+\phi^\pm \sim R^{1/2}
+$$
+
+Furthermore, $\phi^\pm$ is a regular solution to the *Laplace* equation. It can 
+then be written in spherical coordinates as a 
+[*Legendre polynomials*](http://basilisk.fr/sandbox/cailler/sierou_lister/elliptic.h) 
+series, whose dominant term when $R \to + \infty$ is: 
+
+$$
+\text{[Dominant Order]} \quad
+\phi^\pm(R, \theta) = \phi_0^\pm(\theta)R^{1/2} 
+  = A^\pm \, P_{1/2} (\cos \theta) R^{1/2} 
+$$
+
+
+### b. First Order
+
+In the general pinching problem, describing the two forming cones (one small, 
+one large, as drawn on 
+[*this figure*](http://basilisk.fr/sandbox/cailler/sierou_lister/README)) 
+leads to consider two opposite signed curvatures: in particular, for the 
+satellite droplet, its curvature is *positive*, so that:
+
+$$
+\dfrac{1}{2} \rho 
+\left|\boldsymbol{\nabla} \phi^\pm\right|^2 
++ \sigma \kappa > 0
+$$
+
+As a consequence, we need $\partial_t \phi^\pm \neq 0$ to balance the previous 
+terms, thus verifying the dynamic boundary condition. Since the dominant order 
+of the velocity potentials is time-independent, the first order necessarily 
+depends on time $t$:
+
+$$
+\phi^\pm(R, \theta) 
+= \phi_0^\pm(\theta) R^{1/2} + \phi_1^\pm(\theta) R^\alpha t^{\beta} 
+$$
+
+Thus:
+
+$$
+\rho \left(\partial_t \phi^\pm 
+  + \dfrac{1}{2} \left| \boldsymbol{\nabla} \phi^\pm \right|^2
+\right) 
++ \sigma \kappa 
+= 0
+\Rightarrow
+R^\alpha t^{\beta-1} \sim R^{-1}
+\Rightarrow
+\left\{ 
+  \begin{matrix}
+    \alpha &=& -1\\
+    \beta &=& 1
+  \end{matrix}
+\right.
+$$
+
+therefore:
+
+$$
+\text{[First Order]} \quad
+\phi^\pm(R, \theta, t) 
+= \phi_0^\pm(\theta) R^{1/2} +  \phi_1^\pm(\theta) \dfrac{t}{R}
+$$
+
+
+## Asymptotic expansions of the far-field shape
+
+### a. Dominant Order
+
+Plugging the first order expression of the potential velocities into the 
+kinematic boundary condition, one can obtain:
+
+$$
+\partial_t\mathcal{S} + \boldsymbol{\nabla} \phi^\pm \cdot 
+\boldsymbol{\nabla} \mathcal{S} = 0 
+\Leftrightarrow
+- \partial_t F - \partial_R F \, \partial_R \phi^\pm 
+  + R^{-2}\partial_\theta \phi^\pm = 0,
+\quad \text{at the interface}
+$$
+ 
+As a reasonable physical guess, the dominant order for the far-field shape 
+$F$ should not be time-dependent, that is to say, influenced by the far-field 
+flow. It means that $- \partial_R F \, \partial_R \phi^\pm$ and 
+$R^{-2}\partial_\theta \phi^\pm$ should cancel each other. 
+Let $F \sim R^\gamma t^\delta$ be the general form of the shape function. Then: 
+
+$$
+- \partial_R F \, \partial_R \phi^\pm \sim R^{\gamma-3/2}t^\delta 
+\quad ; \quad
+R^{-2}\partial_\theta \phi^\pm \sim R^{-3/2} 
+\Rightarrow
+\left\{ 
+  \begin{matrix}
+    \gamma &=& 0\\
+    \delta &=& 0
+  \end{matrix}
+\right.
+\Rightarrow
+\boxed{F_{(0)} = \mathrm{C}^{\text{te}} = \theta_0}
+$$
+
+Hence, the interface has a ***conical* shape at dominant order**, with an 
+opening angle $\theta_0$.
+
+
+### b. First Order
+
+At first order, the different terms of the kinematic boundary condition 
+become:
+
+$$
+\left\{\begin{array}{l}
+  \phi^\pm = \phi_0^\pm(\theta)R^{-1/2} + \phi_1^\pm(\theta) \, \dfrac{t}{R}
+  \\
+  \partial_R \phi^\pm = \dfrac{1}{2} \phi_0^\pm (\theta)R^{-1/2}
+    - \phi_1^\pm(\theta)\dfrac{t}{R^2}
+  \quad ; \quad 
+  \partial_\theta \phi^\pm = {\phi_0^\pm}'(\theta)R^{1/2} 
+    + {\phi_1^\pm}'(\theta)\dfrac{t}{R}\\ 
+  \\
+  F = \theta_0 + \underset{F_{(1)}(R,t)}{\underbrace{\theta_1 R^\varepsilon t^\zeta}}
+  \quad ; \quad 
+  \partial_R F = \theta_1 \varepsilon R^{\varepsilon-1}t^\zeta
+  \quad ; \quad 
+  \partial_t F = \theta_1 \zeta R^\varepsilon t^{\zeta-1}
+  \end{array}
+\right.
+$$
+
+and in particular:
+
+$$
+- \theta_1 \zeta R^\varepsilon t^{\zeta-1} 
+- \overset{cf. \, \, \gamma = 0 \text{ \& } \delta=0} 
+    {\overbrace{\dfrac{\theta_1 }{2} \varepsilon R^{\varepsilon-3/2} \phi_0^\pm(\theta)t^\zeta}
+    }
++ {\phi_0^\pm}'(\theta)R^{-3/2}
+= 0
+\quad \Rightarrow \quad 
+\varepsilon = - \dfrac{3}{2} \, ; \, \zeta = 1
+$$
+
+Finally:
+
+$$
+\text{[First Order]} \quad
+F(R,t) = \theta_0 +  \theta_1 t R^{-3/2}
+$$
+
+
+
+## Generalization at all orders
+
+By successively solving the dynamic and kinematic boundary conditions, we can 
+exhibit the *power series* of the shape function, dipolar flow and velocity 
+potentials:
+
+$$
+\begin{array}{rcl}
+  F(R,t) &=& \theta_0 + \displaystyle \sum_{i=1}^{+\infty} \theta_i t^i R^{-3i/2} \\
+  \mu_d(R,t) &=& b_0 \, \widetilde{\mu}_0 \, R^{1/2} 
+    + R^{1/2} \displaystyle \sum_{i=1}^{+\infty} b_i \widetilde{\mu}_i t^i R^{-3i/2}
+  \\
+  \phi^-(R,\theta,t) &= &A_0^- \, P_{1/2} \cos(\theta) R^{1/2}  
+  + R^{1/2} \displaystyle \sum_{i=1}^{+\infty} A_i^- P_{3(i-1)/2}(\cos \theta)t^i R^{-3i/2} 
+  \\
+  \phi^+(R,\theta,t) 
+  &=& \left( A_{0,P}^+ \, P_{1/2} \cos(\theta) + A_{0,Q}^+ \, Q_{1/2} \cos(\theta)\right)R^{1/2} \\
+  &\quad& + R^{1/2} 
+  \displaystyle \sum_{i=1}^{+\infty} \left[
+    A_{i,P}^+ P_{3(i-1)/2}(\cos \theta) + A_{i,Q}^+ Q_{3(i-1)/2}(\cos \theta)
+  \right] t^i R^{-3i/2} 
+\end{array}
+$$
+
+No *Legendre* polynomials of the second kind $Q$ are found in 
+the asymptotic expansion of $\phi^-$ in order to avoid any singularity on 
+the axis $\theta = 0$ ([Sierou \& Lister, 2004 -- *Appendix A*](#sierou2004)). 
+Coefficients $(\theta_i,b_i, A_i^\pm)_{i\in\mathbb{N}}$ are dimensional 
+proportionality coefficients to ensure a proper definition of the physical 
+quantities. They are notably obtained thanks to the boundary conditions **and** 
+the classical potential theory equations describing the tangential velocity 
+jump through the interface.
+
+
+
+# Scale invariant asymptotic expansions of (post--)pinchings
+
+## A brief reminder of capillary-inertial self-similar variables
+
+A dimensional analysis shows that the pinching phenomenon follows the same 
+capillary-inertial scale invariance as the one demonstrated in 
+[Keller \& Miksis, (1983)](#keller1983). In axisymmetric cylindrical 
+coordinates, the self-similar variables read as:
+
+$$
+\xi = \left(\dfrac{\rho}{\sigma t^2}\right)^{1/3} \, z 
+\quad ; \quad
+\eta = \left(\dfrac{\rho}{\sigma t^2}\right)^{1/3} \, r
+$$
+
+Let $(\overline{R}, \theta)$ be the scale invariant spherical-polar coordinate 
+system related to the cylindrical one $(\xi, \eta)$:
+
+$$
+\overline{R} = \sqrt{\xi^2 + \eta^2} 
+\quad ; \quad 
+\tan \theta = \eta/\xi
+$$
+
+Then, the physical quantities can be written in function of those scale 
+invariant coordinates:
+
+$$
+F(r,z,t)
+= \left(\dfrac{\sigma t^2}{\rho}\right)^{1/3} 
+  \overline{F}\left(\overline{R}\right)
+\quad ; \quad 
+\phi^\pm(r,z,t) 
+= \left(\dfrac{\sigma^2 t}{\rho^2}\right)^{1/3} 
+  \overline{\phi}^\pm\left(\overline{R}, \theta\right)
+$$
+$$
+\kappa(r,z,t) 
+=
+\left( \dfrac{\rho}{\sigma \, t^2} \right)^{1/3} \, 
+        \overline{\kappa}\left(\overline{R}, \theta\right)
+$$
+
+
+## Far-field self-similar asymptotic expansions
+
+Plugging the self-similar functions into the [dynamic](#dynamic-boundary-condition) 
+and [kinematic](#kinematic-boundary-condition) boundary conditions, they take 
+the following form in the self-similar space at the surface 
+$\overline{F} = \theta$:
+
+$$
+- \dfrac{1}{3}{\overline{\phi}^-} 
+  + \dfrac{2}{3} \overline{R} \, \partial_{\overline{R}} \overline{\phi}^-
+  + \dfrac{1}{2} \left[
+    \left(
+      \partial_{\overline{R}} \overline{\phi}^- 
+    \right)^2
+    + \dfrac{1}{{\overline{R}}^2} \left(
+      \partial_{\theta} \overline{\phi}^- 
+    \right)^2
+  \right]
+  + \overline{\kappa} 
+  = 0
+$$
+$$
+- \overline{R} \, \partial_{\overline{R}} \overline{\phi}^\pm \, 
+\partial_{\overline{R}} \overline{F} 
++ \dfrac{1}{\overline{R}} \partial_{\theta} \overline{\phi}^\pm  
+- \dfrac{2}{3} {\overline{R}}^2 \, \partial_{\overline{R}} \overline{F} 
+= 0
+$$
+
+where we used the *pre-pinching* sign convention, following 
+[Sierou \& Lister, (2004) -- *Appendix A*](#sierou2004).
+The recoiling cones simulated in this *sandbox* directory corresponding to 
+a ***post-pinching*** configuration, we give the relationship between the two 
+conventions:
+
+$$ 
+\boxed{
+  \theta_i^{\text{pre}} = (-1)^i \, \theta_i^{\text{post}} 
+  \quad ; \quad 
+  \widetilde{\mu}_i^{\text{pre}} = (-1)^i \, \widetilde{\mu}_i^{\text{post}} 
+  \quad ; \quad 
+  \widetilde{A_i^\pm}^{\text{pre}} = (-1)^i \, \widetilde{A_i^\pm}^{\text{post}}
+}
+$$
+
+Under the self-similar form (*pre-pinching* convention), 
+the [far-field asymptotic expansions](#generalization-at-all-orders) become:
+
+$$
+\begin{array}{rcl}
+ \overline{F}\left(\overline{R}\right) 
+  &=& \theta_0 + \displaystyle \sum_{i=1}^{+\infty}\theta_i \overline{R}^{-3i/2} 
+  \\
+  \overline{\mu}_d\left(\overline{R}\right) 
+  &=& \widetilde{\mu}_0 \, \overline{R}^{1/2} 
+    + \overline{R}^{1/2} \displaystyle \sum_{i=1}^{+\infty} 
+    \widetilde{\mu}_i \overline{R}^{-3i/2}
+  \\
+  \overline{\phi}^- \left(\overline{R},\theta\right) 
+  &=& \widetilde{A_0}^- \, P_{1/2} \cos(\theta) \overline{R}^{1/2}  
+  + \overline{R}^{1/2} \displaystyle \sum_{i=1}^{+\infty} 
+  \widetilde{A_i}^- P_{3(i-1)/2}(\cos \theta) 
+  \overline{R}^{-3i/2} 
+  \\
+  \overline{\phi}^+ \left(\overline{R},\theta\right) 
+  &=& \left( \widetilde{A_{0,P}}^+ \, P_{1/2} \cos(\theta) 
+    + \widetilde{A_{0,Q}}^+ \, Q_{1/2} \cos(\theta)\right)
+  \overline{R}^{1/2}  
+  \\
+  &\quad& + \overline{R}^{1/2} 
+  \displaystyle \sum_{i=1}^{+\infty} \left[
+    \widetilde{A_{i,P}}^+ P_{3(i-1)/2}(\cos \theta) 
+      + \widetilde{A_{i,Q}}^+ Q_{3(i-1)/2}(\cos \theta)
+  \right] \overline{R}^{-3i/2}
+\end{array}
+$$
+
+The analytical method to get the 
+$(\theta_i, \widetilde{\mu}_i, \widetilde{A_i}^-, 
+\widetilde{A_{i,P}}^+, \widetilde{A_{i,Q}}^+)_{i \in \mathbb{N}}$ coefficients 
+is given below for the dominant order only, as an example (and because this is 
+the only order considered in our simulations).
+
+
+
+# Finding the dominant order coefficients $\widetilde{A_0}^-$, $\widetilde{A_{0,P}}^+$ and $\widetilde{A_{0,Q}}^+$
+
+At dominant order, the shape function $\overline{F}$, the dipolar distribution 
+$\overline{\mu}_d$ and the inner and outer velocity potentials 
+$\overline{\phi}^-$ and $\overline{\phi}^+$ read as:
+
+$$
+\left\{
+  \begin{array}{rcl}
+    \overline{F}\left( \overline{R} \right) &=& \theta_0 \\
+    \overline{\mu}_d \left( \overline{R} \right) 
+    &=& \widetilde{\mu}_0 \, \overline{R}^{1/2} \\
+    \overline{\phi}^- \left( \overline{R},\theta \right) 
+    &=& \widetilde{A_0}^- \, P_{1/2} \cos(\theta) \overline{R}^{1/2}\\
+    \overline{\phi}^+ \left(\overline{R},\theta\right) 
+    &=& \left( \widetilde{A_{0,P}}^+ \, P_{1/2} \cos(\theta) 
+    + \widetilde{A_{0,Q}}^+ \, Q_{1/2} \cos(\theta)\right)
+    \overline{R}^{1/2}  
+  \end{array}
+\right. 
+$$
+
+
+We suppose that both $\theta_0$ and $\widetilde{\mu}_0$ are known 
+parameters, and we seek solutions for the $\widetilde{A_0}^-$, 
+$\widetilde{A_{0,P}}^+$ and $\widetilde{A_{0,Q}}^+$ coefficients. 
+
+Since the shape function is independent of $\theta$ at dominant order, each 
+member of the [kinematic](#kinematic-boundary-condition) boundary condition 
+cancels each other at $\theta = \overline{F}$, so that no additional information 
+can be used from this equation. 
+The same appears for the [dynamic](#dynamic-boundary-condition) boundary 
+condition: the only terms at 
+$\mathcal{O}_{\overline{R} \to +\infty} \left(\overline{R}^{1/2}\right)$ order 
+are:
+
+$$
+- \dfrac{\overline{\phi}^-}{3} 
+  \quad \text{and} \quad
+  \dfrac{2}{3} \overline{R} \, \partial_{\overline{R}} \overline{\phi}^- 
+  = \dfrac{2}{3}\overline{R} 
+  \times \dfrac{1}{2} \widetilde{A_0}^- \, P_{1/2}(\cos \theta) \, 
+  \overline{R}^{-1/2} = \dfrac{\overline{\phi}^-}{3}
+$$
+
+which cancel each other. The only way to close the problem is then to use the 
+[classical potential theory equations](#additional-potential-theory-relations)
+concerning the tangential velocity jump through the interface. At dominant order: 
+
+$$
+\left\{
+  \begin{array}{lcl}
+    \widetilde{A_0}^- P_{1/2}(\cos \theta_0) 
+    &=& \widetilde{A_{0,P}}^+ \, P_{1/2}(\cos \theta_0)
+      + \widetilde{A_{0,Q}}^+ \, Q_{1/2}(\cos \theta_0) 
+      + \widetilde{\mu}_0 \\
+    \partial_\theta \overline{\phi}^- 
+      = \partial_\theta \overline{\phi}^+ 
+      &\Leftrightarrow& 
+      \widetilde{A_0}^- P'_{1/2}(\cos \theta_0)
+        = \widetilde{A_{0,P}}^+ P'_{1/2}(\cos \theta_0) 
+          + \widetilde{A_{0,Q}}^+ Q'_{1/2}(\cos \theta_0)
+  \end{array}
+\right.
+$$
+
+Nonetheless, this is a linear system of $2$ equations for $3$ unknowns 
+$(\widetilde{A_0}^-, \widetilde{A_{0,P}}^+, \widetilde{A_{0,Q}}^+)$. 
+To really close the problem, a third equation is needed. In order to do so, 
+one can observe that a *regularity condition* is required on the symmetry axis 
+when $\theta = \pi$: when $(\overline{R} \to + \infty, \, \theta = \pi)$, the 
+only fluid present in this space region is the *exterior* fluid $+$. Then, at 
+dominant order:
+
+$$
+\overline{\phi}^+ \left(\overline{R} \to \infty, \theta = \pi\right)
+= 
+\overline{R}^{1/2} \left[ 
+  \widetilde{A_{0,P}}^+ \, P_{1/2}(-1) 
+  + \widetilde{A_{0,Q}}^+ \, Q_{1/2}(-1)     
+\right]
++ \mathcal{O}_{\overline{R} \to \infty}\left(\overline{R}^{-1}\right)
+$$
+
+Since $P_{1/2}(-1)$ diverges, but this is not the case for 
+$Q_{1/2}(-1) = - \pi/2$, we conclude that the $P_{1/2}$ term in $\overline{\phi}^+$ 
+is eliminated, so $\boxed{\widetilde{A_{0,P}}^+ = 0}$, hence:
+
+$$
+\overline{\phi}^+ \left(\overline{R},\theta\right) 
+= \widetilde{A_{0,Q}}^+ \, Q_{1/2}(\cos \theta) \, \overline{R}^{1/2} 
+  + \mathcal{O}_{\overline{R} \to \infty} \left(\overline{R}^{-1}\right) 
+$$
+
+so that the previous linear system of equations becomes:
+
+$$
+\left\{
+  \begin{array}{lcl}
+    \widetilde{A_0}^- P_{1/2}(\cos \theta_0) 
+    &=& \widetilde{A_{0,Q}}^+ \, Q_{1/2}(\cos \theta_0) 
+      + \widetilde{\mu}_0 \\
+      \widetilde{A_0}^- P'_{1/2}(\cos \theta_0)
+        &=& \widetilde{A_{0,Q}}^+ Q'_{1/2}(\cos \theta_0)
+  \end{array}
+\right.
+$$
+
+Solving this *Cramer* system, we finally get the velocity potential coefficients: 
+
+$$
+\left\{ 
+  \begin{array} {rcl}
+    \widetilde{A_0}^-  &=& \dfrac{Q^{'}_{1/2} (\cos \theta_0)}
+      {P_{1/2}(\cos \theta_0) Q^{'}_{1/2}(\cos \theta_0) 
+        - P^{'}_{1/2}(\cos \theta_0) Q_{1/2} (\cos \theta_0)} 
+        \, \widetilde{\mu}_0 \\
+    & &\\
+    \widetilde{A_{0,Q}}^+ &=& \dfrac{P^{'}_{1/2}(\cos \theta_0)}
+      {P_{1/2}(\cos \theta_0) Q^{'}_{1/2}(\cos \theta_0) 
+        - P^{'}_{1/2}(\cos \theta_0) Q_{1/2}(\cos \theta_0)} 
+        \, \widetilde{\mu}_0
+  \end{array}
+\right.
+$$
+
+With the help of the [*recurrence relations*](http://basilisk.fr/sandbox/cailler/sierou_lister/elliptic.h#interesting-recurrence-relations) existing for the 
+*Legendre* polynomials, we can rewrite the previous solutions without 
+any derivatives:
+
+$$
+\boxed{ 
+  \begin{array} {rcl}
+    \widetilde{A_0}^- 
+    &=& 
+    \dfrac{\cos \theta_0 \, Q_{1/2}(\cos \theta_0) - Q_{3/2}(\cos \theta_0)}
+      {P_{3/2}(\cos \theta_0) Q_{1/2}(\cos \theta_0) 
+        - P_{1/2}(\cos \theta_0) Q_{3/2}(\cos \theta_0)} 
+        \, \widetilde{\mu}_0 \\
+    & &\\
+    \widetilde{A_{0,Q}}^+ 
+    &=& 
+    \dfrac{\cos \theta_0 \, P_{1/2}(\cos \theta_0) - P_{3/2}(\cos \theta_0)}
+    {P_{3/2}(\cos \theta_0) Q_{1/2}(\cos \theta_0) 
+      - P_{1/2}(\cos \theta_0) Q_{3/2}(\cos \theta_0)} 
+      \, \widetilde{\mu}_0
+  \end{array}
+}
+$$
+
+Those are the formulae implemented in the file 
+[`u_BC_dipolar_flow.h`](http://basilisk.fr/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h). For higher orders, coefficients are determined by 
+successively solving boundary conditions and classical potential theory equations. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# References
+~~~bib
+@article{keller1983,
+ ISSN = {00361399},
+ URL = {http://www.jstor.org/stable/2101434},
+ author = {Joseph B. Keller and Michael J. Miksis},
+ journal = {SIAM Journal on Applied Mathematics},
+ number = {2},
+ pages = {268--277},
+ publisher = {Society for Industrial and Applied Mathematics},
+ title = {Surface Tension Driven Flows},
+ urldate = {2025-02-24},
+ volume = {43},
+ year = {1983}
+}
+
+@article{day1998,
+  title={Self-similar capillary pinchoff of an inviscid fluid},
+  author={Day, Richard F and Hinch, E John and Lister, John R},
+  journal={Physical review letters},
+  volume={80},
+  number={4},
+  pages={704},
+  year={1998},
+  url={https://www.damtp.cam.ac.uk/user/coflu/publications/PhysRevLett.80.704.pdf}, 
+  publisher={APS}
+}
+
+@article{nie1998,
+  title={Application of adaptive quadrature to axi-symmetric vortex sheet motion},
+  author={Nie, Qing and Baker, Greg},
+  journal={Journal of computational physics},
+  volume={143},
+  number={1},
+  pages={49--69},
+  year={1998}, 
+  url={https://conservancy.umn.edu/server/api/core/bitstreams/aad109e5-7e05-465b-958c-0bd916503285/content}, 
+  publisher={Elsevier}
+}
+
+
+@article{sierou2004,
+  author = {Sierou, A. and Lister, J. R.},
+  title = {Self-similar recoil of inviscid drops},
+  journal = {Physics of Fluids},
+  volume = {16},
+  number = {5},
+  pages = {1379-1394},
+  year = {2004},
+  month = {05},
+  issn = {1070-6631},
+  doi = {10.1063/1.1689031},
+  url = {https://doi.org/10.1063/1.1689031},
+  eprint = {https://pubs.aip.org/aip/pof/article-pdf/16/5/1379/19153172/1379\_1\_online.pdf},
+}
+~~~
+*/

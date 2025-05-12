@@ -1,0 +1,117 @@
+This bug was fixed by this patch:
+
+~~~bash
+Sat Sep  5 12:16:41 CEST 2015  Stephane Popinet <popinet@basilisk.fr>
+  * Fix for spaces in vector/tensor components
+~~~
+
+When compiling with the intel compiler on the University of Auckland machine pan we are having problems with a couple of the macros, namely norm and box_boundaries.  In both cases the macro seems to have not been applied properly causing problems when they are compiled.  I both cases I was also able to work around them by directly applying the offending macro but this is not ideal.
+I realise that this is very much machine/compilor dependent but I think it is worth mentioning in case others have similar issues.
+
+Emily, please use something like:
+
+~~~bash
+qcc -source bump2D.c
+~~~
+
+on the machine which uses the Intel compiler. This will generate a file called `_bump2D.c` which contains the output of the preprocessed code i.e. the initial code where the problematic macros have been replaced. Editing the file, you should be able to find with what these macros have been replaced. Please cut and paste the results here and I will have a look.
+
+
+###Norm macro:
+
+What was in the code:
+
+~~~c
+double a = h[] < dry ? HUGE : 1. + 1e-4*dt*norm(u)/h[];
+~~~
+
+What the macro replaced it with:
+
+~~~c
+    double a = val(h,0,0,0) < dry ? HUGE : 1. + 1e-4*dt*(sqrt(sq(u . x[]) + sq(u .  y[])))/val(h,0,0,0);
+~~~
+
+The problem here seems to be the spaces inserted into the macro - these do not appear to be in the macro as it is defined...
+
+~~~c
+# define norm(v) (sqrt(sq(v.x[]) + sq(v.y[])))
+~~~
+
+###box_boundaries macro:
+
+What was in the code:
+
+~~~c
+box_boundaries (l, true, retleaf, list);
+~~~
+
+What is was replaced by:
+
+~~~c
+#line 1024
+ { free (list_y); free (listf_y); } while(0);
+  else
+    do { scalar * lists = NULL, * list_x = NULL, * list_y = NULL; scalar * listf_x = NULL, * listf_y = NULL; if (list) for (scalar s = *list, *_i30 = list; *((scalar *)&s) >= 0; s = *++_i30) if (!is_constant(s)) { if (s . v . x < 0) lists = list_add (lists, s); else { if (s . v . x == s) { if (s . face) listf_x = list_add (listf_x, s); else list_x = list_add (list_x, s); } else if (s . face) listf_y = list_add (listf_y, s); else list_y = list_add (list_y, s); } } int diagonal = 1 << user, diagonal_x = 2*diagonal, diagonal_y = 4*diagonal;  { foreach_boundary(l){
+~~~
+
+In the case of box_boundaries it appears to have truncated the macro as the entire macro is:
+
+~~~c
+#define box_boundaries(l, cond1, cond, list)				\
+do {									\
+  scalar * lists = NULL, * list_x = NULL, * list_y = NULL;		\
+  scalar * listf_x = NULL, * listf_y = NULL;				\
+  for (scalar s in list)						\
+    if (!is_constant(s)) {						\
+      if (s.v.x < 0)							\
+	lists = list_add (lists, s);					\
+      else {								\
+	if (s.v.x == s) {						\
+	  if (s.face)							\
+	    listf_x = list_add (listf_x, s);				\
+	  else								\
+	    list_x = list_add (list_x, s);				\
+	}								\
+	else if (s.face)						\
+	  listf_y = list_add (listf_y, s);				\
+	else								\
+	  list_y = list_add (list_y, s);				\
+      }									\
+    }									\
+  /* normal/tangential directions */					\
+  int diagonal = 1 << user, diagonal_x = 2*diagonal, diagonal_y = 4*diagonal; \
+  foreach_boundary(l)							\
+    if (cond1) {							\
+      if (!boundary_scalar (point, cond, lists))			\
+	cell.flags |= diagonal;						\
+      foreach_dimension() {						\
+	if (!boundary_vector_x (point, cond, list_x))			\
+	  cell.flags |= diagonal_x;					\
+	boundary_normal_x (point, cond, listf_x);			\
+      }									\
+    }									\
+  /* diagonal and tangential (face) directions */			\
+  foreach_boundary(l)							\
+    if (cond1) {							\
+      if (cell.flags & diagonal) {					\
+	boundary_diagonal (point, cond, lists);				\
+	cell.flags &= ~diagonal;					\
+      }									\
+      foreach_dimension() {						\
+	if (cell.flags & diagonal_x) {					\
+	  boundary_diagonal (point, cond, list_x);			\
+	  cell.flags &= ~diagonal_x;					\
+	}								\
+	boundary_tangential_x (point, cond, listf_x);			\
+      }									\
+    }									\
+  free (lists);								\
+  foreach_dimension() {							\
+    free (list_x);							\
+    free (listf_x);							\
+  }									\
+ } while(0)
+~~~
+
+
+Is it possible that there is a line length limit in some of the compilers?

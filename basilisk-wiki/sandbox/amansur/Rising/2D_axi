@@ -1,0 +1,153 @@
+/**
+# 2D axisymmetrical simulation
+
+For the 2D axisymetrical simulation, only one line has to be added to the code :
+*/
+
+#include axi.h
+
+/**
+## Boundary conditions
+
+The symmetry is made around the x axis. Therefore, no boudary conditions should be set on the bottom of the simulation.
+*/
+
+
+/**
+## dv()
+
+dv(), which represents the volume of the grid element. 
+
+In 2D, dv() = $\Delta^2$. In 2D axisymetric it becomes dv() = $\Delta ^2 r$ (i.e. $\Delta ^2 y$).
+
+In 2D axisymetric, y represents the radius **r**. For some output data, it is important to keep in mind that there is still a 2 $\pi$ r coefficient that needs to be taken into account.
+*/
+
+/**
+## Metric
+
+In 2D axisymmetric, the cell metric *cm* changes, the volume/area of a cell is proportional to *r* (i.e. *y*). The simulation is based on 2D parameters, to get the 2D axisymmetry each cell has to be multiplied by 2 $\pi$ r. cm[ ] becomes y, but not 2 $\pi$ r !  
+
+- cm[$~$] = y
+
+Also, the length scale factor or the face metric *fm* changes. This face metric is used when dealing with flux. 
+Each flux should be 2 $\pi$ r $\Delta$ either on the *x* or *y* axis. Here again the $2 \pi$ is missing.  
+
+- fm.x[$~$] = fm.y[$~$] = y
+
+[Metric in axi](http://basilisk.fr/src/axi.h)
+*/
+
+
+/**
+# rising_axi.c
+*/
+
+#include "axi.h"
+#include "navier-stokes/centered.h"
+#include "vof.h"
+#include "tension.h"
+
+# define R 1e-3 
+# define L (30.0*R)
+
+# define mu1 1.8e-5
+# define mu2 1e-3
+# define rho1 1.225
+# define rho2 1e3
+
+
+# define x_min (3*R)
+
+# define LEVEL 6
+
+scalar c[];
+scalar *interfaces = {c};
+scalar rhov[];
+face vector alphav[];
+face vector muv[];
+
+u.n[top]    = dirichlet(0); 
+u.t[top]    = neumann(0); 
+u.n[right] = neumann(0); 
+u.t[right] = dirichlet(0); 
+u.n[left] = neumann(0); 
+u.t[left] = dirichlet(0); 
+
+int main() 
+{
+  origin ( -x_min, 0);
+  L0 = L;
+  
+  TOLERANCE = 1e-6;
+  alpha = alphav;
+  rho = rhov;
+  mu = muv;
+  c.sigma = 0.07;
+  init_grid (1 << LEVEL);
+  run();
+}
+
+event init_interface (i = 0) 
+{  
+    vertex scalar phi[];
+    foreach_vertex()
+      phi[] = sq(R) - sq(x) - sq(y);
+    fractions (phi, c);
+}
+
+#define rho(c) (rho1*c + (1. - (c))*rho2)
+#define mu(c)  (mu1*c + (1. - (c))*mu2)
+
+event properties (i++) 
+{
+  foreach_face() 
+  {
+    double cm = (c[] + c[-1])/2.;
+    alphav.x[] = fm.x[]/rho(cm);
+    muv.x[] = (fm.x[]*mu(cm));
+  }
+  foreach(){
+    rhov[] = cm[]*rho(c[]);
+  }
+}
+
+event vof (i++, first);
+
+event acceleration (i++) {
+  face vector av = a;
+  foreach_face(x)
+    av.x[] -= 9.81;
+}
+
+event velocity(t+=0.002){
+	double v_x = 0.;
+	double v_y = 0.;
+	double vol = 0.;
+	
+	foreach(){
+		v_x += c[] * u.x[] * dv();
+		v_y += c[] * u.y[] * dv();
+		vol += c[] * dv();
+	}
+	
+	double  V_x = v_x / vol ;
+	double  V_y = v_y / vol ;
+	
+  FILE * fp_v = fopen ("v.dat", "a");
+  fprintf(fp_v,"%d %g %g %g\n",i,t,V_x,V_y);
+  fclose(fp_v);
+  
+
+  char *outfile4 = NULL;
+  outfile4 = (char *) malloc(sizeof(char) * 1024);
+  sprintf(outfile4, "c-%g.png", t);
+  FILE * fp_c = fopen (outfile4, "w");
+  output_ppm(c, fp_c, linear=true);
+  fclose(fp_c);
+
+}
+
+
+event end(t = 0.06) {
+}

@@ -1,0 +1,127 @@
+This file is based on [the instaling information](/src/gl/INSTALL) and
+give an improved description on compiling and using your own OSMesa/GLU
+library in a supercomputer environment ([running on
+supercomputers](/src/Tips#running-on-supercomputers)) which do not have
+Basilisk installed. It is important to first check that OSMesa is not
+already installed on the supercomputer and accessible via module. In that
+case it should not be necessary to recompile the library and just follow
+something like [this](/src/gl/INSTALL#osmesaglu-on-occigen). 
+
+# Standalone installation
+
+The libraries are independent from Basilisk and can be installed
+separately.
+This can be done easily using something like:
+
+On the local system:
+
+~~~bash
+cd $BASILISK
+tar czvf gl.tgz gl
+scp gl.tgz login@supercomputer.org:
+~~~
+
+On the remote machine:
+
+~~~bash
+tar xzvf gl.tgz
+cd gl
+make clean
+~~~
+
+## Installing OSMesa/GLU from source on a supercomputer
+
+If pre-compiled packages for OSMesa/GLU are not available (or broken)
+on the system you want to use, it is reasonably simple to install
+these libraries directly from source. Something like the following
+recipe should work on most UNIX systems:
+
+On the local system:
+
+~~~bash
+wget http://basilisk.fr/src/gl/mesa-17.2.4.tar.gz
+wget http://basilisk.fr/src/gl/glu-9.0.0.tar.gz
+scp mesa-17.2.4.tar.gz login@supercomputer.org:
+scp glu-9.0.0.tar.gzlogin@supercomputer.org:
+~~~
+
+On the remote machine:
+
+~~~bash
+tar -zxvf mesa-17.2.4.tar.gz
+cd mesa-17.2.4
+./configure --prefix=/home/login/local --enable-osmesa \
+	    --with-gallium-drivers=swrast                \
+            --disable-driglx-direct --disable-dri --disable-gbm --disable-egl
+make
+make install
+
+tar -zxvf glu-9.0.0.tar.gz
+cd glu-9.0.0
+./configure --prefix=/home/login/local 
+make
+make install
+~~~
+
+Then supposing that you have copy $BASILISK/gl in /home/login/local ([installation
+instructions](#Standalone installation) above) on the supercomputer :
+
+~~~bash
+cd gl
+CFLAGS+='-I/home/login/local/include' make libglutils.a libfb_osmesa.a
+~~~
+
+After that gl/ is compiled, and you want to compile a code you will need
+to specify the library paths by specifying these lines on your 
+compilation script:
+
+~~~bash
+MESA=/home/login/local/
+GL=/home/login/local/
+
+mpicc -Wall -std=c99 -O2 _$NAME.c -o $NAME    \
+    -L$MESA/lib -I$GL -L$GL/gl \
+    -lglutils -lfb_osmesa -lOSMesa -lGLU -lm
+~~~
+
+And finaly to run your code you will need to specify the library paths
+by specifying these lines on your run script before the execution of the code:
+
+~~~bash
+# export mesa libraries
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:home/login/local/lib
+~~~
+
+see also:
+
+* [OSMesa](https://mesa.freedesktop.org/osmesa.html)
+
+## OSMesa/GLU on Occigen
+
+If you have an account on
+[Occigen](https://www.cines.fr/calcul/materiels/occigen/) and you have
+installed OSMesa/GLU from source following the instruction above
+you can use something like:
+
+~~~bash
+module purge
+module load openmpi
+module load intel
+module load llvm
+
+NAME=toto
+MESA=/home/login/local/
+GL=/home/login/local/
+
+# compilation of the code
+mpicc -Wall -std=c99 -O2 _$NAME.c -o $NAME    \
+    -L$MESA/lib -I$GL -L$GL/gl \
+    -lglutils -lfb_osmesa -lOSMesa -lGLU -lm
+
+# export mesa libraries
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/login/local/lib
+
+# execution of the code
+srun --mpi=pmi2 -K1 --resv-ports -n $SLURM_NTASKS ./$NAME \
+     2> log-$SLURM_NTASKS > out-$SLURM_NTASKS
+~~~

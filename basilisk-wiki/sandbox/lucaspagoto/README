@@ -1,0 +1,40 @@
+/**
+
+# My Sandbox
+
+Welcome to my sandbox. This page intends to present the problems I have been working on.
+
+My contact
+:   lucashenrique.pagoto@gmail.com
+:   lucas.deoclecio@ifes.edu.br
+
+
+# 1. Drop rise and coalescence
+
+The cases below are for a Newtonian drop rising due to gravity, impacting on a liquid-liquid interface, and draining the film of the surrounding material between the drop and the liquid-liquid interface. The surrounding material may present Non-Newtonian behaviors.
+
+* [Bubble rise in a Newtonian material](http://basilisk.fr/sandbox/lucaspagoto/Bubble/Bubble_rise_Newtonian.c)
+* [Bubble rise in a inelastic viscoplastic material (Bingham model)](http://basilisk.fr/sandbox/lucaspagoto/Bubble/Bubble_rise_Viscoplastic.c)
+* [Bubble rise in a viscoelastic material (Oldroyd-B model)](http://basilisk.fr/sandbox/lucaspagoto/Bubble/Bubble_rise_Viscoelastic.c)
+
+* [Bubble rise and coalescence in a Newtonian material](http://basilisk.fr/sandbox/lucaspagoto/Bubble/Bubble-rise-coalescence-Newtonian.c)
+* [Bubble rise and coalescence in a viscoplastic (Bingham) material](http://basilisk.fr/sandbox/lucaspagoto/Bubble/Bubble-rise-coalescence-Viscoplastic.c)
+* [Bubble rise and coalescence in a viscoelastic (Oldroyd-B) material](http://basilisk.fr/sandbox/lucaspagoto/Bubble/Bubble-rise-coalescence-Viscoelastic.c)
+* [Bubble rise and coalescence in an elasto-viscoplastic (Saramito) material](http://basilisk.fr/sandbox/lucaspagoto/Bubble/Bubble-rise-coalescence-Elasto-Viscoplastic.c)
+
+
+# 2. Other flows of elasto-viscoplastic materials
+
+## 2.1 Couette shear
+
+* [Saramito material](/sandbox/lucaspagoto/Elasto_viscoplastic/Couette-Saramito.c)
+* [Mendes-Thompson material]
+* [Elasto-viscoplastic (Saramito material) 2D drop in a Couette Newtonian shear flow](/sandbox/lucaspagoto/Elasto_viscoplastic/shear_droplet2.c)
+
+## 2.2 Expansion/Contraction
+
+
+# Other flows
+
+* [Poiseuille flow of a Bingham fluid in a periodic channel inclined at 45 degrees](/sandbox/lucaspagoto/Viscoplastic/Viscoplastic_Poiseuille45.c)
+* [Couette flow of a Bingham fluid between rotating cylinders](/sandbox/lucaspagoto/Viscoplastic/rotating_couette.c)

@@ -1,0 +1,437 @@
+% !TEX encoding = UTF-8 Unicode
+\documentclass[a4paper,12pt]{article}
+\usepackage[francais]{babel}		% typographie franaise (french marche aussi)
+%\usepackage[mac]{inputenc}		% lettres accentuées
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx, amsmath, amssymb}
+
+\setlength{\textheight}{24cm}
+\setlength{\topmargin}{-10mm}
+\setlength{\textwidth}{18cm}
+\setlength{\oddsidemargin}{-10mm} % marge gauche (im)paire = 1in. + x1mm
+%\setlength{\evensidemargin}{0mm} % book : marge gauche paire = 1in. + x2mm
+\setlength{\parskip}{1.2ex plus 0.9ex minus 0.4ex}
+
+\newcommand{\dd} {\textrm d}   
+\newcommand{\im} {\mathrm i}   
+\newcommand{\e}  {\textrm e}   
+\newcommand{\dpa}[2]  {\frac {\partial #1} {\partial #2}}   
+\newcommand{\ddpa}[2] {\frac {\partial^{2} #1} {\partial #2 ^{2}}}   
+\newcommand{\dto}[2]  {\frac {{\textrm d} #1} {{\textrm d} #2}}   
+\newcommand{\ddto}[2] {\frac {\textrm{d}^{2} #1} {\textrm{d} #2 ^{2}}}
+
+%-----------------------------------------------------------------------
+\begin{document}
+{\Large
+\noindent
+%M2R DET,
+
+\begin{center}
+{\bf Examen du cours d'instabilité, M2R DET, 1 février 2018} \\
+{\it \small Durée 2 heures. La qualité de la présentation de la copie sera prise en compte. 
+%Barme indicatif : I : 3 points, II 5 points, III : 12 points. %Présentation : 2 points.
+} \\
+{\it \small Documents autorisés : tous documents manuscrits.}
+\end{center}
+}
+
+%\medskip
+%-----------------------------------------------------------------------
+%\textbf{I. Questions de cours}
+%
+%\section{Système dynamique}  
+%
+%On étudie dans cet exercice le mouvement d'un objet de position $x(t)$ gouverné par l'équation dynamique suivante :
+%
+% 
+%\begin{equation}
+%m \frac{d^2 x}{d t^2} + \mu \frac{d x}{d t} = - r x + x^3
+%\end{equation}
+%
+%\begin{enumerate}
+%\item On suppose tout d'abord $m=0; \mu = 1$. Montrez que ce problème se ramène à celui de la minimisation d'une fonction $V(x)$ que vous préciserez. Tracez la forme de cette fonction selon le signe de $r$. En déduire le diagramme des bifurcations. De quel type de bifurcation s'agit-il ?  
+%
+%\item  Réécrire l'équation dynamique sous forme d'un système dynamique à deux degrés de liberté. Cherchez les solutions d'équilibre de ce système, et comparez au résultat trouvé à la question précédente.
+%
+%\item On suppose $m=1,\mu = 2$. Etudiez la stabilité des solutions d'équilibre et préciser leur nature selon la valeur de $r$.
+%Tracez l'allure du portrait de phase dans chaque cas (on doit trouver 4 cas différents). 
+%
+%%\item Même question pour $m=1, \mu = 0$ (on doit trouver 2 cas différents).
+%\end{enumerate}
+%
+
+\section{Equation de Ginsburg-Landau inhomogène}
+
+
+
+On étudie le problème suivant, gouvernant l'évolution de la fonction scalaire $F(x,t)$, définie dans l'intervalle $x\in [-L,L]$ et $t\in [0,\infty]$ :
+
+\begin{equation}
+\frac{\partial F}{\partial t} = (r - \alpha x^2) F + \nu  \frac{\partial^2 F}{\partial^2 x} - F^3 
+\quad \quad (\alpha >0)
+\end{equation}
+
+
+associée aux conditions limites $F(-L,t) = F(+L,t) = 0$ et à la condition initiale $F(x,0) = F_0(x)$.
+
+Ce modèle, appelé Ginsburg-Landau inhomogène, a parfois été utilisé pour modéliser les instabilités dans le sillage d'un objet bidimensionnel.
+
+
+\begin{enumerate}
+
+\item Ecrire la version linéarisée de ce problème sous forme d'un problème aux valeurs propres. Que peut-on dire de la structure mathématique du problème ? A quoi peut-on s'attendre concernant les valeurs propres $\lambda$ ? Tracez l'allure attendue pour la courbe donnant $\lambda_{r,max}(r)$ (partie réelle de la valeur propre la plus instable en fonction du paramètre de contrôle $r$).
+
+
+\item Proposez une stratégie de résolution numérique du problème linéaire précédent (on ne demande pas d'écrire un programme détaillé mais de présenter les principales étapes de la démarche).
+
+
+\item 
+Expliquez comment (et sous quelles hypothèses) on peut ramener le problème à une "équation d'amplitude" pour un paramètre d'amplitude $A(t)$. 
+Donnez la forme attendue de cette équation. Quelle bifurcation classique reconnait-on ?
+
+%\item 
+%Lorsque le paramètre de contrôle $r$ est varié, à quel type de comportement peut-on s'attendre ?
+%et le choix de la condition initiale $F_0(x)$, a quel type de comportement peut-on s'attendre concernant la solution du problème non linéaire ? Illustrez votre réponse par des figures correspondant aux divers cas que vous pourrez imaginer. 
+
+
+\end{enumerate}
+
+
+\section{Convection de Rayleigh-Bénard dans une cellule verticale}
+
+On étudie l'instabilité de convection se produisant dans une cellule rectangulaire définie par 
+$x \in [0,L]$ et $y \in [0,H]$ avec $H \gg L$ (contrairement au cas traité en cours qui correspond à une cellule de horizontale avec $ H \ll L$).
+
+On note $T_0 = T(x,0)$ et $T_1 = T(x,H)$ avec  $T_0>T_1$ les températures des parois inférieures et supérieures, et on suppose les parois latérales maintenues à la température de l'état de base $\bar{T}(y)$.
+
+\begin{enumerate}
+
+\item Décrire l'état de base (solution sans convection) du système, et donnez la loi $T = \overline{T}(y)$ correspondante.
+
+\item On étudie la stabilité en cherchant une solution "monodimensionnelle" de la forme 
+$T = \overline{T}(y) + Re( \hat{T} e^{i k x} e^{\lambda t})$ ; $\vec{u} = Re(\hat{v} e^{i k x} e^{\lambda t}) \vec{e_y}$ où 
+$\hat{T}$ et $\hat{v}$ sont des constantes (éventuellement complexes) indépendantes de $y$. Pour quelles valeurs de $k$ cette solution vérifie-t-elle les conditions limite en $x=0$ et $x=L$ ? Représentez l'allure du champ de vitesse correspondant. Cette solution est-elle valable dans toute la cellule ?
+
+\item Ecrire les équations du mouvement dans le régime linéaire ($\hat{T} \ll1 $ et $\hat{v}\ll1$) en précisant les hypothèses de modélisation. Montrez que les valeurs propres sont solutions de l'équation suivante :
+
+\begin{equation}
+(\lambda + \nu k^2) (\lambda + \kappa k^2) - \alpha g (T_0-T_1)/H = 0
+\end{equation}
+
+\item 
+En déduire que l'instabilité se produit lorsque la condition suivante est réalisée :
+\begin{equation}
+(T_0-T_1) > \frac{\color{red}{16}\nu \kappa \pi^4 H }{\alpha g L^4} 
+\end{equation}
+ 
+ {\em 
+ (Indication : on pourra remarquer que l'équation précédente a deux solutions réelles $\lambda_1$ et $\lambda_2$ dont l'une est toujours négative, et donc se contenter d'étudier le signe du produit des deux racines).
+ }
+ 
+ %\item 
+%Exprimez ce critère d'instabilité sous forme d'une condition sur le nombre de Rayleigh du problème. Comparez  avec le critère établi en cours pour la convection dans une cellule horizontale de hauteur $h$. Commentez.
+ 
+\end{enumerate}
+
+\section*{Instabilité de deux fluides superposés}
+
+On considère deux couches de fluides superposées de vitesse et masse volumique différentes :
+
+$y<0 : \quad \rho = \rho_1 ; \, u = - U$ 
+
+ $y>0 : \quad \rho = \rho_2 ; \, u = U$
+
+
+On note $g$ la gravité, dirigée vers le bas. \underline{ On néglige la tension superficielle.}
+
+\begin{enumerate}
+
+\item Montrez que des perturbations de nombre d'onde $k$ dans la direction $x$ sont gouvernées par la relation de dispersion suivante :
+\begin{equation}
+\rho_1 (k U + \omega)^2 + \rho_2( kU - \omega)^2 +(\rho_2-\rho_1) g k = 0
+\end{equation} 
+
+Vous utiliserez la démarche de votre choix mais veillerez à bien préciser et justifier les hypothèses faites dans la modélisation.
+
+\item Dans le cas $g=0$, montrez que cette relation de dispersion prédit une instabilité. Exprimez 
+son taux d'amplification et sa vitesse de phase, et montrez que celle-ci est constante.
+
+\item Dans le cas $g\ne 0$ et $\rho_2 > \rho_1$, deux mécanismes d'instabilité sont en compétition. Lesquels ? Quel mécanisme est dominant dans la limite des grandes longueurs d'ondes ? Qu'en est-il dans la limite des petites longueurs d'ondes ? (justifiez en s'appuyant sur la relation de dispersion).
+
+\item Dans le cas  $g\ne 0$ et $\rho_2 < \rho_1$, montrez que l'instabilité a lieu uniquement pour $k>k_c$, avec :
+\begin{equation}
+k_c = \frac{g }{4 U^2}  \frac{\rho_1-\rho_2}{\rho_1 \rho_2}.
+\end{equation} 
+Interprétez physiquement ce résultat.
+
+\end{enumerate}
+
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+%%% ANNEXE : exam systemes dyn 2017
+
+
+On étudie le système dynamique à deux degrés de libertés $[x(t);y(t)]$ suivant :
+
+$$
+\begin{array}{l}
+\frac{dx }{dt} = x \left ( r - x^2 - 3 y^2 \right),
+\\
+\frac{dy }{dt} = y \left ( r -1 + x^2 - y^2 \right).
+\end{array}
+$$
+
+Ce système se rencontre en mécanique des fluides et décrit l'interaction de deux modes instables en compétition. Par exemple, pour modéliser la convection thermique dans une cellule rectangulaire, $[x(t);y(t)]$ représentent les amplitudes respectives de tourbillons de convection alignés selon la longueur ou selon la largeur de la cellule.
+Le paramètre $r$ est un paramètre de bifurcation (par exemple l'amplitude de la différence de température entre les plaques supérieures et inférieures de la cellule).
+
+\begin{figure}[h]
+$$
+\begin{array}{cc}
+\includegraphics[width=.45\linewidth]{PortraitdePhase_modeinteraction_055.png}
+&
+\includegraphics[width=.45\linewidth]{PortraitdePhase_modeinteraction_125.png}
+\\
+(a) : \quad r = 0.55 & (b) : r=1.25
+\end{array}
+$$
+\end{figure}
+
+\begin{enumerate}
+
+\item Recherchez les points d'équilibre de ce système. Montrez que selon la valeur du paramètre $r$ il existe entre un et quatre points d'équilibre situés dans le quadrant [$x\le0 ; y \le 0 $] ).
+Que peut-on dire du nombre total de points d'équilibre ?
+
+\item Quelle est la nature du point d'équilibre $(0,0)$ (noté point O) selon la valeur de $r$ ?
+
+%\item Tracez l'allure du portrait phase de système dans le cas $r=-1$.
+
+\item Pour $r>0$ il existe un point d'équilibre vérifiant $y=0$ et $x > 0$ (noté point A). Etudiez la stabilité de ce point d'équilibre. Quelle est la nature de ce point selon la valeur de $r$ ?
+
+\item Mêmes questions pour le point $B$ vérifiant  $x=0$ et $y > 0$.
+
+\item Tracez au mieux le portrait de phase de système dans le cas $r=0.25$. On fera apparaitre les points O, A et A' (symétrique de A par rapport à O).
+
+\item La figure $1(a)$ représente le portrait de phase du système (restreint au cadrant [$x\ge0 ; y \ge 0 $] ) dans le cas $r=0.55$, tracé avec le programme Matlab utilisé en cours. 
+
+Identifiez les points d'équilibres visible sur cette figure et retrouvez leur position a partir des résultats de la question 1. 
+
+Justifiez la structure du portrait de phase au voisinage des points O et A. D'après la figure, de quel type est le troisième point d'équilibre observé (noté C) ? 
+
+\item Mêmes questions pour le cas $r= 1.25$ (figure $1(b)$).
+
+\item (facultatif) Etudiez la stabilité du point C. Montrez que selon la valeur de $r$, ce point est soit du type noeud stable, soit du type foyer stable.
+
+\item Tracez l'allure portrait de phase dans le cas  $r=2$.
+
+
+\item A partir de l'ensemble des résultats dont vous disposez, tracez un diagramme de bifurcation
+représentant le paramètre d'amplitude $Z = \sqrt{x^2+y^2}$ en fonction de $r$. 
+
+On tracera quatre courbes correspondant aux branches de solutions O, A, B et C dans leurs gammes d'existence relatives, et selon la convention habituelle on représentera en traits pleins les branches stables et en traits pointillés les branches instables.
+
+Justifiez la nature des bifurcations rencontrées sur ce diagramme.
+
+
+
+\end{enumerate}
+
+\section*{Oscillateur non linéaire}
+
+On considère une variante de l'oscillateur de Van der Pol définie ainsi :
+\begin{equation}
+\ddto{u}{t} + \omega_0^2 u - 2 \omega_0 \epsilon  \dto{u}{t} = - \alpha  u^2 \dto{u}{t} -  \beta u^3
+\label{eq:0731bis}
+\end{equation}
+
+Dans ce modèle, $\alpha$ représente la correction non linéaire au taux d'amplification et $\beta$ représente la correction non linéaire à la fréquence. 
+
+
+\begin{enumerate}
+
+\item Donnez la solution $u(t)$ de l'équation dans le cas linéaire. Quel est la nature du point fixe (0) selon le signe de $\epsilon$ ? A quel type de bifurcation peut-on donc s'attendre lorsque $\epsilon$ devient positif ?
+
+\item Au voisinage du seuil de l'instabilité ($0 < \epsilon \ll 1$), Justifiez qu'on s'attend à une solution saturée de la forme 
+
+\begin{equation}
+u(t) \approx \epsilon^{1/2} u_0(t) + {o}( \epsilon^{1/2}). 
+\label{eq:AA}
+\end{equation}
+où $u_0$ est une fonction périodique de pulsation peu différente de $\omega_0$.
+
+\item Afin de démontrer que la solution est effectivement de cette forme et d'obtenir une équation d'amplitude, on utilise une méthode d'échelles multiples en introduisant un temps rapide $\tau = t$ et un temps lent $T = \epsilon t$. On cherche donc maintenant la solution sous la forme 
+
+\begin{equation}
+u(t) \approx \epsilon^{1/2} u_0(\tau,T) 
++ \epsilon^{3/2} u_1(\tau,T), \mbox{ avec }
+  u_0(\tau,T) = A(T) e^{i\omega_0 t} + \bar{A}(T) e^{-i\omega_0 t } 
+\end{equation}
+
+En injectant cette solution dans l'équation, montrez que le terme $u_1$ est gouverné par une équation de la forme
+\begin{equation}
+\ddto{u_1}{\tau} + \omega_0^2 u_1  = {\cal F}(u_0),
+\label{eq:0731bis}
+\end{equation}
+où ${\cal F}(u_0)$ est un terme de forçage qui contient des termes proportionnels à $e^{\pm i \omega_0 \tau}$ et d'autres termes proportionnels à $e^{\pm 3 i \omega_0 \tau}$
+  
+\item Justifiez pourquoi l'hypothèse (\ref{eq:AA}) implique que le terme de forçage proportionnel à 
+$e^{\pm i \omega_0 \tau}$ est nécessairement nul.
+
+\item En déduire que $A(T)$ obéit à une équation d'amplitude de la forme suivante :
+\begin{equation}
+\dto{A}{T} = \mu A - \kappa |A|^2A , 
+\label{eq:0712}
+\end{equation}
+où $\mu$ et $\kappa$ sont deux coefficients éventuellement complexes.
+
+
+\item Pour résoudre cette équation on sépare les évolutions du module et de la phase de $A$ en posant $A = a(T) \e^{\im \phi(T)}$. Montrez que $a(T)$ obéit à une équation de Landau, et donnez l'équation différentielle vérifiée par $\phi(T)$.
+
+\item En déduire qu'il existe une solution saturée (d'amplitude constante) de la forme 
+$a(T) = a_0$, $\phi(T) = \omega_1 T+ \phi_{0} $ et exprimez $a_0$ et $\omega_1$ en fonction de $\alpha,\beta,\omega_0$.
+
+\item En déduire que la solution finale se met donc sous la forme 
+\begin{equation}
+u(t) \approx \epsilon^{1/2} 2 a_0 \cos [ (\omega_0+ \epsilon \omega_1)t +\phi_0]  
+\end{equation}
+
+\end{enumerate}
+
+\section*{Système de Lorentz}
+
+%On considère une version simplifiée du système de Lorenz sous la forme suivante :
+
+Le système de Lorenz est une modélisation extrême de la convection thermique de Rayleigh-Bénard, et s'écrit
+\begin{eqnarray*}
+\dot{x} &=& - P x + P y \\
+\dot{y} &=& - y + r x - x z \\
+\dot{z} &=& - b z + x y,
+\end{eqnarray*}. 
+Dans ces équations $P$ est un nombre sans dimension analogue au nombre de Prandtl, $r$ correspond à un nombre de Rayleigh réduit, et $b$ correspond au nombre d'onde de la perturbation. On considère ici $r$ comme le paramètre variable, et les deux autre paramètres fixés aux valeurs $P=10$ et $b=1$
+(ce qui diffère de la valeur "classique" $b=8/3$ initialement choisie par Lorenz)
+
+\begin{enumerate}
+
+\item Déterminer les points fixes du système selon la valeur du paramètre de bifurcation $r$.
+
+\item Préciser la nature de la première bifurcation rencontrée pour $r$ croissant, et tracer le diagramme de bifurcation. 
+
+\item Etudiez la stabilité de la solution stationnaire issue de cette première bifurcation,
+et montrez que celle-ci subit une bifurcation de Hopf pour la valeur du paramètre de contrôle
+$r \ge r_c = P(P+4)/(P-2)$.
+
+Indication : on recherchera le polynome caractéristique $det(Df-\lambda I)$ sous la forme d'un polynome d'ordre 3, et on remarquera que si le polynôme a une paire de valeurs propres imaginaires pures alors il peut s'écrire sous la forme $(\lambda-A) (\lambda^2+B) $.
+
+\item L'intégration numérique du système de Lorenz montre, au delà de cette valeur de $r$, un comportement très étonnant. Décrire en quelques mots les principales propriétés de cette solution numérique.
+
+%par une bifurcation de Hopf (on admettra que la condition de transversalité est bien satisfaite). \'Eléments de solution dans (Charru 2011, \S1.4.4).
+
+\end{enumerate}
+
+
+
+\end{document}
+
+
+
+\item Donner la solution du système différentiel $\dot{\bf x} = A {\bf x}$, ${\bf x}(0) = {\bf x}_0$, pour les deux matrices suivantes : 
+\begin{equation}
+A = \left(
+\begin{array}{cc}
+a & 0 \\
+0 & b
+\end{array} \right) ; \qquad
+A = \left(
+\begin{array}{cc}
+\sigma & -\omega \\
+\omega & \sigma
+\end{array} \right).
+\end{equation}
+
+%\item Soit le système différentiel $\dot{\bf x} = A {\bf x}$, $A = {\rm diag}(\lambda_1, \lambda_2)$. Tracer le portrait de phase pour $(\lambda_1, \lambda_2) = (Ð1,1)$ ; préciser le type du point fixe, et à quelle valeur propre correspond chaque direction propre.
+
+%\item  Soit le système différentiel $\dot{\bf x} = A {\bf x}$, $A = {\rm diag}(\lambda_1, \lambda_2)$. Tracer le portrait de phase pour $(\lambda_1, \lambda_2) = (2,1)$ ; préciser le type du point fixe, et à quelle valeur propre correspond chaque direction propre.
+
+%\item Les systèmes des deux questions précédentes sont-ils conservatifs ?
+
+\item Donner la définition dÕun point fixe hyperbolique. Donner la définition de lÕéquivalence topologique de deux systèmes. Donner la condition de lÕéquivalence topologique dÕun système non linéaire et du système linéarisé en un point fixe.
+
+\item On considère le système différentiel
+\begin{eqnarray*}
+\dot{x} = x (2 Ð x Ð y), \\
+\dot{y} = y (3 Ð x Ð 2y).
+\end{eqnarray*}
+\begin{enumerate}
+\item Déterminer les régions du plan $(x,y)$ o le flot défini par ce système est contractant ou dilatant. 
+\item Déterminer les points fixes, leur stabilité, et leur type. 
+\item Déterminer les directions propres pour chacun des points fixes. 
+\item \'Ebaucher le portrait de phase au voisinage des points fixes. 
+\item Compléter le portrait de phase, après avoir tracé le champ de vecteurs $(\dot{x}, \dot{y})$ sur les axes $x = 0$ et $y = 0$, sur les courbes telles que $\dot{x} = 0$ ou $\dot{y} = 0$, et déterminé les régions du plan o $\dot{x} > 0$ et $\dot{y} > 0$, $\dot{x} > 0$ et $\dot{y} < 0$, etc.
+\end{enumerate}
+
+\item On considère lÕoscillateur de Dffing dissipatif 
+\begin{equation}
+\ddto{x}{t} + \epsilon \dto{x}{t} +  x - a x^3 = 0
+\label{eq:0731bis}
+\end{equation}
+avec $\epsilon$ réel, $a >0$. Déterminer les points fixes dans lÕespace des phases. Déterminer le type du point fixe $(0, 0)$ selon la valeur de $\epsilon$.
+
+%\item Quelle est la condition de stabilité linéaire dÕun point fixe $x_*$ d'un système différentiel $\dot{\bf x} = A {\bf x}$, ${\bf x} \in  \mathbb{R}^n$. Pour $n=2$, représenter les valeurs propres dans le plan complexe (a) pour $x_*$ stable, (b) pour $x_*$ instable.
+
+\item Quelle est la condition de stabilité linéaire dÕun point fixe $x_*$ dÕune application ${\bf x}_{k+1} = f({\bf x}_k)$, ${\bf x} \in  \mathbb{R}^n$ ? Pour $n = 2$, représenter le spectre des valeurs propres dans le plan complexe (a) pour $x_*$ stable, (b) pour $x_*$ instable.
+
+\item Déterminer les points fixes de lÕapplication 
+\begin{equation}
+x_{k+1} = x_k (1 + \mu - x_k),
+\end{equation}
+ainsi que leur stabilité, selon la valeur de $\mu$ réel.
+
+\item \`A quelles condition un point fixe dÕune application est-il dit hyperbolique ? Pour quelles valeurs de $\mu$ les points fixes de lÕapplication ci-dessus sont-ils non hyperboliques ?
+
+\item Déterminer les points périodiques de période minimale 2 de lÕapplication ci-dessus.
+
+
+\end{enumerate}
+
+
+\end{document} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+NOM - Prénom :	4 mars 1998
+
+Phénomènes non linéaires Ð Contrle continu n¡ 2
+
+
+6. Soit A = BBC[(AARHS2CO 2(a; b;c; d)) la matrice jacobienne dÕune application, calculée en un point fixe. Quelles inégalités les invariants de cette matrice doivent-ils vérifier pour que le point fixe soit un noeud stable ?
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+NOM - Prénom :	Date : 18 mars 1998
+
+Physique non linéaire Ð Contrle continu n¡ 3
+
+1. système O(x;¥) = f(x) : donner la forme normale et le diagramme de bifurcation dÕune bifurcation noeud-col.
+
+2. système O(x;¥) = f(x) : donner la forme normale et le diagramme de bifurcation dÕune bifurcation fourche.
+
+3. Soit le système O(x;¥) = mx Ð x2. Tracer le diagramme de bifurcation et préciser la nature de la bifurcation.
+
+4. système O(w;¥) = f(w ) : Donner la forme normale et le diagramme de bifurcation dÕune bifurcation de Hopf.
+
+5.Quel type de bifurcation lÕapplication xn+1 = mxn Ð xO(n;2)  subit-elle en m = 1.Tracer le diagramme de bifurcation. 
+
+6. On considère une application xn+1 = f(xn) dont un point fixe perd son hyperbolicité pour m = 0 avec l = Ð1. A quel type de bifurcation peut-on sÕattendre ? Quelle condition f(x) doit-elle remplir pour quÕil en soit ainsi ?
+

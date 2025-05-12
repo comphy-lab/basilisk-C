@@ -1,0 +1,905 @@
+hwloc/linux: Ignoring PCI device with non-16bit domain.
+Pass --enable-32bits-pci-domain to configure to support such devices
+(warning: it would break the library ABI, don't enable unless really needed).
+0 0 0.0017798 
+1 0.0017798 0.0017798 
+2 0.00843461 0.0066548 
+3 0.0218341 0.0133995 
+4 0.0413975 0.0195633 
+5 0.0666238 0.0252264 
+6 0.0967327 0.0301089 
+7 0.131474 0.034741 
+8 0.169236 0.037762 
+9 0.210774 0.0415382 
+10 0.257199 0.0464251 
+11 0.306719 0.0495201 
+12 0.356239 0.0495201 
+13 0.409886 0.0536467 
+14 0.463533 0.0536467 
+15 0.517179 0.0536467 
+16 0.577532 0.0603526 
+17 0.637885 0.0603526 
+18 0.698237 0.0603526 
+19 0.75859 0.0603526 
+20 0.818942 0.0603526 
+21 0.879295 0.0603526 
+22 0.939647 0.0603526 
+23 1 0.0603526 
+24 1.07143 0.0714286 
+25 1.14286 0.0714286 
+26 1.21429 0.0714286 
+27 1.28571 0.0714286 
+28 1.35714 0.0714286 
+29 1.42857 0.0714286 
+30 1.5 0.0714286 
+31 1.57143 0.0714286 
+32 1.64286 0.0714286 
+33 1.71429 0.0714286 
+34 1.78571 0.0714286 
+35 1.85714 0.0714286 
+36 1.92857 0.0714286 
+37 2 0.0714286 
+38 2.07692 0.0769231 
+39 2.15385 0.0769231 
+40 2.23077 0.0769231 
+41 2.30769 0.0769231 
+42 2.38462 0.0769231 
+43 2.46154 0.0769231 
+44 2.53846 0.0769231 
+45 2.61538 0.0769231 
+46 2.69231 0.0769231 
+47 2.76923 0.0769231 
+48 2.84615 0.0769231 
+49 2.92308 0.0769231 
+50 3 0.0769231 
+51 3.07692 0.0769231 
+52 3.15385 0.0769231 
+53 3.23077 0.0769231 
+54 3.30769 0.0769231 
+55 3.38462 0.0769231 
+56 3.46154 0.0769231 
+57 3.53846 0.0769231 
+58 3.61538 0.0769231 
+59 3.69231 0.0769231 
+60 3.76923 0.0769231 
+61 3.84615 0.0769231 
+62 3.92308 0.0769231 
+63 4 0.0769231 
+64 4.07692 0.0769231 
+65 4.15385 0.0769231 
+66 4.23077 0.0769231 
+67 4.30769 0.0769231 
+68 4.38462 0.0769231 
+69 4.46154 0.0769231 
+70 4.53846 0.0769231 
+71 4.61538 0.0769231 
+72 4.69231 0.0769231 
+73 4.76923 0.0769231 
+74 4.84615 0.0769231 
+75 4.92308 0.0769231 
+76 5 0.0769231 
+77 5.07692 0.0769231 
+78 5.15385 0.0769231 
+79 5.23077 0.0769231 
+80 5.30769 0.0769231 
+81 5.38462 0.0769231 
+82 5.46154 0.0769231 
+83 5.53846 0.0769231 
+84 5.61538 0.0769231 
+85 5.69231 0.0769231 
+86 5.76923 0.0769231 
+87 5.84615 0.0769231 
+88 5.92308 0.0769231 
+89 6 0.0769231 
+90 6.07692 0.0769231 
+91 6.15385 0.0769231 
+92 6.23077 0.0769231 
+93 6.30769 0.0769231 
+94 6.38462 0.0769231 
+95 6.45299 0.0683761 
+96 6.52137 0.0683761 
+97 6.58974 0.0683761 
+98 6.65812 0.0683761 
+99 6.7265 0.0683761 
+100 6.79487 0.0683761 
+101 6.86325 0.0683761 
+102 6.93162 0.0683761 
+103 7 0.0683761 
+104 7.07143 0.0714286 
+105 7.14286 0.0714286 
+106 7.21429 0.0714286 
+107 7.28571 0.0714286 
+108 7.35714 0.0714286 
+109 7.42857 0.0714286 
+110 7.5 0.0714286 
+111 7.57143 0.0714286 
+112 7.64286 0.0714286 
+113 7.71429 0.0714286 
+114 7.78571 0.0714286 
+115 7.85714 0.0714286 
+116 7.92857 0.0714286 
+117 8 0.0714286 
+118 8.07143 0.0714286 
+119 8.14286 0.0714286 
+120 8.21429 0.0714286 
+121 8.28571 0.0714286 
+122 8.35714 0.0714286 
+123 8.42857 0.0714286 
+124 8.5 0.0714286 
+125 8.57143 0.0714286 
+126 8.64286 0.0714286 
+127 8.71429 0.0714286 
+128 8.78571 0.0714286 
+129 8.85714 0.0714286 
+130 8.92857 0.0714286 
+131 9 0.0714286 
+132 9.07143 0.0714286 
+133 9.14286 0.0714286 
+134 9.21429 0.0714286 
+135 9.28571 0.0714286 
+136 9.35714 0.0714286 
+137 9.42857 0.0714286 
+138 9.5 0.0714286 
+139 9.57143 0.0714286 
+140 9.64286 0.0714286 
+141 9.71429 0.0714286 
+142 9.78571 0.0714286 
+143 9.85714 0.0714286 
+144 9.92857 0.0714286 
+145 10 0.0714286 
+146 10.0769 0.0769231 
+147 10.1538 0.0769231 
+148 10.2308 0.0769231 
+149 10.3077 0.0769231 
+150 10.3846 0.0769231 
+151 10.4615 0.0769231 
+152 10.5385 0.0769231 
+153 10.6154 0.0769231 
+154 10.6923 0.0769231 
+155 10.7692 0.0769231 
+156 10.8462 0.0769231 
+157 10.9231 0.0769231 
+158 11 0.0769231 
+159 11.0769 0.0769231 
+160 11.1538 0.0769231 
+161 11.2308 0.0769231 
+162 11.3077 0.0769231 
+163 11.3846 0.0769231 
+164 11.4615 0.0769231 
+165 11.5385 0.0769231 
+166 11.6154 0.0769231 
+167 11.6923 0.0769231 
+168 11.7692 0.0769231 
+169 11.8462 0.0769231 
+170 11.9231 0.0769231 
+171 12 0.0769231 
+172 12.0769 0.0769231 
+173 12.1538 0.0769231 
+174 12.2308 0.0769231 
+175 12.3077 0.0769231 
+176 12.3846 0.0769231 
+177 12.4615 0.0769231 
+178 12.5385 0.0769231 
+179 12.6154 0.0769231 
+180 12.6923 0.0769231 
+181 12.7692 0.0769231 
+182 12.8462 0.0769231 
+183 12.9231 0.0769231 
+184 13 0.0769231 
+185 13.0769 0.0769231 
+186 13.1538 0.0769231 
+187 13.2308 0.0769231 
+188 13.3077 0.0769231 
+189 13.3846 0.0769231 
+190 13.4615 0.0769231 
+191 13.5385 0.0769231 
+192 13.6154 0.0769231 
+193 13.6923 0.0769231 
+194 13.7692 0.0769231 
+195 13.8462 0.0769231 
+196 13.9231 0.0769231 
+197 14 0.0769231 
+198 14.0769 0.0769231 
+199 14.1538 0.0769231 
+200 14.2308 0.0769231 
+201 14.3077 0.0769231 
+202 14.3846 0.0769231 
+203 14.4615 0.0769231 
+204 14.5385 0.0769231 
+205 14.6154 0.0769231 
+206 14.6923 0.0769231 
+207 14.7692 0.0769231 
+208 14.8462 0.0769231 
+209 14.9231 0.0769231 
+210 15 0.0769231 
+211 15.0769 0.0769231 
+212 15.1538 0.0769231 
+213 15.2308 0.0769231 
+214 15.3077 0.0769231 
+215 15.3846 0.0769231 
+216 15.4615 0.0769231 
+217 15.5385 0.0769231 
+218 15.6154 0.0769231 
+219 15.6923 0.0769231 
+220 15.7692 0.0769231 
+221 15.8462 0.0769231 
+222 15.9231 0.0769231 
+223 16 0.0769231 
+224 16.0769 0.0769231 
+225 16.1538 0.0769231 
+226 16.2308 0.0769231 
+227 16.3077 0.0769231 
+228 16.3846 0.0769231 
+229 16.4615 0.0769231 
+230 16.5385 0.0769231 
+231 16.6154 0.0769231 
+232 16.6923 0.0769231 
+233 16.7692 0.0769231 
+234 16.8462 0.0769231 
+235 16.9231 0.0769231 
+236 17 0.0769231 
+237 17.0769 0.0769231 
+238 17.1538 0.0769231 
+239 17.2308 0.0769231 
+240 17.3077 0.0769231 
+241 17.3846 0.0769231 
+242 17.4615 0.0769231 
+243 17.5385 0.0769231 
+244 17.6154 0.0769231 
+245 17.6923 0.0769231 
+246 17.7692 0.0769231 
+247 17.8462 0.0769231 
+248 17.9231 0.0769231 
+249 18 0.0769231 
+250 18.0769 0.0769231 
+251 18.1538 0.0769231 
+252 18.2308 0.0769231 
+253 18.3077 0.0769231 
+254 18.3846 0.0769231 
+255 18.4615 0.0769231 
+256 18.5385 0.0769231 
+257 18.6154 0.0769231 
+258 18.6923 0.0769231 
+259 18.7692 0.0769231 
+260 18.8462 0.0769231 
+261 18.9231 0.0769231 
+262 19 0.0769231 
+263 19.0769 0.0769231 
+264 19.1538 0.0769231 
+265 19.2308 0.0769231 
+266 19.3077 0.0769231 
+267 19.3846 0.0769231 
+268 19.4615 0.0769231 
+269 19.5385 0.0769231 
+270 19.6154 0.0769231 
+271 19.6923 0.0769231 
+272 19.7692 0.0769231 
+273 19.8462 0.0769231 
+274 19.9231 0.0769231 
+275 20 0.0769231 
+276 20.0769 0.0769231 
+277 20.1538 0.0769231 
+278 20.2308 0.0769231 
+279 20.3077 0.0769231 
+280 20.3846 0.0769231 
+281 20.4615 0.0769231 
+282 20.5385 0.0769231 
+283 20.6154 0.0769231 
+284 20.6923 0.0769231 
+285 20.7692 0.0769231 
+286 20.8462 0.0769231 
+287 20.9231 0.0769231 
+288 21 0.0769231 
+289 21.0769 0.0769231 
+290 21.1538 0.0769231 
+291 21.2308 0.0769231 
+292 21.3077 0.0769231 
+293 21.3846 0.0769231 
+294 21.4615 0.0769231 
+295 21.5385 0.0769231 
+296 21.6154 0.0769231 
+297 21.6923 0.0769231 
+298 21.7692 0.0769231 
+299 21.8462 0.0769231 
+300 21.9231 0.0769231 
+301 22 0.0769231 
+302 22.0769 0.0769231 
+303 22.1538 0.0769231 
+304 22.2308 0.0769231 
+305 22.3077 0.0769231 
+306 22.3846 0.0769231 
+307 22.4615 0.0769231 
+308 22.5385 0.0769231 
+309 22.6154 0.0769231 
+310 22.6923 0.0769231 
+311 22.7692 0.0769231 
+312 22.8462 0.0769231 
+313 22.9231 0.0769231 
+314 23 0.0769231 
+315 23.0769 0.0769231 
+316 23.1538 0.0769231 
+317 23.2308 0.0769231 
+318 23.3077 0.0769231 
+319 23.3846 0.0769231 
+320 23.4615 0.0769231 
+321 23.5385 0.0769231 
+322 23.6154 0.0769231 
+323 23.6923 0.0769231 
+324 23.7692 0.0769231 
+325 23.8462 0.0769231 
+326 23.9231 0.0769231 
+327 24 0.0769231 
+328 24.0769 0.0769231 
+329 24.1538 0.0769231 
+330 24.2308 0.0769231 
+331 24.3077 0.0769231 
+332 24.3846 0.0769231 
+333 24.4615 0.0769231 
+334 24.5385 0.0769231 
+335 24.6154 0.0769231 
+336 24.6923 0.0769231 
+337 24.7692 0.0769231 
+338 24.8462 0.0769231 
+339 24.9231 0.0769231 
+340 25 0.0769231 
+341 25.0769 0.0769231 
+342 25.1538 0.0769231 
+343 25.2308 0.0769231 
+344 25.3077 0.0769231 
+345 25.3846 0.0769231 
+346 25.4615 0.0769231 
+347 25.5385 0.0769231 
+348 25.6154 0.0769231 
+349 25.6923 0.0769231 
+350 25.7692 0.0769231 
+351 25.8462 0.0769231 
+352 25.9231 0.0769231 
+353 26 0.0769231 
+354 26.0769 0.0769231 
+355 26.1538 0.0769231 
+356 26.2308 0.0769231 
+357 26.3077 0.0769231 
+358 26.3846 0.0769231 
+359 26.4615 0.0769231 
+360 26.5385 0.0769231 
+361 26.6154 0.0769231 
+362 26.6923 0.0769231 
+363 26.7692 0.0769231 
+364 26.8462 0.0769231 
+365 26.9231 0.0769231 
+366 27 0.0769231 
+367 27.0769 0.0769231 
+368 27.1538 0.0769231 
+369 27.2308 0.0769231 
+370 27.3077 0.0769231 
+371 27.3846 0.0769231 
+372 27.4615 0.0769231 
+373 27.5385 0.0769231 
+374 27.6154 0.0769231 
+375 27.6923 0.0769231 
+376 27.7692 0.0769231 
+377 27.8462 0.0769231 
+378 27.9231 0.0769231 
+379 28 0.0769231 
+380 28.0769 0.0769231 
+381 28.1538 0.0769231 
+382 28.2308 0.0769231 
+383 28.3077 0.0769231 
+384 28.3846 0.0769231 
+385 28.4615 0.0769231 
+386 28.5385 0.0769231 
+387 28.6154 0.0769231 
+388 28.6923 0.0769231 
+389 28.7692 0.0769231 
+390 28.8462 0.0769231 
+391 28.9231 0.0769231 
+392 29 0.0769231 
+393 29.0769 0.0769231 
+394 29.1538 0.0769231 
+395 29.2308 0.0769231 
+396 29.3077 0.0769231 
+397 29.3846 0.0769231 
+398 29.4615 0.0769231 
+399 29.5385 0.0769231 
+400 29.6154 0.0769231 
+401 29.6923 0.0769231 
+402 29.7692 0.0769231 
+403 29.8462 0.0769231 
+404 29.9231 0.0769231 
+405 30 0.0769231 
+406 30.0769 0.0769231 
+407 30.1538 0.0769231 
+408 30.2308 0.0769231 
+409 30.3077 0.0769231 
+410 30.3846 0.0769231 
+411 30.4615 0.0769231 
+412 30.5385 0.0769231 
+413 30.6154 0.0769231 
+414 30.6923 0.0769231 
+415 30.7692 0.0769231 
+416 30.8462 0.0769231 
+417 30.9231 0.0769231 
+418 31 0.0769231 
+419 31.0769 0.0769231 
+420 31.1538 0.0769231 
+421 31.2308 0.0769231 
+422 31.3077 0.0769231 
+423 31.3846 0.0769231 
+424 31.4615 0.0769231 
+425 31.5385 0.0769231 
+426 31.6154 0.0769231 
+427 31.6923 0.0769231 
+428 31.7692 0.0769231 
+429 31.8462 0.0769231 
+430 31.9231 0.0769231 
+431 32 0.0769231 
+432 32.0769 0.0769231 
+433 32.1538 0.0769231 
+434 32.2308 0.0769231 
+435 32.3077 0.0769231 
+436 32.3846 0.0769231 
+437 32.4615 0.0769231 
+438 32.5385 0.0769231 
+439 32.6154 0.0769231 
+440 32.6923 0.0769231 
+441 32.7692 0.0769231 
+442 32.8462 0.0769231 
+443 32.9231 0.0769231 
+444 33 0.0769231 
+445 33.0769 0.0769231 
+446 33.1538 0.0769231 
+447 33.2308 0.0769231 
+448 33.3077 0.0769231 
+449 33.3846 0.0769231 
+450 33.4615 0.0769231 
+451 33.5385 0.0769231 
+452 33.6154 0.0769231 
+453 33.6923 0.0769231 
+454 33.7692 0.0769231 
+455 33.8462 0.0769231 
+456 33.9231 0.0769231 
+457 34 0.0769231 
+458 34.0769 0.0769231 
+459 34.1538 0.0769231 
+460 34.2308 0.0769231 
+461 34.3077 0.0769231 
+462 34.3846 0.0769231 
+463 34.4615 0.0769231 
+464 34.5385 0.0769231 
+465 34.6154 0.0769231 
+466 34.6923 0.0769231 
+467 34.7692 0.0769231 
+468 34.8462 0.0769231 
+469 34.9231 0.0769231 
+470 35 0.0769231 
+471 35.0769 0.0769231 
+472 35.1538 0.0769231 
+473 35.2308 0.0769231 
+474 35.3077 0.0769231 
+475 35.3846 0.0769231 
+476 35.4615 0.0769231 
+477 35.5385 0.0769231 
+478 35.6154 0.0769231 
+479 35.6923 0.0769231 
+480 35.7692 0.0769231 
+481 35.8462 0.0769231 
+482 35.9231 0.0769231 
+483 36 0.0769231 
+484 36.0769 0.0769231 
+485 36.1538 0.0769231 
+486 36.2308 0.0769231 
+487 36.3077 0.0769231 
+488 36.3846 0.0769231 
+489 36.4615 0.0769231 
+490 36.5385 0.0769231 
+491 36.6154 0.0769231 
+492 36.6923 0.0769231 
+493 36.7692 0.0769231 
+494 36.8462 0.0769231 
+495 36.9231 0.0769231 
+496 37 0.0769231 
+497 37.0769 0.0769231 
+498 37.1538 0.0769231 
+499 37.2308 0.0769231 
+500 37.3077 0.0769231 
+501 37.3846 0.0769231 
+502 37.4615 0.0769231 
+503 37.5385 0.0769231 
+504 37.6154 0.0769231 
+505 37.6923 0.0769231 
+506 37.7692 0.0769231 
+507 37.8462 0.0769231 
+508 37.9231 0.0769231 
+509 38 0.0769231 
+510 38.0769 0.0769231 
+511 38.1538 0.0769231 
+512 38.2308 0.0769231 
+513 38.3077 0.0769231 
+514 38.3846 0.0769231 
+515 38.4615 0.0769231 
+516 38.5385 0.0769231 
+517 38.6154 0.0769231 
+518 38.6923 0.0769231 
+519 38.7692 0.0769231 
+520 38.8462 0.0769231 
+521 38.9231 0.0769231 
+522 39 0.0769231 
+523 39.0769 0.0769231 
+524 39.1538 0.0769231 
+525 39.2308 0.0769231 
+526 39.3077 0.0769231 
+527 39.3846 0.0769231 
+528 39.4615 0.0769231 
+529 39.5385 0.0769231 
+530 39.6154 0.0769231 
+531 39.6923 0.0769231 
+532 39.7692 0.0769231 
+533 39.8462 0.0769231 
+534 39.9231 0.0769231 
+535 40 0.0769231 
+536 40.0769 0.0769231 
+537 40.1538 0.0769231 
+538 40.2308 0.0769231 
+539 40.3077 0.0769231 
+540 40.3846 0.0769231 
+541 40.4615 0.0769231 
+542 40.5385 0.0769231 
+543 40.6154 0.0769231 
+544 40.6923 0.0769231 
+545 40.7692 0.0769231 
+546 40.8462 0.0769231 
+547 40.9231 0.0769231 
+548 41 0.0769231 
+549 41.0769 0.0769231 
+550 41.1538 0.0769231 
+551 41.2308 0.0769231 
+552 41.3077 0.0769231 
+553 41.3846 0.0769231 
+554 41.4615 0.0769231 
+555 41.5385 0.0769231 
+556 41.6154 0.0769231 
+557 41.6923 0.0769231 
+558 41.7692 0.0769231 
+559 41.8462 0.0769231 
+560 41.9231 0.0769231 
+561 42 0.0769231 
+562 42.0769 0.0769231 
+563 42.1538 0.0769231 
+564 42.2308 0.0769231 
+565 42.3077 0.0769231 
+566 42.3846 0.0769231 
+567 42.4615 0.0769231 
+568 42.5385 0.0769231 
+569 42.6154 0.0769231 
+570 42.6923 0.0769231 
+571 42.7692 0.0769231 
+572 42.8462 0.0769231 
+573 42.9231 0.0769231 
+574 43 0.0769231 
+575 43.0769 0.0769231 
+576 43.1538 0.0769231 
+577 43.2308 0.0769231 
+578 43.3077 0.0769231 
+579 43.3846 0.0769231 
+580 43.4615 0.0769231 
+581 43.5385 0.0769231 
+582 43.6154 0.0769231 
+583 43.6923 0.0769231 
+584 43.7692 0.0769231 
+585 43.8462 0.0769231 
+586 43.9231 0.0769231 
+587 44 0.0769231 
+588 44.0769 0.0769231 
+589 44.1538 0.0769231 
+590 44.2308 0.0769231 
+591 44.3077 0.0769231 
+592 44.3846 0.0769231 
+593 44.4615 0.0769231 
+594 44.5385 0.0769231 
+595 44.6154 0.0769231 
+596 44.6923 0.0769231 
+597 44.7692 0.0769231 
+598 44.8462 0.0769231 
+599 44.9231 0.0769231 
+600 45 0.0769231 
+601 45.0769 0.0769231 
+602 45.1538 0.0769231 
+603 45.2308 0.0769231 
+604 45.3077 0.0769231 
+605 45.3846 0.0769231 
+606 45.4615 0.0769231 
+607 45.5385 0.0769231 
+608 45.6154 0.0769231 
+609 45.6923 0.0769231 
+610 45.7692 0.0769231 
+611 45.8462 0.0769231 
+612 45.9231 0.0769231 
+613 46 0.0769231 
+614 46.0769 0.0769231 
+615 46.1538 0.0769231 
+616 46.2308 0.0769231 
+617 46.3077 0.0769231 
+618 46.3846 0.0769231 
+619 46.4615 0.0769231 
+620 46.5385 0.0769231 
+621 46.6154 0.0769231 
+622 46.6923 0.0769231 
+623 46.7692 0.0769231 
+624 46.8462 0.0769231 
+625 46.9231 0.0769231 
+626 47 0.0769231 
+627 47.0769 0.0769231 
+WARNING: convergence for u.x not reached after 100 iterations
+  res: 579968 sum: -9.56677e+21 nrelax: 96 tolerance: 0.001
+WARNING: convergence for p not reached after 100 iterations
+  res: 5.66231e+08 sum: -9.55526e+23 nrelax: 53 tolerance: 0.169
+628 47.1538 0.0769231 
+WARNING: convergence for pf not reached after 100 iterations
+  res: 7.92282e+29 sum: -1.86905e+45 nrelax: 46 tolerance: 0.00558678
+WARNING: convergence for u.x not reached after 100 iterations
+  res: 1.0329e+121 sum: 1.12743e+138 nrelax: 100 tolerance: 0.001
+WARNING: convergence for p not reached after 100 iterations
+  res: 6.14575e+122 sum: 1.35749e+138 nrelax: 100 tolerance: 0.00139669
+629 48 0.846154 
+WARNING: convergence for pf not reached after 100 iterations
+  res: 1.23003e+260 sum: 3.31455e+271 nrelax: 93 tolerance: 0.004
+/home/antoine/basilisk/src/output.h:281: Assertion `i >= 0 && i < NCMAP - 1' failed.
+[antoine-Precision-5480:312450] *** Process received signal ***
+[antoine-Precision-5480:312450] Signal: Aborted (6)
+[antoine-Precision-5480:312450] Signal code:  (-6)
+[antoine-Precision-5480:312467] *** Process received signal ***
+[antoine-Precision-5480:312467] Signal: Aborted (6)
+[antoine-Precision-5480:312467] Signal code:  (-6)
+[antoine-Precision-5480:312464] *** Process received signal ***
+[antoine-Precision-5480:312464] Signal: Aborted (6)
+[antoine-Precision-5480:312464] Signal code:  (-6)
+[antoine-Precision-5480:312470] *** Process received signal ***
+[antoine-Precision-5480:312470] Signal: Aborted (6)
+[antoine-Precision-5480:312470] Signal code:  (-6)
+[antoine-Precision-5480:312451] *** Process received signal ***
+[antoine-Precision-5480:312451] Signal: Aborted (6)
+[antoine-Precision-5480:312451] Signal code:  (-6)
+[antoine-Precision-5480:312467] [ 0] [antoine-Precision-5480:312450] [ 0] [antoine-Precision-5480:312464] [ 0] [antoine-Precision-5480:312470] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x739dd7442520]
+[antoine-Precision-5480:312464] [ 1] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x75346b042520]
+[antoine-Precision-5480:312467] [ 1] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7fc7b3e42520]
+[antoine-Precision-5480:312450] [ 1] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x79c7e2e42520]
+[antoine-Precision-5480:312470] [ 1] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x739dd74969fc]
+[antoine-Precision-5480:312464] [ 2] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x75346b0969fc]
+[antoine-Precision-5480:312467] [ 2] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x79c7e2e969fc]
+[antoine-Precision-5480:312470] [ 2] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x79c7e2e42476]
+[antoine-Precision-5480:312470] [ 3] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7fc7b3e969fc]
+[antoine-Precision-5480:312450] [ 2] /lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x79c7e2e287f3]
+[antoine-Precision-5480:312470] [ 4] ./edgeTone(+0x5b7e)[0x55c13dfe5b7e]
+[antoine-Precision-5480:312470] [ 5] ./edgeTone(+0x43ebd)[0x55c13e023ebd]
+[antoine-Precision-5480:312470] [ 6] ./edgeTone(+0x448b8)[0x55c13e0248b8]
+[antoine-Precision-5480:312470] [ 7] ./edgeTone(+0x44e83)[0x55c13e024e83]
+[antoine-Precision-5480:312470] [ 8] ./edgeTone(+0x1499a)[0x55c13dff499a]
+[antoine-Precision-5480:312470] [ 9] ./edgeTone(+0x4736d)[0x55c13e02736d]
+[antoine-Precision-5480:312470] [10] ./edgeTone(+0x2936)[0x55c13dfe2936]
+[antoine-Precision-5480:312470] [11] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x75346b042476]
+[antoine-Precision-5480:312467] [ 3] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x739dd7442476]
+[antoine-Precision-5480:312464] [ 3] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7fc7b3e42476]
+[antoine-Precision-5480:312450] [ 3] [antoine-Precision-5480:312451] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x79c7e2e29d90]
+[antoine-Precision-5480:312470] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x79c7e2e29e40]
+[antoine-Precision-5480:312470] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7207c0242520]
+[antoine-Precision-5480:312451] [ 1] /lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x75346b0287f3]
+[antoine-Precision-5480:312467] [ 4] ./edgeTone(+0x5b7e)[0x644f369a4b7e]
+[antoine-Precision-5480:312467] [ 5] ./edgeTone(+0x43ebd)[0x644f369e2ebd]
+[antoine-Precision-5480:312467] [ 6] ./edgeTone(+0x448b8)[0x644f369e38b8]
+[antoine-Precision-5480:312467] [ 7] ./edgeTone(+0x44e83)[0x644f369e3e83]
+[antoine-Precision-5480:312467] [ 8] ./edgeTone(+0x1499a)[0x644f369b399a]
+[antoine-Precision-5480:312467] [ 9] ./edgeTone(+0x4736d)[0x644f369e636d]
+[antoine-Precision-5480:312467] [10] ./edgeTone(+0x2936)[0x644f369a1936]
+[antoine-Precision-5480:312467] [11] [13] ./edgeTone(+0x2975)[0x55c13dfe2975]
+[antoine-Precision-5480:312470] *** End of error message ***
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x739dd74287f3]
+[antoine-Precision-5480:312464] [ 4] ./edgeTone(+0x5b7e)[0x619274ddab7e]
+[antoine-Precision-5480:312464] [ 5] ./edgeTone(+0x43ebd)[0x619274e18ebd]
+[antoine-Precision-5480:312464] [ 6] ./edgeTone(+0x448b8)[0x619274e198b8]
+[antoine-Precision-5480:312464] [ 7] ./edgeTone(+0x44e83)[0x619274e19e83]
+[antoine-Precision-5480:312464] [ 8] ./edgeTone(+0x1499a)[0x619274de999a]
+[antoine-Precision-5480:312464] [ 9] ./edgeTone(+0x4736d)[0x619274e1c36d]
+[antoine-Precision-5480:312464] [10] ./edgeTone(+0x2936)[0x619274dd7936]
+[antoine-Precision-5480:312464] [11] /lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7fc7b3e287f3]
+[antoine-Precision-5480:312450] [ 4] ./edgeTone(+0x5b7e)[0x57eee8f45b7e]
+[antoine-Precision-5480:312450] [ 5] ./edgeTone(+0x43ebd)[0x57eee8f83ebd]
+[antoine-Precision-5480:312450] [ 6] ./edgeTone(+0x448b8)[0x57eee8f848b8]
+[antoine-Precision-5480:312450] [ 7] ./edgeTone(+0x44e83)[0x57eee8f84e83]
+[antoine-Precision-5480:312450] [ 8] ./edgeTone(+0x1499a)[0x57eee8f5499a]
+[antoine-Precision-5480:312450] [ 9] ./edgeTone(+0x4736d)[0x57eee8f8736d]
+[antoine-Precision-5480:312450] [10] ./edgeTone(+0x2936)[0x57eee8f42936]
+[antoine-Precision-5480:312450] [11] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x739dd7429d90]
+[antoine-Precision-5480:312464] [12] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x75346b029d90]
+[antoine-Precision-5480:312467] [12] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7fc7b3e29d90]
+[antoine-Precision-5480:312450] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7fc7b3e29e40]
+[antoine-Precision-5480:312450] [13] ./edgeTone(+0x2975)[0x57eee8f42975]
+[antoine-Precision-5480:312450] *** End of error message ***
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x75346b029e40]
+[antoine-Precision-5480:312467] [13] ./edgeTone(+0x2975)[0x644f369a1975]
+[antoine-Precision-5480:312467] *** End of error message ***
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x739dd7429e40]
+[antoine-Precision-5480:312464] [13] ./edgeTone(+0x2975)[0x619274dd7975]
+[antoine-Precision-5480:312464] *** End of error message ***
+/lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7207c02969fc]
+[antoine-Precision-5480:312451] [ 2] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7207c0242476]
+[antoine-Precision-5480:312451] [ 3] [antoine-Precision-5480:312452] *** Process received signal ***
+[antoine-Precision-5480:312452] Signal: Aborted (6)
+[antoine-Precision-5480:312452] Signal code:  (-6)
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7207c02287f3]
+[antoine-Precision-5480:312451] [ 4] ./edgeTone(+0x5b7e)[0x5eb57974eb7e]
+[antoine-Precision-5480:312451] [ 5] ./edgeTone(+0x43ebd)[0x5eb57978cebd]
+[antoine-Precision-5480:312451] [ 6] ./edgeTone(+0x448b8)[0x5eb57978d8b8]
+[antoine-Precision-5480:312451] [ 7] ./edgeTone(+0x44e83)[0x5eb57978de83]
+[antoine-Precision-5480:312451] [ 8] ./edgeTone(+0x1499a)[0x5eb57975d99a]
+[antoine-Precision-5480:312451] [ 9] ./edgeTone(+0x4736d)[0x5eb57979036d]
+[antoine-Precision-5480:312451] [10] ./edgeTone(+0x2936)[0x5eb57974b936]
+[antoine-Precision-5480:312451] [11] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7207c0229d90]
+[antoine-Precision-5480:312451] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7207c0229e40]
+[antoine-Precision-5480:312451] [13] ./edgeTone(+0x2975)[0x5eb57974b975]
+[antoine-Precision-5480:312451] *** End of error message ***
+[antoine-Precision-5480:312473] *** Process received signal ***
+[antoine-Precision-5480:312473] Signal: Aborted (6)
+[antoine-Precision-5480:312473] Signal code:  (-6)
+[antoine-Precision-5480:312476] *** Process received signal ***
+[antoine-Precision-5480:312476] Signal: Aborted (6)
+[antoine-Precision-5480:312476] Signal code:  (-6)
+[antoine-Precision-5480:312452] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7df86ea42520]
+[antoine-Precision-5480:312452] [ 1] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7df86ea969fc]
+[antoine-Precision-5480:312452] [ 2] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7df86ea42476]
+[antoine-Precision-5480:312452] [ 3] [antoine-Precision-5480:312479] *** Process received signal ***
+[antoine-Precision-5480:312479] Signal: Aborted (6)
+[antoine-Precision-5480:312479] Signal code:  (-6)
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7df86ea287f3]
+[antoine-Precision-5480:312452] [ 4] ./edgeTone(+0x5b7e)[0x5e687d6b2b7e]
+[antoine-Precision-5480:312452] [ 5] ./edgeTone(+0x43ebd)[0x5e687d6f0ebd]
+[antoine-Precision-5480:312452] [ 6] ./edgeTone(+0x448b8)[0x5e687d6f18b8]
+[antoine-Precision-5480:312452] [ 7] ./edgeTone(+0x44e83)[0x5e687d6f1e83]
+[antoine-Precision-5480:312452] [ 8] ./edgeTone(+0x1499a)[0x5e687d6c199a]
+[antoine-Precision-5480:312452] [ 9] ./edgeTone(+0x4736d)[0x5e687d6f436d]
+[antoine-Precision-5480:312452] [10] ./edgeTone(+0x2936)[0x5e687d6af936]
+[antoine-Precision-5480:312452] [11] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7df86ea29d90]
+[antoine-Precision-5480:312452] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7df86ea29e40]
+[antoine-Precision-5480:312452] [13] ./edgeTone(+0x2975)[0x5e687d6af975]
+[antoine-Precision-5480:312455] *** Process received signal ***
+[antoine-Precision-5480:312455] Signal: Aborted (6)
+[antoine-Precision-5480:312455] Signal code:  (-6)
+[antoine-Precision-5480:312452] *** End of error message ***
+[antoine-Precision-5480:312476] [ 0] [antoine-Precision-5480:312458] *** Process received signal ***
+[antoine-Precision-5480:312458] Signal: Aborted (6)
+[antoine-Precision-5480:312458] Signal code:  (-6)
+[antoine-Precision-5480:312473] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7723eaa42520]
+[antoine-Precision-5480:312476] [ 1] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7f2d80242520]
+[antoine-Precision-5480:312473] [ 1] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7723eaa969fc]
+[antoine-Precision-5480:312476] [ 2] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7723eaa42476]
+[antoine-Precision-5480:312476] [ 3] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7f2d802969fc]
+[antoine-Precision-5480:312473] [ 2] /lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7723eaa287f3]
+[antoine-Precision-5480:312476] [ 4] ./edgeTone(+0x5b7e)[0x57709b4eab7e]
+[antoine-Precision-5480:312476] [ 5] ./edgeTone(+0x43ebd)[0x57709b528ebd]
+[antoine-Precision-5480:312476] [ 6] ./edgeTone(+0x448b8)[0x57709b5298b8]
+[antoine-Precision-5480:312476] [ 7] ./edgeTone(+0x44e83)[0x57709b529e83]
+[antoine-Precision-5480:312476] [ 8] ./edgeTone(+0x1499a)[0x57709b4f999a]
+[antoine-Precision-5480:312476] [ 9] ./edgeTone(+0x4736d)[0x57709b52c36d]
+[antoine-Precision-5480:312476] [10] ./edgeTone(+0x2936)[0x57709b4e7936]
+[antoine-Precision-5480:312476] [11] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7f2d80242476]
+[antoine-Precision-5480:312473] [ 3] [antoine-Precision-5480:312480] *** Process received signal ***
+[antoine-Precision-5480:312480] Signal: Aborted (6)
+[antoine-Precision-5480:312480] Signal code:  (-6)
+/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7723eaa29d90]
+[antoine-Precision-5480:312476] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7723eaa29e40]
+[antoine-Precision-5480:312476] [13] ./edgeTone(+0x2975)[0x57709b4e7975]
+[antoine-Precision-5480:312476] *** End of error message ***
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7f2d802287f3]
+[antoine-Precision-5480:312473] [ 4] ./edgeTone(+0x5b7e)[0x563f3fa67b7e]
+[antoine-Precision-5480:312473] [ 5] ./edgeTone(+0x43ebd)[0x563f3faa5ebd]
+[antoine-Precision-5480:312473] [ 6] ./edgeTone(+0x448b8)[0x563f3faa68b8]
+[antoine-Precision-5480:312473] [ 7] ./edgeTone(+0x44e83)[0x563f3faa6e83]
+[antoine-Precision-5480:312473] [ 8] ./edgeTone(+0x1499a)[0x563f3fa7699a]
+[antoine-Precision-5480:312473] [ 9] ./edgeTone(+0x4736d)[0x563f3faa936d]
+[antoine-Precision-5480:312473] [10] ./edgeTone(+0x2936)[0x563f3fa64936]
+[antoine-Precision-5480:312473] [11] [antoine-Precision-5480:312479] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7435bbc42520]
+[antoine-Precision-5480:312479] [ 1] [antoine-Precision-5480:312485] *** Process received signal ***
+[antoine-Precision-5480:312485] Signal: Aborted (6)
+[antoine-Precision-5480:312485] Signal code:  (-6)
+/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7f2d80229d90]
+[antoine-Precision-5480:312473] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7f2d80229e40]
+[antoine-Precision-5480:312473] [13] ./edgeTone(+0x2975)[0x563f3fa64975]
+[antoine-Precision-5480:312473] *** End of error message ***
+[antoine-Precision-5480:312455] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x77502e442520]
+[antoine-Precision-5480:312455] [ 1] [antoine-Precision-5480:312458] [ 0] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7435bbc969fc]
+[antoine-Precision-5480:312479] [ 2] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7435bbc42476]
+[antoine-Precision-5480:312479] [ 3] [antoine-Precision-5480:312480] [ 0] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x77502e4969fc]
+[antoine-Precision-5480:312455] [ 2] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7610f1642520]
+[antoine-Precision-5480:312458] [ 1] /lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7435bbc287f3]
+[antoine-Precision-5480:312479] [ 4] ./edgeTone(+0x5b7e)[0x58095db53b7e]
+[antoine-Precision-5480:312479] [ 5] ./edgeTone(+0x43ebd)[0x58095db91ebd]
+[antoine-Precision-5480:312479] [ 6] ./edgeTone(+0x448b8)[0x58095db928b8]
+[antoine-Precision-5480:312479] [ 7] ./edgeTone(+0x44e83)[0x58095db92e83]
+[antoine-Precision-5480:312479] [ 8] ./edgeTone(+0x1499a)[0x58095db6299a]
+[antoine-Precision-5480:312479] [ 9] ./edgeTone(+0x4736d)[0x58095db9536d]
+[antoine-Precision-5480:312479] [10] ./edgeTone(+0x2936)[0x58095db50936]
+[antoine-Precision-5480:312479] [11] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7435bbc29d90]
+[antoine-Precision-5480:312479] [12] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7610f16969fc]
+[antoine-Precision-5480:312458] [ 2] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x77502e442476]
+[antoine-Precision-5480:312455] [ 3] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7435bbc29e40]
+[antoine-Precision-5480:312479] [13] ./edgeTone(+0x2975)[0x58095db50975]
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x77502e4287f3]
+[antoine-Precision-5480:312455] [ 4] ./edgeTone(+0x5b7e)[0x5d7a55c39b7e]
+[antoine-Precision-5480:312455] [ 5] ./edgeTone(+0x43ebd)[0x5d7a55c77ebd]
+[antoine-Precision-5480:312455] [ 6] ./edgeTone(+0x448b8)[0x5d7a55c788b8]
+[antoine-Precision-5480:312455] [ 7] ./edgeTone(+0x44e83)[0x5d7a55c78e83]
+[antoine-Precision-5480:312455] [ 8] ./edgeTone(+0x1499a)[0x5d7a55c4899a]
+[antoine-Precision-5480:312455] [ 9] ./edgeTone(+0x4736d)[0x5d7a55c7b36d]
+[antoine-Precision-5480:312455] [10] ./edgeTone(+0x2936)[0x5d7a55c36936]
+[antoine-Precision-5480:312455] [11] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x77502e429d90]
+[antoine-Precision-5480:312455] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x77502e429e40]
+[antoine-Precision-5480:312455] [13] ./edgeTone(+0x2975)[0x5d7a55c36975]
+[antoine-Precision-5480:312455] *** End of error message ***
+[antoine-Precision-5480:312461] *** Process received signal ***
+[antoine-Precision-5480:312461] Signal: Aborted (6)
+[antoine-Precision-5480:312461] Signal code:  (-6)
+/lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7abfcb642520]
+[antoine-Precision-5480:312480] [ 1] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7abfcb6969fc]
+[antoine-Precision-5480:312480] [ 2] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7abfcb642476]
+[antoine-Precision-5480:312480] [ 3] /lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7abfcb6287f3]
+[antoine-Precision-5480:312480] [ 4] ./edgeTone(+0x5b7e)[0x60a5e1e8cb7e]
+[antoine-Precision-5480:312480] [ 5] ./edgeTone(+0x43ebd)[0x60a5e1ecaebd]
+[antoine-Precision-5480:312480] [ 6] ./edgeTone(+0x448b8)[0x60a5e1ecb8b8]
+[antoine-Precision-5480:312480] [ 7] ./edgeTone(+0x44e83)[0x60a5e1ecbe83]
+[antoine-Precision-5480:312480] [ 8] ./edgeTone(+0x1499a)[0x60a5e1e9b99a]
+[antoine-Precision-5480:312480] [ 9] ./edgeTone(+0x4736d)[0x60a5e1ece36d]
+[antoine-Precision-5480:312480] [10] ./edgeTone(+0x2936)[0x60a5e1e89936]
+[antoine-Precision-5480:312480] [11] [antoine-Precision-5480:312485] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7fbf59042520]
+[antoine-Precision-5480:312485] [ 1] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7fbf590969fc]
+[antoine-Precision-5480:312485] [ 2] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7610f1642476]
+[antoine-Precision-5480:312458] [ 3] /lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7610f16287f3]
+[antoine-Precision-5480:312458] [ 4] ./edgeTone(+0x5b7e)[0x588ed1a73b7e]
+[antoine-Precision-5480:312458] [ 5] ./edgeTone(+0x43ebd)[0x588ed1ab1ebd]
+[antoine-Precision-5480:312458] [ 6] ./edgeTone(+0x448b8)[0x588ed1ab28b8]
+[antoine-Precision-5480:312458] [ 7] ./edgeTone(+0x44e83)[0x588ed1ab2e83]
+[antoine-Precision-5480:312458] [ 8] ./edgeTone(+0x1499a)[0x588ed1a8299a]
+[antoine-Precision-5480:312458] [ 9] ./edgeTone(+0x4736d)[0x588ed1ab536d]
+[antoine-Precision-5480:312458] [10] ./edgeTone(+0x2936)[0x588ed1a70936]
+[antoine-Precision-5480:312458] [11] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7610f1629d90]
+[antoine-Precision-5480:312458] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7610f1629e40]
+[antoine-Precision-5480:312458] [13] ./edgeTone(+0x2975)[0x588ed1a70975]
+[antoine-Precision-5480:312458] *** End of error message ***
+[antoine-Precision-5480:312479] *** End of error message ***
+/lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7abfcb629d90]
+[antoine-Precision-5480:312480] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7abfcb629e40]
+[antoine-Precision-5480:312480] [13] ./edgeTone(+0x2975)[0x60a5e1e89975]
+[antoine-Precision-5480:312480] *** End of error message ***
+/lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7fbf59042476]
+[antoine-Precision-5480:312485] [ 3] /lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7fbf590287f3]
+[antoine-Precision-5480:312485] [ 4] ./edgeTone(+0x5b7e)[0x5daab1ddcb7e]
+[antoine-Precision-5480:312485] [ 5] ./edgeTone(+0x43ebd)[0x5daab1e1aebd]
+[antoine-Precision-5480:312485] [ 6] ./edgeTone(+0x448b8)[0x5daab1e1b8b8]
+[antoine-Precision-5480:312485] [ 7] ./edgeTone(+0x44e83)[0x5daab1e1be83]
+[antoine-Precision-5480:312485] [ 8] ./edgeTone(+0x1499a)[0x5daab1deb99a]
+[antoine-Precision-5480:312485] [ 9] ./edgeTone(+0x4736d)[0x5daab1e1e36d]
+[antoine-Precision-5480:312485] [10] ./edgeTone(+0x2936)[0x5daab1dd9936]
+[antoine-Precision-5480:312485] [11] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x7fbf59029d90]
+[antoine-Precision-5480:312485] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x7fbf59029e40]
+[antoine-Precision-5480:312485] [13] ./edgeTone(+0x2975)[0x5daab1dd9975]
+[antoine-Precision-5480:312485] *** End of error message ***
+[antoine-Precision-5480:312461] [ 0] /lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x789b50642520]
+[antoine-Precision-5480:312461] [ 1] /lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x789b506969fc]
+[antoine-Precision-5480:312461] [ 2] /lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x789b50642476]
+[antoine-Precision-5480:312461] [ 3] /lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x789b506287f3]
+[antoine-Precision-5480:312461] [ 4] ./edgeTone(+0x5b7e)[0x585fdda80b7e]
+[antoine-Precision-5480:312461] [ 5] ./edgeTone(+0x43ebd)[0x585fddabeebd]
+[antoine-Precision-5480:312461] [ 6] ./edgeTone(+0x448b8)[0x585fddabf8b8]
+[antoine-Precision-5480:312461] [ 7] ./edgeTone(+0x44e83)[0x585fddabfe83]
+[antoine-Precision-5480:312461] [ 8] ./edgeTone(+0x1499a)[0x585fdda8f99a]
+[antoine-Precision-5480:312461] [ 9] ./edgeTone(+0x4736d)[0x585fddac236d]
+[antoine-Precision-5480:312461] [10] ./edgeTone(+0x2936)[0x585fdda7d936]
+[antoine-Precision-5480:312461] [11] /lib/x86_64-linux-gnu/libc.so.6(+0x29d90)[0x789b50629d90]
+[antoine-Precision-5480:312461] [12] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x80)[0x789b50629e40]
+[antoine-Precision-5480:312461] [13] ./edgeTone(+0x2975)[0x585fdda7d975]
+[antoine-Precision-5480:312461] *** End of error message ***
+--------------------------------------------------------------------------
+Primary job  terminated normally, but 1 process returned
+a non-zero exit code. Per user-direction, the job has been aborted.
+--------------------------------------------------------------------------
+--------------------------------------------------------------------------
+mpirun noticed that process rank 13 with PID 0 on node antoine-Precision-5480 exited on signal 6 (Aborted).
+--------------------------------------------------------------------------

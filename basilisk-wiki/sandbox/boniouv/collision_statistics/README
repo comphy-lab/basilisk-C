@@ -1,0 +1,11 @@
+# Collision statistics of finite-size monodisperse droplets in homogeneous isotropic turbulence
+This foler contains:
+
+* The [header](collision.h) to post-process a droplet-laden flow 
+and extract collision statistics from it.
+* The [initialization of the HIT](initHIT.c) used as an input in 
+the droplet-laden turbulence simulation.
+* A [minimal test](collisionBinary.c) to verify the post-processing for a 
+binary collision in 2D.
+* The [droplet-laden HIT solver](collisionHIT.c) used to study the 
+collision statistics.

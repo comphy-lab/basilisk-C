@@ -1,0 +1,201 @@
+# Gnuplot basics
+
+## Plot an interface and a vector field
+
+### Typing commands
+~~~ literatec
+gnuplot > plot [-2:2][-2:2]'velocity-100' u 1:2:($3*1e4):($4*1e4) w vec lc rgb "black", 'interface-100' u 1:2 w l lt rgb "violet"
+~~~
+
+### How to generate the file in Basilisk
+
+*velocity-i*
+
+~~~literatec
+event velocity (i+=100) {
+ 
+  char *outfile1 = NULL;
+  outfile1 = (char *) malloc(sizeof(char) * 256);
+  sprintf(outfile1, "velocity-%d", i);
+  FILE * fp_velocity = fopen (outfile1, "w");
+  output_field ({u.x,u.y}, fp_velocity, linear = true);
+  fclose(fp_velocity);
+
+}
+~~~
+
+*interface-i*
+
+~~~literatec
+event interface (i+=100) {
+ 
+  char *outfile2 = NULL;
+  outfile2 = (char *) malloc(sizeof(char) * 256);
+  sprintf(outfile2, "interface-%d", i);
+  FILE * fp_interface = fopen (outfile2, "w");
+  output_facets (c, fp_interface);
+  fclose(fp_interface);
+}
+~~~
+
+### What's in the file
+*velocity-100*
+
+~~~literatec
+# 1:x 2:y 3:u.x 4:u.y
+-19.9609 -19.9609 0.00588741 -2.19209e-06
+-19.9609 -19.8828 0.00588709 -6.67147e-06
+-19.9609 -19.8047 0.00588784 -1.12894e-05
+
+...
+~~~
+
+*interface-100*
+
+~~~literatec
+# 1:x_A 2:y_A
+# 3:x_B 4:y_B
+# \n - new line
+-0.710403 0.703125
+-0.703125 0.710403
+
+-0.703125 0.710497
+-0.625 0.780838
+
+-0.780838 0.625
+-0.710497 0.703125
+
+...
+~~~
+
+for plotting AB segments
+
+## Plot y(x)
+### Typing command
+
+~~~ literatec
+gnuplot > plot 'v.dat' u 1:2 lc rgb "blue" lt 1 pt 7 ps 1.5;
+~~~
+
+### How to generate the file in Basilisk
+
+*v.dat*
+
+~~~literatec
+event velocity(i++){
+	double v_x = 0.;
+	double v_y = 0.;
+	double vol = 0.;
+	
+	foreach(){
+		v_x += c[] * u.x[] * dv() ;
+		v_y += c[] * u.y[] * dv() ;
+		vol += c[] * dv();
+	}
+	
+	double  V_x = v_x / vol ;
+	double  V_y = v_y / vol ;
+	
+  FILE * fp_v = fopen ("v.dat", "a");
+  fprintf(fp_v,"%d %g %g\n",i,V_x,V_y);
+  fclose(fp_v);
+}
+~~~
+
+### What's in the file
+
+*v.dat*
+
+~~~ literatec
+# 1:i 2:u.x 3:u.y
+0 0 0
+1 -0.18086 0.180693
+2 -0.000273179 0.000202897
+3 0.00270616 -0.00317989
+
+~~~
+
+## Study the evolution of a tracer for a given abscisse or ordinate
+
+The function [interpolate()](http://basilisk.fr/src/grid/cartesian-common.h#598) allows to take the values for given coordinates.
+
+~~~ literatec
+event print (i+=10) {
+ 
+ for (double y = -L/2 ; y <= L/2; y += 0.01){
+ 
+ char *outfile3 = NULL;
+ outfile3 = (char *) malloc(sizeof(char) * 256);
+ sprintf(outfile3, "D-%d", i);
+ FILE * fp_D = fopen (outfile3, "a");
+ fprintf(fp_D,"%g %g \n", y, interpolate (c, 0, y));
+ fclose(fp_D);	
+ }
+}
+~~~
+
+# Gnuplot video
+
+## Typing commands
+
+~~~literatec
+gnuplot > n=0
+gnuplot > load 'file_name.gp'
+~~~
+
+## 'file_name.gp'
+
+### Interface and vector field
+~~~literatec
+interface(n) = sprintf("interface-%d", n)
+velocity(n)  = sprintf("velocity-%d", n)
+
+if ( n <= 1000 )
+
+plot [-3:3][-2:2] interface(n) u 1:2 w l lt rgb "violet", velocity(n) u 1:2:($3*1):($4*1) w vec lc rgb "black"
+
+n=n+1
+pause 0.1 // if there is not a lot of points, the plots appear too quick, so a pause time  [s] is needed
+reread
+~~~
+
+### XYZ splot - gradient of sigma in x direction
+
+~~~literatec
+Gx_sigma(n) = sprintf("Gx_sigma-%d", n)
+
+if ( n <= 10 )
+
+splot Gx_sigma(n) u 1:2:4 w lines
+// ou splot Gx_sigma(n) u 1:2:4 w pm3d
+
+pause 1
+n=n+1
+reread
+~~~
+
+## How to generate the file in Basilisk
+
+###[Velocity and interface file generation](#how-to-generate-the-file-in-basilisk)
+
+### Gradient of sigma in x direction
+
+~~~literatec
+   for (scalar c in interfaces){
+   
+     scalar sigma_temp = c.sigma;
+
+       foreach(){ 
+
+          double Gx_sigma = sigma_temp[] - sigma_temp[-1,0] ; 
+    
+	  char *outfile3 = NULL;
+          outfile3 = (char *) malloc(sizeof(char) * 256);
+          sprintf(outfile3, "Gx_sigma-%d", i);
+          FILE * fp_Gx_sigma = fopen (outfile3, "a");
+          fprintf(fp_Gx_sigma,"%g %g %g %g %g\n",x,y,Gx_sigma, sigma_temp[], sigma_temp[-1,0]);
+          fclose(fp_Gx_sigma);
+
+       }
+   }
+~~~

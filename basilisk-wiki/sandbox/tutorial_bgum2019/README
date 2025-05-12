@@ -1,0 +1,35 @@
+/**
+# BGUM 2019 basic tutorial
+
+If you found this page looking for _the_ tutorial, follow [this
+link](/Tutorial).
+
+The last day of [BGUM 2019](/BGUM2019) was dedicated to doing
+tutorials. During the basic beginners-tutorial session we aimed to create a
+simple diffusion problem. Piece by piece, we coded and discussed some
+considerations for the following example:
+
+* [A simple diffusion problem in Basilisk. (including some
+discussion)](diff.c)
+
+Then we extended this code to run with a space-varyimg diffusivity and
+employed an adaptive grid for the computations:
+
+* [An extended simple diffusion problem.](diff_v.c)
+
+We also discussed some general concepts regarding the various grids
+types in Baslisk.
+
+* [As also presented here](/sandbox/Antoonvh/The_Tree-Grid_Structure_in_Basilisk)
+
+Due to a lack of time we did not do the following exersizes:
+
+* [Implement "our own" diffusion solver](diffusion2.h)
+
+* [Test this new solver formulation](diff2.c)
+
+## Repeated message:
+
+It is wise to learn from *all* of the [examples](/src/examples/README)
+and read the documentation that comes along with the [solver and
+functions](/src/README) that you `#include`.

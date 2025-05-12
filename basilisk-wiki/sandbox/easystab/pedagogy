@@ -1,0 +1,590 @@
+This page is not a Octave/Matlab code, it is a general pedagogical introduction to the ways things are done in Easystab.
+
+# General philosophy
+
+Often when dealing with physical systems with the computer, we march in time the mathematical models of the system, this is *simulation*. We can do this with Easystab but this is only one of the posibilities. The central aspect of Easystab is to find *steady states* of the physical system and study their *stability*.
+
+We compute solutions to nonlinear equations using the Newton iterations (see below), which means that we build the Jacobian of the nonlinear equations. For stability, we study the eigenvalues of the Jacobian. So building the Jacobian is a central tool of Easystab. In general, we like to build in matrices the physical representations of the linear systems that we manipulate. This is opposite to what is done in *matrix-free* techniques.
+
+The Jacobians are built by combining *differentiation matrices*.
+
+With these general tools, we can also solve for time varying problems by considering time just like another spatial dimension. So a 1D time varying problem is in fact a 2D problem and this can be solve globally. See for instance [burgers_global.m]().
+
+
+# Differentiation matrices
+
+The variables (the unknows) are discretized on spatial and temporal grids. In 1D this is a column vector. The differentiation is a linear operation, it can thus be represented physically by a matrix-vector product. This is a general fact, unrelated to the type of interpolant you would like to use to approximate the continuous idea of derivative. We call this matrix the *differentiation matrix*. Examples are given in [diffmat.m]().
+
+Several discretization methods are possible to construct the differentiation matrices. The simplest one is the *finite difference method* [diffmat.m]().
+Another very popular one is the *Chebyshev collocation method* []() which is used in most of the examples for classical flow instabilities. Both methods and a number of other ones (Fourier collocation, Hermite collocation, mapped Chebyshev collocation...) are implemented in [dif1D.m](). Theoretical details on how to construct the differentitation matrices using collocation methods are given [discretizationmethods.m](here).
+
+The concept of differentiation matrices works as well in 2D or 3D. In 2D for instance, the unknown depends of two spatial directions for instance $x$ and $y$. if you discretize these two directions, your unknown will become a rectangular array. To generalize the differentiation as a matrix-vector product, we transform the array into a long column vector. Assume $f$ is an array with *Ny* rows and *Nx* columns, then this transformation is coded
+
+    f=f(:)
+    
+When this transformation is done, you can compute the derivatives by building a differentiation matrix that accounts for the way the values of the rectangular array are put into a vector. Examples are given in [diffmat_2D.m]() for 2D and in [diffmat_3D.m]() in 3D.
+
+# Notations
+
+The second derivative of $\phi(x,y)$ with respect to $y$ is usually noted
+$$
+\frac{\partial^2 \phi}{\partial y^2}
+$$
+but here we chose the shorter notation
+$$
+\phi_{yy}.
+$$
+
+When manipulating linear systems, it is convenient to use matrix-vector representation. In this case it is useful to have a notation for the differentiation operator. The operator for the second derivative in $y$ is noted
+$$
+\partial_{yy}
+$$
+
+For instance for the linear system of equations (linearized Navier-Stokes and continuity in 2D)
+$$
+\begin{array}{l}
+\rho u_t=-p_x+\mu (u_{xx}+u_{yy})\\
+\rho v_t=-p_y+\mu (v_{xx}+v_{yy})\\
+u_x+v_y=0\\
+\end{array},
+$$ 
+it is convenient to write it as
+$$
+\left(\begin{array}{ccc}\rho&0&0\\0&\rho&0\\0&0&0\end{array}\right)
+\left(\begin{array}{c}
+u_t \\ v_t\\ p_t\\ 
+\end{array}\right)
+=
+\left(\begin{array}{ccc}
+\mu(\partial_{xx}+\partial_{yy})&0&-\partial_x\\
+0&\mu(\partial_{xx}+\partial_{yy})&-\partial_y\\
+\partial_x&\partial_y&0\\
+\end{array}\right)
+\left(\begin{array}{c}
+u \\ v\\ p\\ 
+\end{array}\right)
+$$
+or even shorter
+$$
+Eq_t=Aq.
+$$
+
+When we are interested in the value of a variable at a given position we use the notation $|$, for instance the value of $u$ at $x=0$ is
+$$
+u|_{x=0}
+$$
+or if the context is clear
+$$
+u|_0.
+$$
+We can write this with an oerator notation
+$$
+u|_0=I|_0u.
+$$
+The same way for derivatives
+$$
+u_x|_0=\partial_x|_0 u.
+$$
+This is useful for boundary conditions. For instance to write a slip boundary condition at a top wall at $y=L$ and bottom wall at $y=0$ for the fluid flow above, we have
+$$
+\begin{array}{l}
+u_y|_0=0\\
+v|_0=0\\
+u_y|_L=0\\
+v|_L=0\\
+\end{array}
+$$
+which can be written in operator notation as
+$$
+\left(\begin{array}{ccc}
+\partial_y|_0&0&0\\
+0&I|_0&0\\
+\partial_y|_L&0&0\\
+0&I|_L&0\\
+\end{array}\right)
+\left(\begin{array}{c}
+u \\ v\\ p\\ 
+\end{array}\right)=0
+$$
+or even shorter 
+$$
+Cq=0.
+$$
+
+This operator notation in the mathematics is very close to the way things are coded. If *I* is the identity matrix and *q* the variable, then
+
+    I(1,:)*q
+
+is the value of *q* at the first grid point. Equivalently if *D* is the differentiation matrix, then
+
+    D(1,:)*q
+
+is the derivative of *q* at the first grid point. In 2D, if *l.top* is the vector of indices of the top cells and *Dx* is the $x$ differentiation matrix, then
+
+   Dx(l.top,:)*q
+
+is the vector of the $x$ derivative of $q$ at the top boundary.
+
+To summarize:
+
+* Subscripts denote the derivatives
+* $\partial$ denote the differentiation operators
+* $|$ are the locations
+* $q$ is the state vector
+* $f(q)$ is a nonlinear function
+* $A$ is the Jacobian of *f* near *q*
+* $Eq_t=Aq$ is a linear dynamic system
+* $Cq=0$ are the boundary conditions
+
+
+# Boundary conditions
+
+We manipulate differential equations, so we need to impose boundary conditions. A differentiation matrix is not invertible because its rank is less than the number of degrees of freedom. 
+
+For instance if $g$ is the derivative of $f$ you have
+$$
+g=Df
+$$
+with $D$ a differentiation matrix. If you have $f$ and you want to know $g$ this is easy, just a matrix-vector product to do. But if you have $g$ and you want $f$ you will have to invert $D$ and solve
+$$
+f=D^{-1}g.
+$$
+But you cannot do this because $D$ is not invertible. Why? Simply because for a given $g$ there are many possible solution. The computer cannot chose for you, you have to tell which one you want, and this is done by imposing boundary conditions.
+
+The fact that $D$ is not invertible can be rephrased as *one of the equations is linear a combination of the other equations*. So basically we can remove this equation if we find it a replace it with a more useful equation, for instance that tells that we want that the value of $g$ at the first grid point to be 0. Examples are given in [differential_equation.m]().
+
+In the codes, we use always the same notatino to impose the boundary conditions, first we assemble the vector 
+
+    loc
+
+of the indices of the equations that can be removed and replaced with the equations for the boundary conditions. This is typically the boundary cells. Then we assemble the matrix
+
+    C
+
+of the boundary conditions, such that $Cq=0$ are the boundary conditions.
+
+Then we replace these equations in the system matrices. For the nonlinear function and the associated jacobian we replace
+
+    f(loc)=C*q
+    A(loc,:)=C;
+    
+For the dynamic system $Eq_t=Aq$ we replace
+
+    E(loc,:)=0;
+    A(loc,:)=C;
+
+such that the lines of the system corresponding the the values of the indices in *loc* are effectivelly the boundary conditions: 
+$$
+0\times q_t=C q.
+$$
+See for instance [poiseuille_uvp.m#boundary-conditions]().
+
+A quick way to code non-homogeneous boundary conditions is by building a variable $q_0$ (typicaly the initial guess of the Newton iterations) that satisfies these boundary conditions, and imposing that the state variable have the same boundary conditions: 
+
+    f(loc)=C*(q-q0)
+    A(loc,:)=C;
+
+see for instance [venturi.m]().
+
+
+
+
+
+
+
+
+
+
+
+# Solving nonlinear equations
+
+if *q* is the vector of all the variables of the system, then the nonlinear model for this system can be written
+$$   
+f(q)=0
+$$    
+The *q* that satisfies this equation is a steady state of my system. 
+
+To solve this kind of problem we use Newton iterations. This is very simple. Assume that you have an initial guess $q_n$ wich is not too far from a steady state, then you look for an increment $\tilde{q}$ such that $q_n+\tilde{q}$ is the solution. This means tht you want to find *\tilde{q}* that satisfies the equation
+$$
+f(q_n+\tilde{q})=0
+$$
+this equation is nonlinear so it is difficult to solve. We can on the other hand solve a simplified version of this equation, by approximating $f$ by a linear function. For this we write
+$$
+f(q_n+\tilde{q})\approx f(q_n)+a(\tilde{q})+O(\tilde{q}^2)
+$$
+and we neglect the order two terms $O(\tilde{q}^2)$. Since $a(\tilde{q})$ is linear we can rewrite it as a matrix-vector product
+$$
+f(q_n+\tilde{q})\approx f(q_n)+A\tilde{q})+O(\tilde{q}^2)
+$$
+and we call the matrix $A$ the *Jacobian* of $f$ about $q_n$. 
+
+Using this linear aproximation of $f$ we can get an new solution $q_{n+1}$ by solving
+$$
+\tilde{q}=-A^{-1}f(q_{n})
+$$
+thus 
+$$
+q_{n+1}=q_{n}-A^{-1}f(q_{n}).
+$$
+This is likey to be a better approximation then $q_n$ if the linearization of $f$ is a good approximation of $f$, which is the case is the initial guess is not too far from the solution.
+
+For an example, see [meniscus.m]().
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Systems with several equations
+
+Physical systems typically combine several equations for several unknown variables. We always build a unified representation of the system as
+$$
+f(q)=0
+$$
+where $f$ combines all the equations and $q$ combines all the variables. For instance if we have three variables $u,v,p$, then $q$ is the column vector that concatenates the variables
+$$
+q=
+\begin{pmatrix}
+u\\ v\\p
+\end{pmatrix}
+$$
+And $f$ is the column concatenation of the three equations
+$$
+f(q)=\begin{pmatrix}
+f_u(u,v,p)\\
+f_v(u,v,p)\\
+f_p(u,v,p)
+\end{pmatrix}=0
+$$
+Doing this, the Jacobian of $f$ will be a $3\times3$ block concatenation of the Jacobians of the 3 equations
+$$
+A=\begin{pmatrix}
+A_{uu}&A_{uv}&A_{up}\\
+A_{vu}&A_{vv}&A_{vp}\\
+A_{pu}&A_{pv}&A_{pp}\\
+\end{pmatrix}
+$$
+The submatrices of this big Jacobians correspond to the way each of the functions $f_i$ depend on each of the variables, for instance
+$$
+\begin{array}{l}
+f_v(u,v,p+\tilde{p})\\
+=f_v(u,v,p)+a(\tilde{p})+O(\tilde{p}^2)\\
+\approx f_v(u,v,p)+A_{vp}\tilde{p}
+\end{array}
+$$
+is a linear approximation of how $f_v$ depends on $p$.
+
+In order not to get lost with all the variables in the vector of unknowns we build *location vectors* that store the index location of each of the variables. For instance if the grid has *N* cells, we build
+
+    l.u=(1:N)';
+    l.v=(N+1:2*N)';
+    l.p=(2*N+1:3*N)';
+    
+where the quote *'* denotes the matrix transpose to transform the row vector *1:N* into a column vector. See [vibrating_string.m]() for an example.
+
+Using these location vectors I can now extract the value of u, v and p from the state q once it is computed by the following commands (I select from the vector q the cells whose indices are stored in the location vectors):
+
+    u=q(l.u);
+    v=q(l.v);
+    p=q(l.p);
+
+
+
+
+
+# Location vectors and matrices
+
+
+## Location vectors
+
+The use of location vectors is much larger than just accessing the different variables in a state vector q. In general it is good to know where in q are the data you are interested in. For instance the value of a variable at a wall or at a free surface. In our grids, the position of the cell increase with its number, which means that if the vector u is the discretization with N cells of a 1D function $u(x)$, then u(1) is the leftmost value of u and u(N) is the rightmost value of u. This is the same in 2D and 3D for $y$ and $z$.  
+
+A good example for this is the location vectors for the boundaries and corners for a 2D grid, see for instance [diffmat_2D.m] and [dif2D.m]() where they are built and see above [#1D,-2D-and-3D] a discussion on how the dimensionality is treated. We build a structure l with fields l.top l.bot, l.right, l.left, l.cor, l.ctl, l.ctr, l.cbl, l.cbr. Following on the example above of the state q, if I want to store in *utop* the value of variable u at the top of the grid I do
+
+    utop=q(l.u(l.top));
+
+In this command line, when I do *l.u(l.top)*, I select from the location vector l.u the cells which correspond to the indices in *l.top* (the top cells) and I use this to extract *utop* from q. 
+
+Note that the location vectors l.top, l.bot, l.right ... are defined on just one single 2D grid and not for the cells of the full state variable *q*. This is why I need to do *q(l.u(l.top))* and not just q(l.top). To simplify the notation, I could build a new field in *l*:
+
+    l.utop=l.u(l.top);
+    utop=q(l.utop);
+
+
+## Location matrices
+
+It is nice to be able to access the desired parts of the state $q$, but we need more than that because all in Easystab is based on an operator formulation. Indeed most of the operations that we do are based on a matrix description of the physics to be able to use the ful power of linear algebra. So we need to access the different elements of $q$ with matrices and we do this by combining location vectors with identity matrices. This is based on the idea of submatrix selection: we can select from a matrix a given number of lines and a given number of columns at the same time. This is illustrated on the figure:
+
+![Selection of submatrices](submatrices.png)
+
+This is one of the basic functionalities of Octave/Matlab. To transform into an operator the action of selection we select the lines of an identity matrix of the size of $q$. For this we only need to select the desired lines and keep of the columns:
+
+![Selection of submatrices](selectionmatrix.png)
+
+Thus the operation of creating *utop* above can now be written
+
+    utop=I(l.u(l.top)),:)*q
+
+where *I* is an identity matrix with the same size as $q$. 
+
+We need to proceed yet further, because we may need to access the values of $q$ but also its derivative using this operator formulation. For instance If I want to store in uytop the $y$ derivative of  variable $u$ at the top of the grid I do
+
+    uytop=D.y(l.top,:)*I(l.u,:)*q;
+
+and you see that I do this in two steps. First using the identity matrix, I select $u$ from $q$ and then I do a selection in the 2D differentiation matrix of the lines that correspond to the top of the mesh. It is off course not possible to first select the top values of $u$ and then compute the derivative since for the $y$ derivative I need to know the values of $u$ inside the domain (and even more using spectral differentiation since then I need to know the values of $u$ in the full mesh to compute its derivatives!).
+
+Sometimes we may use an slightly different method to avoid the use of the identity matrix. I build a composite differentiation matrix DDy for the full state variable $q$
+
+    DDy=blkdiag(Dy,Dy,Dy);
+    
+Here, *blkdiag* means *block diagonal*. It builds the matrix that looks as follow
+$$
+DDy=\begin{pmatrix}
+Dy & 0 & 0 \\
+0 & Dy & 0 \\
+0 & 0 & Dy \\
+\end{pmatrix}
+$$
+So I can compute at once the $y$ derivative of all the variables in $q$
+$$
+\begin{pmatrix}
+u_y \\
+v_y \\
+p_y \\
+\end{pmatrix}=
+\begin{pmatrix}
+Dy & 0 & 0 \\
+0 & Dy & 0 \\
+0 & 0 & Dy \\
+\end{pmatrix}
+\begin{pmatrix}
+u \\
+v \\
+p \\
+\end{pmatrix}
+$$
+Once this utility matrix built, I simply do
+
+    uytop=DDy(l.u(l.top),:)*q.
+
+Maybe you need now an example of why we need to do such sophisticated things using operators. This is most of the time used to impose the boundary conditions. Assume for instance that we want to impose a no-penetration condition at the top wall 
+$$
+u_y|_{top}=0, v|_{top)=0
+$$
+then the equations that should be satisfied is $Cq=0$ with the matrix $C$ built as
+
+    C=[D.y(l.top,:)*I(l.u,:); ...
+          I(l.v(l.top),:)];
+
+Then this constraint is inserted in the matrix representation of the physical system as described in [#boundary-conditions]().
+
+Now you understand that using these three objects:
+
+* Differentiation matrices
+* location vectors
+* Identity matrices
+
+we have a great flexibility and compacity of the code to manipulate nonlinear functions and Jacobians.
+
+Probably the most sophisticated example of the full power of all this is [free_surface_navier_stokes.m]() where we find steady state of the Navier-Stokes equations in 2D with $u$, $v$ and $p$ and a free surface $\eta$ whose position is as well an unknown.  
+
+
+
+
+
+# Your Newton iteration will not converge if...
+
+* The equations in your nonlinear function $f(q)$ are contradictory. This is the case for instance for the Navier-Stokes equation if you impose the value of the velocity everywhere at the boundaries with a total flux that is not zero, and at the same time you want $u_x+v_y=0$ everywhere (incompressibility).
+
+* The equations in your nonlinear function $f(q)$ leave out some degrees of freedom. This is the case for instance for Navier-Stokes if you don't impose the value of the pressure somwhere in the domain. In this case, please see [troubleshooting_jacobian_invertibility.m]().
+
+* Your initial guess is too far from the nonlinear solution. This is the case typically when it is discontinuous. Remember that you have derivatives in your functions and that a discontinuous initial guess will have extremely large derivatives (and even larger for finer grids). 
+
+* Your Jacobian is incorrect. If you made a mistake in the analytical formula. In this case, please see [troubleshooting_jacobian_formula.m]().
+
+
+
+
+
+
+
+# Systems with free surfaces
+
+In Easystab, we are interested in physical systems with free surfaces, like for instance the waves on the sea. We use *boundary-fitted coordinates* which means that the computational domain has its boundary that follow the free-surfaces. 
+
+When studying stability of such systems, we can simplify everything by doing a method called *flattening* of the boundary conditions at the free-surface, and with this we do not need to move the computational domain. This is done as follows:
+
+We introduce a new variable usually called $\eta$ that describes where the free-surface is located, for instance
+$$
+y=\eta(x,t).
+$$
+The boundary conditions for the fluid variables should be imposed where the fluid ends, that is at the free-surface. Considering for instance the fluid temperature $T$, and assuming the the outside of the fluid is at constant temperature $T_o$ we have the boundary condition
+$$
+T(x,y=\eta)=T_o
+$$
+and this is a nonlinear condition because the unknown $\eta$ comes as an argument of $T$. If $\eta$ is small, we can simplify this boundary condition by making a linear approximation using a Taylor expansion in $y$
+$$
+T(x,y=\eta)=T(x,y=0)+\eta T_y(x,y=0)
+$$
+In the comments of the codes, we use the shorter notation
+$$
+T|_\eta=T|_0+\eta T_y|_0
+$$
+
+Typically in our codes, we will compute the Jacobians of this boundary condition. The nonlinear boundary condition is written
+$$
+f(T,\eta)=T|_\eta=0
+$$
+and the Jacobian associated to this condition is obtained by doing a small perturbation $T\rightarrow T+\tilde{T}, \eta\rightarrow \eta+\tilde{\eta}, $
+$$
+\begin{array}{l}
+f(T+\tilde{T},\eta+\tilde{\eta})\\
+=T|_{\eta+\tilde{\eta}}+\tilde{T}|_{\eta+\tilde{\eta}}\\
+=T|_{\eta}+\tilde{\eta} T_y|_{\eta}+\tilde{T}|_{\eta}+\tilde{\eta}\tilde{T}_y|_{\eta}
+\end{array}
+$$
+and the last term can be neglected because it is quadratic in small perturbations. We rewrite this with the Jacobian in matrix representation 
+$$
+f(T+\tilde{T},\eta+\tilde{\eta})
+=f(T,\eta)+A
+\begin{pmatrix}
+\tilde{T} \\ 
+\tilde{\eta}
+\end{pmatrix}
+$$
+with 
+$$
+A=\begin{pmatrix}{cc}
+  I|_\eta      & T_y|_{\eta}
+\end{pmatrix}.
+$$
+See [free_surface_gravity.m]() for instance.
+
+This is used to compute the Jacobian of the system near a given steady state. This jacobian can as well be used with the Newton iteration to solve for the steady state itself. When we want to solve a nonlinear system with free surface, like for instance the steady flow inside a capillary Venturi, we do this method iteratively to find the next approximation of where the free-surface is located and what is the associated flow field. Then we adapt the computational domain to the new guess of where the free-surface is. This is done for instance in [domain_derivative_1D_adapt.m]().
+
+
+
+
+
+# Several ways to building a Jacobian
+
+Now that we have described these operators to access the different variables, we can show the several ways to build the linear operators that represent in the computer in a single big matrix all the different equations. Let us take as an exemple the Navier-Stokes and continuity equations linearized about a zero base flow as used in [#notations]()
+
+$$
+\left(\begin{array}{ccc}\rho&0&0\\0&\rho&0\\0&0&0\end{array}\right)
+\left(\begin{array}{c}
+u_t \\ v_t\\ p_t\\ 
+\end{array}\right)
+=
+\left(\begin{array}{ccc}
+\mu(\partial_{xx}+\partial_{yy})&0&-\partial_x\\
+0&\mu(\partial_{xx}+\partial_{yy})&-\partial_y\\
+\partial_x&\partial_y&0\\
+\end{array}\right)
+\left(\begin{array}{c}
+u \\ v\\ p\\ 
+\end{array}\right)
+$$
+or even shorter
+$$
+Eq_t=Aq.
+$$
+
+## Concatenation
+
+We suppose we have already built an identity matrix $I$ with the size of the grid for $u$, for instance a $N\times N$ identity matrix. And a zero matrix $Z$ full with zeros and of size $N\times N$. I suppose also that we have built the first and second differentiation matrices in $x$ and $y$ dx, dxx, dy, dyy Then the first and most intuitive way of building $A$ and $E$ is by concatenation of these matrices:
+
+    A=[mu*(dxx+dyy), Z, -dx; ...
+          Z, mu*(dxx+dyy), -dy; ...
+          dx, dy, Z];
+    E=[rho*I, Z, Z; ...
+         Z, rho*I, Z; ...
+         Z, Z, Z];
+    
+We will use this way to build the Jacobians when their expression is simple like here.
+
+## Affectation of submatrices
+
+Now we see a second way to do this, and instead of using concatenation, we use selection vectors as described in [#selection-vectors](). We have built $l.u, l.v, l.p$ vectors which contain the indices in the state vector $q$ that correspond to $u$, $v$ and pressure $p$. We start by initialising $A$ and $E$ as square matrices of size $3N$ full with zeros
+
+    A=zeros(3*N,3*N);
+    E=A;
+
+And then we successively fill the different non-zero blocs of $E$ and $A$
+
+    A(l.u,l.u)=mu*(dxx+dyy);
+    A(l.u,l.p)=-dx;
+    A(l.v,l.v)=mu*(dxx+dyy);
+    A(l.u,l.p)=-dy;
+    A(l.p,l.u)=dx;
+    A(l.p,l.v)=dy;
+    
+    E(l.u,l.u)=rho*I;
+    E(l.v,l.v)=rho*I;
+    
+You see that this way is nice for matrices with many zero blocs which do not need to be affected since $A$ and $E$ are initialy full of zeros. This formulation is also useful when the equation becomes complicated with many different variables. it is mostly useful when the different variables do not have the same size, for instance if you have the velocity and pressure $u, v, p$ on a 2D grid and the position of a free surface $\eta$ on a 1D grid interacting whith each-other as in [free_surface_2D.m]() for instance. With this formulation you don't need to remember what are the sizes of the different variables.
+
+## With selection matrices
+
+Now we see yet a third way, using the full power of selection matrices built using the lines of the identity matrix as described in [#selection-vectors-and-matrices](). We assume we have a big identity matrix $II$ of the size $3N\times 3N$ of the the full state vector $q$ and selection vectors. Then we first start for convenience of notation to build selection matrices for each state variable
+
+    Iu=II(l.u,:);
+    Iv=II(l.v,:);
+    Ip=II(l.p,:);
+
+And then we write
+
+    A=[mu*(dxx+dyy)*Iu-dx*Ip;  ...
+          mu*(dxx+dyy)*Iv-dy*Ip;  ...
+          dx*Iu+dy*Iv]; 
+    E=[rho*Iu; rho*Iv; 0*Ip];
+
+What is nice with this formulation is that the linear operator appears in the code exactly like the equations writen in mathematics, with just the value of the variables $u, v$ and $p$ replaced by the selection matrices $Iu, Iv$ and $Ip$. This gives a nice readability of the code and helps verifying that we have indeed coded the correct equations.
+
+## Full power of selection matrices
+
+Now a last formulation which is just the pleasure of pushing as far as possible the idea of the selection matrices. We build $E$ and $A$ without even a concatenation. We build the column selection matrices corresponding to the three variables
+
+    uI=II(:,l.u); 
+    vI=II(:,l.v); 
+    pI=II(:,l.p); 
+
+and simply code
+
+    A=uI*(mu*(dxx+dyy)*Iu-dx*Ip)+ vI*(mu*(dxx+dyy)*Iv-dy*Ip)+pI*(dx*Iu+dy*Iv); 
+    E=uI*rho*Iu+vI*rho*Iv];
+
+To give a better feeling of this formulation, I write here the first term of $A$ by showing the structure of the different line and column selection matrices
+
+$$
+\left(\begin{array}{c} I \\ 0\\ 0\\ \end{array}\right)
+\left[
+\mu (\partial_{xx}+\partial_{yy}) 
+\left(\begin{array}{ccc} I & 0 & 0 \end{array}\right)
+-\partial_x  \left(\begin{array}{ccc} 0 & 0 & I \end{array}\right)
+\right]
+$$
+
+To conclude, we can as well combine these different formulations depending on the type of equations you want to solve and the way the variables are.
+
+
+
+
+
+
+
+# Computational efficiency
+
+It is useful that the computations be quick, especially for learning purpose and experimentation. Octave/Matlab have a reputation of being slow. In fact it is slow when you don't know how to use it. A choice made in its development is that array should occupy contiguous space in memory. This cost much time when creating a new variable or when changing the shape of an existing variable because this contiguous space in memory has to be made by defragmentation, but the good side of it is that once the array is created, global operations on it are going to be fast. 
+
+Also, most array manipulations are coded in c, and very optimized. This is done as for any *c* or *fortran* program using the classical high efficiency library like [BLAS](www.netlib.org/blas/) [EISPACK](www.netlib.org/eispack/) or [LAPACK](www.netlib.org/lapack/). These are compiled codes, and thus quick. it is slow in Octave/Matlab to manipulate scalars, especially in nested loops. In easystab we manipulate only big matrices and their submatrices, so this should be fast. Also we do most of the heavy operations: linear system solve and eigenmodes using compiled functions: *\* and *eig*.
+
+For 2D and 3D, we use sparse matrices. This reduce memory usage and a also reduces the number of unnecessary multiplications within matrices when there are many zeros in these matrices. In 2D, spectral differentiation (Chebychev, Fourier...) leads to many zeros, and finite differences leads to even more zeros. In 2D I often combine Chebychev in $y$ and finite differences in $x$, see for instance [venturi.m]() and [jet_2D.m](), this is a good choice for sparsity since we have $x$ along the lines and $y$ along the columns, see [diffmat_2D.m] and [dif2D.m]().

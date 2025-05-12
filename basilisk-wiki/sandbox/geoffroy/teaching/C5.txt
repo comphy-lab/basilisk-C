@@ -1,0 +1,85 @@
+/**
+# Infiltration : modèle de Green - Ampt
+
+Ce TP est précédé d'un cours sur le modèle de Green-Ampt
+
+## Bibliothèque d'events : infiltration.h
+
+Commencez par créer un fichier que vous nommerez "infiltration.h". Ce
+fichier contiendra un ou plusieurs events Basilisk permettant de
+prendre en compte les termes sources de pluie et d'infiltration dans
+le système d'équations de Saint-Venant. Avant de vous lancer "tête
+baissée" dans la programmation de cette bibliothèque, je vous
+recommande de répondre préalablement à ces quelques questions :
+
+* De combien de champs scalaires allez vous avoir besoin ?
+* Y a t-il un lien entre la pluie et l'infiltration ?
+* Existe-t-il des temps particuliers dont vous devez vous méfier ? 
+
+Dans un premier temps, je vous demande de m'écrire votre algorithme 
+avant la programmation de la bibliothèque. Je vous demanderai de refaire 
+l'exercice une fois que tout sera fini. Je ramasserai les algorithmes.
+
+Je vous recommande également de programmer cette bibliothèque en
+parrallèle du cas test n° 1 afin de bien identifier les buts et
+besoins de vos events. 
+
+## Cas test n° 1 : Episode pluvieux idéal sur bathymétrie parabolique
+
+Créez un fichier ep_pluv1_nom.c en remplaçant *nom* par votre/vos
+nom(s). Le cas test sera programmé dans ce fichier. Dans ce cas test,
+une pluie homogène d'intensité $I = 50 mm/h $ tombe sur une
+bathymétrie parabolique 1D. La parabole fait 10 m de long, son centre
+est à 0 m d'altitude et son altitude maximale est d'1 m. Les
+caractéristiques du sol sont les suivantes :
+
+* Conductivité hydraulique :  $K_s = 29.9 mm.h^{-1}$
+* Porosité maximale (ou effective) : $\theta_m = 0.296$
+* Succion capillaire : $\Psi = 1.37 m$
+* Remplissage initiale du poreux en eau : $\theta_i = 0.05$ 
+
+L'épisode pluvieux dure 10h.
+
+Vous rendrez en fin de séance une animation gnuplot du cas où vous
+représenterez la bathymétrie, la profondeur de l'eau infiltrée ainsi
+que la hauteur d'eau à la surface. Je vous conseille de vous inspirer
+des cas test présents sur le site de Basilisk pour réaliser cette
+sortie. Vous rendrez également un graphique sur lequel vous
+représenterez l'intensité de la pluie (qui est constante), le taux
+d'infiltration maximal admis par le modèle de Green-Ampt et le taux
+d'infiltration réelle, en fonction du temps.
+
+## Cas test n°2 : Episode pluvieux réaliste (torrentielle)
+
+Créez un fichier que vous nommerez ep_pluv2_nom.c
+Ce cas test ressemble au précédent : même bathymétrie et mêmes
+caractéristiques du sol. Par contre, la pluie simulée sera celle d'un
+événement plus réaliste : 
+
+* Au temps t = 0, l'intensité de la pluie est nulle.
+* Entre t = 0 et t = 4 h, l'intensité augmente linéairement avec le temps jusqu'à atteindre $50 mm.h^{-1}$.
+* Entre t = 4 h et t = 8 h, l'intensité reste constante et égale à $50 mm.h^{-1}$.
+* Entre t = 8 h et t = 10 h, l'intensité diminue linéairement avec le temps pour finir à 0 à t = 10h.
+
+Vous réaliserez la même animation gnuplot que pour le cas précédent
+(bathymétrie, hauteur d'eau et profondeur de l'eau infiltrée). Vous
+réaliserez également un graphique où seront représentés le taux
+d'infiltration maximal, l'intensité de la pluie et l'infiltration
+réelle, en fonction du temps. Sur un autre graphique, vous
+représenterez l'intensité de la pluie et la hauteur d'eau au centre de
+la parabole (attention : les unités sont différentes). Vous
+représenterez sur ce graphique le temps de chargement de la matrice
+caractéristique ainsi que le temps de relaxation. 
+
+* Que remarquez vous en vous intéressant à l'évolution de la hauteur d'eau au centre ? Commentez. 
+* Proposer une solution pour éviter ce phénomène non-physique.
+
+## Cas test n°3 : Présence d'une nappe phréatique
+
+Créez un fichier que vous nommerez nappe_nom.c Réalisez le même cas
+test que précédemment mais en y ajoutant couche imperméable à la
+profondeur d'1 m 80. Il vous faudra prévoir un paramêtre dans
+infiltration.h qui permet de simuler une nappe phréatique.
+
+Qu'observez-vous ? Commentez. 
+*/

@@ -1,0 +1,13 @@
+* Map projections for terrain
+* More control over where adaptation occurs. 
+e.g. setting different MAXLEVEL for different areas in a grid,
+specifying a particular area to be refined.
+* Terrain module to work with cartesian grid.
+* [Transparency in bview3D](https://groups.google.com/forum/#!topic/basilisk-fr/6FSSpVmT9XU)
+* Distinction for the prolongation attribute(s) between error estimation and halos.
+
+## Granted wishes
+
+* Restart files
+* Boundary conditions for 3D multigrid
+* Periodic boundaries for trees

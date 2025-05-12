@@ -1,0 +1,24 @@
+# My Sandbox
+Welcome to my sandbox.
+
+In this space, I will share the topics I am investigating using the Basilisk framework.
+
+*Victor Boniou*
+
+## Collision rate in turbulent flows laden with droplets/bubbles
+The study of droplet-laden turbulent flows requires different numerical tools which are included in this sandbox.
+
+### Linear forcing of turbulent flows
+The turbulence needs to be maintained in time to extract converged statistics of both the carrier flow and the droplets. 
+
+Hence, a [new tool](linear_forcing/force_turbulence.h) is available to prescribe a couple of kinetic energy and dissipation rate ($k$,$\epsilon$) with an imposed integral length $\ell \sim 0.2\mathcal{L}$. This methodology is extended to two-phase flows and different test cases are available [in the related section](linear_forcing).
+
+### Advanced postprocessing of droplets/bubbles from an Eulerian representation of the flow
+The postprocessing of collisions can be done by using the implemented [extracting tool](collision_statistics/collision.h).
+
+## Other works
+
+### Conservation of momentum with multi-VOF
+Using no-coalescence, the [momentum conserving algorithm](/src/navier-stokes/conserving.h) does not work if two droplets are close to each other.
+For example, if a collision occurs, the momentum will not be correctly transported.
+An adaptation of the algorithm when using the [multi-VOF method](/src/no-coalescence.h) is proposed in the related [in the related section](conserving-multi).

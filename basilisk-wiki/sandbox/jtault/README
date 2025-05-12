@@ -1,0 +1,903 @@
+# My Sandbox
+Welcome to the README of my sandbox. Here I provide an overview of the projects under /sandbox/jtault. I mainly work in the areas of vortex breakdown and electrokinetics, but I also perform some multi-phase simulations using Basilisk.
+
+Jesse T. Ault ([Web](https://jesseault.com))\
+Fluids and Thermal Sciences Group\
+Brown University\
+Email: ([jesse_ault@brown.edu](mailto:jesse_ault@brown.edu))
+
+## Repositories
+
+### Bubble bursting at a compound interface
+We investigate the bursting of rising bubbles at an air-water interface when the bubbles are initially coated in a thin oil layer. This work is currently under review for publication in Nature Physics:
+
+**Title:** Singular jets from oil-coated bubble bursting\
+**Authors:** Z. Yang, B. Ji, J. T. Ault, and J. Feng*
+
+
+**Sample results:** Here, we initialize the interface shapes using the model developed in the above paper, and we simulate the coupled transport. Note that these results use the three-phase contact line implementation by Dr. Vatsal Sanjay ([Basilisk sandbox](http://basilisk.fr/sandbox/vatsal/README)). A typical result of the simulations is shown below over time for a case that experiences singular jet formation.
+<img src="https://jesseault.com/nextcloud/index.php/s/65tQ5BEZLNJKRr2/preview"  width="1000">
+
+
+
+# Simulation of an oil-coated bubble bursting
+As mentioned, this simulation uses the three-phase solver developed by Dr. Vatsal Sanjay ([Basilisk sandbox](http://basilisk.fr/sandbox/vatsal/README)) to simulate the bursting of an oil-coated bubble at an air-water interface. The different needed codes are published below along with some documentation, and over 1 TB of data from simulation runs can be made available upon request.
+
+# The needed codes are found below:
+
+## batch.sh
+
+**This is one of the submission scripts submitted for the Brown CCV supercomputer. Here, this runs the conversion operation to output VTK files.**
+
+~~~
+#!/bin/bash
+
+#SBATCH --time=24:00:00
+
+#SBATCH -N 1
+#SBATCH -n 1
+#SBATCH --mem=80G
+
+# Specify a job name:
+#SBATCH -J basilisk
+
+export BASILISK=~/basilisk/src
+export PATH=$PATH:~/basilisk/src
+
+# This section will compile to run in parallel and then run the solver. Make sure that the correct number of processors are allocated above.
+#CC99='mpicc -std=c99' qcc -Wall -O2 -D_MPI=1 newTest.c -o run -lm
+#srun --mpi=pmix -n 32 ./run
+
+# This section of code will run the convert program to convert the output checkpoint files into VTK files.
+rm run
+qcc -Wall -O2 convert.c -o run -lm
+./run
+~~~
+
+## convert.c
+
+**This code will run the conversion to reload all of the output checkpoint files and re-output them as VTK files. The reason for this 'hack' approach is that the VTK output writer I found will only work in serial and not in parallel. There are probably better options out there.**
+
+~~~
+#define R_VOFLIMIT 1e-3
+
+#include "axi.h"
+#include "navier-stokes/centered.h"
+#include "three-phase.h"
+#include "tension.h"
+#include "VTKoutput.h"
+#include "distance.h"
+
+#define MINLEVEL 7
+#define MAXLEVEL 10
+
+#define fErr 1e-3
+#define KErr 1e-3
+#define VelErr 1e-3
+
+// Define the geometry
+#define L 10.0e-3
+
+// Boundary Conditions
+u.n[right] = neumann(0.);
+p[right] = dirichlet(0.);
+
+scalar alphas[];
+scalar testDistance[];
+scalar testDistance2[];
+scalar testDistance3[];
+
+int main()
+{
+  size(L);
+  origin(6e-3, 0);
+  init_grid (1 << MAXLEVEL);
+
+  rho1 = 1.204; // air
+  rho2 = 913.0; // oil
+  rho3 = 998.0; // water
+
+  mu1 = 18.13e-6; // air
+  mu2 = 4.6e-3; // oil
+  mu3 = 0.89e-3; // water
+
+  double sigma13 = 71.6e-3;// air-water
+  double sigma23 = 38.1e-3;// oil-water
+  double sigma12 = 18.7e-3;  
+
+  //f3.sigma = (sigma13 + sigma23 - sigma12) / 2.0;
+  //f2.sigma = sigma23 - f3.sigma;
+  //f1.sigma = sigma13 - f3.sigma;
+
+  TOLERANCE = 1e-6;
+  run();
+}
+
+event init(t = 0)
+{
+
+  for (double t = 1e-4; t < 10.0e-3; t += 1e-4) {
+    char name[500];
+    sprintf(name, "out-%.2f-CC.out", t*1e5);
+    char name2[500];
+    sprintf(name2, "out-%.2f-CC.vtk", t*1e5);
+
+    fprintf(stdout, name);
+    fprintf(stdout, "\n");
+    fprintf(stdout, name2);
+    fprintf(stdout, "\n\n");
+
+    restore (file = name);
+    output_paraview_CC(name2, t, 0., {alphas});
+  }
+}
+~~~
+
+## newTest.c
+
+**This is the actual solver. Note that the really ugly, large equations are basically high-order polynomials to set the initial conditions. We found these by solving numerically a model (in the paper) to approximate the initial (static) interface shapes before rupture. We fit these to high-order polynomials and use them to initialize the initial conditions here.**
+
+~~~
+#define R_VOFLIMIT 1e-3
+
+#include "axi.h"
+#include "navier-stokes/centered.h"
+#include "fractions.h"
+#define FILTERED
+#include "three-phase.h"
+#include "tension.h"
+#include "VTKoutput.h"
+#include "distance.h"
+
+#define MINLEVEL 5
+#define MAXLEVEL 13 // 12
+
+#define fErr 1e-3
+#define KErr 1e-3
+#define VelErr 1e-3
+
+// Define the geometry
+#define L 15.0e-3
+#define R1 1.95e-3
+#define R2 2.0e-3
+
+// Boundary Conditions
+u.n[right] = neumann(0.);
+p[right] = dirichlet(0.);
+
+scalar alphas[];
+
+int main()
+{
+  int Oil_visc = 2;
+
+  size(L);
+  origin(-4.0e-3, 0);
+  init_grid (1 << MAXLEVEL);
+
+  rho2 = 998.0; // water
+  rho3 = 1.204; // air
+  
+  mu2 = 0.89e-3; // water
+  mu3 = 18.13e-6; // air
+
+  if (Oil_visc == 2) {
+    rho1 = 875.0; // oil
+    mu1 = 2.086e-3; // oil
+    f1.sigma = 0.0181; // air/oil
+    f2.sigma = 0.041; // water/oil
+  }
+  else if (Oil_visc == 5) {
+    rho1 = 913.0; // oil
+    mu1 = 4.6e-3; // oil
+    f1.sigma = 18.7e-3; // air/oil
+    f2.sigma = 38.1e-3; // water/oil  
+  }
+  else if (Oil_visc == 10) {
+    rho1 = 930; // oil
+    mu1 = 10e-3; // oil
+    f1.sigma = 0.01914; // air/oil
+    f2.sigma = 0.0409; // water/oil 
+  }
+  else if (Oil_visc == 20) {
+    rho1 = 950; // oil
+    mu1 = 20e-3; // oil
+    f1.sigma = 0.0194; // air/oil
+    f2.sigma = 0.0409; // water/oil 
+  }
+
+  
+  TOLERANCE = 1e-6;
+  
+  run();
+}
+
+event init(t = 0)
+{
+  int Case = 8;
+  double r_lim_1, z_lim_1, r_lim_2, z_lim_2;
+  
+  if (Case == 1) {
+      r_lim_1 = 1.35170501037191*1e-3;
+      z_lim_1 = 0.375533185058833*1e-3;
+      r_lim_2 = 1.59385013047239*1e-3;
+      z_lim_2 = 0.00328458654733756; //3.31611768024265*1e-3;
+    }
+  else if (Case == 2) {
+      r_lim_1 = 1.55159657698644*1e-3;
+      z_lim_1 = 0.522700173908474*1e-3;
+      r_lim_2 = 1.54782189406541*1e-3;
+      z_lim_2 = 0.00326478169318366; //3.28846997949751*1e-3;
+    }
+  else if (Case == 3) {
+      r_lim_1 = 1.67375791111958*1e-3;
+      z_lim_1 = 0.617796545460821*1e-3;
+      r_lim_2 = 1.55679065522414*1e-3;
+      z_lim_2 = 0.00328; //3.30420391019313*1e-3;
+    }
+  else if (Case == 4) {
+      r_lim_1 = 1.71466210548685*1e-3;
+      z_lim_1 = 0.663274484062195*1e-3;
+      r_lim_2 = 1.53544600078326*1e-3;
+      z_lim_2 = 0.003255; //3.28482605413889*1e-3;
+    }
+  else if (Case == 5) {
+      r_lim_1 = 1.85098498594908*1e-3;
+      z_lim_1 = 0.796007833576201*1e-3;
+      r_lim_2 = 1.53819508214288*1e-3;
+      z_lim_2 = 0.003272; //3.29542201024412*1e-3;
+    }
+  else if (Case == 6) {
+      r_lim_1 = 1.9009883223642*1e-3;
+      z_lim_1 = 0.910164782832564*1e-3;
+      r_lim_2 = 1.45497436018858*1e-3;
+      z_lim_2 = 0.003194;//3.2166405390881*1e-3;
+    }
+  else if (Case == 7) {
+      r_lim_1 = 1.94457064731323*1e-3;
+      z_lim_1 = 1.13285973958969*1e-3;
+      r_lim_2 = 1.30286284651996*1e-3;
+      z_lim_2 = 0.003033; //3.05772205364344*1e-3;
+    }
+  else if (Case == 8) {
+      r_lim_1 = 1.99902888895628*1e-3;
+      z_lim_1 = 1.3294242176447*1e-3;
+      r_lim_2 = 1.26504714282477*1e-3;
+      z_lim_2 = 0.002969; //2.99788379545318*1e-3;
+    }
+  
+  
+  if (!restore (file = "restart")) {
+    fprintf(stdout, "There is no restart file.\n");
+  }
+
+  double z1, z2, r3, z4;
+
+  foreach () {
+    if (Case == 1) {
+      z1 = (+1.357750734735647E-02*pow(y*1e3,9)-7.828809454891772E-02*pow(y*1e3,8)+1.846452373664142E-01*pow(y*1e3,7)-2.206772221231513E-01*pow(y*1e3,6)+1.355022474315898E-01*pow(y*1e3,5)-2.049765146117644E-02*pow(y*1e3,4)-5.715990749624263E-03*pow(y*1e3,3)+1.852664336432668E-01*pow(y*1e3,2)-1.873714767149672E-04*y*1e3+0.000000000000000E+00)*1e-3;
+      z2 = (+4.666870450890280E-04*pow(y*1e3,8)-1.606997846860378E-03*pow(y*1e3,7)+3.450338223489183E-03*pow(y*1e3,6)-2.696369974962074E-03*pow(y*1e3,5)+9.421133458189922E-03*pow(y*1e3,4)-4.782870031683002E-04*pow(y*1e3,3)+1.977020911974303E-01*pow(y*1e3,2)-6.399865698026097E-06*y*1e3-1.678024588435728E-02)*1e-3;
+      r3 = (-1.637302807743277E-06*pow(x*1e3,26)+5.191074284599997E-05*pow(x*1e3,25)-7.312210369651989E-04*pow(x*1e3,24)+5.927951163048202E-03*pow(x*1e3,23)-2.954896509387863E-02*pow(x*1e3,22)+8.615066103507581E-02*pow(x*1e3,21)-1.011405276428509E-01*pow(x*1e3,20)-1.201502749740012E-01*pow(x*1e3,19)-2.560619684268452E-01*pow(x*1e3,18)+6.525162055755866E+00*pow(x*1e3,17)-2.673802114556107E+01*pow(x*1e3,16)+4.079281232870543E+01*pow(x*1e3,15)+6.550814282833809E+01*pow(x*1e3,14)-5.051887512037449E+02*pow(x*1e3,13)+1.373521197219294E+03*pow(x*1e3,12)-2.301362628679914E+03*pow(x*1e3,11)+2.491043762487982E+03*pow(x*1e3,10)-1.435685947069049E+03*pow(x*1e3,9)-3.747303472331048E+02*pow(x*1e3,8)+1.779155819135926E+03*pow(x*1e3,7)-2.055012932754647E+03*pow(x*1e3,6)+1.463849575586401E+03*pow(x*1e3,5)-7.176711930654154E+02*pow(x*1e3,4)+2.465055251470648E+02*pow(x*1e3,3)-5.903213962992336E+01*pow(x*1e3,2)+1.092715882937194E+01*x*1e3+9.662396473630194E-03)*1e-3;
+      z4 = (+1.796980939385519E+00+exp(-y*1e3/(+2.710523708715753E+00))*pow(1./(y*1e3),0.5)*(+4.814616379274008E-07*pow(y*1e3,8)-1.691820605303149E-05*pow(y*1e3,7)+3.291226573009550E-04*pow(y*1e3,6)-3.155283225199848E-03*pow(y*1e3,5)+2.295398020365885E-02*pow(y*1e3,4)-6.153623141702021E-02*pow(y*1e3,3)+2.927138607997448E-01*pow(y*1e3,2)+5.391471616005816E-01*y*1e3+1.978581809251079E+00))*1e-3;
+    }
+    else if (Case == 2) {
+      z1 = (+1.734566043095817E-03*pow(y*1e3,9)-5.725322370807498E-03*pow(y*1e3,8)-8.079160444084561E-04*pow(y*1e3,7)+3.523212192087177E-02*pow(y*1e3,6)-7.046570033197115E-02*pow(y*1e3,5)+7.690026907906994E-02*pow(y*1e3,4)-3.150821996806371E-02*pow(y*1e3,3)+1.897203803469847E-01*pow(y*1e3,2)-3.591810435034399E-04*(y*1e3)+0.000000000000000E+00)*1e-3;
+      z2 = (+1.126718848073794E-03*pow(y*1e3,8)-5.004690322252760E-03*pow(y*1e3,7)+1.105055888438056E-02*pow(y*1e3,6)-1.152732869858489E-02*pow(y*1e3,5)+1.607345418280904E-02*pow(y*1e3,4)-2.726175712598447E-03*pow(y*1e3,3)+2.042069582057293E-01*pow(y*1e3,2)-4.699085705630971E-05*(y*1e3)-3.184678299225876E-02)*1e-3;
+      r3 = (-3.461778056802014E-06*pow(x*1e3,26)+1.097959845742229E-04*pow(x*1e3,25)-1.539709697777255E-03*pow(x*1e3,24)+1.228974470838716E-02*pow(x*1e3,23)-5.849253553706244E-02*pow(x*1e3,22)+1.433967828431854E-01*pow(x*1e3,21)+4.004571462029775E-02*pow(x*1e3,20)-1.451725726473805E+00*pow(x*1e3,19)+3.745855575665001E+00*pow(x*1e3,18)+1.501424673773274E+00*pow(x*1e3,17)-2.738927671664976E+01*pow(x*1e3,16)+3.669032071816854E+01*pow(x*1e3,15)+1.275852954960601E+02*pow(x*1e3,14)-5.186229656211442E+02*pow(x*1e3,13)+2.478330591063275E+02*pow(x*1e3,12)+3.246611100482060E+03*pow(x*1e3,11)-1.284095100531124E+04*pow(x*1e3,10)+2.787249109921619E+04*pow(x*1e3,9)-4.186458822369487E+04*pow(x*1e3,8)+4.647937837886125E+04*pow(x*1e3,7)-3.900481912425752E+04*pow(x*1e3,6)+2.478710338421063E+04*pow(x*1e3,5)-1.177184889285986E+04*pow(x*1e3,4)+4.055310381722206E+03*pow(x*1e3,3)-9.593896129191204E+02*pow(x*1e3,2)+1.413647015693208E+02*(x*1e3)-8.707391011059862E+00)*1e-3;
+      z4 = (+1.834083755952505E+00+exp(-(y*1e3)/(+2.710523708715753E+00))*pow(1./(y*1e3),0.5)*(+4.302850993249406E-07*pow(y*1e3,8)-1.475284320604043E-05*pow(y*1e3,7)+2.830616689583812E-04*pow(y*1e3,6)-2.631618306605154E-03*pow(y*1e3,5)+1.896106465817967E-02*pow(y*1e3,4)-4.525807347752398E-02*pow(y*1e3,3)+2.372066908255421E-01*pow(y*1e3,2)+5.751900065355661E-01*(y*1e3)+1.823081377828373E+00))*1e-3;
+    }
+    else if (Case == 3) {
+      z1 = (+2.553020545006675E-03*pow(y*1e3,9)-1.230698052171267E-02*pow(y*1e3,8)+2.031715622664721E-02*pow(y*1e3,7)-7.590482288837250E-04*pow(y*1e3,6)-3.537756380403528E-02*pow(y*1e3,5)+5.668429841231605E-02*pow(y*1e3,4)-2.540552934865686E-02*pow(y*1e3,3)+1.860259688621521E-01*pow(y*1e3,2)-3.091863342791807E-04*(y*1e3)+0.000000000000000E+00)*1e-3;
+      z2 = (+1.683231832037126E-03*pow(y*1e3,8)-8.456682406301794E-03*pow(y*1e3,7)+1.980606444280598E-02*pow(y*1e3,6)-2.321241035078907E-02*pow(y*1e3,5)+2.487670588366412E-02*pow(y*1e3,4)-6.447808547813161E-03*pow(y*1e3,3)+2.050996113728243E-01*pow(y*1e3,2)-1.283538787817568E-04*(y*1e3)-4.459084492335252E-02)*1e-3;
+      r3 = (-3.798584396124963E-06*pow(x*1e3,25)+1.034430437944233E-04*pow(x*1e3,24)-1.122146658943431E-03*pow(x*1e3,23)+4.991039736847306E-03*pow(x*1e3,22)+1.020424557593881E-02*pow(x*1e3,21)-2.524720371707730E-01*pow(x*1e3,20)+1.404753146891352E+00*pow(x*1e3,19)-3.334521744028362E+00*pow(x*1e3,18)-2.563313917867945E+00*pow(x*1e3,17)+4.197345989968779E+01*pow(x*1e3,16)-1.124799363577139E+02*pow(x*1e3,15)+5.026597842203771E+00*pow(x*1e3,14)+8.382276360645093E+02*pow(x*1e3,13)-2.743344853098155E+03*pow(x*1e3,12)+4.129918311172393E+03*pow(x*1e3,11)-5.735185164205906E+02*pow(x*1e3,10)-1.210014979611065E+04*pow(x*1e3,9)+3.160652274193595E+04*pow(x*1e3,8)-4.762506886889882E+04*pow(x*1e3,7)+4.988944081584470E+04*pow(x*1e3,6)-3.804173736159656E+04*pow(x*1e3,5)+2.120128568615137E+04*pow(x*1e3,4)-8.448553818925895E+03*pow(x*1e3,3)+2.283992971201232E+03*pow(x*1e3,2)-3.739511044717337E+02*(x*1e3)+2.914247661470471E+01)*1e-3;
+      z4 = (+1.897348845830787E+00+exp(-(y*1e3)/(+2.710523708715753E+00))*pow(1./(y*1e3),0.5)*(+4.096789569804559E-07*pow(y*1e3,8)-1.434139930108769E-05*pow(y*1e3,7)+2.781355619683686E-04*pow(y*1e3,6)-2.644662747903875E-03*pow(y*1e3,5)+1.911440072882209E-02*pow(y*1e3,4)-4.923194493435865E-02*pow(y*1e3,3)+2.385173995779500E-01*pow(y*1e3,2)+5.182389909609149E-01*(y*1e3)+1.826613266783410E+00))*1e-3;
+    }
+    else if (Case == 4) {
+      z1 = (+3.762946270343899E-03*pow(y*1e3,9)-2.097010735058038E-02*pow(y*1e3,8)+4.646145430317290E-02*pow(y*1e3,7)-4.366898569757142E-02*pow(y*1e3,6)+6.183506681200351E-03*pow(y*1e3,5)+3.279669973386517E-02*pow(y*1e3,4)-1.743009903175263E-02*pow(y*1e3,3)+1.858182254004300E-01*pow(y*1e3,2)-2.193720061143926E-04*(y*1e3)+0.000000000000000E+00)*1e-3;
+      z2 = (+2.286529413827035E-03*pow(y*1e3,8)-1.202350979314283E-02*pow(y*1e3,7)+2.876631656579727E-02*pow(y*1e3,6)-3.507392739282125E-02*pow(y*1e3,5)+3.417863198068876E-02*pow(y*1e3,4)-1.027883942884728E-02*pow(y*1e3,3)+2.085530895515245E-01*pow(y*1e3,2)-2.140534251745023E-04*(y*1e3)-5.126221283079233E-02)*1e-3;
+      r3 = (-1.153031452438236E-05*pow(x*1e3,25)+3.760784393407455E-04*pow(x*1e3,24)-5.519279339004914E-03*pow(x*1e3,23)+4.766734194266867E-02*pow(x*1e3,22)-2.646367453626475E-01*pow(x*1e3,21)+9.586596199740014E-01*pow(x*1e3,20)-2.145894691744502E+00*pow(x*1e3,19)+2.473173759218941E+00*pow(x*1e3,18)-1.736621399471612E+00*pow(x*1e3,17)+1.363682080216863E+01*pow(x*1e3,16)-6.525634755579998E+01*pow(x*1e3,15)+1.137415629487406E+02*pow(x*1e3,14)+3.261933894664333E+01*pow(x*1e3,13)-2.218690329303315E+02*pow(x*1e3,12)-1.529320089806187E+03*pow(x*1e3,11)+9.842122185647026E+03*pow(x*1e3,10)-2.862133953580387E+04*pow(x*1e3,9)+5.420571763630197E+04*pow(x*1e3,8)-7.360217235570999E+04*pow(x*1e3,7)+7.417598168214969E+04*pow(x*1e3,6)-5.593715328338479E+04*pow(x*1e3,5)+3.126165651084794E+04*pow(x*1e3,4)-1.259104140963987E+04*pow(x*1e3,3)+3.457943891807339E+03*pow(x*1e3,2)-5.781654528980691E+02*(x*1e3)+4.555588663814002E+01)*1e-3;
+      z4 = (+1.890688756549617E+00+exp(-(y*1e3)/(+2.710523708715753E+00))*pow(1./(y*1e3),0.5)*(+3.961847483962144E-07*pow(y*1e3,8)-1.365263938073278E-05*pow(y*1e3,7)+2.624897094740637E-04*pow(y*1e3,6)-2.449078669846295E-03*pow(y*1e3,5)+1.760903167063099E-02*pow(y*1e3,4)-4.225039211707429E-02*pow(y*1e3,3)+2.178355813518475E-01*pow(y*1e3,2)+5.450932524617216E-01*(y*1e3)+1.766232489218609E+00))*1e-3;
+    }
+    else if (Case == 5) {
+      z1 = (+8.915472792548803E-03*pow(y*1e3,11)-8.534912362770053E-02*pow(y*1e3,10)+3.564490518743868E-01*pow(y*1e3,9)-8.452026545636626E-01*pow(y*1e3,8)+1.244378900021080E+00*pow(y*1e3,7)-1.164755742064439E+00*pow(y*1e3,6)+6.818263133845935E-01*pow(y*1e3,5)-2.221300261736691E-01*pow(y*1e3,4)+3.844482739892839E-02*pow(y*1e3,3)+1.768629697895080E-01*pow(y*1e3,2)+3.325121655837649E-05*(y*1e3)+0.000000000000000E+00)*1e-3;
+      z2 = (+2.676253446203033E-03*pow(y*1e3,9)-1.849408051053678E-02*pow(y*1e3,8)+5.573643654259904E-02*pow(y*1e3,7)-9.154394236715026E-02*pow(y*1e3,6)+9.128069431344996E-02*pow(y*1e3,5)-4.548271212674311E-02*pow(y*1e3,4)+1.914303865794668E-02*pow(y*1e3,3)+2.034816757139944E-01*pow(y*1e3,2)+3.201563973190555E-04*(y*1e3)-7.428143045156226E-02)*1e-3;
+      r3 = (-3.123709314648088E-05*pow(x*1e3,24)+1.038309906506804E-03*pow(x*1e3,23)-1.562433609606056E-02*pow(x*1e3,22)+1.395800124505716E-01*pow(x*1e3,21)-8.121861889581281E-01*pow(x*1e3,20)+3.148191043523620E+00*pow(x*1e3,19)-7.789201187464736E+00*pow(x*1e3,18)+1.003573629902521E+01*pow(x*1e3,17)+5.288841891037384E-01*pow(x*1e3,16)-9.084504447478238E+00*pow(x*1e3,15)-6.095118451661253E+01*pow(x*1e3,14)+1.703419891883260E+02*pow(x*1e3,13)+4.216129504824901E+02*pow(x*1e3,12)-3.433620206611360E+03*pow(x*1e3,11)+9.908355497929469E+03*pow(x*1e3,10)-1.706466677192035E+04*pow(x*1e3,9)+1.835565500355895E+04*pow(x*1e3,8)-9.828957426255411E+03*pow(x*1e3,7)-3.802537314714993E+03*pow(x*1e3,6)+1.288815671741646E+04*pow(x*1e3,5)-1.288754918198505E+04*pow(x*1e3,4)+7.587488775978768E+03*pow(x*1e3,3)-2.789462018118803E+03*pow(x*1e3,2)+5.981984419971424E+02*(x*1e3)-5.621802974995823E+01)*1e-3;
+      z4 = (+1.959289184179813E+00+exp(-(y*1e3)/(+2.710523708715753E+00))*pow(1./(y*1e3),0.5)*(+3.667579558689089E-07*pow(y*1e3,8)-1.286193316460832E-05*pow(y*1e3,7)+2.495343530139651E-04*pow(y*1e3,6)-2.371127941845747E-03*pow(y*1e3,5)+1.707978889801498E-02*pow(y*1e3,4)-4.345029398942986E-02*pow(y*1e3,3)+2.100226102193354E-01*pow(y*1e3,2)+4.946628833559660E-01*(y*1e3)+1.744966012667424E+00))*1e-3;
+    }
+    else if (Case == 6) {
+      z1 = (+1.124927072157150E-02*pow(y*1e3,12)-1.117778361352201E-01*pow(y*1e3,11)+4.846257157437565E-01*pow(y*1e3,10)-1.199264798805468E+00*pow(y*1e3,9)+1.865808323041380E+00*pow(y*1e3,8)-1.900268032688820E+00*pow(y*1e3,7)+1.290944003534704E+00*pow(y*1e3,6)-5.935640551767414E-01*pow(y*1e3,5)+2.028929081193303E-01*pow(y*1e3,4)-4.531612120089164E-02*pow(y*1e3,3)+1.914986271371421E-01*pow(y*1e3,2)-2.870071934395852E-04*(y*1e3)+0.000000000000000E+00)*1e-3;
+      z2 = (+4.494758327991492E-03*pow(y*1e3,11)-4.181232839166163E-02*pow(y*1e3,10)+1.706466393557839E-01*pow(y*1e3,9)-3.982076957822844E-01*pow(y*1e3,8)+5.847233400726854E-01*pow(y*1e3,7)-5.587556702272352E-01*pow(y*1e3,6)+3.510819613343818E-01*pow(y*1e3,5)-1.310386954712479E-01*pow(y*1e3,4)+3.485892981413170E-02*pow(y*1e3,3)+2.116597509159015E-01*pow(y*1e3,2)+3.182005111867819E-04*(y*1e3)-9.639383327565591E-02)*1e-3;
+      r3 = (-3.087596912819145E-06*pow(x*1e3,26)+7.268001421841417E-05*pow(x*1e3,25)-5.988269950060388E-04*pow(x*1e3,24)+5.139265588345693E-04*pow(x*1e3,23)+2.738147989119212E-02*pow(x*1e3,22)-2.278623450074246E-01*pow(x*1e3,21)+8.220603165975566E-01*pow(x*1e3,20)-8.929744823027228E-01*pow(x*1e3,19)-3.509442322148726E+00*pow(x*1e3,18)+9.743066303997477E+00*pow(x*1e3,17)+2.798573634636314E+01*pow(x*1e3,16)-1.872156527277869E+02*pow(x*1e3,15)+3.007226046048532E+02*pow(x*1e3,14)+4.688483070628662E+02*pow(x*1e3,13)-3.139802868214468E+03*pow(x*1e3,12)+7.194720371383052E+03*pow(x*1e3,11)-1.141077501325201E+04*pow(x*1e3,10)+2.067816004528886E+04*pow(x*1e3,9)-4.918182488475753E+04*pow(x*1e3,8)+1.041313770571485E+05*pow(x*1e3,7)-1.627590069520270E+05*pow(x*1e3,6)+1.826584247578050E+05*pow(x*1e3,5)-1.464597687151276E+05*pow(x*1e3,4)+8.235946129725396E+04*pow(x*1e3,3)-3.098528762292010E+04*pow(x*1e3,2)+7.026327131426672E+03*(x*1e3)-7.263497791520297E+02)*1e-3;
+      z4 = (+1.938317828072450E+00+exp(-(y*1e3)/(+2.710523708715753E+00))*pow(1./(y*1e3),0.5)*(+3.112501365588245E-07*pow(y*1e3,8)-1.011740368851976E-05*pow(y*1e3,7)+1.886127885301112E-04*pow(y*1e3,6)-1.627961839418399E-03*pow(y*1e3,5)+1.147331802673129E-02*pow(y*1e3,4)-1.818325611869879E-02*pow(y*1e3,3)+1.359777765151707E-01*pow(y*1e3,2)+5.797386576988547E-01*(y*1e3)+1.519681364696940E+00))*1e-3;
+    }
+    else if (Case == 7) {
+      z1 = (+6.032840027367756E-01*pow(y*1e3,18)-1.034747503124785E+01*pow(y*1e3,17)+8.158435521347644E+01*pow(y*1e3,16)-3.919250810583663E+02*pow(y*1e3,15)+1.281893400982021E+03*pow(y*1e3,14)-3.021556036772349E+03*pow(y*1e3,13)+5.298872271634809E+03*pow(y*1e3,12)-7.036949060778345E+03*pow(y*1e3,11)+7.134330653727826E+03*pow(y*1e3,10)-5.525017851069726E+03*pow(y*1e3,9)+3.247443045909889E+03*pow(y*1e3,8)-1.428669674292363E+03*pow(y*1e3,7)+4.596743366929156E+02*pow(y*1e3,6)-1.043669331192064E+02*pow(y*1e3,5)+1.585031180292594E+01*pow(y*1e3,4)-1.478448748233937E+00*pow(y*1e3,3)+2.721476892252029E-01*pow(y*1e3,2)-1.395829828619478E-03*(y*1e3)+0.000000000000000E+00)*1e-3;
+      z2 = (+8.316198455060027E-02*pow(y*1e3,15)-1.150026761894942E+00*pow(y*1e3,14)+7.182127710845053E+00*pow(y*1e3,13)-2.676644689352613E+01*pow(y*1e3,12)+6.627815940569374E+01*pow(y*1e3,11)-1.149075440361159E+02*pow(y*1e3,10)+1.432156217494786E+02*pow(y*1e3,9)-1.297079883778235E+02*pow(y*1e3,8)+8.529722196174643E+01*pow(y*1e3,7)-4.027439977632196E+01*pow(y*1e3,6)+1.335395639403316E+01*pow(y*1e3,5)-2.984996605088992E+00*pow(y*1e3,4)+4.308065018416945E-01*pow(y*1e3,3)+1.987460442127914E-01*pow(y*1e3,2)+1.529177913416072E-03*(y*1e3)-1.502092737769593E-01)*1e-3;
+      r3 = (-6.462952002815783E-06*pow(x*1e3,28)+1.660572393826929E-04*pow(x*1e3,27)-1.791480054946803E-03*pow(x*1e3,26)+1.006557416350918E-02*pow(x*1e3,25)-2.757775637258781E-02*pow(x*1e3,24)+9.851614608987203E-03*pow(x*1e3,23)+1.069979178420239E-01*pow(x*1e3,22)+1.084083545255772E-01*pow(x*1e3,21)-1.710115966899643E+00*pow(x*1e3,20)+2.424452162457393E+00*pow(x*1e3,19)+4.235165463043534E+00*pow(x*1e3,18)-4.857450985439783E+00*pow(x*1e3,17)-3.287199004739289E+00*pow(x*1e3,16)-2.209991829051377E+02*pow(x*1e3,15)+9.010158776224191E+02*pow(x*1e3,14)-3.599559063767255E+02*pow(x*1e3,13)-3.781650778137994E+03*pow(x*1e3,12)+1.311099275549052E+03*pow(x*1e3,11)+3.435505715780759E+04*pow(x*1e3,10)-7.920780957168083E+04*pow(x*1e3,9)-4.388970620909670E+04*pow(x*1e3,8)+5.726237413715654E+05*pow(x*1e3,7)-1.439427439389998E+06*pow(x*1e3,6)+2.106670277992343E+06*pow(x*1e3,5)-2.047456340135086E+06*pow(x*1e3,4)+1.350693348438106E+06*pow(x*1e3,3)-5.862787112878283E+05*pow(x*1e3,2)+1.519683961374361E+05*(x*1e3)-1.789545662106964E+04)*1e-3;
+      z4 = (+1.950144199995576E+00+exp(-(y*1e3)/(+2.710523708715753E+00))*pow(1./(y*1e3),0.5)*(+1.771439652204018E-07*pow(y*1e3,8)-4.387948680150140E-06*pow(y*1e3,7)+7.133123638140792E-05*pow(y*1e3,6)-3.415198419388539E-04*pow(y*1e3,5)+2.296630865429201E-03*pow(y*1e3,4)+1.725142373421358E-02*pow(y*1e3,3)+2.592783827471624E-02*pow(y*1e3,2)+6.177461602659763E-01*(y*1e3)+1.151784142410524E+00))*1e-3;
+    }
+    else if (Case == 8) {
+      z1 = (+1.023110466698491E-02*pow(y*1e3,35)-1.619717946205029E-01*pow(y*1e3,34)+1.054768256041203E+00*pow(y*1e3,33)-3.397655809084593E+00*pow(y*1e3,32)+4.130602435724366E+00*pow(y*1e3,31)+6.844258544426098E+00*pow(y*1e3,30)-3.043232130813468E+01*pow(y*1e3,29)+3.628708796419274E+01*pow(y*1e3,28)-8.034927560229239E+00*pow(y*1e3,27)-1.393137429114003E+01*pow(y*1e3,26)+8.997812162994708E+01*pow(y*1e3,25)-3.626193291261448E+02*pow(y*1e3,24)+5.198200571293503E+02*pow(y*1e3,23)-3.014118687574323E+02*pow(y*1e3,22)+9.722693565103714E+02*pow(y*1e3,21)-2.708194896701445E+03*pow(y*1e3,20)+1.140087739996066E+03*pow(y*1e3,19)+3.403493705715294E+03*pow(y*1e3,18)+1.201975808671888E+03*pow(y*1e3,17)-8.752400339944144E+03*pow(y*1e3,16)-3.520938317631042E+04*pow(y*1e3,15)+1.782522695693886E+05*pow(y*1e3,14)-3.679921964945815E+05*pow(y*1e3,13)+4.754163339939423E+05*pow(y*1e3,12)-4.299172942104379E+05*pow(y*1e3,11)+2.845048363784255E+05*pow(y*1e3,10)-1.402289303188671E+05*pow(y*1e3,9)+5.162197713099514E+04*pow(y*1e3,8)-1.408282982901494E+04*pow(y*1e3,7)+2.798258244636952E+03*pow(y*1e3,6)-3.938191826992070E+02*pow(y*1e3,5)+3.762837702061519E+01*pow(y*1e3,4)-2.281061508024931E+00*pow(y*1e3,3)+2.788575722635748E-01*pow(y*1e3,2)-1.169492420663609E-03*(y*1e3)+0.000000000000000E+00)*1e-3;
+      z2 = (+1.398951343285082E+00*pow(y*1e3,24)-2.332727067125230E+01*pow(y*1e3,23)+1.467485975924787E+02*pow(y*1e3,22)-2.101960577109287E+02*pow(y*1e3,21)-3.038008318108298E+03*pow(y*1e3,20)+2.612562828542780E+04*pow(y*1e3,19)-1.164108643858779E+05*pow(y*1e3,18)+3.552784996501544E+05*pow(y*1e3,17)-8.075971392512823E+05*pow(y*1e3,16)+1.420943265564656E+06*pow(y*1e3,15)-1.975300824311701E+06*pow(y*1e3,14)+2.193884137511772E+06*pow(y*1e3,13)-1.957000894143032E+06*pow(y*1e3,12)+1.403252793544079E+06*pow(y*1e3,11)-8.065196161068449E+05*pow(y*1e3,10)+3.692107597105068E+05*pow(y*1e3,9)-1.332803635190936E+05*pow(y*1e3,8)+3.740415875538073E+04*pow(y*1e3,7)-8.004218401711085E+03*pow(y*1e3,6)+1.272265802473709E+03*pow(y*1e3,5)-1.448911307274275E+02*pow(y*1e3,4)+1.123686868723157E+01*pow(y*1e3,3)-3.085538372504257E-01*pow(y*1e3,2)+1.475773147641798E-02*(y*1e3)-2.173289186711275E-01)*1e-3;
+      r3 = (-5.008912673139158E-05*pow(x*1e3,27)+1.228438300524165E-03*pow(x*1e3,26)-1.249008518986552E-02*pow(x*1e3,25)+6.481650769797284E-02*pow(x*1e3,24)-1.590000089126579E-01*pow(x*1e3,23)+6.637322992321443E-02*pow(x*1e3,22)+8.537149399975134E-02*pow(x*1e3,21)+2.278107100599540E+00*pow(x*1e3,20)-3.008835908776580E+00*pow(x*1e3,19)-3.908660577222337E+01*pow(x*1e3,18)+1.240440783246039E+02*pow(x*1e3,17)+4.872970902143749E+01*pow(x*1e3,16)-3.279289815879526E+02*pow(x*1e3,15)-2.239674074348071E+03*pow(x*1e3,14)+7.765603548886496E+03*pow(x*1e3,13)+7.652315862961751E+03*pow(x*1e3,12)-7.060966580344526E+04*pow(x*1e3,11)+7.388063517595197E+04*pow(x*1e3,10)+2.279705043392706E+05*pow(x*1e3,9)-6.081825299112491E+05*pow(x*1e3,8)-2.955914293816218E+05*pow(x*1e3,7)+3.853088505916576E+06*pow(x*1e3,6)-8.822968010480234E+06*pow(x*1e3,5)+1.139059127557150E+07*pow(x*1e3,4)-9.376240492026070E+06*pow(x*1e3,3)+4.918114277035544E+06*pow(x*1e3,2)-1.511507307491638E+06*(x*1e3)+2.084742402876324E+05)*1e-3;
+      z4 = (+1.980525937191926E+00+exp(-(y*1e3)/(+2.710523708715753E+00))*pow(1./(y*1e3),0.5)*(+1.293247227135023E-07*pow(y*1e3,8)-2.767100772388310E-06*pow(y*1e3,7)+4.122061701047429E-05*pow(y*1e3,6)-6.972221744923378E-05*pow(y*1e3,5)+3.983187289256702E-04*pow(y*1e3,4)+2.162517219002935E-02*pow(y*1e3,3)+2.247220673179393E-03*pow(y*1e3,2)+5.707703718817071E-01*(y*1e3)+1.054440595337796E+00))*1e-3;
+    }
+    
+    bool air1, air2, air3, air4;
+    air1 = (y >= r_lim_2) && (x >= z4);
+    air2 = (x >= z_lim_2);
+    air3 = (x <= z_lim_2) && (x >= z_lim_1) && (y <= r3);
+    air4 = (x <= z_lim_1) && (x >= z1);
+      
+    if (air1 || air2 || air3 || air4) { // Air
+      f1[] = 0.0;
+      f2[] = 0.0;
+    }
+    else if ((x >= z2) && (x <= z1) && y < r_lim_1) { // Oil
+      f1[] = 1.0;
+      f2[] = 0.0;
+    }
+    else { // Water
+      f1[] = 1.0;
+      f2[] = 1.0;
+    }
+
+    if (abs(f1[]*(1.0-f2[])-1.0)<1e-6) { // oil
+      alphas[] = 2.0;
+    }
+    else if (abs(f1[]*f2[]-1.0)<1e-6) { // water
+      alphas[] = 1.0;
+    }
+    else { // air
+      alphas[] = 3.0;
+    }
+  }
+}
+
+event acceleration (i++) {
+ face vector av = a;
+  foreach_face(x)
+    av.x[] -= 9.81;
+}
+
+event adapt(i++)
+{
+  scalar KAPPA1[], KAPPA2[];
+  curvature(f1, KAPPA1);
+  curvature(f2, KAPPA2);
+  adapt_wavelet((scalar *){f1, f2, u.x, u.y, KAPPA1, KAPPA2},
+		(double[]){fErr, fErr, VelErr, VelErr, KErr, KErr},
+		maxlevel = MAXLEVEL, minlevel = MINLEVEL);
+}
+
+event printout(i++){
+  fprintf(stdout,"i= %d t= %.4e mg[ %d %d %d] max(u,v)= %.3e %.3e \n",i, t, mgp.i, mgpf.i, mgu.i, statsf(u.x).max, statsf(u.y).max);
+}
+
+event vtkoutput (t = 0; t < 10.0e-3; t += 1e-4)
+{
+  fprintf(stdout, "Output checkpoint file.\n");
+  char name[500];
+  sprintf(name, "out-%.2f-CC.out", t*1e5);
+  dump (file = name);
+}
+
+event setFields(i++){
+  foreach () {
+    if (abs(f1[]*(1.0-f2[])-1.0)<1e-6) { // oil
+      alphas[] = 2.0;
+    }
+    else if (abs(f1[]*f2[]-1.0)<1e-6) { // water
+      alphas[] = 1.0;
+    }
+    else { // air
+      alphas[] = 3.0;
+    }
+  }
+}
+~~~
+
+## three-phase.h
+
+**This is a version of the code that I believe is unchanged from the referenced sandbox by Vatsal Sanjay. I'm reproducing it here as I used it just in case he updates his version and the new one isn't compatible in some way.**
+
+~~~
+#include "vof.h"
+scalar f1[], f2[], *interfaces = {f1, f2};
+double rho1 = 1., mu1 = 0., rho2 = 1., mu2 = 0., rho3 = 1., mu3 = 0.;
+
+face vector alphav[];
+scalar rhov[];
+
+event defaults (i = 0) {
+  alpha = alphav;
+  rho = rhov;
+
+  if (mu1 || mu2)
+    mu = new face vector;
+}
+
+#ifndef rho
+#define rho(f1, f2) (clamp(f1*(1-f2), 0., 1.) * rho1 + clamp(f1*f2, 0., 1.) * rho2 + clamp((1-f1), 0., 1.) * rho3)
+#endif
+#ifndef mu
+#define mu(f1, f2) (clamp(f1*(1-f2), 0., 1.) * mu1 + clamp(f1*f2, 0., 1.) * mu2 + clamp((1-f1), 0., 1.) * mu3)
+#endif
+
+#ifdef FILTERED
+scalar sf1[], sf2[], *smearInterfaces = {sf1, sf2};
+#else
+#define sf1 f1
+#define sf2 f2
+scalar *smearInterfaces = {sf1, sf2};
+#endif
+
+event properties (i++) {
+  if (i > 1){
+    foreach(){
+      if (f2[]>f1[]){
+        f1[] = f2[];
+      }
+    }
+  }
+
+#ifdef FILTERED
+  int counter1 = 0;
+  for (scalar sf in smearInterfaces){
+    counter1++;
+    int counter2 = 0;
+    for (scalar f in interfaces){
+      counter2++;
+      if (counter1 == counter2){
+        // fprintf(ferr, "%s %s\n", sf.name, f.name);
+      #if dimension <= 2
+          foreach(){
+            sf[] = (4.*f[] +
+        	    2.*(f[0,1] + f[0,-1] + f[1,0] + f[-1,0]) +
+        	    f[-1,-1] + f[1,-1] + f[1,1] + f[-1,1])/16.;
+          }
+      #else // dimension == 3
+          foreach(){
+            sf[] = (8.*f[] +
+        	    4.*(f[-1] + f[1] + f[0,1] + f[0,-1] + f[0,0,1] + f[0,0,-1]) +
+        	    2.*(f[-1,1] + f[-1,0,1] + f[-1,0,-1] + f[-1,-1] +
+        		f[0,1,1] + f[0,1,-1] + f[0,-1,1] + f[0,-1,-1] +
+        		f[1,1] + f[1,0,1] + f[1,-1] + f[1,0,-1]) +
+        	    f[1,-1,1] + f[-1,1,1] + f[-1,1,-1] + f[1,1,1] +
+        	    f[1,1,-1] + f[-1,-1,-1] + f[1,-1,-1] + f[-1,-1,1])/64.;
+          }
+      #endif
+      }
+    }
+  }
+  #endif
+#if TREE
+  for (scalar sf in smearInterfaces){
+    sf.prolongation = refine_bilinear;
+    boundary ({sf});
+  }
+#endif
+
+  foreach_face() {
+    double ff1 = (sf1[] + sf1[-1])/2.;
+    double ff2 = (sf2[] + sf2[-1])/2.;
+
+    // double rhoTemp = max(rho(ff1, ff2), rho3);
+    // alphav.x[] = fm.x[]/rhoTemp;
+    alphav.x[] = fm.x[]/rho(ff1, ff2);
+    face vector muv = mu;
+    // double muTemp = max(mu(ff1, ff2), mu3);
+    // muv.x[] = fm.x[]*muTemp;
+    muv.x[] = fm.x[]*mu(ff1, ff2);
+  }
+  foreach(){
+    // double rhoTemp = max(rho(sf1[], sf2[]), rho3);
+    // rhov[] = cm[]*rhoTemp;
+    rhov[] = cm[]*rho(sf1[], sf2[]);
+  }
+
+#if TREE
+  for (scalar sf in smearInterfaces){
+    sf.prolongation = fraction_refine;
+    boundary ({sf});
+  }
+#endif
+}
+~~~
+
+## vof-3p.h
+
+**This is a version of the code that I believe is unchanged from the referenced sandbox by Vatsal Sanjay. I'm reproducing it here as I used it just in case he updates his version and the new one isn't compatible in some way.**
+
+~~~
+attribute {
+  scalar * tracers;
+  bool inverse;
+}
+
+#include "fractions-3p.h"
+
+extern scalar * interfaces;
+extern face vector uf;
+extern double dt;
+
+event defaults (i = 0)
+{
+#if TREE
+  for (scalar c in interfaces)
+    c.refine = c.prolongation = fraction_refine;
+#endif
+}
+
+event stability (i++) {
+  if (CFL > 0.5)
+    CFL = 0.5;
+}
+
+foreach_dimension()
+static void sweep_x (scalar c, scalar cc)
+{
+  vector n[];
+  scalar alpha[], flux[];
+  double cfl = 0.;
+  scalar * tracers = c.tracers, * gfl = NULL, * tfluxl = NULL;
+  if (tracers) {
+    for (scalar t in tracers) {
+      scalar gf = new scalar, flux = new scalar;
+      gfl = list_append (gfl, gf);
+      tfluxl = list_append (tfluxl, flux);
+    }
+    foreach() {
+      scalar t, gf;
+      for (t,gf in tracers,gfl) {
+	double cl = c[-1], cc = c[], cr = c[1];
+	if (t.inverse)
+	  cl = 1. - cl, cc = 1. - cc, cr = 1. - cr;
+	gf[] = 0.;
+	static const double cmin = 0.5;
+	if (cc >= cmin) {
+	  if (cr >= cmin) {
+	    if (cl >= cmin) {
+	      if (t.gradient)
+		gf[] = t.gradient (t[-1]/cl, t[]/cc, t[1]/cr)/Delta;
+	      else
+		gf[] = (t[1]/cr - t[-1]/cl)/(2.*Delta);
+	    }
+	    else
+	      gf[] = (t[1]/cr - t[]/cc)/Delta;
+	  }
+	  else if (cl >= cmin)
+	    gf[] = (t[]/cc - t[-1]/cl)/Delta;
+	}
+      }
+    }
+    boundary (gfl);
+  }
+
+  reconstruction (c, n, alpha);
+  
+  foreach_face(x, reduction (max:cfl)) {
+
+    double un = uf.x[]*dt/(Delta*fm.x[]), s = sign(un);
+    int i = -(s + 1.)/2.;
+
+    if (un*fm.x[]*s/cm[] > cfl)
+      cfl = un*fm.x[]*s/cm[];
+
+    double cf = (c[i] <= 0. || c[i] >= 1.) ? c[i] :
+      rectangle_fraction ((coord){-s*n.x[i], n.y[i], n.z[i]}, alpha[i],
+			  (coord){-0.5, -0.5, -0.5},
+			  (coord){s*un - 0.5, 0.5, 0.5});
+    
+    flux[] = cf*uf.x[];
+    
+    scalar t, gf, tflux;
+    for (t,gf,tflux in tracers,gfl,tfluxl) {
+      double cf1 = cf, ci = c[i];
+      if (t.inverse)
+	cf1 = 1. - cf1, ci = 1. - ci;
+      if (ci > 1e-10) {
+	double ff = t[i]/ci + s*min(1., 1. - s*un)*gf[i]*Delta/2.;
+	tflux[] = ff*cf1*uf.x[];
+      }
+      else
+	tflux[] = 0.;
+    }
+  }
+  delete (gfl); free (gfl);
+
+#if TREE
+  scalar * fluxl = list_concat (NULL, tfluxl);
+  fluxl = list_append (fluxl, flux);
+  for (int l = depth() - 1; l >= 0; l--)
+    foreach_halo (prolongation, l) {
+#if dimension == 1
+      if (is_refined (neighbor(-1)))
+	for (scalar fl in fluxl)
+	  fl[] = fine(fl);
+      if (is_refined (neighbor(1)))
+	for (scalar fl in fluxl)
+	  fl[1] = fine(fl,2);
+#elif dimension == 2
+      if (is_refined (neighbor(-1)))
+	for (scalar fl in fluxl)
+	  fl[] = (fine(fl,0,0) + fine(fl,0,1))/2.;
+      if (is_refined (neighbor(1)))
+	for (scalar fl in fluxl)
+	  fl[1] = (fine(fl,2,0) + fine(fl,2,1))/2.;
+#else // dimension == 3
+      if (is_refined (neighbor(-1)))
+	for (scalar fl in fluxl)
+	  fl[] = (fine(fl,0,0,0) + fine(fl,0,1,0) +
+		  fine(fl,0,0,1) + fine(fl,0,1,1))/4.;
+      if (is_refined (neighbor(1)))
+	for (scalar fl in fluxl)
+	  fl[1] = (fine(fl,2,0,0) + fine(fl,2,1,0) +
+		   fine(fl,2,0,1) + fine(fl,2,1,1))/4.;
+#endif
+    }
+  free (fluxl);
+#endif
+
+  if (cfl > 0.5 + 1e-6)
+    fprintf (ferr, 
+	     "WARNING: CFL must be <= 0.5 for VOF (cfl - 0.5 = %g)\n", 
+	     cfl - 0.5), fflush (ferr);
+
+  foreach() {
+    c[] += dt*(flux[] - flux[1] + cc[]*(uf.x[1] - uf.x[]))/(cm[]*Delta);
+    scalar t, tflux;
+    for (t, tflux in tracers, tfluxl)
+      t[] += dt*(tflux[] - tflux[1])/(cm[]*Delta);
+  }
+  boundary ({c});
+  boundary (tracers);
+
+  delete (tfluxl); free (tfluxl);
+}
+
+void vof_advection (scalar * interfaces, int i)
+{
+  for (scalar c in interfaces) {
+    scalar cc[];
+    foreach()
+      cc[] = (c[] > 0.5);
+
+    void (* sweep[dimension]) (scalar, scalar);
+    int d = 0;
+    foreach_dimension()
+      sweep[d++] = sweep_x;
+    boundary ({c});
+    for (d = 0; d < dimension; d++)
+      sweep[(i + d) % dimension] (c, cc);
+  }
+}
+
+event vof (i++)
+  vof_advection (interfaces, i);
+~~~
+
+## VTKoutput.h
+
+**This is a reproduced version of VTKoutput.h by Chizari. I am reproducing it in the current version to avoid incompatibilities that could occur from future versions.**
+
+~~~
+/* The purpose is to export a vtk ascii file for using in Paraview. There are two main functions, one for the contour plot “output_paraview_CC” and the other for the interface “output_paraview_IF”. */
+
+/* These functions may be used as follow, */
+
+/*     char name[500]; */
+/*     sprintf(name, "%s-%.4f-CC.vtk", "out", t); */
+/*     output_paraview_CC(name, t, 90.0, {f, u.x, u.y}); */
+/*     sprintf(name, "%s-%.4f-F1.vtk", "out", t); */
+/*     output_paraview_IF(name, t, 90.0, f); */
+
+/* Creating the VTK format for the contour plot will be done by the following function, note that the “rotationangle” variable is for rotating the whole area CCW. */
+
+#define R_PI 3.1415926535897932384626433832795
+void output_paraview_CC(char *name, double time, double rotationangle, scalar *outlist)
+{
+	scalar *list = dump_list(outlist);
+	;
+	int i, cellnumber;
+	//	int varNO = list_len(list);
+	double xxx[4], yyy[4];
+	const double angle = rotationangle * R_PI / 180.0;
+	FILE *fp;
+	scalar vartmp[];
+	;
+	cellnumber = 0;
+	foreach ()
+		cellnumber++;
+	;
+	fp = fopen(name, "w");
+	fprintf(fp, "# vtk DataFile Version 2.0\r\n");
+	fprintf(fp, "Unstructured Grid\r\n");
+	fprintf(fp, "ASCII\r\n");
+	fprintf(fp, "DATASET UNSTRUCTURED_GRID\r\n");
+	fprintf(fp, "POINTS %d float\r\n", cellnumber * 4);
+	foreach_leaf()
+	{
+		xxx[0] = x - 0.50 * Delta;
+		xxx[1] = x + 0.50 * Delta;
+		xxx[2] = x + 0.50 * Delta;
+		xxx[3] = x - 0.50 * Delta;
+		yyy[0] = y - 0.50 * Delta;
+		yyy[1] = y - 0.50 * Delta;
+		yyy[2] = y + 0.50 * Delta;
+		yyy[3] = y + 0.50 * Delta;
+		fprintf(fp, "%.9f %.9f 0.0\r\n", xxx[0] * cos(angle) - yyy[0] * sin(angle), yyy[0] * cos(angle) + xxx[0] * sin(angle));
+		fprintf(fp, "%.9f %.9f 0.0\r\n", xxx[1] * cos(angle) - yyy[1] * sin(angle), yyy[1] * cos(angle) + xxx[1] * sin(angle));
+		fprintf(fp, "%.9f %.9f 0.0\r\n", xxx[2] * cos(angle) - yyy[2] * sin(angle), yyy[2] * cos(angle) + xxx[2] * sin(angle));
+		fprintf(fp, "%.9f %.9f 0.0\r\n", xxx[3] * cos(angle) - yyy[3] * sin(angle), yyy[3] * cos(angle) + xxx[3] * sin(angle));
+	}
+	fprintf(fp, "CELLS %d %d\r\n", cellnumber, cellnumber + cellnumber * 4);
+	for (i = 0; i < cellnumber; i++)
+		fprintf(fp, "%d %d %d %d %d\r\n", 4, i * 4 + 0, i * 4 + 1, i * 4 + 2, i * 4 + 3);
+	fprintf(fp, "CELL_TYPES %d\r\n", cellnumber);
+	for (i = 0; i < cellnumber; i++)
+		fprintf(fp, "7\r\n");
+	fprintf(fp, "CELL_DATA %d\r\n", cellnumber);
+	for (scalar s in list)
+	{
+		if (strcmp(s.name, "cm"))
+		{
+			fprintf(fp, "SCALARS %s float\r\n", s.name);
+			fprintf(fp, "LOOKUP_TABLE default\r\n");
+			foreach_leaf()
+				fprintf(fp, "%f\r\n", s[]);
+		}
+	};
+	fclose(fp);
+	return;
+}
+
+//The following function will find the intersection points for 2D.
+
+int findintersectionpoints(double nx, double ny, double alpha, double xc, double yc, double delta, double xi[2], double yi[2], char typei[2])
+{
+	int ppp = 0;
+	double xtmp[2], ytmp[2], underflow = 1.0e-6;
+	if (fabs(nx) < underflow)
+	{
+		ytmp[0] = (alpha - nx * (-0.50)) / ny;
+		ytmp[1] = (alpha - nx * (+0.50)) / ny;
+		xi[ppp] = xc + (-0.50) * delta;
+		yi[ppp] = yc + (ytmp[0]) * delta;
+		typei[ppp] = 'l';
+		(ppp)++;
+		xi[ppp] = xc + (+0.50) * delta;
+		yi[ppp] = yc + (ytmp[1]) * delta;
+		typei[ppp] = 'r';
+		(ppp)++;
+	}
+	else if (fabs(ny) < underflow)
+	{
+		xtmp[0] = (alpha - ny * (-0.50)) / nx;
+		xtmp[1] = (alpha - ny * (+0.50)) / nx;
+		xi[ppp] = xc + (xtmp[0]) * delta;
+		yi[ppp] = yc + (-0.50) * delta;
+		typei[ppp] = 'b';
+		(ppp)++;
+		xi[ppp] = xc + (xtmp[1]) * delta;
+		yi[ppp] = yc + (+0.50) * delta;
+		typei[ppp] = 't';
+		(ppp)++;
+	}
+	else
+	{
+		xtmp[0] = (alpha - ny * (-0.50)) / nx;
+		xtmp[1] = (alpha - ny * (+0.50)) / nx;
+		ytmp[0] = (alpha - nx * (-0.50)) / ny;
+		ytmp[1] = (alpha - nx * (+0.50)) / ny;
+
+		if (-0.50 <= ytmp[0] && ytmp[0] <= +0.50)
+		{
+			xi[ppp] = xc + (-0.50) * delta;
+			yi[ppp] = yc + (ytmp[0]) * delta;
+			typei[ppp] = 'l';
+			(ppp)++;
+		}
+		if (-0.50 <= xtmp[0] && xtmp[0] <= +0.50)
+		{
+			xi[ppp] = xc + (xtmp[0]) * delta;
+			yi[ppp] = yc + (-0.50) * delta;
+			typei[ppp] = 'b';
+			(ppp)++;
+		}
+		if (-0.50 <= ytmp[1] && ytmp[1] <= +0.50)
+		{
+			xi[ppp] = xc + (+0.50) * delta;
+			yi[ppp] = yc + (ytmp[1]) * delta;
+			typei[ppp] = 'r';
+			(ppp)++;
+		}
+		if (-0.50 <= xtmp[1] && xtmp[1] <= +0.50)
+		{
+			xi[ppp] = xc + (xtmp[1]) * delta;
+			yi[ppp] = yc + (+0.50) * delta;
+			typei[ppp] = 't';
+			(ppp)++;
+		}
+	}
+	return true;
+}
+
+//And the VTK format of the interface will be,
+
+void output_paraview_IF(char *name, double time, double rotationangle, scalar intrfc)
+{
+	int interfacepoints, cellnumber, i;
+	char typei[2], *typeintersect;
+	double xi[2], yi[2], *xintersect, *yintersect;
+	FILE *fp;
+	const double angle = rotationangle * R_PI / 180.0;
+	scalar alpha[];
+	vector n[];
+	;
+	cellnumber = 0;
+	foreach ()
+		cellnumber++;
+	xintersect = (double *)calloc(sizeof(double), cellnumber);
+	yintersect = (double *)calloc(sizeof(double), cellnumber);
+	typeintersect = (char *)calloc(sizeof(char), cellnumber);
+	;
+	reconstruction(intrfc, n, alpha);
+	interfacepoints = 0;
+	foreach_leaf()
+	{
+		if (intrfc[] > R_VOFLIMIT && intrfc[] < 1.0 - R_VOFLIMIT)
+		{
+			findintersectionpoints(n.x[], n.y[], alpha[], x, y, Delta, xi, yi, typei);
+			xintersect[interfacepoints] = xi[0] * cos(angle) - yi[0] * sin(angle);
+			yintersect[interfacepoints] = yi[0] * cos(angle) + xi[0] * sin(angle);
+			typeintersect[interfacepoints] = typei[0];
+			interfacepoints++;
+			xintersect[interfacepoints] = xi[1] * cos(angle) - yi[1] * sin(angle);
+			yintersect[interfacepoints] = yi[1] * cos(angle) + xi[1] * sin(angle);
+			typeintersect[interfacepoints] = typei[1];
+			interfacepoints++;
+		}
+	};
+	fp = fopen(name, "w");
+	fprintf(fp, "# vtk DataFile Version 2.0\r\n");
+	fprintf(fp, "Unstructured Grid\r\n");
+	fprintf(fp, "ASCII\r\n");
+	fprintf(fp, "DATASET UNSTRUCTURED_GRID\r\n");
+	switch (interfacepoints)
+	{
+	case 0:
+	{
+		fprintf(fp, "POINTS %d float\r\n", 2);
+		foreach_leaf()
+		{
+			fprintf(fp, "%.9f %.9f 0.0\r\n", x, y);
+			fprintf(fp, "%.9f %.9f 0.0\r\n", x, y);
+			break;
+		}
+		fprintf(fp, "CELLS %d %d\r\n", 1, 3);
+		fprintf(fp, "%d %d %d\r\n", 2, 0, 1);
+		fprintf(fp, "CELL_TYPES %d\r\n", 1);
+		fprintf(fp, "3\r\n");
+		break;
+	}
+	default:
+	{
+		fprintf(fp, "POINTS %d float\r\n", interfacepoints);
+		for (i = 0; i < interfacepoints; i++)
+			fprintf(fp, "%.9f %.9f 0.0\r\n", xintersect[i], yintersect[i]);
+		fprintf(fp, "CELLS %d %d\r\n", interfacepoints / 2, interfacepoints + interfacepoints / 2);
+		for (i = 0; i < interfacepoints / 2; i++)
+			fprintf(fp, "%d %d %d\r\n", 2, i * 2 + 0, i * 2 + 1);
+		fprintf(fp, "CELL_TYPES %d\r\n", interfacepoints / 2);
+		for (i = 0; i < interfacepoints / 2; i++)
+			fprintf(fp, "3\r\n");
+		break;
+	}
+	};
+	free(xintersect);
+	free(yintersect);
+	fclose(fp);
+	return;
+}
+~~~

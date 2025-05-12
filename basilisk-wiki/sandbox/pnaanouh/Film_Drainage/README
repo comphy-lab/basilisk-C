@@ -1,0 +1,3 @@
+This directory outlines the work done in order to resolve the film drainage between two colliding droplets using the multilayer solver. 
+
+It includes several test cases as well as a modified version of the multilayer solver. This version of the solver builds on the work of Clement Robert and adds some terms that are neglected in the base version (primarily in the diffusion functions), fixes an error with regards to the veritical velocity boundary condition at the free surface, adds an optional symmetry boundary condition at the bathymetry, adds Van der Waals and surface tension forces, adds the normal and tangetial stress continuity conditions at the free surface, and includes some minor quality of life improvements.  

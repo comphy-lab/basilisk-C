@@ -1,0 +1,75 @@
+/**
+# RT.edp by Freefem++ (a very simple version)
+*/
+real gravity = 0.98;
+real gchoc = 9.8;
+real rho1 = 2., rho2 = 1.;
+real mu = 0.0001;
+real dt =0.03;
+
+mesh Th = square(150,150,[x*1.,y*1.]);
+plot(Th,wait =0);
+// definition des espaces d’elements finis 
+// P2 elements quadratiques continus par morceaux
+// P1 elements affines continus par morceaux
+
+//velocity field
+fespace Uh(Th,P2);
+// u1,u2 vel & u1o,u2o o vel & u1h,u2h test vel
+Uh u1,u2,u1o,u2o,u1h,u2h;
+
+//pressure field
+fespace Vh(Th, P1);
+Vh p,ph;
+
+//density & viscosity & levelset field
+fespace Wh(Th, P2);
+Wh rho, rhoo;
+Wh phi, phio, phih;
+
+//initialisation 
+phi = 0.5 + 0.02*cos(x*2.*pi) - y;
+phio=phi;
+u1 = 0.0; u1o = u1;
+u2 = 0.0; u2o = u2;
+
+//convect([u1,u2],-dt,v):  convext v by u1,u2, dt seconds (un+1 - un ox)/dt
+//solve NS
+problem LevelSet(phi, phih) =
+  int2d(Th) (phi*phih/dt)
+  - int2d(Th) (convect([u1o,u2o], -dt, phio)*phih/dt)
+  + int2d(Th) (0.0001*dx(phi)*dx(phih) +0.0001*dy(phi)*dy(phih));
+
+//solve NS
+problem NavierStokes([u1, u2,p], [u1h, u2h, ph]) =
+  int2d(Th) (rho*u1*u1h / dt)
+  - int2d(Th)(rho*convect([u1o,u2o], -dt, u1o)*u1h/dt)
+  +int2d(Th) (mu*dx(u1)*dx(u1h)+mu*dy(u1)*dy(u1h))
+  -int2d(Th)(p*dx(u1h))
+  + int2d(Th)(rho*u2*u2h/dt)
+  - int2d(Th)(rho*convect([u1o,u2o], -dt, u2o)*u2h/dt)
+  +int2d(Th) (mu*dx(u2)*dx(u2h)+mu*dy(u2)*dy(u2h))
+  -int2d(Th)(p*dy(u2h))
+  +int2d(Th)(rho*gravity*u2h)
+  +int2d(Th)((dx(u1)+dy(u2))*ph+0.000001*p*ph)
+  //+int2d(Th,levelset = y - 0.6 + tt)(rho*gchoc*u2h) //implusive choc
+  +on(1,3, u1=0, u2=0) 
+  +on(2,4, u1=0); 
+
+//time loop 
+for (int it=0; it< 100; it++){
+  // First, convect density 
+  for (int innerloop=0; innerloop<1; innerloop++){
+    rhoo = rho;
+    phio = phi;
+    LevelSet;
+    rho = rho1*(phi<=0)+rho2*(phi>0);
+    NavierStokes;
+    u1o = u1; u2o = u2;
+  }
+  // eps nbvx 
+  //Th = adaptmesh(Th, [rho, u1, u2]); rho = rho; mu = mu; u1=u1; u2=u2;
+  if (it % 5 ==0)	
+    plot(phi, nbiso=40, fill=1, value=1, ps="TwofluidLevel_it"+it+".eps");
+}
+

@@ -1,0 +1,127 @@
+Thank you Thomas for those files !
+
+# How to do it
+
+
+## Creating many folders
+
+To create the folders type in the Terminal :
+
+~~~literatec
+amansur@cezanne:~/right_folder$ sh createfolders.sh
+~~~
+
+*Note : you have to be in the folder where the file 'createfolders.sh' is, in the Terminal directory adress (**~/right_folder**).*
+
+### createfolders.sh
+
+~~~literatec
+#! /bin/bash
+COUNTER=5
+Updater=1
+echo Creating Folders
+for i in $( seq $COUNTER )
+do
+mkdir $i
+done
+echo Created $COUNTER Folders
+~      
+~~~
+
+## Succession of simulations
+
+Put the files you want to compute, with the [Makefile](http://basilisk.fr/src/Makefile) in the different folders you just created and put the right value into those files (*for example: change the value of Ca, Re, the level, the size of the box, ...*).
+
+Then launch the 'succession_simulation.sh' file by this command : 
+
+~~~literatec
+amansur@cezanne:~/right_folder$ sh succession_simulation.sh
+~~~
+
+*Note : you have to be in the folder where the file 'createfolders.sh' is, in the Terminal directory adress (**~/right_folder**).*
+
+### succession_simulation.sh
+
+~~~literatec
+#! /bin/bash
+clear
+StartTime=$(date +%s)
+gnome-system-monitor &
+echo $StartTime
+echo 'Starting Sigma Lineari'
+COUNTER=5 #Number of folders
+for i in $( seq $COUNTER )
+do
+dirname="/poisson/temporaires/amansur/Stage_M2/" #Path to your folder
+dirname=$dirname$i
+cd $dirname
+echo $dirname
+inputfile="/input"
+file=$dirname$inputfile
+echo $file
+ls
+make sigma_lineaire.tst
+wait
+cd ..
+sleep 5
+done
+StopTime=$(date +%s)
+#echo $StopTime
+TotalTime=$(($StopTime - $StartTime))
+echo "$(($TotalTime/3600)) h $(($TotalTime/60)) m $(($TotalTime%60)) s elapsed."
+StartTime=$(date -d @$StartTime)
+StopTime=$(date -d @$StopTime)
+~~~
+
+if the loop doesn't work, use that code :
+
+~~~literatec
+#! /bin/bash
+clear
+StartTime=$(date +%s)
+gnome-system-monitor &
+echo $StartTime
+echo 'Starting Sigma Lineaire'
+for i in 1 2 3 4 5
+do
+dirname="/poisson/temporaires/amansur/Stage_M2/" #Path to your folder
+dirname=$dirname$i
+cd $dirname
+echo $dirname
+inputfile="/input"
+file=$dirname$inputfile
+echo $file
+ls
+make sigma_lineaire.tst
+wait
+cd ..
+sleep 5
+echo $(pwd)
+done
+StopTime=$(date +%s)
+#echo $StopTime
+TotalTime=$(($StopTime - $StartTime))
+echo "$(($TotalTime/3600)) h $(($TotalTime/60)) m $(($TotalTime%60)) s elapsed."
+StartTime=$(date -d @$StartTime)
+StopTime=$(date -d @$StopTime)
+~~~
+
+# How to check a variable during computation
+
+Since the computation is going to take a while, it would be nice to be able to follow at where the simulation is. To do this, you can open a new terminal (Ctrl+Alt+T), go to the right folder and type in the command line of the terminal : *"tail -f t.dat"*
+
+
+
+## In the file
+
+~~~literatec
+FILE * fp_t = fopen ("t.dat", "a");
+fprintf(fp_t,"%g %d\n",t,i);
+fclose(fp_t); 
+~~~
+
+## In the terminal
+
+~~~literatec
+> tail -f t.dat
+~~~

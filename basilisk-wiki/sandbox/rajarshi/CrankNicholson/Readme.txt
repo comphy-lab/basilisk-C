@@ -1,0 +1,27 @@
+## README FILE - A GUIDE TO ALL THE FILES ON THIS DIRECTORY
+
+1. [ProlongationOperatorScaling.c]() : In this code the error scaling of the prolongation operator has been demonstrated. There are currently four different prolongation operators. The Bi-linear & Bi-quadratic ones are written in grids/multigrid.h whereas the Bi-cubic and the Bi-quartic ones are written in Laplacian.h The value of the parameter ‘order’ in the main function needs to be changed to observe the error scaling of the various schemes.
+
+2. [Poisson2nd-bilinear.c]() : We solve the Poisson equation on a uniform grid using a 2nd order Finite Volume Solver. This exercise is performed to test the Error scalability of the solver for which we use differently resolved grids & study how the maximum error behaves.
+
+3. [Poisson4th-bicubic.c]() : We solve the Poisson equation on a uniform grid using a 4th order Finite Volume Solver. This exercise is performed to test the Error scalability of the solver for which we use differently resolved grids & study how the maximum error behaves.
+
+4. [RefinedGrid-Poisson2nd.c]() : The order of the scheme is 2. The domain is made up of circularly refined grids starting from the centre. The Central core has the highest grid density, followed by a level of lesser grid densities as we reach the edge of the domains. In this case 3 layers of refinement are used for each domain. The error scaling is studied as the grids for different levels (ranging from 8 to 10) are used for the central circle. 
+
+5. [RefinedGrid-Poisson4th.c]() : The order of the scheme is 4. The domain is made up of circularly refined grids starting from the centre. The Central core has the highest grid density, followed by a level of lesser grid densities as we reach the edge of the domains. In this case 3 layers of refinement are used for each domain. The error scaling is studies as the grids for different levels (ranging from 8 to 10) are used for the central circle.
+
+6. [Laplacian.h]() : This is a header file. In this file, we have the function to compute the Direct Laplacian of a function using a 4th order scheme and a 2nd order scheme. The computation can be done both for a Multigrid as well as a Quadtree. In addition to this, temporarily the modules for bicubic and biquartic prolongation functions have also been placed in this file. However at a later stage these functions will be moved to a more suitable header file.
+
+7. [Poisson-helmholtz4th.h]() : This is the header file which has all the functions required for the computation of the 4th order Poisson Helmholtz problem. This file will be modified shortly in conjunction with the poisson.h file.
+
+8. [DirectLaplacianMultigrid.c]() : We compute the Laplacian using a 4th order formulation. This exercise is performed to test the Error scalability of the formulation on a periodic domain for which we use differently resolved homogenous grids & study how the maximum error behaves on the multigrid. The results are satisfactory
+
+9. [DirectLaplacian2ndQuadtree.c]() : The domain is made up of refined grid patches starting from the centre. The Central core has the highest grid density, followed by a level of lesser grid densities as we reach the edge of the domains. In this case 2 layers of refinement are used for each domain. The error distribution across the grid is looked at. The error shows a jump at the interface of two grid spacings.
+
+10. [DirectLaplacian4thQuadtree.c]() : The domain is made up of refined grid patches starting from the centre. The Central core has the highest grid density, followed by a level of lesser grid densities as we reach the edge of the domains. In this case 2 layers of refinement are used for each domain. The error distribution across the grid is looked at. The order of the method is 4 and the biquartic operator has been used for prolongation at the boundary interface. The error shows a jump at the interface of two grid spacings, however the error jump is clearly less than the one obtained in the bi-linear 2nd order laplacian solver.
+
+11. [TestingRelaxationOperator2nd4th.c]() : This test case is performed to study the accuracy of the relaxation operator, by leaving out the residuals. Hence instead of the equation L(dA) = Res being relaxed, the original equation L(A) = B is relaxed. The case is simplified further, in that - the multigrid cycles have been left out. The results demonstrate that for both the cases the converged solution is obtained, hence we may conclude the relaxation operator is fine. The problem could be with either the residual operation or with the multi-grid cycle. This will be taken up in the Residual test case.
+
+12. [TestingResidualOperator2nd.c]() : This test case is performed to study the accuracy of the second order residual operator. The case is simplified, in that - the multigrid cycles have been left out. The results demonstrate that a converged solution is obtained, hence we may conclude the residual & relaxation operators are fine.
+
+13. [TestingResidualOperator4th.c]() : This test case is performed to study the accuracy of the fourth order residual operator. The case is simplified, in that - the multigrid cycles have been left out. The results demonstrate that a converged solution is not obtained, hence we may conclude the residual & relaxation operators are not fine. A possible reason found after debugging is the errorneous implementation of the boundary condition which needs to be applied on two layers of ghost cells.

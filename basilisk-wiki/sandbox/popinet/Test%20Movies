@@ -1,0 +1,12 @@
+![First movie](v24102919-1920x1080p.mp4)( width="100%" )
+
+![Second movie](/src/test/stokes/movie.mp4)( width="100%" )
+
+![Third movie: `ffmpeg -i movie.mp4 -c:v libx264 -crf 18 -vf format=yuv420p -profile:v baseline -level 3.0 -movflags +faststart -an movie1.mp4`](movie1.mp4)( width="100%" )
+
+![Fourth movie: Handbrake conversion](movie2.mp4)( width="100%" )
+
+<video width="100%" controls>
+  <source src="https://www.dropbox.com/s/24ttgnc0hsnb94m/CaseIII_Experiment.mp4?dl=1" type="video/mp4">
+  <caption><p align="center">From dropbox</caption>
+</video>

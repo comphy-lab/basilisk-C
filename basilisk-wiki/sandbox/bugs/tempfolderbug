@@ -1,0 +1,21 @@
+# Temporary folder is not removed  
+When compiling a `.c` file that includes a header file like so, 
+
+~~~literatec
+...
+#include "../folder/header.h"
+...
+~~~
+
+A `folder` is created outside the temporary `.qcc` folder and it will not be removed. 
+
+## how to reproduce  
+~~~bash
+$ cd $BASLISK/examples/
+$ qcc -Wall -O2 -autolink breaking.c -L$BASILISK/gl \
+            -lglutils -lfb_osmesa -lGLU -lOSMesa -lm
+$ cd test    
+$ ls
+stokes.h
+~~~
+The last command reveals that a temporary folder had been created that was not removed.

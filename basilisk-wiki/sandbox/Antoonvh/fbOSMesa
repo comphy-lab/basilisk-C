@@ -1,0 +1,31 @@
+1 patch for repository http://basilisk.fr/basilisk:
+
+patch ffc13c43cd422910015fc6111850c237d367f4bf
+Author: j.a.v.hooft@gmail.com
+Date:   Sun Jun  6 13:31:42 CEST 2021
+  * turn of FPEs for framebuffer creation with OSMesa
+
+New patches:
+
+[turn of FPEs for framebuffer creation with OSMesa
+j.a.v.hooft@gmail.com**20210606113142
+ Ignore-this: dfa86fb5e98bca416e020266fd71a5affceaf19614c8ef63fec807eb6334b2480db9f5bd65a76949
+] hunk ./src/gl/fb_osmesa.c 5
++#include <fenv.h>
+hunk ./src/gl/fb_osmesa.c 8
++int fedisableexcept (int flags);
++int feenableexcept (int flags);
++
+hunk ./src/gl/fb_osmesa.c 32
++  fedisableexcept (FE_DIVBYZERO|FE_INVALID);
+hunk ./src/gl/fb_osmesa.c 44
++  feenableexcept (FE_DIVBYZERO|FE_INVALID);
+
+Context:
+
+[TAG release 21-05-05
+Stephane Popinet <popinet@basilisk.fr>**20210517161606
+ Ignore-this: d57aa73da17d09b1c5e64fb6875586ff
+] 
+Patch bundle hash:
+8843f5bc43bdd93fe18e4ce733c4f74dbe845b73

@@ -1,0 +1,30 @@
+This folder contains the following tests:
+
+- neumann0.c: a single Gaussian vortex, square domain, free-slip walls [OK]
+- neumann1.c: two Gaussian vortices, square domain, free-slip walls, circulation, centroids, radius [OK]
+- neumann2.c: two Gaussian vortices (counter), square domain, free-slip walls, circulation, centroids, radius [OK]
+- neumann3.c: like neumann0.c, but uses a circular domain, less clean due to embedded boundaries.
+- neumann4.c: like neumann1.c, but uses a circular domain, less clean due to embedded boundaries.
+- neumann5.c: like neumann2.c, but uses a circular domain, less clean due to embedded boundaries.
+- neumann6.c: like neumann0.c, but rotating to obtain zero total circulation, checked circulation in rotating frame [OK].
+- periodic0.c: like neumann0.c, but uses periodic boundaries, this is the correct way for initial conditions, here foreach_boundary() wont work, so we use fractions.
+- periodic1.c: like neumann1.c, but uses periodic boundaries, this is the correct way for initial conditions, here foreach_boundary() wont work, so we use fractions.
+- vortex0.c: uses periodic0.c as initial conditions, semi-implicit Coriolis term,
+  we can estimate the numerical viscosity here, which depends on spatial resolution.
+  explicit: using 16 points per core radius, nu~2e-6, core radius spreads accordingly
+  explicit: using 32 points per core radius, nu~9e-7, core radius spreads accordingly
+  explicit: using 64 points per core radius, nu~1e-7, core radius spreads accordingly
+
+  semi-implicit: using 16 points per core radius, nu~1.5e-6, core radius spreads accordingly
+  semi-implicit: using 32 points per core radius, nu~1.5e-7, core radius spreads accordingly, fishy long-term behavior
+  semi-implicit: using 64 points per core radius, negative but small numerical viscosity
+
+- vortex1.c: uses periodic1.c as initial conditions, explicit Coriolis term, we
+  recover a pair rotating with angular velocity Ω = pi/b² - Gamma/LxLy.
+  Results are very clean if constant resolution. Less clean if adaptative.
+
+- vortex2.c: like vortex1.c, but in 3D. Comparison with vortex1.c to validate Coriolis3d 
+
+
+
+- helix.c: uses periodic BCs, foreach_boundary() wont work.

@@ -1,0 +1,145 @@
+1 patch for repository http://basilisk.fr/basilisk:
+
+patch b2e88cca63c53927a6815a6d30ff506654824279
+Author: j.a.v.hooft@gmail.com
+Date:   Thu May 20 13:35:08 CEST 2021
+  * Array reductions
+
+New patches:
+
+[Array reductions
+j.a.v.hooft@gmail.com**20210520113508
+ Ignore-this: afc94d0c11109efda00a414ac2db2cbc
+] hunk ./src/common.h 650
++@define mpi_all_reduce_double_arr(v,op,elem)
+hunk ./src/common.h 669
++@define mpi_all_reduce_double_arr(v,op,elem)
+hunk ./src/common.h 694
++@def mpi_all_reduce_double_arr(v,op,num) {
++  prof_start ("mpi_all_reduce");
++  double global[num], tmp[num];
++  for (int i = 0; i < num; i++)
++    tmp[i] = v[i]; // Cast
++  mpi_all_reduce0 (tmp, global, num, MPI_DOUBLE, op, MPI_COMM_WORLD);
++  for (int i = 0; i < num; i++)
++    v[i] = global[i]; 
++  prof_stop();
++}
++@
++
+hunk ./src/common.h 795
+-
++@define mpi_all_reduce_double_arr(v,op,elem)
+hunk ./src/qcc.lex 91
+-  char reduction[REDUCTMAX][4], reductvar[REDUCTMAX][80];
++  char reduction[REDUCTMAX][4], reductvar[REDUCTMAX][80],
++    reduct_elem[REDUCTMAX][80], not_array[80] = "is_not_an_array";
+hunk ./src/qcc.lex 100
+-
+hunk ./src/qcc.lex 503
+-      for (i = 0; i < nreduct; i++) {
+-	if (strcmp (reduction[i], "+"))
++      for (i = 0; i < nreduct; i++) { 
++	if (!strcmp(reduct_elem[i], not_array)) { //Not an array reduction
++	  if (strcmp (reduction[i], "+"))
++	    fprintf (yyout,
++		     "OMP(omp critical) if (_%s %s %s) %s = _%s;\n",
++		     reductvar[i], strcmp(reduction[i], "min") ? ">" : "<",
++		     reductvar[i], reductvar[i], reductvar[i]);
++	  else
++	    fprintf (yyout,
++		     "OMP(omp critical) %s += _%s;\n",
++		     reductvar[i], reductvar[i]);
+hunk ./src/qcc.lex 515
+-		   "OMP(omp critical) if (_%s %s %s) %s = _%s;\n",
+-		   reductvar[i], strcmp(reduction[i], "min") ? ">" : "<",
+-		   reductvar[i], reductvar[i], reductvar[i]);
+-	else
++		   "mpi_all_reduce_double (%s, %s);\n",
++		   reductvar[i],
++		   !strcmp(reduction[i], "min") ? "MPI_MIN" : 
++		   !strcmp(reduction[i], "max") ? "MPI_MAX" : 
++		   "MPI_SUM");
++	} else { // _array reduction
+hunk ./src/qcc.lex 522
+-		   "OMP(omp critical) %s += _%s;\n",
+-		   reductvar[i], reductvar[i]);
+-	fprintf (yyout,
+-		 "mpi_all_reduce_double (%s, %s);\n",
+-		 reductvar[i], 
+-		 !strcmp(reduction[i], "min") ? "MPI_MIN" : 
+-		 !strcmp(reduction[i], "max") ? "MPI_MAX" : 
+-		 "MPI_SUM");
++		   "for (int _ii = 0; _ii < %s; _ii++) {\n", reduct_elem[i]);
++	  if (strcmp (reduction[i], "+"))
++	    fprintf (yyout,
++		     "OMP(omp critical) \
++		     if (_%s[_ii] %s %s[_ii]) %s[_ii] = _%s[_ii];\n",
++		     reductvar[i], strcmp(reduction[i], "min") ? ">" : "<",
++		     reductvar[i], reductvar[i], reductvar[i]);
++	  else
++	    fprintf (yyout,
++		     "OMP(omp critical) %s[_ii] += _%s[_ii];\n",
++		     reductvar[i], reductvar[i]);
++	  fprintf (yyout, "}\n");
++	  fprintf (yyout,
++		   "mpi_all_reduce_double_arr (%s, %s, %s);\n",
++		   reductvar[i], 
++		   !strcmp(reduction[i], "min") ? "MPI_MIN" : 
++		   !strcmp(reduction[i], "max") ? "MPI_MAX" : 
++		   "MPI_SUM", reduct_elem[i]);
++	}
+hunk ./src/qcc.lex 550
+-
++  
+hunk ./src/qcc.lex 555
+-
++  
+hunk ./src/qcc.lex 1240
+-	fprintf (yyout, "%s _%s = %s; ",
+-		 doubletype, reductvar[i], reductvar[i]);
++	if (!strcmp(reduct_elem[i], not_array)) {
++	  fprintf (yyout, "%s _%s = %s; ",
++		   doubletype, reductvar[i], reductvar[i]);
++	} else {
++	  fprintf (yyout, "%s _%s[%s]; ",
++		   doubletype, reductvar[i], reduct_elem[i]);
++	  fprintf (yyout, "for (int _ii = 0; _ii < %s; _ii++) _%s[_ii] = %s[_ii];",
++		   reduct_elem[i], reductvar[i], reductvar[i]);
++	}
+hunk ./src/qcc.lex 2447
+-,?{WS}*reduction{WS}*[(](min|max|\+):{ID}[)] {
++,?{WS}*reduction{WS}*[(](min|max|\+):{ID}(\[:({D}+|{ID})\])?[)] {
+hunk ./src/qcc.lex 2452
+-  char * s = strchr (yytext, '('), * s1 = strchr (yytext, ':');
+-  *s1 = '\0'; s1++;
++  char * s = strchr (yytext, '('), * s1 = strchr (yytext, ':'),
++    * s2 = strrchr (yytext, ':');
++  *s1 = '\0'; // first : -> terminate
+hunk ./src/qcc.lex 2456
++  if (s1 == s2) { // No array reduction
++    yytext[yyleng-1] = '\0';
++    strcpy (reduct_elem[nreduct], not_array);
++  } else {        // Parse array syntax
++    s2--; *s2 = '\0'; s2 += 2; // [ -> terminate
++    yytext[yyleng-2] = '\0';   // ] -> terminate
++    strcpy (reduct_elem[nreduct], s2);
++  }
+hunk ./src/qcc.lex 2465
+-  yytext[yyleng-1] = '\0';
+-  strcpy (reductvar[nreduct++], s1);
++  strcpy (reductvar[nreduct++], ++s1);
++  if (debug) {
++    int j = nreduct - 1;
++    fprintf (stderr, "qcc: nreduct: %d, var: %s, op: %s, elem: %s\n",
++	     j, reductvar[j], reduction[j], reduct_elem[j]);
++  }
+
+Context:
+
+[TAG release 21-05-05
+Stephane Popinet <popinet@basilisk.fr>**20210517161606
+ Ignore-this: d57aa73da17d09b1c5e64fb6875586ff
+] 
+Patch bundle hash:
+7e62272d52135f0e74ffd66715c1543a9a6fb518

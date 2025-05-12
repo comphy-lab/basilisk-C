@@ -1,0 +1,63 @@
+# Installation of the complete bview
+
+## GL dependencies
+
+To install the bview stuff, you first need to install OS-Mesa:
+
+On debian-like system:
+
+~~~bash
+sudo apt-get install libglu1-mesa-dev libosmesa6-dev
+~~~
+
+On OS X:
+
+~~~bash
+sudo port install mesa
+~~~
+
+Then you need to compile the basilisk GL dependencies. For that, do:
+
+
+On debian-like system:
+
+~~~bash
+cd $BASILISK/gl
+make libglutils.a libfb_osmesa.a
+~~~
+
+On OS X:
+
+~~~bash
+cd $BASILISK/gl
+CFLAGS=-I/opt/local/include make libglutils.a libfb_osmesa.a
+~~~
+
+On OS X 10.9 and above, you may seen some warning. You can safely ignore them.
+
+## BVIEW-SERVERS
+
+Now, we just need to install the bview-servers. For that, do:
+
+On debian-like system and OS X:
+
+~~~bash
+cd $BASILISK
+make bview-servers
+~~~
+
+On OS X 10.9 and above, you may seen some warning. You cans safely ignore them.
+
+On OS X, the compilation may not work. It could be link to the fact that the GLU
+library are not correctly link to OS-Mesa. For that, assuming that git is
+install on your system, do:
+
+~~~bash
+cd
+git clone https://anongit.freedesktop.org/git/mesa/glu.git/
+cd glu
+./autogen.sh
+./configure --enable-osmesa --prefix=/usr/local/
+make
+sudo make install
+~~~

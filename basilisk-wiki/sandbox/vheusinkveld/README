@@ -1,0 +1,22 @@
+/**
+# Welcome to my sandbox
+This page will provide an overview of the work I have done with Basilisk. Currently I am doing my master thesis at the Delft University of Technology at atmospheric sciences. Here I am researching possible mitigation techniques to combat cold night frost events in the lower part of the atmosphere (+-20m). I am supervised in part by [Antoon](http://basilisk.fr/sandbox/Antoonvh/README). 
+
+My current full project can be found on [Github](https://github.com/VHeusinkveld/thesis_code/tree/master/basilisk/cases/krab), I find this to specific to be posted here, but if you are interested you can check it out.
+
+## Cases ase used in '[Towards a physics-based understanding of fruit frost protection using wind machines](https://doi.org/10.1016/j.agrformet.2019.107868)'
+[Towards a physics-based understanding of fruit frost protection using wind machines](https://doi.org/10.1016/j.agrformet.2019.107868)
+
+* [Krabbendijke case](http://basilisk.fr/sandbox/vheusinkveld/krabbendijke.h)
+* [Idealized case](http://basilisk.fr/sandbox/vheusinkveld/idealized.h)
+
+## Physics
+* [2D/3D fan/mixer/rotor](fan.c)
+
+## My functions 
+* [Averaging a scalar field in time on an Equidistant grid](myfunctions/equidistant/averaging.h)
+* [Output equidistant interpolated slices of scalar data in 3D](myfunctions/output/sliceOf3D.h)
+
+## General notes 
+* [On the usages of Windows Subsystems for Linux + Virtual machine](virtual_machine_WSL)
+* [Error in fractions.h](min_examples/fraction_fan/fraction_fan2.c)

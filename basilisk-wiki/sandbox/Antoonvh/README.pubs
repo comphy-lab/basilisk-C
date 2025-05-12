@@ -1,0 +1,171 @@
+# Pages for peer reviewed publications
+
+This page gives an overview of my pages that were used for published
+articles, etc.
+
+
+## A fourth-order accurate adaptive solver for incompressible flow problems
+
+<img style = float:right
+src="https://ars.els-cdn.com/content/image/1-s2.0-S0021999122003138-gr020.jpg"
+alt="drawing" width="400px"/>
+
+By: J. Antoon van Hooft and Stéphane Popinet
+
+Year: 2022
+
+In: Journal of Computational Physics
+
+DOI: [https://doi.org/10.1016/j.jcp.2022.111251]()
+
+* Chapter 2, solver formulation  
+[The implementation of the 4th-order accurate solver](nsf4t.h)
+* Chapter 3, tests, experiments and examples
+1) [Adaptive Convergence rates](test_conv.c)  
+2) [Two-dimensional vortices of Taylor and Green](tg4.c)
+3) [Three-dimensional vortices of Antuono](antuono4.c)
+4) [Viscous boundary layer](visc_boun.c)
+5) [Shear instability](doublep.c)
+6) [Rising buoyant plume](rise.c)
+7) [Dipole-wall collision](dip.c)
+8) [Head-on collision of two vortex rings](ring4.c)
+* Appendix  
+  [Non-smooth advection](upat.c)
+  
+## Detecting nighttime inversions in the interior of a Douglas fir canopy
+
+<img style = float:right
+src="canopy/pltend.png"
+alt="drawing" width="300px"/>
+
+
+By: B. Schilperoort; M. Coenders-Gerrits; C. Jiménez Rodríguez; J.A. van Hooft; B.J.H. van de Wiel; H. Savenije 
+
+Year: 2022
+
+in: Agricultural and Forest Meteorology
+
+DOI: [https://doi.org/10.1016/j.agrformet.2022.108960]()
+
+* [A model for Layer formation in a forest canopy](canopy.c)
+
+~~~literatec
+  
+    
+
+~~~
+
+## Modeling the Atmospheric Diurnal Cycle
+<img style = float:right src="http://www.basilisk.fr/sandbox/Antoonvh/front_page/front_page.png" alt="drawing" width="250px"/>
+
+PhD thesis by Antoon van Hooft
+
+Year: 2020 
+
+At: TU Delft repository
+
+DOI: [https://doi.org/10.4233/uuid:e45cea45-8915-4a11-b8fd-389cb3e19d22]()
+
+In order of appearance:    
+
+* [Front cover](front_page.c)  
+* [Ouverture: Root finding](root-finding.c)
+* [Entr'acte 1: The Mandelbrot set](mandelbrot3.c)  
+* [Chapter 2 is based on an article](README.pubs#towards-adaptive-grids-for-atmospheric-boundary-layer-simulations)  
+* [Entr'acte 2: A dipole collision with a wall](lamb-dipole.c)  
+* [Chapter 3 is based on an article](README.pubs#adaptive-cartesian-meshes-for-atmospheric-single-column-models)  
+* [Entr'acte 3: The collision of two vortex rings](two_rings.c)  
+* [Chapter 4 is based on an article](README.pubs#an-idealized-description-for-the-diurnal-cycle-of-the-dry-atmospheric-boundary-layer)  
+* [Entr'acte 4: Error estimation for a Poisson solver](poisson_f.c) 
+* Encore: This section is based on the experience writing these pages 
+
+## A Note on the Scalar-Gradient Sharpening in the Stable Atmospheric Boundary Layer
+
+<img style = float:right
+src="gs.png"
+alt="drawing" width="230px"/>
+
+By: J. Antoon van Hooft
+
+Year: 2020
+
+In: Boundary-Layer Meteorology
+
+DOI: [https://doi.org/10.1007/s10546-020-00516-x]()
+
+[Scalar-gradient sharpening by the self advection of a dipolar vortex.](gradient-sharpening.c)
+    
+## An Idealized Description for the Diurnal Cycle of the Dry Atmospheric Boundary Layer
+
+<img style = float:right
+src="http://www.basilisk.fr/sandbox/Antoonvh/LESisosurfaces2.png"
+alt="drawing" width="400px"/>
+
+By J. Antoon van Hooft, Peter Baas, Maurice van Tiggelen, Cedrick
+Ansorge and Bas J.H. van de Wiel.
+
+Year: 2019
+
+In: Journal of the Atmospheric Sciences
+
+DOI: [https://doi.org/10.1175/JAS-D-19-0023.1]()
+
+In order of appearance,
+
+* [The effects of the pressure-gradient force, using a Single-Column Model (SCM).](diurnalSCM.c)
+* [The effect of including a layered soil-heat storage model in the SCM.](diurnalSCMsoil.c)
+* [Large-eddy simulation of the diurnal cycle with a weak wind forcing.](diurnalLES.c)
+
+## Adaptive Cartesian Meshes for Atmospheric Single-Column Models
+
+<img style = float:right
+src="https://www.geosci-model-dev.net/11/4727/2018/gmd-11-4727-2018-f08-web.png"
+alt="drawing" width="500px"/>
+
+By J. Antoon van Hooft, Stéphane Popinet and Bas J.H. van de Wiel
+
+Year: 2018
+
+In: Geoscientific Model Development
+
+DOI: [https://doi.org/10.5194/gmd-11-4727-2018]()
+
+In order of appearance,
+
+* Results *Sect 3.1*, The Laminar Ekman-spiral test case;
+    a. [using a fixed and equidistant grid](ekmanfg.c)  
+    b. [using an adaptive grid](ekman.c)
+* Results *Sect. 3.2*, The GABLS1 case;
+    a. [using an adaptive grid](GABLS1.c)
+    b. [using a fixed and equidistant grid](GABLS1fg.c)  
+* Results *Sect 3.3*, The GABLS2 case;
+    a. [using an adaptive grid](GABLS2.c)
+    b. [using a fixed and equidistant grid](GABLS2fg.c)
+    
+## Towards Adaptive Grids for Atmospheric Boundary-Layer Simulations
+<img style = float:right
+src="https://media.springernature.com/lw785/springer-static/image/art%3A10.1007%2Fs10546-018-0335-9/MediaObjects/10546_2018_335_Fig7_HTML.gif"
+alt="drawing" width="350px"/>
+
+By: J. Antoon van Hooft, Stéphane Popinet, Chiel C van Heerwaarden,
+Steven J.A. van der Linden, Stephan R de Roode and Bas J.H. van de
+wiel.
+
+Year: 2018  
+
+In: Boundary-layer meteorology.
+
+DOI:
+[https://doi.org/10.1007/s10546-018-0335-9](https://doi.org/10.1007/s10546-018-0335-9)
+
+In order of appearance,  
+
+* [Section 2.1: Generate an example tree grid and output the relevant cells](The_Tree_Grid_Structure_in_Basilsik)
+* [Section 2.2: Analysis of a data slice from a 3D turbulence simulation](slice.c)  
+* [Chapter 3: DNS of the growth and decay of a convective atmospheric Boundary layer using an Adaptive grid](freeconv.c)  
+* [Chapter 3: DNS of the growth and decay of a convective atmospheric Boundary layer in fixed-and-regular-grid mode](404)  
+* [Chapter 4: LES of an atmospheric boundary layer filled with a radiant smoke cloud](smoke.c)  
+* [Appendix 1: DNS of a lid driven cavity in two dimensions using an adaptive grid](lid.c)  
+* [Appendix 1: DNS of a lid-driven cavity in two dimensions with a fixed-and-regular grid](lidfg.c)  
+
+

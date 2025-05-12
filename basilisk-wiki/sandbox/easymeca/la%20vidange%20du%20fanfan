@@ -1,0 +1,36 @@
+Cette "vidange du Fanfan", c'est le phénomène que j'ai montré en cours: le sablier avec un liquide très visqueux. Pour cette prise en main de ImageJ, nous vous proposons de décrire les différents phénomènes qui sont présent là dedans.
+
+J'ai acheté ce sablier vsqueux chez [les fanfans](http://www.yelp.fr/biz/les-fanfans-paris) dans le marais, une boutique que je vous recommande vivement.
+
+![](vidange du fanfan.png)
+
+Voici les vidéos:
+
+Pour le fluide violet très visqueux:
+
+* [fanfan_violet]() 
+* [fanfan_violet_rapide]() 
+
+Pour le fluide rouge moins visqueux:
+
+* [fanfan_rouge]() 
+* [fanfan_rouge_rapide]() 
+
+**Voici ce que vous pouvez faire:**
+
+D'abord pour le wiki:
+
+1) Créez votre page de contribution dans le répertoire de votre groupe
+
+Ensuite:
+
+1) Ecrire un paragraphe qui décrit tout ce qui se passe dans le phénomène (et en général, faites aussi cela pour les questions qui suivent).
+2) faire un reslice qui montre comment la période d'enroulement du jet en bas varie au cours du cycle de remontée de bulle
+3) faire un reslice qui montre comment la fréquence de remontée des bulles varie au cours de la vidange
+4) faire un reslice qui montre comment se fait la vidange au cours du temps
+5) comparer le fluide rouge et le fluid violet
+6) (pour ceux qui sont plus à l'aise) tracer des graphiques avec openoffice calc qui donnent le versant quantitatif de ces questions que nous avons traitées de manière visuelle avec ImageJ
+
+Et mettez ce que vous avez fait dans votre page de contribution. 
+Pensez bien à mettre les images dans le bon répertoire.
+

@@ -1,0 +1,106 @@
+# Lars WD Sandbox
+I am a PhD student at the University of Oslo and am currently working on circulation models in fjord environments. Scripts and functions will be added here as the project progress.
+
+Github mirror at:
+[https://github.com/larswd/basiliskSandbox/](https://github.com/larswd/basiliskSandbox/)
+
+Contact me at: larswd@math.uio.no
+
+Homepage: [larswd@github.io](https://larswd.github.io/content/intro.html)
+
+
+## Save multilayer fields to paraview file.
+
+The function in [output_vts.h](output_vts.h) is a function which stores a set of variables of interest to a vts file which can then be viewed using paraview (or other software which can open paraview files). Largely based on a similar function by Øystein Lande which plots a single layer. Sample function call in a basilisk event:
+
+```C
+event output_field (t <= tmax; t += dt)
+{
+    fprintf(stdout, "field vts output at step: %d, time: %.2f \n", i, t);
+    static int j = 0;
+    char name[100];
+    sprintf(name, "fields/field_%.6i.vts", j++);
+    fprintf(stdout, "written to: %s\n", name);
+    FILE* fp = fopen(name, "w");
+    output_vts_ascii_all_layers(fp, {eta,h,u}, N);
+    fclose(fp);
+}
+
+```
+**Download**:
+```bash
+wget http://basilisk.fr/sandbox/larswd/output_vts.h?raw -O output_vts.h
+```
+
+## Multilayer particle tracker. 
+Based on the ```particle.h``` extension of Antoon van Hooft, which can be found [here](http://basilisk.fr/sandbox/Antoonvh/particle.h). The code and algorithms remain largely the same, but they are modified to ensure the particles are placed and tracked correctly in the vertical. This extension is only activated if the multilayer solver is imported, and if this is not the case should be identical to Antoon's ```particle.h```.
+
+Code: 
+[particle.h](particle.h).
+
+This library depends on [particle_multilayer.h](particle_multilayer.h) and [particle_classic.h](particle_classic.h) for tracking particles in either a multilayer or non-multilayer setting respectively. 
+
+**Current issues**
+- Strange issue when including, but not using, multilayer library. The LAYERS variable is still defined, meaning any uncommented statement importing the multilayer solver, including 
+
+```c
+#if 0
+  #include "layered/hydro.h"
+#endif
+```
+means the multilayer particle tracker is used instead of the classic particle tracker. Should not cause much trouble except when making comparative test cases. 
+
+- Locate layer algorithm in particle pdf is computationally expensive, and results in a significantly slower execution compared to the non-multilayer case. 
+
+**Test cases and examples**
+
+- [brownian.c](brownian.c) illustrating gaussian drift with multilayer. Based on the test case of Antoon with the same name which can be found [here](http://basilisk.fr/sandbox/Antoonvh/brownian.c).
+- [brownian_classic.c](brownian_classic.c) The gaussian drift example of Antoon without multilayer. Code identical [to the original which can be found here.](http://basilisk.fr/sandbox/Antoonvh/brownian.c).
+
+- [tlengt.c](tlengt.c) a test case showing that the placement of particles is implemented correctly when using multilayer.
+
+
+- [tlengt_classic.c](tlengt_classic.c) a test case showing that the placement of particles is implemented correctly when using multilayer.
+
+- [multilayer_2D_diffusion.c](multilayer_2D_diffusion.c) is an example showing diffusion of particles in both vertical and horizontal direction when using mutilayer.
+
+**Download**
+```bash
+wget http://basilisk.fr/sandbox/larswd/particle.h?raw -O particle.h
+wget http://basilisk.fr/sandbox/larswd/particle_classic.h?raw -O particle_classic.h
+wget http://basilisk.fr/sandbox/larswd/particle_multilayer.h?raw -O particle_multilayer.h
+```
+
+## Multilayer Tracer tracker
+This module implements a fully-implicit solver of the [convection-diffusion equations](https://en.wikipedia.org/wiki/Convection%E2%80%93diffusion_equation) for the multilayer solver. The solver utilises a TVD-scheme, which is second order in space. You can find the code here: 
+
+- [mltracer.h](mltracer.h)
+- [mltracer2D.h](mltracer2D.h)
+- [mltracer3D.h](mltracer3D.h)
+
+**Download**
+```bash
+wget http://basilisk.fr/sandbox/larswd/mltracer.h?raw -O mltracer.h
+wget http://basilisk.fr/sandbox/larswd/mltracer2D.h?raw -O mltracer2D.h
+wget http://basilisk.fr/sandbox/larswd/mltracer3D.h?raw -O mltracer3D.h
+```
+
+**TODO**
+
+- Solver is currently too unbasilisk-like, and is not sufficiently utilising the very handy foreach-iterators as much as I'd like.
+
+- Solver currently utilizes two different files depending on if the simulation is in the $x$-$z$-plane or fully 3D. Ideally, these files should be merged into a single file to make patching easier and download simpler. 
+
+- Add support for non-uniform diffusion coefficients and non-uniform densities. 
+
+**Test cases and examples**
+
+- [VM_1Ddiffusion.c](VM_1Ddiffusion.c) Implementation of a test case for a nonstationary diffusion problem of heat in a rod.
+
+- [1D_convection.c](1D_convection.c) Implementation of a 1D convection problem. 
+
+**Issues and requests**
+
+Please add any requests or submit an issue if you discover any bugs here:
+
+- There seem to be some strange numerical diffusion in convection scheme even with TVD

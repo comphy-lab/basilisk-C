@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# SGLS v1.0 09/16/2021
+# shell script to run biew on host browser while basilisk runs concurrently in a container
+# 1st argument (if present): port of visualization (0 to 4, 0 by default)
+# 2nd argument (if present): browser (Safari by default)
+
+# written for mac; haven't tested on other systems
+port=0
+if [ "$#" -gt "0" ];
+then
+   port=$1
+fi
+shift
+browser=safari
+if [ "$#" -gt "0" ];
+then
+   browser=$1
+fi
+
+url="http://basilisk.fr/three.js/editor/index.html?ws://localhost:710$port"
+
+open -a $browser $url

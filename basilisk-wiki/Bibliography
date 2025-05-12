@@ -1,0 +1,2403 @@
+---
+toc: no
+...
+
+A non-exhaustive list of papers about/using Basilisk. Please add your
+own papers if they use Basilisk. See also [src/references.bib]().
+
+### 2025
+
+~~~bib
+@article{sanjay2025b,
+  title = {Unifying Theory of Scaling in Drop Impact: Forces and Maximum Spreading Diameter},
+  author = {Sanjay, Vatsal and Lohse, Detlef},
+  journal = {Phys. Rev. Lett.},
+  volume = {134},
+  issue = {10},
+  pages = {104003},
+  numpages = {9},
+  year = {2025},
+  month = {Mar},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevLett.134.104003},
+  url = {https://link.aps.org/doi/10.1103/PhysRevLett.134.104003}
+}
+
+@article{zhao2025, 
+title={Direct numerical simulations of Leidenfrost drop impacting onto superheated liquid pool: an early stage study}, 
+volume={1007}, 
+DOI={10.1017/jfm.2025.19}, 
+journal={Journal of Fluid Mechanics}, 
+author={Zhao, Shuo and Zhang, Jie and Sun, Chao and Ni, Ming-Jiu}, 
+year={2025}, 
+pages={A13}}
+
+@article{wang2025,
+title = {Towards quantitative prediction of droplet collision outcomes: A dual-VOF approach with rarefied gas effect and augmented van der Waals force},
+journal = {International Journal of Multiphase Flow},
+volume = {188},
+pages = {105207},
+year = {2025},
+issn = {0301-9322},
+doi = {https://doi.org/10.1016/j.ijmultiphaseflow.2025.105207},
+url = {https://www.sciencedirect.com/science/article/pii/S0301932225000850},
+author = {Ning Wang and Zhenyu Zhang and Peng Zhang and Changlu Zhao}
+}
+
+@article{mansar2025,
+  title={Effect of real-world perturbations on wave breaking due to a sharp-crested superharmonic instability},
+  author={Mansar, A and Turner, Matthew Ray and Bridges, Thomas Jackson and Dias, Fr{\'e}d{\'e}ric},
+  journal={Water Waves},
+  pages={1--40},
+  year={2025},
+  publisher={Springer},
+  doi = {10.1007/s42286-025-00116-7}
+}
+
+@article{tang2025,
+  title={Droplet bag formation in turbulent airflows},
+  author={Tang, Kaitao and Adcock, Thomas AA and Mostert, Wouter},
+  journal={Physical Review Fluids},
+  volume={10},
+  number={3},
+  pages={033604},
+  year={2025},
+  publisher={APS},
+  doi = {10.1103/PhysRevFluids.10.033604},
+}
+
+@article{jerome2025,
+  title={Ribbing patterns in inertial rotary drag-out},
+  author={Jerome, J. J. S. and Trontin, P. and Matas, J.P.},
+  journal={Journal of Fluid Mechanics},
+  volume={1007},
+  pages={A84},
+  year={2025},
+  publisher={Cambridge University Press},
+  doi={10.1017/jfm.2025.51}
+}
+
+@article{chen2025,
+    author = {Chen, Xiangbin and Han, Tianyang and Pan, Jieyun and Fuster, Daniel and Zaleski, Stéphane},
+    title = {Volume-conserving method for dynamic contact line on complex surfaces},
+    journal = {Physics of Fluids},
+    volume = {37},
+    number = {2},
+    pages = {023392},
+    year = {2025},
+    month = {02},
+    issn = {1070-6631},
+    doi = {10.1063/5.0254089},
+    url = {https://doi.org/10.1063/5.0254089},
+    eprint = {https://pubs.aip.org/aip/pof/article-pdf/doi/10.1063/5.0254089/20414988/023392\_1\_5.0254089.pdf}
+}
+
+@article{xu2025,
+title = {Double bursting jets from a suspended water drop under one cycle of oscillation},
+journal = {International Journal of Multiphase Flow},
+pages = {105151},
+year = {2025},
+issn = {0301-9322},
+doi = {https://doi.org/10.1016/j.ijmultiphaseflow.2025.105151},
+author = {Cheng Xu and Wanyu Zhu and Huihui Xia and Weiwei Deng}
+}
+
+@article{dasgupta2025, 
+title={Focussing of concentric free-surface waves}, 
+volume={1003}, 
+DOI={10.1017/jfm.2024.1089}, 
+journal={Journal of Fluid Mechanics}, 
+author={Kayal, Lohit and Sanjay, Vatsal and Yewale, Nikhil and Kumar, Anil and Dasgupta, Ratul}, 
+year={2025}, 
+pages={A14}
+}
+
+@article{sanjay2025, 
+title={The role of viscosity on drop impact forces on non-wetting surfaces}, volume={1004}, 
+DOI={10.1017/jfm.2024.982}, 
+journal={Journal of Fluid Mechanics}, 
+author={Sanjay, Vatsal and Zhang, Bin and Lv, Cunjing and Lohse, Detlef}, year={2025}, 
+pages={A6}
+}
+
+@article{agbaglah2025,
+  title = {Bag film rupture mechanisms in droplet fragmentation under uniform airflows.},
+  DOI = {https://doi.org/10.1063/5.0253364},
+  journal = {Physics of Fluids},
+  volume = {37 (2)},
+  author = {Sasar Y. and Agbaglah G.G.},
+  year = {2025},
+  month = feb,
+  pages = {022138}
+}
+
+@article{sharaborin2025,
+  title = {Break-up of the {Taylor} bubble},
+  ISSN = {0045-7930},
+  url = {http://dx.doi.org/10.1016/j.compfluid.2025.106577},
+  DOI = {10.1016/j.compfluid.2025.106577},
+  journal = {Computers &amp; Fluids},
+  publisher = {Elsevier BV},
+  author = {Sharaborin,  Evgenii L. and Rogozin,  Oleg A. and Kasimov,  Aslan R.},
+  year = {2025},
+  month = feb,
+  pages = {106577}
+}
+
+@article{shen2025,
+  title={Fragmentation from inertial detachment of a sessile droplet: implications for pathogen transport},
+  author={Shen, Naijian and Kulkarni, Y and Jamin, T and Popinet, S and Zaleski, S and Bourouiba, L},
+  journal={Journal of Fluid Mechanics},
+  volume={1002},
+  pages={A6},
+  year={2025},
+  publisher={Cambridge University Press},
+  doi={10.1017/jfm.2024.874}
+}
+
+@phdthesis{dai2025,
+  title={Wind Machines for Frost-Damage Mitigation},
+  author={Yi Dai},
+  year={2025},
+  school={TU Delft},
+  url={https://doi.org/10.4233/uuid:7000b291-671c-4ab3-86fa-beeff39bf5df}
+}
+~~~
+
+### 2024
+
+~~~bib
+@phdthesis{sharaborin2024,
+  title={Adaptive direct numerical simulation of multiscale multiphase inert and reacting flows},
+  author={Evgenii Sharaborin},
+  year={2024},
+  month={11},
+  day={28},
+  school={Skolkovo Institute of Science and Technology (Skoltech)},
+  url={https://doi.org/10.13140/RG.2.2.22000.16645}
+}
+
+@article{warburton2024,
+author = {Warburton, K. L. P. and Meyer, C. R. and Sommers, A. N.},
+title = {Predicting the Onset of Subglacial Drainage Channels},
+journal = {Journal of Geophysical Research: Earth Surface},
+volume = {129},
+number = {12},
+pages = {e2024JF007758},
+keywords = {subglacial hydrology, subglacial channels, stability analysis, glacier categorization},
+doi = {https://doi.org/10.1029/2024JF007758},
+url = {https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2024JF007758},
+year = {2024}
+}
+
+@article{bergin2024,
+title = {A numerical investigation into the interaction between rain and water waves},
+journal = {Computers & Fluids},
+pages = {106534},
+year = {2024},
+issn = {0045-7930},
+doi = {https://doi.org/10.1016/j.compfluid.2024.106534},
+url = {https://www.sciencedirect.com/science/article/pii/S0045793024003657},
+author = {Claire Bergin and Wouter Mostert and Vikram Pakrashi and Frederic Dias}
+}
+
+@article{balasubramanian2024,
+title={Bursting bubble in an elastoviscoplastic medium},
+author={Balasubramanian, Arivazhagan G. and Sanjay, Vatsal and Jalaal, Maziyar and Vinuesa, Ricardo and Tammisola, Outi},
+journal={Journal of Fluid Mechanics},
+volume={1001},
+pages={A9},
+year={2024},
+DOI={10.1017/jfm.2024.1073},
+pdf={https://arxiv.org/pdf/2409.14897.pdf},
+url={https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/bursting-bubble-in-an-elastoviscoplastic-medium/1BA3796051255B4F4CB38CFD638877A1},
+publisher={Cambridge University Press}
+}
+
+@article{feddersen2024,
+  title={Modelling wind-induced changes to overturning wave shape},
+  author={Feddersen, Falk and Hanson, Kentaro and Mostert, Wouter and Fincham, Adam},
+  journal={Journal of Fluid Mechanics},
+  volume={1000},
+  pages={A48},
+  year={2024},
+  DOI={10.1017/jfm.2024.1012},
+  publisher={Cambridge University Press}
+}
+
+@article{gennari2024, 
+title={Bubble dissolution in Taylor–Couette flow}, 
+volume={999}, 
+DOI={10.1017/jfm.2024.886}, 
+journal={Journal of Fluid Mechanics}, 
+author={Gennari, Gabriele and Jefferson-Loveday, Richard and Pickering, Stephen J. and George, Michael W.}, 
+year={2024}, 
+pages={A39}
+}
+
+@article{cranmer2024,
+  title = {Non-Negligible Buoyancy Effect on Bubbles Travelling in Horizontal Microchannels of Comparable Size at Small {{Bond}} Numbers},
+  author = {Cranmer, Jakub A. and Sharaborin, Evgenii and Khodaparast, Sepideh and Giustini, Giovanni and Magnini, Mirco},
+  year = {2024},
+  month = dec,
+  journal = {International Journal of Multiphase Flow},
+  volume = {181},
+  pages = {105019},
+  publisher = {Elsevier},
+  issn = {03019322},
+  doi = {10.1016/j.ijmultiphaseflow.2024.105019},
+  urldate = {2024-11-15},
+  langid = {english},
+  annotation = {[ZMU-dateModified]2024-11-16T02:43:07+08:00}
+}
+
+@article{yu2024b, 
+title={Roll waves on laminar sheet flow of Newtonian fluid with negligible surface tension}, 
+volume={999}, 
+DOI={10.1017/jfm.2024.887}, 
+journal={Journal of Fluid Mechanics}, 
+author={Yu, Boyuan and Chu, Vincent H.}, 
+year={2024},
+month={November},
+pages={A49}
+}
+
+@article{badalan2024,
+  title={Simulation of non-Newtonian biopolymer extrusion and fall in the centrifugal microencapsulation process},
+  author={Badalan, Matei and Ghigliotti, Giovanni and Roux, Denis and Ma{\^\i}trejean, Guillaume and Achard, Jean-Luc and Bottausci, Fr{\'e}d{\'e}ric and Balarac, Guillaume},
+  journal={AIChE Journal},
+  volume={70},
+  number={10},
+  pages={e18517},
+  year={2024},
+  publisher={Wiley Online Library},
+  doi={https://doi.org/10.1002/aic.18517}
+}
+
+@article{zinelis2024b,
+  title={The fluid dynamics of a viscoelastic fluid dripping onto a substrate},
+  author={Zinelis, Konstantinos and Abadie, Thomas and McKinley, Gareth H and Matar, Omar},
+  journal={Soft Matter},
+  year={2024},
+  publisher={Royal Society of Chemistry}
+}
+
+@article{hao2024,
+author = {Hao, Xuanting},
+title = {Quantifying Bioluminescent Light Intensity in Breaking Waves Using Numerical Simulations},
+journal = {Geophysical Research Letters},
+volume = {51},
+number = {20},
+pages = {e2024GL110884},
+keywords = {breaking waves, bioluminescence, numerical modeling},
+doi = {https://doi.org/10.1029/2024GL110884},
+url = {https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2024GL110884},
+eprint = {https://agupubs.onlinelibrary.wiley.com/doi/pdf/10.1029/2024GL110884},
+note = {e2024GL110884 2024GL110884},
+year = {2024}
+}
+
+@article{shi2024, 
+title={Lateral migration and bouncing of a deformable bubble rising near a vertical wall. Part 1. Moderately inertial regimes}, 
+volume={998}, 
+DOI={10.1017/jfm.2024.865}, 
+journal={Journal of Fluid Mechanics}, 
+author={Shi, Pengyu and Zhang, Jie and Magnaudet, Jacques}, 
+year={2024},
+month={October},
+pages={A8}}
+
+@article{zinelis2024, 
+title={Transition to elasto-capillary thinning dynamics in viscoelastic jets}, volume={998}, 
+DOI={10.1017/jfm.2024.787}, 
+journal={Journal of Fluid Mechanics}, 
+author={Zinelis, Konstantinos and Abadie, Thomas and McKinley, Gareth H. and Matar, Omar K.}, 
+year={2024},
+month={October},
+pages={A4}}
+
+@hal{farsoiya2024, hal-04461912}
+
+@article{liu2024,
+title = {Numerical simulation of deep-water wave breaking using RANS: Comparison with experiments},
+journal = {European Journal of Mechanics - B/Fluids},
+volume = {108},
+pages = {211-225},
+year = {2024},
+issn = {0997-7546},
+doi = {https://doi.org/10.1016/j.euromechflu.2024.08.003},
+url = {https://www.sciencedirect.com/science/article/pii/S0997754624001171},
+author = {Yuxuan Liu and Ton S. {van den Bremer} and Thomas A.A. Adcock}
+}
+
+@article{yu2024,
+  title={Roll Waves in Mudflow Modeled as {H}erschel--{B}ulkley Fluids},
+  author={Yu, Boyuan and Chu, Vincent H},
+  journal={Journal of Engineering Mechanics},
+  volume={150},
+  number={12},
+  pages={04024092},
+  year={2024},
+  month = {December},
+  doi = {10.1061/JENMDT.EMENG-7931},
+  URL = {https://ascelibrary.org/doi/abs/10.1061/JENMDT.EMENG-7931},
+  publisher={American Society of Civil Engineers}
+}
+
+@hal{cipriano2024b, hal-04580590}
+
+@article{dellapia2024,
+  title = {Varicose dynamics of liquid curtain: Linear analysis and volume-of-fluid simulations},
+  author = {Della Pia, Alessandro and Chiatto, Matteo and de Luca, Luigi},
+  journal = {Phys. Rev. Fluids},
+  volume = {9},
+  issue = {8},
+  pages = {084003},
+  numpages = {18},
+  year = {2024},
+  month = {Aug},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.9.084003},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.9.084003}
+}
+
+@article{vrionis2024,
+title = {Condensation dynamics on inclined heterogeneous substrates},
+journal = {International Journal of Thermofluids},
+pages = {100782},
+year = {2024},
+issn = {2666-2027},
+doi = {https://doi.org/10.1016/j.ijft.2024.100782},
+url = {https://www.sciencedirect.com/science/article/pii/S2666202724002234},
+author = {P.-Y. Vrionis and Andreas D. Demou and Nikos Savva},
+keywords = {Contact lines, Thin film flows, Thin film approximation, Condensation}
+}
+
+@article{harispe2024,
+title = {Accurate numerical prototypes of microfluidic droplet generators with open source tools},
+journal = {Computers & Fluids},
+pages = {106366},
+year = {2024},
+issn = {0045-7930},
+doi = {https://doi.org/10.1016/j.compfluid.2024.106366},
+url = {https://www.sciencedirect.com/science/article/pii/S0045793024001981},
+author = {David Gabriel Harispe and Pablo A. Kler}
+}
+
+@article{pan2024,
+  title={An edge-based interface tracking ({EBIT}) method for multiphase-flow simulation with surface tension},
+  author={Pan, Jieyun and Long, Tian and Chirco, Leonardo and Scardovelli, Ruben and Popinet, St\'{e}phane and Zaleski, St\'{e}phane},
+  journal={Journal of Computational Physics},
+  volume={508},
+  pages={113016},
+  year={2024},
+  publisher={Elsevier},
+  doi = {https://doi.org/10.1016/j.jcp.2024.113016},
+  url = {https://www.sciencedirect.com/science/article/pii/S0021999124002651},
+  pdf = {https://arxiv.org/pdf/2309.00338}
+}
+
+@article{miller2024,
+  title = {Gyre turbulence: Anomalous dissipation in a two-dimensional ocean model},
+  author = {Miller, Lennard and Deremble, Bruno and Venaille, Antoine},
+  journal = {Phys. Rev. Fluids},
+  volume = {9},
+  issue = {5},
+  pages = {L051801},
+  numpages = {8},
+  year = {2024},
+  month = {May},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.9.L051801},
+  url={https://arxiv.org/abs/2310.02187}
+}
+
+@article{dai2024, 
+title = {Integrated large-eddy simulation for modeling plant-tissue warming induced by wind machines in an orchard canopy},    
+journal = {Agricultural and Forest Meteorology},
+volume = {356},                                 
+pages = {110175},                           
+year = {2024},           
+issn = {0168-1923},     
+doi = {https://doi.org/10.1016/j.agrformet.2024.110175},
+url = {https://www.sciencedirect.com/science/article/pii/S0168192324002880}, 
+author = {Yi Dai and Antoon {van Hooft} and Edward G. Patton and Judith Boekee and Steven {van der Lind\
+en} and Marie-Claire {ten Veldhuis} and Bas J.H. {van de Wiel}}
+}
+
+@article{holroyd2024b,
+  title={Stabilisation of falling liquid films with restricted observations},
+  author={Holroyd, O.A. and Cimpeanu, R. and Gomes, S.N.},
+  journal={Proc. European Control Conference (ECC)},
+  volume={},
+  number={},
+  pages={2574--2579},
+  year={2024},
+  publisher={IEEE},
+  doi={10.23919/ECC64448.2024.10591067},
+  url={https://ieeexplore.ieee.org/document/10591067},
+  pdf={https://arxiv.org/pdf/2407.06906}
+}
+
+@article{long2024,
+  title={An Edge-based Interface Tracking ({EBIT}) method for multiphase flows with phase change},
+  author={Long, Tian and Pan, Jieyun and Zaleski S\'{e}phane},
+  journal={Journal of Computational Physics},
+  volume={513},
+  pages={113159},
+  year={2024},
+  publisher={Elsevier},
+  doi={https://doi.org/10.1016/j.jcp.2024.113159},
+  pdf={https://arxiv.org/pdf/2402.13677}
+}
+
+@article{fudge2024,
+  title={Drop impact onto immiscible liquid films floating on pools},
+  author = {B.D. Fudge and R. Cimpeanu and A.A. Castrejón-Pita},
+  journal={Scientific Reports},
+  volume={14},
+  number={1},
+  pages={13671},
+  year={2024},
+  publisher={Springer},
+  doi={https://doi.org/10.1038/s41598-024-62427-y},
+  http={https://www.nature.com/articles/s41598-024-62427-y}
+}
+
+@article{prouvost2024,
+  title={A metric-based adaptive mesh refinement criterion under constrain for solving elliptic problems on quad/octree grids},
+  author={Prouvost, Lucas and Belme, Anca and Fuster, Daniel},
+  journal={Journal of Computational Physics},
+  volume={506},
+  pages={112941},
+  year={2024},
+  publisher={Elsevier},
+  doi={https://doi.org/10.1016/j.jcp.2024.112941},
+  pdf={https://hal.science/hal-04516638/}
+}
+
+@article{ray2024,
+  title={New insights into head-on bouncing of unequal-size droplets on a wetting surface},
+  author={Ray, Saroj and Han, Yu and Yue, Zongyu and Guo, Hengjie and Chao, Christopher Yu Hang and Cheng, Song},
+  journal={Journal of Fluid Mechanics},
+  volume={983},
+  pages={A25},
+  year={2024},
+  publisher={Cambridge University Press},
+  doi={https://doi.org/10.1017/jfm.2024.156}
+}
+
+@article{saini2024c,
+  title={A Review of the Accuracy of Direct Numerical Simulation Tools for the Simulation of Non-Spherical Bubble Collapses},
+  author={Saini, Mandeep and Prouvost, Lucas and Popinet, Stephane and Fuster, Daniel},
+  journal={Journal of the Indian Institute of Science},
+  pages={1--23},
+  year={2024},
+  publisher={Springer},
+  doi={https://doi.org/10.1007/s41745-024-00427-7},
+  pdf={https://arxiv.org/pdf/2404.18285.pdf}
+}
+
+@article{ohl2024,
+  title={Finite amplitude wave propagation through bubbly fluids},
+  author={Ohl, Siew-Wan and Rossell{\'o}, Juan Manuel and Fuster, Daniel and Ohl, Claus-Dieter},
+  journal={International Journal of Multiphase Flow},
+  volume={176},
+  pages={104826},
+  year={2024},
+  publisher={Elsevier},
+  doi={https://doi.org/10.1016/j.ijmultiphaseflow.2024.104826},
+  pdf={https://arxiv.org/pdf/2308.10662.pdf}
+}
+
+@article{thale2024,
+    author = {Thale, Vinod Ashok and Abouelsoud, Mostafa and Chizari, Hossain and Thoraval, Marie-Jean},
+    title = {Impact force of an air-in-liquid compound drop},
+    journal = {Physics of Fluids},
+    volume = {36},
+    number = {2},
+    pages = {022110},
+    year = {2024},
+    month = {02},
+    url = {https://doi.org/10.1063/5.0183822},
+    pdf = {https://pubs.aip.org/aip/pof/article-pdf/doi/10.1063/5.0183822/19668472/022110\_1\_5.0183822.pdf},
+}
+
+@article{holroyd2024a,
+  title={Linear quadratic regulation control for falling liquid films},
+  author={Holroyd, O.A. and Cimpeanu, R. and Gomes, S.N.},
+  journal={SIAM Journal on Applied Mathematics},
+  volume={84},
+  number={3},
+  pages={940--960},
+  year={2024},
+  publisher={SIAM},
+  doi={10.1017/jfm.2024.236},
+  url={https://epubs.siam.org/doi/abs/10.1137/23M1548475},
+  pdf={https://arxiv.org/pdf/2301.11379.pdf}
+}
+
+@article{tang2024, 
+  title={Fragmentation of colliding liquid rims}, 
+  volume={987}, 
+  DOI={10.1017/jfm.2024.392}, 
+  journal={Journal of Fluid Mechanics}, 
+  author={Tang, K. and Adcock, T.A.A. and Mostert, W.}, 
+  year={2024}, 
+  pages={A18}
+}
+
+@article{saini2024b, title={Direct numerical simulations of microlayer formation during heterogeneous bubble nucleation}, volume={984}, author={Saini, M. and Chen, X. and Zaleski, S. and Fuster, D.}, year={2024}, pages={A70},doi={10.1017/jfm.2024.236}, journal={Journal of Fluid Mechanics},
+url={https://arxiv.org/abs/2404.08377},
+pdf={https://arxiv.org/pdf/2404.08377.pdf}
+}
+
+@article{garcía2024, 
+  title={The skating of drops impacting over gas or vapour layers}, 
+  volume={980}, 
+  DOI={10.1017/jfm.2024.20}, 
+  journal={Journal of Fluid Mechanics}, 
+  author={García-Geijo, P. and Riboux, G. and Gordillo, J.M.}, 
+  year={2024}, 
+  pages={A35}
+}
+
+@article{gai2024,
+  title = {On the dynamics and wakes of a freely settling Platonic polyhedron in a quiescent Newtonian fluid},
+  author = {Gai, Guodong and Wachs, Anthony},
+  journal = {Journal of Fluid Mechanics},
+  volume = {985},
+  pages = {A3},
+  year = {2024},
+  publisher = {Cambridge University Press},
+  doi = {doi:10.1017/jfm.2024.269},
+  pdf = {https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/on-the-dynamics-and-wakes-of-a-freely-settling-platonic-polyhedron-in-a-quiescent-newtonian-fluid/CCCB7546F3915E2C4CD968385B4ED386}
+}
+
+@article{saini2024,
+  title = {Finite speed of sound effects on asymmetry in multibubble cavitation},
+  author = {Saini, Mandeep and Saade, Youssef and Fuster, Daniel and Lohse, Detlef},
+  journal = {Phys. Rev. Fluids},
+  volume = {9},
+  issue = {4},
+  pages = {043602},
+  numpages = {15},
+  year = {2024},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.9.043602},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.9.043602},
+  pdf = {https://arxiv.org/pdf/2404.02237.pdf}
+}
+
+@hal{cipriano2024, hal-04252476}
+
+@article{salvador2024,
+title = {Droplet characterization of a pressure-swirl atomizer by means of high-fidelity modelling based on DNS simulations},
+journal = {Fuel},
+volume = {358},
+pages = {130169},
+year = {2024},
+issn = {0016-2361},
+doi = {https://doi.org/10.1016/j.fuel.2023.130169},
+url = {https://www.sciencedirect.com/science/article/pii/S0016236123027837},
+author = {F.J. Salvador and P. Martí-Aldaraví and A. Lozano and H. Taghavifar and A. Nemati},
+keywords = {Atomization, DNS, Two-phase flow, Spray, Pressure-swirl, Droplet}
+}
+~~~
+
+### 2023
+
+~~~bib
+@article{ray2023,
+    author = {Ray, Saroj and Han, Yu and Cheng, Song},
+    title = "{Pinch-off dynamics in unequal-size droplets head-on collision on a wetting surface: Experiments and direct numerical simulations}",
+    journal = {Physics of Fluids},
+    volume = {35},
+    number = {12},
+    pages = {122105},
+    year = {2023},
+    issn = {1070-6631},
+    doi = {10.1063/5.0171469},
+    url = {https://doi.org/10.1063/5.0171469},
+    pdf = {https://pubs.aip.org/aip/pof/article-pdf/doi/10.1063/5.0171469/18240601/122105\_1\_5.0171469.pdf},
+}
+
+@article{liu2023,
+title={Wave statistics and energy dissipation of shallow-water breaking waves in a tank with a level bottom},
+volume={975},
+DOI={10.1017/jfm.2023.876},
+journal={Journal of Fluid Mechanics},
+publisher={Cambridge University Press},
+author={Liu, Shuo and Wang, Hui and Bayeul-Lain, Annie-Claude and Li, Cheng and Katz, Joseph and Coutier-Delgosha, Olivier},
+year={2023},
+pages={A25}}
+
+@article{tian2023, 
+title={Conical focusing: mechanism for singular jetting from collapsing drop-impact craters}, 
+volume={958}, 
+DOI={10.1017/jfm.2022.1085}, 
+journal={Journal of Fluid Mechanics}, 
+author={Tian, Yuan Si and Yang, Zi Qiang and Thoroddsen, Sigurdur T.}, year={2023}, 
+pages={R1}}
+
+@article{kayal2023, 
+title={Jet from a very large, axisymmetric, surface-gravity wave}, 
+volume={975}, 
+DOI={10.1017/jfm.2023.837}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Kayal, Lohit and Dasgupta, Ratul}, 
+year={2023}, 
+pages={A22}}
+
+@hal{martin2023, hal-03832494}
+
+@article{erinin2023,
+  title={The effects of surfactants on plunging breakers},
+  author={Erinin, MA and Liu, C and Liu, X and Mostert, W and Deike, L and Duncan, JH},
+  journal={Journal of Fluid Mechanics},
+  volume={972},
+  pages={R5},
+  year={2023},
+  publisher={Cambridge University Press}
+}
+
+@article{wang2023,
+  title={Analysis of high-speed drop impact onto deep liquid pool},
+  author={Wang, Hui and Liu, Shuo and Bayeul-Lain{\'e}, Annie-Claude and Murphy, David and Katz, Joseph and Coutier-Delgosha, Olivier},
+  journal={Journal of Fluid Mechanics},
+  doi = {10.1017/jfm.2023.701},
+  volume={972},
+  pages={A31},
+  month = {October},
+  year={2023},
+  publisher={Cambridge University Press}
+}
+
+@article{kulkarni2023,
+  title={Stream function solutions for some contact line boundary conditions: Navier slip, super slip and the generalized Navier boundary condition},
+  author={Kulkarni, Yash and Fullana, Tomas and Zaleski, Stephane},
+  journal={Proceedings of the Royal Society A},
+  volume={479},
+  number={2278},
+  pages={20230141},
+  year={2023},
+  publisher={The Royal Society}
+}
+
+@article{gonzalez2023,
+  author={Gonzalez, MA and Rakotonirina, AD and Sainte-Rose, B. and Cox, DJ},
+  title={On The Digital Twin of The Ocean Cleanup Systems—{P}art {I}: {C}alibration of the Drag Coefficients of a Netted Screen in {O}rca{F}lex Using {CFD} and Full-Scale Experiments},
+  journal={J. Mar. Sci. Eng},
+  volume={11},
+  pages={1943},
+  year={2023}
+}
+
+@article{jing2023,
+  title={A height function based momentum balance model to simulate contact angle dynamics with hysteresis},
+  author={Li, Jing and Lin, Zhiliang},
+  journal={International Journal for Numerical Methods in Fluids},
+  volume={95},
+  number={1},
+  pages={1--22},
+  year={2023},
+  publisher={Wiley Online Library},
+  doi={10.1002/fld.5140},
+  url={https://onlinelibrary.wiley.com/doi/10.1002/fld.5140}
+}
+
+@article{ellevold2023,
+  title={Calculation of internal-wave-driven instability and vortex shedding along a flat bottom},
+  author={Ellevold, Thea J and Grue, John},
+  journal={Journal of Fluid Mechanics},
+  volume={966},
+  pages={A40},
+  year={2023},
+  publisher={Cambridge University Press}
+}
+
+@hal{deoclecio2023, hal-04142183}
+
+@article{boyd2023b,
+  title = {Simulation and modeling of the vaporization of a freely moving and deforming drop at low to moderate {Weber} numbers},
+  author = {Boyd, Bradley and Becker, Sid and Ling, Yue},
+  journal = {International Journal of Heat and Mass Transfer},
+  volume = {218},
+  pages = {124735},
+  year = {2023},
+  month = {October},
+  doi = {10.1016/j.ijheatmasstransfer.2023.124735},
+  url = {https://linkinghub.elsevier.com/retrieve/pii/S0017931023008803}
+}
+
+@article{farsoiya2023b,
+  title = {Role of viscosity in turbulent drop break-up},
+  author = {Farsoiya, Palas Kumar and Liu, Zehua and Daiss, Andreas and Fox, Rodney O. and Deike, Luc},
+  journal = {Journal of Fluid Mechanics},
+  volume = {972},
+  pages = {A11},
+  year = {2023},
+  month = {Sep},
+  publisher = {Cambridge University Press},
+  doi = {10.1017/jfm.2023.684},
+  url = {https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/role-of-viscosity-in-turbulent-drop-breakup/E712CE0CBB1539A64D4698F354A24186}
+}
+
+@article{riviere2023,
+  title = {Bubble breakup reduced to a one-dimensional nonlinear oscillator},
+  author = {Rivi\`ere, Ali\'enor and Duchemin, Laurent and Josserand, Christophe and Perrard, St\'ephane},
+  journal = {Phys. Rev. Fluids},
+  volume = {8},
+  issue = {9},
+  pages = {094004},
+  numpages = {12},
+  year = {2023},
+  month = {Sep},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.8.094004},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.8.094004}
+}
+
+@InProceedings{kieffer2023,
+  author = {Kieffer-Roth, C. and Eckel, G. and Le Clercq, P.},
+  title = {Lagrangian simulations of a liquid jet in crossflow coupled with initial spray conditions from Direct Numerical Simulations},
+  year = {2023},
+  booktitle = {ILASS conference, Napoli, Italy, 4-7 September}
+}
+
+@article{sykes2023,
+  title = {Droplet impact dynamics on shallow pools},
+  author = {Sykes, Thomas C. and Cimpeanu, Radu and Fudge, Ben D. and Castrej{\'o}n-Pita, J. Rafael and Castrej{\'o}n-Pita, Alfonso A.},
+  journal = {Journal of Fluid Mechanics},
+  doi = {10.1017/jfm.2023.622},
+  volume = {970},
+  pages = {A34},
+  month = {September},
+  year = {2023}
+}
+
+@article{choudhury2023,
+  title={On the role of viscoelasticity in mucociliary clearance: a hydrodynamic continuum approach},
+  author={Choudhury, Anjishnu and Filoche, Marcel and Ribe, Neil M and Grenier, Nicolas and Dietze, Georg F},
+  journal={Journal of Fluid Mechanics},
+  volume={971},
+  pages={A33},
+  year={2023},
+  publisher={Cambridge University Press}
+}
+
+@article{tang2023, 
+title={Bag film breakup of droplets in uniform airflows}, 
+volume={970}, 
+DOI={10.1017/jfm.2023.605}, 
+journal={Journal of Fluid Mechanics}, 
+author={Tang, K. and Adcock, T.A.A. and Mostert, W.}, 
+year={2023},
+month = {September}, 
+pages={A9}}
+
+@article{hidman2023,
+title={Assessing passive scalar dynamics in bubble-induced turbulence using direct numerical simulations},
+volume={962},
+DOI={10.1017/jfm.2023.307},
+journal={Journal of Fluid Mechanics},
+publisher={Cambridge University Press},
+author={Hidman, Niklas and Ström, Henrik and Sasic, Srdjan and Sardina, Gaetano},
+year={2023},
+month = {September},
+pages={A32}}
+
+@article{huet2023,
+  doi={https://doi.org/10.1016/j.jcp.2023.112424},
+  url={https://www.sciencedirect.com/science/article/pii/S0021999123005193?casa_token=aIl8ruwyHOoAAAAA:ywoI5SRbxgR8bdQGDuHPI5vR87s5OaGs7ZIoQo73rjNFIrcbjg27EzmflFoXdT2nwAWeqMyw},
+  pdf={https://www.sciencedirect.com/science/article/pii/S0021999123005193/pdfft?md5=a5f7fcdc1f00849051b2d43124c704ef&pid=1-s2.0-S0021999123005193-main.pdf},
+  title={A Cartesian-octree adaptive front-tracking solver for immersed biological capsules in large complex domains},
+  author={Huet, Damien P and Wachs, Anthony},
+  journal={Journal of Computational Physics},
+  pages={112424},
+  year={2023},
+  publisher={Elsevier}
+}
+
+@article{gai23PRF2,
+  title = {Dynamics, wakes, and regime transitions of a fixed angular particle in an unbounded inertial flow. II. From tetrahedron to sphere},
+  author = {Gai, Guodong and Wachs, Anthony},
+  journal = {Phys. Rev. Fluids},
+  volume = {8},
+  issue = {6},
+  pages = {064305},
+  numpages = {41},
+  year = {2023},
+  month = {Jun},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.8.064305},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.8.064305}
+}
+
+
+@article{gai23PRF1,
+  title = {Dynamics, wakes, and regime transitions of a fixed angular particle in an unbounded inertial flow. I. Regular tetrahedron angular position},
+  author = {Gai, Guodong and Wachs, Anthony},
+  journal = {Phys. Rev. Fluids},
+  volume = {8},
+  issue = {6},
+  pages = {064304},
+  numpages = {39},
+  year = {2023},
+  month = {Jun},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.8.064304},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.8.064304}
+}
+
+
+@hal{wu2023, hal-04157783}
+
+@article{gai23JFM, 
+title={On the streamwise vorticity generation and distribution in an angular particle wake}, 
+volume={964}, 
+DOI={10.1017/jfm.2023.408}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Gai, Guodong and Wachs, Anthony}, 
+year={2023}, 
+pages={R3}}
+
+
+@article{gai23PdTc,
+title = {High fidelity adaptive Cartesian octree grid computations of the flow past a Platonic polyhedron up to a Reynolds number of 200},
+journal = {Powder Technology},
+volume = {420},
+pages = {118390},
+year = {2023},
+issn = {0032-5910},
+doi = {https://doi.org/10.1016/j.powtec.2023.118390},
+url = {https://www.sciencedirect.com/science/article/pii/S0032591023001742},
+author = {Guodong Gai and Anthony Wachs}
+}
+
+
+@article{roggeveen2023,
+doi = {10.1088/1361-648X/acc8ad},
+url = {https://dx.doi.org/10.1088/1361-648X/acc8ad},
+year = {2023},
+month = {apr},
+publisher = {IOP Publishing},
+volume = {35},
+number = {27},
+pages = {274003},
+author = {J V Roggeveen and H A Stone and C Kurzthaler},
+title = {Transport of a passive scalar in wide channels with surface topography: An asymptotic theory},
+journal = {Journal of Physics: Condensed Matter}
+}
+
+@article{deo2023,
+author = {Deo,Indu Kant  and Gao,Rui  and Jaiman,Rajeev K. },
+title = {Combined space-time reduced-order model with three-dimensional deep convolution for extrapolating fluid dynamics},
+journal = {Physics of Fluids},
+volume = {0},
+number = {ja},
+pages = {null},
+year = {0},
+doi = {10.1063/5.0145071},
+URL = { https://doi.org/10.1063/5.0145071 }
+}
+
+@article{vozhakov2023,
+  title={Numerical Simulations of Swirling Water Jet Atomization: A Mesh Convergence Study},
+  author={Vozhakov, Ivan S and Hrebtov, Mikhail Yu and Yavorsky, Nikolay I and Mullyadzhanov, Rustam I},
+  journal={Water},
+  volume={15},
+  number={14},
+  pages={2552},
+  year={2023},
+  publisher={MDPI}
+}
+
+@article{zinelis2023,
+      title={Transition to elasto-capillary thinning dynamics in viscoelastic jets}, 
+      author={Konstantinos Zinelis and Thomas Abadie and Gareth H. McKinley and Omar K. Matar},
+      year={2023},
+      eprint={2306.05137},
+      archivePrefix={arXiv},
+      primaryClass={physics.flu-dyn}
+}
+
+@article{boswell2023,
+  title={Characterizing energy dissipation of shallow-water wave breaking in a storm surge},
+  author={Boswell, Hunter and Yan, Guirong and Mostert, Wouter},
+  journal={Physical Review Fluids},
+  volume={8},
+  number={5},
+  pages={054801},
+  year={2023},
+  publisher={APS}
+}
+
+@misc{alessio2023,
+      title={Diffusiophoresis-Enhanced Turing Patterns}, 
+      author={Benjamin M. Alessio and Ankur Gupta},
+      year={2023},
+      eprint={2305.11372},
+      archivePrefix={arXiv},
+      primaryClass={cond-mat.soft}
+}
+
+@article{fudge2023,
+title = {Drop splashing after impact onto immiscible pools of different viscosities},
+journal = {Journal of Colloid and Interface Science},
+volume = {641},
+pages = {585-594},
+year = {2023},
+issn = {0021-9797},
+doi = {https://doi.org/10.1016/j.jcis.2023.03.040},
+url = {https://www.sciencedirect.com/science/article/pii/S0021979723003995},
+pdf = {https://www.sciencedirect.com/science/article/pii/S0021979723003995/pdfft?md5=51abb6255a431d626da619b07cc96adb&pid=1-s2.0-S0021979723003995-main.pdf},
+author = {Ben D. Fudge and Radu Cimpeanu and Arnaud Antkowiak and J. Rafael Castrejón-Pita and Alfonso A. Castrejón-Pita},
+keywords = {Drops, Splashing, Wetting, Impact, Experiment, Direct numerical simulation},
+}
+
+@article{alventosa2023,
+  title={Inertio-capillary rebound of a droplet impacting a fluid bath},
+  author={Alventosa, Luke F.L. and Cimpeanu, Radu and Harris, Daniel M.},
+  journal={Journal of Fluid Mechanics},
+  volume={958},
+  pages={A24},
+  year={2023},
+  doi={10.1017/jfm.2023.88},
+  url={https://doi.org/10.1017/jfm.2023.88},
+  pdf={https://www.cambridge.org/core/services/aop-cambridge-core/content/view/93C2414D27C42F17BF67587E9C5BA6AF/S0022112023000885a.pdf/inertio-capillary-rebound-of-a-droplet-impacting-a-fluid-bath.pdf},
+  publisher={Cambridge University Press}
+}
+
+@article{hashemi2023,
+author = {Hashemi,Mohammad  and Shalbaf,Saman  and Jadidi,Mehdi  and Dolatabadi,Ali },
+title = {Effects of gas viscosity and liquid-to-gas density ratio on liquid jet atomization in crossflow},
+journal = {AIP Advances},
+volume = {13},
+number = {3},
+pages = {035105},
+year = {2023},
+doi = {10.1063/5.0129696},
+url = {https://doi.org/10.1063/5.0129696}
+}
+
+@article{uchida2023,
+title = {Cautionary tales from the mesoscale eddy transport tensor},
+journal = {Ocean Modelling},
+pages = {102172},
+year = {2023},
+issn = {1463-5003},
+doi = {https://doi.org/10.1016/j.ocemod.2023.102172},
+url = {https://www.sciencedirect.com/science/article/pii/S1463500323000136},
+author = {Takaya Uchida and Dhruv Balwada and Quentin Jamet and William K. Dewar and Bruno Deremble and Thierry Penduff and Julien Le Sommer}}
+
+@article{hayward2023,
+  author    = {Hayward, M. W. and Lane, E. M. and Whittaker, C. N. and Leonard, G. S. and Power, W. L.},
+  journal   = {Natural Hazards and Earth System Sciences},
+  title     = {Scenario-based modelling of waves generated by sublacustrine explosive eruptions at Lake Taupō, New Zealand},
+  year      = {2023},
+  volume    = {23},
+  number    = {2},
+  pages     = {955--971},
+  publisher = {Copernicus},
+  doi = {10.5194/nhess-23-955-2023},
+  url = {https://nhess.copernicus.org/articles/23/955/2023/},
+  pdf = {https://nhess.copernicus.org/articles/23/955/2023/nhess-23-955-2023.pdf}
+}
+
+@Article{jbara2023,
+  author    = {Jbara, Layal and Ghigo, Arthur and Wachs, Anthony},
+  journal   = {Physics of Fluids},
+  title     = {Steady three-dimensional unbounded flow past an obstacle continuously deviating from a sphere to a cube},
+  year      = {2023},
+  number    = {1},
+  pages     = {013343},
+  volume    = {35},
+  file      = {:layalpaper1.pdf:PDF},
+  groups    = {FluidSolid flows},
+  publisher = {AIP Publishing LLC},
+  doi = {10.1063/5.0133499},
+  url = {https://aip.scitation.org/doi/10.1063/5.0133499}
+}
+
+@hal{farsoiya2023, hal-03933249}
+
+@article{frederix2023,
+author = {E. M. A. Frederix and S. Tajfirooz and J. A. Hopman and J. Fang and E. Merzari and E. M. J. Komen},
+title = {Two-Phase Turbulent Kinetic Energy Budget Computation in Co-Current Taylor Bubble Flow},
+journal = {Nuclear Science and Engineering},
+volume = {0},
+number = {0},
+pages = {1-17},
+year  = {2023},
+publisher = {Taylor & Francis},
+doi = {10.1080/00295639.2022.2141517},
+URL = { https://doi.org/10.1080/00295639.2022.2141517}
+}
+
+@article{finster2023,
+title = {Numerical simulation of the accumulation process in modulated liquid jets of defined volume using the volume-of-fluid methodology},
+journal = {International Journal of Multiphase Flow},
+volume = {160},
+pages = {104356},
+year = {2023},
+issn = {0301-9322},
+doi = {https://doi.org/10.1016/j.ijmultiphaseflow.2022.104356},
+url = {https://www.sciencedirect.com/science/article/pii/S0301932222003159},
+author = {M. Finster and H. Chaves and R. Schwarze}
+}
+
+@article{boyd2023,
+title = {A consistent volume-of-fluid approach for direct numerical simulation of the aerodynamic breakup of a vaporizing drop},
+journal = {Computers \& Fluids},
+pages = {105807},
+year = {2023},
+issn = {0045-7930},
+doi = {https://doi.org/10.1016/j.compfluid.2023.105807},
+url = {https://www.sciencedirect.com/science/article/pii/S0045793023000324},
+author = {Boyd, Bradley and Ling, Yue}
+}
+
+@article{saade2023,
+title = {{A multigrid solver for the coupled pressure-temperature equations in an all-Mach solver with VoF}},
+journal = {J. Comput. Phys.},
+volume = {476},
+pages = {111865},
+year = {2023},
+doi = {https://doi.org/10.1016/j.jcp.2022.111865},
+url = {https://www.sciencedirect.com/science/article/pii/S0021999122009287},
+author = {Saade, Youssef and Lohse, Detlef and Fuster, Daniel},
+pdf = {https://www.sciencedirect.com/science/article/pii/S0021999122009287/pdfft?md5=78ca03363968831fbe407670fcaf059c&pid=1-s2.0-S0021999122009287-main.pdf}
+}
+~~~
+
+### 2022
+
+~~~bib
+@article{Cheng2022,
+title = {An immersed boundary/multi-relaxation time lattice {B}oltzmann method on adaptive octree grids for the particle-resolved simulation of particle-laden flows},
+journal = {Journal of Computational Physics},
+volume = {471},
+pages = {111669},
+year = {2022},
+issn = {0021-9991},
+doi = {https://doi.org/10.1016/j.jcp.2022.111669},
+url = {https://www.sciencedirect.com/science/article/pii/S002199912200732X},
+author = {Zihao Cheng and Anthony Wachs},
+keywords = {Lattice Boltzmann method, Immersed boundary method, Adaptive mesh refinement, Parallel computing, Particle-laden flow, Fluid-solid interaction},
+}
+
+@article{colanera2022,
+author = {Colanera,Antonio  and Della Pia,Alessandro  and Chiatto,Matteo },
+title = {Data-driven global stability of vertical planar liquid jets by
+         dynamic mode decomposition on random perturbations},
+journal = {Physics of Fluids},
+volume = {34},
+number = {12},
+pages = {122101},
+year = {2022},
+doi = {10.1063/5.0123550},
+URL = {https://doi.org/10.1063/5.0123550}
+}
+
+@article{wray2022,
+  title = {Electrostatic control of the {N}avier-{S}tokes equations for thin films},
+  author = {Alexander Wray and Radu Cimpeanu and Susana Gomes},
+  journal = {Physical Review Fluids},
+  volume = {7},
+  issue = {12},
+  pages = {L122001},
+  numpages = {10},
+  year = {2022},
+  month = {December},
+  doi = {10.1103/PhysRevFluids.7.L122001},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.7.L122001},
+  pdf = {https://arxiv.org/pdf/2207.12019.pdf}
+}
+
+@hal{limare2022, hal-03889680}
+
+@article{hidman2022b,
+title={The lift force on deformable and freely moving bubbles in linear shear flows},
+volume={952},
+doi={10.1017/jfm.2022.917},
+journal={Journal of Fluid Mechanics},
+publisher={Cambridge University Press},
+author={Niklas Hidman and Hernik Ström and Srdjan Sasic and Gaetao Sardina}, 
+year={2022},
+pages={A34}}
+
+@article{liu2022,
+title = {Numerical simulation study of extensional characteristics impacts on the viscoelastic thread deformation and satellite droplet generation},
+journal = {Journal of Non-Newtonian Fluid Mechanics},
+pages = {104955},
+year = {2022},
+issn = {0377-0257},
+doi = {https://doi.org/10.1016/j.jnnfm.2022.104955},
+url = {https://www.sciencedirect.com/science/article/pii/S0377025722001744},
+author = {Luhao Liu and Xinyan Guan and Qingfei Fu}
+}
+
+@article{pan2022, 
+title={On axisymmetric dynamic spin coating with a single drop of ethanol}, volume={951}, 
+DOI={10.1017/jfm.2022.862}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Pan, Yuming and Wang, Zhibei and Zhao, Xinyan and Deng, Weiwei and Xia, Huihui}, 
+year={2022}, 
+pages={A30}}
+
+@article{li2022,
+author = {Li,Yang  and Xu,Zhikun  and Peng,Xiaoyun  and Wang,Tianyou  and Che,Zhizhao },
+title = {Numerical simulation of secondary breakup of shear-thinning droplets},
+journal = {Physics of Fluids},
+year = {2022},
+doi = {10.1063/5.0132939}
+}
+
+@article{patankar2022,
+title={Dynamic stabilisation of Rayleigh–Plateau modes on a liquid cylinder}, volume={946},
+DOI={10.1017/jfm.2022.533},
+journal={Journal of Fluid Mechanics},
+publisher={Cambridge University Press}, 
+author={Patankar, Sagar and Basak, Saswata and Dasgupta, Ratul}, year={2022}, pages={A2}
+}
+
+@hal{farsoiya2022, hal-03854121}
+
+@hal{wu2022, hal-03839928}
+
+@inproceedings{johannesen2022,
+  title={Analysis of Structures in Very Shallow Water: CFD Analysis of Wave Propagation and Breaking Waves},
+  author={Johannesen, Magnus and Lande, {\O}ystein},
+  booktitle={International Conference on Offshore Mechanics and Arctic Engineering},
+  volume={85895},
+  pages={V05AT06A007},
+  year={2022},
+  organization={American Society of Mechanical Engineers}
+}
+
+@article{rump2022,
+  title = {Vorticity-induced flow-focusing leads to bubble entrainment in an inkjet printhead: Synchrotron x-ray and volume-of-fluid visualizations},
+  author = {Rump, Maaike and Saade, Youssef and Sen, Uddalok and Fezzaa, Kamel and Versluis, Michel and Lohse, Detlef and Segers, Tim},
+  journal = {Phys. Rev. Fluids},
+  volume = {7},
+  issue = {10},
+  pages = {104004},
+  numpages = {16},
+  year = {2022},
+  month = {Oct},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.7.104004},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.7.104004},
+  pdf={https://arxiv.org/pdf/2205.06635.pdf}
+}
+
+@article{riviere2022,
+  title = {Capillary driven fragmentation of large gas bubbles in turbulence},
+  author = {Rivi\`ere, Ali\'enor and Ruth, Daniel J. and Mostert, Wouter and Deike, Luc and Perrard, St\'ephane},
+  journal = {Phys. Rev. Fluids},
+  volume = {7},
+  issue = {8},
+  pages = {083602},
+  numpages = {11},
+  year = {2022},
+  month = {Aug},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.7.083602},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.7.083602}
+}
+
+@hal{chirco2022, hal-03717210}
+
+@phdthesis{VatsalThesis,
+	title = {Viscous Free-Surface Flows},
+	keywords = {Drops, Bubble dynamics, Free-surface flows, Viscosity, Capillarity},
+	author = {Sanjay, V.},
+	doi = {10.3990/1.9789036554077},
+	language = {English},
+	year = {2022},
+	month = {Jul},
+	day = {4},
+	isbn = {978-90-365-5407-7},
+	publisher = {University of Twente},
+	address = {Netherlands},
+	school = {University of Twente},
+        pdf={https://qrco.de/bd9SHU}
+}
+
+@article{sanjay2022a,
+  title={When does an impacting drop stop bouncing?},
+  author={Sanjay, V. and Chantelot, P. and Lohse, D.},
+  journal={arXiv preprint arXiv:2208.05935},
+  year={2022}
+}
+
+@article{sanjay2022b,
+  title = {Impact Forces of Water Drops Falling on Superhydrophobic Surfaces},
+  author = {Zhang, B. and Sanjay, V. and Shi, S. and Zhao, Y. and Lv, C. and Feng, X.-Q. and Lohse, D.},
+  journal = {Phys. Rev. Lett.},
+  volume = {129},
+  issue = {10},
+  pages = {104501},
+  numpages = {7},
+  year = {2022},
+  month = {Aug},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevLett.129.104501},
+  url = {https://link.aps.org/doi/10.1103/PhysRevLett.129.104501},
+  pdf={https://qrco.de/bd9aV3}
+}
+
+@article{sanjay2022c, 
+title={Taylor–Culick retractions and the influence of the surroundings}, 
+author={Sanjay, V. and Sen, U. and Kant, P. and Lohse, D.},
+volume={948}, 
+doi={10.1017/jfm.2022.671}, 
+journal={J. Fluid Mech.}, 
+publisher={Cambridge University Press},
+year={2022}, 
+pages={A14}
+}
+
+@article{sanjay2022d,
+  title={Drop impact on viscous liquid films},
+  author={Sanjay, V. and Lakshman, S. and Chantelot, P. and Snoeijer, J. H. and Lohse, D.},
+  journal={arXiv preprint arXiv:2206.06298},
+  year={2022}
+}
+
+@phdthesis {schmidt2022,
+   author = {Schmidt, Simon},
+   title = {On the development and application of linear stability methods for two-phase shear flows},
+   school = {Technische Universität Berlin},
+   year = {2022},
+   type = {Doctoral Thesis},
+   address = {Berlin},
+   doi = {10.14279/depositonce-15846},
+   url = {http://dx.doi.org/10.14279/depositonce-15846},
+   keywords = {linear stability analysis, two-phase flow, shear flow, nonlinear dynamics, fluid instability, lineare Stabilitätsanalyse, Zweiphasenströmung, Scherströmung, nichtlineare Dynamik, Strömungsinstabilität}
+}
+
+@article{tong2022,
+title = {Characteristics of the bubble-induced pressure, force, and impulse on a rigid wall},
+journal = {Ocean Engineering},
+volume = {255},
+pages = {111484},
+year = {2022},
+issn = {0029-8018},
+doi = {https://doi.org/10.1016/j.oceaneng.2022.111484},
+url = {https://www.sciencedirect.com/science/article/pii/S0029801822008575},
+author = {Shi-Yu Tong and Shuai Zhang and Shi-Ping Wang and Shuai Li}
+}
+
+@article{king2022,
+author = {Darren N. King and Kate Clark and Catherine Chagué and Xun Li and Emily Lane and Bruce G. McFadgen and Jarom Hippolite and Peter Meihana and Billy Wilson and John Dobson and Pene Geiger and Hamuera Robb and Daniel Hikuroa and Shaun Williams and Regine Morgenstern and Finn Scheele},
+title = {Tsunami or storm deposit? A late Holocene sedimentary record from Swamp Bay, Rangitoto ki te Tonga/D’Urville Island, Aotearoa – New Zealand},
+journal = {New Zealand Journal of Geology and Geophysics},
+volume = {0},
+number = {0},
+pages = {1-17},
+year  = {2022},
+publisher = {Taylor & Francis},
+doi = {10.1080/00288306.2022.2087692}
+}
+
+@article{gennari2022,
+title = {A phase-change model for diffusion-driven mass transfer problems in incompressible two-phase flows},
+journal = {Chemical Engineering Science},
+volume = {259},
+pages = {117791},
+year = {2022},
+issn = {0009-2509},
+doi = {https://doi.org/10.1016/j.ces.2022.117791},
+url = {https://www.sciencedirect.com/science/article/pii/S000925092200375X},
+author = {Gabriele Gennari and Richard Jefferson-Loveday and Stephen J. Pickering}
+}
+
+@article{schilperoort2022,
+title = {Detecting nighttime inversions in the interior of a Douglas fir canopy},
+journal = {Agricultural and Forest Meteorology},
+volume = {321},
+pages = {108960},
+year = {2022},
+issn = {0168-1923},
+doi = {https://doi.org/10.1016/j.agrformet.2022.108960},
+url = {https://www.sciencedirect.com/science/article/pii/S0168192322001502},
+author = {Bart Schilperoort and Miriam Coenders-Gerrits and César Jiménez Rodríguez and Antoon {van Hooft} and Bas van de Wiel and Hubert Savenije}
+}
+
+@hal{vanhooft2022, hal-03663254}
+
+@hal{mostert2022, hal-03631988}
+
+@hal{uchida2022, hal-03633661}
+
+@article{zhang2022,
+  title = {Direct numerical simulation of compressible interfacial multiphase flows using a mass–momentum–energy consistent volume-of-fluid method},
+  volume = {236},
+  issn = {00457930},
+  url = {https://linkinghub.elsevier.com/retrieve/pii/S0045793021003650},
+  doi = {10.1016/j.compfluid.2021.105267},
+  journal = {Computers \& Fluids},
+  author = {Zhang, Bo and Boyd, Bradley and Ling, Yue},
+  year = {2022},
+  pages = {105267},
+}
+
+@hal{hayward2022, hal-03589296}
+
+@article{zhao2022,
+  title={Boiling and evaporation model for liquid-gas flows: A sharp and conservative method based on the geometrical VOF approach},
+  author={Zhao Shuo and Zhang, Jie and Ni, Ming-Jiu},
+  journal={Journal of Computational Physics},
+  volume={452},
+  pages={110908},
+  year={2022},
+  publisher={Elsevier},
+  doi = {10.1016/j.jcp.2021.110908},
+  url = {https://www.sciencedirect.com/science/article/pii/S0021999121008032} 
+}
+
+@article{hidman2022,
+title = {A multiscale methodology for small-scale bubble dynamics in turbulence},
+author = {Niklas Hidman and Henrik Ström and Srdjan Sasic and Gaetano Sardina},
+journal = {International Journal of Multiphase Flow},
+pages = {103976},
+year = {2022},
+issn = {0301-9322},
+doi = {https://doi.org/10.1016/j.ijmultiphaseflow.2022.103976},
+url = {https://www.sciencedirect.com/science/article/pii/S0301932222000052}
+}
+
+@hal{joubert2022, hal-03538277}
+
+@hal{berny2022, hal-03480945}
+~~~
+
+### 2021
+
+~~~bib
+@hal{guo2021, tel-03177304}
+
+@article{fudge2021,
+  title = {Dipping into a new pool: The interface dynamics of drops impacting onto a different liquid},
+  author = {Fudge, Ben D. and Cimpeanu, Radu and Castrej{\'o}n-Pita, Alfonso A.},
+  journal = {Physical Review E},
+  volume = {104},
+  number = {6},
+  pages = {065102},
+  month = {Dec},
+  year = {2021},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevE.104.065102}, 
+  url = {https://journals.aps.org/pre/abstract/10.1103/PhysRevE.104.065102}
+}
+
+@article{tang2021,
+  title = {Effects of surface tension on the Richtmyer-Meshkov instability in fully compressible and inviscid fluids},
+  author = {Tang, Kaitao and Mostert, Wouter and Fuster, Daniel and Deike, Luc},
+  journal = {Phys. Rev. Fluids},
+  volume = {6},
+  issue = {11},
+  pages = {113901},
+  numpages = {23},
+  year = {2021},
+  month = {Nov},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.6.113901},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.6.113901}
+}
+
+@hal{battershill2021, hal-03419617}
+
+@article{sharaborin2021b,
+  doi = {10.3390/fluids6110389},
+  year = {2021},
+  month = {October},
+  publisher = {{MDPI} {AG}},
+  volume = {6},
+  number = {11},
+  pages = {389},
+  author = {Sharaborin, Evgenii L. and Rogozin, Oleg A. and Kasimov, Aslan R.},
+  title = {Computational Study of the Dynamics of the {Taylor} Bubble},
+  journal = {Fluids},
+  url = {https://www.mdpi.com/2311-5521/6/11/389},
+  pdf={https://www.mdpi.com/2311-5521/6/11/389/pdf}
+}
+
+@article{ganan2021, 
+title={On the physics of transient ejection from bubble bursting}, 
+volume={929}, 
+DOI={10.1017/jfm.2021.791}, 
+journal={Journal of Fluid Mechanics}, 
+author={Gañán-Calvo, A. M. and López-Herrera, J. M.}, 
+year={2021}, 
+pages={A12}
+}
+
+@article{sakakeeny2021b, 
+title={A model to predict the oscillation frequency for drops pinned on a vertical planar surface}, 
+volume={928}, 
+DOI={10.1017/jfm.2021.844}, 
+journal={Journal of Fluid Mechanics}, 
+author={Sakakeeny, J. and Deshpande, C. and Deb, S. and Alvarado, J.L. and Ling, Y.}, 
+year={2021}, 
+pages={A28}}
+
+@article{sharaborin2021a,
+  doi = {10.3390/fluids6090334},
+  url = {https://doi.org/10.3390/fluids6090334},
+  year = {2021},
+  month = {September},
+  publisher = {{MDPI} {AG}},
+  volume = {6},
+  number = {9},
+  pages = {334},
+  author = {Evgenii L. Sharaborin and Oleg A. Rogozin and Aslan R. Kasimov},
+  title = {The Coupled Volume of Fluid and {Brinkman} Penalization Methods for Simulation of Incompressible Multiphase Flows},
+  journal = {Fluids},
+  url = {https://www.mdpi.com/2311-5521/6/9/334},
+  pdf={https://www.mdpi.com/2311-5521/6/9/334/pdf}
+}
+
+@article{li2021, 
+title={Comparison of Boundary Integral and Volume-of-Fluid methods for compressible bubble dynamics}, 
+volume={145}, 
+DOI={10.1016/j.ijmultiphaseflow.2021.103834},
+journal={International Journal of Multiphase Flow}, 
+author={Li, Shuai and Saade, Youssef and van der Meer, Devaraj and Lohse, Detlef}, 
+year={2021}, 
+pages={103834},
+url={https://www.sciencedirect.com/science/article/pii/S0301932221002627},
+pdf={https://www.sciencedirect.com/science/article/pii/S0301932221002627/pdfft?md5=005e544f6da82c57dafb5034d139954b&pid=1-s2.0-S0301932221002627-main.pdf}
+}
+
+@article{jaccod2021,
+  title={Predator-prey plankton dynamics in turbulent flow past an obstacle},
+  author={Jaccod, Alice and Berti, Stefano and Calzavarini, Enrico and Chibbaro, Sergio},
+  journal={Physical Review Fluids},
+  volume={6},
+  number={10},
+  pages={103802},
+  year={2021},
+  month = {Sep},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.6.103802},
+}
+
+@article{wu2021,
+  title = {Wind wave growth in the viscous regime},
+  author = {Wu, Jiarong and Deike, Luc},
+  journal = {Phys. Rev. Fluids},
+  volume = {6},
+  issue = {9},
+  pages = {094801},
+  numpages = {19},
+  year = {2021},
+  month = {Sep},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.6.094801},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.6.094801}
+}
+
+@article{saade2021, 
+title={Crown formation from a cavitating bubble close to a free surface}, 
+volume={926}, 
+DOI={10.1017/jfm.2021.676},
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Saade, Youssef and Jalaal, Maziyar and Prosperetti, Andrea and Lohse, Detlef}, 
+year={2021}, 
+pages={A5},
+url={https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/crown-formation-from-a-cavitating-bubble-close-to-a-free-surface/F3E1B35E3199F7BA83233E555FB59168},
+pdf={https://www.cambridge.org/core/services/aop-cambridge-core/content/view/F3E1B35E3199F7BA83233E555FB59168/S0022112021006765a_hi.pdf/crown-formation-from-a-cavitating-bubble-close-to-a-free-surface.pdf}
+}
+
+@article{zhang2021, 
+title={Three-dimensional dynamics of a pair of deformable bubbles rising initially in line. Part 1. Moderately inertial regimes}, 
+volume={920}, DOI={10.1017/jfm.2021.429}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Zhang, Jie and Ni, Ming-Jiu and Magnaudet, Jacques}, 
+year={2021}, 
+pages={A16}}
+
+@inproceedings{mahmood2021,
+  title={Effects of Reynolds number on Aerobreakup of Viscous Drops},
+  author={Mahmood, T. and Ling, Y.},
+  booktitle={International Conference on Liquid Atomization and Spray Systems (ICLASS)},
+  volume={1},
+  number={1},
+  year={2021},
+  url = {http://journals.ed.ac.uk/ICLASS_Edinburgh/article/download/6045/7892}
+}
+
+@inproceedings{vasconcelos2021,
+  title={Comparison of Commercial and Open-Source CFD Solvers on Surface Tension Dominated Flows},
+  author={Vasconcelos, Daniel and Silva, Andr{\'e} and Barata, Jorge},
+  booktitle={International Conference on Liquid Atomization and Spray Systems (ICLASS)},
+  volume={1},
+  number={1},
+  year={2021},
+  url = {http://journals.ed.ac.uk/ICLASS_Edinburgh/article/download/5981/7828}
+}
+
+@Article{ganan-calvo2021,
+AUTHOR = {Gañán-Calvo, Alfonso M. and Chapman, Henry N. and Heymann, Michael and Wiedorn, Max O. and Knoska, Juraj and Gañán-Riesco, Braulio and López-Herrera, José M. and Cruz-Mazo, Francisco and Herrada, Miguel A. and Montanero, José M. and Bajt, Saša},
+TITLE = {The Natural Breakup Length of a Steady Capillary Jet: Application to Serial Femtosecond Crystallography},
+JOURNAL = {Crystals},
+VOLUME = {11},
+YEAR = {2021},
+NUMBER = {8},
+ARTICLE-NUMBER = {990},
+URL = {https://www.mdpi.com/2073-4352/11/8/990},
+ISSN = {2073-4352},
+DOI = {10.3390/cryst11080990}
+}
+
+@article{lee2021,
+author = {Lee, Jun-Whan and Irish, Jennifer L. and Weiss, Robert},
+title = {Probabilistic Near-Field Tsunami Source and Tsunami Run-up Distribution Inferred From Tsunami Run-up Records in Northern Chile},
+journal = {Journal of Geophysical Research: Oceans},
+volume = {126},
+number = {6},
+pages = {e2021JC017289},
+doi = {https://doi.org/10.1029/2021JC017289},
+url = {https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2021JC017289},
+year = {2021}
+}
+
+@article{fuster2021,
+title = {Vortex-interface interactions in two-dimensional flows},
+journal = {International Journal of Multiphase Flow},
+volume = {143},
+pages = {103757},
+year = {2021},
+issn = {0301-9322},
+doi = {https://doi.org/10.1016/j.ijmultiphaseflow.2021.103757},
+url = {https://www.sciencedirect.com/science/article/pii/S0301932221001993},
+author = {Daniel Fuster and Maurice Rossi}}
+
+@article{deoclecio2021,
+title = {Bubble entrapment condition in Bingham materials},
+journal = {Journal of Non-Newtonian Fluid Mechanics},
+volume = {295},
+pages = {104616},
+year = {2021},
+issn = {0377-0257},
+doi = {10.1016/j.jnnfm.2021.104616},
+url = {https://www.sciencedirect.com/science/article/pii/S0377025721001154},
+author = {Lucas H.P. Deoclecio and Edson J. Soares and Hiranya Deka and Jean-Lou Pierson}
+}
+
+@article{sanjay2021, 
+title={Bursting bubble in a viscoplastic medium}, 
+volume={922}, 
+DOI={10.1017/jfm.2021.489}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Sanjay, Vatsal and Lohse, Detlef and Jalaal, Maziyar}, 
+year={2021}, 
+pages={A2},
+url={http://basilisk.fr/sandbox/vatsal/BurstingBubble/burstingBubble.c},
+pdf={https://www.cambridge.org/core/services/aop-cambridge-core/content/view/4D5743C8FAC06837D898A42DA715B5E7/S0022112021004894a.pdf/bursting-bubble-in-a-viscoplastic-medium.pdf}
+}
+
+@article{agbaglah2021b, 
+author = {G. Gilou Agbaglah},
+title={Numerical study of hole formation in a thin flapping liquid sheet sheared by a fast gas stream}, 
+journal = {Physics of Fluids},
+volume = {33},
+pages = {062119},
+year = {2021},
+doi = {10.1063/5.0055167} 
+}
+
+@article{sakakeeny2021a,
+author = {Sakakeeny,Jordan  and Ling,Yue },
+title = {Numerical study of natural oscillations of supported drops with free and pinned contact lines},
+journal = {Physics of Fluids},
+volume = {33},
+number = {6},
+pages = {062109},
+year = {2021},
+doi = {10.1063/5.0049328}
+}
+
+@article{perrard2021, 
+  title={Bubble deformation by a turbulent flow}, 
+  volume={920}, 
+  DOI={10.1017/jfm.2021.379}, 
+  journal={Journal of Fluid Mechanics}, 
+  publisher={Cambridge University Press}, 
+  author={Perrard, St{\'e}phane and Rivi{\`e}re, Ali{\'e}nor and Mostert, Wouter and Deike, Luc},
+  year={2021}, 
+  pages={A15}
+}
+
+@article{riviere2021, 
+  title={Sub-Hinze scale bubble production in turbulent bubble breakup}, 
+  volume={917}, 
+  DOI={10.1017/jfm.2021.243}, 
+  journal={Journal of Fluid Mechanics}, 
+  publisher={Cambridge University Press}, 
+  author={Rivi{\`e}re, Ali{\'e}nor and Mostert, Wouter and Perrard, St{\'e}phane and Deike, Luc},
+  year={2021}, 
+  pages={A40}
+}
+
+@article{han2021,
+  title={A consistent and parallelized height function based scheme for applying contact angle to 3D volume-of-fluid simulations},
+  author={Han, Tian-Yang and Zhang, Jie and Tan, Hua and Ni, Ming-Jiu},
+  journal={Journal of Computational Physics},
+  volume={433},
+  pages={110190},
+  year={2021},
+  publisher={Elsevier}
+}
+
+@article{dallaston2021, 
+title={Regular and complex singularities of the generalized thin film equation in two dimensions}, 
+volume={917}, 
+DOI={10.1017/jfm.2021.286}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, author={Dallaston, M.C. and Fontelos, M.A. and Herrada, M.A. and Lopez-Herrera, J.M. and Eggers, J.}, year={2021}, pages={A20},
+pdf={https://people.maths.bris.ac.uk/~majge/regular_and_complex_singularities_of_the_generalized_thin_film_equation_in_two_dimensions.pdf}
+}
+
+@hal{farsoiya2021, hal-03227997}
+
+@article{dalwadi2021, 
+title={Levitation of a cylinder by a thin viscous film}, 
+volume={917}, 
+DOI={10.1017/jfm.2021.284}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Mohit P. Dalwadi and Radu Cimpeanu and Hilary Ockendon and John Ockendon and Tom Mullin}, 
+year={2021}, 
+pages={A28}
+}
+
+@article{negus2021, 
+title={Droplet impact onto a spring-supported plate: analysis and simulations}, 
+volume={128}, 
+DOI={10.1007/s10665-021-10107-5}, 
+journal={Journal of Engineering Mathematics}, 
+publisher={Springer}, 
+author={Michael J. Negus and Matthew R. Moore and James M. Oliver and Radu Cimpeanu}, 
+year={2021}, 
+pages={1-27}
+}
+
+@hal{berny2021, hal-03203023}
+
+@article{das2021, 
+title={Electrohydrodynamic-induced interactions between droplets}, 
+volume={915}, 
+DOI={10.1017/jfm.2021.120}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Das, Santanu Kumar and Dalal, Amaresh and Tomar, Gaurav}, 
+year={2021}, 
+pages={A88}
+}
+
+@article{zhu2021,
+author = {Zhu, Wanli and Zhao, Ningbo and Jia, Xiongbin and Sun, Chengwen and Zheng, Hongtao},
+title = {Effects of Airflow Velocity and Droplet Diameter on the Secondary Breakup Characteristics},
+journal = {AIAA Journal},
+pages = {1-9},
+year = {2021},
+doi = {10.2514/1.J060360}
+}
+
+@article{schmidt2021, 
+title={Global stability and nonlinear dynamics of wake flows with a two-fluid interface}, 
+volume={915}, 
+DOI={10.1017/jfm.2021.150}, 
+journal={Journal of Fluid Mechanics}, publisher={Cambridge University Press}, 
+author={Schmidt, Simon and Tammisola, Outi and Lesshafft, Lutz and Oberleithner, Kilian}, 
+year={2021}, 
+pages={A96}
+}
+
+@article{colanera2021,
+author={Colanera,Antonio and Della Pia,Alessandro and Chiatto,Matteo and de Luca,Luigi and Grasso,Francesco},
+title={Modal decomposition analysis of unsteady viscous liquid sheet flows},
+journal={Physics of Fluids},
+volume={33},
+pages={092117},
+year={2021},
+doi = {10.1063/5.0065683}
+}
+
+@article{dellapia2021b,
+author={Della Pia,Alessandro and Colanera,Antonio and Chiatto,Matteo and de Luca,Luigi},
+title={Energy insights into the unsteady dynamics of a viscous gravitational liquid sheet},
+journal={Physics of Fluids},
+volume={33},
+pages={092118},
+year={2021},
+doi = {10.1063/5.0065590}
+}
+
+@article{dellapia2021a,
+author = {Della Pia,Alessandro  and Chiatto,Matteo  and de Luca,Luigi },
+title = {Receptivity to forcing disturbances in subcritical liquid sheet flows},
+journal = {Physics of Fluids},
+volume = {33},
+pages = {032113},
+year = {2021},
+doi = {10.1063/5.0044322}
+}
+
+@article{kusuno2021,
+title = {Wake-induced lateral migration of approaching bubbles},
+journal = {International Journal of Multiphase Flow},
+pages = {103639},
+year = {2021},
+issn = {0301-9322},
+doi = {https://doi.org/10.1016/j.ijmultiphaseflow.2021.103639},
+author = {Hiroaki Kusuno and Toshiyuki Sanada},
+keywords = {Bubble–bubble interaction, Bubble wake, Bubble deformation, Repulsive force, Lift reversal, Vortex ring}
+}
+
+@article{agbaglah2021, 
+title={Breakup of thin liquid sheets through hole–hole and hole–rim merging}, volume={911}, 
+DOI={10.1017/jfm.2020.1016}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Agbaglah, G.G.}, 
+year={2021}, 
+pages={A23}}
+
+@article{turkoz2021,
+  title={Dynamics of impulsively induced viscoelastic jets},
+  author={Turkoz, Emre and Stone, Howard and Arnold, Craig and Deike, Luc},
+  journal={Journal of Fluid Mechanics},
+  volume={911},
+  pages={A14},
+  year={2021},
+  doi = {10.1017/jfm.2020.1053},
+  url = {https://spikelab.mycpanel.princeton.edu/papers/180.pdf}
+}
+
+@article{innocenti2021, 
+title={Direct numerical simulation of bubble-induced turbulence}, 
+volume={918}, 
+DOI={10.1017/jfm.2021.288}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Innocenti, Alessio and Jaccod, Alice and Popinet, Stéphane and Chibbaro, Sergio}, 
+year={2021}, 
+pages={A23}}
+
+@phdthesis{vanhooft2021,
+  title={Modeling the atmospheric diurnal cycle},
+  author={J.A. van Hooft},
+  year={2021},
+  school={Delft University of Technology},
+  url={https://repository.tudelft.nl/islandora/object/uuid:e45cea45-8915-4a11-b8fd-389cb3e19d22}
+}
+
+~~~
+
+### 2020
+
+~~~bib
+@hal{pairetti2020, hal-03080699}
+
+@article{Lee2020,
+author = {Lee, Jun-Whan and Irish, Jennifer L. and Weiss, Robert},
+title = {Rapid prediction of alongshore run-up distribution from near-field tsunamis},
+journal = {Natural Hazards},
+volume = {104},
+pages = {1157-1180},
+doi = {https://doi.org/10.1007/s11069-020-04209-z},
+year = {2020}
+}
+
+@article{Sakakeeny2020,
+   Author = {Sakakeeny, J. and Ling, Y.},
+   Journal = {Physical Review Fluids},
+   Pages = {123604},
+   Title = {Natural oscillations of a sessile drop on flat surfaces with mobile contact lines},
+   Volume = {5},
+   Year = {2020},
+   doi = "https://doi.org/10.1103/PhysRevFluids.5.123604",
+}
+ 
+@article{ramirez2020,
+  title={Lifting a sessile oil drop from a superamphiphobic surface with an impacting one},
+  author={Ram{\'\i}rez-Soto, O. and Sanjay, V. and Lohse, D. and Pham, J. T. and Vollmer, D.},
+  journal={Science advances},
+  volume={6},
+  number={34},
+  pages={eaba4330},
+  year={2020},
+  publisher={American Association for the Advancement of Science},
+  url={https://advances.sciencemag.org/content/6/34/eaba4330}
+}
+
+@article{aniszewski20,
+title = "Planar jet stripping of liquid coatings: Numerical studies",
+journal = "International Journal of Multiphase Flow",
+volume = "132",
+pages = "103399",
+year = "2020",
+issn = "0301-9322",
+doi = "https://doi.org/10.1016/j.ijmultiphaseflow.2020.103399",
+url = "http://www.sciencedirect.com/science/article/pii/S0301932220305085",
+author = "Wojciech Aniszewski and Youssef Saade and Stéphane Zaleski and Stéphane Popinet",
+keywords = "Coating, Film formation, Turbulence-interface interaction, Simulation, Volume-of-Fluid"
+}
+
+@article{xu2020,
+     author = {Yonghui Xu and Ivan Delbende and Daniel Fuster and Maurice Rossi},
+     title = {Instability of a swirling bubble ring},
+     journal = {Comptes Rendus. M\'ecanique},
+     pages = {519--535},
+     publisher = {Acad\'emie des sciences, Paris},
+     volume = {348},
+     number = {6-7},
+     year = {2020},
+     doi = {10.5802/crmeca.22},
+     language = {en},
+     url = {http://comptes-rendus.academie-sciences.fr/mecanique/item/CRMECA_2020__348_6-7_519_0/}
+}
+
+@hal{celsuk2020, hal-03007802}
+
+@misc{frederix2020,
+      title={Towards direct numerical simulation of turbulent
+             co-current {T}aylor bubble flow}, 
+      author={Edo M. A. Frederix and Jannes A. Hopman and Traianos Karageorgiou
+              and Ed M. J. Komen},
+      year={2020},
+      url={https://arxiv.org/abs/2010.03866},
+      pdf={https://arxiv.org/pdf/2010.03866},
+      eprint={2010.03866},
+      archivePrefix={arXiv},
+      primaryClass={physics.flu-dyn}
+}
+
+@article{li2020,
+  title = {Numerical study on melt drop collision and hydraulic fragmentation during FCI of a nuclear reactor severe accident},
+  journal = {Nuclear Engineering and Design},
+  volume = {370},
+  pages = {110862},
+  year = {2020},
+  issn = {0029-5493},
+  doi = {https://doi.org/10.1016/j.nucengdes.2020.110862},
+  url = {http://www.sciencedirect.com/science/article/pii/S0029549320303563},
+  author = {Gen Li and Panpan Wen and Yupeng Li and Jinshi Wang and Weixiong Chen and Junjie Yan},
+  keywords = {Hydraulic fragmentation, Melt drop collision, Fuel--coolant interaction, Severe accident}
+}
+
+@hal{fullana2020, hal-02953610}
+
+@article{gumulya2020,
+title = {Dynamics of bubbles rising in pseudo-2D bubble column: Effect of confinement and inertia},
+author={Gumulya, M and Utikar, RP and Pareek, VK and Evans, GM and Joshi, JB},
+journal={Chemical Engineering Journal},
+volume={405},
+pages={126615},
+Year = {2020},
+publisher={Elsevier},
+doi={10.1016/j.cej.2020.126615}
+}
+
+@article{dellapia2020,
+  author = {Della Pia, Alessandro  and Chiatto, Matteo  and de Luca, Luigi},
+  title = {Global eigenmodes of thin liquid sheets by means of 
+           Volume-of-Fluid simulations},
+  journal = {Physics of Fluids},
+  volume = {32},
+  pages = {082112},
+  year = {2020},
+  doi = {10.1063/5.0020559}
+}
+
+@article{chen2020,
+title = {Transient waves generated by a vertical flexible wavemaker plate with a general ramp function},
+journal = {Applied Ocean Research},
+volume = {103},
+pages = {102335},
+year = {2020},
+issn = {0141-1187},
+doi = {10.1016/j.apor.2020.102335},
+url = {http://www.sciencedirect.com/science/article/pii/S0141118720303643},
+author = {Qunbin Chen and Xiaobo Chen and Yuxiang Ma and Guohai Dong}
+}
+
+@article{jian2020a, 
+   author = {Jian, Zhen and Deng, Peng and Thoraval, Marie-jean}, 
+   doi = {10.1017/jfm.2020.385}, 
+   journal = {Journal of Fluid Mechanics}, 
+   pages = {A7}, 
+   title = {{Air sheet contraction}}, 
+   volume = {899}, 
+   year = {2020} 
+}
+
+@hal{pierson2020, hal-02747137}
+
+@Article{vilela2020,
+  author = 	 {Vilela, Vitor and de Souza, Francisco José},
+  title = 	 {A Numerical Study on Droplet-Particle Collision},
+  journal = 	 {Flow, Turbulence and Combustion},
+  doi =          {10.1007/s10494-020-00153-x},
+  year = 	 {2020}
+}
+
+@hal{zhang2020, hal-02635319}
+
+@hal{popinet2020, hal-02365730}
+
+@article{east2020,
+  title = {Modelling reef hydrodynamics and sediment mobility 
+           under sea level rise in atoll reef island systems},
+  journal = {Global and Planetary Change},
+  pages = {103196},
+  year = {2020},
+  issn = {0921-8181},
+  doi = {https://doi.org/10.1016/j.gloplacha.2020.103196},
+  url = {http://www.sciencedirect.com/science/article/pii/S0921818120300874},
+  author = {Holly K. East and Chris T. Perry and Eddie P. Beetham 
+    and Paul S. Kench and Yiqing Liang}
+}
+
+@article{jian2020,
+   author = {Jian, Zhen and Channa, Murad Ali and Kherbeche, Abderrahmane and Chizari, Hossain and Thoroddsen, Sigurdur T. and Thoraval, Marie-Jean}, 
+   doi = {10.1103/PhysRevLett.124.184501}, 
+   journal = {Physical Review Letters}, 
+   number = {18}, 
+   pages = {184501}, 
+   publisher = {American Physical Society}, 
+   title = {{To Split or Not to Split: Dynamics of an Air Disk Formed under a Drop Impacting on a Pool}}, 
+   volume = {124}, 
+   year = {2020} }
+
+@Article{vanhooft2020,
+author={van Hooft, J. Antoon},
+title={A Note on Scalar-Gradient Sharpening in the Stable Atmospheric Boundary Layer},
+journal={Boundary-Layer Meteorology},
+year={2020},
+volume={176},
+number={1},
+pages={149-156},
+issn={1573-1472},
+doi={10.1007/s10546-020-00516-x},
+url={https://doi.org/10.1007/s10546-020-00516-x}
+}
+
+@article{mostert2020, 
+  title={Inertial energy dissipation in shallow-water breaking waves}, 
+  volume={890}, 
+  DOI={10.1017/jfm.2020.83}, 
+  journal={Journal of Fluid Mechanics}, 
+  publisher={Cambridge University Press}, 
+  author={Mostert, Wouter and Deike, Luc}, 
+  year={2020}, 
+  pages={A12}}
+
+
+@article{mollison2020,
+  title={The sedimentology and tsunamigenic potential of the Byron submarine landslide off New South Wales, Australia},
+  author={Mollison, Kendall C and Power, Hannah E and Clarke, Samantha L and Baxter, Alan T and Lane, Emily M and Hubble, Thomas CT},
+  journal={Geological Society, London, Special Publications},
+  volume={500},
+  year={2020},
+  publisher={Geological Society of London}
+}
+
+@hal{berny2020, hal-02481349}
+
+@article{wu2020,
+title = "Comparison of two interfacial flow solvers: Specific case of a single droplet impacting onto a deep pool",
+journal = "Computers & Mathematics with Applications",
+year = "2020",
+issn = "0898-1221",
+doi = "https://doi.org/10.1016/j.camwa.2020.01.010",
+url = "http://www.sciencedirect.com/science/article/pii/S0898122120300237",
+author = "Shuang Wu and Jie Zhang and Qi Xiao and Ming-Jiu Ni"
+}
+
+@article{valori2020, 
+title={Weak formulation and scaling properties of energy fluxes in three-dimensional numerical turbulent Rayleigh–Bénard convection}, 
+volume={885}, 
+DOI={10.1017/jfm.2019.1000}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Valori, Valentina and Innocenti, Alessio and Dubrulle, Bérengère and Chibbaro, Sergio}, 
+year={2020}, 
+pages={A14}}
+
+@Article{schmidt2020,
+  title =	 {Instability of forced planar liquid jets: mean
+                  field analysis and nonlinear simulation},
+  volume =	 {883},
+  DOI =		 {10.1017/jfm.2019.855},
+  journal =	 {Journal of Fluid Mechanics},
+  publisher =	 {Cambridge University Press},
+  author =	 {Schmidt, S. and Oberleithner, K.},
+  year =	 {2020},
+  pages =	 {A7}
+}
+
+@article{heusinkveld2020,
+title = {Towards a physics-based understanding of fruit frost protection using wind machines},
+journal = {Agricultural and Forest Meteorology},
+volume = {282-283},
+pages = {107868},
+year = {2020},
+issn = {0168-1923},
+doi = {https://doi.org/10.1016/j.agrformet.2019.107868},
+url = {http://www.sciencedirect.com/science/article/pii/S0168192319304848},
+author = {Vincent W.J. Heusinkveld and J. Antoon van Hooft and Bart Schilperoort and Peter Baas and Marie-claire ten Veldhuis and Bas J.H. van de Wiel}
+}
+
+@hal{kirstetter2020, hal-02955433}
+~~~
+
+### 2019
+
+~~~bib
+@article{romano2019,
+  title = {Liquid plug formation in an airway closure model},
+  author = {Roman\`o, F. and Fujioka, H. and Muradoglu, M. and Grotberg, J. B.},
+  journal = {Phys. Rev. Fluids},
+  volume = {4},
+  issue = {9},
+  pages = {093103},
+  numpages = {23},
+  year = {2019},
+  month = {Sep},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.4.093103},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.4.093103}
+}
+
+@article{turkoz2019,
+  title={Reduction of transfer threshold energy for laser-induced jetting of liquids using Faraday waves},
+  author={Turkoz, Emre and Kang, SeungYeon and Du, Xiaohan and Deike, Luc and Arnold, Craig B},
+  journal={Physical Review Applied},
+  volume={11},
+  number={5},
+  pages={054022},
+  year={2019},
+  publisher={APS},
+  Url={https://journals.aps.org/prapplied/abstract/10.1103/PhysRevApplied.11.054022}
+}
+
+@article{ruth2019,
+	Author = {Ruth, Daniel J. and Mostert, Wouter and Perrard, St{\'e}phane and Deike, Luc},
+	Doi = {10.1073/pnas.1909842116},
+	Eprint = {https://www.pnas.org/content/116/51/25412.full.pdf},
+	Issn = {0027-8424},
+	Journal = {Proceedings of the National Academy of Sciences},
+	Number = {51},
+	Pages = {25412--25417},
+	Publisher = {National Academy of Sciences},
+	Title = {Bubble pinch-off in turbulence},
+	Url = {https://www.pnas.org/content/116/51/25412},
+	Volume = {116},
+	Year = {2019},
+	Bdsk-Url-1 = {https://www.pnas.org/content/116/51/25412},
+	Bdsk-Url-2 = {http://dx.doi.org/10.1073/pnas.1909842116}}
+
+@article{balla2019, 
+title={Non-isothermal bubble rise dynamics in a self-rewetting fluid: three-dimensional effects}, volume={858}, 
+DOI={10.1017/jfm.2018.774}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Balla, Mounika and Tripathi, Manoj Kumar and Sahu, Kirti Chandra and Karapetsas, George and Matar, Omar K.}, 
+year={2019}, 
+pages={689–713}
+}
+
+@hal{zhou2019, hal-02390428}
+
+@article{deka2019,
+  title={Retraction of a viscoplastic liquid sheet},
+  author={Deka, Hiranya and Pierson, Jean-Lou and Soares, Edson J},
+  journal={Journal of Non-Newtonian Fluid Mechanics},
+  volume={272},
+  pages={104172},
+  year={2019},
+  publisher={Elsevier}
+}
+
+@misc{reijers2019,
+  title={Oblique droplet impact onto a deep liquid pool},
+  author={Reijers, Sten A and Liu, Bo and Lohse, Detlef and Gelderblom, Hanneke},
+  journal={arXiv preprint arXiv:1903.08978},
+    year={2019},
+    eprint={1903.08978},
+    archivePrefix={arXiv},
+    primaryClass={physics.flu-dyn}
+}
+
+@Article{vanhooft2019,
+  author = 	 {van Hooft, J.A. and Baas, P and van Tiggelen, M and Ansorge, C. and van de Wiel, B.J.H.},
+  title = 	 {An idealized description for the diurnal cycle of the dry atmospheric boundary layer.},
+  journal = 	 {Journal of the atmospheric sciences},
+  year = 	 {2019},
+  volume = {76},
+  number = {12},
+  pages = {3717-3736},
+  year = {2019},
+  doi = {10.1175/JAS-D-19-0023.1},
+  URL = {https://doi.org/10.1175/JAS-D-19-0023.1}
+  
+}
+
+
+@misc{sletten2019,
+  title={Numerical investigation of internal solitary wave induced global instabilities},
+  author={Joakim Soløy Sletten},
+  year={2019},
+  school={Department of Mathematics, University of Oslo},
+  url={https://www.duo.uio.no/bitstream/handle/10852/69479/1/Joakim-Sol-y-Sletten---Masteroppgave.pdf}
+}
+
+@Article{singh2019,
+  author = 	 {Singh, Manpreet and Farsoiya, Palas Kumar and Dasgupta, Ratul},
+  title = 	 {Test cases for comparison of two interfacial solvers},
+  journal = 	 {International Journal of Multiphase Flow},
+  year = 	 {2019},
+  url = {https://doi.org/10.1016/j.ijmultiphaseflow.2019.02.004}
+}
+
+@hal{devita2019, hal-02295398}
+
+@hal{castillo2019, hal-01921361}
+
+~~~
+
+### 2018
+
+~~~bib
+@hal{pairetti2018, hal-03150888}
+
+@hal{roy2018, tel-02056238}
+
+@article{lai2018,
+  title={Bubble bursting: Universal cavity and jet profiles},
+  author={Lai, Ching-Yao and Eggers, Jens and Deike, Luc},
+  journal={Physical review letters},
+  volume={121},
+  number={14},
+  pages={144501},
+  year={2018},
+  publisher={APS},
+  Url={https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.121.144501}
+  }
+  
+@Article{deblais2018,
+  author = 	 {A. Deblais and M. A. Herrada and I. Hauner and K. P. Velikov and 
+                  T. van Roon and H. Kellay and J. Eggers and D. Bonn},
+  title = 	 {Viscous Effects on Inertial Drop Formation},
+  journal = 	 {Phys. Rev. Lett.},
+  year = 	 {2018},
+  url = {https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.121.254501}
+}
+
+@Article{vanhooft2018b,
+author = {van Hooft, J. A. and Popinet, S. and van de Wiel, B. J. H.},
+title = {Adaptive Cartesian meshes for atmospheric single-column models: a study using Basilisk 18-02-16},
+journal = {Geoscientific Model Development},
+volume = {11},
+year = {2018},
+number = {12},
+pages = {4727--4738},
+url = {https://www.geosci-model-dev.net/11/4727/2018/},
+doi = {10.5194/gmd-11-4727-2018}
+}
+
+@hal{lopez2018, hal-01912184}
+
+@article{ramaduglu2018,
+title = {Pseudo-turbulence and inverse cascade in buoyancy driven two-dimensional bubbly flows},
+author = {R Ramadugu and V Pandey and P Perlekar},
+year = {2018},
+url={http://arxiv.org/abs/1809.04759v2}
+}
+
+@hal{fuster2018, hal-01845218}
+
+@InProceedings{lande2018,
+  author       = {Lande, Øystein and Johannessen, Thomas Berge},
+  title        = {Propagation of Steep and Breaking Short-crested Waves - A Comparison of CFD Codes},
+  booktitle    = {ASME 2018 37th International Conference on Ocean, Offshore and Arctic Engineering},
+  year         = {2018},
+  number       = {OMAE2018-78288},
+  organization = {American Society of Mechanical Engineers},
+}
+
+@article{turkoz2018, 
+title={Axisymmetric simulation of viscoelastic filament thinning with the {Oldroyd-B} model}, 
+volume={851}, 
+url={https://doi.org/10.1017/jfm.2018.514}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Turkoz, Emre and Lopez-Herrera, Jose M. and Eggers, Jens and Arnold, Craig B. and Deike, Luc}, 
+year={2018}, 
+pages={R2}}
+
+@article {yang2018,
+	author = {Yang, Shihao and An, Yi and Liu, Qingquan},
+	title = {A two-dimensional layer-averaged numerical model for turbidity currents},
+	volume = {477},
+	year = {2018},
+	doi = {10.1144/SP477.32},
+	publisher = {Geological Society of London},
+	issn = {0305-8719},
+	URL = {http://sp.lyellcollection.org/content/early/2018/05/23/SP477.32},
+	eprint = {http://sp.lyellcollection.org/content/early/2018/05/23/SP477.32.full.pdf},
+	journal = {Geological Society, London, Special Publications}
+}
+
+@Article{vanhooft2018a,
+  author = 	 {J. Antoon van Hooft and Stéphane Popinet and Chiel C. van Heerwaarden and Steven J.A. van der Linden and Stephan R. de Roode and Bas J.H. van de Wiel},
+  title = 	 {Towards Adaptive Grids for Atmospheric Boundary-Layer Simulations},
+  journal = 	 {Boundary-Layer Meteorology},
+  volume = {167},
+  number = {3},
+  pages = {421--443},
+  year = 	 {2018},
+  url =          {https://doi.org/10.1007/s10546-018-0335-9}
+}
+~~~
+
+### 2017
+
+~~~bib
+@hal{castillo2017, tel-01609741}
+
+@Article{beetham2017,
+  author = 	 {E. Beetham and P. S. Kench and S. Popinet},
+  title = 	 {Future reef growth can mitigate physical impacts of sea-level rise on atoll islands},
+  journal = 	 {Earth's Future},
+  year = 	 {2017},
+  url =          {http://doi.org/10.1002/2017EF000589}
+}
+
+@Article{zhou2017,
+  author = 	 {Y. Zhou and P.-Y. Lagrée and S. Popinet and P. Ruyer and P. Aussillous},
+  title = 	 {Experiments on, and discrete and continuum simulations of, the discharge of granular media from silos with a lateral orifice},
+  journal = 	 {Journal of Fluid Mechanics},
+  year = 	 {2017},
+  url =          {http://doi.org/10.1017/jfm.2017.543}
+}
+
+@article{zainali2017,
+  Author         = {Amir Zainali and Roberto Marivela and Robert Weiss and
+                   Yongqian Yang and Jennifer L. Irish},
+  Title          = {Numerical simulation of nonlinear long waves in the
+                   presence of discontinuous coastal vegetation},
+  Journal        = {Marine Geology},
+  doi            = {http://dx.doi.org/10.1016/j.margeo.2017.08.001},
+  url            = {http://www.sciencedirect.com/science/article/pii/S0025322717303717},
+  year           = {2017}
+}
+
+@article{farsoiya2017, 
+title={Axisymmetric viscous interfacial oscillations - theory and simulations}, 
+volume={826}, DOI={10.1017/jfm.2017.443}, 
+journal={Journal of Fluid Mechanics}, 
+publisher={Cambridge University Press}, 
+author={Farsoiya, Palas Kumar and Mayya, Y. S. and Dasgupta, Ratul}, 
+year={2017}, pages={797-818}}
+
+@phdthesis{marivela2017,
+  title={Numerical Perspective on Tsunami Hazards and Their Mitigation by Coastal Vegetation},
+  author={Marivela-Colmenarejo, Roberto},
+  year={2017},
+  school={Virginia Tech},
+  url={https://vtechworks.lib.vt.edu/bitstream/handle/10919/77886/Marivela-Colmenarejo_R_D_2017.pdf?sequence=1&isAllowed=y}
+}
+
+@InProceedings{ling2017,
+  author =    {Y. Ling, G. Legros, S. Popinet and S. Zaleski},
+  title =     {Direct numerical simulation of an atomizing biodiesel jet: Impact of fuel properties on atomization characteristics},
+  year =      {2017},
+  booktitle = {ILASS conference, Valencia, Spain, 6-8 September}
+}
+
+@article{laneeffects,
+  title={Effects of Inundation by the 14th November, 2016 Kaikoura Tsunami on Banks Peninsula, Canterbury, New Zealand},
+  author={Lane, Emily M and Borrero, Jose and Whittaker, Colin N and Bind, Jo and Chagu{\'e}-Goff, Catherine and Goff, James and Goring, Derek and Hoyle, Jo and Mueller, Christof and Power, William L and others},
+  journal={Pure and Applied Geophysics},
+  pages={1--20},
+  publisher={Springer},
+  year={2017}
+}
+
+@inproceedings{yi2017,
+  title={Propagation of landslide induced impulse wave in channel type reservoirs},
+  author={Yi, An and Qingquan, Liu and Chuanqi, Shi and Jiaxiu, Yang},
+  booktitle={Journal of Physics: Conference Series},
+  volume={822},
+  number={1},
+  pages={012048},
+  year={2017},
+  organization={IOP Publishing},
+  url={http://iopscience.iop.org/article/10.1088/1742-6596/822/1/012048/pdf}
+}
+
+@article{eggers2017,
+  title={Spatial structure of shock formation},
+  volume={820}, DOI={10.1017/jfm.2017.205},
+  journal={Journal of Fluid Mechanics},
+  publisher={Cambridge University Press},
+  author={Eggers, J. and Grava, T. and Herrada, M. A. and Pitton, G.},
+  year={2017},
+  pages={208--231}
+}
+~~~
+
+### 2016
+
+~~~bib
+@hal{castillo2016, hal-01429395}
+	
+@article{howland2016,
+  title={It’s Harder to Splash on Soft Solids},
+  author={Howland, Christopher J and Antkowiak, Arnaud and Castrej{\'o}n-Pita, J Rafael and Howison, Sam D and Oliver, James M and Style, Robert W and Castrej{\'o}n-Pita, Alfonso A},
+  journal={Physical review letters},
+  volume={117},
+  number={18},
+  pages={184502},
+  year={2016},
+  publisher={APS},
+  url={https://arxiv.org/pdf/1511.06212}
+}
+
+@article{kirstetter2016,
+  title={Modeling rain-driven overland flow: Empirical versus analytical friction terms in the shallow water approximation},
+  author={Kirstetter, Geoffroy and Hu, Jie and Delestre, Olivier and Darboux, Fran{\c{c}}ois and Lagr{\'e}e, P-Y and Popinet, St{\'e}phane and Fullana, Jose-Maria and Josserand, Christophe},
+  journal={Journal of Hydrology},
+  volume={536},
+  pages={1--9},
+  year={2016},
+  publisher={Elsevier},
+  url={https://arxiv.org/pdf/1609.04711}
+}
+~~~
+
+### 2015
+
+~~~bib
+@hal{popinet2015, hal-01163101}
+
+@Article{beetham2015,
+  author = 	 {E. P. Beetham and P. S. Kench and J. O'Callaghan and S. Popinet},
+  title = 	 {Wave transformation and shoreline water level on Funafuti Atoll, Tuvalu},
+  journal = 	 {Journal of Geophysical Research},
+  year = 	 {2015}
+}
+~~~

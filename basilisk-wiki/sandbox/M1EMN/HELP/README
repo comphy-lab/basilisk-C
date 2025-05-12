@@ -1,0 +1,136 @@
+ 
+quelques commandes utiles
+
+
+# basiliks
+ 
+## Installation  
+
+On Linux
+[http://basilisk.fr/src/INSTALL]()
+
+On Mac
+[http://basilisk.fr/sandbox/INSTALL_MACOS]()
+
+On Raspberry 
+[http://basilisk.fr/sandbox/M1EMN/PI4/README]()
+
+...
+
+
+# darcs
+
+## install
+
+voir
+
+~~~bash
+http://basilisk.fr/src/INSTALL
+~~~
+
+récupérer le wiki
+
+~~~bash
+ darcs get wiki@shell.basilisk.fr:wiki
+~~~
+
+dans `wiki`il y aura la sandbox.
+
+
+## mise à jour local ->  basilisk 
+~~~bash
+darcs whatsnew
+darcs record 
+~~~
+répondre y/n Y, donner un nom descriptif,  terminer par `^X` puis `Y` puis `Enter` pour `write
+
+~~~bash
+darcs push 
+~~~
+
+répondre `y` puis `Y`
+
+
+
+
+## mise à jour basilisk -> local 
+
+~~~bash
+darcs pull
+~~~
+
+répondre y/n Y
+
+
+## conflits de darcs
+
+aye !
+
+~~~bash
+darcs unpull -h 7e2e87a8f88f0c0564f0a4bc29c0486ead6c9f37
+~~~
+
+[https://darcsbook.acmelabs.space/chapter06.html]()
+
+## more files
+
+
+~~~bash
+darcs add Img/Balmforth_Kerswell05.png
+~~~
+
+
+## make
+
+avoir le bon makefile
+
+~~~bash
+cd /Users/pyl/basilisk-wiki/sandbox/M1EMN/Exemples 
+ls M*
+ln -s ../../Makefile 
+~~~  
+
+
+ne pas oublier de créer l’alias (obsolète)
+
+~~~bash
+ln -s dambNS.c.page dambNS.c  
+~~~
+
+compilation, exécution et création des images et du `html`
+
+~~~bash
+  make dambNS.tst
+  make dambNS/plots
+  make dambNS.c.html
+~~~
+
+
+# notes
+bug de formule en local sous macosx, création d'un script `c2html.sh`,
+
+
+
+~~~code
+
+vi c2html.sh
+
+#!/bin/bash
+
+echo "usage: source c2html myfile"
+make $1.c.html
+sed -i - 's/\\)//g' $1.c.html
+sed -i - 's/\\(//g' $1.c.html
+sed -i - 's/\\\[//g' $1.c.html
+sed -i - 's/\\\]//g' $1.c.html;
+rm $1.c.html-
+open $1.c.html
+~~~
+
+~~~bash
+make dambNS.tst
+make dambNS/plots
+make dambNS.c.html
+source c2html dambNS
+~~~
+

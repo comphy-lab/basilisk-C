@@ -1,0 +1,10 @@
+Number of gas phase species = 5
+Number of liq phase species = 1
+Number of gas phase reactions = 1
+Species[0] = NC7H16 - molecular weight = 100.204998 [kg/kmol]
+Species[1] = O2 - molecular weight = 31.997999 [kg/kmol]
+Species[2] = CO2 - molecular weight = 44.008999 [kg/kmol]
+Species[3] = H2O - molecular weight = 18.015000 [kg/kmol]
+Species[4] = N2 - molecular weight = 28.014000 [kg/kmol]
+Index of O2 is = 1
+Liquid Species[0] = NC7H16(L)

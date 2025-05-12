@@ -1,0 +1,94 @@
+/**
+# Inondation de Carlisle
+
+Dans ce projet, vous allez reproduire par simulation numérique les
+inondations de Carlisle, petite ville du Nord-Ouest de
+l'Angleterre. Commencez par créer le fichier principal nommé
+carlisle_prep_nom.c. Vous procéderez ensuite par étape. Je vous recommande
+de faire que votre fichier principal soit compilable, afin de débuger
+petit à petit. Ce projet est initiallement prévu pour 4*3h de TP. Les
+deux premières séances seront principalement prévues pour préparer le
+cas de l'inondation, les deux suivantes pour le cas à proprement parler.
+
+## Fichier principal
+
+Commencez par inclure les fichiers sources dont vous allez avoir
+besoin. Posez-vous les bonnes questions :
+
+* Quelle grille allez-vous utiliser ? 
+* Allez-vous ajouter de l'infiltration ? 
+
+Dans la fonction main, définissez les valeurs X0, Y0, L0, G comme fait
+habituellement. Vous ajouterez des events au fur et à mesure du
+projet.
+
+## La topographie
+
+La topographie vous sera fournie au format raster. N'oubliez pas de la
+préparer grâce à xyz2kdt (vous trouverez un exemple ici :
+http://gerris.dalembert.upmc.fr/karamea_flood_tutorial.html) et
+d'inclure l'objet kdt.o lors de la compilation
+(~/basilisk/src/kdt/kdt.o). Ouvrez le raster à l'aide de "more" pour
+connaitre sa taille, son X0 et son Y0.
+
+## Les frottements
+
+Nous fixerons un coefficient de manning $n = 0.03$ partout.
+
+## Les rivières entrantes
+
+Dans un premier temps, vous allez sortir une image de la
+topographie. Créez un event dans votre fichier principal qui utilise
+la fonction output_ppm afin de créer cette image. Verifiez sur google
+map le nombre de rivières entrantes. 
+
+Dans l'event init, vous allez faire une boucle foreach() dans laquelle
+vous fixerez le scalaire river[] à 1 autour du point d'entrée de la
+rivière la plus au Nord, vous fixerez river[] = 2 autour du point
+d'entrée de la rivière la plus au Sud, et river[] = 0 partout
+ailleurs. Nous nous servirons de ce scalaire pour fixer nos conditions
+aux bords.
+
+Utilisez le site gaugemap.co.uk pour connaitre le niveau des entrées
+des rivières entrantes du 4 décembre 2015 à 19h. Fixez ce niveau dans
+les deux rivières.
+
+## Le raffinement adaptatif 
+
+Nous utiliserons la même fonction que lors de la simulation de tsunami
+en mer méditérannée.Nous utiliserons un MAXLEVEL = 8; Quelle est la
+taille minimale d'une cellule ?
+
+## Les outputs
+
+Réfléchissez aux différents fichiers de sortie nécéssaires. Il faudra
+obligatoirement une sortie du type "output_gfs (file =
+"begin_flood.gfs", t = 0);" au temps final. Cette fonction fait un
+screenshot de la simulation. Nous repartirons de ce screenshot.
+
+## Préparation du cas d'inondation
+
+Maintenant, lancez la simulation. Il faut déterminer quels critères vous allez utiliser pour définir si la simulation a fini d'être préparé. Vous réfléchirez à la préparation d'un cas "multigrid" si vous avez le temps. 
+
+## La simulation du cas réel
+
+Ne passez à cette étape qu'une fois votre cas bien "préparé".
+
+## La pluie
+
+Vous fixerez la pluie à l'aide des documents que je vous fournirez. Le
+premier vous permettra de définir la répartition temporelle de la
+pluie pendant l'évenement, l'autre vous permettra de fixer sa
+répartition spatiale. 
+
+## Infiltration
+
+Dans un premier temps, nous supposerons qu'il n'y a pas d'infiltration
+dans le sol. Justifiez cette hypothèse grâce aux relevés de pluie.
+
+## 
+
+
+ 
+
+*/

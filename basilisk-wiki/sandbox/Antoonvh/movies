@@ -1,0 +1,43 @@
+# Movies for the Layman's talk 20th Januari 12:00
+
+Presentation Link: [http://collegerama.tudelft.nl/mediasite/play/b410e10d5f9e411bb5410051a47f97291d]()
+
+## Molecular dynamics
+<div class="figure"> <video controls="" preload="metadata"
+width="70%"> <source
+src="https://surfdrive.surf.nl/files/index.php/s/uqzjFx0m5B0j5P9/download"
+type="video/mp4"> Your browser does not support the video
+tag. </video> <p class="caption">Molecular Dynamics by [Sreehari Perumanath et al. (2019)](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.122.104501)</p> </div>
+
+## Vortex-ring collision (lab)
+<div class="figure"> <video controls="" preload="metadata"
+width="70%"> <source
+src="https://surfdrive.surf.nl/files/index.php/s/nO24GK69hygChL0/download"
+type="video/mp4"> Your browser does not support the video
+tag. </video> <p class="caption">Head-on collision of two vortex rings from [Lim and Nickels (1992)](https://www.nature.com/articles/357225a0)</p> </div>
+
+## Vortex ring collision (model)
+<div class="figure">
+<video controls="" preload="metadata" width="900">
+<source src="https://surfdrive.surf.nl/files/index.php/s/HGUFYkO3gcHxCiK/download" type="video/mp4">
+Your browser does not support the video tag. </video>
+<p class="caption">
+Volumetric rendering of the negative $\lambda_2$ field. For details see [this page](ring4.c)
+</p>
+</div>
+
+## Vortex-wall
+<div class="figure"> <video controls="" preload="metadata"
+width="70%"> <source
+src="https://surfdrive.surf.nl/files/index.php/s/zqjhsG2taarfFMk/download"
+type="video/mp4"> Your browser does not support the video
+tag. </video> <p class="caption">Vortex-wall collision. For details see [this page](lamb-wall.c)</p> </div>
+
+## Diurnal Cycle
+<div class="figure"> <video controls="" preload="metadata"
+width="70%"> <source
+src="https://surfdrive.surf.nl/files/index.php/s/gPu1Kudhlj6khql/download"
+type="video/mp4"> Your browser does not support the video
+tag. </video> <p class="caption">Evolution of turbulence during a diurnal cycle. For details see [here](https://journals.ametsoc.org/view/journals/atsc/76/12/jas-d-19-0023.1.xml?tab_body=fulltext-display)</p> </div>
+
+

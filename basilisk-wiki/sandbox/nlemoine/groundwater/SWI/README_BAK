@@ -1,0 +1,68 @@
+# Density-dependent, saturated groundwater flow
+
+## Governing equations ([Simmons *et al.*, 1999](https://doi.org/10.1029/1999WR900254) ; [Simpson & Clement, 2003](https://doi.org/10.1016/S0309-1708(02)00085-4)) 
+
+We denote $g = \left\|\mathbf{g}\right\| = 9.81\textrm{ m}\cdot\textrm{s}^{-2}$ the acceleration of gravity, $\rho_0 = 1000\textrm{ kg}\cdot\textrm{m}^{-3}$ the density of freshwater, and $\rho = \rho(x,y,z,t)$ the density of brackish water. The continuity equation in the aquifer relates the divergence of the mass flux density $\rho\mathbf{q}$ to the time derivative of mass storage $(\rho\phi)$ per unit volume of porous medium:
+
+$$-\mathbf{\nabla}\cdot(\rho\mathbf{q})\quad =\quad\partial_t(\rho\phi)\quad=\ \underbrace{\ \phi\,\partial_t\rho\ }_{\begin{array}{c}
+                                    \textrm{\scriptsize mass variation} \\ 
+                                    \textrm{\scriptsize due to change in} \\ 
+                                    \textrm{\scriptsize water density}
+                                   \end{array}}
+                                   + \underbrace{S_s\rho\,\partial_t\psi}_{\begin{array}{c}
+                                    \textrm{\scriptsize mass variation} \\ 
+                                    \textrm{\scriptsize due to deformation} \\ 
+                                    \textrm{\scriptsize of porous medium}
+                                   \end{array}}\qquad(1)$$
+
+where $\psi = \frac{p}{\rho_0 g}$ is the freshwater-equivalent pressure head in meters, $\phi$ the effective (kinematic) porosity of the porous medium, $S_s$ the specific storativity which relates a change in saturated volumetric water content in response to a unit increase in freshwater head ($\textrm{L}^3\cdot\textrm{L}^{-3}\cdot\textrm{L}^{-1}$), and $\mathbf{q}$ the volumetric flux density given by Darcy's law:
+
+$$\begin{array}{rcl}
+\mathbf{q} & = & -\displaystyle\frac{k}{\mu}\Big[\mathbf{\nabla}p\ -\ \rho\mathbf{g}\Big]\\
+& & \\
+& = & -\displaystyle\frac{k}{\mu}\rho_0\,g\left[\mathbf{\nabla}\psi\ -\ \displaystyle\frac{\rho}{\rho_0}\frac{\mathbf{g}}{\left\|\mathbf{g}\right
+\|}\right]
+\end{array}$$
+
+with $k$ is the (intrinsic) [permeability](https://en.wikipedia.org/wiki/Permeability_(materials_science)) of the porous medium ($\textrm{L}^2$). Further defining the freshwater [hydraulic conductivity](https://en.wikipedia.org/wiki/Permeability_(materials_science)#Relation_to_hydraulic_conductivity) ($\textrm{L}\cdot\textrm{T}^{-1}$) of the porous medium
+$$K = \frac{k}{\mu}\rho_0\,g$$
+
+and $\rho^\ast=\frac{\rho}{\rho_0}$ the dimensionless ratio of brackish water to freshwater density, we get the head formulation of the continuity equation which is more familiar to hydrogeologists:
+
+$$\phi\,\partial_t\rho^\ast\ +\ S_s\rho^\ast\,\partial_t\psi = -\mathbf{\nabla}\cdot(\rho^\ast\mathbf{q})$$
+with 
+$$\mathbf{q} = -K\left[\mathbf{\nabla}\psi\ -\ \rho^\ast\displaystyle\frac{\mathbf{g}}{\left\|\mathbf{g}\right
+\|}\right]$$
+
+Expressing salinity as a mass fraction $\omega$ ($\textrm{M}\cdot\textrm{M}^{-1}$ mass of salt per unit mass of brackish/seawater), the equation for salt conservation reads:
+
+$$\partial_t (\rho\phi\omega)\quad=\quad-\mathbf{\nabla}\cdot\Big(\ \underbrace{-\ \rho\phi\,(D_m\underline{\mathbf{I}}+\underline{\mathbf{D}})\mathbf{\nabla}\omega}_{\begin{array}{c}
+                                    \textrm{\scriptsize Fickian dispersive} \\ 
+                                    \textrm{\scriptsize flux} 
+                                   \end{array}}\quad+\ \underbrace{\rho\,\omega\,\mathbf{q}}_{\begin{array}{c}
+                                    \textrm{\scriptsize advective} \\ 
+                                    \textrm{\scriptsize flux} 
+                                   \end{array}}\Big)\quad$$
+
+where $D_m$ is the apparent molecular diffusivity for the solute in the porous
+medium, $\underline{\mathbf{I}}$ is the dimensionless identity tensor, and $\underline{\mathbf{D}}$ is the mechanical macro-dispersion tensor accounting for both transverse and longitudinal dispersivities. Here we assume that density variations are solely related to variations in salt concentration (we assume that density variations due to temperature variations in the aquifer can be neglected compared to salinity effects), with a linear relation between $\rho$ and $\omega$:
+$$\rho(\omega) = (1+\beta\omega)\rho_0\qquad\textrm{i.e.}\qquad\rho^\ast=1+\beta\omega$$
+
+with $\beta=\displaystyle\left(\frac{1}{\rho}\frac{\partial\rho}{\partial\omega}\right)_{\omega=0}$ the (dimensionless) [haline contraction coefficient](https://en.wikipedia.org/wiki/Haline_contraction_coefficient).
+
+The system to be solved at each time step for the two state variables $(\psi,\omega)$ is then:
+
+$$\left\{
+\begin{array}{rcl}
+\phi\beta\,\partial_t\omega\ +\ (1+\beta\omega)S_s\,\partial_t\psi& =& -\mathbf{\nabla}\cdot\Big((1+\beta\omega)\,\mathbf{q}\Big)\\
+& & \\
+\phi(1+2\beta\omega)\,\partial_t\omega &=&-\mathbf{\nabla}\cdot\Big(-\phi(1+\beta\omega)\,(D_m\underline{\mathbf{I}}+\underline{\mathbf{D}})\mathbf{\nabla}\omega\quad+\quad(1+\beta\omega)\,\omega\,\mathbf{q}\Big)\\
+& & \\
+\textrm{with}\qquad\mathbf{q} &=& -K\left[\mathbf{\nabla}\psi\ -\ (1+\beta\omega)\displaystyle\frac{\mathbf{g}}{\left\|\mathbf{g}\right
+\|}\right]
+\end{array}
+\right.$$
+
+The coefficients of the dispersion tensor in the Fickian-type dispersive transport law are functions of the average fluid velocity in the pores, $\mathbf{v}=\displaystyle\frac{1}{\phi}\mathbf{q}\ $ ([Bear, 1979](https://archive.org/details/hydraulics-of-groundwater/page/n1/mode/2up)):
+$$D_{ij} = \frac{1}{\phi}\alpha_T\left\|\mathbf{q}\right\|+\frac{1}{\phi}(\alpha_L-\alpha_T)\frac{q_iq_j}{\left\|\mathbf{q}\right\|}$$
+with $\alpha_L$ and $\alpha_T$ the longitudinal and transverse dispersivities respectively ($\textrm{L}$).
