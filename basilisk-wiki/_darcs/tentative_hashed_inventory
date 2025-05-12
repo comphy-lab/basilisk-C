@@ -1,4 +1,4 @@
-pristine:4b07357039962a81239753321668be1ca09e89e595aca5a52cb0f90fc9dbc11b
+pristine:948f0a5853e6e1909df4755e8d805abcd7311ba1f2447533af4cf7f30610321f
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -2216,3 +2216,38 @@ Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250509180246
  Next next step: introduce variable viscosity for RBM. Will be enough.
 ] 
 hash: 0000017052-df192d661b8c6ac03e9eed346e074ded5cdcdd5259e9d7c5ca6aea0a25f2ca5a
+[Added new implementation of Fluid Particle Dynamics.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250512095707
+ Ignore-this: 104c9c6dc260dc154d8039383d4ad87f
+ Ready to work with body forces as well.
+ First, provide a quantitative test.
+ Force-torque-free particle in couette/poiseuille?
+] 
+hash: 0000005296-6594e557bebcb1e66292ab564b18f0cdf4f8e2d3500b9a7089db68d87222e016
+[Added quantitative validation for Fluid Particle Dynamics:
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250512124629
+ Ignore-this: ad51839a134e42b325f815b3efef83d4
+ Single, force-torque-free cylindrical particle in 2D 
+ steady Couette flow.
+] 
+hash: 0000005999-faddc212da0b7df141a9d332592915a207ebc1e982081b4f46ba05d7ecc8f7df
+[Added Tharul Wanni Arachchige 
+Tharul WA <Tharul.Wanni@gmail.com>**20250512142700
+ Ignore-this: 6fb9d783f4ac9f9bd50f51870a037885
+] 
+hash: 0000000223-1fbf427ac7cbfb4ee05896e7c357e71f33d737024e0053c5acf68be4320f7940
+[Added participant Anurag M.
+guest**20250512155410
+ Ignore-this: ef3105a9e37f42f87ff3c710b985b535
+] 
+hash: 0000000182-a5c36c4614600a20ded1805defb882a6fbbcd25696016f12f226ef616c05455f
+[Adding a folder.
+Jiarong Wu <wjrangela@gmail.com>**20250512194258
+ Ignore-this: 854ba0128bc6162b1da4d07cca403a99
+] 
+hash: 0000000149-9e1281b44964a5f53387cd3b8e4f5fe44acd7074a7acf3fbda696a7b8a29f2cf
+[Source code.
+Jiarong Wu <wjrangela@gmail.com>**20250512194400
+ Ignore-this: f46e34d3491c6c220d37b98aaf295a4c
+] 
+hash: 0000009377-032c1833421166fc766cb3f93e0c5ec6b9129ce212117e9940d445bf3d2882f1
