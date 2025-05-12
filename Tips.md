@@ -69,16 +69,26 @@ If you encounter issues installing OpenConnect VPN on Ubuntu 24.04 (Noble), foll
 
 ## GitHub Actions Workflow for Darcs Synchronization
 
-We've set up a GitHub Actions workflow to automatically sync this repository with the Darcs repository. The workflow:
+We've set up a GitHub Actions workflow to automatically sync this repository with the Darcs repositories. The workflow:
 
 1. Runs daily at midnight UTC
 2. Can be triggered manually
-3. Tries to install Darcs from the Ubuntu package repository first
-4. If that fails, tries to install Darcs from source using Cabal, attempting multiple versions
-5. Pulls all changes from the Darcs repository
-6. Commits and pushes any changes to GitHub
+3. Installs Darcs using Stack or Cabal as fallback
+4. Pulls all changes from both Darcs repositories:
+   - Syncs basilisk-source/ with http://basilisk.fr/basilisk
+   - Syncs basilisk-wiki/ with http://basilisk.fr/wiki
+5. Commits and pushes any changes to GitHub
 
-The workflow file is located at `.github/workflows/sync-darcs.yml`.
+The workflow file is located at `.github/workflows/sync-darcs-repositories.yml`.
+
+## Repository Structure
+
+Our fork is organized with two main Darcs repositories:
+
+- **basilisk-source/**: Contains the source code for Basilisk C
+- **basilisk-wiki/**: Contains the documentation and wiki content
+
+Each directory is synchronized daily with the corresponding Darcs repository from basilisk.fr.
 
 ## Reporting Issues
 

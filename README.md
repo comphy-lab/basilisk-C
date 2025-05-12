@@ -10,6 +10,15 @@
 
 This repository contains our fork of the Basilisk C codebase ([basilisk.fr](http://basilisk.fr)). We maintain this fork to track and document comphy-lab related bugs and issues. This is a development fork that will be frequently synced with the main Basilisk repository.
 
+## Repository Structure
+
+This repository is organized with two main Darcs repositories:
+
+- **basilisk-source/**: Contains the source code for Basilisk C
+- **basilisk-wiki/**: Contains the documentation and wiki content
+
+Each directory is synchronized daily with the corresponding Darcs repository from basilisk.fr.
+
 ## About Basilisk C
 
 Basilisk C is a powerful open-source computational fluid dynamics (CFD) framework that provides:
@@ -37,13 +46,13 @@ Basilisk C is a powerful open-source computational fluid dynamics (CFD) framewor
 
 ### Getting Started
 
-For installation and usage instructions, please refer to the [installation guide](src/INSTALL) and [tutorial](Tutorial) in the main Basilisk repository.
+For installation and usage instructions, please refer to the [installation guide](basilisk-source/INSTALL) and [tutorial](basilisk-wiki/Tutorial) in the respective directories.
 
 For our course on this codebase, please refer to our [course website](https://comphy-lab.org/teaching/2025-Basilisk101-Madrid).
 
 ### Documentation
 
-Comprehensive documentation is available at [basilisk.fr](http://basilisk.fr), including:
+Comprehensive documentation is available in the basilisk-wiki directory and at [basilisk.fr](http://basilisk.fr), including:
 - Tutorial examples
 - User guides
 - Technical documentation

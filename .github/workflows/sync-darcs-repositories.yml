@@ -1,4 +1,4 @@
-name: Sync Darcs to @basilisk-source
+name: Sync Darcs Repositories
 
 on:
   schedule:
@@ -17,6 +17,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install Darcs
+        id: install_darcs
         run: |
           echo "Installing Darcs following official methods from darcs.net..."
           
@@ -67,11 +68,10 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
 
-      - name: Pull from Darcs into @basilisk-source
+      - name: Pull from Darcs into basilisk-source
         run: |
-          TARGET_DIR="@basilisk-source"
-          mkdir -p "$TARGET_DIR"
-
+          TARGET_DIR="basilisk-source"
+          
           # Check if there's a _darcs directory inside the target directory
           if [ ! -d "$TARGET_DIR/_darcs" ]; then
             echo "No _darcs directory found in $TARGET_DIR. Initializing Darcs repository..."
@@ -80,16 +80,16 @@ jobs:
             DARCS_REPO="http://basilisk.fr/basilisk"
             
             echo "Getting from Darcs repository: $DARCS_REPO"
-            darcs get --lazy "$DARCS_REPO" temp_repo
+            darcs get --lazy "$DARCS_REPO" temp_repo_source
             
             # Move Darcs metadata and contents into the target directory
             echo "Moving Darcs metadata to $TARGET_DIR/_darcs"
-            mv temp_repo/_darcs "$TARGET_DIR/"
+            mv temp_repo_source/_darcs "$TARGET_DIR/"
             echo "Moving repository contents to $TARGET_DIR"
             shopt -s dotglob # Enable matching hidden files
-            mv temp_repo/* "$TARGET_DIR/"
+            mv temp_repo_source/* "$TARGET_DIR/"
             shopt -u dotglob # Disable matching hidden files
-            rm -rf temp_repo
+            rm -rf temp_repo_source
             echo "Initialization complete."
           else
             echo "_darcs directory found in $TARGET_DIR. Pulling changes..."
@@ -99,20 +99,64 @@ jobs:
             echo "Pull complete."
           fi
           
-      - name: Check for changes in @basilisk-source
+      - name: Pull from Darcs into basilisk-wiki
+        run: |
+          TARGET_DIR="basilisk-wiki"
+          
+          # Check if there's a _darcs directory inside the target directory
+          if [ ! -d "$TARGET_DIR/_darcs" ]; then
+            echo "No _darcs directory found in $TARGET_DIR. Initializing Darcs repository..."
+            
+            # Set the Darcs repository URL for the wiki
+            DARCS_REPO="http://basilisk.fr/wiki"
+            
+            echo "Getting from Darcs repository: $DARCS_REPO"
+            darcs get --lazy "$DARCS_REPO" temp_repo_wiki
+            
+            # Move Darcs metadata and contents into the target directory
+            echo "Moving Darcs metadata to $TARGET_DIR/_darcs"
+            mv temp_repo_wiki/_darcs "$TARGET_DIR/"
+            echo "Moving repository contents to $TARGET_DIR"
+            shopt -s dotglob # Enable matching hidden files
+            mv temp_repo_wiki/* "$TARGET_DIR/"
+            shopt -u dotglob # Disable matching hidden files
+            rm -rf temp_repo_wiki
+            echo "Initialization complete."
+          else
+            echo "_darcs directory found in $TARGET_DIR. Pulling changes..."
+            cd "$TARGET_DIR"
+            darcs pull --all
+            cd ..
+            echo "Pull complete."
+          fi
+
+      - name: Check for changes
         id: check_changes
         run: |
-          if [[ -n "$(git status --porcelain @basilisk-source)" ]]; then
+          if [[ -n "$(git status --porcelain basilisk-source)" || -n "$(git status --porcelain basilisk-wiki)" ]]; then
             echo "changes=true" >> $GITHUB_OUTPUT
-            echo "Changes detected in @basilisk-source."
+            echo "Changes detected in repositories."
           else
             echo "changes=false" >> $GITHUB_OUTPUT
-            echo "No changes detected in @basilisk-source."
+            echo "No changes detected in repositories."
           fi
 
       - name: Commit and push if changes exist
         if: steps.check_changes.outputs.changes == 'true'
         run: |
-          git add @basilisk-source
-          git commit -m "Auto-update @basilisk-source from Darcs repository"
-          git push 
+          # Add any changes in basilisk-source
+          if [[ -n "$(git status --porcelain basilisk-source)" ]]; then
+            echo "Committing changes in basilisk-source directory..."
+            git add basilisk-source
+            git commit -m "Auto-update basilisk-source from Darcs repository"
+          fi
+          
+          # Add any changes in basilisk-wiki
+          if [[ -n "$(git status --porcelain basilisk-wiki)" ]]; then
+            echo "Committing changes in basilisk-wiki directory..."
+            git add basilisk-wiki
+            git commit -m "Auto-update basilisk-wiki from Darcs repository"
+          fi
+          
+          # Push all commits
+          git push
