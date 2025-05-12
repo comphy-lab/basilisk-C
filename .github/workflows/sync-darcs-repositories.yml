@@ -3,7 +3,7 @@ name: Sync Darcs Repositories
 on:
   schedule:
     # Run every day at midnight UTC
-    - cron: '0 0 * * *'
+    - cron: "0 0 * * *"
   # Allow manual triggering
   workflow_dispatch:
 
@@ -15,38 +15,49 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          
-      - name: Set up Haskell
-        uses: haskell-actions/setup@v2
-        with:
-          ghc-version: '9.2'
-          cabal-version: 'latest'
-          enable-stack: true
-          stack-no-global: true
-          
+
       - name: Install Darcs
         run: |
-          echo "Installing Darcs via Cabal..."
-          cabal update
-          cabal install --overwrite-policy=always --install-method=copy darcs
-          echo "$HOME/.cabal/bin" >> $GITHUB_PATH
-          export PATH="$HOME/.cabal/bin:$PATH"
-          
-          # Verify installation
+          echo "Installing Darcs following official methods from darcs.net..."
+
+          # Method 1: Install using Stack (preferred method according to darcs.net)
+          echo "Checking if Stack is installed..."
+          if ! command -v stack &> /dev/null; then
+            echo "Installing Stack..."
+            curl -sSL https://get.haskellstack.org/ | sh -s - -f
+          else
+            echo "Stack is already installed"
+            stack --version
+          fi
+
+          echo "Installing Darcs with Stack..."
+          stack install darcs || echo "Stack install encountered an issue, will try with Cabal next"
+          export PATH="$HOME/.local/bin:$PATH"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+          # Check if Darcs was installed successfully
           if command -v darcs &> /dev/null; then
-            echo "Darcs installed successfully"
+            echo "Darcs installed successfully using Stack"
             darcs --version
           else
-            echo "Failed to install Darcs. Trying alternative method..."
-            stack install darcs
-            echo "$HOME/.local/bin" >> $GITHUB_PATH
-            export PATH="$HOME/.local/bin:$PATH"
-            
+            echo "Stack installation failed, trying with Cabal..."
+
+            # Method 2: Install using Cabal as fallback
+            sudo apt-get update
+            sudo apt-get install -y ghc cabal-install
+            cabal update
+
+            echo "Installing Darcs with Cabal..."
+            cabal install darcs
+            export PATH="$HOME/.cabal/bin:$PATH"
+            echo "$HOME/.cabal/bin" >> $GITHUB_PATH
+
+            # Verify installation
             if command -v darcs &> /dev/null; then
-              echo "Darcs installed successfully via Stack"
+              echo "Darcs installed successfully using Cabal"
               darcs --version
             else
-              echo "All Darcs installation methods failed. Exiting."
+              echo "Failed to install Darcs. Exiting."
               exit 1
             fi
           fi
@@ -59,17 +70,17 @@ jobs:
       - name: Pull from Darcs into basilisk-source
         run: |
           TARGET_DIR="basilisk-source"
-          
+
           # Check if there's a _darcs directory inside the target directory
           if [ ! -d "$TARGET_DIR/_darcs" ]; then
             echo "No _darcs directory found in $TARGET_DIR. Initializing Darcs repository..."
-            
+
             # Set the Darcs repository URL
             DARCS_REPO="http://basilisk.fr/basilisk"
-            
+
             echo "Getting from Darcs repository: $DARCS_REPO"
             darcs get --lazy "$DARCS_REPO" temp_repo_source
-            
+
             # Move Darcs metadata and contents into the target directory
             echo "Moving Darcs metadata to $TARGET_DIR/_darcs"
             mkdir -p "$TARGET_DIR"
@@ -87,21 +98,21 @@ jobs:
             cd ..
             echo "Pull complete."
           fi
-          
+
       - name: Pull from Darcs into basilisk-wiki
         run: |
           TARGET_DIR="basilisk-wiki"
-          
+
           # Check if there's a _darcs directory inside the target directory
           if [ ! -d "$TARGET_DIR/_darcs" ]; then
             echo "No _darcs directory found in $TARGET_DIR. Initializing Darcs repository..."
-            
+
             # Set the Darcs repository URL for the wiki
             DARCS_REPO="http://basilisk.fr/wiki"
-            
+
             echo "Getting from Darcs repository: $DARCS_REPO"
             darcs get --lazy "$DARCS_REPO" temp_repo_wiki
-            
+
             # Move Darcs metadata and contents into the target directory
             echo "Moving Darcs metadata to $TARGET_DIR/_darcs"
             mkdir -p "$TARGET_DIR"
@@ -140,13 +151,13 @@ jobs:
             git add basilisk-source
             git commit -m "Auto-update basilisk-source from Darcs repository"
           fi
-          
+
           # Add any changes in basilisk-wiki
           if [[ -n "$(git status --porcelain basilisk-wiki)" ]]; then
             echo "Committing changes in basilisk-wiki directory..."
             git add basilisk-wiki
             git commit -m "Auto-update basilisk-wiki from Darcs repository"
           fi
-          
+
           # Push all commits
           git push
