@@ -25,23 +25,25 @@ jobs:
           sudo apt-get install -y darcs
           darcs --version && echo "darcs_installed=true" >> $GITHUB_OUTPUT || echo "darcs_installed=false" >> $GITHUB_OUTPUT
 
-      - name: Install Darcs via Cabal
+      - name: Install Darcs via Stack
         if: steps.install_darcs_apt.outputs.darcs_installed != 'true'
         run: |
-          echo "Installing Darcs via Cabal..."
-          sudo apt-get update
-          sudo apt-get install -y ghc cabal-install
-          cabal update
-          cabal install darcs
-          export PATH="$HOME/.cabal/bin:$PATH"
-          echo "$HOME/.cabal/bin" >> $GITHUB_PATH
-          
+          echo "Installing Darcs via Stack..."
+          # Install Stack
+          curl -sSL https://get.haskellstack.org/ | sh
+
+          # Install Darcs with Stack
+          stack install darcs
+
+          export PATH="$HOME/.local/bin:$PATH"
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
           # Verify installation
           if command -v darcs &> /dev/null; then
-            echo "Darcs installed successfully via Cabal"
+            echo "Darcs installed successfully via Stack"
             darcs --version
           else
-            echo "Failed to install Darcs with Cabal. Exiting."
+            echo "Failed to install Darcs with Stack. Exiting."
             exit 1
           fi
 
