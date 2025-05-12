@@ -16,51 +16,33 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Darcs
-        id: install_darcs
+      - name: Install Darcs via apt
+        id: install_darcs_apt
+        continue-on-error: true
         run: |
-          echo "Installing Darcs following official methods from darcs.net..."
+          echo "Attempting to install Darcs via apt..."
+          sudo apt-get update
+          sudo apt-get install -y darcs
+          darcs --version && echo "darcs_installed=true" >> $GITHUB_OUTPUT || echo "darcs_installed=false" >> $GITHUB_OUTPUT
+
+      - name: Install Darcs via Cabal
+        if: steps.install_darcs_apt.outputs.darcs_installed != 'true'
+        run: |
+          echo "Installing Darcs via Cabal..."
+          sudo apt-get update
+          sudo apt-get install -y ghc cabal-install
+          cabal update
+          cabal install --lib darcs
+          export PATH="$HOME/.cabal/bin:$PATH"
+          echo "$HOME/.cabal/bin" >> $GITHUB_PATH
           
-          # Method 1: Install using Stack (preferred method according to darcs.net)
-          echo "Checking if Stack is installed..."
-          if ! command -v stack &> /dev/null; then
-            echo "Installing Stack..."
-            curl -sSL https://get.haskellstack.org/ | sh -s - -f
-          else
-            echo "Stack is already installed"
-            stack --version
-          fi
-          
-          echo "Installing Darcs with Stack..."
-          stack install darcs || echo "Stack install encountered an issue, will try with Cabal next"
-          export PATH="$HOME/.local/bin:$PATH"
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-          
-          # Check if Darcs was installed successfully
+          # Verify installation
           if command -v darcs &> /dev/null; then
-            echo "Darcs installed successfully using Stack"
+            echo "Darcs installed successfully via Cabal"
             darcs --version
           else
-            echo "Stack installation failed, trying with Cabal..."
-            
-            # Method 2: Install using Cabal as fallback
-            sudo apt-get update
-            sudo apt-get install -y ghc cabal-install
-            cabal update
-            
-            echo "Installing Darcs with Cabal..."
-            cabal install darcs
-            export PATH="$HOME/.cabal/bin:$PATH"
-            echo "$HOME/.cabal/bin" >> $GITHUB_PATH
-            
-            # Verify installation
-            if command -v darcs &> /dev/null; then
-              echo "Darcs installed successfully using Cabal"
-              darcs --version
-            else
-              echo "Failed to install Darcs. Exiting."
-              exit 1
-            fi
+            echo "Failed to install Darcs with Cabal. Exiting."
+            exit 1
           fi
 
       - name: Configure Git
@@ -84,10 +66,11 @@ jobs:
             
             # Move Darcs metadata and contents into the target directory
             echo "Moving Darcs metadata to $TARGET_DIR/_darcs"
+            mkdir -p "$TARGET_DIR"
             mv temp_repo_source/_darcs "$TARGET_DIR/"
             echo "Moving repository contents to $TARGET_DIR"
             shopt -s dotglob # Enable matching hidden files
-            mv temp_repo_source/* "$TARGET_DIR/"
+            mv temp_repo_source/* "$TARGET_DIR/" 2>/dev/null || true
             shopt -u dotglob # Disable matching hidden files
             rm -rf temp_repo_source
             echo "Initialization complete."
@@ -115,10 +98,11 @@ jobs:
             
             # Move Darcs metadata and contents into the target directory
             echo "Moving Darcs metadata to $TARGET_DIR/_darcs"
+            mkdir -p "$TARGET_DIR"
             mv temp_repo_wiki/_darcs "$TARGET_DIR/"
             echo "Moving repository contents to $TARGET_DIR"
             shopt -s dotglob # Enable matching hidden files
-            mv temp_repo_wiki/* "$TARGET_DIR/"
+            mv temp_repo_wiki/* "$TARGET_DIR/" 2>/dev/null || true
             shopt -u dotglob # Disable matching hidden files
             rm -rf temp_repo_wiki
             echo "Initialization complete."
