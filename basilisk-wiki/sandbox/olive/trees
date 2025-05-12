@@ -1,0 +1,271 @@
+/**
+This page aims to provide to the reader an introduction to trees as an abstract data type, their uses, and their implementation, including in Basilisk. It will be assumed that the reader has a basic knowledge in C programming.
+
+## Trees as Abstract Data Types
+
+Trees are one of the basic *abstract data types* commonly used in computer science. We call the tree an *abstract* data type because it is defined through its behaviour from the point of view of a user, although there exists many different possible *implementations*. That is, there are many different ways of writing computer code to produce the exact same behaviours we would call a tree.
+
+We define a tree as a collection of *nodes* (also called *vertices*) connected by *edges*. Each edge is *directed* meaning the edge is unidirectional (e.g. edge AB allows traversal from node A to node B but not node B to node A). When a node is connected to by another node, the connected node is called a *child* and the connecting node is a *parent*. All trees have a node which is a parent but is not a children. This node is called the *root* of the tree. The nodes which are children but not parents are called *leaves* of the tree. All parents may have any number of children, but all children may have, at most, one parent.
+
+![An example of an abstract tree, which is also a binary tree. The root is drawn at the top, with leaves drawn at the bottom. Directed edges connect the nodes in one direction only, indicated by arrows.](https://i.imgur.com/Z4UeZwr.png)
+
+Typically, is is natural to consider types of trees having a fixed number of children. Each parent of tree above has exactly *two* children and so we call this type of tree a *binary tree*. The above image shows one binary tree, where we have assigned each node a color of the rainbow. The root, colored green is drawn at the top, with the leaves drawn at the bottom. It is not neccesary to draw the tree in this orientation, but convention to do so.
+
+The following remark comes from [Vsztergombi 2003](#references):
+
+> If you want to know why the tree is growing upside down, ask the computer scientists who introduced this convention. (The conventional wisdom is that they never went out of the room, and so they never saw a real tree.)
+
+## Pointer Binary-Tree Data Type
+Below we will demonstrate creating one implementation of a binary tree and the most natural representation. To implement the binary tree, we create a ``BNode`` struct that represents the node of a binary tree: It holds a single integer value, and two pointers: One to the left child, and one to the right child.
+~~~
+~~~
+ */
+#include <stdlib.h>
+#include <string.h>
+
+
+typedef struct BNode {
+    char* value;
+    struct BNode *left;
+    struct BNode *right;
+} BNode;
+
+/**
+Next, we create a helper function to allocate the node and free all nodes:
+*/
+
+
+// Allocate a node and make a fresh copy of 'value'
+BNode *new_bnode(const char *value) {
+    BNode *n = malloc(sizeof *n);
+    if (!n) return NULL;            // OOM
+
+    // duplicate the string
+    n->value = malloc(strlen(value) + 1);
+    if (!n->value) {
+        free(n);
+        return NULL;                // OOM
+    }
+    strcpy(n->value, value);        // copy including '\0'
+    
+    n->left  = NULL;
+    n->right = NULL;
+    return n;
+}
+
+void free_btree(BNode *root) {
+    if (!root) return;
+    free_btree(root->left);
+    free_btree(root->right);
+    free(root->value);
+    free(root);
+}
+
+/**
+Finally, we construct a tree manually, representing the tree from the previous figure:
+*/
+
+BNode* create_btree() {
+    // root
+    BNode* root = new_bnode("Green");
+
+    // left subtree: Plantae
+    root->left = new_bnode("Orange");
+    root->left->left  = new_bnode("Red");
+    root->left->right = new_bnode("Yellow");
+
+    // right subtree: Animalia
+    root->right = new_bnode("Indigo");
+    root->right->left  = new_bnode("Blue");
+    root->right->right = new_bnode("Violet");
+
+    return root;
+}
+
+/**
+## Traversing the Tree
+We have shown so far a simple implementation of a binary tree. We may find nodes in the tree by using the "left" and "right" pointers from the root node. However, what if we don't already know the structure of the tree and wish to find all of the nodes in the tree? There are two canonical methods or algorithms for doing this called **Depth-First Search** (DFS) and **Breadth-First Search** (BFS). Both methods can be used to discover or traverse all the nodes of a tree and also produce a unique ordering of the nodes in the tree. Both methods of searching trees also rely on other types of abstract data types, [stacks](https://en.wikipedia.org/wiki/Stack_(abstract_data_type)) and [queues](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)) which we will first introduce.
+
+### Stacks 
+Stacks are an abstract data type which is defined as a linear collection of elements with two main oprations: One is the **push**. which adds a new element to the list, and the other is a **pop** which removes the most recently added element. The name stack provides a useful analogy, since, one may imagine a stack of heavy plates. Since the plates are heavy, it is only pratical and natural to add plates to or remove plates from the top of the stack. This order of adding and removing elements from the list is also known by the phrase "last in, first out" or LIFO.
+
+To implement a stack, the simplest method is to use an array. We make the array as large as we think that the stack might become, and we use a separate index to keep track of where the "top" of the stack currently is in the array. An array-based implementation of a stack for holding the nodes of our binary tree is shown below:
+*/
+#define MAX_STACK_SIZE 100
+
+typedef struct {
+    BNode *data[MAX_STACK_SIZE];
+    int top;
+} BStack;
+
+void init_stack(BStack* s) {
+    s->top = -1;
+}
+
+int is_empty_stack(BStack* s) {
+    return (s->top == -1);
+}
+
+int is_full_stack(BStack* s) {
+    return (s->top == MAX_STACK_SIZE -1);
+}
+
+void push(BStack *s, BNode *n) {
+    if (!is_full_stack(s))
+        s->data[++s->top] = n;
+}
+
+BNode* pop(BStack *s) {
+    if (is_empty_stack(s)) {
+        return NULL;
+    } else {
+        return s->data[s->top--];
+    }
+}
+
+/**
+As an aside, stacks show up quite often in computing.  One familiar example, if you have ever debugged a program, is the *call stack*, which the runtime uses to remember which function it’s in and where to return.  Each time you call a function, the system *pushes* a new frame onto the stack (holding that function’s return address and local variables); when the function returns, its frame is *popped*.  For example:
+
+```text
+main() ──► a() ──► b()
+```
+produces a call stack that grows like
+```
+[ main ] ← bottom
+[   a   ]
+[   b   ] ← top
+```
+When ``b()`` finishes, its frame is removed (popped) and execution picks up again inside ``a()``, and so on.
+
+### Depth-First Search
+
+The Depth-First Search algorithm explores as far as possible along each branch of the tree before backtracking, and exploring next possible branches. Since the edges of the trees are directed, i.e. there are no pointers or edges connecting a child to the parent, we must hold somewhere pointers of the parents in order for us to be able to go back "up" the tree. To do this, we use our stack: First, place the root at the top of the empty stack. As we go deeper along one branch of the tree, push each child we encounter onto the top of the stack. Once we hit a leaf, and we now wish to go back towards the root of a tree so that we can explore a new unvisited branch, we pop the children off the top of the stack.
+
+Generally, there are three ways in which we may visit the nodes, from the perspective of any node in the tree:
+
+* (Pre-order): Visit the node before either the left or right subtrees
+* (In-order): Visit the left subtree, then the current node, then the right subtree
+* (Post-order): Visit both subtrees before visiting the node itself.
+
+For demonstration, we will show a pre-order traversal of the tree.
+
+![Ordering of the tree from preorder BFS: The dashed arrows represent the order in which nodes are visited in the tree; arrows pointing downward represent a *push* and arrows pointing up the tree represent a *pop* from the stack.](https://i.imgur.com/JZ74JcY.png)
+
+*/
+
+void dfs_pre_order_i(BNode *root) {
+    BStack s;
+    init_stack(&s);
+    if (root) push(&s, root);
+
+    while (!is_empty_stack(&s)) {
+        BNode *n = pop(&s);
+        printf("%s\n", n->value);
+
+        if (n->right) push(&s, n->right);
+        if (n->left)  push(&s, n->left);
+    }
+}
+
+/**
+As we have mentioned earlier, the call stack of our program is itself a stack, and so we may also choose to use this instead. To do so, we create a recursive function that calls itself:
+*/
+
+void dfs_pre_order_r(BNode *node) {
+    if (node == NULL)
+        return;
+
+    printf("%s\n", node->value);
+    dfs_pre_order_r(node->left);
+    dfs_pre_order_r(node->right);
+}
+
+/**
+If we call this, we may note that this produces the same ordering as the one explicitly using our stack. When we use the call stack by calling our function recursively, then our search algorithm is called *recursive* pre-order, where explicitly using our own stack makes the algorithm *iterative* pre-order. Iterative search is generally better for performance and flexbility since we don't deal with the limitations imposed by the call stack, though using one or the other do not in any way change the ordering in which nodes are visited.
+
+### Queues
+Queues are similar to stacks in that they are linear collections of elements. However, the order of insertion differs: In a queue, new elements are placed at the back of the queue and element retreived are taken from the front of the queue. It is said that this order is "first in, first out" or FIFO. The real life analogy might be people waiting in line (or queued) at a government office: It is said in this situation that service is given "first come, first serve."
+
+We may concretely implement this in a similar manner to the stack: Now instead of keeping track of the top of a stack, we keep track of the back of the queue where we *enque* elements. We also track the front of the queue, where we *dequeue* elements.
+
+An implementation of a queue for the ``BNode`` is shown below:
+
+*/
+#define MAX_QUEUE_SIZE 100
+
+typedef struct {
+    BNode *data[MAX_QUEUE_SIZE];
+    int front, rear;
+} Queue;
+
+// Initialize an empty queue
+void init_queue(Queue *q) {
+    q->front = q->rear = 0;
+}
+
+// True when no elements are stored
+int is_empty_queue(Queue *q) {
+    return (q->front == q->rear);
+}
+
+// True when there is no room for more
+int is_full_queue(Queue *q) {
+    return ((q->rear + 1) % MAX_QUEUE_SIZE) == q->front;
+}
+
+// Add a node pointer at the back
+void enqueue(Queue *q, BNode *n) {
+    if (!is_full_queue(q)) {
+        q->data[q->rear] = n;
+        q->rear = (q->rear + 1) % MAX_QUEUE_SIZE;
+    }
+}
+
+// Remove a node pointer from the front
+BNode* dequeue(Queue *q) {
+    if (is_empty_queue(q))
+        return NULL;
+    BNode *n = q->data[q->front];
+    q->front = (q->front + 1) % MAX_QUEUE_SIZE;
+    return n;
+}
+
+/**
+### Breadth-First Search
+
+Where DFS travels as far as possible along a given branch, before traversing backwards to explore new branches, the Breadth-First Search (BFS) travels to all nodes at a given *depth* of the tree, before searching through nodes at the next depth. 
+
+In order to perform a breadth-first search, we must use a queue: For each depth level, you begin with the nodes at a given depth in the queue. Then, starting at the front of the queue, dequeue all nodes and enqueue its children at the back of the queue. This process continues until the queue is empty.
+
+*/
+
+
+void bfs(BNode *root) {
+    Queue q;
+    init_queue(&q);
+    if (root) enqueue(&q, root);
+
+    while (!is_empty_queue(&q)) {
+        BNode *n = dequeue(&q);
+        printf("%s\n", n->value);
+
+        if (n->left)  enqueue(&q, n->left);
+        if (n->right) enqueue(&q, n->right);
+    }
+}
+
+/**
+
+## References
+
+~~~bib
+@book{
+    Vsztergombi_2003, 
+    place={New York}, 
+    title={Discrete mathematics: Elementary and beyond}, 
+    publisher={Springer}, 
+    author={Lovász, László and Pelikán, J. and Vsztergombi, K.}, 
+    year={2003}
+} 
+~~~
+*/

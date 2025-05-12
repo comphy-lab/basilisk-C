@@ -1,0 +1,27 @@
+#include "saint-venant.h"
+
+int main() {
+  size(1.0);               // Domain size (1x1)
+  origin(0, 0);            // Bottom-left corner at (0, 0)
+  G = 9.81;                // Gravity
+  run();                   // Start the simulation
+}
+
+event init(t = 0) {
+  foreach() {
+    h[] = x < 0.5 ? 1.0 : 0.0;   // Water on the left half
+    u.x[] = 0.0;                 // No initial velocity
+  }
+  boundary({h, u.x});           // Apply boundary conditions
+}
+
+event gnuplot(t += 0.1; t <= 2.0) {
+  static FILE * fp = popen("gnuplot -persist", "w");
+  fprintf(fp, "set title 'Shallow Water Height at t = %.2f'\n", t);
+  fprintf(fp, "plot '-' with lines\n");
+  foreach() {
+    fprintf(fp, "%g %g\n", x, h[]);
+  }
+  fprintf(fp, "e\n");
+  fflush(fp);
+}

@@ -24,7 +24,7 @@ and the embedded solid.
 #include "navier-stokes/centered.h"
 #include "two-phase.h"
 #include "tension.h"
-#include "../contact_embed.h"
+#include "tavares/contact-embed.h"
 
 /**
 Geometrical parameters of the embed wall. */

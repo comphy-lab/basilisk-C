@@ -1,7 +1,7 @@
 include $(BASILISK)/Makefile.defs
 
 # the default CFLAGS are set in ../config
-CFLAGS += -O2 -DMTRACE=3
+CFLAGS += -O2 -DMTRACE=3 -I$(DOCUMENT_ROOT)/sandbox
 
 impact-thin-fiber2.c: impact-thin-fiber.c
 	ln -s impact-thin-fiber.c impact-thin-fiber2.c

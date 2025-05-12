@@ -26,8 +26,8 @@ set term pop
 #include "navier-stokes/centered.h"
 #include "two-phase.h"
 #include "tension.h"
-#include "../contact-embed.h"
-#include "../geometrical_tools.h"
+#include "tavares/contact-embed.h"
+#include "tavares/geometrical_tools.h"
 #include "view.h"
 
 #define MINLEVEL 3
@@ -135,14 +135,13 @@ event final_radius (i++, t <= T){
 /** We can also compute the final height of the droplet considering the embedded boundary orientation */
 #if 1
 event final_height(i++, t <= T){
-  coord n; 
-  foreach(){
+  coord n;
+  // hmmm, this is a very weird/complicated way to get the angle...
+  foreach() // hmmm, this is a very weird/complicated way to get the 
     if (cs[] < 1. && cs[] > 0) {
       n = facet_normal (point, cs, fs);
       normalize (&n);
-      break;
     }
-  }
   double detmin=10000, det;
   foreach(reduction(min:detmin)){
     if (f[] < 1.  && f[] > 0. && cs[]> 0 ){ 

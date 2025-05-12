@@ -3,7 +3,7 @@ A copy of Antoon's [tracer-particle.h](TODO),
 but adapted to work with Smoothed/Fluid Particle method.
 I basically turn the particle advection terms.
 */
-#define Particle_Advection_ON 1
+//#define Particle_Advection_ON 1
 
 /**
 # Langrangian particles
@@ -112,7 +112,7 @@ void interpolate_vel (Particles p, int swtch) {
 	foreach_dimension()
 	  p().u.x =interpolate_linear (locate (x, y, z),
 				       u.x, x, y, z);
-	p().omega =interpolate_linear (locate (x, y, z),omega, x, y, z);
+	p().omega = OMEGA_EQUATION();
       }
     }
   } else {
@@ -127,7 +127,7 @@ void interpolate_vel (Particles p, int swtch) {
 	foreach_dimension()
 	  p().u2.x =interpolate_linear (locate (x, y, z),
 					u.x, x, y, z);
-	p().omega2 =interpolate_linear (locate (x, y, z),omega, x, y, z);
+	p().omega2 = OMEGA_EQUATION(); //interpolate_linear (locate (x, y, z),omega, x, y, z);
       }
     }
   }
@@ -178,8 +178,9 @@ void RK_step3 (Particles p, double dtf[2]) {
 				b3*interpolate_linear (locate (x, y, z),
 				 u.x, x, y, z));
       p().theta = p().thetan + h*(b1*p().omega + b2*p().omega2 +
-			b3*interpolate_linear (locate (x, y, z),
-			omega, x, y, z));
+			b3*OMEGA_EQUATION());
+			//b3*interpolate_linear (locate (x, y, z),
+			//omega, x, y, z));
     }
   }
 }
@@ -217,7 +218,15 @@ event tracer_particles_step2 (i = 1; i += 2) {
     
   }
 }
+#else
+event compute_velocity_without_advecting_location (i++) {
+  foreach_P_in_list (tracer_particles) {
+    particle_boundary (P);
+  		interpolate_vel(P, 1);
+  }
+}
 #endif
+
 event free_tracers (t = end) {
   free (tracer_particles);
   tracer_particles = NULL;
@@ -338,28 +347,3 @@ Particles init_tp_circle (int n = 100,
   set_particle_attributes (p);
   return p;
 }
-
-/**
-## To do
-
-* Implement functions for useful tracer-particle diagnostics
-* Check if `tracer-particles` can exist alongside other `Particles`
-* Box boundary conditions for particles (other than periodic)
-* ~~~Tag particles (for MPI)~~~
-* ~~~Bind tracer particles with vof interfaces~~~
-
-## Tests
-
-* [MPI test](tpp.c)  
-* [Advection scheme test](tp18.c)
-
-## Usage
-
-* [A confetti cannon](confetti.c) 
-* [The collision of two vortex rings](two_rings.c)
-
-## See also
-
-* [Visualize `Particles`](scatter2.h)
-* [Tracer particles bound by interfaces](vof-tracer-particles.h)
-*/

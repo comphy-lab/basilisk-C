@@ -34,7 +34,7 @@ int main(){
      We *unset* the data stored in `s` and count the number of cells
      for each thread.
    */
-  foreach(){
+  foreach(reduction(+:n)){
     s[] = nodata;
     n++;
   }

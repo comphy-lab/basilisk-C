@@ -48,13 +48,22 @@ See also the [POM Gallery]().
 
 * **Release '25-02-26 (macros)'**, see [NEWS](/src/NEWS) for details.
 
-* Next [Basilisk Monthly Meeting](BMM/README): 29th April, 4pm CEST.
+* Next [Basilisk Monthly Meeting](BMM/README): May 27th 4pm CET
 
 * Recent publications (see [Bibliography]() for more).
 
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{maes2025, 
+title={Birth of a bubble: drop impact onto a thin liquid film for an immiscible three-fluid system}, 
+volume={1009}, 
+DOI={10.1017/jfm.2025.195}, 
+journal={Journal of Fluid Mechanics}, 
+author={Maës, Pierre-Antoine and Amirfazli, Alidad and Josserand, Christophe}, 
+year={2025}, 
+pages={A8}}
+
 @article{patel2025, 
 title={Coupled liquid–gas flow over a submerged cylinder: interface topology, wake structure and hydrodynamic lift}, 
 volume={1008}, 
@@ -88,14 +97,4 @@ issn = {0301-9322},
 doi = {https://doi.org/10.1016/j.ijmultiphaseflow.2025.105227},
 url = {https://www.sciencedirect.com/science/article/pii/S0301932225001053},
 author = {Linkai Yang and Longmin Tang and Guangzhao Zhou}}
-
-@article{zhang2025b, 
-title={Lift reversal for an oblate droplet translating in a linear shear flow: from inviscid bubble to rigid spheroid}, 
-volume={1007}, 
-DOI={10.1017/jfm.2025.159}, 
-journal={Journal of Fluid Mechanics}, 
-author={Zhang, Jie and Wei, Bo-Lin and Meng, Wei-Jing and Ni, Ming-Jiu},
-year={2025}, 
-pages={A78}
-}
 ~~~

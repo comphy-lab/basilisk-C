@@ -8,6 +8,16 @@ own papers if they use Basilisk. See also [src/references.bib]().
 ### 2025
 
 ~~~bib
+@article{zhang2025b, 
+title={Lift reversal for an oblate droplet translating in a linear shear flow: from inviscid bubble to rigid spheroid}, 
+volume={1007}, 
+DOI={10.1017/jfm.2025.159}, 
+journal={Journal of Fluid Mechanics}, 
+author={Zhang, Jie and Wei, Bo-Lin and Meng, Wei-Jing and Ni, Ming-Jiu},
+year={2025}, 
+pages={A78}
+}
+
 @article{sanjay2025b,
   title = {Unifying Theory of Scaling in Drop Impact: Forces and Maximum Spreading Diameter},
   author = {Sanjay, Vatsal and Lohse, Detlef},

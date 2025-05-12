@@ -58,17 +58,11 @@ breaking, and penetrating jets.](figure2_example.png){width="90%"}
 A representative example of the 3D simulations for a case with strong forcing
 and intermediate stratification is shown below:
 
+
 ![**Example image 1:** Simulation results for a case with $Fr = 0.489$ and $ℎ_2/h
 = 0.31$. Here, the free surface is shown in white, while the concentration field
 at the median plane is depicted in colour. Simulation was performed using 3072
-cores in the Topaze cluster at the CCRT-TGCC](dns_front.png){width="90%"}
-
-<p align="center">
-</p>
-<p align="center">
-<a href="https://doi.org/10.1103/APS.DFD.2023.GFM.V0070"> V0070: FARAMIX: Mixing induced by surface waves in stratified fluids </a>
-</p>
-
+cores in the Topaze cluster at the CCRT-TGCC](dns_front.png){width="90%"}<br\>
 
 # 1. General equations
 
@@ -273,6 +267,7 @@ liquid phase, reflecting the low volatility of salt water in contact with air.
 
 To facilitate the implementation in Basilisk, we may write the equations in 
 the following form:
+$$
 \begin{aligned}
   \partial_{t}\vec{U} + \vec{U}\cdot(\nabla\vec{U}) &= 
   \frac{1}{\rho(\phi)} \left[
@@ -288,6 +283,7 @@ the following form:
   \\
   \partial_{t}C + \vec{U}\cdot(\nabla C) &= \nabla \cdot (\mathscr{D}\nabla C + \beta C),  
 \end{aligned}
+$$
 which can be solved using existing Basilisk code.
 
 

@@ -1,4 +1,4 @@
-pristine:829f7f5dfee4f0c0d9e7b40ea0dcb1ea98e818ed85faa3a435a8b0e26adfe40f
+pristine:4b07357039962a81239753321668be1ca09e89e595aca5a52cb0f90fc9dbc11b
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -1612,3 +1612,607 @@ antoine.aubert <ante.aubert@gmail.com>**20250422081759
  Ignore-this: 45ce4afd97e55a7d8e9e42d6fa01e92b
 ] 
 hash: 0000000266-fe1af48cdfc36760987b19e14c0d3cec5af14f016a7f5544b10bb6643e1dc5ec
+[Single squirmer, to be validated in 2D (can I find a test case?)
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250421171738
+ Ignore-this: b5d8689c315f70d1be903a36dcbaa518
+] 
+hash: 0000002128-1180d09003ce48d15eb4c4e6e66fc5fec276172ae7791272f3e9abe161803c1b
+[Added gyrotaxis owing to gravity
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250421172845
+ Ignore-this: 17fea14d9bd4c471bf0341981bc10e44
+] 
+hash: 0000001283-5f3229a4f8e70fd699baed764d8421685e7fa393525b8df36ded1752d780d6a4
+[Must test also binary collision, using for example something like Ishikawa Simmonds Pedley 2006
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250421175301
+ Ignore-this: 32d6ebcfed543e2278cd27cae39c9f83
+] 
+hash: 0000001201-9260a430a046c168860593f420d2e853950830e0d24bb7bce60ea48a87fde46c
+[loop videos
+Antoonvh <j.a.v.hooft@gmail.com>**20250423084754
+ Ignore-this: fc8a80f7e806a871565d79e05b22c190
+] 
+hash: 0000000342-550815573c1831e8e54f13db6ac2de28dbc2aa83602f9191ef5e850d4ff14494
+[Starting off new case. For dealing with Arthur's myembed particles, while using Antoon's Particle.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250423093951
+ Ignore-this: 18cca2df3b5e312f83eadc28fcebd71a
+] 
+hash: 0000010447-a68be300cd2430b252c79555f93bfa2ec9711a6ebe201fed481d3c6a40d388c0
+[Registration -- Sebastian Dooley (#83)
+guest**20250423102724
+ Ignore-this: 7c2f2b02595f49ffb0e2e1d254c4b301
+] 
+hash: 0000000277-817f434a2fc8e355dd788c77c3aefb28dc621f5867e86185597ed149f1892068
+[Added drivers for myembed-particles.h
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250423100948
+ Ignore-this: d9986024ba528c9bf34db8a79822560a
+] 
+hash: 0000007238-a01c134c56efa9f8e18e830b572b82cdd33d08a27c1056521d2ce301a4ea0f96
+[Some details on how to declare BC for myembed...
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250423132022
+ Ignore-this: 889b4082d6e88355b3aade76f497ebbc
+] 
+hash: 0000002530-234229f1735512223108fb043cc090e956704409d6451624db1ab60e3bb44e86
+[Added BC for velocity, working for a single particle.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250423144539
+ Ignore-this: 68760d04b9abcc7147c572f7dbaefa80
+ Both translation and rotation.
+ WOW!
+] 
+hash: 0000003739-0f116e6c535fc6ec273f76157fa054d3237ca9f62bfbb41df65c1ea1916cf76c
+[Simple squirmer, but must implement rotation of the squirming field as well.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250423170325
+ Ignore-this: 18b4acf6f8b71094920f673056585270
+] 
+hash: 0000003339-45ce24e2e6f4be0b505ee15831ca5d49a09b4573b4b35a0f625b69f9c240e1d6
+[Incomplete first draft
+colive <colive@math.ubc.ca>**20250424102740
+ Ignore-this: 6288aa45ee2d894870b30e87c5d0ec41
+] 
+hash: 0000012742-64ce40763899fcded3e8374cc54061c58d8649634d1c9da936062d7f9ee6ac37
+[noslip_velocity_x, solved some issues on how to identify COLOR with shifted cells.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250424083316
+ Ignore-this: f1ba24effe6756d0210f6ca482eee1a6
+] 
+hash: 0000004920-9c5f3c381bdcece45ddd9c47e644c3d18f3d574a25e83a5a1d5d98d9a5e61f93
+[A bloody adaptation for squirmer_x functions to foreach_dimension() logic.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250424093233
+ Ignore-this: 138647ffa254fc4371c504119cf76573
+] 
+hash: 0000003180-6bb497d1134fb610854d5dee743c68653b82a2d43fe92b42c05eb4c25f8198f9
+[Squirmer seems ok, aligned with x direction.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250424094227
+ Ignore-this: 88de386b07aea044453ea236a8e2604c
+] 
+hash: 0000000396-ecc984c52a804732621788fae48fb4c1424ce8922cafef2436443cfe8f6fafda
+[More compact surface velocity definition, without foreach_dimension()
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250424110300
+ Ignore-this: a8fc5a89cf54ec6247bc548e08e382ef
+] 
+hash: 0000003748-cb022128a9344f2b8925808efa835f9a5f5929bf82f6ac9f7860303dda086d38
+[Works with variable orientation...but not with higher squirming modes.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250424111702
+ Ignore-this: a3bc8a170a3fcc163d0f41326116ca3b
+ What am I missing? to test.
+] 
+hash: 0000000910-adef8bee9fc85d263dbebb8d0004388f19ca2186fca690c1e605c8969c7fd94e
+[Squirmer implementation OK, now needs to be tested.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250424130022
+ Ignore-this: 3c160367e431b23e2e3d9a69b35ad0d4
+] 
+hash: 0000001013-698e0a4a045d05504df1f66a7ef2e621625fecb2719716d0ab27c8ab7d5f3c86
+[Instabilities, not very satisfied with this method :(
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250424165052
+ Ignore-this: 3530b9d0d2921f7da5555ea5903d3e0a
+] 
+hash: 0000004273-96796ed116ffb462871e80647140d0935c45e2e7370a5a136f4469e21bf3bba9
+[Added sedimentation test case. Made using embedded boundaries.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250425150826
+ Ignore-this: 1a37248cea5cbf989db84027ce1ae7e1
+] 
+hash: 0000019099-c72401fef49caefe6a5de3fa6d028a576742c291a40ff163b631547a505e8788
+[Added missing reduction
+Stephane Popinet <popinet@basilisk.fr>**20250425164136
+ Ignore-this: ede023008cc832b49a2a56019c56c503
+] 
+hash: 0000000205-658ead9da286576a5c01100fa04a03cc565804a603de1bb9492c003997efc078
+[Adding an external, multiple-particle-capable driver. Seems ok!
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250426094654
+ Ignore-this: f660f8afed666dd819e31323eafa25fe
+] 
+hash: 0000007934-92fc9d697f5567e5baf56d1af6f1bf86e780f7ff493263b5ffc561feab7197b3
+[Works with moving particle as well!
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250426101758
+ Ignore-this: 46d271c5d89ac08025c00b2c03f32a45
+ But problem, it still does not deal with periodic BC.
+ Must work on p().x definition...
+] 
+hash: 0000002214-2743667588a8f318a6481127aed005766c513e44983d89480193b2f16d676aba
+[Added a plot and a nice video...i consider this case DONE.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250426104420
+ Ignore-this: b99be637d1393df28ca414054d6beb2a
+] 
+hash: 0000001692-61ab2f5bf0a63bee27c51e5eca82c767cdb22a07f0817e8b20326b61e7fc0afd
+[Syntax error, corrected
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250426104710
+ Ignore-this: aea3cf7bb8e07d65cec52273261781dc
+] 
+hash: 0000000415-ebe9e76143e70ba9868e935ce775426c4c078abe2bb1f5c9bde7eaf54a053dbf
+[was missing "view.h"
+fpicella <francesco.picella@sorbonne-universite.fr>**20250426104910
+ Ignore-this: e6f69eebf011d5b8e62272ae84058bd0
+] 
+hash: 0000000235-56244d3662cb2334e1766e0c4805b18ac25173dcd67309d89c6ee52b704dfbff
+[bug top thermal boundary
+Vierron <alexandrevierron@gmail.com>**20250427191331
+ Ignore-this: 52825d25c17b8167ca12c30b39ff2d9d
+] 
+hash: 0000003301-846cb4133b539eb954c0bcacaa6ad85edb945ad4072c067e35b48cce83f46644
+[add rbvisco makefile
+Vierron <alexandrevierron@gmail.com>**20250427191502
+ Ignore-this: 20a874821a7710c010aa176b514721f0
+] 
+hash: 0000000211-5d996412d5db7139ada063e12914c88e7230ad1efb60b187c353d4d69703e0ea
+[almost but enought
+Vierron <alexandrevierron@gmail.com>**20250427191859
+ Ignore-this: 5259c3c8c1fc29b483c472ce3e3fb1ec
+] 
+hash: 0000000227-9265d9992824c03f40ebfac2ae25a662dff1472c958b863f333ea1b79ad18fc5
+[Added Maes
+Stephane Popinet <popinet@basilisk.fr>**20250428090437
+ Ignore-this: 63a28d7c09a014c25a159b29cd1b658c
+] 
+hash: 0000000824-e8ec51da766461deaa4a5a802352a013fde33c1dee87044476aa0fdd8e2700f2
+[Moved
+Stephane Popinet <popinet@basilisk.fr>**20250428090636
+ Ignore-this: fd8ac54f3015b86ea866c71201c15d4c
+] 
+hash: 0000000472-ca03ab2ebdec652f4ed04f607d2efd491f58d36d878a6fd028b00ab1bd0c9c15
+[cosmetic
+Vierron <alexandrevierron@gmail.com>**20250428090923
+ Ignore-this: f41c9cd4b7fbe62c3288dcc651e7dad4
+] 
+hash: 0000000249-13b7004997f81e3bc580003ada6340d4585c60c0cbbc60bcfd5c573aec1fcd98
+[Here I am
+fpicella <francesco.picella@sorbonne-universite.fr>**20250428100808
+ Ignore-this: 35f1b3d50cc1d3076f607a4afb1b9b18
+] 
+hash: 0000000325-f81749c0f21a787213a20bd80bb005afac9cd127379efe932c84a9d744feb51a
+[Start adding regularized stokeslets to the particle implementation.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250428105326
+ Ignore-this: 1c39c79152b022d8231df22bd1d22e87
+] 
+hash: 0000007964-feff400fb5f64bfd7eaa79ddc9908a4bdaa4c14692948de70d5a1baf520f6a41
+[test
+Vierron <alexandrevierron@gmail.com>**20250428134130
+ Ignore-this: 2e1650aba3b50e88f1257cf91fb9e4f4
+] 
+hash: 0000000553-ecad0be7208ef062e438e98d66181e9ec6a9731c24a680bb0ca1ac7ebf0863be
+[First implementation, with single force at the center of the particle.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250428133217
+ Ignore-this: 9bff667e11f1c0c8e12ad779fc49d6c0
+] 
+hash: 0000002825-ef5f19bd7434ccba9f2e84b2a13c4e7f7a8d711507dd201ced31935e6e3755c2
+[increase deltaT
+Vierron <alexandrevierron@gmail.com>**20250428145553
+ Ignore-this: f57f2761321121b78521209c75f368b4
+] 
+hash: 0000000211-0a6e1131d1b5c0f3f95fee08fd49978bb238e7129c2ec997b5447bad2a363993
+[add title
+Vierron <alexandrevierron@gmail.com>**20250428150117
+ Ignore-this: a63a5f1abeb5115fb9f74a694f92f4e6
+] 
+hash: 0000000333-82c9d58e1f1b7694368c18965fc83b4734c094a70cb8a846da23c2bf59961dd4
+[There is an error in computing viscous forces. Different values according to the direction of thrust.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250428161719
+ Ignore-this: c9384e6ccecfe07473b7139957e63876
+ Must check the interaction of RS with embed.
+ I think there must be some kind of error within the compute_force routine.
+ TODO: check first if the velocity field is independent on thetaP.
+ Then: go and have a look at force computation routines.
+ Still, when the system is pointing upwards, it is ok.
+] 
+hash: 0000007439-0392d1671b7396565dfcf8250444195a97787a222d063e3faf491944c842581c
+[Reprise from sedimentation_with_driver.c.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250429065419
+ Ignore-this: 7e94be365465e265a3551ac58bdc5beb
+ Now I set SEDIMENTATION parameter within the main.c file.
+] 
+hash: 0000000594-fae8de52008a58491c1c22806aedb0b78d1218e1fee0fe94dc1920cdfd49ca18
+[Added a simple, non-regressive test. A myembed particle in RBM in an uniform flow.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250429082442
+ Ignore-this: ce242f4e31030ab44a3c0607fc0d3ca2
+] 
+hash: 0000002489-577ccc898de03150d4f196d0cc72af3f777bc4bd5c8ec4ba970cba95bc62b753
+[Forgot to add Makefile
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250429082644
+ Ignore-this: e1ddc0a39d2eadfa612d77735239c382
+] 
+hash: 0000000455-2816dd68e41847364d315898c152710ed03bbea40bb9fc6cdc96343d6eef289c
+[Added another case, using driver-myembed-particle.h
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250429091733
+ Ignore-this: 51a5e61ecc308fb5de668e81afdf433c
+] 
+hash: 0000002867-ccac14fc45aa8d472510becd9f7a4629885b01603071518a1d8e0d001b08a357
+[Re-made test case, force on translating particle.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250429102718
+ Ignore-this: 29c9544ed770c64c182a38ff9b225f8e
+] 
+hash: 0000005205-d248b73522fabb05a255bbf6edef5d921c25ec0c94d1cf07ad7097e1cc3af1b6
+[Removed makefile from test_driver- folder
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250429104507
+ Ignore-this: 57538f31a7b96b53eb8cd42cea9a78a2
+] 
+hash: 0000000473-9393bfb96b420e2786e941a45434cd9732e271e24715e8931e23146c7e79ee6c
+[add shadow
+Vierron <alexandrevierron@gmail.com>**20250429125316
+ Ignore-this: b6d11a83a61ec1d8ad9a3cdf75d1a1a9
+] 
+hash: 0000001197-74f6ffdc2c0e14d30eb68e9a0842f01397fc120fed999e2e0ba36a3c6e533174
+[youpi !
+Vierron <alexandrevierron@gmail.com>**20250429131146
+ Ignore-this: 45f941ff9ffe428f9afb3d96985f02aa
+] 
+hash: 0000000488-bb7f8a2d91d39b15450664f1d853c5cb09384e2b1d966d748d7e31a855948689
+[all good
+Vierron <alexandrevierron@gmail.com>**20250429131226
+ Ignore-this: c8cfcdf90c431ed16c7fe0deabaae4e6
+] 
+hash: 0000000171-bc9dc0fc169e6d848a25aae641ddf6bcce5e7722010fdc5fe80f84bcb726d555
+[test link and cosmetics readme
+Vierron <alexandrevierron@gmail.com>**20250429134027
+ Ignore-this: c77fdd4a9ff3ee8b47ae038eaeca2ff1
+] 
+hash: 0000000667-463320a6a18195930c84de63beec8d17c039996c89420e69e49eb155f062556b
+[test
+Vierron <alexandrevierron@gmail.com>**20250429134136
+ Ignore-this: ac4baa88b3097f43aaf6cff9ec7650f
+] 
+hash: 0000000306-53af8b0e20336b5c15b4cb58ba60b3bf600a4185456c04bf118e648dfe3a3c02
+[add video in readme
+Vierron <alexandrevierron@gmail.com>**20250429134706
+ Ignore-this: 19b77c7e5f1e660acac74fb273c2158f
+] 
+hash: 0000000337-fd397f57f69e15871b62f6b5b727131be7e5c799938f2e9c22ae6eb21a87115f
+[add link video hole
+Vierron <alexandrevierron@gmail.com>**20250429135410
+ Ignore-this: db6fafc9433d6cd57682548021779979
+] 
+hash: 0000000401-8b326790db5013705534347f0a2889036494fa5f01365e5be2d02e78f86c3603
+[re-formatting driver-myembed-particles.h, to solve a memory leak problem...
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250429161339
+ Ignore-this: 9203cd361c0f1ab3c464cc6fdb75041a
+] 
+hash: 0000010592-f5e81510b97154b118bd9510a336244b7b2817a8a125003cc9e2c6248d117ba8
+[as often, I forgot to add view.h
+fpicella <francesco.picella@sorbonne-universite.fr>**20250429161606
+ Ignore-this: 4293b8aa6f292b7c5a4ec02032c7a8d1
+] 
+hash: 0000000252-a4d067175ab54a3aa734a9bfa38028dbdde6dfca8e01e7fee676ee7a4e9ae038
+[with a simple plot
+fpicella <francesco.picella@sorbonne-universite.fr>**20250429162906
+ Ignore-this: 2d25049cc902f6d22f55129eacb2d0bb
+] 
+hash: 0000000657-70e00062dcd48f90722191d4d826c49e05f471f6a82b05f497eb9961e875d7e9
+[Added test case for forces compute in y direction as well.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250430072808
+ Ignore-this: f24ecdeffb3c86d6a8dfa912153e4f3d
+] 
+hash: 0000007991-04a98c8fadfad333ee28ef226e48cbf5eda7bcbd49eacc5877987edebaa38d4f
+[Added new test case, it works ALSO in y direction...!
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250430100651
+ Ignore-this: 56230130e8ea42ea3a5468b7f335e3a0
+] 
+hash: 0000005213-f4d9dac29c167b5e08fa653b50761a42796f426b01502cc95c211001fa40f9f7
+[Update of BMM information
+Tianyang <hantianyang@ucas.ac.cn>**20250430112636
+ Ignore-this: 5ffc2622b06e179968f2fd8f3057d40d
+] 
+hash: 0000000271-ea642bb4f4f1911406e9c24ad051b01992f4c4e2aebc77a2917308228077bffe
+[Update of BMM information
+Tianyang <hantianyang@ucas.ac.cn>**20250430113031
+ Ignore-this: d1f7bb35874cc231917634c8761e7280
+] 
+hash: 0000000470-bcac23878a3ecead2606ba6f938e3045e07d2b740fa18c98d7134dd5da83b746
+[1. Fei He, Department of Engineering and Science, University of Oxford, UK
+feihe <fei.he@eng.ox.ac.uk>**20250430212708
+ Ignore-this: 6b4c7fb68ff31a38510793858f43b70d
+] 
+hash: 0000000264-2ccc88c02de641524ef79b1e4872c10763e2c9244a4e4d11d31f3184abb57522
+[[Fei He](https://eng.ox.ac.uk/people/fei-he/) Department of Engineering and Science, University of Oxford, UK
+feihe <fei.he@eng.ox.ac.uk>**20250430213020
+ Ignore-this: 8b992c0b60d04978578d0312dd8a11c2
+] 
+hash: 0000000413-b74959d7951cf3cc87d065866ae37bb1a7cb86fb4c867df9a98666166b420671
+[Added a simple test-case, of a poiseuille flow made using simple masking.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250501063914
+ Ignore-this: c505fc3b51f1f6694009d2588dc29e19
+] 
+hash: 0000001701-3c1fb683017d790cb544f06d8e4066f2d2ac0198df6f133a800479531d322269
+[add makefile rbvisco3D
+Vierron <alexandrevierron@gmail.com>**20250501144736
+ Ignore-this: 4f3b82c7111832fa2578bf2e56be7991
+] 
+hash: 0000000215-f587acb31548cbf8a9956dea76c65d93f8441ab72647a5017301a058480e8c74
+[add rbvisco3D code
+Vierron <alexandrevierron@gmail.com>**20250501144911
+ Ignore-this: 2c834e07073b62dfc9bcbede91e26e9
+] 
+hash: 0000004951-a4202029a10eaf69a9306b8abf1363308e3909c927e3dd620b14a380abe2d5a4
+[test
+Vierron <alexandrevierron@gmail.com>**20250501150547
+ Ignore-this: e973d568d371b6493ca97c30e41602ed
+] 
+hash: 0000000703-7cd1fd89a1d3ab7bbe14ee705c5214f2a642674c4d91aac3eda0112ff33c90a7
+[test 3D square cell
+Vierron <alexandrevierron@gmail.com>**20250501151848
+ Ignore-this: 18bcf1dc8973acd3e72a03496549698e
+] 
+hash: 0000000217-724a7525e9de48133777b46190c91a9bdae3815fc6d7b2a4e0100efde7c66344
+[add link and video 
+Vierron <alexandrevierron@gmail.com>**20250501153555
+ Ignore-this: e4bfe5715a1b10ccbb3d37a01a413be2
+] 
+hash: 0000000499-68368687e5399f09c83a632c3c1a346ec613dd5122ef2d8ea121500bbea045e3
+[oups bad link
+Vierron <alexandrevierron@gmail.com>**20250501153627
+ Ignore-this: aef8333b5013122441a4c8db3c07df37
+] 
+hash: 0000000237-b0eea048a091b44a21f4915975e54e6004fde45ec24e50eb8aa9bf046d4d9244
+[Registration for Peter Lewin-Jones 
+guest**20250501154616
+ Ignore-this: 91d999b24fff6c06eb435b5786deb567
+] 
+hash: 0000000199-3092947257d33d58e5d7f377b2b7e2b5a090bc88ddbcd4dcfde4176fbccd6bab
+[add makefile for multi
+Vierron <alexandrevierron@gmail.com>**20250501161804
+ Ignore-this: 97c1f2a87ccee245253bbfed9e76b9b2
+] 
+hash: 0000000291-01cf969b5c2e68d20c85ba3750de21e9e99fe5e19829ca152fc02c60aef8db88
+[add code 3D cyl mutli bug
+Vierron <alexandrevierron@gmail.com>**20250501161824
+ Ignore-this: 69a15efff3359a637ca983f84ee17dd4
+] 
+hash: 0000001019-e477fddf3cc1ce88e135566d1859fc3ba028fc5f2e2808cff1a0852e07357469
+[all good for a bug or not compatible ?
+Vierron <alexandrevierron@gmail.com>**20250501162145
+ Ignore-this: cefcb81643c40164d9623f2dda098d8f
+] 
+hash: 0000000185-3e602a7af74d8745e43914d02d408b281983a661e0419682a04671cf2b504437
+[all good
+Vierron <alexandrevierron@gmail.com>**20250501165112
+ Ignore-this: 2aed05eef56ae49bcf5b91656ecc43e6
+] 
+hash: 0000000584-674a1e11896e26573a1d677c4a6d3bf677e921546f3daae64053ff3627c5d75f
+[add link to non-cylindrical domain multrigrid3D
+Vierron <alexandrevierron@gmail.com>**20250501165728
+ Ignore-this: 43ca0f3f9334aaf38488d494b1f22aee
+] 
+hash: 0000000246-27bfd06a8290582bcd6b50c18fd8bb84787ddabadab9d1b2d2a9288e579c168f
+[Wenge Huang cancel register because of limit visa application time
+WengeHuang <hwenge@vt.edu>**20250502093546
+ Ignore-this: 6a215be6f853574de5e94e9a21be15ab
+] 
+hash: 0000000232-9284eef62ded95272e57b48f62918bcad568978f786dcb7e5bdf2cb1ee8a7148
+[Interested in learning Basilisk programming 
+chandrashekarg.4@gmail.com <chandrashekarg.4@gmail.com>**20250502101715
+ Ignore-this: 3d13e2d9cf47008ce3c0346ccbc35e3b
+] 
+hash: 0000000249-a3914227e83b529da1bde632faa13d1dd33f27fb5a3c35cf0e21542f513a4f61
+[Interested in learning Basilisk programming 
+chandrashekarg.4@gmail.com <chandrashekarg.4@gmail.com>**20250502101812
+ Ignore-this: 5ccfe6914d73e539441e9ab069c21e86
+] 
+hash: 0000000318-412f179a8f282e2b64cae3afbee303df416be3d72bfaf8c0a89db86172dffeee
+[Suppression of Christophe Josserand participation (sorry, I have personal issues that make my venue eventually not possible).
+cjoss <christophe.josserand@ladhyx.polytechnique.fr>**20250502103321
+ Ignore-this: bc2020c7a5134863d7fb3e9a226f292
+] 
+hash: 0000000383-2ccc3472d0ec9f0463d3541131a387ed5d3080d2a70e9f5522a936679ec73fcf
+[1. Aston Over, The Royal Grammar School High Wycombe, UK.
+guest**20250502113547
+ Ignore-this: 3984efeef5991af1ea165be1f48c8803
+] 
+hash: 0000000205-12fe0ad2969f0ac83ae7088107c6372096ac0946608289d20357c792e5c58b84
+[Registered
+ecipriano <edoardo.cip@gmail.com>**20250502115139
+ Ignore-this: fd9eaffe6b81e26101543c92cc2acce7
+] 
+hash: 0000000436-93b8cfdb04cea54591f7940ab378a2f1ac4ce588fd237996a132a8f19ccdd8d5
+[Removed particpant
+guest**20250502132636
+ Ignore-this: ef14acc1c70776bc44c8e8acc222bff3
+] 
+hash: 0000000181-f1e6ab12faebc84712d1795b59b0ff08f400a0f721232b00f5567966647591b6
+[cosmetics readme
+Vierron <alexandrevierron@gmail.com>**20250502135226
+ Ignore-this: 87f3568fb981ccce8bd5fb31ca0b4933
+] 
+hash: 0000004015-2fed1aee124632815f22c5be4395c217839e87f37cbd0684386f747cff13ff16
+[cosmetic2
+Vierron <alexandrevierron@gmail.com>**20250502135426
+ Ignore-this: 904d4bd1dcf444eb8cf860fd9687d382
+] 
+hash: 0000000661-4743df0756ecefebd737aba49306bc0ca3a6bd58ea31230eca7585f599ed07d6
+[1.[Tianning Tang](www.tim-tang.net) Department of Mechanical and Aerospace Engineering, University of Manchester 
+nbjdttn**20250503124605
+ Ignore-this: a13ae01f24758695fe1b7a166f89e3fe
+] 
+hash: 0000000322-e79e268996d2675b7a6e92c37ef05eed4f8682c1c17b730fcc14a00548873668
+[1.[Tianning Tang](www.tim-tang.net) Department of Mechanical and Aerospace Engineering, University of Manchester 
+nbjdttn**20250503124722
+ Ignore-this: 205a03f24dec96e23409bd02b69cf048
+] 
+hash: 0000000438-f2fb7ff1b00452f42c25f9ab9a10be61dd57d343c55faa1ee037cfc59a34349c
+[Add attendance 
+SchauenCXS <cxs.schauen@gmail.com>**20250503124929
+ Ignore-this: 129acff22304ab5150bbd10596d5e8aa
+] 
+hash: 0000000218-e9a4c76179ba7965f84e4efa2c98a780ee40ae5d1aa5844f899b4a06166d7218
+[Zheni registration 
+Zheni Fei <627502928@qq.com>**20250503124936
+ Ignore-this: c683dcad3f54fb7324a6871fe2070783
+] 
+hash: 0000000521-c4ebcd3a867d80e1fe2c6552ea2d422b01df02f1baa9f675efe7708c035e9592
+[Add attendance 
+SchauenCXS <cxs.schauen@gmail.com>**20250503125110
+ Ignore-this: 381a0fea50bf60c5ee0c81a1e33f6a25
+] 
+hash: 0000000448-928c6b8b45bfcd9926a7cfa142dfb18fdb5fca292ab224f2f2e4f596287ac985
+[Zheni fei
+Zheni Fei <627502928@qq.com>**20250503125112
+ Ignore-this: 1df41c11b0f6728d221c78d378317ca6
+] 
+hash: 0000000354-ea598a6f5d1ea76166d38a669fc6100401717545305d360ff3b17af1b9683020
+[Add attendance 
+SchauenCXS <cxs.schauen@gmail.com>**20250503125513
+ Ignore-this: 27f68e3d36606d51fc07f52aba98272f
+] 
+hash: 0000000655-275ebe90f09c03fc4413d655708c8c63fb69ca6d2bcac38364f4e5e5bad5e949
+[Update attendance 
+SchauenCXS <cxs.schauen@gmail.com>**20250503125603
+ Ignore-this: f2a0734c38484133264273de833a139
+] 
+hash: 0000000290-25e3fe4049bfefde56bb254e6098ec1752dd66f576a2cfe28dfc5bdc2f0a8cba
+[Cosmetics
+acastillo <andres.castillo.castellanos@gmail.com>**20250503214055
+ Ignore-this: 23689bd64b9a5a1f556cdc2d74b7e22b
+] 
+hash: 0000000499-5d516e60a0e6434391c56b4f1269e899f809befead91cccc317032d32542a3d5
+[Cosmetic, again
+acastillo <andres.castillo.castellanos@gmail.com>**20250503214742
+ Ignore-this: c7df8a8708393db4bd6f35ff21f4c57b
+] 
+hash: 0000000599-10aed4ac44162c368153fac48d83253ce2246feeee9b0a5ee57c7a1d0ef6263c
+[No luck
+acastillo <andres.castillo.castellanos@gmail.com>**20250503214859
+ Ignore-this: f551742ac65809a0048bc6c943f8a4b
+] 
+hash: 0000000595-9dcec41426f9b253d1a3dd1736ebe68a6f88abfa909a03a2e274a5a90f34dfd0
+[Dam
+debdip <debdipbiswas3@gmail.com>**20250504045536
+ Ignore-this: 661df78f8bc6a15aa0708704ef489dcc
+] 
+hash: 0000000915-19d164b04b043673cef4c5881c8a9202c9b0687b348180210d380066cfdaf44f
+[unregistration of siva balasundaram
+Siva**20250505120843
+ Ignore-this: 119e6d7985cb93a9689ac1372804f6f9
+] 
+hash: 0000000198-7585b4562f50c5dd3455a8c3e43f4c7757765ac4a856c6eca280cecf2397d03d
+[Registration of Xinyu Liu
+xyl91 <spet5947@ox.ac.uk>**20250505123802
+ Ignore-this: e8a46a4b701535b9e62fda8f2683ef9b
+] 
+hash: 0000000279-8e61a6f262b7e534e38a643e34fa486fd334d5ece54abf22b4c912a52f328cac
+[Creation
+MathildeGouin <mathilde.gouin@polytechnique.edu>**20250505144123
+ Ignore-this: df1530e87fcae55a30b39130ba190d0
+] 
+hash: 0000000220-e58b5958362236b17f8779de807d18ea8cac43a258229cdcf152ab29c6c9099c
+[took my name out 
+Tharul WA <Tharul.Wanni@gmail.com>**20250505171404
+ Ignore-this: 3a6ce4305a0f724b48547ccf578bfc88
+] 
+hash: 0000000210-349b017a7f87481bab68e70028481a1e45399e9052c808fa12e9587dd639b9b1
+[register
+Nathaniel <1147530097@qq.com>**20250506071751
+ Ignore-this: 2cfd5002d0b27923895747a3360a6c67
+] 
+hash: 0000000206-a1fd46f7b11c8fc95bf7f44c00df68091d8b93354e33f9767e087dbfd533ccc9
+[Participant added
+NQChien <nguyenquangchien@gmail.com>**20250506102422
+ Ignore-this: dd1d508b288c48cd640d345c38fb5a5c
+] 
+hash: 0000000199-7397465c4f75665da8dd911f273b38fa445352d1a31607431538cbe140734293
+[Added a new sedimentation test case. Employ embed for particle and mask for container's wall.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250507064901
+ Ignore-this: acb8122771f6b4cc4805887ffaf316d3
+] 
+hash: 0000010185-c2948012cb5205d9f85d2191192703550b720944b071f15d02b086deedea9620
+[Added sedimentation with driver. Working smoothly in y direction.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250507080516
+ Ignore-this: 9fd004ec04488b318dcd2c4dc333bc5c
+ With quantitative validation!
+] 
+hash: 0000008034-47d2cc72ee5b090f37f08a150d04a9d5f42f49419677cd5fbf9be5955651b3ea
+[Accounting for moving embedded boundaries.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250507113211
+ Ignore-this: a5474bdb8e2cebc9697dfa7f3637ce1c
+ Test case for sedimenting particle approaching a wall.
+ The particle slows down...
+ ...thanks only to hydrodynamic interactions!
+] 
+hash: 0000007609-bb9daa291af00b6ded843043f6f7a6cb6d249e4e3e04cc4302b657f5eceeee4f
+[Announcement of the next BMM time
+Tianyang <hantianyang@ucas.ac.cn>**20250507121238
+ Ignore-this: 2723aa7a01d13fe0a09552d2ed0ed6d
+] 
+hash: 0000000273-37883b3a9963ebb33bc6cc5a6e795a34fd7cb4a3315b8fe00932e7ef5fc2db2f
+[Some few adjustements, to make it more stable numerically.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250507124422
+ Ignore-this: 28160fc5daaecae60097c802f31191fa
+] 
+hash: 0000000528-af17002aafa4fdb21ef1bb4c5d957ee77243f5276cba4ef19266dbe6a3398189
+[Added a video, that is always nice...
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250507125948
+ Ignore-this: 922108f17a6489ee939831a1d1be0421
+] 
+hash: 0000000917-cedab20d3faed11d8da484ddf1533e55fbf3568cf6967f4bb8084952579b4c72
+[test
+yanchongduan <duanyc2025@gmail.com>**20250509123126
+ Ignore-this: d69678c9cf117743881821e3bef9497d
+] 
+hash: 0000000124-cd9f100d753670bbda653eb34f9780879164e4375ce39a33d59b7507479f1264
+[empty.c
+yanchongduan <duanyc2025@gmail.com>**20250509124302
+ Ignore-this: 5ce5b061ec13ae0be72e52a96b360ec3
+] 
+hash: 0000000220-03e1c487e9332a8b86d2e7c2ff00c4cba284a9fb71b38dc29ff9adc2e6c59f15
+[Add routines for working with filaments
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250509131007
+ Ignore-this: 8c744c1dfa15dee242bd2253a2d932d9a5f59a0285502136139acb0b8ce6669058ed6c0c500ddc55
+] 
+hash: 0000099148-b27fa7e9032c1f7074be8fa6af23ca7f79bdb7af6c2fe2840950dc7465f832d8
+[Added missing includes
+Stephane Popinet <popinet@basilisk.fr>**20250509131123
+ Ignore-this: 1fe6efb2d873445c954a0a23795094d4
+] 
+hash: 0000000299-b77a1089f4cf1ff85d3359690a21540f94a6890a7294fa977d6708859d3f51dc
+[Fixed
+Stephane Popinet <popinet@basilisk.fr>**20250509132248
+ Ignore-this: 4aed238f9c8788ff0040eafe7d8a6fa0
+] 
+hash: 0000000697-456d1b37defca9a784e76b6cca2392816dcac2779c67699c2aa42454578b9c9c
+[Fixed header file, but still broken
+Stephane Popinet <popinet@basilisk.fr>**20250509132809
+ Ignore-this: d01e39172cab4f6bac3593235a3de7e7
+] 
+hash: 0000000260-fe41fd07941a5e62db6ce78519344bc5ea9e524d15bbde671a6c3a86ecad999c
+[Add macro for initialization
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250509141410
+ Ignore-this: d1468707ce2f5bf1132f4a2ea05c45a94bfee0a2203b1f6e45a6c67bc2c399cb1220dbcbb05b20d
+] 
+hash: 0000008568-979aecd75c9805fae4a9df8aebbb902d1f7c53480067ddbbfc8e29e3f637407c
+[Better movie
+Stephane Popinet <popinet@basilisk.fr>**20250509141750
+ Ignore-this: 33599fc9fd7f76bdd139b9cb46fd685f
+] 
+hash: 0000000954-892026ff950bae0969410da1a000b94a7d341de36b581e5bf7bf84e4cde86969
+[Add macro for initialization
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250509152635
+ Ignore-this: 57c922f154b75ddc9e8c2ab8bd6bcc4d5a10c7f9509bb95c3bac53362a61e74a490ffc16cb9ed987
+] 
+hash: 0000017681-2bdf724f5531f6dc7690b69fb9cf056de9e2c44e7286ecef00daa0672dc3d3c0
+[This should be faster
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250509153634
+ Ignore-this: 55a9931f744bc7b3c96613c052c9e075af8dc3d1f764a5901a56540de3928f4264b5b70d293dd2d1
+] 
+hash: 0000002392-c6b7a7447f14e250a9321d637a99318aea61013bb7bf8fb817d6c256d736241e
+[A mix between Lushi 2013 and Jibuti 2014.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250509180246
+ Ignore-this: 2ff7baa910c8c8d10544181b6450771
+ Microswimmer treates as three separate forces.
+ Microswimmer body-size: one cell.
+ Next step: should use smoothed profile instead of cs fs fractions.
+ Next next step: introduce variable viscosity for RBM. Will be enough.
+] 
+hash: 0000017052-df192d661b8c6ac03e9eed346e074ded5cdcdd5259e9d7c5ca6aea0a25f2ca5a

@@ -14,7 +14,7 @@ Fields that will contain the phase fractions of all microswimmers */
 scalar csFP[];
 face vector fsFP[];
 scalar bodyforce[]; // a nice scalar field, to "visualize" how forces are applied on the field.
-vector forceFP[];
+face vector forceFP[];
 
 /*
 Some practical shortcuts
@@ -33,6 +33,21 @@ Some practical shortcuts
 #define xCis         p().x-1.*ALPHA*cosTheta+1.*BETA*sinTheta
 #define yCis         p().y-1.*ALPHA*sinTheta-1.*BETA*cosTheta
 
+#define ED(px,py) sqrt(sq(x-px) + sq(y-py)) // Euclidean Distance
+
+#define EPSILON 0.5
+
+#define RS(px,py) (15.*pow(EPSILON,4))/pow(8.*M_PI*(sq(ED(px,py))+sq(EPSILON)),7./2.)
+
+/*
+### Microswimmer reorientation equation
+For the moment, simple gyrotaxis owing to gravity.
+But could be anything!
+*/
+// BEGIN -- DEFINE RE-ORIENTATION EQUATION (i.e. gyrotaxis owing to rheology, gravity, light...whatever!) // FP 20250308 
+#define OMEGA_EQUATION() -sin(p().theta)/(2.*B) + interpolate_linear(locate (x, y, z), omega, x, y, z)/2.  // FP 20250308 
+
+
 
 static FILE *singleParticleFile[NPARTICLES] = {NULL}; // for the moment only one set of particles...?
 
@@ -50,9 +65,9 @@ void locate_particle_in_zero(){
     while (pn[_l_particle] != terminate_int) {
       for (int _j_particle = 0; _j_particle < pn[_l_particle]; _j_particle++) {
         p().x = 3.*RADIUS*alternating_series(_j_particle);
-        p().y = -0.5*RADIUS+1.*RADIUS*alternating_series(_j_particle);
+        p().y = L0/2.*RADIUS*alternating_series(_j_particle);
 				p().z = 0.; 
-				p().theta=+_j_particle*M_PI*0.2;
+				p().theta=+_j_particle*M_PI*1.;
 /*
 First, barebones version, all particles have the same radius...
 ...but provided the numerical method improved, I could play around with 
@@ -112,7 +127,7 @@ event compute_variable_viscosity_field(i=-1){ // I'll explicitly call this from 
 			csFP[] *= csLOCAL[]; // intersection...
 	}
 	foreach_face()
-		fsFP.x[] = face_value(csFP,0); // "naive" face interpolation
+		fsFP.x[] = (face_value(csFP,0) + face_value(csFP,1))*0.5; // "naive" face interpolation
 
   foreach_face()
 #ifndef EMBED
@@ -132,58 +147,94 @@ For the moment, those forces are regularized on a volume that is identical
 to the microswimmer's body.
 */
 event compute_propulsion_forces(i=-1){
+	scalar csLOCAL[];
+	face vector fsLOCAL[];
+
 	foreach(){
 		bodyforce[] = 0.;
-		forceFP.x[] = 0.;
-		forceFP.y[] = 0.;
 	}
-	scalar bodyforceLOCAL[];
+	foreach_face()
+		forceFP.x[] = 0.;
 	foreach_particle(){
 		p().areaCenter = 0.;
 		p().areaTrans  = 0.;
 		p().areaCis    = 0.;
 /*
-	Blob associated to the presence of the microswimmers's body.
+### Regularized Stokeslet
+Idea, replace point force with a blob...
 */
-		fraction(bodyforceLOCAL,circle(xCenter,yCenter,p().r));
+	
+///*
+//	Blob associated to the presence of the microswimmers's body.
+//*/
+//		foreach(){
+//			bodyforce[] += RS(xCenter,yCenter);
+//			forceFP.y[] += RS(xCenter,yCenter)*SEDIMENTATION;
+//		}
+		solid(csLOCAL,fsLOCAL,circle(xCenter,yCenter,p().r));
 		foreach(){
-			bodyforce[] += -(1.-bodyforceLOCAL[]);
-			p().areaCenter += (1.-bodyforceLOCAL[])*sq(Delta); // MUST BE MODIFIED IN 3D!
+			bodyforce[] += -(1.-csLOCAL[]);
+			p().areaCenter += (1.-csLOCAL[])*sq(Delta); // MUST BE MODIFIED IN 3D!
 		}
-		// Since I'm still here, I can apply the forces associated to the body of the microswimmer
-		foreach(){
-			forceFP.x[] += (1.-bodyforceLOCAL[])*sq(Delta)*(+sinTheta*2.*PROPULSION)                 / p().areaCenter; 
-			forceFP.y[] += (1.-bodyforceLOCAL[])*sq(Delta)*(-cosTheta*2.*PROPULSION - SEDIMENTATION) / p().areaCenter;
-		}
+		foreach_face(y)
+			forceFP.y[] -= (1.-fsLOCAL.y[])*(+SEDIMENTATION)*sq(Delta)/p().areaCenter; 
 
-/*
-	Blob associated to the presence of the microswimmers's trans flagella
-*/
-		fraction(bodyforceLOCAL,circle(xTrans,yTrans,p().r));
-		foreach(){
-			bodyforce[] += +(1.-bodyforceLOCAL[]);
-			p().areaTrans += (1.-bodyforceLOCAL[])*sq(Delta); // MUST BE MODIFIED IN 3D!
-		}
-		// Since I'm still here, I can apply the forces associated to the Trans flagella of the microswimmer
-		foreach(){
-			forceFP.x[] -= (1.-bodyforceLOCAL[])*sq(Delta)*(+sinTheta*1.*PROPULSION) / p().areaTrans; 
-			forceFP.y[] -= (1.-bodyforceLOCAL[])*sq(Delta)*(-cosTheta*1.*PROPULSION) / p().areaTrans;
-		}
-/*
-	Blob associated to the presence of the microswimmers's trans flagella
-*/
-		fraction(bodyforceLOCAL,circle(xCis,yCis,p().r));
-		foreach(){
-			bodyforce[] += +(1.-bodyforceLOCAL[]);
-			p().areaCis += (1.-bodyforceLOCAL[])*sq(Delta); // MUST BE MODIFIED IN 3D!
-		}
-		// Since I'm still here, I can apply the forces associated to the Cis flagella of the microswimmer
-		foreach(){
-			forceFP.x[] -= (1.-bodyforceLOCAL[])*sq(Delta)*(+sinTheta*1.*PROPULSION) / p().areaCis; 
-			forceFP.y[] -= (1.-bodyforceLOCAL[])*sq(Delta)*(-cosTheta*1.*PROPULSION) / p().areaCis;
-		}
+		double TOTAL_FORCE_CHECK = 0.;
+		foreach_face(y)
+			TOTAL_FORCE_CHECK += forceFP.y[];
+		fprintf(stderr,"TOTAL_FORCE_CHECK %+6.5e\n",TOTAL_FORCE_CHECK);
+			
 	}
 
+///*
+//	Blob associated to the presence of the microswimmers's body.
+//*/
+//		fraction(bodyforceLOCAL,circle(xCenter,yCenter,p().r));
+//		foreach(){
+//			bodyforce[] += -(1.-bodyforceLOCAL[]);
+//			p().areaCenter += (1.-bodyforceLOCAL[])*sq(Delta); // MUST BE MODIFIED IN 3D!
+//		}
+//		// Since I'm still here, I can apply the forces associated to the body of the microswimmer
+//		foreach(){
+//			forceFP.x[] -= (1.-bodyforceLOCAL[])*sq(Delta)*(+sinTheta*2.*PROPULSION)                 / p().areaCenter; 
+//			forceFP.y[] -= (1.-bodyforceLOCAL[])*sq(Delta)*(-cosTheta*2.*PROPULSION + SEDIMENTATION) / p().areaCenter;
+//		}
+//
+///*
+//	Blob associated to the presence of the microswimmers's trans flagella
+//*/
+//		fraction(bodyforceLOCAL,circle(xTrans,yTrans,p().r));
+//		foreach(){
+//			bodyforce[] += +(1.-bodyforceLOCAL[]);
+//			p().areaTrans += (1.-bodyforceLOCAL[])*sq(Delta); // MUST BE MODIFIED IN 3D!
+//		}
+//		// Since I'm still here, I can apply the forces associated to the Trans flagella of the microswimmer
+//		foreach(){
+//			forceFP.x[] += (1.-bodyforceLOCAL[])*sq(Delta)*(+sinTheta*1.*PROPULSION) / p().areaTrans; 
+//			forceFP.y[] += (1.-bodyforceLOCAL[])*sq(Delta)*(-cosTheta*1.*PROPULSION) / p().areaTrans;
+//		}
+///*
+//	Blob associated to the presence of the microswimmers's trans flagella
+//*/
+//		fraction(bodyforceLOCAL,circle(xCis,yCis,p().r));
+//		foreach(){
+//			bodyforce[] += +(1.-bodyforceLOCAL[]);
+//			p().areaCis += (1.-bodyforceLOCAL[])*sq(Delta); // MUST BE MODIFIED IN 3D!
+//		}
+//		// Since I'm still here, I can apply the forces associated to the Cis flagella of the microswimmer
+//		foreach(){
+//			forceFP.x[] += (1.-bodyforceLOCAL[])*sq(Delta)*(+sinTheta*1.*PROPULSION) / p().areaCis; 
+//			forceFP.y[] += (1.-bodyforceLOCAL[])*sq(Delta)*(-cosTheta*1.*PROPULSION) / p().areaCis;
+//		}
+//	}
+
+}
+/*
+#Apply acceleration */
+event acceleration (i++) {
+	foreach_face()
+		av.x[] = forceFP.x[];
+	a = av;
 }
 
 // // // // On top of that now, compute the FORCING FIELD, associated to each particle.

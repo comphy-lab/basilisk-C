@@ -1,10 +1,7 @@
 /**
-# droplet on an embedded cylinder
-
+# Droplet spreading on an embedded cylinder
 
 ~~~gnuplot Equilibrium shapes for $30^\circ \leq \theta \leq 150^\circ$
-set term push
-set term @SVG size 640,180
 set size ratio -1
 unset key
 unset xtics
@@ -18,8 +15,6 @@ f(x)  = sqrt(0.5**2 - x**2) - 0.575
 plot 'out' w l lt -1 lw 3 lc rgb "blue" t 'Numerical solution',\
   f0(x) with filledcurves above y1 = 0.575 fc "black" t 'cylinder',\
  -1*f(x) with filledcurves below y1 = 0.575 fc "black" t ''
- 
-set term pop
 ~~~
 */
 
@@ -134,14 +129,13 @@ event movie(i+=10,last){
   if (theta0 == 120) {
     view(fov=20, tx = 0, ty = -0.5);
   //view(fov=20, quat = {0,0,-0.707,0.707}, tx = 0, ty = -0.5);
-    draw_vof ("f", lw=2);
-    draw_vof("cs", "fs",filled=-1);
-    squares("f", linear = true, min = 0, max = 1);
+    draw_vof("cs", "fs",filled = -1);
+    draw_vof ("f", filled = 1, fc = {0,0,1});
     save("movie.mp4");
   }
 }
 /**
-![Relaxation toward a $120^\circ$ contact angle.](droplet-cylinder-embed/movie.mp4)
+![Relaxation toward a $120^\circ$ contact angle.](droplet-cylinder-embed/movie.mp4)(width="60%")
 */
 
 // fixme: Comparison to theory is missing (add soon) 

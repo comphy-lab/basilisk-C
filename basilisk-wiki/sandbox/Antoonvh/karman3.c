@@ -9,14 +9,14 @@ We visualize the concepts of path lines, streak lines and stream lines:
 
 ![Path line (blue) and streak line (green). For the second path line,
  it is clear to see how a path line is the history of a fluid
- element](karman3/path_streak.mp4)
+ element](karman3/path_streak.mp4)(loop)
 
 Furthermore, we  show the  streamfunction (in  the channel's  frame of
 reference), vorticity field and a bunch of tracers.
 
 ![Stream lines, particles and vorticity field (color). Indeed, the
  unsteady streamlines do not represent material lines and cross particle
- paths](karman3/abunch_omg_psi.mp4)
+ paths](karman3/abunch_omg_psi.mp4)(loop)
 */
 
 #include "embed.h"
