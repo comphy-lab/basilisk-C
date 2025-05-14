@@ -19,6 +19,25 @@ void draw_space_curve(int n_seg, coord *p){
   }
 }
 
+void draw_space_curve_with_vector(int n_seg, coord *p, coord *t, float scale=1.0) {
+  // // Set the clear color to a shade of blue (RGBA)
+  // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
+  // // Clear the color buffer
+  // glClear(GL_COLOR_BUFFER_BIT);
+
+  glLineWidth(5.0f);
+  for (int i = 0; i < n_seg-1; i++) {
+    // Start point of the vector is the curve point p[i]
+    // End point of the vector is p[i] + t[i]
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_LINES);
+      glVertex3f(p[i].x,                p[i].y,                p[i].z);
+      glVertex3f(p[i].x + scale*t[i].x, p[i].y + scale*t[i].y, p[i].z + scale*t[i].z);
+    glEnd();
+  }
+}
+
 void draw_space_curve_with_vectors(int n_seg, coord *p, coord *t, coord *n, coord *b, float scale=1.0) {
   // // Set the clear color to a shade of blue (RGBA)
   // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

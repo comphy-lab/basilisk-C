@@ -56,3 +56,5 @@ slave-omgpsi.o: slave-omgpsi.c Makefile
 hilbert.tst: CFLAGS += -disable-dimensions
 
 multiscale-gpu.tst: CFLAGS += -grid=gpu/multigrid
+
+fpm.tst: CFLAGS += -llapack -lblas -lgfortran

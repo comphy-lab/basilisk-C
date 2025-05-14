@@ -1,4 +1,4 @@
-pristine:948f0a5853e6e1909df4755e8d805abcd7311ba1f2447533af4cf7f30610321f
+pristine:68f13b20aeeef8df2b640456e0e92989a57e0227abd62e82dad5c69fcc527a97
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -2251,3 +2251,85 @@ Jiarong Wu <wjrangela@gmail.com>**20250512194400
  Ignore-this: f46e34d3491c6c220d37b98aaf295a4c
 ] 
 hash: 0000009377-032c1833421166fc766cb3f93e0c5ec6b9129ce212117e9940d445bf3d2882f1
+[Finite pointset method (proof of principle)
+Antoonvh <j.a.v.hooft@gmail.com>**20250513084531
+ Ignore-this: b05a22f2bbf8e24cc84b3eec0183ef62
+] 
+hash: 0000003910-09129213efb3a169bd431f7e0428e24a79eebe61d6aab3beb139735f14981818
+[Deleted using web interface
+Antoonvh <j.a.v.hooft@gmail.com>**20250513084607
+ Ignore-this: 78fca10b450b9980795fe648d27aedf0
+] 
+hash: 0000003893-d1e3bb3c91b1101c9d16a1b7d383f86a2d70a8669d442a7f0ed39864abccc018
+[finite pointsetset method (proof of principle)
+Antoonvh <j.a.v.hooft@gmail.com>**20250513084635
+ Ignore-this: 49142ea1893b5c89586122645e25cad7
+] 
+hash: 0000003931-da48247728f9b0934567aea08ec49880546788fcdeebb9f6d4e4bcef603daaa7
+[solver libs
+Antoonvh <j.a.v.hooft@gmail.com>**20250513084751
+ Ignore-this: b348496d9dd40e66157c8fab541a3689
+] 
+hash: 0000000184-c67080666616980f75b671c66a7c5ea6f0b547e057b9ceb57a01afa35ee809b7
+[2nd attempt
+Antoonvh <j.a.v.hooft@gmail.com>**20250513084936
+ Ignore-this: 3c8102e684f2fcdc9f7cc93d2a1c4c8e
+] 
+hash: 0000000229-d009244de8498a57a0b5728ac26b19306de368e79738dcf459b43da1890a6f2b
+[autolink
+Antoonvh <j.a.v.hooft@gmail.com>**20250513090317
+ Ignore-this: d222bfb00ea4472e983f03e8685ba838
+] 
+hash: 0000000175-f7aca4291764bfee139191dd2d9a02b6ea98332a5eadbef84d76298bdf3915c6
+[typo, add x11 (wxt not good)
+pyl <pyl@ccr.jussieu.fr>**20250513122749
+ Ignore-this: 64f395cc904f5a27b566399a72e10a4e
+] 
+hash: 0000000413-919ac32707ac494c37e7c79c9df186639e8c02ffce43a25b8d69019285c132ff
+[Add bib article dixit2025viscoelastic
+Ayush Dixit <ayushdixit067@gmail.com>**20250513135855
+ Ignore-this: da461e23c7c1cd2a9ed86616f9667b19
+] 
+hash: 0000000563-4a8d6abfcb77ca390eb64cf9f56bf289201cc761141a2c1ee3857f298074bf78
+[Registration - Jiayu Li
+guest**20250513142021
+ Ignore-this: a6b3e3c37e3ec08c5e7f2ace8bc146c3
+] 
+hash: 0000000167-3572da73213f250fd10c12a07f076b0bc47368ed0815120bad719fcadca85769
+[Edit information of Jiayu
+guest**20250513142413
+ Ignore-this: 842af5537671d4c77ad523b5f93904fe
+] 
+hash: 0000000262-d64e77af4360a8475e46cc0d1c59cf97630d7d23fa17eb0b89a109cbae4d2e35
+[tHree forces implementation, first steps.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250513153800
+ Ignore-this: 919589ef02a9ffadbca4fe349252a81e
+ Force blobs designed on Fluid Particle-like functions.
+ Result independent on resolution.
+] 
+hash: 0000007301-b08359b3ea768317e372ffdf964d993e175763bf9de2f24473ce227ed740a72e
+[wip: k-epsilon_ocean
+Bruno Deremble <bruno.deremble@cnrs.fr>**20250513154954
+ Ignore-this: 8a595834ebcc30e0389939eb4bcae678db13a5e49276b73ac92fc303ea1bd05d0a281ba4a001f8e7
+] 
+hash: 0000021078-1bbbec385359c2da200197c7e7c5263dfd96096db472c5dbe2eb0ec4a4633c2b
+[graph title
+bderembl <bruno.deremble@cnrs.fr>**20250513155323
+ Ignore-this: fdbc5d5ed97ef701321978502a69cd0a
+] 
+hash: 0000000291-8bec57b52251d162a7afad2aa54eb450c5e8233b54e262996e657ea1f592115b
+[Organizing old code
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250513214845
+ Ignore-this: b85046387124524f9d3abe00da19c0cdc72f6412bde2f7f58d0e50734d28ed24458662b9bf51a0de
+] 
+hash: 0000003069-c52ebcecc80cf15c5a76d64f4f357f29926dc6736ed4499bc36c52bdc09e10b4
+[Adding vortex filaments and Biot-Savart with examples
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250513215133
+ Ignore-this: fc1cc26aaf0864cb2fcd943407c687b5bb4263f40830238ce0ecf669eec57ddcc74d21724231342a
+] 
+hash: 0000226913-74a14d98c4acc00c5eb1f1508db9972641631a5a0e1a454cb6f74dd217fab88d
+[Error with outputs
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250513222654
+ Ignore-this: bac68215d6b71ff3bc0f02795ddbe8ce7228351f5dce0d069b6b632535aa704c8ba74861dcc187fe
+] 
+hash: 0000000941-7c46f1fa73deab80903d8de457a3dd426705b377e7f65bdc5469a5071e62cf97

@@ -14,7 +14,8 @@ face vector fsTOTAL[];
   What is the smallest cells size (CS) in the simulation? 
   This will be the characteristic size with which I model
   the presence of my microswimmer.*/
-#define CS (L0/(N))
+//#define CS (L0/(N))
+#define CS L0/64
 // This is right if I have a fixed mesh, but should check when using
 // variable refinement (adaptive...)
 

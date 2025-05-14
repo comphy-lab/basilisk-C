@@ -59,7 +59,7 @@ int main()
 event init (t = 0) {
 /**
 	Initialize microswimmer particles. */
-	microswimmers = init_tp_circle(4);
+	microswimmers = init_tp_circle(NP);
 
   /**
   Viscosity is  unity. */
@@ -86,9 +86,9 @@ event init (t = 0) {
 We check for a stationary solution. */
 
 event logfile (t += 0.05; i <= 1000) {
-	//foreach_particle_in(microswimmers){
-	//	fprintf(stderr,"PARTICLE %+6.5e %+6.5e %+6.5e %+6.5e \n",p().x,p().y,p().u.x,p().u.y);
-	//}
+	foreach_particle_in(microswimmers){
+		fprintf(stderr,"PARTICLE %+6.5e %+6.5e %+6.5e %+6.5e \n",p().x,p().y,p().u.x,p().u.y);
+	}
 }
 
 event acceleration (i++){

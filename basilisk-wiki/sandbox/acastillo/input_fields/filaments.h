@@ -290,42 +290,87 @@ struct vortex_filament{
   coord*  dC;       // 
   coord*  d2C;      // 
   coord*  d3C;      // 
+  coord*  Ulocal;   //
+  coord*  Uauto;    // 
+  coord*  Umutual;  //
+  coord*  Utotal;   // 
+  double* vol;      // Initial volume 
+  
 };
 
-void allocate_vortex_filament(struct vortex_filament* filament, int nseg) {
-  filament->nseg = nseg;
-  filament->theta = malloc(nseg * sizeof(double));
-  filament->C = malloc(nseg * sizeof(coord));
-  filament->Tvec = malloc(nseg * sizeof(coord));
-  filament->Nvec = malloc(nseg * sizeof(coord));
-  filament->Bvec = malloc(nseg * sizeof(coord));
-  filament->s = malloc(nseg * sizeof(double));
+// Function to allocate memory for the *members* of a vortex_filament struct
+// Assumes the struct itself has already been created (e.g., on the stack or
+// heap)
+void allocate_vortex_filament_members(struct vortex_filament* filament, int nseg) {
+  
+  if (filament == NULL) {
+    perror("Failed to allocate memory for filament");
+    return ;
+  }
+
+  filament->nseg  = nseg;
+  filament->pcar  = (coord) {0.0, 0.0, 0.0};
+
+  // Allocate memory for the double arrays
+  filament->theta = malloc(nseg * sizeof(double));  
+  filament->s     = malloc(nseg * sizeof(double));
   filament->sigma = malloc(nseg * sizeof(double));
   filament->kappa = malloc(nseg * sizeof(double));
-  filament->tau = malloc(nseg * sizeof(double));
+  filament->tau   = malloc(nseg * sizeof(double));  
+  filament->a     = malloc(nseg * sizeof(double));
+  filament->vol   = malloc(nseg * sizeof(double));
   filament->varphi0 = malloc(nseg * sizeof(double));
-  filament->a = malloc(nseg * sizeof(double));
-  filament->dC = malloc(nseg * sizeof(coord));
-  filament->d2C = malloc(nseg * sizeof(coord));
-  filament->d3C = malloc(nseg * sizeof(coord));
-  filament->pcar = (coord) {0.0, 0.0, 0.0};
+  
+  // Allocate memory for the coord arrays
+  filament->C     = malloc(nseg * sizeof(coord));
+  filament->dC    = malloc(nseg * sizeof(coord));
+  filament->d2C   = malloc(nseg * sizeof(coord));
+  filament->d3C   = malloc(nseg * sizeof(coord));  
+  filament->Tvec  = malloc(nseg * sizeof(coord));
+  filament->Nvec  = malloc(nseg * sizeof(coord));
+  filament->Bvec  = malloc(nseg * sizeof(coord));
+
+  
+  
+  filament->Ulocal  = malloc(nseg * sizeof(coord));
+  filament->Uauto   = malloc(nseg * sizeof(coord));
+  filament->Umutual = malloc(nseg * sizeof(coord));
+  filament->Utotal  = malloc(nseg * sizeof(coord));
 }
 
-void free_vortex_filament(struct vortex_filament* filament) {
-    free(filament->theta);
-    free(filament->C);
-    free(filament->Tvec);
-    free(filament->Nvec);
-    free(filament->Bvec);
-    free(filament->s);
-    free(filament->sigma);
-    free(filament->kappa);
-    free(filament->tau);
-    free(filament->varphi0);
-    free(filament->a);
-    free(filament->dC);
-    free(filament->d2C);
-    free(filament->d3C);
+// Function to free memory for the *members* of a vortex_filament struct
+// Assumes the struct itself will NOT be freed by this function
+void free_vortex_filament_members(struct vortex_filament* filament) {
+  if (filament == NULL) {
+    // Nothing to free
+    return;
+  }
+
+  // Free the double arrays
+  free(filament->theta);    filament->theta = NULL; // Set to NULL after freeing
+  free(filament->s);        filament->s = NULL;
+  free(filament->sigma);    filament->sigma = NULL;
+  free(filament->kappa);    filament->kappa = NULL;
+  free(filament->tau);      filament->tau = NULL;
+  free(filament->a);        filament->a = NULL;
+  free(filament->vol);      filament->vol = NULL;
+  free(filament->varphi0);  filament->varphi0 = NULL;
+
+  // Free the coord arrays
+  free(filament->C);        filament->C = NULL;
+  free(filament->dC);       filament->dC = NULL;
+  free(filament->d2C);      filament->d2C = NULL;
+  free(filament->d3C);      filament->d3C = NULL;
+  free(filament->Tvec);     filament->Tvec = NULL;
+  free(filament->Nvec);     filament->Nvec = NULL;
+  free(filament->Bvec);     filament->Bvec = NULL;
+
+  
+
+  free(filament->Ulocal);   filament->Ulocal = NULL;
+  free(filament->Uauto);    filament->Uauto = NULL;
+  free(filament->Umutual);  filament->Umutual = NULL;
+  free(filament->Utotal);   filament->Utotal = NULL;
 }
 
 struct local_filament{  

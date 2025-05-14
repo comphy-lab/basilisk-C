@@ -2,7 +2,7 @@
   What is the smallest cells size (CS) in the simulation? 
   This will be the characteristic size with which I model
   the presence of my microswimmer.*/
-#define ZITA (L0/(N))
+#define ZITA (L0/(N))*5.
 
 #define radius sqrt(sq(PS(x,p().x+Shift.x))+sq(PS(y,p().y+Shift.y)))
 #define SmoothedProfile(RADIUS) 0.5*(tanh((RADIUS-radius)/ZITA)+1.)
@@ -36,12 +36,15 @@ void compute_SP(Particles p){
 	so to normalize all quantities wrt the present configuration.*/
 		double integral = 0.;
 		foreach(reduction(+:integral)) // should work in parallel as well...
-			integral += SmoothedProfile(p().r)*sq(Delta);
+			if(SmoothedProfile(0.)>1e-5)
+				integral += 1.;
+		fprintf(stderr,"Cells covered by SPN0 %+6.5e \n",integral);
 /**
 	Now I can normalize, so that the integral of blob for the
 	present particle is equal to 1 .*/
 		foreach()
-			SPN0[] += SmoothedProfile(p().r)*sq(Delta)/integral;
+			if(SmoothedProfile(0.)>1e-5)
+				SPN0[] += 1./integral/dv();
 /**
 	### Compute SP, must be normalized so that the max is equal to 1.*/
   	double maxi = - 1e100;
@@ -62,5 +65,33 @@ extern face vector muv;
 void compute_variable_viscosity()
 {
 	foreach_face()
-		muv.x[] = fm.x[] + ETA*face_value(SP0,0);
+		muv.x[] = fm.x[]*(1.-face_value(SP0,0)) + ETA*face_value(SP0,0);
 }
+
+/**
+	# Body forcing. */
+//extern face vector av;
+/**
+	bodyForce is defined as a cell-centered field.
+	The effective acceleration field will be obtained
+	by interpolating the face values, as is done in
+	compute_variable_viscosity(). */
+vector bodyForce[];
+void compute_bodyForce(Particles p)
+{
+	foreach_particle_in(p)
+//		foreach()
+//			foreach_dimension()
+//				bodyForce.x[] = p().B.x*STRENGTH*SPN0[];
+		foreach_point(p().x,p().y)
+			foreach_dimension()
+				bodyForce.x[] = p().B.x*STRENGTH/dv();
+}
+
+//extern face vector av;
+//
+//void compute_variable_acceleration()
+//{
+//	foreach_face()
+//		av.x[] = face_value(bodyForce.x,0);
+//}

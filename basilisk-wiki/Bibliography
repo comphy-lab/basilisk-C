@@ -8,6 +8,17 @@ own papers if they use Basilisk. See also [src/references.bib]().
 ### 2025
 
 ~~~bib
+@article{dixit2025viscoelastic,
+  title={Viscoelastic Worthington jets and droplets produced by bursting bubbles},
+  author={Dixit, Ayush and Oratis, Alexandros and Zinelis, Konstantinos and Lohse, Detlef and Sanjay, Vatsal},
+  journal={Journal of Fluid Mechanics},
+  volume={1010},
+  pages={A2},
+  year={2025},
+  publisher={Cambridge University Press},
+  doi = {10.1017/jfm.2025.237}
+}
+
 @article{zhang2025b, 
 title={Lift reversal for an oblate droplet translating in a linear shear flow: from inviscid bubble to rigid spheroid}, 
 volume={1007}, 

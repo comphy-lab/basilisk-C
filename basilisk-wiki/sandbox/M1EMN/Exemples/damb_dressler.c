@@ -32,6 +32,7 @@ event init (i = 0)
    }
 
 #ifdef gnuX
+  printf("\nset term x11\n");
   printf("\nset grid\n");
 #endif    
 }
@@ -96,7 +97,7 @@ event plot(t<tmax;t+=.5 ) {
 To compile and run with gnuplot:
 
 ~~~bash
-  qcc -DgnuX=1   -O2   -o damb damb_dressler.c -lm;  ./damb_dressler | gnuplot
+  qcc -DgnuX=1 -O2 -o damb_dressler damb_dressler.c -lm; ./damb_dressler | gnuplot
 ~~~
 
 To generate the plot with   `out`
