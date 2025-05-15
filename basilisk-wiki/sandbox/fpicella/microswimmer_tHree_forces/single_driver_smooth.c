@@ -12,8 +12,10 @@ I Will define here if I want a fancier/more complex way of computing angular vel
 //#define Particle_Advection_ON 1
 
 double HEIGHT = 1.0;
-double STRENGTH = 100.0;
 double THETA = 0.;
+double RADIUS = 0.25;
+double ETA = 0.;
+double FACTOR = 1.;
 
 #include "fpicella/src/periodic-shift-treatment.h"
 
@@ -21,8 +23,8 @@ double THETA = 0.;
 double theta; double thetan; double omega; double omega2; double r; \
 coord B; double Thrust;
 
-#define ALPHA +2
-#define BETA +0
+#define alpha +2
+#define beta  +2
 
 #include "fpicella/src/tracer-particles-FP.h"
 #include "fpicella/src/driver-tHree-smooth.h"
@@ -40,14 +42,15 @@ double NP = 1.;
 
 int main()
 {
-	display_control(STRENGTH,-1000,1000);
 	display_control(THETA,-10,10);
+	display_control(FACTOR,-1000,1000);
+	display_control(ETA,-1000,1000);
 	
   /**
   Space and time are dimensionless. This is necessary to be able to
   use the 'mu = fm' trick. */
 
-  size (64. [0]);
+  size (4. [0]);
   DT = HUGE [0];
   
   origin (-L0/2., -L0/2.);
@@ -59,7 +62,7 @@ int main()
   TOLERANCE = 1e-7;
   
   //for (N = 16; N <= 64; N *= 2)
-	N=64;
+	N=128;
     run();
 }
 
@@ -73,9 +76,9 @@ event init (t = 0) {
 	foreach_particle(){
 		p().x = 0.;
 		p().y = 0.;
-		p().B.y=0.;
-		p().r = 1.;
-		p().Thrust = 1.;
+		p().B.x=100.;
+		p().r = RADIUS;
+		p().Thrust = 0.;
 	}
 
   /**
@@ -85,8 +88,11 @@ event init (t = 0) {
 
   ///**
   //The channel geometry is defined using Constructive Solid Geometry. */  
-  //mask (y > +HEIGHT/2. ? top : none);
-  //mask (y < -HEIGHT/2. ? bottom : none);
+  mask (y > +HEIGHT/2. ? top : none);
+  mask (y < -HEIGHT/2. ? bottom : none);
+
+//  mask (x > +HEIGHT/2. ? right : none);
+//  mask (x < -HEIGHT/2. ? left : none);
 	
 	u.n[top]    = dirichlet(0.);
 	u.t[top]    = dirichlet(0.);
@@ -116,4 +122,11 @@ event acceleration (i++){
 event properties(i++){
 	foreach_particle_in(microswimmers)
 		p().theta = THETA;
+	/**
+	### Fluid-Particle method
+	Include variable viscosity field. */
+	compute_sp(microswimmers);
+	foreach_face()
+		muv.x[] = 1.+face_value(sp,0)*ETA;
+	mu = muv;
 }

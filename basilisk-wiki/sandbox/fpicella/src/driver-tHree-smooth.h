@@ -3,6 +3,7 @@
 	Build up a forcing field...*/
 
 face vector av[];
+face vector muv[];
 /*
   What is the smallest cells size (CS) in the simulation? 
   This will be the characteristic size with which I model
@@ -25,24 +26,18 @@ face vector av[];
 #define sinTheta     sin(p().theta)
 #define cosTheta     cos(p().theta)
 
-#define ShiftxCenter      p().x-0.*BETA*cosTheta+0.*ALPHA*sinTheta
-#define ShiftyCenter      p().y-0.*BETA*sinTheta-0.*ALPHA*cosTheta
+#define ALPHA alpha*p().r
+#define BETA   beta*p().r
 
-#define ShiftxTrans       p().x-1.*BETA*cosTheta+1.*ALPHA*sinTheta
-#define ShiftyTrans       p().y-1.*BETA*sinTheta-1.*ALPHA*cosTheta
+#define ShiftxCenter   -0.*BETA*cosTheta+0.*ALPHA*sinTheta
+#define ShiftyCenter   -0.*BETA*sinTheta-0.*ALPHA*cosTheta
 
-#define ShiftxCis         p().x-1.*BETA*cosTheta-1.*ALPHA*sinTheta
-#define ShiftyCis         p().y-1.*BETA*sinTheta+1.*ALPHA*cosTheta
+#define ShiftxTrans    -1.*BETA*cosTheta+1.*ALPHA*sinTheta
+#define ShiftyTrans    -1.*BETA*sinTheta-1.*ALPHA*cosTheta
 
+#define ShiftxCis      -1.*BETA*cosTheta-1.*ALPHA*sinTheta
+#define ShiftyCis      -1.*BETA*sinTheta+1.*ALPHA*cosTheta
 
-/**
-	Next step, improve the _blob_ model.*/
-
-
-
-
-/**
-	A field for visualisation purposes only. */
 vector bodyForce[];
 void compute_microswimmer_forcing_smooth(Particles p)
 {
@@ -54,8 +49,8 @@ void compute_microswimmer_forcing_smooth(Particles p)
 	// Center
 		Shift.x = ShiftxCenter; Shift.y = ShiftyCenter;
 		foreach(){
-				bodyForce.x[] += SP(p().r)*(p().B.x+cos(p().theta)*p().Thrust);
-				bodyForce.y[] += SP(p().r)*(p().B.y+sin(p().theta)*p().Thrust);
+				bodyForce.x[] += SP(p().r)*(p().B.x+cos(p().theta)*p().Thrust)*FACTOR;
+				bodyForce.y[] += SP(p().r)*(p().B.y+sin(p().theta)*p().Thrust)*FACTOR;
 		}
 	// Trans
 		Shift.x = ShiftxTrans; Shift.y = ShiftyTrans;
@@ -72,4 +67,15 @@ void compute_microswimmer_forcing_smooth(Particles p)
 	}
 	foreach_face()
 		av.x[] = face_value(bodyForce.x,0);
+}
+
+scalar sp[];
+void compute_sp(Particles p){
+  foreach()
+    sp[] = 0.;
+	foreach_particle_in(p){
+		coord Shift = {0.,0.};
+		foreach()
+				sp[] += SP(p().r);
+	}
 }

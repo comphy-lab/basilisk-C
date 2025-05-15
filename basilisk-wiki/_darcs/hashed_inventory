@@ -1,4 +1,4 @@
-pristine:68f13b20aeeef8df2b640456e0e92989a57e0227abd62e82dad5c69fcc527a97
+pristine:97d6fdefacd520245e11ed12553b615c008dd58102c215cba53f6bb877759a7a
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -2333,3 +2333,50 @@ Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**2025051322265
  Ignore-this: bac68215d6b71ff3bc0f02795ddbe8ce7228351f5dce0d069b6b632535aa704c8ba74861dcc187fe
 ] 
 hash: 0000000941-7c46f1fa73deab80903d8de457a3dd426705b377e7f65bdc5469a5071e62cf97
+[Add article in preparation
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250514070416
+ Ignore-this: a2f8a9d4af22753cd6720d31452a1ef8c965a76c3df25137a898bb24b3f5b25765b8deaafcf650fd
+] 
+hash: 0000002474-2a16d71c39c88319b813a3944e0a9a2b87d5b287edc0aebc71031a6dfbddd102
+[Add videos to readme
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250514070823
+ Ignore-this: 4c011ba9750ba81df7984484410caccc0d12c5b2959b1e4503ead65f0012659c9361cdf15db06c3b
+] 
+hash: 0000000714-aa1247ab13342d5cbc5fc4cb5711468bddb896cebeb0706a240c640d9a1392c9
+[Second try
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250514070906
+ Ignore-this: 49eb899798d850465eb1d34d9c0a4115708ea9df32ad0f65e70ec4a0af594b8ba9c2155e1d86ef0c
+] 
+hash: 0000000890-411ebcf4742be43898d753aa236ae3805ca25f6a410b4927ea25643458ff7652
+[Third time is the charm
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250514071103
+ Ignore-this: 14fe2cdc323f4e3885652943482657e9d2b46a4f05c374441876d509abb2eef4fd84c85329af00ac
+] 
+hash: 0000000936-d08a946b835bfab3e17a630b2fe894c788eabb036216abe5e33cb8fd375e3698
+[Added new attendee
+guest**20250514071221
+ Ignore-this: c1af2db87926a0966d344aa3a801bf8d
+] 
+hash: 0000000174-6c98a91d6140e68e0eab567facc363929093a244bc8757dcd0e3a1c29941fb7e
+[Without variable viscosity. Result is independent on mesh/resolution.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250513163451
+ Ignore-this: 895fd9879b931b85317357119b0e8423
+] 
+hash: 0000001485-32d8941869e5f3b70ed6c0afd885c5a157f820aae8a3903f93e3698cc199df5f
+[2D jet impinging on a flat plate.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250514102009
+ Ignore-this: b7fd43685c5c66cf69ecd4980a8d973c
+ For my dearest Antoine.
+ What BC to set?
+] 
+hash: 0000004651-fd764e29589920a058649d8337e911337a2eb29a8e6c50d7f2fa3dc4bc1a5731
+[particle finder
+j.a.v.hooft@gmail.com**20250514183805
+ Ignore-this: ecc326c96fc77a0739b52abbaaa3c0c609a024ede6d4d64c6ec4117dd8f942b483c669b27e243e5e
+] 
+hash: 0000004058-f0987a05739c2190a724b0bac88d0ef9e05efd3f616c746a8dd5abdab152bd8b
+[loop
+Antoonvh <j.a.v.hooft@gmail.com>**20250514184001
+ Ignore-this: f1167bbc658d266cad5c38727ea910df
+] 
+hash: 0000000248-edb8335e21c5813089603286e11aeb6b56105f1cb677f0336c261c5d064dffa2

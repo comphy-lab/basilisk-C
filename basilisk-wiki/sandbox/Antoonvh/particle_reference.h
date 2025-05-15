@@ -126,7 +126,7 @@ void assign_particles (Particles plist, scalar s) {
       while (ind[n++] >= 0);
     }
     ind = realloc (ind, (n + 1)*sizeof(int));
-    ind[n - 1] = j;
+    ind[n - 1] = _j_particle;
     ind[n] = -1;
     s[] = field_v(ind);
   }
@@ -143,18 +143,18 @@ int plist_s (scalar s) {
 }
 
 @def foreach_particle_point(s) {
-  int l = plist_s(s);				
+  int _l_particle = plist_s(s);				
   if (value_p(s, point)) {					
     int * ind = pointer_v(value_p(s, point));			
     for (int n = 0; ind[n] >= 0; n++) {		
-      int j = ind[n];
+      int _j_particle = ind[n];
       PARTICLE_VARIABLES;			
       @						
 	@def end_foreach_particle_point()
 	}					
-    }						
-    }						
-      @						
+  }
+}
+  @						
 	
 	/**
 ## Test

@@ -3,40 +3,29 @@
 My name is [Andrés](https://orcid.org/0000-0003-2175-324X).
 I store in this location some of the work done in Basilisk. I mainly work with parametric instabilities, vortex instabilities and thermal convection.
 
-# Submitted papers
-## Parametric instabilities
-
-~~~bib
-@Article{Grea2025,
-author={Benoît-Joseph Gréa and Andrés Castillo-Castellanos and Antoine
-Briard and Alexis Banvillet and Nicolas Lion and Catherine Canac and Kevin
-Dagrau and Pauline Duhalde},
-title={Frozen waves in the inertial regime},
-journal={Submitted to Journal of Fluid Mechanics},
-year={2025}
-}
-~~~
-
-# Published papers
-## Vortex flows
-~~~bib
-
-@hal{abraham2022, hal-04281239v1}
-@hal{castillo2022, hal-03746533v1}
-@hal{castillo2021, hal-03401563}
-
-~~~
-## Thermal convection
-~~~bib
-
-@hal{castillo2019, hal-01921361}
-@hal{castillo2017, tel-01609741v2}
-@hal{castillo2016, hal-01429395}
-
-~~~
-
 # Structure of this sandbox
 This sandbox is divided in different parts:
+
+## Vortex Filament Method
+
+This includes an implementation of a Vortex Filament Method (VFM) using [Biot-Savart](filaments/biot-savart.h) and some examples:
+
+* Motion of a [vortex ring](filaments/test_vortex_ring1.h)
+* Motion of [2 vortex rings](filaments/test_2vortex_rings1.h)
+* Motion of [3 vortex rings](filaments/test_3vortex_rings1.h)
+* Motion of an [elliptical vortex ring](filaments/test_vortex_ellipse1.h)
+
+<center>
+  <table>
+  <tr>
+  <td><center>![Motion of an elliptical vortex ring](filaments/test_vortex_ellipse1/vortex_ellipse.mp4)(width=100%)</center></td>
+  <td><center>![Motion of 2 vortex rings](filaments/test_2vortex_rings1/2vortex_rings.mp4)(width=100%)</center></td>
+  <td><center>![Motion of 3 vortex rings](filaments/test_3vortex_rings1/3vortex_rings.mp4)(width=100%)</center></td>
+  </tr>
+  </table>
+</center>
+
+
 
 ## Output fields
 This includes a series of routines to write the resulting fields into several
@@ -204,6 +193,46 @@ base state.
 *****
 
 /**
+# Articles Submitted or in Preparation
+## Parametric instabilities
+
+~~~bib
+@Article{Castillo2025,
+author={Andrés Castillo-Castellanos and Benoît-Joseph Gréa and Antoine
+Briard and Louis Gostiaux},
+title={Mixing induced by Faraday surface waves},
+journal={In preparation for Journal of Fluid Mechanics},
+year={2025}
+}
+
+@Article{Grea2025,
+author={Benoît-Joseph Gréa and Andrés Castillo-Castellanos and Antoine
+Briard and Alexis Banvillet and Nicolas Lion and Catherine Canac and Kevin
+Dagrau and Pauline Duhalde},
+title={Frozen waves in the inertial regime},
+journal={Submitted to Journal of Fluid Mechanics},
+year={2025}
+}
+~~~
+
+# Articles in Publication
+## Vortex flows
+~~~bib
+
+@hal{abraham2022, hal-04281239v1}
+@hal{castillo2022, hal-03746533v1}
+@hal{castillo2021, hal-03401563}
+
+~~~
+## Thermal convection
+~~~bib
+
+@hal{castillo2019, hal-01921361}
+@hal{castillo2017, tel-01609741v2}
+@hal{castillo2016, hal-01429395}
+
+~~~
+
 # References
 
 ~~~bib
