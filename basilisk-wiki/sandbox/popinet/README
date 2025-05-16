@@ -811,6 +811,13 @@ abstract = "Abstract This work reports a direct numerical simulation study on su
 ## Conferences
 
 ~~~bib
+@InProceedings{popinet2025,
+  author = {Stéphane Popinet and Arnaud Antkowiak and Pierre-Yves Lagrée and Luc Deike and Jiarong Wu},
+  title =	 {Thick or thin? {M}odelling film flows from microns to kilometers (invited Keynote lecture)},
+  year =	 2025,
+  booktitle =	 {12th International Conference on Multiphase Flow, Toulouse, 11-16 May}
+}
+
 @InProceedings{popinet2024a,
   author =	 {S. Popinet},
   title =	 {A multilayer model for multiscale flows of thin (and not-so-thin) films

@@ -18,8 +18,6 @@ foreach() {
 }
 ~~~
 
-*Except*(!) qcc does not allow these nested loops and you must wrap it
-in some function (see test). 
  */
 
 attribute { 
@@ -108,7 +106,7 @@ void free_scalar_data (scalar s) {
 
 void assign_particles (Particles plist, scalar s) {
   if (s.plist > 0)
-    free_scalar_data (s);
+    ;//free_scalar_data (s);
   s.plist = plist + 1;
   foreach()
     s[] = 0;
@@ -142,19 +140,17 @@ int plist_s (scalar s) {
   return s.plist - 1; // Atribute may not exists at `@def` preprocessing
 }
 
-@def foreach_particle_point(s) {
+macro foreach_particle_point(scalar s, Point point) {
   int _l_particle = plist_s(s);				
   if (value_p(s, point)) {					
     int * ind = pointer_v(value_p(s, point));			
     for (int n = 0; ind[n] >= 0; n++) {		
       int _j_particle = ind[n];
       PARTICLE_VARIABLES;			
-      @						
-	@def end_foreach_particle_point()
-	}					
+      {...}
+    }					
   }
 }
-  @						
 	
 	/**
 ## Test

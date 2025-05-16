@@ -8,7 +8,33 @@ own papers if they use Basilisk. See also [src/references.bib]().
 ### 2025
 
 ~~~bib
-@article{dixit2025viscoelastic,
+@article{deblais2025,
+  title = {Early stages of drop coalescence},
+  author = {Deblais, Antoine and Xie, Kaili and Lewin-Jones, Peter and Aarts, Dirk and Herrada, Miguel A. and Eggers, Jens and Sprittles, James E. and Bonn, Daniel},
+  journal = {Phys. Rev. Fluids},
+  volume = {10},
+  issue = {4},
+  pages = {L042001},
+  numpages = {8},
+  year = {2025},
+  month = {Apr},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.10.L042001},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.10.L042001}
+}
+
+@article{yang2025,
+title = {Topological change of a hollow droplet impacting onto a cylindrical super-hydrophobic target: A numerical study},
+journal = {International Journal of Multiphase Flow},
+volume = {188},
+pages = {105227},
+year = {2025},
+issn = {0301-9322},
+doi = {https://doi.org/10.1016/j.ijmultiphaseflow.2025.105227},
+url = {https://www.sciencedirect.com/science/article/pii/S0301932225001053},
+author = {Linkai Yang and Longmin Tang and Guangzhao Zhou}}
+
+@article{dixit2025,
   title={Viscoelastic Worthington jets and droplets produced by bursting bubbles},
   author={Dixit, Ayush and Oratis, Alexandros and Zinelis, Konstantinos and Lohse, Detlef and Sanjay, Vatsal},
   journal={Journal of Fluid Mechanics},

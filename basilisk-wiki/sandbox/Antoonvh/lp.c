@@ -14,12 +14,6 @@ scalar p[];
 Particles parts;
 int np = 10;
 
-// We must wrap this foreach* in a function 
-void print_particles (Point point, scalar s, coord cc) {
-  foreach_particle_point(s)
-    fprintf (stderr, "%g %g\n%g %g\n\n", cc.x, cc.y, x, y);
-}
-
 int main() {
   srand (1);
   // setup grid
@@ -33,7 +27,7 @@ int main() {
   parts = new_particles (np);
   foreach_particle() {
     foreach_dimension()
-      p().x = noise();
+      p().x = noise(); 
   }
   // Two particles share a cell for testing:
   pl[parts][np-1].x = pl[parts][0].x + 0.04;
@@ -44,13 +38,16 @@ int main() {
   // Print neighborhood data:
   foreach() {
     coord cc = {x, y};
-    foreach_neighbor(1) 
-      print_particles(point, p, cc);
+    foreach_neighbor(1) {
+      foreach_particle_point(p, point) {
+	fprintf (stderr, "%g %g\n%g %g\n\n", cc.x, cc.y, x, y);
+      }
+    }
   }
 
   FILE * fp = fopen ("particles", "w");
   foreach_particle()
-    fprintf (fp, "%g %g %d\n", x, y, j);
+    fprintf (fp, "%g %g %d\n", x, y, _j_particle);
   fclose (fp);
 
   //clean_up
