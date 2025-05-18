@@ -1,14 +1,15 @@
 
 #define ML 1
 #define HYDRO 1
-
+#define MUI 1
+#define BAGNOLDDRY 1
 
 
 #include "grid/multigrid1D.h"
 #if !ML
 # include "saint-venant.h"
 #else // ML
-# include "./hydroF.h"
+# include "./hydroMT.h"
 # define phi q
 # if !HYDRO
 #   include "layered/nh.h"
@@ -21,63 +22,7 @@
 const double NU = 0.1, T0 = 240;
 const double HR = 1 [1];
 const double Ltas = 20 [1];
-/*
-Functions reserved for dry  Bagnold flow
-*/
 
-/*- - - - - - - - - - - - - - - - - - - - - - - - - */
-double Shear(Point point, scalar s, scalar h, int layer){
-
-  double shear;
-    if (layer>0&&layer<(nl-1)){ 
-      shear = (s[0,0,layer]-s[0,0,layer-1])/(0.5*(h[0,0,layer]+h[0,0,layer-1]));}
-
-	else if(layer==0){
-
-	  shear = (s[0,0,layer+1]-s[0,0,layer])/(0.5*(h[0,0,layer+1]+h[0,0,layer]));
-	}
-	else if(layer==nl-1){
-	  shear = (s[0,0,layer]-s[0,0,layer-1])/(0.5*(h[0,0,layer]+h[0,0,layer-1]));
-	}
-    return shear;
-
-}
-
-double pressionHydro(Point point, scalar h,int layer){
-
-	double H = 0.;
-	double zc = 0.;
-    for (int l = 0; l < layer; l++) {
-		H+=h[0,0,l];
-	}
-	zc = H + 0.5*h[0,0,layer];
-	return rho*G*cos(slope)*(eta[]-zb[]-zc);
-}
-
-
-double nombreInertie(Point point, scalar s, scalar h, int layer){
-
-  double ans;
-  ans = dg*Shear(point,s,h,layer)/sqrt(pressionHydro(point,h,layer)/rho);
-  return ans;
-
-}
-
-double coeffFrotte(Point point, scalar s, scalar h, int layer){
-
-  double _rapport;
-  _rapport = I0/nombreInertie(point, s, h, layer);
-  return mu0 + deltamu/(_rapport + 1);
-
-}
-
-
-double Nueq(Point point, scalar s, scalar h, int layer){
-
-    double ans;
-    ans =  coeffFrotte(point,s,h,layer)*pressionHydro(point,h,layer)/Shear(point,s,h,layer);
-    return ans;
-}
 
 double Ub(Point point)
 {

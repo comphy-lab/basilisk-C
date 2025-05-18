@@ -1,5 +1,5 @@
 /**
-# Motion of a thin vortex ring (using the filament framework)
+# Motion of a thin vortex ring (using the vortex filament framework)
 
 In this example, we consider the motion of a vortex ring of radius $R$ and core
 size $a$ using the [vortex filament framework](../input_fields/filaments.h).
@@ -21,16 +21,24 @@ velocity induced by the vortex filament and $\vec{U}_{\infty}$ an external
 velocity field. The induced velocity $\vec{U}_{ind}$ is given by the 
 [Biot-Savart](biot-savart.h) law.
 
-Here, we vary the number of segments to verify the axial velocity converges.
+- In this test, we verify that the translational velocity $u_z$ is independent
+  of the discretization:
 
-~~~gnuplot Contributions to the total axial velocity from different sources as function of nseg
-set term pngcairo enhanced size 640,480 font ",12"
-set output 'plot_all.png'
-set xlabel "nseg"
-set ylabel "velocity"
-plot 'curve.txt' u 1:3 w lp title "local", \
-              '' u 1:4 w lp title "non-local", \
-              '' u 1:5 w lp title "total"
+~~~pythonplot Contributions to the total axial velocity from different sources as function of $n_{seg}$
+import numpy as np
+import matplotlib.pyplot as plt
+	
+plt.figure()
+data = np.loadtxt('curve.txt', delimiter=' ', usecols=[0,2,3,4])
+plt.plot(data[:,0], data[:,1], ls='--', lw=1.4, label='local contributions');
+plt.plot(data[:,0], data[:,2], ls='-.', lw=1.6, label='non-local contributions');
+plt.plot(data[:,0], data[:,3], ls='-',  lw=2,   label='total velocity');
+plt.legend(loc='best');
+plt.xlabel(r'$n_{seg}$')
+plt.ylabel(r'$U_z$')
+plt.xlim([8,128])
+plt.tight_layout()
+plt.savefig('plot_Uz_vs_nseg.svg')
 ~~~
 
 */
@@ -42,11 +50,6 @@ plot 'curve.txt' u 1:3 w lp title "local", \
 #include "../input_fields/draw_filaments.h"
 #include "biot-savart.h"
 
-
-
-/**
- The main time loop is defined in [run.h]().
-*/
 int minlevel = 4;
 int maxlevel = 8;
 vector u[];
@@ -60,15 +63,12 @@ int main(){
   if (pid() == 0){
     FILE *fp = fopen("curve.txt", "w"); 
     fclose(fp);
-  }
-  
+  }  
   
   double R = 1.0;
   double a=0.01;
   struct vortex_filament filament1;
-  coord Uinfty = {0., 0., 0.};
-
-  
+  coord Uinfty = {0., 0., 0.};  
   for (int nseg = 8; nseg < 128; nseg+=1){
 
     double dtheta = 2*pi/((double)nseg);
@@ -92,35 +92,116 @@ int main(){
     memcpy(filament1.a, a1, nseg * sizeof(double));  
     memcpy(filament1.vol, vol1, nseg * sizeof(double));
 
-    
     local_induced_velocity(filament1);  
     for (int j = 0; j < nseg; j++) {
       filament1.a[j] = sqrt(filament1.vol[j]/(pi*filament1.s[j]));
-    }
-      
+    }      
     local_induced_velocity(filament1);  
     for (int j = 0; j < nseg; j++) {
       filament1.Uauto[j] = nonlocal_induced_velocity(filament1.C[j], filament1);            
       foreach_dimension(){
-        filament1.Utotal[j].x = filament1.Uauto[j].x + filament1.Ulocal[j].x - Uinfty.x;      
+        filament1.U[j].x = filament1.Uauto[j].x + filament1.Ulocal[j].x - Uinfty.x;      
       }
     }
-
     if (pid() == 0){
       FILE *fp = fopen("curve.txt", "a");
       for (int j = 0; j < nseg; j++) {
         fprintf(fp, "%d %d ", nseg, j);        
         fprintf(fp, "%g ", filament1.Ulocal[j].z);
         fprintf(fp, "%g ", filament1.Uauto[j].z);
-        fprintf(fp, "%g \n", filament1.Utotal[j].z);
+        fprintf(fp, "%g \n", filament1.U[j].z);
       }
       fputs("\n", fp);  
       fclose(fp);
     }
-
     free_vortex_filament_members(&filament1);
   }
   
+/**
+- We also verify that the translational velocity $U_z$ has a log-dependency on
+  the core size $a$, according to:
+  $$
+  U_z = \frac{\Gamma}{4\pi}\left(\log\left(\frac{8}{a}\right)-0.5\right)
+  $$
+  which is all contained inside the local contributions.
+
+~~~pythonplot Contributions to the total axial velocity from different sources as function of $a$
+import numpy as np
+import matplotlib.pyplot as plt
+	
+plt.figure()
+data = np.loadtxt('curve2.txt', delimiter=' ', usecols=[2,3,4,5])
+plt.semilogx(data[:,0], data[:,1], ls='--', lw=1.4, label='local contributions');
+plt.semilogx(data[:,0], data[:,2], ls='-.', lw=1.6, label='non-local contributions');
+plt.semilogx(data[:,0], data[:,3], ls='-',  lw=2,   label='total velocity');
+
+def func(x):
+  return (1/(4*np.pi))*(np.log(8/x)-0.5)
+plt.semilogx(data[:,0], func(data[:,0]), '-k', label=r'$(\Gamma/4\pi)(\log(8/a)-0.5$')
+
+plt.legend(loc='best');
+plt.xlabel(r'$a$')
+plt.ylabel(r'$U_z$')
+plt.xlim([5e-4,5e-1])
+plt.tight_layout()
+plt.savefig('plot_Uz_vs_a.svg')
+~~~
+*/
+  if (pid() == 0){
+    FILE *fp = fopen("curve2.txt", "w"); 
+    fclose(fp);
+  }  
+
+  for (int i = 1; i < 1000; i++){
+    int nseg = 64;
+    double a = 0.0005*(double)i;
+    double dtheta = 2*pi/((double)nseg);
+    double theta[nseg];
+    double a1[nseg];
+    double vol1[nseg];
+    coord C1[nseg];
+
+    // Define a curve 
+    for (int j = 0; j < nseg; j++){
+      theta[j] = dtheta * (double)j;
+      C1[j] = (coord) { R * cos(theta[j]), R * sin(theta[j]), 0.};
+      vol1[j] = pi * sq(a) * R * dtheta;
+      a1[j] = a;
+    } 
+    
+    // We store the space-curve in a structure   
+    allocate_vortex_filament_members(&filament1, nseg);
+    memcpy(filament1.theta, theta, nseg * sizeof(double));
+    memcpy(filament1.C, C1, nseg * sizeof(coord));
+    memcpy(filament1.a, a1, nseg * sizeof(double));  
+    memcpy(filament1.vol, vol1, nseg * sizeof(double));
+    
+    local_induced_velocity(filament1);  
+    for (int j = 0; j < nseg; j++) {
+      filament1.a[j] = sqrt(filament1.vol[j]/(pi*filament1.s[j]));
+    }      
+    local_induced_velocity(filament1);  
+    for (int j = 0; j < nseg; j++) {
+      filament1.Uauto[j] = nonlocal_induced_velocity(filament1.C[j], filament1);            
+      foreach_dimension(){
+        filament1.U[j].x = filament1.Uauto[j].x + filament1.Ulocal[j].x - Uinfty.x;      
+      }
+    }
+    if (pid() == 0){
+      FILE *fp = fopen("curve2.txt", "a");
+      for (int j = 0; j < nseg; j++) {
+        fprintf(fp, "%d ", i);        
+        fprintf(fp, "%d ", j);        
+        fprintf(fp, "%g ", filament1.a[j]);        
+        fprintf(fp, "%g ", filament1.Ulocal[j].z);
+        fprintf(fp, "%g ", filament1.Uauto[j].z);
+        fprintf(fp, "%g \n", filament1.U[j].z);
+      }
+      fputs("\n", fp);  
+      fclose(fp);
+    }
+    free_vortex_filament_members(&filament1);
+  }
 }
 
 /**

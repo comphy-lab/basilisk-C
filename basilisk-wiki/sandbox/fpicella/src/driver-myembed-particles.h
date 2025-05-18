@@ -46,7 +46,11 @@ coord theta; \
 coord omega; \
 coord F; \
 coord T; \
-coord B; 
+coord B; \
+coord M; 
+/**
+F, T, translational-rotational forces MEASURED on particle. (i.e. HYDRO).
+B, M, translational-rotational BODY forces apllied on particle.*/
 
 #include "fpicella/src/myembed-particles.h"
 
@@ -362,8 +366,14 @@ void hydro_forces_torques()
 void velocity_for_force_free()
 {
 	foreach_particle(){
+		/**
+		Translational velocity. */
 		foreach_dimension()
 			p().u.x += (p().F.x+p().B.x)*dt;
+		/**
+		Angular velocity. */
+		foreach_dimension()
+			p().omega.x += (p().T.x+p().M.x)*dt; 
 	}
 }
 void particle_location_update()
@@ -371,5 +381,6 @@ void particle_location_update()
 	foreach_particle()
 		foreach_dimension()
 			p().x += p().u.x*dt;
+	// for the moment, no update of rotation.
 		
 }

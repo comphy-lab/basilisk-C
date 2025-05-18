@@ -314,7 +314,7 @@ void write_filament_state(FILE* fp, struct vortex_filament *filament) {
         fprintf(fp, "%g %g %g ", filament->Ulocal[j].x,  filament->Ulocal[j].y,  filament->Ulocal[j].z);
         fprintf(fp, "%g %g %g ", filament->Uauto[j].x,   filament->Uauto[j].y,   filament->Uauto[j].z);
         fprintf(fp, "%g %g %g ", filament->Umutual[j].x, filament->Umutual[j].y, filament->Umutual[j].z);
-        fprintf(fp, "%g %g %g ", filament->Utotal[j].x,  filament->Utotal[j].y,  filament->Utotal[j].z);
+        fprintf(fp, "%g %g %g ", filament->U[j].x,       filament->U[j].y,       filament->U[j].z);
         fprintf(fp, "%g \n", filament->a[j]);
     }
     fputs("\n", fp); 

@@ -1,4 +1,4 @@
-pristine:40abae51053b1353429fca9d2396d604c90978487cf85cc8cf16919e641c5937
+pristine:da34d7c5a60dcd2a702fd619f79d4958f73b827cccb87ac62552c1075ba13634
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -2545,3 +2545,65 @@ Fanshuo**20250515162442
  Ignore-this: 151964d326ba5a39eda523b31ce5d060
 ] 
 hash: 0000000301-dcb0218293768735a2e4c21d46728012124d885d5eec63caab0f6a81cb4ef293
+[1. Om Mahesh Kumar Prajapati, The Royal Grammar School High Wycombe, UK
+Omp543 <prajapati2122007@gmail.com>**20250516095533
+ Ignore-this: 9ca0800617fcdba2b02dcc9677bf324a
+] 
+hash: 0000000268-92a29a9354ccfd97c69cef392b1a0686f06e0fc4da9b89bd81d8df49b64bd4e8
+[.
+Omp543 <prajapati2122007@gmail.com>**20250516095632
+ Ignore-this: 2d35ad576d3b967e297bed8f0d6bb009
+] 
+hash: 0000000128-179a093d268800e18ac3d9e91b3a34f11b67d438bfd73c5485241c6edac1a882
+[Added rotations (torques) in driver-myembed-particles.h
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250516133040
+ Ignore-this: 476d0db0a1f36745af64f71a1a6de972
+] 
+hash: 0000004714-ee5c7a5301ceee8fb8a326226a6ded7c0429dc4b949b71a26bdf05e2b90becbf
+[Added quasi-steady solver, ensuring for *istantaneous* force-free condition.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250516164818
+ Ignore-this: 46a1fdf52a37542587a0e0c5ffd7527c
+ To be validated, but quantitatively it must be somehow identical to
+ previous versions in cylinder_between_plates.
+] 
+hash: 0000007583-7c565f58538f590245565527f6a007c4c50cfe02f4677cc334d6c72fe33ca719
+[1. Boran Celik, The Royal Grammar School High Wycombe, UK
+guest**20250516184152
+ Ignore-this: c17f70c6589525d8b981398b9815ff4f
+] 
+hash: 0000000208-7af933463582c154e1ed79c69f228007b6e2c3884195b7ed462ee5b86ac22239
+[Add comparison to theory
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250516211529
+ Ignore-this: 45a751bbbb43c41a01f0cd735001e54b19d6ecc2ac641217e62ef109d41b90e8f7058e2790db37d1
+] 
+hash: 0000005258-5e5f620fd9071e1e73f1d6b7b31281fc496b10242333942d24daacc96655adda
+[Gena Panaser, University of Birmingham, UK
+guest**20250517103611
+ Ignore-this: e824b41426d5ff921afef0707eb2179a
+] 
+hash: 0000000181-45e9d5eaadee8c3a5398a518490475a7b67c1091f31285e9888d9ba8dd3d3c3a
+[Better images
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250516220316
+ Ignore-this: 58b72bb932b15765c35c6b5a32cb80dc9edb0ab56fa3d12458edcc8a9d89d030d654af2a1e4f39e6
+] 
+hash: 0000009294-411d756ea9fdb48646d92886486eff634ea8ca59561ff5354210bd6254112d90
+[Better images
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250517193326
+ Ignore-this: 46a3f4792f75c7c3d94f915fa9cb3adbb2d4f5f7eba41a316a701a22b04cd9637ee6829dbffd7467
+] 
+hash: 0000046531-fba852341b8172307928d5685974afd824351ee4e6fd38f582b3d3a51a1939e8
+[Small tweak
+acastillo <andres.castillo.castellanos@gmail.com>**20250517195004
+ Ignore-this: 6e8ced6f6f6aed93b66862cd396776c0
+] 
+hash: 0000000326-619db1e2277df6e5077044cecb5ba30fa154a3ef942c4d096c6c5b6a3fcd72bf
+[BagnoldFront+hydroMT.h
+Fanshuo**20250517202441
+ Ignore-this: 6172abc6b43334cbe5af8d3274b58b80
+] 
+hash: 0000000485-4c5a1c077d22867b22e400ae22e7d5434c9bc3cd11db4834ac79a621e630b314
+[+
+Fanshuo**20250517202515
+ Ignore-this: bb438bfad3d545d0743c824ea2405835
+] 
+hash: 0000001500-c1c6e8a51a7f5f8eb8c215d4a6744acdbc47e5eec817f3a73cd61a1c847434b9

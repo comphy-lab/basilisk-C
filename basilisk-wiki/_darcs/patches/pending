@@ -19,6 +19,7 @@ rmdir ./sandbox/easystab/sandbox/easystab
 rmdir ./sandbox/easystab/sandbox
 rmdir ./sandbox/esaymeca
 rmdir ./sandbox/fanshuo/Doc/pics
+rmdir ./sandbox/fanshuo/videdossier
 rmdir ./sandbox/flpo
 rmdir ./sandbox/huang/test_cases
 rmdir ./sandbox/huet/tests/eulerian_caps

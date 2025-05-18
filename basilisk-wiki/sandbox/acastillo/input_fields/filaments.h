@@ -293,7 +293,8 @@ struct vortex_filament{
   coord*  Ulocal;   //
   coord*  Uauto;    // 
   coord*  Umutual;  //
-  coord*  Utotal;   // 
+  coord*  U;        // 
+  coord*  Uprev;    // 
   double* vol;      // Initial volume 
   
 };
@@ -330,12 +331,11 @@ void allocate_vortex_filament_members(struct vortex_filament* filament, int nseg
   filament->Nvec  = malloc(nseg * sizeof(coord));
   filament->Bvec  = malloc(nseg * sizeof(coord));
 
-  
-  
   filament->Ulocal  = malloc(nseg * sizeof(coord));
   filament->Uauto   = malloc(nseg * sizeof(coord));
   filament->Umutual = malloc(nseg * sizeof(coord));
-  filament->Utotal  = malloc(nseg * sizeof(coord));
+  filament->U       = malloc(nseg * sizeof(coord));
+  filament->Uprev   = malloc(nseg * sizeof(coord));
 }
 
 // Function to free memory for the *members* of a vortex_filament struct
@@ -365,12 +365,11 @@ void free_vortex_filament_members(struct vortex_filament* filament) {
   free(filament->Nvec);     filament->Nvec = NULL;
   free(filament->Bvec);     filament->Bvec = NULL;
 
-  
-
   free(filament->Ulocal);   filament->Ulocal = NULL;
   free(filament->Uauto);    filament->Uauto = NULL;
   free(filament->Umutual);  filament->Umutual = NULL;
-  free(filament->Utotal);   filament->Utotal = NULL;
+  free(filament->U);        filament->U = NULL;
+  free(filament->Uprev);    filament->Uprev = NULL;
 }
 
 struct local_filament{  

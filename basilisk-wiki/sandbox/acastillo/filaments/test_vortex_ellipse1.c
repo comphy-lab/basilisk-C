@@ -1,5 +1,5 @@
 /**
-# Motion of a elliptical vortex ring (using the filament framework)
+# Motion of a elliptical vortex ring (using the vortex filament framework)
 
 In this example, we consider the motion of a elliptical vortex ring of radii
 $R_1$ and $R_2$, and nominal core size $a$ using the [vortex filament
@@ -20,8 +20,13 @@ $$
 where $\vec{x}_c$ is the position vector of vortex filament, $\vec{U}_{ind}$ the
 velocity induced by the vortex filament and $\vec{U}_{\infty}$ an external
 velocity field. The induced velocity $\vec{U}_{ind}$ is given by the 
-[Biot-Savart](biot-savart.h) law. In this example, we set $\vec{U}_{\infty}$
-as the advection velocity of a vortex ring with the same core size. 
+[Biot-Savart](biot-savart.h) law. 
+
+In this example, we're going to create a simple solver for the equation above
+and compute the external field in the Eulerian grid. We're also going to compare
+the motion of the ellipical vortex ring to the circular vortex ring. To this
+end, we'll use the translational velocity of the circular vortex ring as
+$\vec{U}_{\infty}$.
 
 */
 
@@ -33,23 +38,23 @@ as the advection velocity of a vortex ring with the same core size.
 #include "biot-savart.h"
 
 /**
- In this example, $R_1=1.1$, $R_2=0.9$, $a=0.05$ and the vortex ring is
+ In this example, $R_1=1.2$, $R_2=0.8$, $a=0.05$ and the vortex ring is
  discretized into $n_{seg}=64$ filaments.
 */
 int nseg = 64;
-double R1=1.10;
-double R2=0.90;
-double a=0.05;
-double dtmax=0.01;
+double R1 = 1.20;
+double R2 = 0.80;
+double a = 0.05;
+double dtmax = 0.01;
 struct vortex_filament filament1;
-struct vortex_filament filament1_prev;
+
 coord Uinfty = {0., 0., 0.365405};
 
 /**
  The main time loop is defined in [run.h]().
 */
 int minlevel = 4;
-int maxlevel = 8;
+int maxlevel = 9;
 vector u[];
 int main(){
   L0 = 10.0;
@@ -62,17 +67,39 @@ int main(){
 
 /**
 ## Initial conditions 
-We consider the space-curve $\mathcal{C}(\xi,t)$ is parametrized as function of
+We consider the space-curve $\mathcal{C}_1(\xi,t)$ is parametrized as function of
 $\theta(\xi,t)$. At time $t=0$,
 $$
 \begin{aligned}
-x &= R_1\cos(\theta), \quad
+x_1 &= R_1\cos(\theta), \quad
 \\
-y &= R_2\sin(\theta), \quad
+y_1 &= R_2\sin(\theta), \quad
 \\
-z &= 0
+z_1 &= z_0
 \end{aligned}
 $$
+
+
+~~~pythonplot Evolution of the axial coordinate of the filaments 
+import numpy as np
+import matplotlib.pyplot as plt
+	
+n = 64
+ax = plt.figure()
+data = np.loadtxt('curve.txt', delimiter=' ', usecols=[0,2,3,4])
+plt.plot(data[:n+1,1], data[:n+1,2])
+
+theta = np.linspace(0,2*np.pi)
+plt.plot(np.cos(theta), np.sin(theta), '--', color='grey', lw=0.5)
+
+plt.axis('image')
+plt.xlabel(r'Coordinate $x$')
+plt.ylabel(r'Coordinate $y$')
+plt.tight_layout()
+plt.savefig('plot_init.svg')
+~~~
+
+
 We also set the core size $a_{seg}$ such that the total vorticity is that of a
 vortex ring of nominal core size $a_{ring}$, such that each segment has constant
 volume
@@ -83,7 +110,7 @@ $$
 $$
 This also means that vortex stretching with modify the local core size.
 
-The curve $\mathcal{C}(\xi,t)$ will be stored as `struct vortex_filament` which 
+The curve $\mathcal{C}_1(\xi,t)$ will be stored as `struct vortex_filament` which 
 must be released at the end of the simulation.
 */
 event init (t = 0) {
@@ -103,7 +130,6 @@ event init (t = 0) {
   
   // We store the space-curve in a structure   
   allocate_vortex_filament_members(&filament1, nseg);
-  allocate_vortex_filament_members(&filament1_prev, nseg);
   memcpy(filament1.theta, theta, nseg * sizeof(double));
   memcpy(filament1.C, C1, nseg * sizeof(coord));
   memcpy(filament1.a, a1, nseg * sizeof(double));
@@ -113,9 +139,8 @@ event init (t = 0) {
   for (int j = 0; j < nseg; j++) {
     filament1.a[j] = sqrt(filament1.vol[j]/(pi*filament1.s[j]));
   }
-  
     
-  view (camera="iso");
+  view (camera="front", fov=10);
   draw_tube_along_curve(filament1.nseg, filament1.C, filament1.a);
   save ("prescribed_curve.png");
 
@@ -144,9 +169,11 @@ event init (t = 0) {
   }
 }
 
+/**
+We release the vortex filaments at the end of the simulation. 
+*/
 event finalize(t = end){
   free_vortex_filament_members(&filament1);
-  free_vortex_filament_members(&filament1_prev);
 }
 
 /** 
@@ -157,27 +184,33 @@ velocity at $\vec{x}_c$
 */
 event evaluate_velocity (i++) {  
 
-  memcpy(filament1_prev.Utotal, filament1.Utotal, nseg * sizeof(coord));
+  memcpy(filament1.Uprev, filament1.U, nseg * sizeof(coord));
 
   local_induced_velocity(filament1);  
   for (int j = 0; j < nseg; j++) {
     filament1.Uauto[j] = nonlocal_induced_velocity(filament1.C[j], filament1);            
     foreach_dimension(){
-      filament1.Utotal[j].x = filament1.Uauto[j].x + filament1.Ulocal[j].x - Uinfty.x;      
+      filament1.U[j].x = filament1.Uauto[j].x + filament1.Ulocal[j].x - Uinfty.x;      
     }
   }
 }
 
 /**
 Then, we advect the filament segments using an explicit Adams-Bashforth scheme
-and update the core size
 */ 
-event advance_filaments (i++, last) {      
+event advance_filaments (i++) {      
   for (int j = 0; j < nseg; j++) {
     foreach_dimension(){
-      filament1.C[j].x += dt*(3.*filament1.Utotal[j].x - filament1_prev.Utotal[j].x)/2.;
+      filament1.C[j].x += dt*(3.*filament1.U[j].x - filament1.Uprev[j].x)/2.;
     }
   } 
+}
+
+/** 
+Finally, we compute the new arch-lenghts and update the core sizes to preserve 
+the total vorticity
+*/
+event advance_filaments (i++, last) {      
   local_induced_velocity(filament1);  
   for (int j = 0; j < nseg; j++) {
     filament1.a[j] = sqrt(filament1.vol[j]/(pi*filament1.s[j]));
@@ -197,7 +230,7 @@ The elliptical vortex ring is characterized by this flapping motion.
 */
 
 event sequence (t += 0.10){
-  view(camera="iso", fov=10);
+  view(camera="iso", fov=8);
   draw_tube_along_curve(filament1.nseg, filament1.C, filament1.a);  
   save("vortex_ellipse.mp4");
 }
@@ -206,17 +239,20 @@ event sequence (t += 0.10){
 
 ### The solution outside the vortex tube
 
-Vortex filaments are dealt as Lagrangian particles. We may also use an Eulerian
-grid to evaluate the induced velocity at some point $\vec{x}\in\mathbb{R}^3$.
-
+Vortex filaments are treated as Lagrangian particles and may exist outside the
+mesh. We may also evaluate the induced velocity at any point 
+$\vec{x}\in\mathbb{R}^3$.
 <center>
   <table>
   <tr>
   <td><center>![](test_vortex_ellipse1/axial_velocity_1.png){ width="100%" }</center></td>
   <td><center>![](test_vortex_ellipse1/axial_velocity_2.png){ width="100%" }</center></td>
   <td><center>![](test_vortex_ellipse1/axial_velocity_3.png){ width="100%" }</center></td>
+  </tr>
+  <tr>
   <td><center>![](test_vortex_ellipse1/axial_velocity_4.png){ width="100%" }</center></td>
   <td><center>![](test_vortex_ellipse1/axial_velocity_5.png){ width="100%" }</center></td>
+  <td><center>![](test_vortex_ellipse1/axial_velocity_6.png){ width="100%" }</center></td>
   </tr>
   </table>
   <center>Axial velocity induced at the mid-plane taken at regular intervals </center>
@@ -224,7 +260,7 @@ grid to evaluate the induced velocity at some point $\vec{x}\in\mathbb{R}^3$.
 
 */
 
-event slice (t += 1.0, t <= 5.0){  
+event slice (t += 1.0, t <= 7.0){  
   foreach(){
     coord p = {x,y,z};
     coord u_BS = nonlocal_induced_velocity(p, filament1);
@@ -233,12 +269,11 @@ event slice (t += 1.0, t <= 5.0){
     }
   }
   adapt_wavelet ((scalar*){u}, (double[]){1e-3, 1e-3, 1e-3}, maxlevel, minlevel);
-
   {
     char filename2[100]; 
     sprintf(filename2, "axial_velocity_%g.png", t);
     
-    view(camera="right");  
+    view(camera="left", fov=8);  
     squares ("u.z", linear = true, spread = -1, n={1,0,0}, min=-0.33, max=0.33, map = cool_warm); 
     draw_tube_along_curve(filament1.nseg, filament1.C, filament1.a);  
     save(filename2);  
@@ -248,7 +283,7 @@ event slice (t += 1.0, t <= 5.0){
 /** 
 ### Time evolution
 
-We may also follow the position of $\mathcal{C}$ and the induced velocities 
+We may also follow the position of $\mathcal{C}_1$ and the induced velocities
 over time, 
 */
 
@@ -262,21 +297,45 @@ event final (t += 0.2, t <= 30.0){
 
 /** 
 
-~~~gnuplot Time evolution of the core size $a$ for a point initially located at $\theta=0$
-set term pngcairo enhanced size 640,480 font ",12"
-set output 'plot_core.png'
-set xlabel "time"
-set ylabel "core size"
-plot 'curve.txt' u 1:18 every ::1::1 w lp title "\\theta=0"
+- Viewed from the top, we can see the elliptical ring seems to be rotating
+
+~~~pythonplot Evolution of the x- and y-coordinates
+import numpy as np
+import matplotlib.pyplot as plt
+	
+n = 64
+ax = plt.figure()
+data = np.loadtxt('curve.txt', delimiter=' ', usecols=[0,2,3,4])
+for i in range(0,24,3):
+  plt.plot(data[n*i:n*(i+1),1], data[n*i:n*(i+1),2])
+plt.axis('image')
+plt.xlabel(r'Coordinate $x$')
+plt.ylabel(r'Coordinate $y$')
+plt.legend()
+plt.tight_layout()
+plt.savefig('plot_xy_vs_t.svg')
 ~~~
 
-~~~gnuplot Time evolution of the axial coordinate for a point initially located at $\theta=0$
-set term pngcairo enhanced size 640,480 font ",12"
-set output 'plot_position.png'
-set xlabel "time"
-set ylabel "axial coordinate"
-plot 'curve.txt' u 1:5 every ::1::1 w lp title "\\theta=0"
+- This also seen on the axial coordinate. Additionally, the elliptical ring 
+seems to move slightly slower than the circular ring.
+
+~~~pythonplot Evolution of the z-coordinate
+import numpy as np
+import matplotlib.pyplot as plt
+	
+n = 64
+ax = plt.figure()
+data = np.loadtxt('curve.txt', delimiter=' ', usecols=[0,4])
+plt.plot(data[::n,0], data[::n,1], label='Initially at $\\theta=0$')
+plt.plot(data[n//4::n,0], data[n//4::n,1], label='Initially at $\\theta=\\pi/2$')
+plt.legend()
+plt.xlabel(r'Time $t$')
+plt.ylabel(r'Axial coordinate $z$')
+plt.xlim([0,30])
+plt.tight_layout()
+plt.savefig('plot_z_vs_t.svg')
 ~~~
+
 */
 
 /**

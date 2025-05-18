@@ -26,8 +26,8 @@ face vector muv[];
 #define sinTheta     sin(p().theta)
 #define cosTheta     cos(p().theta)
 
-#define ALPHA alpha*p().r
-#define BETA   beta*p().r
+//#define ALPHA alpha*p().r
+//#define BETA   beta*p().r
 
 #define ShiftxCenter   -0.*BETA*cosTheta+0.*ALPHA*sinTheta
 #define ShiftyCenter   -0.*BETA*sinTheta-0.*ALPHA*cosTheta
