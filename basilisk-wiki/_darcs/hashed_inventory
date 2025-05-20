@@ -1,4 +1,4 @@
-pristine:da34d7c5a60dcd2a702fd619f79d4958f73b827cccb87ac62552c1075ba13634
+pristine:b00c82b6fbabcf1e0c84bf603474024489199266f8fdbaf9d6744f8b64afccf1
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -2607,3 +2607,35 @@ Fanshuo**20250517202515
  Ignore-this: bb438bfad3d545d0743c824ea2405835
 ] 
 hash: 0000001500-c1c6e8a51a7f5f8eb8c215d4a6744acdbc47e5eec817f3a73cd61a1c847434b9
+[adjust gnuplot
+Fanshuo**20250518113521
+ Ignore-this: 93e8d92a5e96b0a290ae3487ae581db3
+] 
+hash: 0000000410-62f8eb96c3d3728314c7ce3d898dfff6215f9445291098d87cc7ba6b74951a56
+[Added test case for sedimentation, with quasi-steady solver.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250519082047
+ Ignore-this: 860c9c17e9b06be5562b678b2951e745
+ Much more refined than previous one!
+] 
+hash: 0000008944-2eda5364985a3eb3e5be0d1958b1b24f8ef6dd61dd9cba75e7050b18f2ec243b
+[Canwei Jin proposed a talk topic
+CanweiJin <jincanwei1996@gmail.com>**20250519131310
+ Ignore-this: 630475c69bbcea45b85a321ea087a90a
+] 
+hash: 0000000308-a4b215ad4ef19d8b0e863857d9992b788e0562c4b25c50ce769e3574b3eef905
+[Added new test case, propulsion with point-forces.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250519172821
+ Ignore-this: 45cacffaff5324e5bf75e5308a338bf3
+ Must work out periodicity.
+] 
+hash: 0000010135-f0febfc47d14ec10bb92a2ef871cfdd979b7f04c740a3c4350c05f3d6dce9cc2
+[Forgot to add the point-force driver. Here it is.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250519172924
+ Ignore-this: 13ca6b19ec1de263664841e30e7635fa
+] 
+hash: 0000001416-f63bbf74adce582926493706d9499f256555b2f0f6a163aebaa670b92e52ac7d
+[test robuste on nl
+Fanshuo**20250519204923
+ Ignore-this: 498b5f60fb38f77044660e58fcef78c3
+] 
+hash: 0000000163-29d7973bfd3ac35bfe60a90fe50f4e69284c13ec0f1bab43986b4d2c8ecb2e63

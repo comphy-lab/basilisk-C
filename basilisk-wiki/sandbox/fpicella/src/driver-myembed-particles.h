@@ -47,7 +47,8 @@ coord omega; \
 coord F; \
 coord T; \
 coord B; \
-coord M; 
+coord M; \
+double thrust; double alpha; double beta; 
 /**
 F, T, translational-rotational forces MEASURED on particle. (i.e. HYDRO).
 B, M, translational-rotational BODY forces apllied on particle.*/
@@ -368,12 +369,21 @@ void velocity_for_force_free()
 	foreach_particle(){
 		/**
 		Translational velocity. */
+		coord propulsionAngle = {cosTheta,sinTheta};
 		foreach_dimension()
-			p().u.x += (p().F.x+p().B.x)*dt;
+			p().u.x += (p().F.x+p().B.x+p().thrust*propulsionAngle.x)*dt;
 		/**
 		Angular velocity. */
 		foreach_dimension()
-			p().omega.x += (p().T.x+p().M.x)*dt; 
+			p().omega.x += (p().T.x+p().M.x)*dt*100.; 
+		/**
+		Here dt and the arbitrary quantity (here 100) are just parameters,
+		in a steady case, they do not have a real physical meaning.
+		Consider them as relaxation parameters for the timestepper.*/
+		/**
+		In 2D...must get back to -z variables.*/
+		#if dimension == 2
+			p().omega.z = p().omega.x;
 	}
 }
 void particle_location_update()
@@ -381,6 +391,12 @@ void particle_location_update()
 	foreach_particle()
 		foreach_dimension()
 			p().x += p().u.x*dt;
-	// for the moment, no update of rotation.
+	/**
+	Treat periodicity...*/
+	// // // TO BE DONE
+	/**
+	Simple update of angular position.*/
+	foreach_particle()
+		p().theta.z += p().omega.z*dt;
 		
 }

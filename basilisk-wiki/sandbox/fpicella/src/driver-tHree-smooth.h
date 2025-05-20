@@ -3,7 +3,6 @@
 	Build up a forcing field...*/
 
 face vector av[];
-face vector muv[];
 /*
   What is the smallest cells size (CS) in the simulation? 
   This will be the characteristic size with which I model
