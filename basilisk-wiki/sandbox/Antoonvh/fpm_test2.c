@@ -25,11 +25,6 @@ Well done least squares finite point method!
 
 Particles parts;
 
-int N_from_part (int np) {
-  double snp = sqrt(np);
-  int Ni = log(snp)/log(2) - 1;
-  return 1<<Ni;
-}
 
 int main() {
   L0 = 6;

@@ -1,4 +1,4 @@
-pristine:d630501553060dcfea780cb5c11c102965958291b60c8b040af8f164258d6538
+pristine:5c21575f5ed95f5e874460fd653a0386161e60a6ddb67aea05ba7a6f04a8166a
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -2644,3 +2644,28 @@ guest**20250520143244
  Ignore-this: 55dd821918118166cd3d7e1ba9aadaf
 ] 
 hash: 0000000241-b7f0b5b720efc2934324b152d772ed1334b9a4854bce2b24531a2453cd74ea73
+[Added Nicolas Cailler to list of participants
+Nicolas Cailler <nicolas.cailler@upmc.fr>**20250521071215
+ Ignore-this: b12e1acb5b7c144b1490746f1fdf4017
+] 
+hash: 0000000387-2c781f5bb5e4e2c6fada297a496a76aa1c11893ea48bac18bbc8bcb99fb77a49
+[fpm solver tests
+j.a.v.hooft@gmail.com**20250521135751
+ Ignore-this: c5d4cfeeb38c03ed280cf40b37892d304fded136240a57e8aa29d0b0c919172f6e04016230a972e9
+] 
+hash: 0000006704-53f760a7d5191787777b435483f65975d0f134b435cd39a2614941136460ded6
+[Adapted driver-myembed-particles.h to accept 3D.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250520181146
+ Ignore-this: a501711608831e9e18b716a11adbda3b
+ Simple errors.
+] 
+hash: 0000000433-92da55a238e10857a7541487150c7f72da45093d75e1d29d7a330a5a36facef9
+[3-bodies model microswimmer. Single neutral microswimmer.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250521161507
+ Ignore-this: 6cdbfbc08bfd525634a8a81c0c5d402
+ It is feaseable, it apparently matches Ambre Palotai's case.
+ But it is super expensive, computationally speaking.
+ I will revert to some other more basiliskian-style method.
+ F
+] 
+hash: 0000013561-4a26a8943fb6f8932bb6de1982d8290c09f8a037ee451f52aacddd03ca41bffe

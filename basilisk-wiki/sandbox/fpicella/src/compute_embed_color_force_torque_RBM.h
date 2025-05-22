@@ -57,6 +57,11 @@ $$
 void embed_color_torque_RBM (scalar p, vector u, face vector mu, scalar color, coord c, coord pOmega, double pRADIUS, coord * Tp, coord * Tmu)
 // Additional term here is OMEGA, the ANGULAR VELOCITY and the RADIUS of the particle...
 {
+	#if dimension == 3
+	if(t==0)
+		fprintf(stderr,"WARNING, RBM to be checked if rotation is on!!!\n");
+	#endif
+
   coord Tps = {0}, Tmus = {0};
   foreach (reduction(+:Tps) reduction(+:Tmus))
     if (cs[] > 0. && cs[] < 1. && color[] > 0. && color[] < 1.) {
@@ -111,7 +116,7 @@ BLABLABLA, carnet jaune.
 So, I need some additional quantities here to play with.
 */
 // RBM
-	assert (dimension == 2);// for the moment, it works only in 2D...
+	//assert (dimension == 2);// for the moment, it works only in 2D...
   coord dudt = {0};// RBM, tangential component of the velocity gradient. it is non zero ONLY if the particle rotates.
 	foreach_dimension()
 		dudt.x = -pOmega.x*(r.x)/pRADIUS;
@@ -158,6 +163,10 @@ as well as Rigid Body Motion of a solid particle.
 void embed_color_force_RBM (scalar p, vector u, face vector mu, scalar color, coord c, coord pOmega, double pRADIUS, coord * Fp, coord * Fmu)
 // Additional term here is OMEGA, the ANGULAR VELOCITY and the RADIUS of the particle...
 {
+	#if dimension == 3
+	if(t==0)
+		fprintf(stderr,"WARNING, RBM to be checked if rotation is on!!!\n");
+	#endif
   coord Fps = {0}, Fmus = {0};
   foreach (reduction(+:Fps) reduction(+:Fmus))
     if (cs[] > 0. && cs[] < 1. && color[] > 0. && color[] < 1.) {
@@ -215,7 +224,7 @@ BLABLABLA, carnet jaune.
 So, I need some additional quantities here to play with.
 */
 // RBM
-	assert (dimension == 2);// for the moment, it works only in 2D...
+	//assert (dimension == 2);// for the moment, it works only in 2D...
   coord dudt = {0};// RBM, tangential component of the velocity gradient. it is non zero ONLY if the particle rotates.
 	foreach_dimension()
 		dudt.x = -pOmega.x*(r.x)/pRADIUS;

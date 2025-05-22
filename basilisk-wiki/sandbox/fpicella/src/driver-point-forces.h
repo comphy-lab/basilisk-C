@@ -34,5 +34,9 @@ void compute_propulsion()
 event acceleration(i++){
 	compute_propulsion();
 	foreach_face()
+#if dimension == 2
 		av.x[] = face_value(propulsion.x,0)/(sq(Delta));
+#else
+		av.x[] = face_value(propulsion.x,0)/(cube(Delta));
+#endif
 }

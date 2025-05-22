@@ -25,9 +25,15 @@ face vector fsLOCAL[];
 /*
 Some practical shortcuts
 */
+#if dimension == 2
 #define circle(px,py,pr) (sq (PS(x,px)) + sq (PS(y,py)) - sq (pr))
 #define PARTICLE circle(p().x,p().y,p().r)
 #define COLOR (sq (PS(COORD.x,p().x)) + sq (PS(COORD.y,p().y)) - sq (p().r)) // more complex, hate foreach_dimension() :D
+#else
+#define sphere(px,py,pz,pr) (sq (PS(x,px)) + sq (PS(y,py)) + sq (PS(z,pz)) - sq (pr))
+#define PARTICLE sphere(p().x,p().y,p().z,p().r)
+#define COLOR (sq (PS(COORD.x,p().x)) + sq (PS(COORD.y,p().y)) + sq (PS(COORD.z,p().z)) - sq (p().r)) // more complex, hate foreach_dimension() :D
+#endif
 
 #define THETA atan2(PS(COORD.y,p().y),PS(COORD.x,p().x))
 /*
@@ -124,12 +130,23 @@ event output_particle_initialize(i=0){ // first iteration, define name and open 
   }
 }
 #define FORMAT_SPEC_7 ("%+6.5e %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e\n") // to avoid writing every time it...
+#define FORMAT_SPEC_10 ("%+6.5e %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e\n") // to avoid writing every time it...
+#if dimension == 2
 event output_particle(i++){
   foreach_particle(){
     fprintf(singleParticleFile[_j_particle],FORMAT_SPEC_7,t,p().x,p().y,p().theta.z,p().u.x,p().u.y,p().omega.z);
     fflush(singleParticleFile[_j_particle]);
   }
 }
+#else
+event output_particle(i++){
+  foreach_particle(){
+    fprintf(singleParticleFile[_j_particle],FORMAT_SPEC_10,t,p().x,p().y,p().z,p().u.x,p().u.y,p().z,p().F.x,p().F.y,p().F.z);
+    fflush(singleParticleFile[_j_particle]);
+  }
+}
+#endif
+
 
 /*
 ### Compute volume fractions associated to the presence of the particle
@@ -358,9 +375,11 @@ void hydro_forces_torques()
 		/*
 		The rest works only in 2D for the moment
 		*/
+		#if dimension == 2
 		p().T.x = Tp.x + Tmu.x;
 		p().T.y = p().T.x;	
 		p().T.z = p().T.x;	
+		#endif
 	}
 }
 
@@ -384,6 +403,7 @@ void velocity_for_force_free()
 		In 2D...must get back to -z variables.*/
 		#if dimension == 2
 			p().omega.z = p().omega.x;
+		#endif // compatibility with 3D.
 	}
 }
 void particle_location_update()

@@ -78,7 +78,7 @@ int find_nearest_particles (coord X, int nn, Particles plist, int * index, int n
 
 A lookup table relating the number of particles to the estimation order
 */
-int order_barrier_2D[3] = {4, 9, 13}; 
+int order_barrier_2D[3] = {4, 9, 16}; //2x2, 3x3, 4x4 
 int max_particles = 20;
 int order_lookup (int n) {
   if (n >= order_barrier_2D[2])
@@ -203,10 +203,33 @@ int least_squares_poly_2D (coord loc, double * coefs, Particles parts) {
 }
 
 /**
+## smooth operator
+ */
+void smooth_2D (Particles p) {
+  double coefs[9];
+  foreach_particle_in(p) {
+    coord pc = {x, y};
+    int order = least_squares_poly_2D (pc, coefs, p);
+    p().z = order > 0 ? coefs[0] : p().s;
+  }
+  foreach_particle_in(p)
+    p().s = p().z;
+}
+
+int N_from_part (int np) {
+  double snp = sqrt(np);
+  int Ni = log(snp)/log(2) - 1;
+  return 1<<Ni;
+}
+
+
+/**
 ## Tests
 
 * [Particle finding](fpm_test.c)
 * [Point-based least-sqaures finite difference](fpm_test2.c)
+* [Simple advection-equation solver](fpm_advection.c)
+* [Covergence test for a diffusion solver](fpm_diffusion.c)
 
 ## Todo
 
