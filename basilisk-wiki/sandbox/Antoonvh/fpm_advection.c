@@ -9,13 +9,17 @@ Particles s;
 
 FILE * gnuplotPipe;
 
-coord U = {1, 0};
+coord U = {1, 1};
 
 double solution (double x, double y, double t) {
   return exp(-sq(x-U.x*t + 1) - (sq(y)));
 }
 
 int main() {
+  periodic (left);
+  periodic_x = true;
+  periodic (bottom);
+  periodic_y = true;
   DT = 0.01;
   init_grid (32);
   L0 = 10;
@@ -62,9 +66,6 @@ event advection (i++, last) {
   foreach_particle_in(s) {
     p().s -= dt*(p().z);
   }
-  foreach_particle_in(s)
-    if (fabs(x - (X0 + L0/2)) > L0/2.5 || fabs(y - (Y0 + L0/2)) > L0/2.5)
-      p().s = 0;
 }
 
 int frame = 0;
@@ -77,7 +78,7 @@ event movie (t += 0.05) {
   fprintf(gnuplotPipe, "e\n");
 }
 
-event stop (t = 2) {
+event stop (t = 10) {
   smooth_2D(s);
   event("movie");
   pclose (gnuplotPipe);

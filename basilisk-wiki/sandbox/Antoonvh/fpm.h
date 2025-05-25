@@ -11,7 +11,10 @@ We need particles! By default we will assign a  single scalar field "s" to the p
 #endif
 
 #include "particle_reference.h"
-
+//periodic switches
+bool periodic_x = false;
+bool periodic_y = false;
+bool periodic_z = false;
 /**
    We need a function for finding nearby particles. We will use a
    helper grid to achieve this efficiently.
@@ -32,7 +35,15 @@ double max_array (int n, double arr[n], int *i) {
 }
 
 
-int find_nearest_particles (coord X, int nn, Particles plist, int * index, int neighbor = 1) {
+int find_nearest_particles (coord X, int nn, Particles plist, int * index, int neighbor = 1, int * index_periodic_x = NULL, int * index_periodic_y = NULL) {
+  foreach_dimension() {
+    if (index_periodic_x == NULL && periodic_x == true)
+      fprintf (stderr, "Periodic in dim %d, bit no alloctated indices array\n");
+    if (periodic_x == true) {
+      for (int i = 0; i < nn; i++)
+	index_periodic_x[i] = 0;
+    }
+  }
   // Update helper field
   if (ref_outdated) {
     free_scalar_data(reference);
@@ -40,6 +51,7 @@ int find_nearest_particles (coord X, int nn, Particles plist, int * index, int n
     ref_outdated = false;
   }
   double dist[nn]; //squared distances;
+  
   for (int i = 0; i < nn; i++)
     dist[i] = HUGE;
   double distm = HUGE; //largest distance
@@ -51,14 +63,33 @@ int find_nearest_particles (coord X, int nn, Particles plist, int * index, int n
   foreach_point(X.x, X.y, X.z) {
     if (point.level > 0) {
       foreach_neighbor(neighbor) {
+	coord ni = {_k, _l, 0};
 	foreach_particle_point(reference, point) {
 	  double disti = 0;
-	  foreach_dimension()
-	    disti += sq(X.x - p().x);
-	  if (disti < distm) {
+	  foreach_dimension() {
+	    double px = p().x;
+	    if (periodic_x) {
+	      if (ni.x > 0 && p().x < X.x)
+		px += L0;
+	      else if (ni.x < 0 && p().x > X.x)
+		px -= L0;
+	    }
+	    disti += sq(X.x - px);
+	  }
+	  if (disti < distm && disti < 2*sq(neighbor*Delta)) {
 	    dist[il] = disti;
 	    index[il] = _j_particle;
+	    foreach_dimension() {
+	      if (periodic_x) {
+		index_periodic_x[il] = 0;
+		if (ni.x > 0 && p().x < X.x)
+		  index_periodic_x[il] = 1;
+		else if (ni.x < 0 && p().x > X.x)
+		  index_periodic_x[il] = -1;
+	      }
+	    }
 	    distm = max_array (nn, dist, &il);
+	    
 	  }
 	}
       }
@@ -113,19 +144,28 @@ We do not apply distance weighing (there is enough to tune already)
  */
 #define max_ind (row*m + n)
 //Relative to reference location
-#define p_x  (pl[part][index[n]].x - loc.x)
-#define p_y  (pl[part][index[n]].y - loc.y)
-#define p_z  (pl[part][index[n]].z - loc.z)
 
-int fill_matrix_2D (int order = 1, Particles part, int m, int * index, double * A, coord loc) {
+
+
+#define p_x  (pl[part][index[n]].x - loc.x + L0*periodic_arr_x[n])
+#define p_y  (pl[part][index[n]].y - loc.y + L0*periodic_arr_y[n])
+#define p_z  (pl[part][index[n]].z - loc.z + L0*periodic_arr_z[n])
+
+int fill_matrix_2D (int order = 1, Particles part, int m, int * index, double * A, coord loc,
+		    int * periodic_arr_x = NULL, int * periodic_arr_y = NULL) {
+  // No periodicity?
+  foreach_dimension() {
+    if (periodic_x == false && periodic_arr_x == NULL) 
+      periodic_arr_x = (int *)calloc(m, sizeof(int));
+  }
   int row = 0;
   if (order >= 0) {
-    for (int n = 0; n < m; n++) 
+    for (int n = 0; n < m; n++)  
       A[max_ind] = 1.;
   }
   if (order > 0) {
     row++;
-    for (int n = 0; n < m; n++) 
+    for (int n = 0; n < m; n++)
       A[max_ind] = p_x;
     row++;
     for (int n = 0; n < m; n++) 
@@ -156,6 +196,10 @@ int fill_matrix_2D (int order = 1, Particles part, int m, int * index, double * 
     for (int n = 0; n < m; n++) 
       A[max_ind] = cube(p_y);
   }
+  foreach_dimension()
+    if (periodic_x == false && periodic_arr_x == NULL)
+      free(periodic_arr_x);
+  
   return row;
 }
 /**
@@ -163,7 +207,7 @@ int fill_matrix_2D (int order = 1, Particles part, int m, int * index, double * 
 
 Using LAPACK
  */
-#pragma autolink -lblas -llapack
+#pragma autolink -lcblas -llapack
 
 extern void dgels_(char *trans, int *m, int *n, int *nrhs,
                    double *a, int *lda, double *b, int *ldb,
@@ -171,11 +215,21 @@ extern void dgels_(char *trans, int *m, int *n, int *nrhs,
 
 int least_squares_poly_2D (coord loc, double * coefs, Particles parts) {
   int index[max_particles];
-  int mat_m =  find_nearest_particles (loc, max_particles, parts, index); // number of equations
+  int * periodic_arr_x = NULL;
+  int * periodic_arr_y = NULL;
+
+  foreach_dimension() {
+    if (periodic_x == true) 
+      periodic_arr_x = malloc((max_particles)*sizeof(int));
+  }
+   // number of equations mat_m
+  int mat_m =  find_nearest_particles (loc, max_particles, parts, 
+				       index, 1, periodic_arr_x, periodic_arr_y);
   int order = order_lookup (mat_m);
   int mat_n = size_lookup (order); // Number of unknowns
   double * A = malloc(sizeof(double)*mat_m*mat_n);
-  fill_matrix_2D (order, parts, mat_m, index, A, loc);
+      
+  fill_matrix_2D (order, parts, mat_m, index, A, loc, periodic_arr_x, periodic_arr_y);
   double rhs[mat_m];
   for (int i = 0; i < mat_m; i++) {
     rhs[i] = pl[parts][index[i]].s;
@@ -199,6 +253,12 @@ int least_squares_poly_2D (coord loc, double * coefs, Particles parts) {
   // solution and order 
   for (int i = 0; i < mat_n; i++)
     coefs[i] = rhs[i];
+
+  foreach_dimension() {
+    if (periodic_x == true) 
+      free(periodic_arr_x);
+  }
+  
   return order;
 }
 
@@ -228,13 +288,14 @@ int N_from_part (int np) {
 
 * [Particle finding](fpm_test.c)
 * [Point-based least-sqaures finite difference](fpm_test2.c)
-* [Simple advection-equation solver](fpm_advection.c)
-* [Covergence test for a diffusion solver](fpm_diffusion.c)
+* [Simple periodic advection-equation solver](fpm_advection.c)
+* [Covergence test for a diffusion-equation solver](fpm_diffusion.c)
 
 ## Todo
 
 * 3D
 * Boundaries
+  - ~Periodic box boudnariers~
 * Solve something
 * A Poisson solver
 * Sensible point distributions (look into packing problem)
