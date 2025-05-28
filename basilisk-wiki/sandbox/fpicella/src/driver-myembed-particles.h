@@ -54,6 +54,7 @@ coord F; \
 coord T; \
 coord B; \
 coord M; \
+coord R; \
 double thrust; double alpha; double beta; 
 /**
 F, T, translational-rotational forces MEASURED on particle. (i.e. HYDRO).
@@ -134,7 +135,8 @@ event output_particle_initialize(i=0){ // first iteration, define name and open 
 #if dimension == 2
 event output_particle(i++){
   foreach_particle(){
-    fprintf(singleParticleFile[_j_particle],FORMAT_SPEC_7,t,p().x,p().y,p().theta.z,p().u.x,p().u.y,p().omega.z);
+    //fprintf(singleParticleFile[_j_particle],FORMAT_SPEC_7,t,p().x,p().y,p().theta.z,p().u.x,p().u.y,p().omega.z);
+fprintf(singleParticleFile[_j_particle],FORMAT_SPEC_10,t,p().x,p().y,p().theta.z,p().u.x,p().u.y,p().omega.z,p().F.x,p().F.y,p().T.z);
     fflush(singleParticleFile[_j_particle]);
   }
 }
@@ -390,7 +392,7 @@ void velocity_for_force_free()
 		Translational velocity. */
 		coord propulsionAngle = {cosTheta,sinTheta};
 		foreach_dimension()
-			p().u.x += (p().F.x+p().B.x+p().thrust*propulsionAngle.x)*dt;
+			p().u.x += (p().F.x+p().B.x+p().thrust*propulsionAngle.x+p().R.x)*dt;
 		/**
 		Angular velocity. */
 		foreach_dimension()
@@ -413,10 +415,79 @@ void particle_location_update()
 			p().x += p().u.x*dt;
 	/**
 	Treat periodicity...*/
-	// // // TO BE DONE
-	/**
-	Simple update of angular position.*/
-	foreach_particle()
-		p().theta.z += p().omega.z*dt;
+	foreach_particle(){
+		foreach_dimension(){
+			if(p().x>+L0/2.)
+				p().x-=L0;
+			if(p().x<-L0/2.)
+				p().x+=L0;
+		}
+	}
+	///**
+	//Simple update of angular position.*/
+	//foreach_particle()
+	//	p().theta.z += p().omega.z*dt;
 		
+}
+
+void compute_top_wall_repulsion(){
+	/**
+	Simple model: here I compute the repulsion wrt top wall.
+	I employ a purely repulsive potential.*/
+	foreach_particle(){
+		double distance = L0/2.-p().y;
+		double sigma    = 3*p().r;
+		double sr     = pow(sigma/distance,12.);
+		p().R.y -= (sr);
+	}
+}
+void compute_right_wall_repulsion(){
+	/**
+	Simple model, a purely repulsive potential.*/
+	foreach_particle(){
+		double distance = L0/2.-p().x;
+		double sigma    = 3*p().r;
+		double sr     = pow(sigma/distance,12.);
+		p().R.x -= (sr);
+	}
+}
+void compute_left_wall_repulsion(){
+	/**
+	Simple model, a purely repulsive potential.*/
+	foreach_particle(){
+		double distance = L0/2.+p().x;
+		double sigma    = 3*p().r;
+		double sr     = pow(sigma/distance,12.);
+		p().R.x += (sr);
+	}
+}
+void compute_bottom_wall_repulsion(){
+	/**
+	Simple model, a purely repulsive potential.*/
+	foreach_particle(){
+		double distance = L0/2.+p().y;
+		double sigma    = 3*p().r;
+		double sr     = pow(sigma/distance,12.);
+		p().R.y += (sr);
+	}
+}
+
+void compute_particle_particle_repulsion(){
+	foreach_particle(){
+  	for (int _k_particle = 0; _k_particle < pn[_l_particle]; _k_particle++) {
+			if(_k_particle != _j_particle){
+				coord distance;
+				foreach_dimension()
+					distance.x = pl[_l_particle][_k_particle].x - pl[_l_particle][_j_particle].x;
+				double DISTANCE = sqrt(sq(distance.x)+sq(distance.y));
+				double sigma    = 2*p().r;
+				double sr     = pow(sigma/DISTANCE,12.);
+				double angle = atan2(distance.y,distance.x);
+				//fprintf(stderr,"particle-particle repulsion %d %d %+6.5e %+6.5e %+6.5e \n",_j_particle,_k_particle,angle,DISTANCE,sr);
+				p().R.x -= 0.0*sr*cos(angle);
+				p().R.y -= 0.0*sr*sin(angle);
+			
+			}
+		}
+	}
 }

@@ -16,6 +16,12 @@ void compute_propulsion()
 		// FLAGELLA 1
 		pos.x = p().x + p().alpha*cos(+atan(p().beta)-M_PI/2.+p().theta.z);
 		pos.y = p().y + p().alpha*sin(+atan(p().beta)-M_PI/2.+p().theta.z);
+		foreach_dimension(){
+			if(pos.x<-L0/2.)
+			pos.x += L0;
+			if(pos.x>+L0/2.)
+			pos.x -= L0;
+		}
 		foreach_point(pos.x,pos.y){
 			propulsion.x[] += cosTheta*(-p().thrust/2.);
 			propulsion.y[] += sinTheta*(-p().thrust/2.);
@@ -23,6 +29,12 @@ void compute_propulsion()
 		// FLAGELLA 2
 		pos.x = p().x + p().alpha*cos(-atan(p().beta)+M_PI/2.+p().theta.z);
 		pos.y = p().y + p().alpha*sin(-atan(p().beta)+M_PI/2.+p().theta.z);
+		foreach_dimension(){
+			if(pos.x<-L0/2.)
+			pos.x += L0;
+			if(pos.x>+L0/2.)
+			pos.x -= L0;
+		}
 		foreach_point(pos.x,pos.y){
 			propulsion.x[] += cosTheta*(-p().thrust/2.);
 			propulsion.y[] += sinTheta*(-p().thrust/2.);
@@ -39,4 +51,7 @@ event acceleration(i++){
 #else
 		av.x[] = face_value(propulsion.x,0)/(cube(Delta));
 #endif
+	/**
+	Hook to overload acceleration, if needed.*/
+	event ("acceleration_overload");
 }

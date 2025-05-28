@@ -25,8 +25,8 @@ face vector av[];
 #define sinTheta     sin(p().theta)
 #define cosTheta     cos(p().theta)
 
-//#define ALPHA alpha*p().r
-//#define BETA   beta*p().r
+#define ALPHA alpha*p().r
+#define BETA   beta*p().r
 
 #define ShiftxCenter   -0.*BETA*cosTheta+0.*ALPHA*sinTheta
 #define ShiftyCenter   -0.*BETA*sinTheta-0.*ALPHA*cosTheta
@@ -48,20 +48,20 @@ void compute_microswimmer_forcing_smooth(Particles p)
 	// Center
 		Shift.x = ShiftxCenter; Shift.y = ShiftyCenter;
 		foreach(){
-				bodyForce.x[] += SP(p().r)*(p().B.x+cos(p().theta)*p().Thrust)*FACTOR;
-				bodyForce.y[] += SP(p().r)*(p().B.y+sin(p().theta)*p().Thrust)*FACTOR;
+				bodyForce.x[] += SP(p().r)*(p().B.x+cos(p().theta)*p().Thrust)/(p().r*p().r*M_PI);
+				bodyForce.y[] += SP(p().r)*(p().B.y+sin(p().theta)*p().Thrust)/(p().r*p().r*M_PI);
 		}
 	// Trans
 		Shift.x = ShiftxTrans; Shift.y = ShiftyTrans;
 		foreach(){
-				bodyForce.x[] += SP(p().r)*(-cos(p().theta)*p().Thrust/2.);
-				bodyForce.y[] += SP(p().r)*(-sin(p().theta)*p().Thrust/2.);
+				bodyForce.x[] += SP(p().r)*(-cos(p().theta)*p().Thrust/2.)/(p().r*p().r*M_PI);
+				bodyForce.y[] += SP(p().r)*(-sin(p().theta)*p().Thrust/2.)/(p().r*p().r*M_PI);
 		}
 	// Cis
 		Shift.x = ShiftxCis; Shift.y = ShiftyCis;
 		foreach(){
-				bodyForce.x[] += SP(p().r)*(-cos(p().theta)*p().Thrust/2.);
-				bodyForce.y[] += SP(p().r)*(-sin(p().theta)*p().Thrust/2.);
+				bodyForce.x[] += SP(p().r)*(-cos(p().theta)*p().Thrust/2.)/(p().r*p().r*M_PI);
+				bodyForce.y[] += SP(p().r)*(-sin(p().theta)*p().Thrust/2.)/(p().r*p().r*M_PI);
 		}
 	}
 	foreach_face()

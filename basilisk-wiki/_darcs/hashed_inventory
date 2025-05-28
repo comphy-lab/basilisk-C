@@ -1,4 +1,4 @@
-pristine:2aaac2a6d6a3d9f98946fc46dc3f4e8887a767cba668afa3afb7b0938136009f
+pristine:748fd381bcbc131d7ecd5138324cdf5cb43febf72cc512cfff5675a6cb4acdc7
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -2699,3 +2699,68 @@ j.a.v.hooft@gmail.com**20250524141626
  Ignore-this: 8558bb0721879f7e701728b8a8e9e0a091801fe54b37f8e2696ddaef899a5e6948a8226359dc33ef
 ] 
 hash: 0000005653-1f6b54be9e462718cae17b5ab6dae60fef4dedf640edd36fc30357457e0eb0ea
+[Added periodicity-treatment on driver-myembed-particle.h
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250526073509
+ Ignore-this: 5900c1a0f7df2ee41ff200a943c487c1
+ Simple but effective.
+] 
+hash: 0000000984-d435421e1f8390a77955df47eeecf2c31a98bff35e988a2b3aa225bf8427d8ac
+[Added periodicity treatment for driver-point-forces.h as well.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250526083041
+ Ignore-this: 7604bfea5db8b0793ddc00a08465dbbb
+] 
+hash: 0000008675-138eb67e0ed2343191c63fb90b4c13e3c33875d79fe5c66a6b3dc4f6ba25026d
+[Start working with confined tHree swimmers.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250526162134
+ Ignore-this: 663883fd0d3da2163faa51e659d74718
+] 
+hash: 0000011543-0c192ee40849b65c043439c622fc39c1968bdf436bbf0fbcc0f5fba7284e4169
+[Retrieve tHree formulation. 
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250527070917
+ Ignore-this: 5c227033ef436addcc31355ed4a6f773
+ Qualitatively very good.
+ Now needs some quantitative validations.
+] 
+hash: 0000002901-fdba6c49b2082aa8d4e3850e4911d901beb07e8ee22a790c7b16890f8dd1406c
+[I will not attend
+atleje <atlej@math.uio.no>**20250527090859
+ Ignore-this: e5cc37bfea9160395981c1d71a6ae1c6
+] 
+hash: 0000000173-690088e21148786d733b57cbf08274dcafa2072839c1233aef94cff360516763
+[Added validation for the tHree approach::w
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250527160544
+ Ignore-this: 4bb5de338372c6058e266f189fa83c0f
+ Constant force, variable confinement of a cylinder between two plates.
+ I discovered that target forces must be normalized by the cylinder area.
+] 
+hash: 0000007004-1b01ced246070a8da09aa27a243b86c6cdcc44a4c89b4bce13516433795a6162
+[Updated some file descriptions.
+fpicella <francesco.picella@sorbonne-universite.fr>**20250527162035
+ Ignore-this: 95bbca60521509a830231bfae4b74d6e
+] 
+hash: 0000000718-e617935f1dd31a208e31d9b3eed26a3801eeb07708441fe7ea8711680c7f9350
+[Error in cylinder area calculation. Now solved.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250527162100
+ Ignore-this: 174bb725b446cb3399a985e29eccc911
+] 
+hash: 0000001358-2709dc929c96fbc62b1b5fa66e674ca62a318385d5caf77291979795b5e75f17
+[Update of BMM information
+Tianyang <hantianyang@ucas.ac.cn>**20250527172017
+ Ignore-this: e6018ffe07d960ef70a8786ea295e974
+] 
+hash: 0000000265-cc5920070ba85047bfd54db5803e134bcf8e4a6abccb19bccefa171f6cd549b9
+[ss
+test <test@gmail.com>**20250527172127
+ Ignore-this: a362c04c8aa805018f300d91286ef83
+] 
+hash: 0000003760-d10cfa485c6457cf64e439ebce126e2b2efcef6cee99c5a0b2c1bf1c3349b159
+[Update of BMM video description
+Tianyang <hantianyang@ucas.ac.cn>**20250527172446
+ Ignore-this: 39f0950f060b4508c2b31e506506a221
+] 
+hash: 0000000474-f76c8dd669a54351d1fe56c4fcddd7c0fbe6aa0ab08c8d4dd3b097a9ef032699
+[rollback frontpage
+j.a.v.hooft@gmail.com**20250527173100
+ Ignore-this: e79d31b6e17e8ac97b713661e0074399774cabb87e88e852eed2304a208ea097f86a44283603b350
+] 
+hash: 0000003825-c49d7d102acd446d5fdb01dce39250361681534750b7eb6b18514cb6d752d4d0
