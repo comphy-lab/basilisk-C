@@ -1,4 +1,4 @@
-pristine:748fd381bcbc131d7ecd5138324cdf5cb43febf72cc512cfff5675a6cb4acdc7
+pristine:fe2ef8d34749b5e54d77ffbffee5288c868f8ec93a4b832734b449f2fb43d5f7
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -2764,3 +2764,14 @@ j.a.v.hooft@gmail.com**20250527173100
  Ignore-this: e79d31b6e17e8ac97b713661e0074399774cabb87e88e852eed2304a208ea097f86a44283603b350
 ] 
 hash: 0000003825-c49d7d102acd446d5fdb01dce39250361681534750b7eb6b18514cb6d752d4d0
+[updated location of conference
+wmostert <wmostert2208@gmail.com>**20250528112858
+ Ignore-this: ab030cbd091ccb75b7579aafbb07d334
+] 
+hash: 0000000432-d4a3e52b007060db959556751ba218cf17e3d39ac4edacea7d09e53f96beccf5
+[Adding repulsion to tHree formulation.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250528122137
+ Ignore-this: 19fdc358c971b2b0c1c5d642dfa387ba
+ Bottom wall ok.
+] 
+hash: 0000004940-2e2780a61b708e218ae45c86295cc7000d624a4356b5e4d8a16e45eea56a2825

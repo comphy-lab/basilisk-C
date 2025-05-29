@@ -78,3 +78,35 @@ void compute_sp(Particles p){
 				sp[] += SP(p().r);
 	}
 }
+
+/** Include _steric_ interactions.
+To do so, use some potential to tune body force
+on the particle when close to boundaries or other particles.*/
+
+void compute_repulsion(Particles p)
+{
+	foreach()
+		foreach_dimension()
+			bodyForce.x[] = 0.;
+	foreach_particle_in(p){
+		
+		coord Shift = {0.,0.};
+		coord Intensity = {0.,0.}; // intensity of the force to apply.
+		// Intensity will be built upon body-wall and body-body interactions.
+		/** What is the distance from which I want the repulsion force to kick in?*/
+		double sigma = 5.*p().r;
+		/** Set up a variable for the particle-surface distance, for convenience...*/
+		double distance = 0.;
+	/** Compute the intensity of repulsion, between the particle and the top-bottom wall.*/
+		distance = L0/2.+y;
+		Intensity.y += pow(sigma/distance,12)-pow(sigma/distance,6); 
+//		fprintf(stderr,"Distance-Intensity %+6.5e %+6.5e \n",distance,Intensity.y);
+	// Center
+		foreach(){
+				bodyForce.x[] += Intensity.x*SP(p().r)/(p().r*p().r*M_PI);
+				bodyForce.y[] += Intensity.y*SP(p().r)/(p().r*p().r*M_PI);
+		}
+	foreach_face()
+		av.x[] += face_value(bodyForce.x,0);
+	}
+}
