@@ -12,8 +12,8 @@ I Will define here if I want a fancier/more complex way of computing angular vel
 //#define Particle_Advection_ON 1
 
 double HEIGHT = 1.0;
-double THETA = M_PI/2.*3;
-double RADIUS = 0.25;
+double THETA = M_PI/2.*1;
+double RADIUS = 1.0;
 double FACTOR = 1.;
 
 #include "fpicella/src/periodic-shift-treatment.h"
@@ -42,7 +42,7 @@ FILE * output_file; // global output file pointer
 
 scalar un[]; // reference velocity field, for stopping the simulation.
 
-double NP = 1.;
+double NP = 3.;
 
 
 int main()
@@ -53,8 +53,9 @@ int main()
   Space and time are dimensionless. This is necessary to be able to
   use the 'mu = fm' trick. */
 
-  size (16. [0]);
-  DT = HUGE [0];
+  size (64. [0]);
+  //DT = HUGE [0];
+  DT = 0.1 [0];
   
   origin (-L0/2., -L0/2.);
 
@@ -62,11 +63,10 @@ int main()
   //periodic (top);
   
   stokes = true;
-  TOLERANCE = 1e-7;
+  TOLERANCE = 1e-3;
 
   output_file = fopen ("Output.dat", "w");
 
-	RADIUS = 0.25;
   
 //  for (N = 32; N <= 256; N *= 2)
 //		for(RADIUS = 0.05; RADIUS <= 0.45; RADIUS += 0.05)
@@ -82,13 +82,13 @@ int main()
 event init (t = 0) {
 /**
 	Initialize microswimmer particles. */
-	microswimmers = init_tp_circle(NP);
+	microswimmers = init_tp_square(NP);
 	foreach_particle(){
 		//p().x = 0.;
 		//p().y = 0.;
 		p().B.y=-1.;
 		p().r = RADIUS;
-		p().Thrust = 0.;
+		p().Thrust = 4.;
 		// forces will be normalized by the cylinder area
 		// this is done in driver-tHree-smooth.h
 	}
@@ -124,10 +124,10 @@ event init (t = 0) {
 /**
 We check for a stationary solution. */
 
-event logfile (t += 0.05; i <= 2000) {
+event logfile (t += 0.1; i <= 5000) {
 //  double du = change (u.y, un);
 	foreach_particle_in(microswimmers){
-		fprintf(stderr,"PARTICLE %+6.5e %+6.5e %+6.5e %+6.5e \n",p().x,p().y,p().u.x,p().u.y);
+		//fprintf(stderr,"PARTICLE %+6.5e %+6.5e %+6.5e %+6.5e \n",p().x,p().y,p().u.x,p().u.y);
   	//if (i > 10 && du < 1e-6){
 		//	fprintf(output_file,"%+04d %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e \n",N,p().r,p().x,p().y,p().u.x,p().u.y,HEIGHT);
 		//	fflush(output_file);
@@ -138,11 +138,13 @@ event logfile (t += 0.05; i <= 2000) {
 
 event acceleration (i++){
 	compute_microswimmer_forcing_smooth(microswimmers);
-	compute_repulsion(microswimmers);
+	compute_repulsion(microswimmers,3.0,true,true,true,true,4.);
 	a = av;
 }
 
 event properties(i++){
 	foreach_particle_in(microswimmers)
 		p().theta = THETA;
+/** For plotting purposes only...*/
+	compute_bodyPlot(microswimmers);
 }

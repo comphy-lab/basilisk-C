@@ -78,7 +78,8 @@ void p_coarsen (Point point, scalar s) {
   foreach_child()
     if (s[]) {
       int * indc = pointer_v(s[]);
-      int n = 0; while(indc[n++] >= 0);
+      int n = 0;
+      while(indc[n++] >= 0);
       nt += n - 1;
     }
   if (nt) {
@@ -111,6 +112,11 @@ void assign_particles (Particles plist, scalar s) {
   s.plist = plist + 1;
   foreach()
     s[] = 0;
+  // No box-boundary points
+  foreach_dimension() {
+    s[left] = 0;
+    s[right] = 0;
+  }
 #if TREE
   s.refine = s.prolongation = p_refine;
   s.coarsen = s.restriction = p_coarsen;
@@ -129,6 +135,7 @@ void assign_particles (Particles plist, scalar s) {
     ind[n] = -1;
     s[] = field_v(ind);
   }
+  multigrid_restriction ({s});
   boundary ({s}); // Find particles in ghosts and parent cells
 }
 
@@ -142,7 +149,8 @@ int plist_s (scalar s) {
 }
 
 macro foreach_particle_point(scalar s, Point point) {
-  int _l_particle = plist_s(s);				
+  int _l_particle = plist_s(s);
+  NOT_UNUSED(_l_particle);
   if (value_p(s, point)) {					
     int * ind = pointer_v(value_p(s, point));			
     for (int n = 0; ind[n] >= 0; n++) {		

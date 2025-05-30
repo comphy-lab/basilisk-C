@@ -1,4 +1,4 @@
-pristine:fe2ef8d34749b5e54d77ffbffee5288c868f8ec93a4b832734b449f2fb43d5f7
+pristine:764c3e50833787baea64491db0de2a16f327c992038f578305d45c1c342e7855
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -2775,3 +2775,28 @@ Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250528122137
  Bottom wall ok.
 ] 
 hash: 0000004940-2e2780a61b708e218ae45c86295cc7000d624a4356b5e4d8a16e45eea56a2825
+[periodic conditions and Poisson solver for finite point method 
+j.a.v.hooft@gmail.com**20250529100716
+ Ignore-this: f38acd5af98935cb6d304e4b1f02bba3b4be5d407b570fc8a8f1e74d443339789f20a07a5c5221e3
+] 
+hash: 0000018409-8c803989df4ca76679b625c1e27fa9f197368767f39d1d41bd73c05fb85936f9
+[My first code
+debdipbiswas <debdipbiswas3@gmail.com>**20250529102646
+ Ignore-this: 3ca6ab316a6dcaf7d282d1d662f83622
+] 
+hash: 0000000147-62efd65f3ca15fd8911617a3454c98e9c28533e33fced22e25939afd2df42ea0
+[Self-similar solver for the collapse of a viscous heap. Not converging yet.
+nicolas.cailler@upmc.fr**20250529193257
+ Ignore-this: 8a71c09befae6993388dffacdaeefce0bf113f0f2c4aadd2c27eb44786c5c94d7f582cf0931ff7b3
+] 
+hash: 0000049742-738fa04db4f3c915bab0cc59ac98928fbeeb30790a5ab06b029274749ddc998d
+[Simple repulsion implemented. Now It has to be tuned and tested.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250530112456
+ Ignore-this: 807eb635751ad259a12170b9373a700f
+] 
+hash: 0000004661-5410f9aa6c70985fc8f36f5ecb873899188246a90755c7f203d35a6b42777c2a
+[Repulsion, of a sedimenting+propelling particle.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250530135540
+ Ignore-this: 4457aaf20b0123b6735cbaf2c7b0fd44
+] 
+hash: 0000001413-693cbb4603dd3bd4bdd7e58ff01ec92f641cdbcfc828bf95d474ab8480b0fd9e
