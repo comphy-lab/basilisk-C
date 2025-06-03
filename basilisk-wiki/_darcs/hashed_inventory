@@ -1,4 +1,4 @@
-pristine:764c3e50833787baea64491db0de2a16f327c992038f578305d45c1c342e7855
+pristine:ddbd3c9e57954244ffaf004a379f947d2ee617e65376e3399a9d2a2b12c2863e
 Starting with inventory:
 0000129802-22e85facf16f1532c8ad2c5d2fe2fe26985365c1e76a5c2d41581b5aeafd2530
 [TAG 25-04-08
@@ -2800,3 +2800,31 @@ Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250530135540
  Ignore-this: 4457aaf20b0123b6735cbaf2c7b0fd44
 ] 
 hash: 0000001413-693cbb4603dd3bd4bdd7e58ff01ec92f641cdbcfc828bf95d474ab8480b0fd9e
+[bodyPlot field, for plotting purposes only...plots little cute hearts!
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250530140113
+ Ignore-this: 6da68423dbd6b7815a1171f92547e05c
+] 
+hash: 0000000601-79515e3381653b2a0991d9a22d130c161efbdb99f95d39303bae34f6e8619963
+[Added first try for the plume observation.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250530162520
+ Ignore-this: ee489fc18d7f07f2e666ce793307f8f8
+ It is far from being perfect.
+ But it could be a good start.
+ F
+] 
+hash: 0000004124-9ed82c663e50f803b5ad359afa0ab1c53a26d246b371a3f0dc984ba35cf4660f
+[Solved issues on film visualisation.
+fpicella <francesco.picella@sorbonne-universite.fr>**20250530163210
+ Ignore-this: 5e7da6dfd512462961360180c42e14fa
+] 
+hash: 0000000583-01976b18580fb207eb195df057b26f5daac48f66fa5157080e5102ecbd48356b
+[name updated
+fpicella <francesco.picella@sorbonne-universite.fr>**20250530163248
+ Ignore-this: 325231a976ef4588d59da4fbaa6f899e
+] 
+hash: 0000000245-bf9126cf5805dc2399be44e60343f9534d0194eed9c286bfd842d69466404245
+[removed two registrants who indicated they couldn't attend
+wmostert <wmostert2208@gmail.com>**20250602092149
+ Ignore-this: 34d5dce2cb508d9adc611caa142485c0
+] 
+hash: 0000000605-491af2d590165ad207b297c3afe687053d62bbcdfd26c91a6171ebaba0f75b22

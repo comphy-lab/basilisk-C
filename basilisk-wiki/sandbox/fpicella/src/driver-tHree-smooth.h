@@ -164,8 +164,17 @@ void compute_bodyPlot(Particles p){
 		coord Shift = {0.,0.}; // legacy from previous functions...keep it to zero
 													 // if you want the force to be applied around the 
 													 // microswimmer body.
-		foreach(){
+	// Center
+		Shift.x = ShiftxCenter; Shift.y = ShiftyCenter;
+		foreach()
 				bodyPlot[] += SP(p().r);
-		}
+	// Trans
+		Shift.x = ShiftxTrans; Shift.y = ShiftyTrans;
+		foreach()
+				bodyPlot[] += SP(p().r);
+	// Cis
+		Shift.x = ShiftxCis; Shift.y = ShiftyCis;
+		foreach()
+				bodyPlot[] += SP(p().r);
 	}
 }
