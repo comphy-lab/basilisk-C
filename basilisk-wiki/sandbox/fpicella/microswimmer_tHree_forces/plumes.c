@@ -65,7 +65,7 @@ int main()
   
   origin (-L0/2., -L0/2.);
 
-  periodic (right);
+//  periodic (right);
   //periodic (top);
   
   stokes = true;
@@ -151,10 +151,13 @@ event properties(i++){
 /** For plotting purposes only...*/
 	compute_bodyPlot(microswimmers);
 }
+// maybe you'll need to compress the mp4 video as well...?
+// fpicella@chocolatine:~/wiki/sandbox/fpicella/microswimmer_tHree_forces/plumes$ ffmpeg -i plumes.mp4 -filter:v "setpts=PTS/10" -filter:a "atempo=10.0" -vcodec libx264 -crf 28 -preset veryfast -movflags +faststart plumes_compressed.mp4^C
+
 
 /**
 # Plumes of bioconvection (?)
 
-![Some plumes from heart-shaped microswimmers](plumes/plumes.mp4)
+![Some plumes from heart-shaped microswimmers](plumes/plumes_compressed.mp4)(loop)
 
 */
