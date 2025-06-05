@@ -30,11 +30,28 @@ title: Basilisk (Gerris) Users' Meeting 2025
 
 ## Summary
 
-The meeting will be held on the 7--9th July 2025 at the University of Oxford, United Kingdom, in the Department of Engineering Science, at the Thom Building (Parks Road, central Oxford).
+The meeting will be held on the 7--9th July 2025 at the University of Oxford, United Kingdom, in the Department of Engineering Science, in Lecture Room 1, [Thom Building](https://www.openstreetmap.org/?mlat=51.760234&mlon=-1.260001#map=19/51.760234/-1.260001&layers=N) (Parks Road, Oxford OX1 3PJ).
 
 The format will be similar to earlier Basilisk/Gerris meetings held in [Paris, France in 2011](http://gfs.sourceforge.net/wiki/index.php/Gerris_users%27_meeting_2011), [Wellington, New Zealand in 2012](http://gfs.sourceforge.net/wiki/index.php/Gerris_users%27_meeting_2012), [Sevilla, Spain in 2014](http://gfs.sourceforge.net/wiki/index.php/Meeting_on_Numerical_challenges_in_two-phase_flows), [Princeton, USA in 2017](BGUM2017), [Paris, France in 2019](BGUM2019) and [Paris, France in 2023](BGUM2023). Participants are encouraged to share their work using Basilisk (or Gerris) for applications in fluid mechanics, environmental science, engineering etc. Students are especially welcome to participate in this informal and friendly gathering.
 
-Attendance is free of charge but registration is mandatory. **If you are registered, please fill in the [dinner survey](https://www.surveymonkey.com/r/VPFRKJH) before Monday 16th June**.
+Attendance is free of charge but registration is mandatory. **If you are registered, please fill in the [dinner survey](https://www.surveymonkey.com/r/VPFRKJH) before Monday 16th June**. Among other things, this will communicate your dietary requirements.
+
+## Accommodation and travel to Oxford
+Choosing hotels: Broadly you could expect to walk to the venue in about 20 minutes if you stay east of the river Thames, west of the river Cherwell, south of Belbroughton road (or thereabouts), and north of Christ Church meadow. You could stay further away if you like but it would mean either a longer walk or having to take alternative transport - which in Oxford traffic may not be quicker than walking. Hotels on George Street, and on neighbouring streets, are well-placed.
+
+Some possibilities (certainly not exhaustive):
+
+Old Parsonage, 1-3 Banbury Road, OX2 6NN
+
+The Buttery, 11-12 Broad Street, Oxford OX1 3AP  
+
+The Randolph Inn, Beaumont Street, OX1 2LN
+
+Cotswold Lodge Hotel, 66A Banbury Road, OX2 6JP
+
+Bocardo 24-26 George St, Oxford OX1 2AE
+
+To get to Oxford from London, the simplest options are by train from Paddington Station, or Marylebone Station, both of which are easily accessible via the Underground if arriving from the Eurostar, for example. If coming from Heathrow or Gatwick airports, there are also direct bus options, for example the confusingly named "Airline" bus.
 
 ## Participants
 
@@ -43,7 +60,7 @@ As we have reached 100 participants, registration is closed. If you have registe
 1. [Wouter Mostert](/sandbox/wmostert/README), Department of Engineering Science, University of Oxford, UK.
 1. [Radu Cimpeanu](/sandbox/rcimpeanu/README), Mathematics Institute, University of Warwick, UK.
 1. [Stéphane Popinet](/sandbox/popinet/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France -- *What's new and future plans*.
-1. Nausheen Basha
+1. Nausheen Basha, Imperial College London.
 1. [Vatsal Sanjay](https://comphy-lab.org), [Physics of Fluids, Univ. Twente](https://pof.tnw.utwente.nl) -- *Can polymeric flows be the 'Drosophila' of continuum mechanics?*
 1. Riccardo Caraccio, [Politecnico di Milano](https://www.polimi.it/), IT -- *A One-Grid Framework for Pyrolysis of Porous Biomass Particles*
 1. [Kaitao Tang](/sandbox/kaitaotang/), Department of Engineering Science, University of Oxford, UK.
@@ -112,7 +129,6 @@ As we have reached 100 participants, registration is closed. If you have registe
 1. [Datong Wang](http://basilisk.fr/sandbox/Datong/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole Polytechnique, Palaiseau, France. -- *Numerical study of drop impact on concave surface: spread, jet, and splash*.
 1. Yifan Han, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Germany -- *Wetting effects on the dynamics of droplets and bubbles at surfaces*.
 1. Gerd Mutschke, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Germany.
-1. Hunter Boswell, Missouri University of Science and Technology, USA.
 1. [Minerva Schuler](https://warwick.ac.uk/fac/sci/hetsys/people/cohort5/minervaschuler/), Department of Engineering, University of Warwick, UK.
 1. Muwanguzi Stephen Kyazze, College of Ocean and Civil Engineering, Shanghai Jiaotong University 
 1. Ahmed Basil KOTTILINGAL, Paris
@@ -122,7 +138,6 @@ As we have reached 100 participants, registration is closed. If you have registe
 1. Peter Lewin-Jones, Mathematics Institute, University of Warwick, UK
 1. Aston Over, Royal Grammar School High Wycombe, UK
 1. Anurag Muthyala, The Royal Grammar School High Wycombe, UK
-1. Chandra Shekara G, BMSCollege of Engineering, Bangalore India
 1. [Edoardo Cipriano](/sandbox/ecipriano/README), [Politecnico di Milano](https://www.polimi.it/), IT -- *Current state of gas-liquid phase change modeling in Basilisk*.
 1. [Tianning Tang](www.tim-tang.net), Department of Mechanical and Aerospace Engineering, University of Manchester 
 1. [Xiaosheng Chen](https://eng.ox.ac.uk/people/xiaosheng-shaun-chen/), Department of Engineering Science, University of Oxford, UK.

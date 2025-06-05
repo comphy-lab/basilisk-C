@@ -87,6 +87,9 @@ to the 12-term in Lennard-Jones.*/
 /** Forces are applied directly at the center of the body, as if 
 they where some sort of _body-force_.*/
 
+/** Single common definition of the (repulsion / attraction) potential*/
+#define potential pow(sigma/distance,12) - pow(sigma/distance,6)
+
 void compute_repulsion(Particles p, double repulsion_distance, bool top, bool bottom, bool right, bool left, double repulsion_strength)
 {
 	foreach()
@@ -106,22 +109,22 @@ void compute_repulsion(Particles p, double repulsion_distance, bool top, bool bo
 	/** Compute the intensity of repulsion, between the particle and the bottom wall.*/
 		if(bottom==true){
 			distance = L0/2.+y;
-			Intensity.y += pow(sigma/distance,repulsion_strength);//-pow(sigma/distance,6); 
+			Intensity.y += potential;//pow(sigma/distance,repulsion_strength);//-pow(sigma/distance,6); 
 		}
 	/** Compute the intensity of repulsion, between the particle and the top wall.*/
 		if(top==true){
 			distance = L0/2.-y;
-			Intensity.y -= pow(sigma/distance,repulsion_strength);//-pow(sigma/distance,6); 
+			Intensity.y -= potential;//pow(sigma/distance,repulsion_strength);//-pow(sigma/distance,6); 
 		}
 	/** Compute the intensity of repulsion, between the particle and the right wall.*/
 		if(right==true){
 			distance = L0/2.-x;
-			Intensity.x -= pow(sigma/distance,repulsion_strength);//-pow(sigma/distance,6); 
+			Intensity.x -= potential;//pow(sigma/distance,repulsion_strength);//-pow(sigma/distance,6); 
 		}
 	/** Compute the intensity of repulsion, between the particle and the bottom wall.*/
 		if(left==true){
 			distance = L0/2.+x;
-			Intensity.x += pow(sigma/distance,repulsion_strength);//-pow(sigma/distance,6); 
+			Intensity.x += potential;//pow(sigma/distance,repulsion_strength);//-pow(sigma/distance,6); 
 		}
 	/** Compute particle-particle repelling force. */
 	/** This clearly is not the most efficient way to do it:
@@ -137,12 +140,10 @@ void compute_repulsion(Particles p, double repulsion_distance, bool top, bool bo
 				foreach_dimension()
 					DISTANCE.x = pl[_l_particle][_k_particle].x - pl[_l_particle][_j_particle].x;
 				distance = sqrt(sq(DISTANCE.x)+sq(DISTANCE.y))-sigma;
-				double INTENSITY = pow(sigma/distance,12);//-pow(sigma/distance,6);
+				double INTENSITY = pow(sigma/distance,repulsion_strength);//-pow(sigma/distance,6);
 				double angle = atan2(DISTANCE.y/distance,DISTANCE.x/distance);
-				//fprintf(stderr,"particle-particle repulsion %d %d %+6.5e %+6.5e %+6.5e \n",_j_particle,_k_particle,angle,distance,INTENSITY);
 				Intensity.x -= INTENSITY*cos(angle);
 				Intensity.y -= INTENSITY*sin(angle);
-			
 			}
 		}
 	// Center
@@ -178,3 +179,30 @@ void compute_bodyPlot(Particles p){
 				bodyPlot[] += SP(p().r);
 	}
 }
+
+/** ### Particle output
+		A simple(r) implementation.
+		I will just write a single file for each particle in time.
+		For the moment, I allocate space for 100 particles.
+		In cas I'll need to do more...I'll have to deal with
+		the next line of code.*/
+static FILE *singleParticleFile[100] = {NULL}; // for the moment only one set of particles...?
+/** Prepare the output files.*/
+/* Particle output, super-compact (and working in serial!) way :)
+   FP, 20250212 11h37 */
+event output_particle_initialize(i=0){ // first iteration, define name and open files...
+  foreach_particle(){
+    char filename[100];
+    sprintf(filename, "particle_%03d.dat", _j_particle);
+    singleParticleFile[_j_particle] = fopen(filename,"w");
+  }
+}
+#define FORMAT_SPEC_7 ("%+6.5e %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e %+6.5e\n") // to avoid writing every time it...
+event output_particle(i++){
+  foreach_particle(){
+    //fprintf(singleParticleFile[_j_particle],FORMAT_SPEC_7,t,p().x,p().y,p().theta.z,p().u.x,p().u.y,p().omega.z);
+fprintf(singleParticleFile[_j_particle],FORMAT_SPEC_7,t,p().x,p().y,p().theta,p().u.x,p().u.y,p().omega);
+    fflush(singleParticleFile[_j_particle]);
+  }
+}
+

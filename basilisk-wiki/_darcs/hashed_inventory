@@ -1,4 +1,4 @@
-pristine:a069b04a46ab1e30e92797428975a4487846ca8eb381cc6bb6bcc2f2781a70ea
+pristine:b9ac5b41506f3ab58f847958bf419a0360bfec529e19af13be7f529cb874a9f0
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -36,3 +36,52 @@ Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250603192050
  Ignore-this: f893607bf1f52a2bc9dd41c839e1e51c
 ] 
 hash: 0016413216-f121b53079df3b7fc2c0421653040b0f6495ba582de7cb4bcb5d809031b2eecd
+[updated registrant list
+wmostert <wmostert2208@gmail.com>**20250604142148
+ Ignore-this: b62f2e592eb48bf319a452f3bf15e786
+] 
+hash: 0000000384-591d9e555fbc6c30a55858668ac8d0741f4be43b508809c6373f96589b12d066
+[added accommodation & travel section
+wmostert <wmostert2208@gmail.com>**20250604150614
+ Ignore-this: 5d3527de6564a72aacb3108a9ae623d
+] 
+hash: 0000001654-c9d7881b48b3e8db6b7a2edc125cabf71a60bad489ac6e9252b001e4a96a6926
+[added note on dietary requirements
+wmostert <wmostert2208@gmail.com>**20250604150652
+ Ignore-this: a5b7bd9354b18f79255f40236e5a0653
+] 
+hash: 0000000598-37f750d9ab04679de666c80a01fffd12a817c1db93d875ca8249270ddf31f9bf
+[formatting
+wmostert <wmostert2208@gmail.com>**20250604150733
+ Ignore-this: c3e348d96cdbf07bad11f289c9cecf57
+] 
+hash: 0000000263-07e06869a7e4a83dc51884aea72e34ac0dfc0735f5fbd68f9c0e3f87be227b30
+[Added location
+Stephane Popinet <popinet@basilisk.fr>**20250604155741
+ Ignore-this: da76b06a2bc40055f7fc4f58336bc501
+] 
+hash: 0000000638-4dd537cf69a4582921c5f0f4ded2eae289d1be177fa0ba53691a35a9c0286a2b
+[More compact way of defining repulsion potentials.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250604123108
+ Ignore-this: 895ff3ca7a6f68a96d0c8c276ac57e33
+] 
+hash: 0000001771-9b3d22de5f820c15f230f21a91f1761eec5fff79fa91846cab5a0e2fdca12a03
+[Added single swimmer base case. To play around with.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250604162259
+ Ignore-this: 4531eb11fde60c9489d7a32c96ee469
+ It also contains a new output system, borrowed from driver-myembed.
+ It works in serial. Maybe looking at Antoon's routines
+ for _particle_ there must be something better available.
+ But for the moment, that's enough for me.
+] 
+hash: 0000005950-48d8e858a9c5f35942c3a54a093b85b6f676866bf0ecfa6fa580b314ac84c0ff
+[Simplified, added a video and a simple post-treatment.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250604164429
+ Ignore-this: 44a5695faa6a46dfed039345acf1ff9
+] 
+hash: 0000003677-039a16d6d58a1ee0047b8a88d1bdc05294cfd7525c27a1cca371059011d3fab4
+[Added video as well.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250604164902
+ Ignore-this: 7c84038cbd886d7ca1077992b20f7ae6
+] 
+hash: 0002053188-2c64f3e5d3339ee77ab8a5755948ea2ff1ab8ce939a1e29f1c3f1aa2ffdff4ff
