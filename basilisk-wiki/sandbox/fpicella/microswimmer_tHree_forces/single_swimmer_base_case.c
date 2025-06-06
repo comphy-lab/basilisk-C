@@ -72,7 +72,8 @@ int main()
   use the 'mu = fm' trick. */
 
   size (32. [0]);
-  DT = HUGE [0];
+  //DT = HUGE [0];
+  DT = 1.0 [0];
   
   origin (-L0/2., -L0/2.);
 
@@ -144,7 +145,7 @@ event init (t = 0) {
 }
 
 
-event logfile (t += 1.0; i <= 100) {
+event log_make_video (t += 1.0) {
   squares ("omega", linear = true);
   scatter (microswimmers, pc = {256, 256, 256});
   isoline ("bodyPlot", 0.25, lc = {256,256,256}, lw = 2);
@@ -153,6 +154,8 @@ event logfile (t += 1.0; i <= 100) {
   save ("single_swimmer.mp4");
 }
 
+/** End event, to properly unallocate variables.*/
+event end (t = 100);
 
 event acceleration (i++){
 	compute_microswimmer_forcing_smooth(microswimmers);

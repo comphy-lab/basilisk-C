@@ -152,7 +152,7 @@ and how Adaptivity works. To organize my toughts I wrote it down.
      f. [Split-solver dual-grid AMR](omega.c)
 * [Encode a movie on an octree](ri.c)
 * [Hilbert-order MPI-domain decomposition on trees](test_Hilbert.c)
-* [Code your own flow-problem solver (external link)](https://antoonvanhooft.nl/min_ns/intro)
+* [Code your own flow-problem solver (external link)](http://188.91.26.92/min_ns/intro)
 
 ## Contact
 
