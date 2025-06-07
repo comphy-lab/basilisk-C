@@ -1,7 +1,7 @@
 # Hello World
 Hi, I'm Francesco, and I'm actually working active colloids.
 
-![And yes, I use VI. Comic by[xkcd](xkcd.com)](https://imgs.xkcd.com/comics/real_programmers.png)
+![And yes, I use VI. Comic by [xkcd.](https://xkcd.com/378/)](https://imgs.xkcd.com/comics/real_programmers.png)
 
 For this reason, I'm re-adapting [Arthur Ghigo](http://basilisk.fr/sandbox/ghigo/src/) implementation of moving embedded boundaries.
 
@@ -17,3 +17,6 @@ Updated on june 2025
 - Bio-mimetic active colloid, using the [tHree method](microswimmer_tHree_forces/single_swimmer_base_case.c). Single swimmer.
 
 - Multiple microswimmers with the [tHree method](microswimmer_tHree_forces/plumes.c).
+
+### I do not really understand darcs...
+please, S. help!
