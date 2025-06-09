@@ -81,7 +81,7 @@ int main()
   periodic (top);
   
   stokes = true;
-  //TOLERANCE = 1e-3;
+  TOLERANCE = 1e-3;
 
   //output_file = fopen ("Output.dat", "w");
 
@@ -145,7 +145,13 @@ event init (t = 0) {
 }
 
 
+v v v v v v v
+event logfile (t += 1.0; i <= 100) {
+=============
 event log_make_video (t += 1.0) {
+*************
+event make_movie (t += 2.5) {
+^ ^ ^ ^ ^ ^ ^
   squares ("omega", linear = true);
   scatter (microswimmers, pc = {256, 256, 256});
   isoline ("bodyPlot", 0.25, lc = {256,256,256}, lw = 2);
@@ -154,9 +160,14 @@ event log_make_video (t += 1.0) {
   save ("single_swimmer.mp4");
 }
 
+v v v v v v v
+
+=============
+*************
 /** End event, to properly unallocate variables.*/
 event end (t = 100);
 
+^ ^ ^ ^ ^ ^ ^
 event acceleration (i++){
 	compute_microswimmer_forcing_smooth(microswimmers);
 	compute_repulsion(microswimmers,3.0,false,false,false,false,12.); // look at the driver-tHree file
@@ -169,6 +180,10 @@ event properties(i++){
 	vorticity(u,omega);
 	compute_bodyPlot(microswimmers);
 }
+
+/**
+### Proper definition of _stopping_ event for the solver.*/
+event end (t = 101);
 
 /**
 # Velocity for a single tHree swimmer.

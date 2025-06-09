@@ -1,4 +1,4 @@
-pristine:9c1812d54989258e793c9a2a9eed62b74894ab1f9e9adabedc9343b231ad8afa
+pristine:75bb6e2acb5e3ecad57d10a942e1c728765e90eb0342a8ceceaefbf575730abb
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -125,3 +125,69 @@ fpicella <francesco.picella@sorbonne-universite.fr>**20250606192736
  Ignore-this: 5ba158653a1e5181ee2608896eac359a
 ] 
 hash: 0000007219-b50aef8135e3983b848354bc9f32364b56826a973009515b39de3eed75116d77
+[DO NOT RECORD MP4 FILES PLEASE!
+Stephane Popinet <popinet@basilisk.fr>**20250607134319
+ Ignore-this: bdf2abdbb48da01ecc413874bc6fb329
+] 
+hash: 0002052974-5feaccc1459afafd45ec663980808a7568a736d6308fb979742f129f86338b14
+[Proper definition of _end_ event, to stop
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250605074118
+ Ignore-this: f81791da6fe09ec89a87712c1a89d442
+ the simulation and unallocate variables.
+] 
+hash: 0005221535-b8b2c91711ff342a260686b7c05711ce25d0e6215af322a15e616f12fe1ccb96
+[final time changed.
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250605074305
+ Ignore-this: e244d3a3aeb63c6bf7eea24562c32ac6
+] 
+hash: 0000000272-ae84c2a00aecaee5b74aee5ab0f773b377110f64b9facc589581fbe932b8f6ea
+[Simplified and resolver conflict, I hope
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250605090306
+ Ignore-this: ca8fa94359f711e5a2d82c8039a5d67e
+] 
+hash: 0047511334-b2b393433f8bcddc0645b453b0730e95fb6d0a802aa5b9dc6bb8ea2a725bfc1f
+[Updated README
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250605093159
+ Ignore-this: 1d623463158bb25db8a1107cf61c11bc
+] 
+hash: 0000001468-ab7341d421b0254a79f3d6426e5f009193490be6020046a39ebe1743935ef532
+[stream solver mode3 example 
+j.a.v.hooft@gmail.com**20250605095131
+ Ignore-this: 1d27ef79db30267d0a40214fae2f093f18d578c0af5c602d7a76814ed59c6c4dae1eb13465bceab2
+] 
+hash: 0000001509-39f4a8c8c245df61a410eacf098cff0d743d019840af92172b42b378e4993cfd
+[resolving conflict
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250605102410
+ Ignore-this: 33f6e5874dfd8a5b775dfd3e1a9ab013
+] 
+hash: 0081592846-55d7df37d003b6bba2aae13e43b59d17bc30724f3733e9774c071e029f9c6cb7
+[updated README
+Francesco Picella <francesco.picella@sorbonne-universite.fr> **20250605113054
+ Ignore-this: 2827c6e3495984e48df970291fd75705
+] 
+hash: 0000000256-6b51220623620e9d58e3fecb79cafee6288d91fc170e006bc6d6c000cbc9a531
+[action 4
+Daniel Fuster <dfuster@gmail.com>**20250606080601
+ Ignore-this: b686ec0c3f44da8bef4393d1306d103a
+] 
+hash: 0000000167-93e3e93ddf98684d599011400a41888d8215a88120f845bef6841b189d10bd51
+[Again
+Stephane Popinet <popinet@basilisk.fr>**20250607134640
+ Ignore-this: acce4ca270fa0793ee36861e3f4af075
+] 
+hash: 0002053024-cc3d04be537e791ec5bdb7dd2d17372dbf4881d6e32dc1ef5f9b3d7b13417b48
+[removed unused variable
+Antoonvh <j.a.v.hooft@gmail.com>**20250608082031
+ Ignore-this: d5b8ee800ab170acc749395001171fac
+] 
+hash: 0000000281-9261055d7b9cfedea22051a27da8bc0788b417cf17c162495e6a9fd63198f31e
+[double least-squares
+j.a.v.hooft@gmail.com**20250608140757
+ Ignore-this: cb5cb3d71c68d66ea3bc0defee411d1eede988441545e1622944800cd1a98177ac7b58fb3ea020cf
+] 
+hash: 0000005162-ac392bf9294b1423d9a4e8f6fe5da2371d1e22da3033a7177389a86886cd94ee
+[Michele Cattani's Withdrawal
+Michele Cattani <michelecattani94@gmail.com>**20250608152310
+ Ignore-this: 9e30c7015e65d4cf9d057983c332016f
+] 
+hash: 0000000454-56068ee95c6a15cc3a363869a312eb162b221c6dfce0c073fde62b0b584f20af
