@@ -7,7 +7,7 @@ other bview functions in [draw.h](src/draw.h).
  */
 
 trace
-void scatter (Particles p, float s = 3, float pc[3] = {0,0,0}){
+void scatter (Particles p, float s = 3, float pc[3] = {0,0,0}) {
   bview * view = draw();
 #if dimension == 2
   glTranslatef (0., 0., view->lc*view->fov/24.); //from draw_lines()

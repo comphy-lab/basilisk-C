@@ -6,7 +6,7 @@ CFLAGS += -O2 -DMTRACE=3
 
 
 
-poiseuille.tst:CFLAGS+= -events
+poiseuille.tst:CFLAGS+= 
 
 Bingham.tst:CFLAGS+=
 

@@ -45,7 +45,6 @@ bool particle_in_cell (particle part, Point point) {
   return true;
 }
 
-#if TREE
 void p_refine (Point point, scalar s) {
   if (!s[]) { // No particles
     foreach_child()
@@ -84,7 +83,9 @@ void p_coarsen (Point point, scalar s) {
     }
   if (nt) {
     int * indp = NULL;
-    indp = malloc (sizeof(int)*nt + 1);
+    if (s[])
+      indp = pointer_v(s[]);
+    indp = realloc (indp, sizeof(int)*nt + 1);
     nt = 0;
     foreach_child()
       if (s[]) {
@@ -97,18 +98,19 @@ void p_coarsen (Point point, scalar s) {
     s[] = field_v(indp);
   }
 }
-#endif
 
 void free_scalar_data (scalar s) {
-  foreach_cell() {
-    free(pointer_v(s[]));
+  foreach_cell_all() {
+    if (s[])
+      free(pointer_v(s[]));
     pointer_v(s[]) = NULL;
+    s[] = 0;
   }
 }
 
 void assign_particles (Particles plist, scalar s) {
   if (s.plist > 0)
-    ;//free_scalar_data (s);
+    ;//ree_scalar_data (s);
   s.plist = plist + 1;
   foreach()
     s[] = 0;
@@ -151,7 +153,7 @@ int plist_s (scalar s) {
 macro foreach_particle_point(scalar s, Point point) {
   int _l_particle = plist_s(s);
   NOT_UNUSED(_l_particle);
-  if (value_p(s, point)) {					
+  if (value_p(s, point)) {
     int * ind = pointer_v(value_p(s, point));			
     for (int n = 0; ind[n] >= 0; n++) {		
       int _j_particle = ind[n];

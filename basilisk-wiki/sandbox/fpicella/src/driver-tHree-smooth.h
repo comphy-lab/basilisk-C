@@ -186,7 +186,7 @@ void compute_bodyPlot(Particles p){
 		For the moment, I allocate space for 100 particles.
 		In cas I'll need to do more...I'll have to deal with
 		the next line of code.*/
-static FILE *singleParticleFile[100] = {NULL}; // for the moment only one set of particles...?
+static FILE *singleParticleFile[1000] = {NULL}; // for the moment only one set of particles...?
 /** Prepare the output files.*/
 /* Particle output, super-compact (and working in serial!) way :)
    FP, 20250212 11h37 */

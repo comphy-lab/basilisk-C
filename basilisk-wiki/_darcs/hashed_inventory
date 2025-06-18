@@ -1,4 +1,4 @@
-pristine:75bb6e2acb5e3ecad57d10a942e1c728765e90eb0342a8ceceaefbf575730abb
+pristine:cee677974dbbd9f967d62e4563a717e4cd2517ab5f003e103d3b80fde56b2e09
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -191,3 +191,298 @@ Michele Cattani <michelecattani94@gmail.com>**20250608152310
  Ignore-this: 9e30c7015e65d4cf9d057983c332016f
 ] 
 hash: 0000000454-56068ee95c6a15cc3a363869a312eb162b221c6dfce0c073fde62b0b584f20af
+[Published
+Stephane Popinet <popinet@basilisk.fr>**20250610083850
+ Ignore-this: 4fdbf1ec308e6d9c27fa0585be99a427
+] 
+hash: 0000001145-a977986cf14c763b6c6ae49490b419d75e6388b611ff5545cd85812db6e08226
+[Published
+Stephane Popinet <popinet@basilisk.fr>**20250610084037
+ Ignore-this: f2e84288d2d985947cd2011b0bf15edd
+] 
+hash: 0000001208-c27bfa118fe445b91987122b3ba8a54f9caa1c239495722084b357cced666f58
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20250610084258
+ Ignore-this: 71d8249bb6422e52e838929fce70d920
+] 
+hash: 0000000467-cc49b97543008e45089a5b858191f628565115b0cfbea92cacf38bc4b72a42df
+[HAL works again
+Stephane Popinet <popinet@basilisk.fr>**20250610103536
+ Ignore-this: d7e9df251c4c50529302c44b042a50cf
+] 
+hash: 0000000890-0c9a92a373125bf1eb9860878eb717d77b1180309264eaae397a0c0f2b03509d
+[HAL works again
+Stephane Popinet <popinet@basilisk.fr>**20250610103704
+ Ignore-this: a072d238d4be11824e4a47a52b392213
+] 
+hash: 0000000900-36539400694fe03b2137c18b4c5244bf08a215b95d7e3db7c229a81f899ec389
+[debug poiseuille
+Fanshuo**20250610110326
+ Ignore-this: 1bd15852b6cfda920705f04b8fae5eee
+] 
+hash: 0000000213-81dcd61262ea7ac889b3fd0406e8a7ea9747a3434bc71937f89ac6ce2b90c1fd
+[Pavan included a talk title.
+pavankirar <iampavankirar@gmail.com>**20250610110433
+ Ignore-this: aee95d9e05f91d58dfb41044b3dced46
+] 
+hash: 0000000396-24e401ca58773b7a14613733bc214124838293873ccf5d901a608d679e847c6c
+[Added a link of profile
+pavankirar <iampavankirar@gmail.com>**20250610111409
+ Ignore-this: f1926b25fefef7fd80fc9a5a57069b7e
+] 
+hash: 0000000575-1a21b8c8597539d16f6ec2a42635a3ec0d44adde6540739d55264124b296a79e
+[Updated the link
+pavankirar <iampavankirar@gmail.com>**20250610111727
+ Ignore-this: 7c98f0fd5a765340d046796c6273138b
+] 
+hash: 0000000672-e882b9e04e18a9e3142b6f89a19759b8c4473b13eba01a2362737b6bdd8923ae
+[debug BagnoldCohesive.c comment out "delete ({w})"
+Fanshuo**20250610115934
+ Ignore-this: 1aaa4f69e39e4a01d0e720534a000bbe
+] 
+hash: 0000000252-690124a4adbb125125557f914a48d7708b9b9764a4f7862ce050eec2a5e4ce0f
+[debug to run poiseuille
+Fanshuo**20250610120556
+ Ignore-this: a3ac1cd6781fbcc6cf40164d7604fa8d
+] 
+hash: 0000000195-9cd8ff26692b1a8948641724b60884f71fdea35f9f8e9d1fc6f0f52612220aba
+[updated README, done on the web interface. I have still not solved the issue on the local one.
+fpicella <francesco.picella@sorbonne-universite.fr>**20250610132344
+ Ignore-this: 7850ed3867c7851d58487b80855fe71a
+] 
+hash: 0000001255-45afed9ea5113cf59c2238408567fd414b7c1690704aae0e54bb962c9cf87c43
+[typo, corrected
+fpicella <francesco.picella@sorbonne-universite.fr>**20250610132439
+ Ignore-this: 70b2402dbfda2bf44bc4bdfd19e5b8ef
+] 
+hash: 0000000476-649c13e2ce0666fa58a866b0c0652742e7ff3b02e03274d6b453cb859a18a3e0
+[added short darcs tutorial, for pedagogy purposes only.
+francesco.picella@sorbonne-universite.fr**20250611095501
+ Ignore-this: 28705939d60bcba531f4b0eeed8d6595
+] 
+hash: 0000000583-f39423e13f537f844fa5e7158cc0f1c089191df442db22f99395a32e61136611
+[REadme
+jmfullana**20250611121952
+ Ignore-this: e99a20cb8ecd649f80c980275a46827e
+] 
+hash: 0000000151-09bbe8039761c4ffa7c621d891a645904959d1d53949236936679863483e23bc
+[page
+agivaudan <anaelle.givaudan@sorbonne-universite.fr>**20250611122047
+ Ignore-this: df986cdcd398cd4c5da15c5b5570b75c
+] 
+hash: 0000000150-59ee181cfe5471527545a5ba91c48b265ee87d9d4217c8f79a2fdf172c77330a
+[updated jmf's README
+francesco.picella@sorbonne-universite.fr**20250611124312
+ Ignore-this: 93d2ac5e473ce0ce0d58bc73ac6fa467
+] 
+hash: 0000000175-7a9704baf66cf3a4017b23d005fabacd75665357d56e883552d840c3b4613922
+[I removed agivaudan first file
+francesco.picella@sorbonne-universite.fr**20250611123949
+ Ignore-this: 93766b5871210bacfd77189b97699551
+] 
+hash: 0000000164-152fab1bedd0e29cb658729d7ec874d9328b33e48b240ba7867d8efd5a60f69e
+[Published
+Stephane Popinet <popinet@basilisk.fr>**20250611160138
+ Ignore-this: b64dde81a775c1744925762baae04d13
+] 
+hash: 0000000493-193d28f829d1cdb2fa0234227292fd2769ed14947cba1ef356ce24b68772b40f
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20250611160329
+ Ignore-this: 735fee031eeb5c0a97610c54ca10f793
+] 
+hash: 0000000515-c9d046ee99d160efc428848225cd4bc0ace306e378a4bba434200b02cfe00f72
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20250611160352
+ Ignore-this: 3acaf40e76320f614baf9468517b1337
+] 
+hash: 0000000458-bff684177d22ed9102f0117029de65009dc54d88dd752cb16359f48abf2d7835
+[changed simulation end time
+francesco.picella@sorbonne-universite.fr**20250612080512
+ Ignore-this: cc28ed7c626eec83a7d060cee4f5bfa1
+] 
+hash: 0000000339-a275f982044df4084e2ac74b953e6db7339b96354f1b71e9b11a9197df531aae
+[Patch test
+jose.fullana@sorbonne-universite.fr**20250612080213
+ Ignore-this: 7dd9e646c5a19429bc72ff3e05a95f0
+] 
+hash: 0000000148-16c6b2960ba86d106fb2afc604ef74941dfb78b239ad223ae4a495d499706f65
+[Fixed broken HAL references
+Stephane Popinet <popinet@basilisk.fr>**20250612144356
+ Ignore-this: 23fbc1610a31b50cde6045e28c523f59
+] 
+hash: 0000000513-c0ce93613e39fff87f1ad648fc67324ff3d6638046ea7b8de9dbc5cb14fb3405
+[Draft schedule v1.0
+rcimpeanu**20250613095552
+ Ignore-this: 2782d3c0ccf045a9e1621ecf8d9dd2bd
+] 
+hash: 0000008354-acccf989a25b69488f80983041fbf009831b01baae831a1d65b351c1a32423aa
+[Small typo fixes in the schedule
+rcimpeanu**20250613101325
+ Ignore-this: 17cf42472c95300ed7a6130b2c9aa4fa
+] 
+hash: 0000000612-353a173ba90a52c58bbf8a953fe2cefadffb4834d9a233b718a172365fa100e4
+[updated fingering case
+francesco.picella@sorbonne-universite.fr**20250613124843
+ Ignore-this: 2f5a3da2f88df80993d49645d44c028e
+] 
+hash: 0016413140-3655f809f6e2991187447bf75397ad3aae22b3cd77d4238c1a79841748c672c7
+[updated README
+francesco.picella@sorbonne-universite.fr**20250613125345
+ Ignore-this: 91136b365fa02e235763134d5758cc0
+] 
+hash: 0000000285-e6e4dd4409973c76e4be01110c3328f118ff95e7da2ee091e04716a91d0d7850
+[Wu et al accepted
+Stephane Popinet <popinet@basilisk.fr>**20250613162816
+ Ignore-this: a9ecf6f2801e47522ca3dcb0a0161936
+] 
+hash: 0000000462-aa1cd41beadf3b5c19ebc6603a77b068d653df12ffc86d2464a15a43bf89680e
+[Wu et al
+Stephane Popinet <popinet@basilisk.fr>**20250613162922
+ Ignore-this: 72ed656aeb07099475c63ddf5b91f989
+] 
+hash: 0000000530-97ed65d658133095d1cade160846c69212c5fbcaed07dd653cf932f390f19a20
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20250613163010
+ Ignore-this: f79d27fe4472b13f96af6643d6353513
+] 
+hash: 0000000476-ff3d21bee76fe15f21bd800f013756add32af413051a6654505286b31eb5a48e
+[Formatting and time changes on Tuesday
+Stephane Popinet <popinet@basilisk.fr>**20250613171311
+ Ignore-this: 9cb2716bfc7fdf9af740d425ebee2467
+] 
+hash: 0000016144-ecdc0c845df510ec94a9d0222299ab71c30a29a1d3d1febf80998a8e4bff7d76
+[Away with the old
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250613213509
+ Ignore-this: 2fb02cb2985c074e76f3c1b638f459348eae7ac58d702feae9e94af7b60e02fd8f58134398f3504d
+] 
+hash: 0000001136-7d66f507e1997b978c9d1a9ee7502839cd780785649d2828bcda7845022dc656
+[and in with the new
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250613213813
+ Ignore-this: cffa3eebcdc562f8184a9ac8e3ec759ba7b7326798c6c9ad98385d6e5e11e19225f9382940125638
+] 
+hash: 0002089106-12f81039c4bd5fe5b88f19720852473ac0982b3e2759997345a9c34e5b716139
+[adding image
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250613214416
+ Ignore-this: 4bf2c791fb2967d059e7617dcf81e2c7d8310378fafab35438f904524b487011c073b916d03d1c90
+] 
+hash: 0000000501-7aefe59530e702486dabfc95cb29f8d16eba44c68745f012ad1faeb9bd0813a3
+[removing image
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250613214508
+ Ignore-this: 1bfd4ce2fe99f5b60bdb998f02bcfeb4268647fec6761a9351e3aebe4eb56716bc84d427178007b4
+] 
+hash: 0000000611-08fe4242feca893ede9524029467959f8aaf15e08d78e1556b178ee68e8d0565
+[update title of the talk
+farsoiya**20250614044639
+ Ignore-this: 3d110417bc57fa23334874861f605be6
+] 
+hash: 0000000516-1a6209eb14224c50c61a886090c124d8ee24c250488fe077654d75d4382af23b
+[model
+Shuo Liu <shuo.liu@ensam.eu>**20250614081531
+ Ignore-this: 5bff7a53cd2a54af778aeab12be20f1e
+] 
+hash: 0000000142-41b67cf4b98011141e6c819f5646ecd8fe80f06a02fa61c0d018dfb9333a819c
+[model
+Shuo Liu <shuo.liu@ensam.eu>**20250614081615
+ Ignore-this: 6d1e0bb980d87e2d82c1dafbe35acb8c
+] 
+hash: 0000000140-1b720af12c0755cc550737ef5474a86054a76a17a0bc51d8e1cbe3a2fd9c2233
+[test
+yanchongduan <duanyc2025@gmail.com>**20250614081655
+ Ignore-this: f117ea202d686a20b0d237ddb25cfd15
+] 
+hash: 0000000152-df734b06a22f45309f5363851b00c8f5f24c6e99f691e4fd03dffc8fda86fef3
+[test
+yanchongduan <duanyc2025@gmail.com>**20250614081838
+ Ignore-this: 7f3395b9b8f87d489bcd1ba9d0a9e414
+] 
+hash: 0000000150-e1bca7f9557938e78583357f4c987b68c9ac11fbede971a8151f128485a70f5a
+[Removed titles whuch are already in the program
+Stephane Popinet <popinet@basilisk.fr>**20250616095012
+ Ignore-this: 80b6c8ff0d7d0bd280d1a31556edc4d1
+] 
+hash: 0000021727-8ce9636cb4553d9e61f2be9f17c234d94bed9fc0cacfdb8de3ea8cbc9e048dc2
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20250616095815
+ Ignore-this: d552a738f0a9946c140f306497fa5e36
+] 
+hash: 0000000709-40dd2f5d32a4f1dffd9861b91b09a9ec4b52e08ab957509d29c1d97d0bcdf703
+[Added Kumar 2025
+Stephane Popinet <popinet@basilisk.fr>**20250616100305
+ Ignore-this: 5d1d0092f887843a1dcbe36fd67fba12
+] 
+hash: 0000000599-77de2e67ee9737d649e9276190d566a0038fbe1cdf2a2804b76b84da1850a1b7
+[Hybrid Lagrangian solver
+j.a.v.hooft@gmail.com**20250616123406
+ Ignore-this: 9aaf7e1e2051546e60acacb46d31cc619b4103bd9c45316c189d33077db8ee6fa7713a095635bd4d
+] 
+hash: 0000003668-5ee71ecf7dbef9bd861b07b14a1dc4ca18e1e8998c568a0855d2b06166388a00
+[formatting
+Antoonvh <j.a.v.hooft@gmail.com>**20250616123748
+ Ignore-this: 3c8d6f24e137463ba8ffb3aab980216a
+] 
+hash: 0000000596-767e64459f2f94d602a196122fe2e1d62d9c53f8faa6326c5aa6fcce773499f0
+[Added talk by Palas Kumar Farsoiya on Tuesday
+rcimpeanu**20250616152749
+ Ignore-this: 6c4716a801c05de5c79aa3a1ca73876b
+] 
+hash: 0000000571-a25d27e8eefdde24acaa3e7365661fcddc6deface8e5d38d40b7beac798899cb
+[Basilisk
+Luis__- <luis-henrique1979@hotmail.com>**20250616222241
+ Ignore-this: 5c257a29d6e2dda2caa32406308e0cdc
+] 
+hash: 0000000135-4bf8720007ee0a93e76a6e578c18b924d018489b83b4605d5e432525dd19b575
+[adjusted relaxation parameter in driver-myembed-particles.h
+francesco.picella@sorbonne-universite.fr**20250617080224
+ Ignore-this: 1ae8cc5e38df5e22aceaf5a6c45a2bd8
+] 
+hash: 0000000514-7a6c4c0f3611ab9d6323d7b87b5d0c31cbaa9f5785228f58d00569ec8d66be3d
+[Updated video link
+fpicella <francesco.picella@sorbonne-universite.fr>**20250617095435
+ Ignore-this: bcb97620540736399d50194a79bdf04b
+] 
+hash: 0000000612-0e109b36f746f9369fb4a73db658dc6897c3c53f27510022455e825a8dc838bb
+[Added slb representative
+rcimpeanu**20250617111248
+ Ignore-this: 594e48c5109ff082f3eedb5d8e638127
+] 
+hash: 0000000180-45403f80388561ef913d415401b0469718caac3e9a0c401aa51f88cc80bc0e2f
+[update bug
+Antoonvh <j.a.v.hooft@gmail.com>**20250617120934
+ Ignore-this: be6eee82034d1d7d81947b81e70b285c
+] 
+hash: 0000000154-1cd6e8a8c53f3f1c5f44f6b896501216870f82d587da7df8b9b08bd6009dcd9c
+[More updates
+Stephane Popinet <popinet@basilisk.fr>**20250617141111
+ Ignore-this: 795944577be609af29f34c045b7306f7
+] 
+hash: 0000000259-c0a85ebccab9db9233e93d308cf61e7ba3102aab7aa10036815ab2c2f43e4752
+[Simple case for plumes of bioconvection, x-periodic domain.
+francesco.picella@sorbonne-universite.fr**20250617192307
+ Ignore-this: 17532e77e71fd2cd922089311ddf4f8e
+] 
+hash: 0000008116-f86bb6493e29a6a65829ae18d3370a5a36daeba875b5a0184b402cf2e0e5b6fe
+[updated README with bioconvection case
+francesco.picella@sorbonne-universite.fr**20250617192748
+ Ignore-this: 31c35519019feb43407a2340c99806da
+] 
+hash: 0000000463-eefb8e2957ffa5a0f3f2575f26ee5c281a4e437b1f0e8dd912df4618b62ea581
+[link
+Antoonvh <j.a.v.hooft@gmail.com>**20250618092049
+ Ignore-this: 14ddb27875f2dd448f7ba25b60cc334b
+] 
+hash: 0000000256-35a396c3d41b667f706ffb49a68ec2de48ce49ecc6fd482c8ead9f4bf53c3710
+[updates to fpm
+j.a.v.hooft@gmail.com**20250618095219
+ Ignore-this: 98c222417de5c5242cde7062b2320ad9f4bd9ba669034cfe203d28c47b6457acce74fc0843b71290
+] 
+hash: 0000017194-ca38ddc948c8c2080cc5cbfd5383b37a595f4aaeeaf3e0cb7f085fd850bc5176
+[added binary interaction between tHree swimmers case
+francesco.picella@sorbonne-universite.fr**20250618171404
+ Ignore-this: 3f461c5f71bd9249a66aa5a5ed6086ef
+] 
+hash: 0000005849-5279e0fd479bdaa3c3510b43b358a5fdbe5cf9515e9471272a26d664b398e0af
+[Increased resolution...maybe not necessary, but a test is necessary.
+fpicella <francesco.picella@sorbonne-universite.fr>**20250618172121
+ Ignore-this: afb516b81a1b323ac306338d169299e4
+] 
+hash: 0000000277-b07316cdd813ab3ec718555851c29ad814cf8ce90099d91d8f3d868f7ba89f72

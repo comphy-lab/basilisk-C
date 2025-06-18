@@ -187,9 +187,9 @@ event output (t++)
     
     fprintf (file1,"\n \n");   
   }
-#if HYDRO
-  delete ({w});
-#endif
+//#if HYDRO
+//  delete ({w});
+//#endif
   printf ("# end = %g\n", t);
   fclose(file1);
 }

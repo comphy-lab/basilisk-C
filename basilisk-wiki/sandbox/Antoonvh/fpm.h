@@ -96,7 +96,7 @@ int find_nearest_particles (coord X, int nn, Particles plist, int * index,
   coord dim = {0,1,2};
   foreach_dimension() {
     if (index_periodic_x == NULL && periodic_x == true)
-      fprintf (stderr, "Periodic in dim %d, bit no alloctated indices array\n", dim.x);
+      fprintf (stderr, "Periodic in dim %g, bit no alloctated indices array\n", dim.x);
     if (periodic_x == true) {
       for (int i = 0; i < nn; i++)
 	index_periodic_x[i] = 0;
@@ -120,6 +120,7 @@ int find_nearest_particles (coord X, int nn, Particles plist, int * index,
   
   scalar s = reference;
   int _l_particle = plist_s(s);
+  NOT_UNUSED(_l_particle);
   // keep a list of nearest particles by forgetting the faw-away ones, i.e. no sorting.
   foreach_point_level(X.x, X.y, X.z, level) {
     if (point.level > 0) {
@@ -127,7 +128,7 @@ int find_nearest_particles (coord X, int nn, Particles plist, int * index,
       foreach_neighbor(neighbor) {
 	//printf ("_k = %d, _l = %d\n", _k, _l);
 	coord ni = {_k, _l, 0};
-	//check_double (point, reference);
+	
 	foreach_particle_point(reference, point) {
 	  double disti = 0;
 	  foreach_dimension() {
@@ -217,9 +218,13 @@ We do not apply distance weighing (there is enough to tune already)
 int fill_matrix_2D (int order = 1, Particles part, int m, int * index, double * A, coord loc,
 		    int * periodic_arr_x = NULL, int * periodic_arr_y = NULL) {
   // No periodicity?
+  bool alloc_x = false;
+  bool alloc_y = false;
   foreach_dimension() {
-    if (periodic_x == false && periodic_arr_x == NULL) 
+    if (periodic_x == false && periodic_arr_x == NULL) {
+      alloc_x = true;
       periodic_arr_x = (int *)calloc(m, sizeof(int));
+    }
   }
   int row = 0;
   if (order >= 0) {
@@ -260,7 +265,7 @@ int fill_matrix_2D (int order = 1, Particles part, int m, int * index, double * 
       A[max_ind] = cube(p_y);
   }
   foreach_dimension()
-    if (periodic_x == false && periodic_arr_x == NULL)
+    if (alloc_x == true)
       free(periodic_arr_x);
   return row;
 }
@@ -269,7 +274,7 @@ int fill_matrix_2D (int order = 1, Particles part, int m, int * index, double * 
 
 Using LAPACK
  */
-#pragma autolink -lcblas -llapack
+#pragma autolink -lblas -llapack
 
 extern void dgels_(char *trans, int *m, int *n, int *nrhs,
                    double *a, int *lda, double *b, int *ldb,

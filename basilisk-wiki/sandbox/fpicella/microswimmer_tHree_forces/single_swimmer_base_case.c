@@ -3,7 +3,6 @@
 
 ![Single heart-shaped microswimmers in a periodic domain](single_swimmer_base_case/single_swimmer.mp4)(loop)
 Of course, this aims to mimick a [*puller*](https://doi.org/10.1146/annurev-fluid-121021-042929)...
-
 */
 
 
@@ -183,7 +182,7 @@ event properties(i++){
 
 /**
 ### Proper definition of _stopping_ event for the solver.*/
-event end (t = 101);
+event end (t = 99);
 
 /**
 # Velocity for a single tHree swimmer.

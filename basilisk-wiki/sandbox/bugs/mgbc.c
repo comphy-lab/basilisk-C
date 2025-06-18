@@ -23,11 +23,8 @@ int main() {
   init_grid (4);
   foreach()
     s[] = 1.;
-  boundary ({s});
   output_cells (stderr);
-  foreach() {
+  foreach()
     foreach_neighbor(1)
       printf ("%g %g %g\n", x, y, s[]);
-    return 0;
-  }
 }

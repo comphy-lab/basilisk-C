@@ -259,7 +259,7 @@ plot 'particle_000.dat' using ($3+1-0.25):(-$6/6.3e-2) \
 /*
 Display a solution...*/
 
-event snapshot (i += 1)
+event snapshot (i += 5)
 {
   view (fov = 20, camera = "front",
 	tx = 0., ty = 0.,
@@ -274,5 +274,5 @@ event snapshot (i += 1)
 
 /**
 # Moving, sedimenting cylinder
-![Sedimentation of a 2D confined cylinder, getting closer to a wall. Stokes regime](sedimentation_with_driver_y/output.mp4)(loop)
+![Sedimentation of a 2D confined cylinder, getting closer to a wall. Stokes regime](sedimentation_driver_moving/output.mp4)(loop)
 */

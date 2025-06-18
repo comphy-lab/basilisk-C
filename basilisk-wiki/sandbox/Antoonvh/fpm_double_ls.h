@@ -45,7 +45,8 @@ extern void dgels_(char *trans, int *m, int *n, int *nrhs,
 
 void update_double_ls (double * A, int m, int n, // Matrix and its size
 		       double * b,                //rhs (b_i in) and delta b_i out.
-		       double * P, int k, double * a) { //contraint matrix, its nr of contraints, and rhs
+		       double * P, int k, double * a,  //contraint matrix, its nr of contraints, and rhs
+		       int _j_particle) {
   double alpha = 1, beta = 0;;
   int one = 1;
   char trans = 'T';
@@ -70,8 +71,11 @@ void update_double_ls (double * A, int m, int n, // Matrix and its size
   dgemm_(&ntrans, &trans, &n, &m, &n, &alpha, C, &n, A, &m, &beta, D, &n);
   //printf ("merkar 2 %c %c\n", ntrans, ntrans);
   // Compute initial `x`, corresponding to the initial rhs vector
+  
+
   dgemm_(&ntrans, &ntrans, &n, &one, &m, &alpha, D, &n, b, &m, &beta, x, &n);
   // compute a_i
+  
   double ai[k];
   dgemm_(&ntrans, &ntrans, &k, &one, &n, &alpha, P, &k, x, &n, &beta, ai, &k);
   for (int i = 0; i < k; i++)
@@ -81,9 +85,24 @@ void update_double_ls (double * A, int m, int n, // Matrix and its size
   // Compute E
   dgemm_(&ntrans, &ntrans, &k, &m, &n, &alpha, P, &k, D, &n, &beta, E, &k);
   // Least squares
-  lwork = -1;
   for (int i = 0; i < k; i++)
-    b[i] = a[i];
+    ;//b[i] = a[i];
+  double d = 0, e = 0;
+ 
+  for (int i = 0; i < m; i++) {
+    if (index[i] != _j_particle)
+      d += E[i]*b[i];
+    else
+      e = E[i];
+  }
+  for (int i = 0; i < m; i++) {
+    if (index[i] != _j_particle)
+      b[i] = 0;
+    else
+      ds[i] = (a[0] - d) / (e)
+  }
+  
+  lwork = -1;
   dgels_(&ntrans, &k, &m, &one, E, &k, b, &m, &work_size, &lwork, &info);
   lwork = (int)work_size;
   work = (double *)realloc(work, lwork * sizeof(double));

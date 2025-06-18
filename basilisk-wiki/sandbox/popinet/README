@@ -24,25 +24,11 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
-@Article{wu2025,
-author={Jiarong Wu and Stephane Popinet and Bertrand Chapron and J. Thomas Farrar and Luc Deike},
-title={Turbulence and energy dissipation from wave breaking},
-journal={Journal of Physical Oceanography},
-year={2025}
-}
-
 @Article{saini2025,
 author={Mandeep Saini and Vatsal Sanjay and Youssef Saade and Detlef Lohse and Stephane Popinet},
 title={Implementation of integral surface tension formulations in a volume of fluid framework and their applications to Marangoni flows},
 journal={Journal of Computational Physics},
 year={2025}
-}
-
-@Article{scapin2024,
-  author = 	 {Nicolò Scapin and Jiarong Wu and J. Thomas Farrar and Bertrand Chapron and Stéphane Popinet and Luc Deike},
-  title = 	 {Momentum fluxes in wind-forced breaking waves},
-  journal = 	 {Journal of Fluid Mechanics},
-  year = 	 {2024}
 }
 
 @Article{fullana2024,
@@ -58,13 +44,6 @@ year={2025}
   journal = 	 {Journal of Fluid Mechanics},
   year = 	 {2024}
 }
-
-@Article{kulkarni2024,
-  author = 	 {Yash Kulkarni and Cesar Pairetti and Raphaël Villiers and Stéphane Popinet and Stéphane Zaleski},
-  title = 	 {The atomizing pulsed jet},
-  journal = 	 {Journal of Fluid Mechanics},
-  year = 	 {2024}
-}
 ~~~
 
 ## Published papers
@@ -72,6 +51,8 @@ year={2025}
 ### Atomisation
 
 ~~~bib
+@hal{kulkarni2025, hal-05104157}
+
 @article{shen2025,
   title={Fragmentation from inertial detachment of a sessile droplet: implications for pathogen transport},
   author={Shen, Naijian and Kulkarni, Y and Jamin, T and Popinet, S and Zaleski, S and Bourouiba, L},
@@ -179,6 +160,10 @@ doi = {10.5194/gmd-11-4727-2018}
 ### Waves
 
 ~~~bib
+@hal{wu2025, hal-05108994}
+
+@hal{scapin2025, hal-05105692}
+
 @hal{wu2023, hal-04157783}
 
 @hal{farsoiya2022, hal-03854121}
@@ -244,7 +229,7 @@ doi = {10.5194/gmd-11-4727-2018}
 ### Drops and bubbles
 
 ~~~bib
-@hal{saini2024, hal-04563704v1}
+@hal{saini2024, hal-04563704}
 
 @hal{fintzi2024b, hal-04694017}
 
@@ -386,7 +371,7 @@ doi = {10.5194/gmd-11-4727-2018}
 
 @hal{devita2019, hal-02295398}
 
-@hal{kirstetter2015, hal-01291414}
+@hal{kirstetter2016, hal-02637839}
 ~~~
 
 ### Tsunamis and ocean modelling
@@ -671,7 +656,7 @@ url={https://doi.org/10.1017/jfm.2017.543}
   year = 	 {2018}
 }
 
-@hal{ling2016, hal-01312931}
+@hal{ling2016, hal-01398131}
 
 @hal{fullana2015, hal-01176070}
 ~~~

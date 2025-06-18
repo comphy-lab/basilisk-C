@@ -5,33 +5,26 @@ Hi, I'm [Francesco](https://sites.google.com/view/francescopicella), and I'm act
 
 For this reason, I'm re-adapting [Arthur Ghigo](http://basilisk.fr/sandbox/ghigo/src/) implementation of moving embedded boundaries.
 
-![And I'm sorry, I use VI](https://imgs.xkcd.com/comics/real_programmers.png)
-
 Updated on june 2025
 
 ## Forces/Torques on a moving embedded boundary
 - A variation of classic [couette](/src/test/couette.c), but computing torques [couette_torque](test/couette_torque.c)
-v v v v v v v
-=============
 
-# 2D Stokes flows
+# Active/Passive particles in Stokes flows
 
-- Single 2D cylinder settling between two flat plated as done in [Dvinsky & Popel](cylinder_between_plates/sedimentation_driver_moving.c)
+### Stokes + Embed
 
-- Active colloids, bio-mimetic microswimmers. Single, base case of the [tHree](microswimmer_tHree_forces/single_swimmer_base_case.c) implementation.
+ - Single 2D cylindrical particle moving between flat plates [here for the main folder case](http://basilisk.fr/sandbox/fpicella/cylinder_between_plates/).
+ - [Sedimenting 2D cylindrical particle between flat plates](http://basilisk.fr/sandbox/fpicella/cylinder_between_plates/sedimentation_driver_moving.c).
+ - [Force-free 2D cylindrical particle in Couette flow](http://basilisk.fr/sandbox/fpicella/cylinder_between_plates/plane_couette_force_torque_free_cylinder.c).
 
+### *tHree*: 3-force model for microswimmers.
 
-*************
+ - [Single tHree microswimmer, in a periodic domain](http://basilisk.fr/sandbox/fpicella/microswimmer_tHree_forces/single_swimmer_base_case.c)
+ - [Many _phototactic_ microswimmers](http://basilisk.fr/sandbox/fpicella/microswimmer_tHree_forces/light_gradient.c). A novel repulsion method is used.
+ - [Fingering instability (?)](http://basilisk.fr/sandbox/fpicella/microswimmer_tHree_forces/fingering.c). Orientation is frozen.
+ - [Plumes of bioconvection.](http://basilisk.fr/sandbox/fpicella/microswimmer_tHree_forces/plumes_x_periodic.c). Primary instability from _hydrodynamic screening_?
 
-# Quasi-steady Stokes flows, in 2D
+### Miscellaneous
 
-- Single sedimenting cylinder between flat plates, fully hydrodynamic coupling, after [Dvinky & Popel 1987](cylinder_between_plates/sedimentation_driver_moving.c)
-
-- Bio-mimetic active colloid, using the [tHree method](microswimmer_tHree_forces/single_swimmer_base_case.c). Single swimmer.
-
-- Multiple microswimmers with the [tHree method](microswimmer_tHree_forces/plumes.c).
-
-### I do not really understand darcs...
-please, S. help!
-
-^ ^ ^ ^ ^ ^ ^
+ - [A very concise darcs tutorial](http://basilisk.fr/sandbox/fpicella/short_darcs_tutorial.c).

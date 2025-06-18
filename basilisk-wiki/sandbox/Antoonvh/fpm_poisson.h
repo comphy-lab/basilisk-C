@@ -2,99 +2,81 @@
 A solver for the Poisson equation using the finite point method
  */
 #ifndef ADD_PART_MEM
-#define ADD_PART_MEM double s; double b; double res; double ds; double ds2; 
+#define ADD_PART_MEM double s; double b; double res; double ds; 
 #endif
 
 #include "fpm.h"
-//#include <cblas.h>
-
-int fill_matrix_Poisson_2D (int weight = 1, int order = 1, Particles part, int m, int * index, double * A, coord loc,
-		    int * periodic_arr_x = NULL, int * periodic_arr_y = NULL) {
-  // No periodicity?
-  foreach_dimension() {
-    if (periodic_x == false && periodic_arr_x == NULL) 
-      periodic_arr_x = (int *)calloc(m, sizeof(int));
-  }
-  int row = 0;
-  int n = m - 1;
-  if (order >= 0) {
-      for (int n = 0; n < m - 1; n++)  
-      A[max_ind] = 1.;
-  }
-  if (order > 0) {
-    row++;
-    for (int n = 0; n < m - 1; n++)
-      A[max_ind] = p_x;
-    row++;
-    for (int n = 0; n < m  - 1; n++) 
-      A[max_ind] = p_y;
-  }
-  if (order > 1) {
-    row++;
-    for (int n = 0; n < m  - 1; n++) 
-      A[max_ind] = p_x*p_y;
-    row++;
-    for (int n = 0; n < m  - 1; n++) 
-      A[max_ind] = sq(p_x);
-    row++;
-    for (int n = 0; n < m  - 1; n++) 
-      A[max_ind] = sq(p_y);
-  }
-  if  (order > 2) {
-    row++;
-    for (int n = 0; n < m  - 1; n++) 
-      A[max_ind] = sq(p_x)*p_y;
-    row++;
-    for (int n = 0; n < m - 1; n++) 
-      A[max_ind] = p_x*sq(p_y);
-    row++;
-    for (int n = 0; n < m - 1; n++) 
-      A[max_ind] = cube(p_x);
-    row++;
-    for (int n = 0; n < m - 1; n++) 
-      A[max_ind] = cube(p_y);
-  }
-  foreach_dimension()
-    if (periodic_x == false && periodic_arr_x == NULL)
-      free(periodic_arr_x);
-  return row;
-}
+#include "fpm_double_ls.h"
 
 extern scalar * refl;
 
-double loc_val (coord X, double * coef, int order) {
-  
-  double val = 0;
+int n_smallest_of_m (int m, double a[m], int index[m], int n, int indexo[n]) {
+  double ao[n];
+  for (int i = 0; i < n; i++)
+    ao[i] = HUGE;
+  double largest = HUGE;
   int ind = 0;
-  if (order >= 0) {
-    val += coef[ind++];
-    if (order > 0) {
-      val += coef[ind++]*X.x;
-      val += coef[ind++]*X.y;
-      if (order > 1) {
-	val += coef[ind++]*X.x*X.y;
-	val += coef[ind++]*sq(X.x);
-	val += coef[ind++]*sq(X.y);
-	if  (order > 2) {
-	  val += coef[ind++]*sq(X.x)*X.y;
-	  val += coef[ind++]*X.x*sq(X.y);
-	  val += coef[ind++]*cube(X.x);
-	  val += coef[ind]*cube(X.y);
-	}
-      }
+  for (int i = 0; i < m; i++) {
+    if (a[i] < largest) {
+      ao[ind] = a[i];
+      indexo[ind] = index[i];
+      largest = max_array (n, ao, &ind);
     }
   }
-  return val;
+  int j = 0;
+  for (int i = 0; i < n; i++)
+    if (ao[i] < HUGE)
+      j++;
+  return j;
 }
+
+
+//P is an np*10 matrix, in columnform, computing the estimated laplacian.
+void Laplacian_matrix (coord loc, Particles part,  int np, int * index, double * P, int * periodic_arr_x, int * periodic_arr_y, double * dis, double md) {
+  
+  bool alloc_x = false;
+  bool alloc_y = false;
+  
+  foreach_dimension() {
+    if (periodic_x == false) {
+      alloc_x = true;
+      periodic_arr_x = (int *)calloc(np, sizeof(int));
+    }
+  }
+  
+  for (int n = 0; n < np; n++) {
+    int j = 0;
+    P[n + np*j++] = 0; //c_0 a -> 0
+    P[n + np*j++] = 0; //c_1 x -> 0
+    P[n + np*j++] = 0; //c_2 y -> 0
+    P[n + np*j++] = 0; //c_3 xy -> 0
+    P[n + np*j++] = (1 - dis[n]/md)*2.; //c_4 xx -> 2
+    P[n + np*j++] = (1 - dis[n]/md)*2.; //c_5 yy -> 2
+    P[n + np*j++] = (1 - dis[n]/md)*2.*p_y; //c_6 xxy -> 2y
+    P[n + np*j++] = (1 - dis[n]/md)*2.*p_x; //c_7 yyx -> 2x
+    P[n + np*j++] = (1 - dis[n]/md)*6.*p_x; //c_8 xxx -> 6x
+    P[n + np*j]   = (1 - dis[n]/md)*6.*p_y; //c_9 yyy -> 6y
+  }
+  
+  foreach_dimension() {
+    if (alloc_x) {
+      free(periodic_arr_x);
+    }
+  }
+}
+
+
 
 int iterate_particle (Particles parts, int _j_particle, int level = -1) {
   int index[max_particles];
   double dist[max_particles];
   int * periodic_arr_x = NULL;
   int * periodic_arr_y = NULL;
+  int d = 0;
   foreach_dimension() {
-    if (periodic_x == true) 
+    if (periodic_x == true) {
       periodic_arr_x = malloc((max_particles)*sizeof(int));
+    }
   }
   scalar s = reference;
   if (level >= 0)
@@ -103,87 +85,83 @@ int iterate_particle (Particles parts, int _j_particle, int level = -1) {
   int neigh = level < 0 ? 1 : 2;
   int mat_m =  find_nearest_particles (loc, max_particles, parts, 
 				       index, neigh, periodic_arr_x, periodic_arr_y,
-				       true, level = level, reference = s, dist = dist) + 1;
+				       true, level = level, reference = s, dist = dist) ;
+  
   int ip = 0;
-  double md = max_array (mat_m - 1, dist, &ip);
+  double md = max_array (mat_m , dist, &ip);
   //fprintf (stderr, "%g %d\n", md, level);
-  int order = order_lookup (mat_m - 1);
+  int order = order_lookup (mat_m );
   int mat_n = size_lookup (order); // Number of unknowns
   double * A = malloc(sizeof(double)*mat_m*mat_n);
-  // Weighting of the "Poisson-equation statisfying least squares fit
-  double weight = mat_m*sq(md)*1e2;
-  int row = fill_matrix_Poisson_2D (weight, order, parts, mat_m, index, A,
-				    loc, periodic_arr_x, periodic_arr_y);
-  double poisson[10] = {0,0,0,0,2*weight, 2*weight, 0, 0 ,0 ,0};
-  int n = mat_m - 1;
+  int row = fill_matrix_2D (order, parts, mat_m, index, A,
+			    loc, periodic_arr_x, periodic_arr_y);
+  int nc = 1;//mat_m;
+  int indc[nc];
+  nc =  n_smallest_of_m (mat_m, dist, index, nc, indc);
+  int period_x[nc];
+  int period_y[nc];
+  double dis[nc];
+  for (int i = 0; i < nc; i++) {
+    for (int j = 0 ; j < mat_m; j++)
+      if (indc[i] == index[j]) {
+	period_x[i] = periodic_arr_x[j];
+	period_y[i] = periodic_arr_y[j];
+	dis[i] = dist[j];
+      }
+  }
+  // printf ("%d %d %d %d %d\n", _j_particle, indc[0], order, nc, mat_m);
+  double poisson[nc*10];// = malloc(nc*10*sizeof(double));
+  double a[nc];
+  Laplacian_matrix (loc, parts, nc , indc, poisson, period_x, period_y, dis, md);
+  for (int i = 0; i < nc; i++)
+    a[i] = pl[parts][indc[i]].res*(1 - dis[i]/md);
+  int n = mat_n;
   int m = mat_m;
-  if (order >= 2) {
-    for (int row = 0; row < 6; row++)
-      A[max_ind] = poisson[row];
-    if (order > 2) {
-      for (int row = 6; row < 10; row++)
-	A[max_ind] = poisson[row];
-    }
-  }
-  
-  double rhs[mat_m];
-  rhs[mat_m - 1] = weight*pl[parts][_j_particle].res;
-  for (int i = 0; i < mat_m - 1; i++) 
-    rhs[i] = pl[parts][index[i]].ds;
-  // LAPACK stuff suggested by chatGPT, worked on first attempt(!) 
-  if (mat_m > 0) { // We a data point
-    int lda = mat_m;
-    int ldb = mat_m > mat_n ? mat_m : mat_n;
-    int info;
-    int lwork = -1; // workspace query
-    int nrhs = 1;
-    double wkopt;
-    dgels_("N", &mat_m, &mat_n, &nrhs, A, &lda, rhs, &ldb, &wkopt, &lwork, &info);
-    lwork = (int)wkopt;
-    double *work = (double *)malloc(lwork * sizeof(double));
-    // Actual computation
-    dgels_("N", &mat_m, &mat_n, &nrhs, A, &lda, rhs, &ldb, work, &lwork, &info);
-    free(work);
-  }
-  free(A);
+  double ds[m];
+  for (int j = 0; j < m; j++)
+    ds[j] = pl[parts][index[j]].ds;
+  update_double_ls (A, m, n, ds, poisson, nc, a);
+  free (A);
   /**
 Update particles with the Poisson-equation statisfying solution.
    */
-  for (int i = 0; i < mat_m -1; i++) {
-    coord X;
-    foreach_dimension() {
-      X.x = pl[parts][index[i]].x - loc.x;
-      if (periodic_x)
-	X.x += L0*periodic_arr_x[i];
+  for (int i = 0; i < mat_m; i++) {
+#if FPM_BOUNDARY
+    // Skipping boundary points in the neighborhood
+    if (pl[parts][index[i]].bound == 0) {
+#endif
+      double alphaa = 1;//(1 - dist[i]/md)/mat_m; 
+      pl[parts][index[i]].ds += alphaa* ds[i];
+#if FPM_BOUNDARY
     }
-    // Weighing for diagonal domination
-    double alphaa = dist[i]/md; 
-    pl[parts][index[i]].ds =  alphaa*pl[parts][index[i]].ds + (1 - alphaa)*loc_val(X, rhs, order);
+#endif
   }
+  foreach_dimension() {
+    if (periodic_x == true && periodic_arr_x != NULL) {
+      free(periodic_arr_x);
+    }
+  }
+   
 }
 
 double residual (Particles parts) {
   double max_res = 0;
-  foreach_particle_in(parts, reduction(max:max_res)) {
-    coord X = {x, y, z};
-    double coef[10] = {0};
-    least_squares_poly_2D(X, coef, parts, true);
-    double lap = 2*(coef[4] + coef[5]);
-    p().res =  p().b - lap;
+  foreach_particle_in (parts, reduction(max:max_res)) {
     p().ds = 0;
-    if (fabs(p().res) > max_res)
-      max_res = fabs(p().res);
-  }
-  foreach_particle_in(parts) {
-    double ps = p().s;
-    p().s = p().res;
-    p().res = ps;
-  }
-  //smooth_2D (parts);
-  foreach_particle_in(parts) {
-    double ps = p().s;
-    p().s = p().res;
-    p().res = ps;
+#if FPM_BOUNDARY
+    // Skipping boundary points 
+    if (p().bound == 0) {
+#endif
+      coord X = {x, y, z};
+      double coef[10] = {0};
+      least_squares_poly_2D(X, coef, parts, true);
+      double lap = 2*(coef[4] + coef[5]);
+      p().res =  p().b - lap;
+      if (fabs(p().res) > max_res)
+	max_res = fabs(p().res);
+#if FPM_BOUNDARY
+    }
+#endif
   }
   return max_res;
 }
@@ -203,23 +181,31 @@ int sample_particles (Particles p1, Particles p2, int level = -1, scalar s = ref
     p().s = temp;
   }
   foreach_particle_in(p2) {
+#if FPM_BOUNDARY
+    // Skipping boundary points 
+    if (p().bound == 0) {
+#endif
     coord X = {x,y,z};
     p().ds = interpolate_fpm(X, p1, level, s);
+#if FPM_BOUNDARY
+    }
+#endif
   }
   foreach_particle_in(p1) {
     double temp = p().ds;
     p().ds = p().s;
     p().s = temp;
   }
-  
 }
+
+double TOLER  = 1e-3;
 
 int poisson (Particles parts) {
   double resb = residual (parts);
-  double TOLER  = 1e-3;
+  printf ("resb = %g\n", resb);
   double resa = resb - 2*TOLER;
-  int nrelax = 5;
-  int minlevel = 1;
+  int nrelax = 4;
+  int minlevel = 2;
   
   int iter = 0;
   while ((resa > TOLER && (resb - resa) > TOLER) || iter == 0) {
@@ -231,7 +217,14 @@ int poisson (Particles parts) {
 	sample_particles (multi_level_parts[l-1], multi_level_parts[l], level = l - 1, s= refl[l-1]);
       for (int i = 0; i < nrelax; i++) {
 	foreach_particle_in(multi_level_parts[l]) {
+#if FPM_BOUNDARY
+	  // Skipping boundary points 
+	  if (p().bound == 0) {
+#endif
 	  iterate_particle(multi_level_parts[l], _j_particle, l);
+#if FPM_BOUNDARY
+	  }
+#endif
 	}
       }
     }
@@ -239,15 +232,27 @@ int poisson (Particles parts) {
     sample_particles (multi_level_parts[depth()], parts, s = refl[depth()]);
     for (int i = 0; i < nrelax; i++) {
       foreach_particle_in(parts) {
+#if FPM_BOUNDARY
+	// Skipping boundary points 
+	if (p().bound == 0) {
+#endif
 	iterate_particle(parts, _j_particle);
+#if FPM_BOUNDARY
+	  }
+#endif
       }
     }
+    double max_ds = 0;
     foreach_particle_in(parts) {
       p().s += p().ds;
+      if (fabs(p().ds) > max_ds)
+	max_ds = fabs(p().ds);
     }
     resa = residual(parts);
     cleanup_multi_level(parts);
     iter++;
-    //printf ("%d %g %g\n", iter, resb, resa);
+    printf ("%d %g %g %g\n", iter, resb, resa, max_ds);
   }
 }
+
+

@@ -8,6 +8,42 @@ own papers if they use Basilisk. See also [src/references.bib]().
 ### 2025
 
 ~~~bib
+@article{kumar2025,
+title = {3D numerical investigation of fragmentation of wood’s metal in water and estimation of particle size distribution},
+journal = {Nuclear Engineering and Design},
+volume = {442},
+pages = {114223},
+year = {2025},
+issn = {0029-5493},
+doi = {https://doi.org/10.1016/j.nucengdes.2025.114223},
+url = {https://www.sciencedirect.com/science/article/pii/S0029549325004005},
+author = {M. Chandra Kumar and A. Jasmin Sudha}}
+
+@article{aljedaani2025, 
+title={Double crown during drop impact on an immiscible shallow pool}, volume={1010}, 
+DOI={10.1017/jfm.2025.108}, 
+journal={Journal of Fluid Mechanics}, 
+author={Aljedaani, Abdulrahman B. and Afzaal, Muhammad F. and Langley, Kenneth R. and Yang, Zi Qiang and Thoroddsen, S.T.}, 
+year={2025}, 
+pages={A32}}
+
+@article{maes2025, 
+title={Birth of a bubble: drop impact onto a thin liquid film for an immiscible three-fluid system}, 
+volume={1009}, 
+DOI={10.1017/jfm.2025.195}, 
+journal={Journal of Fluid Mechanics}, 
+author={Maës, Pierre-Antoine and Amirfazli, Alidad and Josserand, Christophe}, 
+year={2025}, 
+pages={A8}}
+
+@article{patel2025, 
+title={Coupled liquid–gas flow over a submerged cylinder: interface topology, wake structure and hydrodynamic lift}, 
+volume={1008}, 
+DOI={10.1017/jfm.2025.162}, 
+journal={Journal of Fluid Mechanics}, 
+author={Patel, Kuntal and Sun, Jun and Yang, Zixuan and Zhu, Xiaojue}, year={2025}, 
+pages={A10}}
+
 @article{deblais2025,
   title = {Early stages of drop coalescence},
   author = {Deblais, Antoine and Xie, Kaili and Lewin-Jones, Peter and Aarts, Dirk and Herrada, Miguel A. and Eggers, Jens and Sprittles, James E. and Bonn, Daniel},
@@ -2230,7 +2266,7 @@ pages={689–713}
 ~~~bib
 @hal{pairetti2018, hal-03150888}
 
-@hal{roy2018, tel-02056238}
+@hal{roy2018, tel-02495751}
 
 @article{lai2018,
   title={Bubble bursting: Universal cavity and jet profiles},

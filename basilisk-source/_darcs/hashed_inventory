@@ -1,4 +1,4 @@
-pristine:e592ba46768bff7222fd4d4b1c0cdb2b4e3079156a32b92ee413198efbfa61d6
+pristine:ad0e00962fb7e66c2096f24344b01184e13db4a6dcaf50f9c36735873932a87c
 Starting with inventory:
 0000059985-9b08f44c43023087ea323913c98c24d9439dcf35bbcb3f79a06269386ede0ffb
 [TAG release 25-02-26 (macros)
@@ -123,3 +123,8 @@ Stephane Popinet <popinet@basilisk.fr>**20250428165015
  Ignore-this: 765e06a86d23020fa31f2694dbfa8e32
 ] 
 hash: 0000000230-6dbfb1dd7e78146a3be69a335406c9b4ab7285cce9f75d6e8d6b2cd11dda32f9
+['gethal' uses api.archives-ouvertes.fr
+Stephane Popinet <popinet@basilisk.fr>**20250612143939
+ Ignore-this: 75e7452fa8be2aa1e8493a239183fac6
+] 
+hash: 0000000705-9fbf862426c9d2305a4afdf5026a310cfa438be6a492fb19c0027e624040bafd

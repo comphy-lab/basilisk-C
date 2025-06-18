@@ -396,9 +396,9 @@ void velocity_for_force_free()
 		/**
 		Angular velocity. */
 		foreach_dimension()
-			p().omega.x += (p().T.x+p().M.x)*dt*100.; 
+			p().omega.x += (p().T.x+p().M.x)*dt*1.; 
 		/**
-		Here dt and the arbitrary quantity (here 100) are just parameters,
+		Here dt and the arbitrary quantity (here 1) are just parameters,
 		in a steady case, they do not have a real physical meaning.
 		Consider them as relaxation parameters for the timestepper.*/
 		/**

@@ -14,13 +14,18 @@ scalar * refl = NULL;
 
 int collect_particles_point (Point point, Particles p, Particles new_list) {
   int np = 0;
-  particle new_p = {.x = 0, .y = 0, .z = 0, .s = 0, .res = 0, .ds = 0};
+  particle new_p = {.x = 0, .y = 0, .z = 0, .s = 0, .res = 0, .ds = 0}; 
   foreach_particle_point(reference, point) {
-    np++;
-    foreach_dimension()
-      new_p.x += p().x;
-    new_p.res += p().res;
-    
+#if FPM_BOUNDARY
+    if (p().bound == 0) {
+#endif
+      np++;
+      foreach_dimension()
+	new_p.x += p().x;
+      new_p.res += p().res;
+#if FPM_BOUNDARY
+    }
+#endif
   }
   if (np) {
     foreach_dimension()
@@ -29,6 +34,30 @@ int collect_particles_point (Point point, Particles p, Particles new_list) {
     new_p.ds  = 0;
     add_particle(new_p, new_list);
   }
+#if FPM_BOUNDARY
+  // dirichlet particles
+  {
+    np = 0;
+    new_p = (particle){.x = 0, .y = 0, .z = 0, .s = 0, .res = 0, .ds = 0, .bound = 1};
+    foreach_particle_point(reference, point) {
+      if (p().bound == 1) {
+	np++;
+	foreach_dimension()
+	  new_p.x += p().x;
+	new_p.res += p().res;
+	new_p.s += p().s;
+      }
+    }
+  if (np) {
+    foreach_dimension()
+      new_p.x /= np;
+    new_p.res /= np;
+    new_p.ds  = 0;
+    new_p.s /= np;
+    add_particle(new_p, new_list);
+  }
+  }
+#endif
   return np;
 }
 
@@ -51,11 +80,12 @@ int init_multi_level(Particles p) {
   return dep;
 }
 
-
-
 void cleanup_multi_level(Particles p) {
   free(multi_level_parts);
+  for (scalar s in refl)
+    free_scalar_data(s);
   delete (refl);
-  //free(refl);
+  free(refl);
+  refl = NULL;
 
 }
