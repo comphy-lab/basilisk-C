@@ -1,0 +1,130 @@
+pristine:ad0e00962fb7e66c2096f24344b01184e13db4a6dcaf50f9c36735873932a87c
+Starting with inventory:
+0000059985-9b08f44c43023087ea323913c98c24d9439dcf35bbcb3f79a06269386ede0ffb
+[TAG release 25-02-26 (macros)
+Stephane Popinet <popinet@basilisk.fr>**20250228155037
+ Ignore-this: 149a755ede47148be43de0df229f5f79
+] 
+hash: 0000007846-b579060a666602a16c5489f9faeee7f1322a1a5b93f27ec46901bc3eb4371a26
+[Error when trying to write-access a constant/undefined field
+Stephane Popinet <popinet@basilisk.fr>**20250228182117
+ Ignore-this: c30de9555cbdf49fa378d56ac01e1d7f
+] 
+hash: 0000000436-d43d900bc381fac42b289f0652160331da8d29d7213b11c9947f4c0c8ad0d1dc
+[Fixed GPU reductions on non-squares domains
+Stephane Popinet <popinet@basilisk.fr>**20250228182135
+ Ignore-this: 1a4caaab75cddcbe34d881ea2c3551ac
+] 
+hash: 0000001188-94e7edae37d9117b4c9408bb2cb5c1b6c0b8074216b243a08439e8780a3f98e0
+[Simplification of is_face_x() etc.
+Stephane Popinet <popinet@basilisk.fr>**20250301171713
+ Ignore-this: 560a9609a5e2f76232cf2e5d61cbc804
+] 
+hash: 0000005877-336ee6d8a9d27e2f30d9b064bd6d69a863f2dcffeb4b6660aeb06365bdcf0e74
+[Rising bubble (CLSVOF version) runs on GPUs
+Stephane Popinet <popinet@basilisk.fr>**20250301172421
+ Ignore-this: 5444d541fb723d1d2c9a5d42780e30e9
+] 
+hash: 0000006071-d43d1bed4de4d3456cf0753f29414008ec27ef3a75689f938238aac0820aff36
+[Finer control of macro expansions using macro1, macro2... instead of postmacro
+Stephane Popinet <popinet@basilisk.fr>**20250301183938
+ Ignore-this: 342501a45d823cd995051386a622cc2e
+] 
+hash: 0000021464-70c5c3e9fb374d1debb4fb85ea61ae1e54d186d05b774f113676204ac22e0bea
+[Updated reference dimensions
+Stephane Popinet <popinet@basilisk.fr>**20250301185640
+ Ignore-this: 72b64ec81a4055a8aaaac384f4530076
+] 
+hash: 0000003464-31ecacaaff40e558d047bb070d6bc6cbac3be20168960de698b50335d00dfb9a
+[Updated for non-cubic multigrids
+Stephane Popinet <popinet@basilisk.fr>**20250301190523
+ Ignore-this: cce812d9525ca93cef71aa542ceb0c53
+] 
+hash: 0000001099-0c39f4d488db938ad31acafcfd2656bf23bf87d846f29e5e15a5eb5d3e8dfe97
+[The solve() macro declarations need to be local
+Stephane Popinet <popinet@basilisk.fr>**20250303141140
+ Ignore-this: b5e0951f8f98cf88dba9d09c07cc4ddc
+] 
+hash: 0000000211-d595f7dba999fe88e279e80810d8087ffcc6b26ee65fdb2eb3446ab431b2440f
+[Removed 'Point point' error message
+Stephane Popinet <popinet@basilisk.fr>**20250304142528
+ Ignore-this: d379269af58c5788dace2bd2859b8192
+ 
+ The declaration is OK but does not allow to access fields etc. anymore.
+] 
+hash: 0000003464-a09ab56cf227f6866033031d612d4088c5dfa9472b57fead1387ceca3c8ae965
+[Fixed 32-bits overflows for very large cartesian and multigrid grids
+Stephane Popinet <popinet@basilisk.fr>**20250305122742
+ Ignore-this: 5c910f505db69122b73c24234b191d16
+] 
+hash: 0000001363-7c70cb7292b889dfded0a92914fa690c0d99ae853591f82f5f9902e9d806d537
+[Expansion of macros in registered function kernels need to use the correct scope
+Stephane Popinet <popinet@basilisk.fr>**20250307112651
+ Ignore-this: a2eb838dffd7b473f01c132138afa3c7
+] 
+hash: 0000004573-c72b8801fc226b5d267e6ac8914a8147e51d7bead2178c384e66e488bb3fd570
+[Added instantaneous computation speed statistics
+Stephane Popinet <popinet@basilisk.fr>**20250307135213
+ Ignore-this: b2544042ea6544f3ed346d19ed2810cb
+] 
+hash: 0000003012-831f2c6659284d1fbfc1d317774672b7225a7970423cfdb50d0d6fc64aa742ee
+[GPUs can use multiple SSBOs to access large video memories
+Stephane Popinet <popinet@basilisk.fr>**20250307191625
+ Ignore-this: f96bac78b8fc427ede50dff3bd26a96b
+] 
+hash: 0000021908-2128c2544798ffa574d4de3902e92c4fbf23a96206d62ef10991d85e303c6ce9
+[Undefined indices could cause incorrect stencil overflows
+Stephane Popinet <popinet@basilisk.fr>**20250322181331
+ Ignore-this: f4b707957afccbf7c2c1e3da280d87a3
+] 
+hash: 0000000489-d2adbc1128ac1ba0573a3a7e76a15fa87b28bcc4bcd5c426427bae63984368ba
+[Fixed ocean.h when using (longitudinal) periodic boundaries
+Stephane Popinet <popinet@basilisk.fr>**20250325132132
+ Ignore-this: 73e8a2b3eb1e940171d167e3a22d8c11
+] 
+hash: 0000001473-a643733f48cd3073d2206eaeb66bef84058c22da04dadbf64962a865d1ccf5a7
+[Minor fixes for warnings with gcc 13
+Stephane Popinet <popinet@basilisk.fr>**20250325171013
+ Ignore-this: 58951538e8eb6c8c898ecf08b48f66af
+] 
+hash: 0000001020-93c8d5b2cba30612a0959582f416d0f4943e4346522a3535e1c51f51718cb757
+[Minor changes for runs on new server
+Stephane Popinet <popinet@basilisk.fr>**20250326151145
+ Ignore-this: 974707504ad838ca926a70ac76aa3a0f
+] 
+hash: 0000000898-f8927f63dab9c14a53e81ddcae3d512176f8efb1a6782db3fd329de5c268f8d0
+[Updated references (new server)
+Stephane Popinet <popinet@basilisk.fr>**20250326155539
+ Ignore-this: cb907cf069d0efb94e13cb8f9f7ae990
+] 
+hash: 0000942806-0858bc3b8cd28368be4c264dcbd3f318c0b6bce2a73d46fb5dfad1959985b33c
+[Bye-bye gfsview
+Stephane Popinet <popinet@basilisk.fr>**20250328140448
+ Ignore-this: 578331987e2e5976844df43ba9b4eb47
+] 
+hash: 0000002358-2900e2bd0d01057663307ab5f162ec318c6dc9e3313fbae5b8220197cabc239e
+[mirror() and translate() need to reinitialize view
+Stephane Popinet <popinet@basilisk.fr>**20250328144755
+ Ignore-this: ded59dfb157b338d3621d4d444448bb5
+] 
+hash: 0000000630-17a8e215d0d87d331bbdf379e612f64f54da7266c3da3a7dc4c617d1d7dd3649
+[GPU tests are run automatically
+Stephane Popinet <popinet@basilisk.fr>**20250329160210
+ Ignore-this: 54f8fcc22e78a4ed65cbd7f463ba7a00
+] 
+hash: 0000077430-f27327583e678cc8d07909524f3715ce0f4eb893985385c4ce92b8295869a0f5
+[Fixed macro simplification in stencils
+Stephane Popinet <popinet@basilisk.fr>**20250331163933
+ Ignore-this: 74fe89a45f4da2da0a65d75e3cac8d69
+] 
+hash: 0000000435-3c3e718aa5a03c3f9b8cdf6400fd35ab30d24761ea48e70a98c7b0f6c254572b
+[Added missing header file, this should fix 'unknown type name ‘uint32_t’'
+Stephane Popinet <popinet@basilisk.fr>**20250428165015
+ Ignore-this: 765e06a86d23020fa31f2694dbfa8e32
+] 
+hash: 0000000230-6dbfb1dd7e78146a3be69a335406c9b4ab7285cce9f75d6e8d6b2cd11dda32f9
+['gethal' uses api.archives-ouvertes.fr
+Stephane Popinet <popinet@basilisk.fr>**20250612143939
+ Ignore-this: 75e7452fa8be2aa1e8493a239183fac6
+] 
+hash: 0000000705-9fbf862426c9d2305a4afdf5026a310cfa438be6a492fb19c0027e624040bafd
