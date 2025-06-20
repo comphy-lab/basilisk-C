@@ -1,4 +1,4 @@
-pristine:cee677974dbbd9f967d62e4563a717e4cd2517ab5f003e103d3b80fde56b2e09
+pristine:fcdff53ffdb46713b237d904d0f475f03814e6cde4cc080302073b8ce248f99d
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -486,3 +486,28 @@ fpicella <francesco.picella@sorbonne-universite.fr>**20250618172121
  Ignore-this: afb516b81a1b323ac306338d169299e4
 ] 
 hash: 0000000277-b07316cdd813ab3ec718555851c29ad814cf8ce90099d91d8f3d868f7ba89f72
+[added matplotlib plot
+francesco.picella@sorbonne-universite.fr**20250619093123
+ Ignore-this: c5c3237d1908d391265bda73f55ae03e
+] 
+hash: 0000002158-7f41827085c95e1794e1f477cb2333db4557873a4ba1b79dd97b4c52f991ff1b
+[second plot, very nice
+francesco.picella@sorbonne-universite.fr**20250619113046
+ Ignore-this: 343c430cf34a18ff65e481a40817af08
+] 
+hash: 0000002762-de4f68b684b4f1b877ef15aa3e3650fb2f973c0e8356c8ffaf0b9d8b12ca8ba6
+[added plots and comments
+francesco.picella@sorbonne-universite.fr**20250619155333
+ Ignore-this: dd9c55b21eda4f9147c5fd2bd2360ffc
+] 
+hash: 0000005473-8f5536dbcf6fba09a9f91951f5bee8ee3712d2a8f068227f2354697af1d78e9f
+[issues in the visualization, solved?
+francesco.picella@sorbonne-universite.fr**20250619161203
+ Ignore-this: b4d89110a0059cb7a697f4a1b7300cb2
+] 
+hash: 0000000767-cbbc844d2137083a24c0d8c56064284f57284def8672d8d4098cc9dba85b81e5
+[added case for microswimmer binary interaction...on 2D plane (now I can plot a _map_)
+francesco.picella@sorbonne-universite.fr**20250619172352
+ Ignore-this: 7133238e3194b95bf49e4630061828b5
+] 
+hash: 0000006791-8aff17e5d107b80f0e9777a47c5475eac6a0e347845a729213b599e3108d8fbd

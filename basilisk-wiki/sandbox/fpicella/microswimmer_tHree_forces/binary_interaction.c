@@ -76,11 +76,13 @@ int main()
   
 //  for (N = 32; N <= 256; N *= 2)
 //		for(RADIUS = 0.05; RADIUS <= 0.45; RADIUS += 0.05)
-	N=128;
+	N=64;
 	BINARY_DISTANCE = L0/2.;
-		for(BINARY_DISTANCE = L0/2.; BINARY_DISTANCE>=RADIUS; BINARY_DISTANCE*=0.9)
-    	run();
-
+		for(BINARY_DISTANCE = L0/2.; BINARY_DISTANCE>=RADIUS; BINARY_DISTANCE*=0.9){
+			for(BUOYANCY = -1; BUOYANCY <= +1. ; BUOYANCY+=1.0){
+    		run();
+			}
+		}
 	fclose(output_file);
 }
 
@@ -140,15 +142,6 @@ event init (t = 0) {
 }
 
 
-//event log_make_video (i += 1) {
-//  squares ("omega", linear = true);
-//  scatter (microswimmers, pc = {256, 256, 256});
-//  isoline ("bodyPlot", 0.25, lc = {256,256,256}, lw = 2);
-//  vectors (u = "u", scale = 0.25, lc = {256,256,256}, level = 8);
-//  box();
-//  save ("movie.mp4");
-//}
-
 event acceleration (i++){
 	compute_microswimmer_forcing_smooth(microswimmers);
 	a = av; // assign acceleration term. That's capital!
@@ -189,4 +182,157 @@ plot 'Output.dat' using ( $13==0 && $7==0 ? ($9/$3) : 1/0 ):( $13==0  && $7==0 ?
      'Output.dat' using ( $13==0 && $7==0 ? ($9/$3) : 1/0 ):( $13==0  && $7==0 ? +$12 : 1/0 ) \
      with points pt 7 ps 2 lc rgb "red" title "omega"
 ~~~
+*/
+
+
+/**
+~~~pythonplot velocities as a function of binary interaction, no buoyancy
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import scipy.interpolate as interpolate
+
+plt.rc('text',usetex=True);
+plt.rc('font',family='serif');
+
+cmap = plt.get_cmap('plasma')
+
+data = np.loadtxt("Output.dat")
+
+fig, ax = plt.subplots(figsize=(4,3))
+
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == 0), 8] / data[(data[:, 12] == 0) & (data[:, 6] == 0), 2], data[(data[:, 12] == 0) & (data[:, 6] == 0), 9], 'o', color=cmap(0.3), markersize=8, label="$u_x$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == 0), 8] / data[(data[:, 12] == 0) & (data[:, 6] == 0), 2], data[(data[:, 12] == 0) & (data[:, 6] == 0), 10], 'o', color=cmap(0.6), markersize=8, label="$u_y$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == 0), 8] / data[(data[:, 12] == 0) & (data[:, 6] == 0), 2], data[(data[:, 12] == 0) & (data[:, 6] == 0), 11], 'o', color=cmap(0.9), markersize=8, label="$\omega$")
+
+ax.legend()
+plt.tight_layout();
+plt.savefig('matplotlib_output.svg')
+~~~
+*/
+
+/**
+~~~pythonplot Swimming velocity, influenced by body distance and buoyancy.
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import scipy.interpolate as interpolate
+
+plt.rc('text',usetex=True);
+plt.rc('font',family='serif');
+
+cmap = plt.get_cmap('plasma')
+
+data = np.loadtxt("Output.dat")
+
+fig, ax = plt.subplots(figsize=(4,3))
+
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == -1), 8] / data[(data[:, 12] == 0) & (data[:, 6] == -1), 2], data[(data[:, 12] == 0) & (data[:, 6] == -1), 10], 'o', color=cmap(0.0), markersize=8, label="$-0.25$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == +0), 8] / data[(data[:, 12] == 0) & (data[:, 6] == +0), 2], data[(data[:, 12] == 0) & (data[:, 6] == +0), 10], 'o', color=cmap(0.3), markersize=8, label="$+0.0$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == +1), 8] / data[(data[:, 12] == 0) & (data[:, 6] == +1), 2], data[(data[:, 12] == 0) & (data[:, 6] == +1), 10], 'o', color=cmap(0.6), markersize=8, label="$+0.25$")
+
+plt.xlabel('$d/R$');
+plt.ylabel('$U_{swim}$');
+
+# Add a dashed line at y=0
+plt.axhline(y=0, color='black', linestyle=':', linewidth=1)
+
+ax.legend(title = "buoyancy/thrust")
+plt.tight_layout();
+plt.savefig('velocity_distance_buoyancy.svg')
+~~~
+*/
+
+/**
+- Positive values, the agent is swimming towards the top (same as direction)
+- Negative values, swimmer is _sinking_ (velocity sign is opposite than direction)
+
+
+### So what?
+- When particle come close enough, they swimming velocity is reduced.
+- If negative buoyancy is added, they could start sinking when close enough!
+*/
+
+/**
+~~~pythonplot Normalized swimming velocity, influenced by body distance and buoyancy.
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+import scipy.interpolate as interpolate
+
+plt.rc('text',usetex=True);
+plt.rc('font',family='serif');
+
+cmap = plt.get_cmap('plasma')
+
+data = np.loadtxt("Output.dat")
+
+fig, ax = plt.subplots(figsize=(4,3))
+
+# A fancy function to make it simpler later...
+
+def get_normalized_y_at_max_x(data, mask, x_col, y_col, norm_col):
+    """
+    Returns x values and y values normalized so that y at max x becomes 1.
+
+    Parameters:
+        data     : numpy array with the data.
+        mask     : boolean array to filter rows.
+        x_col    : column index for the numerator of x-values.
+        y_col    : column index for y-values.
+        norm_col : column index for the denominator of x-values.
+
+    Returns:
+        x_vals                : array of x values (not normalized)
+        y_vals_normalized     : y values scaled so that y at max x = 1
+    """
+    x_vals = data[mask, x_col] / data[mask, norm_col]
+    y_vals = data[mask, y_col]
+
+    if len(x_vals) == 0:
+        return x_vals, y_vals  # empty
+
+    max_x_index = x_vals.argmax()
+    y_at_max_x = y_vals[max_x_index]
+
+    if y_at_max_x == 0:
+        y_vals_normalized = y_vals  # avoid division by zero
+    else:
+        y_vals_normalized = y_vals / y_at_max_x
+
+    return x_vals, y_vals_normalized
+
+""" negative buoyancy """
+mask = (data[:, 12] == 0) & (data[:, 6] == -1)
+x_vals, y_vals_norm = get_normalized_y_at_max_x(data, mask, x_col=8, y_col=10, norm_col=2)
+ax.plot(x_vals, y_vals_norm, 'o', color=cmap(0.0), label="$-0.25$")
+""" neutral buoyancy """
+mask = (data[:, 12] == 0) & (data[:, 6] == +0)
+x_vals, y_vals_norm = get_normalized_y_at_max_x(data, mask, x_col=8, y_col=10, norm_col=2)
+ax.plot(x_vals, y_vals_norm, 'o', color=cmap(0.3), label="$+0.00$")
+""" positive buoyancy """
+mask = (data[:, 12] == 0) & (data[:, 6] == +1)
+x_vals, y_vals_norm = get_normalized_y_at_max_x(data, mask, x_col=8, y_col=10, norm_col=2)
+ax.plot(x_vals, y_vals_norm, 'o', color=cmap(0.6), label="$+0.25$")
+
+
+plt.xlabel('$d/R$');
+plt.ylabel('$U_{swim}/U_{swim}(d/R=\infty)$');
+
+plt.axhline(y=0, color='black', linestyle=':', linewidth=1)
+
+ax.legend(title = "buoyancy/thrust", framealpha =1 )
+plt.tight_layout();
+plt.savefig('normalized_velocity_distance_buoyancy.svg')
+~~~
+*/
+/**
+### Reudction in swimming velocity  _adding buoyancy to the tHree model_:
+ - I normalize the swimming velocity wrt the velocity that would be observed in an unbounded configuration ($U_{swim}(d/R = \infty)$)
+ - I reduction (up to a change of sign!!!) of swimming velocity is enhanced when using negative buoyancy.
+ - This could explain the _Rayleigh-Taylor_-like instability when *local* concentration is high enough
+ - whilst the swimming velocity of an isolated tHree microswimmer is positive, even with negative buoyancy.
 */
