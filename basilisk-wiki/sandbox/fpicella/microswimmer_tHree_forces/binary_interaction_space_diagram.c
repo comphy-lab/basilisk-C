@@ -179,21 +179,20 @@ event logfile ( i += 1; i <= 1000) {
 }
 
 /**
-~~~pythonplot streamwise velocities as a function of position
+~~~pythonplot streamwise velocities as a function of position. Black line is the isovalue for zero swimming velocity.
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import scipy.interpolate as interpolate
 
-plt.rc('text',usetex=True);
-plt.rc('font',family='serif');
+from matplotlib.colors import TwoSlopeNorm
 
-cmap = plt.get_cmap('RdBu_r')
+cmap = plt.get_cmap('viridis')
 
 data = np.loadtxt("Output.dat")
 
-fig, ax = plt.subplots(figsize=(4,3))
+fig, ax = plt.subplots(1,3,figsize=(8,3))
 
 satellite = data[(data[:,13]== 1) & (data[:,6]==-1),:]; # extract only data of the second (satellite) particle
 
@@ -201,39 +200,94 @@ satellite = data[(data[:,13]== 1) & (data[:,6]==-1),:]; # extract only data of t
 # Extract x, y, z for interpolation
 x = satellite[:, 8]
 y = satellite[:, 9]
-z = satellite[:, 11]  # Streamwise velocity or scalar field
 
-# Normalize z by value at maximum x
-max_x_index = x.argmax()
-z_max_x = z[max_x_index]
-if z_max_x != 0:
-    z = z / z_max_x
-else:
-    print("Warning: Zero velocity at max x.")
+### ZOOM FACTOR
+Z = 1.0;
 
 # Create grid
-xi = np.linspace(x.min(), x.max(), 300)
-yi = np.linspace(y.min(), y.max(), 300)
+xi = np.linspace(x.min()*Z, x.max()*Z, 50)
+yi = np.linspace(y.min()*Z, y.max()*Z, 50)
 xi, yi = np.meshgrid(xi, yi)
+
+### PLOT FIRST ONE, on the left
+z = satellite[:, 11]  # Streamwise velocity or scalar field
+
+## Normalize z by value at maximum x
+#max_x_index = x.argmax()
+#z_max_x = z[max_x_index]
+#if z_max_x != 0:
+#    z = z / z_max_x
+#else:
+#    print("Warning: Zero velocity at max x.")
 
 # Interpolate z-values onto the grid
 zi = interpolate.griddata((x, y), z, (xi, yi), method='linear')
 
 # Plot filled contours
-contour = ax.contourf(xi, yi, zi, levels=20, cmap=cmap)
-cbar = plt.colorbar(contour, ax=ax)
-cbar.set_label(r'$\hat{u_y}$')
+contourf = ax[0].contourf(xi, yi, zi, levels=20, cmap=cmap)
+cbar = plt.colorbar(contourf, ax=ax[0])
 
 # Add isoline for zero
-ax.contour(xi, yi, zi, levels=[0], colors='black', linewidths=2)
+contours = ax[0].contour(xi, yi, zi, levels=[0.0], colors='white', linewidths=1)
+ax[0].clabel(contours, inline=True, fontsize=8)
 
 # Optionally overlay original points
-ax.scatter(x, y, color='k', s=5, alpha=0.1)
+#ax.scatter(x, y, color='k', s=5, alpha=0.1)
 
-ax.set_xlabel(r'$x$')
-ax.set_ylabel(r'$y$')
+ax[0].set_xlabel(r'$x$')
+ax[0].set_ylabel(r'$y$')
+ax[0].set_title(r'$u_{streamwise}$')
+
 #ax.legend()
-ax.set_aspect('equal')  # Make axes equal
+ax[0].set_aspect('equal')  # Make axes equal
+
+
+### PLOT SECOND ONE, in the center
+z = satellite[:, 10]  # Spanwise velocity or scalar field
+
+# Interpolate z-values onto the grid
+zi = interpolate.griddata((x, y), z, (xi, yi), method='cubic')
+
+# Plot filled contours
+contourf = ax[1].contourf(xi, yi, zi, levels=20, cmap=cmap)
+cbar = plt.colorbar(contourf, ax=ax[1])
+
+# Add isoline for zero
+contours = ax[1].contour(xi, yi, zi, levels=[-0.025,0.025], colors='white', linewidths=1)
+ax[1].clabel(contours, inline=True, fontsize=8)
+
+# Optionally overlay original points
+#ax.scatter(x, y, color='k', s=5, alpha=0.1)
+
+ax[1].set_xlabel(r'$x$')
+ax[1].set_ylabel(r'$y$')
+ax[1].set_title(r'$u_{spanwise}$')
+ax[1].set_aspect('equal')  # Make axes equal
+
+### PLOT SECOND ONE, in the center
+z = satellite[:, 12]  # Spanwise velocity or scalar field
+
+# Interpolate z-values onto the grid
+zi = interpolate.griddata((x, y), z, (xi, yi), method='cubic')
+
+# Plot filled contours
+contourf = ax[2].contourf(xi, yi, zi, levels=20, cmap=cmap)
+cbar = plt.colorbar(contourf, ax=ax[2])
+
+# Add isoline for zero
+contours = ax[2].contour(xi, yi, zi, levels=[-0.025,0.025], colors='white', linewidths=1)
+ax[2].clabel(contours, inline=True, fontsize=8)
+
+# Optionally overlay original points
+#ax.scatter(x, y, color='k', s=5, alpha=0.1)
+
+ax[2].set_xlabel(r'$x$')
+ax[2].set_ylabel(r'$y$')
+ax[2].set_title(r'$\omega$')
+ax[2].set_aspect('equal')  # Make axes equal
+
+
+
 plt.tight_layout();
 plt.savefig('matplotlib_output.svg')
 ~~~

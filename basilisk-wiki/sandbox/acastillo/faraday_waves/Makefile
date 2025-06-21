@@ -1,4 +1,4 @@
 include $(BASILISK)/Makefile.defs
-GSLLIBS=-I$(GSL_INCDIR) -L$(GSL_LIBDIR) -lgsl -lgslcblas
-CFLAGS+= -O3 -disable-dimensions $(GSLLIBS)
 
+QCC = $(BASILISK)/qcc
+CFLAGS += -DMTRACE=3 -O2

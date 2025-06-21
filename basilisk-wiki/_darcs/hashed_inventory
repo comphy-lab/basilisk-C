@@ -1,4 +1,4 @@
-pristine:fcdff53ffdb46713b237d904d0f475f03814e6cde4cc080302073b8ce248f99d
+pristine:f0e3dec06edd2fab1463e7d24272207db75b3dc551a8d0a22d2c50ce51486c6c
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -511,3 +511,43 @@ francesco.picella@sorbonne-universite.fr**20250619172352
  Ignore-this: 7133238e3194b95bf49e4630061828b5
 ] 
 hash: 0000006791-8aff17e5d107b80f0e9777a47c5475eac6a0e347845a729213b599e3108d8fbd
+[removed latex rendering...it does not really work out of the box.
+fpicella <francesco.picella@sorbonne-universite.fr>**20250620145754
+ Ignore-this: 864ae04e4d8e27ae76d403f673cabb4f
+] 
+hash: 0000000597-bb2567f17810a223d2c35c76b37040572ca6666349c6f90174994cfe7026b04e
+[updated graph
+fpicella <francesco.picella@sorbonne-universite.fr>**20250620150906
+ Ignore-this: 4300e86597ed1fbcb7e5806bada38c9b
+] 
+hash: 0000000554-f2280fb770451ac49920a21d30f4683ff154a739474c83283fc07fc897f63f6f
+[improved binary_interaction_space_diagram.c plot
+francesco.picella@sorbonne-universite.fr**20250620153027
+ Ignore-this: a384ba68ce3cac58ec3c4e1ef35e6f7f
+] 
+hash: 0000001171-1d112d509a3e38c8cc575510c14afaa7200af7f3c21414c2fe2a2eaae3209fa5
+[improved binary_interaction_space_diagram.c plot
+francesco.picella@sorbonne-universite.fr**20250620153059
+ Ignore-this: 54c184bc8336d15106a1f83647db24ee
+] 
+hash: 0000000307-ac6b0ef123daa07dcb75d5864ebbc71b04130a50746199a74cc7cd7c437c4a68
+[full binary_interaction_space_diagram.c plot, with three velocity components. Matplotlib script works in local.
+francesco.picella@sorbonne-universite.fr**20250620155848
+ Ignore-this: 7a64a858f59c90698a08cd923e0856dd
+] 
+hash: 0000003994-a6fe63c18a67a614e7ed9bc8e1cdc802649355ed104d3a1389ce5a41968a1152
+[Included cylindrical case
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250620160942
+ Ignore-this: 16578b5aef698f2ed010452bd0a91756afd76a814342c9ad62fbd814ac3be0c3a00f2bdb5871eeab
+] 
+hash: 0000065013-4470262b7337786e59f4c69e219f367072a0646b60d25808d6c7dce8eafe1c50
+[Included annular case
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20250620175946
+ Ignore-this: bb548a596a56fabd53d3b17a7f13424f07857d7b2efda5be64bc567f91d77358d8e557c4c5c2de68
+] 
+hash: 0000058811-2e2e8aaf78e7af57ff6d1b4a73c7f8b03f3d4e6096b7fc70be3c5d39ab097c89
+[Something's off with the makefile
+acastillo <andres.castillo.castellanos@gmail.com>**20250620180753
+ Ignore-this: 2afa65b00002add5bec69c8278b40a4c
+] 
+hash: 0000000351-ec26dea3e1e9c35ed9c65e259d85b659f948d901dff932d37ebb2f4f4615b10a

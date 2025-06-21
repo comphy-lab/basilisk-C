@@ -193,9 +193,6 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import scipy.interpolate as interpolate
 
-plt.rc('text',usetex=True);
-plt.rc('font',family='serif');
-
 cmap = plt.get_cmap('plasma')
 
 data = np.loadtxt("Output.dat")
@@ -219,9 +216,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import scipy.interpolate as interpolate
-
-plt.rc('text',usetex=True);
-plt.rc('font',family='serif');
 
 cmap = plt.get_cmap('plasma')
 
@@ -262,9 +256,6 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import scipy.interpolate as interpolate
-
-plt.rc('text',usetex=True);
-plt.rc('font',family='serif');
 
 cmap = plt.get_cmap('plasma')
 

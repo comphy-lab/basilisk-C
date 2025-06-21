@@ -1,5 +1,5 @@
 /** 
-# Super-Square Patterns in Faraday Waves
+# Super-Square Patterns in Faraday Waves, Cylindrical Geometry 
 
 This section describes our numerical simulation of super-square patterns in
 Faraday waves, specifically replicating the findings of [Kahouadji et al. (2015)
@@ -49,7 +49,8 @@ investigate three oscillation frequencies:
 
 But we are going to focus on the 30 Hz case. For this case, the authors
 used a $132 \text{ mm} \times 132 \text{ mm} \times 44 \text{ mm}$ domain with
-$512 \times 512 \times 256$ grid points (44 grid points per wavelength).
+$512 \times 512 \times 256$ grid points (44 grid points per wavelength). Inside,
+they define a cylindrical region using immersed boundaries.
 
 ### 1.2. Dimensionless equations
 
@@ -135,30 +136,30 @@ Our simulation utilizes Basilisk's two-phase incompressible solver with embedded
 boundaries, along with modifications from
 [contact-embed.h](http://basilisk.fr/sandbox/tavares/contact-embed.h) to achieve
 correct aspect ratios. More details are available in [Tavares et al.
-(2024)](#tavares2024).
+(2024)](#tavares2024). This case is 3D only. 
 
 */
 
 #define FILTERED
+#include "grid/octree.h"
 #include "embed.h"
 #include "navier-stokes/centered.h"
 #include "two-phase.h"
 #include "navier-stokes/conserving.h"
 #include "tension.h"
 #include "./my_contact-embed.h"
-
+#include "reduced.h"
 
 /**
-### 2.2. Setting Problem Parameters
+### 2.2. Set problem parameters
 
-To align with the dimensionless equations, we've set the simulation parameters
-as follows:
+In order to comply with the nondimensionalization proposed, the parameters are
+listed as follows:
 
 | Parameter         | Symbol              |
 | :---------------- | :------------------ |
-| Width             | $W k$               |
 | Height            | $H k$               |
-| Depth             | $D k$               |
+| Diameter          | $D k$               |
 | Density 1         | $\hat{\rho}$        |
 | Density 2         | $1$                 |
 | Viscosity 1       | $\Upsilon/\mathrm{Re}$ |
@@ -209,18 +210,16 @@ int mesh_tol=1e-1;  // Refinement mesh criteria
 double tend=1.0;  // Time end
 
 /** First, we'll create some macros to deal with the geometry, */ 
+#define _R0 (12.0*pi)
 #define _H0 ((29.5/11.40)*2*pi)
 #define _mindel (L0 / (1 << maxlevel))
-#if dimension == 2
-  #define _D0 (0.)
-  #define rectanglebox(extra) intersection((_H0 + extra - y), (_H0 + extra + y))
-#else
-  #define _D0 (L0)
-  #define rectanglebox(extra)                                     \  
-    intersection(                                                 \
-    intersection((_H0 + extra - z), (_H0 + extra + z)), \
-    intersection((_D0 / 2. + extra - y), (_D0 / 2. + extra + y)))
-#endif
+#define _D0 (L0)
+#define R (sqrt(sq(x) + sq(y)))
+#define rectanglebox(extra)                           \  
+  intersection(                                       \
+  intersection((_H0 + extra - z), (_H0 + extra + z)), \
+  intersection((_R0 + extra - R), (_R0 + extra + R)))
+
 
 vector h[];
 int main(){
@@ -236,13 +235,10 @@ int main(){
   p.nodump = false;
 
   /** the geometric parameters, */ 
-  L0 = 24*pi; 
-  X0 = -L0/2.;
-  Y0 = -(14.5/11.40)*2*pi;
-  #if dimension == 3
-    Y0 = -L0 / 2.;
-    Z0 = -(14.5/11.40)*2*pi;
-  #endif
+  L0 = 76.0; 
+  X0 = -L0/2.;  
+  Y0 = -L0/2.;
+  Z0 = -(14.5/11.40)*2*pi;
 
   /** the forcing parameters */ 
   force.G0 = 0.152230;
@@ -252,18 +248,18 @@ int main(){
   force.period0 = (2 * pi) / force.omega0; 
 
   /** and the initial perturbation */ 
-  perturb.a0 = 0.05; // Perturbation amplitude
-  perturb.m  = 4;    // Mode index
-  perturb.B  = 2;    // Bandwidth
+  perturb.a0 = 0.02; // Perturbation amplitude
+  perturb.m  = 12;   // Mode index
+  perturb.B  = 1;    // Bandwidth
   perturb.kmin = pi * (perturb.m - perturb.B/2) / L0;
   perturb.kmax = pi * (perturb.m + perturb.B/2) / L0;
 
   /** We'll also set-up the numerical parameters */ 
   N = 1 << minlevel;
-  CFL = 0.50;
+  CFL = 0.35;
   DT = 0.50*force.period0;
   TOLERANCE = 1e-3;
-  NITERMIN = 4;
+  NITERMIN = 5;
   
   /** and display everything, */ 
   if (pid() == 0){
@@ -295,13 +291,13 @@ int main(){
 */
 
 event adapt(i++){
-  #if dimension == 2
-    adapt_wavelet({f,cs,u}, (double[]){mesh_tol, mesh_tol, mesh_tol, mesh_tol}, maxlevel = maxlevel, minlevel = minlevel);
-  #else
-    adapt_wavelet({f,cs,u}, (double[]){mesh_tol, mesh_tol, mesh_tol, mesh_tol, mesh_tol}, maxlevel = maxlevel, minlevel = minlevel);
-  #endif
+  adapt_wavelet({f,cs,u}, (double[]){mesh_tol, mesh_tol, mesh_tol, mesh_tol, mesh_tol}, maxlevel = maxlevel, minlevel = minlevel);
 }
 
+#include "tag.h"
+event drop_remove (i += 100) {
+  remove_droplets (f, 1, 0);
+}
 
 /** 
 ### 2.4. Set initial conditions
@@ -313,11 +309,7 @@ velocity field is set to zero.
 */
 
 #include "view.h"
-#if dimension == 2
-  #include "../input_fields/initial_conditions_dimonte_fft1.h"
-#else  
-  #include "../input_fields/initial_conditions_dimonte_fft2.h"  
-#endif
+#include "../input_fields/initial_conditions_dimonte_fft2.h"  
 
 event init(i = 0){
   if (!restore(file = "./backup")){
@@ -325,26 +317,17 @@ event init(i = 0){
     for (int l = 5; l <= maxlevel; ++l){
       refine( rectanglebox( 4.*L0/(1 << l) ) > 0 && level < l);
     }
-
-    #if dimension == 2
+    
     {
-      vertex scalar phi[];
-      initial_condition_dimonte_fft(phi, amplitude=perturb.a0, kmin = perturb.kmin, kmax = perturb.kmax, NX=(1<<maxlevel));
+      vertex scalar phi[], phi1[], phi2[];
+      initial_condition_dimonte_fft2(phi1, amplitude=perturb.a0, kmin = perturb.kmin, kmax = perturb.kmax, NX=(1<<maxlevel), NY=(1<<maxlevel), isvof=1);      
       foreach_vertex(){
-        phi[] *= -1;
-      }
-      fractions(phi, f);
-    }
-    #else
-    {
-      vertex scalar phi[];
-      initial_condition_dimonte_fft2(phi, amplitude=perturb.a0, kmin = perturb.kmin, kmax = perturb.kmax, NX=(1<<maxlevel), NY=(1<<maxlevel), isvof=1);
-      foreach_vertex(){
-        phi[] *= -1;
+        phi1[] *= -1;
+        phi2[] = rectanglebox(2.*_mindel);
+        phi[] = intersection(phi1[], phi2[]);
       }
       fractions(phi, f);      
     }
-    #endif
 
     /** and zero velocity field  */
     foreach(){
@@ -355,43 +338,27 @@ event init(i = 0){
   }
 
   /** If there are walls, we ensure the fields are zero insider the walls */
-  foreach(){
-    f[]*= (rectanglebox(1.*_mindel) > 0.);
-    p[]*= (rectanglebox(1.*_mindel) > 0.);
-    foreach_dimension(){
-      u.x[]*= (rectanglebox(1.*_mindel) > 0.);
-    }
-  }
   N = 1 << maxlevel;
   solid(cs, fs, rectanglebox(0.));
   fractions_cleanup(cs, fs, smin=1e-3, opposite=1);
-  restriction({fs, cs, f, u});
+  restriction({f, p, u, fs, cs});
 }
 
 /** 
 ### 2.5. Set boundary conditions
-We considered no-slip conditions on all boundaries, but stress-free conditions 
-should give similar results.
+We consider free-slip conditions on all boundaries.
 */
 
-#if dimension == 2
-  u.n[left] = dirichlet(0);
-  u.t[left] = dirichlet(0);
-  u.n[right] = dirichlet(0);
-  u.t[right] = dirichlet(0);
-  u.n[embed] = dirichlet(0);
-  u.t[embed] = dirichlet(0);
-#else
-  u.n[left] = dirichlet(0);
-  u.t[left] = dirichlet(0);
-  u.r[left] = dirichlet(0);
-  u.n[right] = dirichlet(0);
-  u.t[right] = dirichlet(0);
-  u.r[right] = dirichlet(0);
-  u.n[embed] = dirichlet(0);
-  u.t[embed] = dirichlet(0);
-  u.r[embed] = dirichlet(0);
-#endif
+u.n[left] = dirichlet(0);
+u.t[left] = neumann(0);
+u.r[left] = neumann(0);
+u.n[right] = dirichlet(0);
+u.t[right] = neumann(0);
+u.r[right] = neumann(0);
+u.n[embed] = dirichlet(0);
+u.t[embed] = neumann(0);
+u.r[embed] = neumann(0);
+
 
 /** 
 ### 2.6. Apply the external forcing
@@ -418,14 +385,7 @@ event acceleration(i++){
   force.ramp = sigmoid(t1-t0, k);
   force.Gn = (force.G0) * (force.F0 * sin(force.omega0 * t));
   
-  face vector av = a;
-  #if dimension == 2
-    foreach_face(y)
-      av.y[] -= force.G0 + force.Gn*force.ramp;
-  #else
-    foreach_face(z)
-      av.z[] -= force.G0 + force.Gn*force.ramp;
-  #endif 
+  G.z = -(force.G0 + force.Gn*force.ramp);
 }
 
 /** 
@@ -449,38 +409,24 @@ the simulations. Due to their substantial size, running these simulations on the
 Basilisk server is impractical.
 
 For example, a specific simulation was conducted on the Ruche cluster at the
-Moulon Mesocenter, taking approximately 60 hours to complete. Detailed
+Moulon Mesocenter, taking approximately 7 days to complete. Detailed
 information about the cluster can be found
 [here](https://mesocentre.pages.centralesupelec.fr/).
 
-The simulation, which spans 250 dimensionless time units (about 40 forcing
-periods) is characterized by the following statistics:
+The development of the Faraday waves can be seen in the video below. We can see
+some artifacts near the walls. 
 
-```
-# Octree, 5881 steps, 225809 CPU, 2.276e+05 real, 1.13e+06 points.step/s, 62 var
-# 40 procs, MPI: min 2.8e+04 (12%) avg 3.6e+04 (16%) max 4.4e+04 (19%)
-```
-
-The development of the Faraday waves can be seen in the video below:
-
-<iframe width="640" height="640" src="https://www.youtube.com/embed/4HFcfVq1Quk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="640" height="640" src="https://www.youtube.com/embed/sVX9F2Ki274" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 */
 
 event movie(t += pi/16){
-#if dimension == 2
-  view(camera = "front", ty = -0.1, tx=0.05);
-  box();
-  draw_vof("f", lc = {1, 0, 0}, lw = 2.);
-  squares("cs[] > 0. ? f[] : nodata", linear = false);
-#elif dimension == 3
   view(camera = "iso");
   scalar Z[];
   foreach()
-    Z[] = z < ((14.5/11.40)*2*pi) ? f[] : 1.0;
+    Z[] = (z < ((14.5/11.40)*2*pi)) ? (1-f[])*cs[] : 0.0;
   view(camera="iso");
   draw_vof("Z");
-#endif
   save("front.mp4");
   clear();
 }
@@ -513,7 +459,7 @@ event time_series(t += pi/16){
   double ekin = 0;
   foreach (reduction(+ : ekin)){
     foreach_dimension()	{
-      ekin += dv() * 0.5 * rhov[] * sq(u.x[]);
+      ekin += dv() * 0.5 * rhov[] * sq(u.x[]) * cs[];
     }
   }
   if (pid() == 0){
