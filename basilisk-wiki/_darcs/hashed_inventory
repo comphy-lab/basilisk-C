@@ -1,4 +1,4 @@
-pristine:f0e3dec06edd2fab1463e7d24272207db75b3dc551a8d0a22d2c50ce51486c6c
+pristine:35b1e48eac5a01cd9bdd14fdf2d371bdb7f900ef518cf138ef9f45f5b50eba98
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -551,3 +551,104 @@ acastillo <andres.castillo.castellanos@gmail.com>**20250620180753
  Ignore-this: 2afa65b00002add5bec69c8278b40a4c
 ] 
 hash: 0000000351-ec26dea3e1e9c35ed9c65e259d85b659f948d901dff932d37ebb2f4f4615b10a
+[made it
+HRJ2002 <hjo61@uclive.ac.nz>**20250623035149
+ Ignore-this: 4fe26554b0203a769f99537265f8c8f0
+] 
+hash: 0000000199-dc7932663d68806fd897f913c375c2e192d6fb7535d0babf37d277238d6d29a2
+[README file
+haouche <ilies.haouche2000@gmail.com>**20250623092637
+ Ignore-this: a110aa38d7596362ca76bca32408b3e3
+] 
+hash: 0000000838-110696841258c85190aa7bf4728808ca026a5d659fa1f40510bac0b91e349d7e
+[Code for drop fragmentation on a leaf. 
+Yash Kulkarni <kulkarniyash2398@gmail.com>**20250623102407
+ Ignore-this: 473b2dedcc17614d0592aff7ae900a3
+] 
+hash: 0000005900-0e6502668538a686f3988ec115f65f1e715968335f3513436fcf76d331067655
+[updated short_darcs_tutorial
+anaelle.givaudan@sorbonne-universite.fr**20250623120845
+ Ignore-this: d1abf432442247742547110a94bd999
+] 
+hash: 0000000397-d44c8459c70f946b6fdb4c84e3af9367d42176f69f30f575d716b35f5bf58f6e
+[REAdME creation
+anaelle.givaudan@sorbonne-universite.fr**20250623125310
+ Ignore-this: 4f6ace1fad4a33e2380cc78d4044f608
+] 
+hash: 0000000238-64d09a6a1db4180c9455a6c5a17816bcbfa3bd7547c8a87fc05ef1d9fc22413e
+[Hodhe
+jose.fullana@sorbonne-universite.fr**20250623125533
+ Ignore-this: 37b9cae63d9c1b7db05b277e71ffdf76
+] 
+hash: 0000000257-ac38fcbdeef7abdea968f9b482c7c6f33dbb6864d0e8012d27f4fa78f6638bc1
+[added sort of validation of the strenght of a tHree microswimmer
+francesco.picella@sorbonne-universite.fr**20250623181915
+ Ignore-this: 307388684b01e87e5ee79b5e92268c82
+] 
+hash: 0000006478-4334437294a7e865ccfde23f7ec171916946028161b73f69962ced66f0e2fb94
+[added plumes_x_periodic_wider case. to be confirmed.
+francesco.picella@sorbonne-universite.fr**20250624200434
+ Ignore-this: d11c57acf8db4bf2809268fe50cb302d
+] 
+hash: 0000018235-f5e03479021e4a4a66810857b69275c9e0dc0b1b2940fdebe8f831bd63c560de
+[removed Ricardo Constante-Amores; Boran Celik; added Isabella Zarpellon Nascimento
+wmostert <wmostert2208@gmail.com>**20250624202704
+ Ignore-this: c2d67e39e539f0398d925f3f79edc976
+] 
+hash: 0000000407-145201bff8620bc6a69e7113b278fa0bf62a09b0ba518f0d67db8f9bd7d04efa
+[added python script to generate video from particle's trajectory
+francesco.picella@sorbonne-universite.fr**20250625081508
+ Ignore-this: 7557703b086a035ccea50f9088a95b22
+] 
+hash: 0000009186-9e98cc728d560f074716ff380c56b2918bc25007c39bff3afcd67b862f8a443c
+[diffusion does not require gradient corrections
+pnaanouh@gmail.com**20250624152712
+ Ignore-this: 8f0c71b28015309667f91281fbfcc11a32ad4eca39000a83edb117a8f8095906ce056372b2e87212
+ 
+ The gradient correction was a mistake due to confusion between grad(s_(k+1/2)) and grad(s)|_(z_(k+1/2))
+ When they are properly differentiated the s grad(z).grad(z) term appears since only grad(s_(k+1/2)) can be computed by the solver 
+ 
+ Summary of selected changes:
+ 
+ M ./sandbox/pnaanouh/Film_Drainage/Solver/cap_diffusion.h -183 +238
+ R ./sandbox/pnaanouh/Film_Drainage/Solver/gradient_correction.h
+] 
+hash: 0000078115-7e6d4071bdf40fc5b5c44540409233b3b24e4f4ad6d610245ab3083eff2366b9
+[Added BCs for sigma_n in 2D and adapted zeroing of dut for non constant fields
+pnaanouh@gmail.com**20250625083715
+ Ignore-this: f4cfdefe5176563826b3a4e8fb316cba6c6be9ffa121989af052433c89fa941a7b83d2b1fa11122c
+] 
+hash: 0000000774-33cfca65473a84778eef48966d6ac4f22731787489a6836bb4afbae32e59a9e6
+[w_t and u_t are now computed explicitly
+pnaanouh@gmail.com**20250625110051
+ Ignore-this: a6eb2ff64bff17a57c1c1bcabd551e46910f95ff4657463d58505036e57d2caa028f4f1777acab8
+ 
+ w_t and u_t are calculated explicitly using the appropriate 3rd order discretisation scheme 
+ This ensures the consistency of the gradient calculation at the domain boundaries
+] 
+hash: 0000006507-77ca55b74c376cf509e87228dfcda1f6e0d2936b1a467770ca57788545509e4e
+[bug fixes
+pnaanouh@gmail.com**20250625113749
+ Ignore-this: c016247c63d6eaea893a59149f71de87755b0ecbcacb24fea2532ad9e6ceb45241bb12d115b12a6d
+] 
+hash: 0000000633-8c233c1a2afa55ae6ac258b7436251aef0edbe399093f38a7db8f744cc28c5d2
+[added plot using KernelDensityEstimation, thanks GPT!
+francesco.picella@sorbonne-universite.fr**20250625130003
+ Ignore-this: a83870f2ab53cf802852aaf88a29f12d
+] 
+hash: 0000006970-4b2ccd7a814c78eef210bbfba637c3deaa3fa8871f881808745700c57965046b
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20250625140859
+ Ignore-this: ded80917474e46ad319791b91b4c657f
+] 
+hash: 0000000663-75c88d7693627be2be2d92ad90c82830b0b0213d37069c420a5ad9395086622c
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20250625141332
+ Ignore-this: 76c63766792da9f43b0064774f88130c
+] 
+hash: 0000000445-019254cb2e0ad1ac4c24a1db22f469be274978035d9d43179879b7d5f7ce79f0
+[Updated plot label
+fpicella <francesco.picella@sorbonne-universite.fr>**20250625143457
+ Ignore-this: 124dc0926fc22796be808d2cc56ad85e
+] 
+hash: 0000000233-eac04c024c901131574921e14d7e7fbc3dda0e571340ffdd515b7d9d80a6f952

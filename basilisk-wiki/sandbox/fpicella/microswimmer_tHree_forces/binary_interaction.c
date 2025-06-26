@@ -203,6 +203,7 @@ ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == 0), 8] / data[(data[:, 12] == 0
 ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == 0), 8] / data[(data[:, 12] == 0) & (data[:, 6] == 0), 2], data[(data[:, 12] == 0) & (data[:, 6] == 0), 10], 'o', color=cmap(0.6), markersize=8, label="$u_y$")
 ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == 0), 8] / data[(data[:, 12] == 0) & (data[:, 6] == 0), 2], data[(data[:, 12] == 0) & (data[:, 6] == 0), 11], 'o', color=cmap(0.9), markersize=8, label="$\omega$")
 
+plt.xlabel('$d/R$');
 ax.legend()
 plt.tight_layout();
 plt.savefig('matplotlib_output.svg')

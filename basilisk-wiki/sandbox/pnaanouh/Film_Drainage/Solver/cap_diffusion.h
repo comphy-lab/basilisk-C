@@ -21,12 +21,9 @@ The lower, principal and upper diagonals are *a*, *b* and *c* respectively.
 Boundary conditions on the top and bottom layers need to be added to close the
 system. Any combination of Neumann and Navier slip conditons can be applied at the top any bottom boundaries. This is implemented using a seperate function for each combination but they should eventually be combined into one modular function.
 
-/** The h_diffusion flag activates the horizontal diffusion
+The h_diffusion flag activates the horizontal diffusion
 */
 bool h_diffusion = false;
-/** gradient_correction contains functions to compute horizontal gradients while taking into account the layer slope  
- */
-#include "gradient_correction.h"
 
 /**
 Uses a neumann condition at both the top and the bottom boundary
@@ -450,72 +447,81 @@ with $D$ the diffusion coefficient. Note that the
 time discretisation is explicit so that the timestep must be limited
 (manually) by $\min(\Delta^2/D)$. */
 
-
 void horizontal_diffusion_NeumannNeumann(scalar s, double D, double dt, (const) scalar dst, (const) scalar dsb)
 {
-  
   if (D > 0.) {
-
-    foreach(){
-      double b=zb[];
-      foreach_layer(){
-	zl[]=b;
-	b+=h[];
-      } 
-    }
     
     scalar d2s= new scalar [nl];
-    
-    foreach(){
-      for (int l = 0; l < nl; l++) {
-	double b = 0.;
-	foreach_dimension(){
-	  
-	  b+=h[0,0,l]*h_2nd_derivative_O_2_centre_NeumannNeumann(point,s,l,false,zl,dst,dsb);
-	  b+=h_1st_derivative_O_2_centre_NeumannNeumann(point,s,l,false,zl,dst,dsb)*(h[1,0,l]-h[-1,0,l])/Delta;
-	  b+=s[0,0,l]*(h[1,0,l]-2.*h[0,0,l]+h[-1,0,l])/sq(Delta);
-	  
-	  b-=h_1st_derivative_O_2_top_NeumannNeumann(point,s,l,false,zl,dst,dsb)*(zl[1,0,l]+h[1,0,l]-zl[-1,0,l]-h[-1,0,l])/Delta;
-	  b+=h_1st_derivative_O_2_bottom_NeumannNeumann(point,s,l,false,zl,dst,dsb)*(zl[1,0,l]-zl[-1,0,l])/Delta;
+    face vector dzl[];
+    foreach_face(){
+      dzl.x[] = (zb[]-zb[-1])/Delta;
+    }
 
-	  if(l< (nl-1) && l>0){
-	    b-=(h[0,0,l+1]*s[0,0,l]+h[0,0,l]*s[0,0,l+1])/(h[0,0,l+1]+h[0,0,l])*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-	    b+=(h[0,0,l]*s[0,0,l-1]+h[0,0,l-1]*s[0,0,l])/(h[0,0,l]+h[0,0,l-1])*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	  }
-	  else{
-	    if (l== (nl-1) && l>0){
-	      b-=(((3.*sq(h[0,0,l])+3.*h[0,0,l]*h[0,0,l-1]+sq(h[0,0,l-1]))*s[0,0,l]-sq(h[0,0,l])*s[0,0,l-1])/((h[0,0,l]+h[0,0,l-1])*(2.*h[0,0,l]+h[0,0,l-1]))
-		  +(1./2.)*dst[0,0]*h[0,0,l]*(h[0,0,l]+h[0,0,l-1])/(2.*h[0,0,l]+h[0,0,l-1]))
-		*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-	      
-	      b+=((h[0,0,l-1]*(3.*h[0,0,l]+h[0,0,l-1])*s[0,0,l]+2.*sq(h[0,0,l])*s[0,0,l-1])/((h[0,0,l]+h[0,0,l-1])*(2.*h[0,0,l]+h[0,0,l-1]))
-		  -(1./2.)*dst[0,0]*h[0,0,l]*h[0,0,l-1]/(2.*h[0,0,l]+h[0,0,l-1]))
-		*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	    }
-	    else{
-	      if( l==0 && l<(nl-1)){
-		b-=((h[0,0,l+1]*(3.*h[0,0,l]+h[0,0,l+1])*s[0,0,l]+2.*sq(h[0,0,l])*s[0,0,l+1])/((h[0,0,l]+h[0,0,l+1])*(2.*h[0,0,l]+h[0,0,l+1]))
-		    +(1./2.)*dsb[0,0]*h[0,0,l]*h[0,0,l+1]/(2.*h[0,0,l]+h[0,0,l+1]))
-		  *(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-		
-		b+=(((3.*sq(h[0,0,l])+3.*h[0,0,l]*h[0,0,l+1]+sq(h[0,0,l+1]))*s[0,0,l]-sq(h[0,0,l])*s[0,0,l+1])/((h[0,0,l]+h[0,0,l+1])*(2.*h[0,0,l]+h[0,0,l+1]))
-		    -(1./2.)*dsb[0,0]*h[0,0,l]*(h[0,0,l]+h[0,0,l+1])/(2.*h[0,0,l]+h[0,0,l+1]))
-		  *(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	      }
-	      else{
-		b-=(s[0,0,l]+h[0,0,l]/6.*(2.*dst[0,0]+dsb[0,0]))*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-		b+=(s[0,0,l]-h[0,0,l]/6.*(dst[0,0]+2.*dsb[0,0]))*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	      }
-	    }
-	  }
+    // $\nabla^2(hu)_l$
+    foreach(){
+      foreach_layer(){
+	foreach_dimension(){
+	  d2s[] = (h[1]*s[1]-2.*h[]*s[]+h[-1]*s[-1])/sq(Delta);
 	}
-	d2s[0,0,l]= b;
       }
     }
+
+    // Inter_layer terms at first layer bottom
+    foreach(){
+      foreach_dimension(){
+	if (nl>1){
+	  d2s[0,0,0] += ((((3.*sq(h[1,0,0])+3.*h[1,0,0]*h[1,0,1]+sq(h[1,0,1]))*s[1,0,0]-sq(h[1,0,0])*s[1,0,1])/((h[1,0,0]+h[1,0,1])*(2.*h[1,0,0]+h[1,0,1]))-(1./2.)*dsb[1,0]*h[1,0,0]*(h[1,0,0]+h[1,0,1])/(2.*h[1,0,0]+h[1,0,1])) * dzl.x[1]  -  (((3.*sq(h[-1,0,0])+3.*h[-1,0,0]*h[-1,0,1]+sq(h[-1,0,1]))*s[-1,0,0]-sq(h[-1,0,0])*s[-1,0,1])/((h[-1,0,0]+h[-1,0,1])*(2.*h[-1,0,0]+h[-1,0,1]))-(1./2.)*dsb[-1,0]*h[-1,0,0]*(h[-1,0,0]+h[-1,0,1])/(2.*h[-1,0,0]+h[-1,0,1])) * dzl.x[0])/Delta;
+	}
+	else{
+	  d2s[0,0,0] += ((s[1,0,0]-h[1,0,0]/6.*(dst[1,0]+2.*dsb[1,0])) * dzl.x[1]  -  (s[-1,0,0]-h[-1,0,0]/6.*(dst[-1,0]+2.*dsb[-1,0])) * dzl.x[0])/Delta;
+	}
+
+	d2s[0,0,0] -= dsb[0,0]*(sq((dzl.x[1] + dzl.x[])/2.));
+      }
+    }
+
+
+    //Inter_layer terms on internal layer boundaries
+    scalar b[]; //could just be a double
+    for (int l = 1; l < nl; l++) {
+      foreach_face(){
+	dzl.x[] += (h[0,0,l-1]-h[-1,0,l-1])/Delta;
+      }
+      foreach(){
+	foreach_dimension(){
+	  b[] = (((h[1,0,l-1]*s[1,0,l]+h[1,0,l]*s[1,0,l-1])/(h[1,0,l]+h[1,0,l-1]))*dzl.x[1] - ((h[-1,0,l-1]*s[-1,0,l]+h[-1,0,l]*s[-1,0,l-1])/(h[-1,0,l]+h[-1,0,l-1]))*dzl.x[0])/Delta;
+	  b[] -= 2.*(s[0,0,l]-s[0,0,l-1])/(h[0,0,l]+h[0,0,l-1]) * (sq((dzl.x[1] + dzl.x[])/2.));
+  
+	  d2s[0,0,l]   +=  b[];
+	  d2s[0,0,l-1] -=  b[];
+	}
+      }
+    }
+    
+    
+    foreach_face(){
+      dzl.x[] += (h[0,0,nl-1]-h[-1,0,nl-1])/Delta;
+    }
+
+    //Interlayer terms at last layer top
+    foreach(){
+      foreach_dimension(){
+	if(nl>1){
+	  d2s[0,0,nl-1] -= ((((3.*sq(h[1,0,nl-1])+3.*h[1,0,nl-1]*h[1,0,nl-2]+sq(h[1,0,nl-2]))*s[1,0,nl-1]-sq(h[1,0,nl-1])*s[1,0,nl-2])/((h[1,0,nl-1]+h[1,0,nl-2])*(2.*h[1,0,nl-1]+h[1,0,nl-2]))+(1./2.)*dst[1,0]*h[1,0,nl-1]*(h[1,0,nl-1]+h[1,0,nl-2])/(2.*h[1,0,nl-1]+h[1,0,nl-2])) * dzl.x[1]  -  (((3.*sq(h[-1,0,nl-1])+3.*h[-1,0,nl-1]*h[-1,0,nl-2]+sq(h[-1,0,nl-2]))*s[-1,0,nl-1]-sq(h[-1,0,nl-1])*s[-1,0,nl-2])/((h[-1,0,nl-1]+h[-1,0,nl-2])*(2.*h[-1,0,nl-1]+h[-1,0,nl-2]))+(1./2.)*dst[-1,0]*h[-1,0,nl-1]*(h[-1,0,nl-1]+h[-1,0,nl-2])/(2.*h[-1,0,nl-1]+h[-1,0,nl-2])) * dzl.x[0])/Delta;
+	}
+	else{
+	  d2s[0,0,nl-1] -= ((s[1,0,nl-1]+h[1,0,nl-1]/6.*(2.*dst[1,0]+dsb[1,0])) * dzl.x[1]  -  (s[-1,0,nl-1]+h[-1,0,nl-1]/6.*(2.*dst[-1,0]+dsb[-1,0])) * dzl.x[0])/Delta;
+	}
+	
+	d2s[0,0,nl-1] += dst[0,0]*(sq((dzl.x[1] + dzl.x[])/2.));
+      }
+    }
+
+    //Diffusion term application
     foreach(){
       foreach_layer(){
 	if (h[] > dry){
-	  s[] += dt*D*d2s[]/h[];
+	  s[] += dt*D*d2s[]/(h[]);
 	}
       }
     }
@@ -528,204 +534,249 @@ void horizontal_diffusion_DirichletNeumann(scalar s, double D, double dt, (const
 {
   if (D > 0.) {
     
+    scalar d2s= new scalar [nl];
+    face vector dzl[];
+    foreach_face(){
+      dzl.x[] = (zb[]-zb[-1])/Delta;
+    }
+
+    // $\nabla^2(hu)_l$
     foreach(){
-      double b=zb[];
       foreach_layer(){
-	zl[]=b;
-	b+=h[];
+	foreach_dimension(){
+	  d2s[] = (h[1]*s[1]-2.*h[]*s[]+h[-1]*s[-1])/sq(Delta);
+	}
+      }
+    }
+
+    // Inter_layer terms at first layer bottom
+    foreach(){
+      foreach_dimension(){
+	if (nl>1){
+	  d2s[0,0,0] += ((((3.*sq(h[1,0,0])+3.*h[1,0,0]*h[1,0,1]+sq(h[1,0,1]))*s[1,0,0]-sq(h[1,0,0])*s[1,0,1])/((h[1,0,0]+h[1,0,1])*(2.*h[1,0,0]+h[1,0,1]))-(1./2.)*dsb[1,0]*h[1,0,0]*(h[1,0,0]+h[1,0,1])/(2.*h[1,0,0]+h[1,0,1])) * dzl.x[1]  -  (((3.*sq(h[-1,0,0])+3.*h[-1,0,0]*h[-1,0,1]+sq(h[-1,0,1]))*s[-1,0,0]-sq(h[-1,0,0])*s[-1,0,1])/((h[-1,0,0]+h[-1,0,1])*(2.*h[-1,0,0]+h[-1,0,1]))-(1./2.)*dsb[-1,0]*h[-1,0,0]*(h[-1,0,0]+h[-1,0,1])/(2.*h[-1,0,0]+h[-1,0,1])) * dzl.x[0])/Delta;
+	}
+	else{
+	  d2s[0,0,0] += (((3.*s[1,0,0]-st[1,0])/2.-h[1,0,0]*dsb[1,0]/4.) * dzl.x[1]  -  ((3.*s[-1,0,0]-st[-1,0])/2.-h[-1,0,0] * dsb[-1,0]/4.)*dzl.x[0])/Delta;
+	}
+
+	d2s[0,0,0] -= dsb[0,0]*(sq((dzl.x[1] + dzl.x[])/2.));
+      }
+    }
+
+
+    //Inter_layer terms on internal layer boundaries
+    scalar b[]; //could just be a double
+    for (int l = 1; l < nl; l++) {
+      foreach_face(){
+	dzl.x[] += (h[0,0,l-1]-h[-1,0,l-1])/Delta;
+      }
+      foreach(){
+	foreach_dimension(){
+	  b[] = (((h[1,0,l-1]*s[1,0,l]+h[1,0,l]*s[1,0,l-1])/(h[1,0,l]+h[1,0,l-1]))*dzl.x[1] - ((h[-1,0,l-1]*s[-1,0,l]+h[-1,0,l]*s[-1,0,l-1])/(h[-1,0,l]+h[-1,0,l-1]))*dzl.x[0])/Delta;
+	  b[] -= 2.*(s[0,0,l]-s[0,0,l-1])/(h[0,0,l]+h[0,0,l-1]) * (sq((dzl.x[1] + dzl.x[])/2.));
+  
+	  d2s[0,0,l]   +=  b[];
+	  d2s[0,0,l-1] -=  b[];
+	}
       }
     }
     
-    scalar d2s= new scalar [nl];
-    foreach(){
-      for (int l = 0; l < nl; l++) {
-	double b = 0.;
-	foreach_dimension(){
-	  
-	  b+=h[0,0,l]*h_2nd_derivative_O_2_centre_DirichletNeumann(point,s,l,false,zl,st,dsb);
-	  b+=h_1st_derivative_O_2_centre_DirichletNeumann(point,s,l,false,zl,st,dsb)*(h[1,0,l]-h[-1,0,l])/Delta;
-	  b+=s[0,0,l]*(h[1,0,l]-2.*h[0,0,l]+h[-1,0,l])/sq(Delta);
+    
+    foreach_face(){
+      dzl.x[] += (h[0,0,nl-1]-h[-1,0,nl-1])/Delta;
+    }
 
-	  b-=h_1st_derivative_O_2_top_DirichletNeumann(point,s,l,false,zl,st,dsb)*(zl[1,0,l]+h[1,0,l]-zl[-1,0,l]-h[-1,0,l])/Delta;
-	  b+=h_1st_derivative_O_2_bottom_DirichletNeumann(point,s,l,false,zl,st,dsb)*(zl[1,0,l]-zl[-1,0,l])/Delta;
-	  
-	  if(l< (nl-1) && l>0){
-	    b-=(h[0,0,l+1]*s[0,0,l]+h[0,0,l]*s[0,0,l+1])/(h[0,0,l+1]+h[0,0,l])*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-	    b+=(h[0,0,l]*s[0,0,l-1]+h[0,0,l-1]*s[0,0,l])/(h[0,0,l]+h[0,0,l-1])*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	  }
-	  else{
-	    if (l== (nl-1) && l>0){
-	      b-=(st[0,0])*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-	      
-	      b+=((h[0,0,l-1]*(3.*h[0,0,l]+2.*h[0,0,l-1])*s[0,0,l]+sq(h[0,0,l])*s[0,0,l-1]-h[0,0,l-1]*(h[0,0,l]+h[0,0,l-1])*st[0,0])/sq(h[0,0,l]+h[0,0,l-1]))
-		*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	    }
-	    else{
-	      if( l==0 && l<(nl-1)){
-		b-=((h[0,0,l+1]*(3.*h[0,0,l]+h[0,0,l+1])*s[0,0,l]+2.*sq(h[0,0,l])*s[0,0,l+1])/((h[0,0,l]+h[0,0,l+1])*(2.*h[0,0,l]+h[0,0,l+1]))
-		    +(1./2.)*dsb[0,0]*h[0,0,l]*h[0,0,l+1]/(2.*h[0,0,l]+h[0,0,l+1]))
-		  *(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-		
-		b+=(((3.*sq(h[0,0,l])+3.*h[0,0,l]*h[0,0,l+1]+sq(h[0,0,l+1]))*s[0,0,l]-sq(h[0,0,l])*s[0,0,l+1])/((h[0,0,l]+h[0,0,l+1])*(2.*h[0,0,l]+h[0,0,l+1]))
-		    -(1./2.)*dsb[0,0]*h[0,0,l]*(h[0,0,l]+h[0,0,l+1])/(2.*h[0,0,l]+h[0,0,l+1]))
-		  *(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	      }
-	      else{
-		b-=(st[0,0])*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-		b+=((3.*s[0,0,l]-st[0,0])/2.-h[0,0,l]/4.*dsb[0,0])*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	      }
-	    }
-	  }
+    //Interlayer terms at last layer top
+    foreach(){
+      foreach_dimension(){
+	d2s[0,0,0] -= (st[1]*dzl.x[1]-st[-1]*dzl.x[0])/Delta;
+	
+	if(nl>1){
+	  d2s[0,0,nl-1] += (-2.*((3.*sq(h[0,0,nl-1])+3.*h[0,0,nl-1]*h[0,0,nl-2]+sq(h[0,0,nl-2]))*s[0,0,nl-1]-sq(h[0,0,nl-1])*s[0,0,nl-2]-(2.*h[0,0,nl-2]+h[0,0,nl-1])*(h[0,0,nl-1]+h[0,0,nl-2])*st[0,0])/(h[0,0,nl-1]*sq(h[0,0,nl-1]+h[0,0,nl-2]))) * (sq((dzl.x[1] + dzl.x[])/2.));
 	}
-	d2s[0,0,l]= b;
+	else{
+	  d2s[0,0,nl-1] += (3.*(st[0,0]-s[0,0,nl-1])/h[0,0,nl-1]-(1./2.)*dsb[0,0]) * (sq((dzl.x[1] + dzl.x[])/2.));
+	}
       }
     }
+
+    //Diffusion term application
     foreach(){
       foreach_layer(){
 	if (h[] > dry){
-	  s[] += dt*D*d2s[]/h[];
+	  s[] += dt*D*d2s[]/(h[]);
 	}
       }
     }
     delete ({d2s});
   }
 }
-
 
 
 void horizontal_diffusion_NeumannDirichlet(scalar s, double D, double dt, (const) scalar dst, (const) scalar sb)
 {
   if (D > 0.) {
     
+    scalar d2s= new scalar [nl];
+    face vector dzl[];
+    foreach_face(){
+      dzl.x[] = (zb[]-zb[-1])/Delta;
+    }
+
+    // $\nabla^2(hu)_l$
     foreach(){
-      double b=zb[];
       foreach_layer(){
-	zl[]=b;
-	b+=h[];
+	foreach_dimension(){
+	  d2s[] = (h[1]*s[1]-2.*h[]*s[]+h[-1]*s[-1])/sq(Delta);
+	}
+      }
+    }
+
+    // Inter_layer terms at first layer bottom
+    foreach(){
+      foreach_dimension(){
+	d2s[0,0,0] += (sb[1]*dzl.x[1]-sb[-1]*dzl.x[0])/Delta;
+	
+	if (nl>1){
+	  d2s[0,0,0] -= (2.*((3.*sq(h[0,0,0])+3.*h[0,0,0]*h[0,0,1]+sq(h[0,0,1]))*s[0,0,0]-sq(h[0,0,0])*s[0,0,1]-(2.*h[0,0,0]+h[0,0,1])*(h[0,0,0]+h[0,0,1])*sb[0,0])/(h[0,0,0]*sq(h[0,0,0]+h[0,0,1]))) * (sq((dzl.x[1] + dzl.x[])/2.));
+	}
+	else{
+	  d2s[0,0,0] -= (3.*(s[0,0,0]-sb[0,0])/h[0,0,0]-(1./2.)*dst[0,0]) * (sq((dzl.x[1] + dzl.x[])/2.));
+	}
+      }
+    }
+
+
+    //Inter_layer terms on internal layer boundaries
+    scalar b[]; //could just be a double
+    for (int l = 1; l < nl; l++) {
+      foreach_face(){
+	dzl.x[] += (h[0,0,l-1]-h[-1,0,l-1])/Delta;
+      }
+      foreach(){
+	foreach_dimension(){
+	  b[] = (((h[1,0,l-1]*s[1,0,l]+h[1,0,l]*s[1,0,l-1])/(h[1,0,l]+h[1,0,l-1]))*dzl.x[1] - ((h[-1,0,l-1]*s[-1,0,l]+h[-1,0,l]*s[-1,0,l-1])/(h[-1,0,l]+h[-1,0,l-1]))*dzl.x[0])/Delta;
+	  b[] -= 2.*(s[0,0,l]-s[0,0,l-1])/(h[0,0,l]+h[0,0,l-1]) * (sq((dzl.x[1] + dzl.x[])/2.));
+  
+	  d2s[0,0,l]   +=  b[];
+	  d2s[0,0,l-1] -=  b[];
+	}
       }
     }
     
-    scalar d2s= new scalar [nl];
+    
+    foreach_face(){
+      dzl.x[] += (h[0,0,nl-1]-h[-1,0,nl-1])/Delta;
+    }
+
+    //Interlayer terms at last layer top
     foreach(){
-      for (int l = 0; l < nl; l++) {
-	double b = 0.;
-	foreach_dimension(){
-	   
-	  b+=h[0,0,l]*h_2nd_derivative_O_2_centre_NeumannDirichlet(point,s,l,false,zl,dst,sb);
-	  b+=h_1st_derivative_O_2_centre_NeumannDirichlet(point,s,l,false,zl,dst,sb)*(h[1,0,l]-h[-1,0,l])/Delta;
-	  b+=s[0,0,l]*(h[1,0,l]-2.*h[0,0,l]+h[-1,0,l])/sq(Delta);
-
-	  b-=h_1st_derivative_O_2_top_NeumannDirichlet(point,s,l,false,zl,dst,sb)*(zl[1,0,l]+h[1,0,l]-zl[-1,0,l]-h[-1,0,l])/Delta;
-	  b+=h_1st_derivative_O_2_bottom_NeumannDirichlet(point,s,l,false,zl,dst,sb)*(zl[1,0,l]-zl[-1,0,l])/Delta;
-
-	  if(l< (nl-1) && l>0){
-	    b-=(h[0,0,l+1]*s[0,0,l]+h[0,0,l]*s[0,0,l+1])/(h[0,0,l+1]+h[0,0,l])*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-	    b+=(h[0,0,l]*s[0,0,l-1]+h[0,0,l-1]*s[0,0,l])/(h[0,0,l]+h[0,0,l-1])*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	  }
-	  else{
-	    if (l== (nl-1) && l>0){
-	      b-=(((3.*sq(h[0,0,l])+3.*h[0,0,l]*h[0,0,l-1]+sq(h[0,0,l-1]))*s[0,0,l]-sq(h[0,0,l])*s[0,0,l-1])/((h[0,0,l]+h[0,0,l-1])*(2.*h[0,0,l]+h[0,0,l-1]))
-		  +(1./2.)*dst[0,0]*h[0,0,l]*(h[0,0,l]+h[0,0,l-1])/(2.*h[0,0,l]+h[0,0,l-1]))
-		*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-	      
-	      b+=((h[0,0,l-1]*(3.*h[0,0,l]+h[0,0,l-1])*s[0,0,l]+2.*sq(h[0,0,l])*s[0,0,l-1])/((h[0,0,l]+h[0,0,l-1])*(2.*h[0,0,l]+h[0,0,l-1]))
-		  -(1./2.)*dst[0,0]*h[0,0,l]*h[0,0,l-1]/(2.*h[0,0,l]+h[0,0,l-1]))
-		*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	    }
-	    else{
-	      if( l==0 && l<(nl-1)){
-		b-=(sb[0,0])*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-		
-		b+=((h[0,0,l+1]*(3.*h[0,0,l]+2.*h[0,0,l+1])*s[0,0,l]+sq(h[0,0,l])*s[0,0,l+1]-h[0,0,l+1]*(h[0,0,l]+h[0,0,l+1])*sb[0,0])/sq(h[0,0,l]+h[0,0,l+1]))
-		  *(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	      }
-	      else{
-		b-=((3.*s[0,0,l]-sb[0,0])/2.+h[0,0,l]/4.*dst[0,0])*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-		b+=(sb[0,0])*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	      }
-	    }
-	  }  
+      foreach_dimension(){
+	if(nl>1){
+	  d2s[0,0,nl-1] -= ((((3.*sq(h[1,0,nl-1])+3.*h[1,0,nl-1]*h[1,0,nl-2]+sq(h[1,0,nl-2]))*s[1,0,nl-1]-sq(h[1,0,nl-1])*s[1,0,nl-2])/((h[1,0,nl-1]+h[1,0,nl-2])*(2.*h[1,0,nl-1]+h[1,0,nl-2]))+(1./2.)*dst[1,0]*h[1,0,nl-1]*(h[1,0,nl-1]+h[1,0,nl-2])/(2.*h[1,0,nl-1]+h[1,0,nl-2])) * dzl.x[1]  -  (((3.*sq(h[-1,0,nl-1])+3.*h[-1,0,nl-1]*h[-1,0,nl-2]+sq(h[-1,0,nl-2]))*s[-1,0,nl-1]-sq(h[-1,0,nl-1])*s[-1,0,nl-2])/((h[-1,0,nl-1]+h[-1,0,nl-2])*(2.*h[-1,0,nl-1]+h[-1,0,nl-2]))+(1./2.)*dst[-1,0]*h[-1,0,nl-1]*(h[-1,0,nl-1]+h[-1,0,nl-2])/(2.*h[-1,0,nl-1]+h[-1,0,nl-2])) * dzl.x[0])/Delta;
 	}
-	d2s[0,0,l]= b;
+	else{
+	  d2s[0,0,nl-1] -= (((3.*s[1,0,nl-1]-sb[1,0])/2.+h[1,0,nl-1]*dst[1,0]/4.) * dzl.x[1]  -  ((3.*s[-1,0,nl-1]-sb[-1,0])/2.+h[-1,0,nl-1]*dst[-1,0]/4.) * dzl.x[0])/Delta;
+	}
+	
+	d2s[0,0,nl-1] += dst[0,0]*(sq((dzl.x[1] + dzl.x[])/2.));
       }
     }
+
+    //Diffusion term application
     foreach(){
       foreach_layer(){
 	if (h[] > dry){
-	  s[] += dt*D*d2s[]/h[];
+	  s[] += dt*D*d2s[]/(h[]);
 	}
       }
     }
     delete ({d2s});
   }
 }
-
 
 
 void horizontal_diffusion_DirichletDirichlet(scalar s, double D, double dt, (const) scalar st, (const) scalar sb)
 {
   if (D > 0.) {
     
+    scalar d2s= new scalar [nl];
+    face vector dzl[];
+    foreach_face(){
+      dzl.x[] = (zb[]-zb[-1])/Delta;
+    }
+
+    // $\nabla^2(hu)_l$
     foreach(){
-      double b=zb[];
       foreach_layer(){
-	zl[]=b;
-	b+=h[];
+	foreach_dimension(){
+	  d2s[] = (h[1]*s[1]-2.*h[]*s[]+h[-1]*s[-1])/sq(Delta);
+	}
+      }
+    }
+
+    // Inter_layer terms at first layer bottom
+    foreach(){
+      foreach_dimension(){
+	d2s[0,0,0] += (sb[1]*dzl.x[1]-sb[-1]*dzl.x[0])/Delta;
+	
+	if (nl>1){
+	  d2s[0,0,0] -= 2.*((3.*sq(h[0,0,0])+3.*h[0,0,0]*h[0,0,1]+sq(h[0,0,1]))*s[0,0,0]-sq(h[0,0,0])*s[0,0,1]-(2.*h[0,0,0]+h[0,0,1])*(h[0,0,0]+h[0,0,1])*sb[0,0])/(h[0,0,0]*sq(h[0,0,0]+h[0,0,1])) * (sq((dzl.x[1] + dzl.x[])/2.));
+	}
+	else{
+	  d2s[0,0,0] -= ((6.*s[0,0,0]-2.*st[0,0]-4.*sb[0,0])/h[0,0,0]) * (sq((dzl.x[1] + dzl.x[])/2.));
+	}
+      }
+    }
+
+
+    //Inter_layer terms on internal layer boundaries
+    scalar b[]; //could just be a double
+    for (int l = 1; l < nl; l++) {
+      foreach_face(){
+	dzl.x[] += (h[0,0,l-1]-h[-1,0,l-1])/Delta;
+      }
+      foreach(){
+	foreach_dimension(){
+	  b[] = (((h[1,0,l-1]*s[1,0,l]+h[1,0,l]*s[1,0,l-1])/(h[1,0,l]+h[1,0,l-1]))*dzl.x[1] - ((h[-1,0,l-1]*s[-1,0,l]+h[-1,0,l]*s[-1,0,l-1])/(h[-1,0,l]+h[-1,0,l-1]))*dzl.x[0])/Delta;
+	  b[] -= 2.*(s[0,0,l]-s[0,0,l-1])/(h[0,0,l]+h[0,0,l-1]) * (sq((dzl.x[1] + dzl.x[])/2.));
+  
+	  d2s[0,0,l]   +=  b[];
+	  d2s[0,0,l-1] -=  b[];
+	}
       }
     }
     
-    scalar d2s= new scalar [nl];
+    
+    foreach_face(){
+      dzl.x[] += (h[0,0,nl-1]-h[-1,0,nl-1])/Delta;
+    }
+
+    //Interlayer terms at last layer top
     foreach(){
-      for (int l = 0; l < nl; l++) {
-	double b = 0.;
-	foreach_dimension(){
-	   
-	  b+=h[0,0,l]*h_2nd_derivative_O_2_centre_DirichletDirichlet(point,s,l,false,zl,st,sb);
-	  b+=h_1st_derivative_O_2_centre_DirichletDirichlet(point,s,l,false,zl,st,sb)*(h[1,0,l]-h[-1,0,l])/Delta;
-	  b+=s[0,0,l]*(h[1,0,l]-2.*h[0,0,l]+h[-1,0,l])/sq(Delta);
-
-	  b-=h_1st_derivative_O_2_top_DirichletDirichlet(point,s,l,false,zl,st,sb)*(zl[1,0,l]+h[1,0,l]-zl[-1,0,l]-h[-1,0,l])/Delta;
-	  b+=h_1st_derivative_O_2_bottom_DirichletDirichlet(point,s,l,false,zl,st,sb)*(zl[1,0,l]-zl[-1,0,l])/Delta;
-
-	  if(l< (nl-1) && l>0){
-	    b-=(h[0,0,l+1]*s[0,0,l]+h[0,0,l]*s[0,0,l+1])/(h[0,0,l+1]+h[0,0,l])*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-	    b+=(h[0,0,l]*s[0,0,l-1]+h[0,0,l-1]*s[0,0,l])/(h[0,0,l]+h[0,0,l-1])*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	  }
-	  else{
-	    if (l== (nl-1) && l>0){
-	      b-=(st[0,0])*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-	       
-	      b+=((h[0,0,l-1]*(3.*h[0,0,l]+2.*h[0,0,l-1])*s[0,0,l]+sq(h[0,0,l])*s[0,0,l-1]-h[0,0,l-1]*(h[0,0,l]+h[0,0,l-1])*st[0,0])/sq(h[0,0,l]+h[0,0,l-1]))
-	      	*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	    }
-	    else{
-	      if( l==0 && l<(nl-1)){
-		b-=(sb[0,0])*(zl[1,0,l]+h[1,0,l]-2.*(zl[0,0,l]+h[0,0,l])+zl[-1,0,l]+h[-1,0,l])/sq(Delta);
-		
-		b+=((h[0,0,l+1]*(3.*h[0,0,l]+2.*h[0,0,l+1])*s[0,0,l]+sq(h[0,0,l])*s[0,0,l+1]-h[0,0,l+1]*(h[0,0,l]+h[0,0,l+1])*sb[0,0])/sq(h[0,0,l]+h[0,0,l+1]))
-		  *(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	      }
-	      else{
-		b-=(st[0,0])*((zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])+(h[1,0,l]-2.*h[0,0,l]+h[-1,0,l]))/sq(Delta);
-		b+=(sb[0,0])*(zl[1,0,l]-2.*zl[0,0,l]+zl[-1,0,l])/sq(Delta);
-	      }
-	    }
-	  }  
+      foreach_dimension(){
+	d2s[0,0,0] -= (st[1]*dzl.x[1]-st[-1]*dzl.x[0])/Delta;
+	
+	if(nl>1){
+	  d2s[0,0,nl-1] += (-2.*((3.*sq(h[0,0,nl-1])+3.*h[0,0,nl-1]*h[0,0,nl-2]+sq(h[0,0,nl-2]))*s[0,0,nl-1]-sq(h[0,0,nl-1])*s[0,0,nl-2]-(2.*h[0,0,nl-2]+h[0,0,nl-1])*(h[0,0,nl-1]+h[0,0,nl-2])*st[0,0])/(h[0,0,nl-1]*sq(h[0,0,nl-1]+h[0,0,nl-2]))) * (sq((dzl.x[1] + dzl.x[])/2.));
 	}
-	d2s[0,0,l]= b;
+	else{
+	  d2s[0,0,nl-1] += ((6.*s[0,0,nl-1]-4.*st[0,0]-2.*sb[0,0])/h[0,0,nl-1]) * (sq((dzl.x[1] + dzl.x[])/2.));
+	}
       }
     }
+
+    //Diffusion term application
     foreach(){
       foreach_layer(){
 	if (h[] > dry){
-	  s[] += dt*D*d2s[]/h[];
+	  s[] += dt*D*d2s[]/(h[]);
 	}
       }
     }
     delete ({d2s});
   }
 }
-
 
 /**
 # Viscous friction between layers

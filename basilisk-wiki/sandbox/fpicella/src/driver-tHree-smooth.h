@@ -25,8 +25,20 @@ face vector av[];
 #define sinTheta     sin(p().theta)
 #define cosTheta     cos(p().theta)
 
+#ifdef alpha
+// This is the old definition, based on the use of alpha and beta definition
 #define ALPHA alpha*p().r
 #define BETA   beta*p().r
+// I keep it only for legacy compatibility with older versions of my code.
+#else
+/**
+ A more flexible definition. I ask for a given:
+ - footprint (beta), i.e. puller, neutral, pusher...
+ - body-flagella distance (dOverR).
+*/
+#define ALPHA dOverR*p().r*cos(atan(beta))
+#define BETA  dOverR*p().r*sin(atan(beta))
+#endif
 
 #define ShiftxCenter   -0.*BETA*cosTheta+0.*ALPHA*sinTheta
 #define ShiftyCenter   -0.*BETA*sinTheta-0.*ALPHA*cosTheta

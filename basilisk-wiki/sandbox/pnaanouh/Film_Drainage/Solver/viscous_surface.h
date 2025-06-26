@@ -63,8 +63,23 @@ event acceleration (i++)
       double phiNu0 = 0.;
       foreach_dimension(){
 	double etax=(eta[1]-eta[-1])/(2.*Delta);
-        phiNu0 -= nu*2.*(1.+sq(etax))/(1.-sq(etax))*(u.x[1,0,nl-1] - u.x[-1,0,nl-1]+h[1,0,nl-1]/2*dut.x[1,0]-h[-1,0,nl-1]/2*dut.x[-1,0])/(2.*Delta);
-	// fixme dx_s and dx are not the same 
+	double ul = 0;
+	double ur = 0;
+	if(nl>1){
+	  ul=((3.*sq(h[-1,0,nl-1])+3.*h[-1,0,nl-1]*h[-1,0,nl-2]+sq(h[-1,0,nl-2]))*u.x[-1,0,nl-1]-sq(h[-1,0,nl-1])*u.x[-1,0,nl-2])/((h[-1,0,nl-1]+h[-1,0,nl-2])*(2.*h[-1,0,nl-1]+h[-1,0,nl-2]))+1./2.*dut.x[-1,0]*h[-1,0,nl-1]*(h[-1,0,nl-1]+h[-1,0,nl-2])/(2.*h[-1,0,nl-1]+h[-1,0,nl-2]);
+	  ur=((3.*sq(h[1,0,nl-1])+3.*h[1,0,nl-1]*h[1,0,nl-2]+sq(h[1,0,nl-2]))*u.x[1,0,nl-1]-sq(h[1,0,nl-1])*u.x[1,0,nl-2])/((h[1,0,nl-1]+h[1,0,nl-2])*(2.*h[1,0,nl-1]+h[1,0,nl-2]))+1./2.*dut.x[1,0]*h[1,0,nl-1]*(h[1,0,nl-1]+h[1,0,nl-2])/(2.*h[1,0,nl-1]+h[1,0,nl-2]);
+	}
+	else{
+	  if (symmetric_bathymetry){
+	    ul=u.x[-1,0,nl-1]+h[-1,0,nl-1]/6.*(2.*dut.x[-1,0]+dub.x[-1,0]);
+	    ur=u.x[1,0,nl-1]+h[1,0,nl-1]/6.*(2.*dut.x[1,0]+dub.x[1,0]);
+	  }
+	  else{
+	    ul=(3.*u.x[-1,0,nl-1]-u_b.x[-1,0])/2.+h[-1,0,nl-1]*dut.x[-1,0]/4.;
+	    ur=(3.*u.x[1,0,nl-1]-u_b.x[1,0])/2.+h[1,0,nl-1]*dut.x[1,0]/4.;
+	  }
+	}
+        phiNu0 -= nu*2.*(1.+sq(etax))/(1.-sq(etax))*((ur - ul)/(2.*Delta)-dut.x[]*etax);
       }
       foreach_layer()
         phiNu[] = phiNu0;
@@ -103,6 +118,7 @@ event viscous_term (i++)
     int iter=0;
 
     scalar wt[];
+    scalar ut[];
     scalar eta_star[];
     vector du_nu0[];
     
@@ -111,6 +127,11 @@ event viscous_term (i++)
         du_nu.x[]=0;
 	du_nu0.x[]=0;
     }
+    du_nu.n[right]=dut.n[right];
+    du_nu.n[left]=dut.n[left];
+
+    du_nu0.n[right]=dut.n[right];
+    du_nu0.n[left]=dut.n[left];
     
         foreach(){
       double b=zb[];
@@ -162,13 +183,69 @@ event viscous_term (i++)
 	  wt[] /= (2.*h[0,0,nl-2]+h[0,0,nl-1])/(h[0,0,nl-1]+h[0,0,nl-2]);
 	}
       }
-      
-      foreach()
-	foreach_dimension ()
-	{
-	  double etax=(eta_star[1]-eta_star[-1])/(2.*Delta);
-	  du_nu.x[] = (- (wt[1,0,nl-1] - wt[-1,0,nl-1])/(2.*Delta) + 4.*(u.x[1,0,nl-1]+ h[1,0,nl-1]/2*du_nu0.x[1,0] - u.x[-1,0,nl-1]- h[-1,0,nl-1]/2*du_nu0.x[-1,0])/(2.*Delta)*etax/(1.-etax*etax))/(1.+etax*(4.*etax/(1-sq(etax))-etax));
+
+      foreach(){
+	double wl = 0;
+	double wr = 0;
+	if(nl>1){
+	  wl += (h[-1,0,nl-2]*(3.*h[-1,0,nl-1]+2.*h[-1,0,nl-2])*w[-1,0,nl-1]+sq(h[-1,0,nl-1])*w[-1,0,nl-2])/sq(h[-1,0,nl-1]+h[-1,0,nl-2]);
+	  wr += (h[1,0,nl-2]*(3.*h[1,0,nl-1]+2.*h[1,0,nl-2])*w[1,0,nl-1]+sq(h[1,0,nl-1])*w[1,0,nl-2])/sq(h[1,0,nl-1]+h[1,0,nl-2]);
 	}
+	foreach_dimension(){
+	  wl -= (h[0,0,nl-1]*u.x[0,0,nl-1]-h[-2,0,nl-1]*u.x[-2,0,nl-1])/(2.*Delta);
+	  wr -= (h[2,0,nl-1]*u.x[2,0,nl-1]-h[0,0,nl-1]*u.x[0,0,nl-1])/(2.*Delta);
+	  if(nl>1){
+	    wl += (((3.*sq(h[-1,0,nl-1])+3.*h[-1,0,nl-1]*h[-1,0,nl-2]+sq(h[-1,0,nl-2]))*u.x[-1,0,nl-1]-sq(h[-1,0,nl-1])*u.x[-1,0,nl-2])/((h[-1,0,nl-1]+h[-1,0,nl-2])*(2.*h[-1,0,nl-1]+h[-1,0,nl-2]))+(1./2.)*du_nu0.x[-1,0]*h[-1,0,nl-1]*(h[-1,0,nl-1]+h[-1,0,nl-2])/(2.*h[-1,0,nl-1]+h[-1,0,nl-2]))*(zl[0,0,nl-1]+h[0,0,nl-1]-zl[-2,0,nl-1]-h[-2,0,nl-1])/(2.*Delta);
+	    wl -= ((h[-1,0,nl-2]*(3.*h[-1,0,nl-1]+h[-1,0,nl-2])*u.x[-1,0,nl-1]+2.*sq(h[-1,0,nl-1])*u.x[-1,0,nl-2])/((h[-1,0,nl-1]+h[-1,0,nl-2])*(2.*h[-1,0,nl-1]+h[-1,0,nl-2]))-(1./2.)*du_nu0.x[-1,0]*h[-1,0,nl-1]*h[-1,0,nl-2]/(2.*h[-1,0,nl-1]+h[-1,0,nl-2]))*(zl[0,0,nl-1]-zl[-2,0,nl-1])/(2.*Delta);
+
+	    wr += (((3.*sq(h[1,0,nl-1])+3.*h[1,0,nl-1]*h[1,0,nl-2]+sq(h[1,0,nl-2]))*u.x[1,0,nl-1]-sq(h[1,0,nl-1])*u.x[1,0,nl-2])/((h[1,0,nl-1]+h[1,0,nl-2])*(2.*h[1,0,nl-1]+h[1,0,nl-2]))+(1./2.)*du_nu0.x[1,0]*h[1,0,nl-1]*(h[1,0,nl-1]+h[1,0,nl-2])/(2.*h[1,0,nl-1]+h[1,0,nl-2]))*(zl[2,0,nl-1]+h[2,0,nl-1]-zl[0,0,nl-1]-h[0,0,nl-1])/(2.*Delta);
+	    wr -= ((h[1,0,nl-2]*(3.*h[1,0,nl-1]+h[1,0,nl-2])*u.x[1,0,nl-1]+2.*sq(h[1,0,nl-1])*u.x[1,0,nl-2])/((h[1,0,nl-1]+h[1,0,nl-2])*(2.*h[1,0,nl-1]+h[1,0,nl-2]))-(1./2.)*du_nu0.x[1,0]*h[1,0,nl-1]*h[1,0,nl-2]/(2.*h[1,0,nl-1]+h[1,0,nl-2]))*(zl[2,0,nl-1]-zl[0,0,nl-1])/(2.*Delta);
+	  }
+	  else{
+	    if (symmetric_bathymetry){
+	      wl += (u.x[-1,0,nl-1]+h[-1,0,nl-1]/6.*(2.*du_nu0.x[-1,0]+dub.x[-1,0]))*(zl[0,0,nl-1]+h[0,0,nl-1]-zl[-2,0,nl-1]-h[-2,0,nl-1])/(2.*Delta);
+	      wl -= (u.x[-1,0,nl-1]-h[-1,0,nl-1]/6.*(du_nu0.x[-1,0]+2.*dub.x[-1,0]))*(zl[0,0,nl-1]-zl[-2,0,nl-1])/(2.*Delta);
+
+	      wr += (u.x[1,0,nl-1]+h[1,0,nl-1]/6.*(2.*du_nu0.x[1,0]+dub.x[1,0]))*(zl[2,0,nl-1]+h[2,0,nl-1]-zl[0,0,nl-1]-h[0,0,nl-1])/(2.*Delta);
+	      wr -= (u.x[1,0,nl-1]-h[1,0,nl-1]/6.*(du_nu0.x[1,0]+2.*dub.x[1,0]))*(zl[2,0,nl-1]-zl[0,0,nl-1])/(2.*Delta);
+	    }
+	    else{
+	      wl += ((3.*u.x[-1,0,nl-1]-u_b.x[-1,0])/2.+h[-1,0,nl-1]*du_nu0.x[-1,0]/4.)*(zl[0,0,nl-1]+h[0,0,nl-1]-zl[-2,0,nl-1]-h[-2,0,nl-1])/(2.*Delta);
+	      wl -= u_b.x[-1,0,nl-1]*(zl[0,0,nl-1]-zl[-2,0,nl-1])/(2.*Delta);
+
+	      wr += ((3.*u.x[1,0,nl-1]-u_b.x[1,0])/2.+h[1,0,nl-1]*du_nu0.x[1,0]/4.)*(zl[2,0,nl-1]+h[2,0,nl-1]-zl[0,0,nl-1]-h[0,0,nl-1])/(2.*Delta);
+	      wr -= u_b.x[1,0,nl-1]*(zl[2,0,nl-1]-zl[0,0,nl-1])/(2.*Delta);
+	    }
+	  }
+	}
+	if(nl>1){
+	  wl /= (2.*h[-1,0,nl-2]+h[-1,0,nl-1])/(h[-1,0,nl-1]+h[-1,0,nl-2]);
+
+	  wr /= (2.*h[1,0,nl-2]+h[1,0,nl-1])/(h[1,0,nl-1]+h[1,0,nl-2]);
+	}
+
+	foreach_dimension ()
+	  {
+	    double etax=(eta_star[1]-eta_star[-1])/(2.*Delta);
+	    double ul = 0;
+	    double ur = 0;
+	    if(nl>1){
+	      ul=((3.*sq(h[-1,0,nl-1])+3.*h[-1,0,nl-1]*h[-1,0,nl-2]+sq(h[-1,0,nl-2]))*u.x[-1,0,nl-1]-sq(h[-1,0,nl-1])*u.x[-1,0,nl-2])/((h[-1,0,nl-1]+h[-1,0,nl-2])*(2.*h[-1,0,nl-1]+h[-1,0,nl-2]))+1./2.*du_nu0.x[-1,0]*h[-1,0,nl-1]*(h[-1,0,nl-1]+h[-1,0,nl-2])/(2.*h[-1,0,nl-1]+h[-1,0,nl-2]);
+	      ur=((3.*sq(h[1,0,nl-1])+3.*h[1,0,nl-1]*h[1,0,nl-2]+sq(h[1,0,nl-2]))*u.x[1,0,nl-1]-sq(h[1,0,nl-1])*u.x[1,0,nl-2])/((h[1,0,nl-1]+h[1,0,nl-2])*(2.*h[1,0,nl-1]+h[1,0,nl-2]))+1./2.*du_nu0.x[1,0]*h[1,0,nl-1]*(h[1,0,nl-1]+h[1,0,nl-2])/(2.*h[1,0,nl-1]+h[1,0,nl-2]);
+	    }
+	    else{
+	      if (symmetric_bathymetry){
+		ul=u.x[-1,0,nl-1]+h[-1,0,nl-1]/6.*(2.*du_nu0.x[-1,0]+dub.x[-1,0]);
+		ur=u.x[1,0,nl-1]+h[1,0,nl-1]/6.*(2.*du_nu0.x[1,0]+dub.x[1,0]);
+	      }
+	      else{
+		ul=(3.*u.x[-1,0,nl-1]-u_b.x[-1,0])/2.+h[-1,0,nl-1]*du_nu0.x[-1,0]/4.;
+		ur=(3.*u.x[1,0,nl-1]-u_b.x[1,0])/2.+h[1,0,nl-1]*du_nu0.x[1,0]/4.;
+	      }
+	    }
+	    du_nu.x[] = (etax*(3.+sq(etax))*(ur-ul)/(2.*Delta)+(sq(etax)-1.)*(wr-wl)/(2.*Delta))/sq(1.+sq(etax));
+	  }
+      }
       iter++;
       foreach(reduction(max:maxdiff)){
 	foreach_dimension(){

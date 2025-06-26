@@ -141,6 +141,8 @@ event face_fields (i++)
 #endif
   }
 #if dimension == 1
+  sigma_n[left] = sigma[]*pow(1+sq((eta[] - eta[-2])/(2.*Delta)), -3./2.);
+  sigma_n[right] = sigma[]*pow(1+sq((eta[2] - eta[])/(2.*Delta)), -3./2.);
   boundary ({sigma_n});
   restriction ({sigma_n});
 #else
@@ -234,7 +236,13 @@ event viscous_term (i++)
 }
 
 event update_eta (i++) {
-  foreach()
-    foreach_dimension()
+  if (!is_constant(dut.x)){
+    foreach()
+      foreach_dimension()
       dut.x[]=0;
+  }
+  else{
+    dut[]={0,0,0}; 
+  }
 }
+
