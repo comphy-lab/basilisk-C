@@ -76,10 +76,10 @@ int main()
   
 //  for (N = 32; N <= 256; N *= 2)
 //		for(RADIUS = 0.05; RADIUS <= 0.45; RADIUS += 0.05)
-	N=64;
+	N=128;
 	BINARY_DISTANCE = L0/2.;
-		for(BINARY_DISTANCE = L0/2.; BINARY_DISTANCE>=RADIUS; BINARY_DISTANCE*=0.9){
-			for(BUOYANCY = -1; BUOYANCY <= +1. ; BUOYANCY+=1.0){
+		for(BINARY_DISTANCE = L0/2.; BINARY_DISTANCE>=RADIUS*4.0; BINARY_DISTANCE*=0.95){
+			for(BUOYANCY = 0.; BUOYANCY >= -1.0 ; BUOYANCY+=-0.5){
     		run();
 			}
 		}
@@ -191,7 +191,6 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import scipy.interpolate as interpolate
 
 cmap = plt.get_cmap('plasma')
 
@@ -216,7 +215,9 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import scipy.interpolate as interpolate
+
+plt.rc('text',usetex=True);
+plt.rc('font',family='serif');
 
 cmap = plt.get_cmap('plasma')
 
@@ -224,17 +225,17 @@ data = np.loadtxt("Output.dat")
 
 fig, ax = plt.subplots(figsize=(4,3))
 
-ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == -1), 8] / data[(data[:, 12] == 0) & (data[:, 6] == -1), 2], data[(data[:, 12] == 0) & (data[:, 6] == -1), 10], 'o', color=cmap(0.0), markersize=8, label="$-0.25$")
-ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == +0), 8] / data[(data[:, 12] == 0) & (data[:, 6] == +0), 2], data[(data[:, 12] == 0) & (data[:, 6] == +0), 10], 'o', color=cmap(0.3), markersize=8, label="$+0.0$")
-ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == +1), 8] / data[(data[:, 12] == 0) & (data[:, 6] == +1), 2], data[(data[:, 12] == 0) & (data[:, 6] == +1), 10], 'o', color=cmap(0.6), markersize=8, label="$+0.25$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == +0.00), 8] / data[(data[:, 12] == 0) & (data[:, 6] == +0.00), 2], data[(data[:, 12] == 0) & (data[:, 6] == +0.00), 10], 'o', color=cmap(0.0), markersize=8, label=r"$ -0.0\%$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == -0.50), 8] / data[(data[:, 12] == 0) & (data[:, 6] == -0.50), 2], data[(data[:, 12] == 0) & (data[:, 6] == -0.50), 10], 'o', color=cmap(0.4), markersize=8, label=r"$-12.5\%$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == -1.00), 8] / data[(data[:, 12] == 0) & (data[:, 6] == -1.00), 2], data[(data[:, 12] == 0) & (data[:, 6] == -1.00), 10], 'o', color=cmap(0.8), markersize=8, label=r"$-25.0\%$")
 
-plt.xlabel('$d/R$');
+plt.xlabel('$\lambda/R$');
 plt.ylabel('$U_{swim}$');
 
 # Add a dashed line at y=0
 plt.axhline(y=0, color='black', linestyle=':', linewidth=1)
 
-ax.legend(title = "buoyancy/thrust")
+ax.legend(title = "buoyancy/thrust",framealpha=1.0)
 plt.tight_layout();
 plt.savefig('velocity_distance_buoyancy.svg')
 ~~~
@@ -256,7 +257,9 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
-import scipy.interpolate as interpolate
+
+plt.rc('text',usetex=True);
+plt.rc('font',family='serif');
 
 cmap = plt.get_cmap('plasma')
 
@@ -297,22 +300,24 @@ def get_normalized_y_at_max_x(data, mask, x_col, y_col, norm_col):
 
     return x_vals, y_vals_normalized
 
-""" negative buoyancy """
-mask = (data[:, 12] == 0) & (data[:, 6] == -1)
-x_vals, y_vals_norm = get_normalized_y_at_max_x(data, mask, x_col=8, y_col=10, norm_col=2)
-ax.plot(x_vals, y_vals_norm, 'o', color=cmap(0.0), label="$-0.25$")
 """ neutral buoyancy """
-mask = (data[:, 12] == 0) & (data[:, 6] == +0)
+mask = (data[:, 12] == 0) & (data[:, 6] == -0.00)
 x_vals, y_vals_norm = get_normalized_y_at_max_x(data, mask, x_col=8, y_col=10, norm_col=2)
-ax.plot(x_vals, y_vals_norm, 'o', color=cmap(0.3), label="$+0.00$")
-""" positive buoyancy """
-mask = (data[:, 12] == 0) & (data[:, 6] == +1)
+ax.plot(x_vals, y_vals_norm, 'o', color=cmap(0.0), label="$-0.0\%$")
+mask = (data[:, 12] == 0) & (data[:, 6] == -0.50)
 x_vals, y_vals_norm = get_normalized_y_at_max_x(data, mask, x_col=8, y_col=10, norm_col=2)
-ax.plot(x_vals, y_vals_norm, 'o', color=cmap(0.6), label="$+0.25$")
+ax.plot(x_vals, y_vals_norm, 'o', color=cmap(0.4), label="$-12.5\%$")
+#mask = (data[:, 12] == 0) & (data[:, 6] == -0.75)
+#x_vals, y_vals_norm = get_normalized_y_at_max_x(data, mask, x_col=8, y_col=10, norm_col=2)
+#ax.plot(x_vals, y_vals_norm, 'o', color=cmap(0.6), label="$-25.0\%$")
+mask = (data[:, 12] == 0) & (data[:, 6] == -1.00)
+x_vals, y_vals_norm = get_normalized_y_at_max_x(data, mask, x_col=8, y_col=10, norm_col=2)
+ax.plot(x_vals, y_vals_norm, 'o', color=cmap(0.8), label="$-25.0\%$")
 
 
-plt.xlabel('$d/R$');
-plt.ylabel('$U_{swim}/U_{swim}(d/R=\infty)$');
+plt.xlabel(r'$\lambda/R$');
+#plt.ylabel(r'$U_{swim}/U_{swim}(\lambda/R \rightarrow\infty)$');
+plt.ylabel(r'$\left|U_{swim}\right|$');
 
 plt.axhline(y=0, color='black', linestyle=':', linewidth=1)
 
