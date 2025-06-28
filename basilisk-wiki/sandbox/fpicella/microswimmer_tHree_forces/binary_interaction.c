@@ -78,8 +78,8 @@ int main()
 //		for(RADIUS = 0.05; RADIUS <= 0.45; RADIUS += 0.05)
 	N=128;
 	BINARY_DISTANCE = L0/2.;
-		for(BINARY_DISTANCE = L0/2.; BINARY_DISTANCE>=RADIUS*4.0; BINARY_DISTANCE*=0.95){
-			for(BUOYANCY = 0.; BUOYANCY >= -1.0 ; BUOYANCY+=-0.5){
+		for(BINARY_DISTANCE = RADIUS*1.0; BINARY_DISTANCE<=L0/2.; BINARY_DISTANCE*=1.25){
+			for(BUOYANCY = 0. ; BUOYANCY >= -1.5; BUOYANCY-=0.4){
     		run();
 			}
 		}
@@ -210,6 +210,7 @@ plt.savefig('matplotlib_output.svg')
 */
 
 /**
+################################################### FIRST MATPLOTLIB PLOT ################################################
 ~~~pythonplot Swimming velocity, influenced by body distance and buoyancy.
 import numpy as np
 import matplotlib as mpl
@@ -225,9 +226,10 @@ data = np.loadtxt("Output.dat")
 
 fig, ax = plt.subplots(figsize=(4,3))
 
-ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == +0.00), 8] / data[(data[:, 12] == 0) & (data[:, 6] == +0.00), 2], data[(data[:, 12] == 0) & (data[:, 6] == +0.00), 10], 'o', color=cmap(0.0), markersize=8, label=r"$ -0.0\%$")
-ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == -0.50), 8] / data[(data[:, 12] == 0) & (data[:, 6] == -0.50), 2], data[(data[:, 12] == 0) & (data[:, 6] == -0.50), 10], 'o', color=cmap(0.4), markersize=8, label=r"$-12.5\%$")
-ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == -1.00), 8] / data[(data[:, 12] == 0) & (data[:, 6] == -1.00), 2], data[(data[:, 12] == 0) & (data[:, 6] == -1.00), 10], 'o', color=cmap(0.8), markersize=8, label=r"$-25.0\%$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == +0.00), 8] / data[(data[:, 12] == 0) & (data[:, 6] == +0.00), 2], data[(data[:, 12] == 0) & (data[:, 6] == +0.00), 10], '.-', color=cmap(0.0), markersize=8, label=r"$ -0.0\%$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == -0.40), 8] / data[(data[:, 12] == 0) & (data[:, 6] == -0.40), 2], data[(data[:, 12] == 0) & (data[:, 6] == -0.40), 10], '.-', color=cmap(0.3), markersize=8, label=r"$-10.\%$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == -0.80), 8] / data[(data[:, 12] == 0) & (data[:, 6] == -0.80), 2], data[(data[:, 12] == 0) & (data[:, 6] == -0.80), 10], '.-', color=cmap(0.6), markersize=8, label=r"$-20.\%$")
+ax.plot(data[(data[:, 12] == 0) & (data[:, 6] == -1.20), 8] / data[(data[:, 12] == 0) & (data[:, 6] == -1.20), 2], data[(data[:, 12] == 0) & (data[:, 6] == -1.20), 10], '.-', color=cmap(0.9), markersize=8, label=r"$-30.\%$")
 
 plt.xlabel('$\lambda/R$');
 plt.ylabel('$U_{swim}$');
@@ -235,9 +237,126 @@ plt.ylabel('$U_{swim}$');
 # Add a dashed line at y=0
 plt.axhline(y=0, color='black', linestyle=':', linewidth=1)
 
-ax.legend(title = "buoyancy/thrust",framealpha=1.0)
+ax.legend(title = "buoyancy/thrust",framealpha=1.0,ncol=2)
 plt.tight_layout();
 plt.savefig('velocity_distance_buoyancy.svg')
+~~~
+*/
+
+/**
+~~~pythonplot
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
+
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
+data = np.loadtxt("Output.dat")
+
+fig, ax = plt.subplots(figsize=(4, 3))
+
+# Define values and colormap
+buoyancy_values = [0.00, -0.40, -0.80, -1.20]
+percent_labels = [0.0, -10., -20., -30.]
+norm = mcolors.Normalize(vmin=min(percent_labels), vmax=max(percent_labels))
+cmap = cm.plasma_r
+
+# Plot each line with color based on buoyancy value
+for buoy, label in zip(buoyancy_values, percent_labels):
+    color = cmap(norm(label))
+    mask = (data[:, 12] == 0) & (data[:, 6] == buoy)
+    x = data[mask, 8] / data[mask, 2]
+    y = data[mask, 10]
+    ax.plot(x, y, 'o-', color=color, markersize=4, markeredgecolor='black', markeredgewidth=0.5)
+
+# Axis labels
+plt.xlabel(r'$\lambda/R$')
+plt.ylabel(r'$U_{swim}$')
+
+# Dashed line at y=0
+plt.axhline(y=0, color='black', linestyle=':', linewidth=1)
+
+#### Colorbar setup
+###sm = cm.ScalarMappable(cmap=cmap, norm=norm)
+###sm.set_array([])  # Required for colorbar
+###cbar = plt.colorbar(sm, ax=ax, orientation='vertical', label="buoyancy/thrust (\%)")
+
+# Colorbar setup with custom ticks
+sm = cm.ScalarMappable(cmap=cmap, norm=norm)
+sm.set_array([])  # Required for colorbar
+
+cbar = plt.colorbar(sm, ax=ax, orientation='vertical')
+cbar.set_label("buoyancy/thrust (\%)")
+
+# Set ticks only at the values you plotted
+cbar.set_ticks(percent_labels)
+cbar.set_ticklabels([f"{p}%" for p in percent_labels])
+
+plt.tight_layout()
+plt.savefig('velocity_distance_buoyancy_colorbar.svg')
+~~~
+*/
+
+/**
+~~~pythonplot -- NORMALIZED
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.cm as cm
+import matplotlib.colors as mcolors
+
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
+
+data = np.loadtxt("Output.dat")
+
+fig, ax = plt.subplots(figsize=(4, 3))
+
+# Define values and colormap
+buoyancy_values = [0.00, -0.40, -0.80, -1.20]
+percent_labels = [0.0, -10., -20., -30.]
+norm = mcolors.Normalize(vmin=min(percent_labels), vmax=max(percent_labels))
+cmap = cm.plasma_r
+
+# Plot each line with color based on buoyancy value
+for buoy, label in zip(buoyancy_values, percent_labels):
+    color = cmap(norm(label))
+    mask = (data[:, 12] == 0) & (data[:, 6] == buoy)
+    x = data[mask, 8] / data[mask, 2]
+    y = data[mask, 10]
+		# Find the y value corresponding to the max x value
+    if len(x) > 0:
+      idx_max = np.argmax(x)
+      y_at_x_max = y[idx_max] if y[idx_max] != 0 else 1  # Avoid division by zero
+      y = y / y_at_x_max
+    ax.plot(x, y, 'o-', color=color, markersize=4, markeredgecolor='black', markeredgewidth=0.5)
+
+# Axis labels
+plt.xlabel(r'$\lambda/R$')
+plt.ylabel(r'$|U_{swim}|$')
+
+# Dashed line at y=0
+plt.axhline(y=0, color='black', linestyle=':', linewidth=1)
+
+#### Colorbar setup
+###sm = cm.ScalarMappable(cmap=cmap, norm=norm)
+###sm.set_array([])  # Required for colorbar
+###cbar = plt.colorbar(sm, ax=ax, orientation='vertical', label="buoyancy/thrust (\%)")
+
+# Colorbar setup with custom ticks
+sm = cm.ScalarMappable(cmap=cmap, norm=norm)
+sm.set_array([])  # Required for colorbar
+
+cbar = plt.colorbar(sm, ax=ax, orientation='vertical')
+cbar.set_label("buoyancy/thrust (\%)")
+
+# Set ticks only at the values you plotted
+cbar.set_ticks(percent_labels)
+cbar.set_ticklabels([f"{p}%" for p in percent_labels])
+
+plt.tight_layout()
+plt.savefig('velocity_distance_buoyancy_colorbar_normalized.svg')
 ~~~
 */
 

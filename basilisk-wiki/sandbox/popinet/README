@@ -24,6 +24,13 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
+@Article{scapin2025b,
+author={Nicolo Scapin and Jiarong Wu and Bertrand Chapron and J. Thomas Farrar and Stéphane Popinet and Luc Deike},
+title={Growth and dissipation in wind-forced breaking waves},
+journal={AGU Advances},
+year={2025}
+}
+
 @Article{saini2025,
 author={Mandeep Saini and Vatsal Sanjay and Youssef Saade and Detlef Lohse and Stephane Popinet},
 title={Implementation of integral surface tension formulations in a volume of fluid framework and their applications to Marangoni flows},

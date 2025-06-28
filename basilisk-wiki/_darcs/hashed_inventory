@@ -1,4 +1,4 @@
-pristine:c6fc0e9cbdd8c2aa512522a209a8be68d2475cf30e4cde28b4836f40a4da8884
+pristine:cd1059a166fcd649e73b186dbc81656ab599394b0156b3ee137eac63110c8fb6
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -892,3 +892,53 @@ j.a.v.hooft@gmail.com**20250626182033
  Ignore-this: ab3aa2fcd231207a3d152c6804306459eaef717967bde27d8d633c8ebb17e508963a7b7652ee624
 ] 
 hash: 0000014062-6acb1bfe5ffaa205f52abd4501c2e491776e2cd554a557ae1a18c6d3b92d7309
+[README file
+haouche <ilies.haouche2000@gmail.com>**20250627055143
+ Ignore-this: 58dfd00e7914d192ae9feb94e86fbe40
+] 
+hash: 0000000329-ca927a326023bba98ab1ae5502f678be969fe1ee85756f4fa916c48c1676c315
+[README file
+haouche <ilies.haouche2000@gmail.com>**20250627055216
+ Ignore-this: 48dcedde2c1f87a74757e073e8084d76
+] 
+hash: 0000000218-216b242fc6bdc98ccda5d2ff3d6d06918dcacd332ba056fa47d4c2ac4ed8b646
+[README file
+haouche <ilies.haouche2000@gmail.com>**20250627055252
+ Ignore-this: bbaeb3962d418af6d056794418d0ab93
+] 
+hash: 0000000238-1aabdf49e5b214422b7f208042619fff047891b91e4ab367d99fecf752846692
+[added scapin et al
+Stephane Popinet <popinet@basilisk.fr>**20250627081351
+ Ignore-this: 29b1f4ece80c0b448d0e937a30b16df9
+] 
+hash: 0000000403-243d64f0218dc2dc95ea94b4a0be414cfc7416bdc09a4afc48db15913d3f7ccd
+[updated plot for binary_interaction.c
+francesco.picella@sorbonne-universite.fr**20250627095024
+ Ignore-this: df18dd41436a813a67114eb265126633
+] 
+hash: 0000006202-93f2ea026562ceec352e1e28bda065ef822e49a2140044e1a839ac0ec8bd94e9
+[added case for single non-force-free microswimmer
+francesco.picella@sorbonne-universite.fr**20250627140231
+ Ignore-this: c65266fd0ac4a37c8548bee54bfec680
+] 
+hash: 0000008535-a6b74ec9c334c1ed33261617640d4c7eb1c817bbb112a8b826da2a8c0447733c
+[Update of BMM video description
+Tianyang <hantianyang@ucas.ac.cn>**20250627145859
+ Ignore-this: a9a019c7b1505e828d72a2d634284a3
+] 
+hash: 0000000475-ac6ded45c2972a098358048ce7713b40aea0f553be916897d47df35cab25134c
+[Update of BMM video description
+Tianyang <hantianyang@ucas.ac.cn>**20250627151200
+ Ignore-this: 63d6a19207f6d43645d4964cdb764f03
+] 
+hash: 0000000734-8031a27490cb71fea9904af92853e0ac65bbf53dce8f4e3c5e4bc85635a7b734
+[added case plumes development under buoyancy, without the need of a _top-layer_. Works well and a dedicated post-processing is also attached.
+francesco.picella@sorbonne-universite.fr**20250627165305
+ Ignore-this: 79b6dc66ea9edc68a4e66213c0bf1e4f
+] 
+hash: 0000013637-2ec4d001717d5b48509725af3be61f09764df374b49412f8866cfe8a76e174ae
+[Participant added
+dyg**20250627202307
+ Ignore-this: 86b4ec86c654f79ec1f9717954470c00
+] 
+hash: 0000000166-210c335332f9fd3a28c5b167da5f5e8140e320e01c1f9c76db0755a17ca79c02
