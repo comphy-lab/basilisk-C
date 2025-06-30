@@ -1,7 +1,7 @@
 /**
 # Adaptive Hybrid Lagrangian-Eulerian $\omega-\psi$ dual-grid solver
 
-![Works pretty good. Well done Lagrangian advection!](http://188.91.26.92/media/mode3_Lag.mp4)
+![Works pretty good. Well done Lagrangian advection!](http://antoonvanhooft.nl/media/mode3_Lag.mp4)
  */
 #define RKORDER 3
 

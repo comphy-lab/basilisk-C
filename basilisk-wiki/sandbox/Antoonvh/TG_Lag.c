@@ -1,9 +1,9 @@
 /**
 # Taylor-Green vortex test
 
-![Works pretty good. Well done Lagrangian advection!](http://188.91.26.92/media/TG_Lag.mp4)
+![Works pretty good. Well done Lagrangian advection!](http://antoonvanhooft.nl/media/TG_Lag.mp4)
 
-![Convergence in OK!](http://188.91.26.92/media/conv.png)
+![Convergence in OK!](http://antoonvanhooft.nl/media/conv.png)
 )
  */
 

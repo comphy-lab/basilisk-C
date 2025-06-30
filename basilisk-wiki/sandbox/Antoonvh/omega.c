@@ -10,7 +10,7 @@ Results:
 ![The vorticity field ($\omega$) represented on the fine mesh (left)
  and teal streamlines ($\psi = \text{Const.}$) represented on the
  coarse mesh (right) for a case of two merging
- vortices](http://188.91.26.92/media/omgpsi_res.mp4)
+ vortices](http://antoonvanhooft.nl/media/omgpsi_res.mp4)
  */
 #include "master-omgpsi.h"
 
