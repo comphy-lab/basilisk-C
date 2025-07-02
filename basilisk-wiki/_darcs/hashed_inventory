@@ -1,4 +1,4 @@
-pristine:5070e774255340f93f8a53261d4f80a73640d8b6080a06b74b12030b94fc8f02
+pristine:ab734d300f354ed406121151f4d67e979d9cd50c95a98ff574ec6a0d3d5ef64e
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -967,3 +967,33 @@ farsoiya**20250629173615
  Ignore-this: 89f925ac92f4144b6ee7779e874a9b18
 ] 
 hash: 0000016229-f930b74849846330466bd880e3e6a9f21523157c54f19094b26d24798733a51b
+[GRL
+Stephane Popinet <popinet@basilisk.fr>**20250701062427
+ Ignore-this: 64ab1f0d16d66d09fdfe7f3a20a09c5d
+] 
+hash: 0000000207-9d76b228b78b7ca801d0f9cdc3215097e30dc5c4f36f3f930b2e575c62a9eb54
+[added cube_sixfold in Makefile
+alimare <limarealexandre@gmail.com>**20250701070226
+ Ignore-this: f95ca147645fb2d9e8964a880012961a
+] 
+hash: 0000000251-97522dbf4f5ea37838e0b8d0cf72231f3e6720e69c5b20dd782fc2945c00ecce
+[updated version
+alimare <limarealexandre@gmail.com>**20250701070524
+ Ignore-this: f201fc8cd33514e0dd3f8b09abc2ae28
+] 
+hash: 0000009618-77e5bf112555df345c61648a662a7fa1af7aaaa07bcc6b89214fdd7a5dbeeb78
+[update with maintained redistance() function
+alimare <limarealexandre@gmail.com>**20250701071718
+ Ignore-this: c14fac027b38f6626ff4f3512e8b5a1d
+] 
+hash: 0000000420-d8d7b194095296442140a5f0dd95f01fbeb6c6e67a5a439e826471b12072f50d
+[Simulation of melting/icing problems with the phase-field method
+guest**20250701134349
+ Ignore-this: e27a377b451f8ed372a72ef584d79dbb
+] 
+hash: 0000000289-dae4626c134d04687aa171e2eace95377563446cee0659152d2c01288be6175e
+[Cleanup
+Stephane Popinet <popinet@basilisk.fr>**20250701140511
+ Ignore-this: 72b8346f2020309d403748beee140784
+] 
+hash: 0000000530-112a89cd26b0e7e1a752a0e480b385951ed5c52d4f1637a43c15a8ff5a20c5e5

@@ -9,7 +9,7 @@ boundary).
 /**
 For this function we need the following files.
 */
-#include "LS_reinit.h"
+#include "redistance.h"
 #include "ghigo/src/myquadratic.h" // best extrapolation so far
 
 /**
@@ -68,7 +68,7 @@ Previous state of cs is saved into csm1
   boundary ({dist});
   restriction({dist});
 
-  LS_reinit(dist, it_max = itredist);
+  redistance(dist, it_max = itredist);
 
 /**
 We remove the overshoots that we might create with reinitialization.
