@@ -103,7 +103,7 @@ event init(t=0){
   epsV = 0.;
   eps4 = 0.4;
 
-  DT        = 10.*sq(L0/(1<<MAXLEVEL))/lambda[0];
+  DT        = 0.1*sq(L0/(1<<MAXLEVEL))/lambda[0];
   DT_LS = 0.45*(L0)/(1 << MAXLEVEL);
   nb_cell_NB = 1 << 3 ; // number of cell in the 
                         // narrow band 

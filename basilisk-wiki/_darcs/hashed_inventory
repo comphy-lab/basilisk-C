@@ -1,4 +1,4 @@
-pristine:ab734d300f354ed406121151f4d67e979d9cd50c95a98ff574ec6a0d3d5ef64e
+pristine:ddd622eb61fd50e3058b4fb8fdff54a759f8f839cfc47ea36f3390c10cac547f
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -997,3 +997,13 @@ Stephane Popinet <popinet@basilisk.fr>**20250701140511
  Ignore-this: 72b8346f2020309d403748beee140784
 ] 
 hash: 0000000530-112a89cd26b0e7e1a752a0e480b385951ed5c52d4f1637a43c15a8ff5a20c5e5
+[0.1 multiplied to DT in event init instead of 10. THis allows to simulation to run, without the convergence for TL not reached message. However, the interface temperatures still remail unbounded
+thakurdesaikaustubh <k.thakurdesai@tue.nl>**20250702115250
+ Ignore-this: e0126b8145d35d70a4503e03a7548bc8
+] 
+hash: 0000000464-e24bf493bade24de8ff28c64385fb848bd6f47ca7fe50412c706dd5984b2c26d
+[update participants
+Nathaniel <1147530097@qq.com>**20250702153202
+ Ignore-this: 543e14574051d5de27a00ce15e0f0229
+] 
+hash: 0000000217-5f24dea9b4d00910d574507a9834693ea25a253c383520248c232b645f3830da
