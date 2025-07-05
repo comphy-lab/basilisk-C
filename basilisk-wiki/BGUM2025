@@ -57,6 +57,11 @@ To get to Oxford from London, the simplest options are by train from Paddington 
 <table>
 <tr><td>**Monday 7th July**</td></tr>
 
+<tr><td>12:00</td>
+<td>
+<center>Registration opens </center>
+<hr></td></tr>
+
 <tr><td>13:30</td>
 <td>
 Welcome. Wouter Mostert, Radu Cimpeanu and Stéphane Popinet
@@ -279,9 +284,9 @@ Antoine Aubert, LadHyX, Palaiseau, France
 
 <tr><td>17:20</td>
 <td>
-Sina Nozarian, Mechanical & Production Engineering Department, Aarhus University, Denmark
+~~Sina Nozarian, Mechanical & Production Engineering Department, Aarhus University, Denmark~~
 <br>
-*Numerical investigation of bubble-turbulence interaction near solid walls*
+~~*Numerical investigation of bubble-turbulence interaction near solid walls*~~
 <hr></td></tr>
 
 <tr><td>17:40</td>
@@ -293,7 +298,7 @@ Sina Nozarian, Mechanical & Production Engineering Department, Aarhus University
 
 <tr><td>19:00</td>
 <td>
-<center> Conference dinner </center>
+<center> Conference dinner, [Wadham College](https://www.openstreetmap.org/?mlat=51.755718&mlon=-1.254845#map=19/51.755718/-1.254845) (meet at front of College) </center>
 <hr></td></tr>
 
 
@@ -356,9 +361,9 @@ Yifan Han, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Ge
 
 <tr><td>11:20</td>
 <td>
-Amin Soltani, [Aarhus University](https://mpe.au.dk/en/research/key-areas-in-research-and-development/fluids-and-energy-mechanical-and-production-engineering-technical-sciences-aarhus-university/heat-and-fluid-flow/people), Denmark
+[Ben Fudge](https://scholar.google.com/citations?user=S5x8qrUAAAAJ&hl=en), Department of Engineering Science, University of Oxford, UK
 <br>
-*Rising bubble in porous medium*
+*The interface dynamics of drops impacting onto a different liquid*
 <hr></td></tr>
 
 <tr><td>11:40</td>
@@ -380,6 +385,15 @@ Closing and free time for discussions
 
 </table>
 
+## Presentation guidelines
+If you are a presenter, please note the following:
+
+- Please prepare your talks for 15 minutes (15 or so slides), leaving about 5 minutes for questions and changeover.
+
+- The lecture room is equipped with a projector and attached computer. Please send Radu or Wouter your slides by the evening before your talk so that we can load them onto the computer to ensure straightforward changeovers. If you strongly prefer to use your own machine, it is possible to connect it - there are USB-C and HDMI adapters.
+
+- Please make use of the breaks between sessions to test your presentation works on the room system, especially if you have movies (but even if not).
+
 ## Participants
 
 As we have reached 100 participants, registration is closed. If you have registered and have changed your plans, please update the list below (using either your own Basilisk login or login *guest*, password *bgum2025*).
@@ -393,7 +407,6 @@ As we have reached 100 participants, registration is closed. If you have registe
 1. [Kaitao Tang](/sandbox/kaitaotang/), Department of Engineering Science, University of Oxford, UK.
 1. [Nicolo Scapin](/sandbox/nscapin/), [Princeton University](https://www.princeton.edu), US
 1. [Ayush Dixit](https://pof.tnw.utwente.nl/people/profile/2068), [Physics of Fluids, Univ. Twente](https://pof.tnw.utwente.nl)
-1. Amin Soltani, [Aarhus University](https://mpe.au.dk/en/research/key-areas-in-research-and-development/fluids-and-energy-mechanical-and-production-engineering-technical-sciences-aarhus-university/heat-and-fluid-flow/people), Denmark
 1. [Aman Bhargava](https://pof.tnw.utwente.nl/people/profile/2120), [Physics of Fluids, Univ. Twente](https://pof.tnw.utwente.nl)
 1. Thomas Abadie, [University of Birmingham](https://www.birmingham.ac.uk/schools/chemical-engineering), UK
 1. [Palas Kumar Farsoiya](https://sites.google.com/view/farsoiya/home?authuser=0), Department of Chemical Engineering, Indian Institute of Technology (IIT), Roorkee, India.
@@ -424,7 +437,6 @@ As we have reached 100 participants, registration is closed. If you have registe
 1. [Pavan Kumar Kirar](https://scholar.google.com/citations?user=tavJeXUAAAAJ&hl=en), [∂'Alembert](http://www.dalembert.upmc.fr/ijlrda/) CNRS Sorbonne Université, Paris, France
 1. Theo Witkamp, Fluids & Flows, Eindhoven University of Technology, Netherlands
 1. [Bruno Deremble](https://bderembl.github.io/), Université Grenoble Alpes
-1. Sina Nozarian, Mechanical & Production Engineering Department, Aarhus University, Denmark
 1. [Ilies Haouche](https://www.linkedin.com/in/ilies-haouche-a862a2192/), Institut d'Electronique de Microélectronique et de Nanotechnologie, University of Lille, France
 1. [Hiroya Watanabe](https://researchmap.jp/hiroya_watanabe?lang=en), Tokyo University of Agriculture and Technology, Japan
 1. Mustapha Aknine, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
@@ -443,7 +455,6 @@ As we have reached 100 participants, registration is closed. If you have registe
 1. Ishar Toor, The Royal Grammar School High Wycombe, UK.
 1. Jens Eggers, School of Mathematics, University of Bristol, UK.
 1. [Arnaud Antkowiak](/sandbox/antko/) ∂'Alembert CNRS/Sorbonne Université
-1. Vyankatesh Mundhada, Department of Chemical Engineering, Indian Institute of Sceience Education and Research, Bhopal
 1. James Sprittles, Mathematics Institute, University of Warwick, UK.
 1. Andriarimina Daniel Rakotonirina, The Ocean Cleanup, The Netherlands
 1. Miguel A. Quetzeri-Santiago, Instituto de Investigaciones en Materiales, UNAM, Mexico
@@ -452,7 +463,6 @@ As we have reached 100 participants, registration is closed. If you have registe
 1. Sai Raja Gopal Vadlamudi, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Germany.
 1. [Datong Wang](http://basilisk.fr/sandbox/Datong/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole Polytechnique, Palaiseau, France
 1. Yifan Han, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Germany
-1. Gerd Mutschke, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Germany.
 1. [Minerva Schuler](https://warwick.ac.uk/fac/sci/hetsys/people/cohort5/minervaschuler/), Department of Engineering, University of Warwick, UK.
 1. Muwanguzi Stephen Kyazze, College of Ocean and Civil Engineering, Shanghai Jiaotong University 
 1. Ahmed Basil KOTTILINGAL, Paris
@@ -471,7 +481,6 @@ As we have reached 100 participants, registration is closed. If you have registe
 1. Jiayu Li, School of Engineering and Materials Science, Queen Mary University of London, UK
 1. Shiqi (Shawn) Qu, The Royal Grammar School High Wycombe, UK
 1. Om Mahesh Kumar Prajapati, The Royal Grammar School High Wycombe, UK
-1. Boran Celik, The Royal Grammar School High Wycombe, UK
 .
 1. Gena Panaser, University of Birmingham, UK
 1. Jacob Cook, University of Warwick, UK
