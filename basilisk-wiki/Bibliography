@@ -8,6 +8,20 @@ own papers if they use Basilisk. See also [src/references.bib]().
 ### 2025
 
 ~~~bib
+@article{phillips2025,
+  title={Modelling two-dimensional droplet rebound off deep fluid baths},
+  author={Phillips, Katie A. and Cimpeanu, Radu and Milewski, Paul A.},
+  journal={Proceedings of the Royal Society A},
+  volume={481},
+  number={2317},
+  pages={20240956},
+  year={2025},
+  doi = {https://doi.org/10.1098/rspa.2024.0956},
+  url = {https://royalsocietypublishing.org/doi/full/10.1098/rspa.2024.0956},
+  publisher={The Royal Society}
+}
+
+
 @article{kumar2025,
 title = {3D numerical investigation of fragmentation of wood’s metal in water and estimation of particle size distribution},
 journal = {Nuclear Engineering and Design},

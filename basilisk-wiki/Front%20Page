@@ -28,17 +28,7 @@ If you want to find out more about Basilisk see:
 
 ## Picture of the month
 
-<center>
-<table>
-<tr>
-<td><center><a href="https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/flm-volume-1001-cover-and-front-matter/9355D9E81D180DBEF63854968BCFF579">![](jfmcover.jpeg){width="60%"}</a></center></td>
-<td><center><a href="https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/flm-volume-1004-cover-and-front-matter/2F26650D56FC695EB9B1B4F713177764">![](jfmcover2.jpg){width="60%"}</a></center></td>
-</tr>
-</table>
-<div class="caption">
-[Vatsal](/sandbox/vatsal/README) and Basilisk are on the covers of Journal of Fluid Mechanics ([Balasubramanian et al., 2024](Bibliography#balasubramanian2024) and [Sanjay et al., 2025](Bibliography#sanjay2025)).
-</div>
-</center>
+![[Global Tides](src/examples/global-tides.c)](src/examples/global-tides/M2.png){width="100%"}
 
 See also the [POM Gallery]().
 

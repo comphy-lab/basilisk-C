@@ -24,6 +24,13 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
+@Article{martin2025,
+author={Clara Martin-Blanco and Nicolo Scapin and Jiarong Wu and Stéphane Popinet and J. Thomas Farrar and Bertrand Chapron and Luc Deike},
+title={Kinematics of gravity-capillary waves above an evolving underwater current},
+journal={Geophysical Research Letters},
+year={2025}
+}
+
 @Article{scapin2025b,
 author={Nicolo Scapin and Jiarong Wu and Bertrand Chapron and J. Thomas Farrar and Stéphane Popinet and Luc Deike},
 title={Growth and dissipation in wind-forced breaking waves},
