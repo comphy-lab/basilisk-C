@@ -35,7 +35,8 @@ double nu = 0.;
  For stability, we discretise the viscous friction term implicitly as
  $$
  \frac{(hu_l)^{n + 1} - (hu_l)^{\star}}{\Delta t} =
- \nu \left( \frac{u_{l + 1} - u_l}{h_{l + 1 / 2}} -
+ \nu_{i+1/2}^* \left( \frac{u_{l + 1} - u_l}{h_{l + 1 / 2}}\right)^{n + 1} -
+ \nu_{i+1/2}^*\left(
  \frac{u_l - u_{l - 1}}{h_{l - 1 / 2}} \right)^{n + 1}
  $$
  which can be expressed as the linear system

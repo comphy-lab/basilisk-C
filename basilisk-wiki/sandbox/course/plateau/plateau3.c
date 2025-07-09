@@ -26,12 +26,9 @@ event adapt (i++) {
   adapt_wavelet ({f}, (double[]){0}, 8); // t < 0.7 ? 8 : 9);
 }
 
-event gfsview (i += 10; t <= 1) {
-  static FILE * fp = popen ("gfsview2D -s plateau3.gfv", "w");
-  output_gfs (fp);
-}
 
-event logfile (i++) {
+
+event logfile (i++; t<=1) {
   scalar hy[];
   foreach() {
     if (f[] > 1e-3 && f[] < 1 - 1e-3) {

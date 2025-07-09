@@ -1,4 +1,4 @@
-This is the sandbox of Marc Cordelle Vacher, currently a Ph.D student at LadHyX & PMMH. I work on hydrodynamic instabilities of a jet/bubble plume impinging on a free-surface. Here are some Basilisk simulations that reproduce the phenomenon.
+This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I work on a hydrodynamic instability of a jet/bubble plume impinging on a free-surface. Here are some Basilisk simulations that reproduce the phenomenon. You can learn more about by work here : [Website](https://sites.google.com/view/marc-vacher/)
 
 [Self-induced sloshing by a jet](slosh_reg.c)
 

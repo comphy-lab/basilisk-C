@@ -1,0 +1,569 @@
+//----------------------------------------------------------------------------------------------------------------------------------------------------------
+// Background information
+//----------------------------------------------------------------------------------------------------------------------------------------------------------
+// 
+// Multigrid included to simulate a domain of LD=2 and HD=1
+// MU1 and RHO1 are irrelevant, but needed for navier-stokes/centered.h. 
+// MU1 taken as 0.001 to keep the numerical viscous diffusion time-scale (Delta^2/NU1) to be constant
+// Since the problem is only dependent on De= \lam*\omega, We choose a low \lam and high frequency, fD giving the same De. These give robust results.
+// Parameters for MCC for a diseased mucus - HBE5wt%: \lam = 0.052 s, \beta=0.1 (lowest possible in log-conform approach), aD=1.6e-6 m and Ls=10e-6 m
+// Output: 	1) U.mp4 : movie for x-component of velocity 
+//		2) snapshot_ux.png, snapshot_taupyy.png, snapshot_taupyx.png: self-explanatory 
+//		3)
+//
+//----------------------------------------------------------------------------------------------------------------------------------------------------------
+/**Load solver modules*/
+#include "grid/multigrid.h"
+#include "navier-stokes/centered.h"
+#include "log-conform.h"		//Constitutive relations for viscoelastic fluids.
+#include "view.h"
+#include "utils.h"
+
+/**User-defined parameters (dimensional quantities are marked with a 'D', except for the reference scales Lref, Uref, and tref)*/
+//Fluid properties in SI units.
+#define RHO1 1000
+#define MU1 0.001
+#define NU1 (MU1/RHO1)
+#define lambdaD 0.002		// Relaxation time of Viscoelastic fluid
+#define Beta 0.1 			// Viscosity ratio, Beta=mus/mu=(mu-mup)/mu
+
+//Cilia beating parameters
+#define fD 496				// Frequency of MCW (CBF,$f$). Taken to be 496 to give De=\lam*\omega=6 (for fD=19 Hz, HBE 5wt% fluid)
+#define omegaD (2*pi*fD)		// Angular frequency
+#define AD 1.6e-6                     // Ciliary Beating Amplitude (CBA)
+#define uwampD (omegaD*AD) 		// Velocity amplitude of Cilia
+#define LambdaD 20.E-6			// Wavelength of MCW
+#define kD (2*pi/LambdaD)		// Wavenumber of MCW
+#define Ls 10.E-6			// Slip-length correlated to cilia density
+#define phi (Ls/hD)			// Dimensionless slip-length
+
+// Mucus film parameters
+#define hD 10.E-6
+
+//Domain
+#define Nmcw 1 
+#define LD (Nmcw*LambdaD)
+
+//Reference scales in SI units.
+#define Lref hD
+//#define Uref (omegaD*AD)
+#define Uref (uwampD)
+#define tref (Lref/Uref)
+
+//Dimensionless groups based on the reference scales. 
+#define Re1 (Uref*Lref*RHO1/MU1)	// Reynolds number: irrelevant for stokes simulation, but needed for navier-stokes/centered.h
+#define Wi (lambdaD*Uref/Lref)	// Weissenberg number needed for log-conform.h
+
+//Dimensionless parameters.
+#define uwamp (uwampD/Uref)		// Velocity amplitude
+#define fstar (fD*tref)		// Frequency, CBF
+#define omega (omegaD*tref)		// Angular frequency
+#define kstar (2*pi*hD/LambdaD)	// Wavenumber
+#define ccap (omegaD/Uref/kD)		// Wave speed
+
+
+//Wall velocity boundary conditions
+//Robin (Mixed-type) boundary condition for slip parameter, \phi ==> [ a.u + b.ddn(u) = c ]
+#define robin(a,b,c) ((dirichlet ((c)*Delta/(2*(b) + (a)*Delta))) + ((neumann (0))* ((2*(b) - (a)*Delta)/(2*(b) + (a)*Delta) + 1.)))
+
+// Bottier BC (PLOS 2017): Additional mean flow term of O(uwamp^2), wave travelling to the left
+#define uw(x,t) (uwamp*sin(kstar*x+omega*t) + (uwamp*uwamp/ccap)*(cos((kstar*x+omega*t)*2) + 1)/2)
+
+//End time.
+#define tend (10./fstar)
+
+/**Initialize auxiliary fields*/
+face vector av[],muv[];
+scalar cpu[],mupf[],Wif[],ufDelta[];
+scalar fsa[],fsb[],trtaup[],D2c[];
+tensor du[];
+tensor S[];
+
+//
+//
+//
+/**Main program*/
+//
+//
+//
+int main()
+{
+periodic(right);			// Periodic BC left-right
+L0=LD/Lref;				// Domain length (x-direction)				
+dimensions(nx=4,ny=2);			// Setting up domain: 2 X 1 in multigrid
+origin(0,0,0);				
+init_grid(64);			// Designates the number of (square) cells per L0.
+rho=unity;				//rho is an internal variable 
+
+  const scalar lamb[] = Wi;
+  lambda = lamb;
+  const scalar mupc[] = (1.-Beta)/Re1;
+  mup = mupc;
+  const face vector mus[] = {Beta/Re1,Beta/Re1};
+  mu = mus;
+
+stokes=true;				// Negligible - Re simulation
+
+//NITERMAX=3000.;			// Convergence parameter
+DT = 2.5e-7;				
+run();
+}
+
+/**Transport properties*/
+event properties (i++)
+{
+// Second invariant of strain-rate tensor
+foreach() {
+        double D2 = 0.;
+            foreach_dimension() {
+                double dxx = u.x[1,0] - u.x[-1,0];
+                double dxy = (u.x[0,1] - u.x[0,-1] + u.y[1,0] - u.y[-1,0])/2.;
+                D2 += sq(dxx) + sq(dxy);
+            }
+            if (D2 > 0.) {
+                D2 = sqrt(D2)/(2.*Delta);
+                D2c[] = D2;
+                }
+            }
+//Newtonian parameters
+  foreach_face() {
+    muv.x[] = fm.x[]*(Beta*1./Re1);
+  }
+//Viscoelastic parameters
+  foreach () {
+    Wif[]=Wi;
+    mupf[]=(1.-Beta)*1./Re1;
+  }
+  boundary ({Wif, mupf});
+// Velocity gradients	
+  foreach(){
+    du.x.x[] = (u.x[1,0] - u.x[-1,0])/2./Delta; //ux
+    du.x.y[] = (u.x[0,1] - u.x[0,-1])/2./Delta; //uy
+
+    du.y.y[] = (u.y[0,1] - u.y[0,-1])/2./Delta; //vy
+    du.y.x[] = (u.y[1,0] - u.y[-1,0])/2./Delta; //vx
+    
+  }  
+  foreach(){
+// Strain-rate tensor components
+    //S.x.x[] = Beta*(2*du.x.x[])/Re1;
+    //S.x.y[] = Beta*(du.x.y[] + du.y.x[])/Re1;
+
+    //S.y.y[] = Beta*(2*du.y.y[])/Re1;
+    //S.y.x[] = Beta*(du.y.x[] + du.x.y[])/Re1;
+
+// Scalar Fields for top boundary conditions (flat-interface) 
+	fsa[] = (tau_p.y.x[]*(Re1*1./Beta));
+	fsb[] = (-tau_p.y.y[]-du.y.y[]*2*(Beta*1./Re1));
+// Scalar field for trace of conformation tensor
+	trtaup[] = (tau_p.x.x[] + tau_p.y.y[] + 2/Wi); 	
+  }
+
+boundary ({fsa, fsb, trtaup});
+
+}
+
+
+/**Boundary conditions*/
+// Bottom wall
+u.n[bottom]=dirichlet(0.);		// No-penetration	
+uf.n[bottom]=dirichlet(0.);
+u.t[bottom]=robin(1.,phi,uw(x,t));	// Metachronal wave Boundary condition with slip, b = \phi/hD 
+uf.t[bottom]=robin(1.,phi,uw(x,t));
+p[bottom]=neumann(0.);			// Neumann pressure
+pf[bottom]=neumann(0.);
+
+// Top wall
+u.n[top]=dirichlet(0.);
+uf.n[top]=dirichlet(0.);
+u.t[top] = neumann(fsa[]);
+uf.t[top] = neumann(fsa[]);
+p[top]=dirichlet(fsb[]);
+pf[top]=dirichlet(fsb[]);
+
+/**Initial condition*/
+event init (t=0)
+{
+  scalar s = tau_p.y.y;
+  s[bottom] = dirichlet(0.);
+  if (!restore(file="dumptErr"))
+  {																						//This updates ghost cells for applying BCs.
+//velocity field
+  foreach(){
+    u.x[] = 0.;
+	u.y[] = 0.;
+  }
+  boundary({u.x,u.y});
+  }
+}
+
+/**Save initial condition*/
+event FSstart (t=0)
+{
+//Save full data
+  p.nodump = false;
+  dump("dump0");
+}
+
+/**Processor ID*/
+event decomposition (t = 0; t += 0.1; t<=tend)
+{
+  foreach()
+  cpu[] = pid();
+}
+
+
+/**Movies*/
+
+event movies (t = 0; t += (0.01/fstar); t <= tend)
+{
+  output_ppm (u.x, file = "U.mp4", linear = true, n=400);
+  output_ppm (u.x, file = "snapshot_ux.png", linear = true, n=400);
+  output_ppm (trtaup, file = "snapshot_trtaup.png", linear = true, n=400);
+  output_ppm (D2c, file = "snapshot_D2.png", linear = true, n=400);
+  output_ppm (p, file = "snapshot_p.png", linear = true, n=400);
+}
+
+
+/**Save current full data*/
+event dumpt (t = 0; t += (0.1/fstar); t<=tend)
+{
+  char dumpName[80];
+  sprintf(dumpName,"dumpt_tf%g", t*fstar);
+  p.nodump=false;
+  dump(file=dumpName);
+}
+
+
+/**Output interpolated fields*/
+event interpolatedFields (t = 0; t += (0.1/fstar); t<=tend)
+{
+  char names[80];
+  sprintf(names, "xyuv_tf%g", t*fstar);
+  FILE * fp = fopen (names, "w");
+  output_field ({u},fp,n=128,linear=true);
+}
+event interpolatedFields (t = 0; t += (0.25/fstar); t<=tend)
+{
+  char names[80];
+  sprintf(names, "xyD2_tf%g", t*fstar);
+  FILE * fp = fopen (names, "w");
+  output_field ({D2c},fp,n=128,linear=true);
+}
+event interpolatedFields (t = 0; t += (0.25/fstar); t<=tend)
+{
+  char names[80];
+  sprintf(names, "xyp_tf%g", t*fstar);
+  FILE * fp = fopen (names, "w");
+  output_field ({p},fp,n=128,linear=true);
+}
+event interpolatedFields (t = 0; t += (0.25/fstar); t<=tend)
+{
+  char names[80];
+  sprintf(names, "xytrc_tf%g", t*fstar);
+  FILE * fp = fopen (names, "w");
+  output_field ({trtaup},fp,n=128,linear=true);
+}
+
+
+/**Measures*/
+event measures (t = 0; t += (0.01/fstar); t<=tend)
+{
+//Statistics (this works automatically with parallel processing)
+  scalar pos[];
+  double Usum=statsf(u.x).sum; // Integral of velocity
+  double trtaupmax=Wi*statsf(trtaup).max; // Max of Trace of conformation tensor
+  double D2max=statsf(D2c).max; // Max of D2
+  double D2min=statsf(D2c).min; // Min of D2
+//Velocity time traces
+  coord xiyj[6];
+  xiyj[0] = (coord){0, 0};
+  xiyj[1] = (coord){0, 0.1};
+  xiyj[2] = (coord){0, 0.2};
+  xiyj[3] = (coord){0, 0.3};
+  xiyj[4] = (coord){0, 0.4};
+  xiyj[5] = (coord){0, 0.45};
+  double Uxiyj[6];
+  interpolate_array ({u.x}, xiyj, 6, Uxiyj, true);
+//Timing
+  timing s = timer_timing (perf.gt, iter, perf.tnc, NULL);
+//Write to file
+  FILE * fp=fopen("measures","a");
+  if (pid() == 0){
+  fprintf (fp,"%g %g %g %g %g %g %g %g\n",t,s.real,s.speed,t*tref,Usum,D2min,D2max,trtaupmax);
+  }
+  fclose (fp);
+}
+
+event end (t = tend)
+{
+//Save full data
+  p.nodump = false;
+  dump();
+}
+nless slip-length
+
+// Mucus film parameters
+#define hD 10.E-6
+
+//Domain
+#define Nmcw 1 
+#define LD (Nmcw*LambdaD)
+
+//Reference scales in SI units.
+#define Lref hD
+//#define Uref (omegaD*AD)
+#define Uref (uwampD)
+#define tref (Lref/Uref)
+
+//Dimensionless groups based on the reference scales. 
+#define Re1 (Uref*Lref*RHO1/MU1)	// Reynolds number: irrelevant for stokes simulation, but needed for navier-stokes/centered.h
+#define Wi (lambdaD*Uref/Lref)	// Weissenberg number needed for log-conform.h
+
+//Dimensionless parameters.
+#define uwamp (uwampD/Uref)		// Velocity amplitude
+#define fstar (fD*tref)		// Frequency, CBF
+#define omega (omegaD*tref)		// Angular frequency
+#define kstar (2*pi*hD/LambdaD)	// Wavenumber
+#define ccap (omegaD/Uref/kD)		// Wave speed
+
+
+//Wall velocity boundary conditions
+//Robin (Mixed-type) boundary condition for slip parameter, \phi ==> [ a.u + b.ddn(u) = c ]
+#define robin(a,b,c) ((dirichlet ((c)*Delta/(2*(b) + (a)*Delta))) + ((neumann (0))* ((2*(b) - (a)*Delta)/(2*(b) + (a)*Delta) + 1.)))
+
+// Bottier BC (PLOS 2017): Additional mean flow term of O(uwamp^2), wave travelling to the left
+#define uw(x,t) (uwamp*sin(kstar*x+omega*t) + (uwamp*uwamp/ccap)*(cos((kstar*x+omega*t)*2) + 1)/2)
+
+//End time.
+#define tend (10./fstar)
+
+/**Initialize auxiliary fields*/
+face vector av[],muv[];
+scalar cpu[],mupf[],Wif[],ufDelta[];
+scalar fsa[],fsb[],trtaup[],D2c[];
+tensor du[];
+tensor S[];
+
+//
+//
+//
+/**Main program*/
+//
+//
+//
+int main()
+{
+periodic(right);			// Periodic BC left-right
+L0=LD/Lref;				// Domain length (x-direction)				
+dimensions(nx=4,ny=2);			// Setting up domain: 2 X 1 in multigrid
+origin(0,0,0);				
+init_grid(64);			// Designates the number of (square) cells per L0.
+rho=unity;				//rho is an internal variable 
+
+  const scalar lamb[] = Wi;
+  lambda = lamb;
+  const scalar mupc[] = (1.-Beta)/Re1;
+  mup = mupc;
+  const face vector mus[] = {Beta/Re1,Beta/Re1};
+  mu = mus;
+
+stokes=true;				// Negligible - Re simulation
+
+//NITERMAX=3000.;			// Convergence parameter
+DT = 2.5e-7;				
+run();
+}
+
+/**Transport properties*/
+event properties (i++)
+{
+// Second invariant of strain-rate tensor
+foreach() {
+        double D2 = 0.;
+            foreach_dimension() {
+                double dxx = u.x[1,0] - u.x[-1,0];
+                double dxy = (u.x[0,1] - u.x[0,-1] + u.y[1,0] - u.y[-1,0])/2.;
+                D2 += sq(dxx) + sq(dxy);
+            }
+            if (D2 > 0.) {
+                D2 = sqrt(D2)/(2.*Delta);
+                D2c[] = D2;
+                }
+            }
+//Newtonian parameters
+  foreach_face() {
+    muv.x[] = fm.x[]*(Beta*1./Re1);
+  }
+//Viscoelastic parameters
+  foreach () {
+    Wif[]=Wi;
+    mupf[]=(1.-Beta)*1./Re1;
+  }
+  boundary ({Wif, mupf});
+// Velocity gradients	
+  foreach(){
+    du.x.x[] = (u.x[1,0] - u.x[-1,0])/2./Delta; //ux
+    du.x.y[] = (u.x[0,1] - u.x[0,-1])/2./Delta; //uy
+
+    du.y.y[] = (u.y[0,1] - u.y[0,-1])/2./Delta; //vy
+    du.y.x[] = (u.y[1,0] - u.y[-1,0])/2./Delta; //vx
+    
+  }  
+  foreach(){
+// Strain-rate tensor components
+    //S.x.x[] = Beta*(2*du.x.x[])/Re1;
+    //S.x.y[] = Beta*(du.x.y[] + du.y.x[])/Re1;
+
+    //S.y.y[] = Beta*(2*du.y.y[])/Re1;
+    //S.y.x[] = Beta*(du.y.x[] + du.x.y[])/Re1;
+
+// Scalar Fields for top boundary conditions (flat-interface) 
+	fsa[] = (tau_p.y.x[]*(Re1*1./Beta));
+	fsb[] = (-tau_p.y.y[]-du.y.y[]*2*(Beta*1./Re1));
+// Scalar field for trace of conformation tensor
+	trtaup[] = (tau_p.x.x[] + tau_p.y.y[] + 2/Wi); 	
+  }
+
+boundary ({fsa, fsb, trtaup});
+
+}
+
+
+/**Boundary conditions*/
+// Bottom wall
+u.n[bottom]=dirichlet(0.);		// No-penetration	
+uf.n[bottom]=dirichlet(0.);
+u.t[bottom]=robin(1.,phi,uw(x,t));	// Metachronal wave Boundary condition with slip, b = \phi/hD 
+uf.t[bottom]=robin(1.,phi,uw(x,t));
+p[bottom]=neumann(0.);			// Neumann pressure
+pf[bottom]=neumann(0.);
+
+// Top wall
+u.n[top]=dirichlet(0.);
+uf.n[top]=dirichlet(0.);
+u.t[top] = neumann(fsa[]);
+uf.t[top] = neumann(fsa[]);
+p[top]=dirichlet(fsb[]);
+pf[top]=dirichlet(fsb[]);
+
+/**Initial condition*/
+event init (t=0)
+{
+  scalar s = tau_p.y.y;
+  s[bottom] = dirichlet(0.);
+  if (!restore(file="dumptErr"))
+  {																						//This updates ghost cells for applying BCs.
+//velocity field
+  foreach(){
+    u.x[] = 0.;
+	u.y[] = 0.;
+  }
+  boundary({u.x,u.y});
+  }
+}
+
+/**Save initial condition*/
+event FSstart (t=0)
+{
+//Save full data
+  p.nodump = false;
+  dump("dump0");
+}
+
+/**Processor ID*/
+event decomposition (t = 0; t += 0.1; t<=tend)
+{
+  foreach()
+  cpu[] = pid();
+}
+
+
+/**Movies*/
+
+event movies (t = 0; t += (0.01/fstar); t <= tend)
+{
+  output_ppm (u.x, file = "U.mp4", linear = true, n=400);
+  output_ppm (u.x, file = "snapshot_ux.png", linear = true, n=400);
+  output_ppm (trtaup, file = "snapshot_trtaup.png", linear = true, n=400);
+  output_ppm (D2c, file = "snapshot_D2.png", linear = true, n=400);
+  output_ppm (p, file = "snapshot_p.png", linear = true, n=400);
+}
+
+
+/**Save current full data*/
+event dumpt (t = 0; t += (0.1/fstar); t<=tend)
+{
+  char dumpName[80];
+  sprintf(dumpName,"dumpt_tf%g", t*fstar);
+  p.nodump=false;
+  dump(file=dumpName);
+}
+
+
+/**Output interpolated fields*/
+event interpolatedFields (t = 0; t += (0.1/fstar); t<=tend)
+{
+  char names[80];
+  sprintf(names, "xyuv_tf%g", t*fstar);
+  FILE * fp = fopen (names, "w");
+  output_field ({u},fp,n=128,linear=true);
+}
+event interpolatedFields (t = 0; t += (0.25/fstar); t<=tend)
+{
+  char names[80];
+  sprintf(names, "xyD2_tf%g", t*fstar);
+  FILE * fp = fopen (names, "w");
+  output_field ({D2c},fp,n=128,linear=true);
+}
+event interpolatedFields (t = 0; t += (0.25/fstar); t<=tend)
+{
+  char names[80];
+  sprintf(names, "xyp_tf%g", t*fstar);
+  FILE * fp = fopen (names, "w");
+  output_field ({p},fp,n=128,linear=true);
+}
+event interpolatedFields (t = 0; t += (0.25/fstar); t<=tend)
+{
+  char names[80];
+  sprintf(names, "xytrc_tf%g", t*fstar);
+  FILE * fp = fopen (names, "w");
+  output_field ({trtaup},fp,n=128,linear=true);
+}
+
+
+/**Measures*/
+event measures (t = 0; t += (0.01/fstar); t<=tend)
+{
+//Statistics (this works automatically with parallel processing)
+  scalar pos[];
+  double Usum=statsf(u.x).sum; // Integral of velocity
+  double trtaupmax=Wi*statsf(trtaup).max; // Max of Trace of conformation tensor
+  double D2max=statsf(D2c).max; // Max of D2
+  double D2min=statsf(D2c).min; // Min of D2
+//Velocity time traces
+  coord xiyj[6];
+  xiyj[0] = (coord){0, 0};
+  xiyj[1] = (coord){0, 0.1};
+  xiyj[2] = (coord){0, 0.2};
+  xiyj[3] = (coord){0, 0.3};
+  xiyj[4] = (coord){0, 0.4};
+  xiyj[5] = (coord){0, 0.45};
+  double Uxiyj[6];
+  interpolate_array ({u.x}, xiyj, 6, Uxiyj, true);
+//Timing
+  timing s = timer_timing (perf.gt, iter, perf.tnc, NULL);
+//Write to file
+  FILE * fp=fopen("measures","a");
+  if (pid() == 0){
+  fprintf (fp,"%g %g %g %g %g %g %g %g\n",t,s.real,s.speed,t*tref,Usum,D2min,D2max,trtaupmax);
+  }
+  fclose (fp);
+}
+
+event end (t = tend)
+{
+//Save full data
+  p.nodump = false;
+  dump();
+}

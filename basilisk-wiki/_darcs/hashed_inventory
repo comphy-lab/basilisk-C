@@ -1,4 +1,4 @@
-pristine:edbc2fd7bfa75a64a62652636e785874839b29efd28f4d708163d7594ae3d226
+pristine:70efe751e0ab3b12efaef99355c8b7603a0e851019724ff21f7da56e649f1c5d
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -1162,3 +1162,68 @@ mvacher <marc.vacher@polytechnique.edu>**20250707135145
  Ignore-this: 597add172a38aed9d4a405d6e4ed3a76
 ] 
 hash: 0000002331-5f1a96c5bc3c4bd433e2c7f06f4ec9b2b0d3275bec1e8211f1ca28f894467e02
+[Added new file
+Anjishnu Choudhury <anjesh.gr8@gmail.com>**20250708085001
+ Ignore-this: 12cf8d76ded65359ffbe2fc2c2697e17
+] 
+hash: 0000019145-cc888aa78cb6c58e9e020b03f48dac1b2bfbca3aa3ac3de23828468ae5aacc66
+[removed repitition
+Anjishnu Choudhury <anjesh.gr8@gmail.com>**20250708092512
+ Ignore-this: 42aab4597f7a53d40d5688427c16af5a
+] 
+hash: 0000002472-3d17bb79580f427f1bf474a6d5f706fc1fceec6a0f7cf7cc7448b84d41bd0d5c
+[removing gfsview
+dfuster <dfuster@gmail.com>**20250708100700
+ Ignore-this: 635d36d594afdca52da7c9abdebeda87
+] 
+hash: 0000000374-2a0c61eb1bb004cdd6b3b19540e101cda96fe9f36dac20b2ef205a2dadd51572
+[typos
+mvacher <marc.vacher@polytechnique.edu>**20250708142554
+ Ignore-this: ee11316ce7d6e7daa86dc55add8e0409
+] 
+hash: 0000000285-5af58a830bd718c3d15ecf79cc983d15aa935344dc2bcdb9346e5131e590dd9c
+[Adds in the text
+mvacher <marc.vacher@polytechnique.edu>**20250708142754
+ Ignore-this: 6e26df345640ecdf0faa4d03feb17e36
+] 
+hash: 0000000438-2cd90e45dad32fd81e6d77abe8a4997a363e5108dd37b704a37c1064b7337ee8
+[typos
+mvacher <marc.vacher@polytechnique.edu>**20250708142845
+ Ignore-this: 309e1866331400f31bfb7b0cddcee7cd
+] 
+hash: 0000000509-9b4557962ec12bce536d2ad62fdcfe5cc83270393bbc839f307439e000c5074e
+[text
+mvacher <marc.vacher@polytechnique.edu>**20250708143213
+ Ignore-this: 5afb1253b8a36394f1cc51ded83e4d38
+] 
+hash: 0000000714-2d50fa00b9ef12a0f8aeaf3712d33a020e8a75fea0511767c94631285002e278
+[fix memory leaks
+j.a.v.hooft@gmail.com**20250708144323
+ Ignore-this: 778bad2baa35fe38d89770f700026694c9522ac267f93f787119edde7c031b37f81d422c2f61246f
+] 
+hash: 0000014398-4ffcb2ee6c5680b72c0db99f7a3d696bfedee8a9a3fa6787df7002af0dccbfdc
+[updated dinner time
+wmostert <wmostert2208@gmail.com>**20250708152703
+ Ignore-this: d8ed58b7d552db20183a7adfbf3d2ae7
+] 
+hash: 0000000179-991b68d916a88e456c7fee5013e0941e296a37e80d9a972bd3c9874c7ca1bed9
+[Tuesday schedule updates
+rcimpeanu**20250708152836
+ Ignore-this: f6dba5c81171ac18cb4d450029aa1d93
+] 
+hash: 0000000515-c87f94f472579f6483ce9b5fd62b44bd92807b97de2792d16ccb1355b21c5b9c
+[change the text : D_{i+/-1/2} !
+pyl <pyl@ccr.jussieu.fr>**20250708164730
+ Ignore-this: 8137ff89dada1ff0c7212e346fcb41bb
+] 
+hash: 0000000499-18150a680d6c33cb94b53df5d8b11c3531fe182140e34f777d328b6cd36d5f3c
+[nu non de nom 
+pyl <pyl@ccr.jussieu.fr>**20250708165114
+ Ignore-this: a4250fa7922d070e0fbd07a21fdca5f7
+] 
+hash: 0000000305-c75e8089cda197faf03868d1a86efbb09cd919f531d3eedacb67070270e17d74
+[test case: plane couette with variable viscosity + embed. test should be improved with convergence plots.
+francesco.picella@sorbonne-universite.fr**20250708165338
+ Ignore-this: 8f0770a7a182abdd9039190192b08a64
+] 
+hash: 0000004622-75d3c58a76b21ee1e2554d770a0b541546f70ba49a6cfa8a798aec271e382739

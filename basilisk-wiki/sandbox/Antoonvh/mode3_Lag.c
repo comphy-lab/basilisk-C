@@ -11,13 +11,9 @@
 #include "scatter2.h"
 #include "../prouvost/AMR_tools/amr.h"
 
-
-double tol = 1e-3;
-
-
+double tol = 5e-4;
 
 int main() {
-  //  maxlevel = 9;
   periodic(left);
   periodic_x = true;
   L0 = 8.;
@@ -30,31 +26,34 @@ int main() {
 #define THETA(M) (M*asin(x/RAD))
 #define RADP(P, M) ((1 + P*sin(THETA(M))))
 
-double P = 1e-2, m = 3; // Perturbation and mode
+double P = 1e-4, m = 3; // Perturbation and mode
 double b = 1.45; //Vortex parameter
 
 
 event init (t = 0) {
   AMReps = tol;
-  
-  slave_init (L0, (coord){X0, Y0, 0}, 8, true, tol);
- 
+  omega.prolongation = refine_3rd;
+  slave_init (L0, (coord){X0, Y0, 0}, 9, true, tol);
   double betav = 1./(1 - sq(b));
   p_omg = new_particles(0);
   int nc = 999, nf = 999;
-  while (nc > 100 || nf > 100) {
+  while (nc > 200 && nf > 200) {
     scalar omega_uf[]; //unfiltered omega 
     omega[bottom] = dirichlet (0);
     omega[top] = dirichlet (0);
     printf ("%d %ld\n", maxlevel, grid->tn);
     foreach() {
       omega[] = 0;
-      double rp = RAD*RADP(P,m), omg = 0;
-      if (rp <= 1.)
-	omg = 2;
-      else if (rp > 1 && rp <= b) 
-	omg = 2*betav;
-      omega_uf[] = omg;
+      double omg = 0;
+      foreach_child()
+	foreach_child() {
+	double rp = RAD*RADP(P,m);
+	if (rp <= 1.)
+	  omg += 2;
+	else if (rp > 1 && rp <= b) 
+	  omg += 2*betav;
+      }
+      omega_uf[] = omg/16.;
     }
     const face vector alphaf[] = {-sq(0.4/(2.*pi)), -sq(0.4/(2.*pi))};
     poisson (omega, omega_uf, alphaf, unity);
@@ -69,30 +68,34 @@ event init (t = 0) {
       pn.x = x;
       pn.y = y;
       pn.s = interpolate(omega, x, y);
+      pn.ti = t;
       add_particle(pn, p_omg);
     }
   }
-  velocity(p_omg);
+  //velocity(p_omg);
+  DT = 0.05;
 }
 
-event mov (t += 0.1, last) {
+event mov (t += 2, last) {
   view (width = 800, height = 800, bg = {0,0.5, 0.5});
   scatter_color (p_omg, s = 1, map = blue_white_red);
   save ("mode3.mp4");
   save ("mode3.png");
   cells();
-  squares ("omega", map = blue_white_red);
+  squares ("omega", map = blue_white_red, min = -1, max = 1);
   save ("grid.mp4");
+  save ("grid.png");
   slave_level();
 }
 
-event adapt (i++ ) {
+event adapt (i++) {
   compute_omega(p_omg, omega);
-  //adapt_wavlet({omega},(double[]){tol}, maxlevel, 5);
+  
 
   adapt_metric({omega});
   adapt_number();
 }
-event stop (t = 10) {
+
+event stop (t = 20) {
   return 1;
 }

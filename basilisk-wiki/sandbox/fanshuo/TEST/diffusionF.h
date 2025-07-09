@@ -3,12 +3,13 @@
 
 We consider the vertical diffusion of a tracer $s$ with a diffusion
 coefficient $D$ for the multilayer solver.
+This coefficient is not constant. 
 
 For stability, we discretise the vertical diffusion equation implicitly as
 $$
 \frac{(hs_l)^{n + 1} - (hs_l)^{\star}}{\Delta t} =
-D \left( \frac{s_{l + 1} - s_l}{h_{l + 1 / 2}} -
-\frac{s_l - s_{l - 1}}{h_{l - 1 / 2}} \right)^{n + 1}
+D_{i+1/2}^*  \left( \frac{s_{l + 1} - s_l}{h_{l + 1 / 2}}  \right)^{n + 1}-
+D_{i-1/2}^*\left(\frac{s_l - s_{l - 1}}{h_{l - 1 / 2}} \right)^{n + 1}
 $$
 which can be expressed as the linear system
 $$

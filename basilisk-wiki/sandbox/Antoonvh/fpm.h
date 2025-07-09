@@ -86,10 +86,9 @@ macro2 foreach_point_level (double _x = 0., double _y = 0., double _z = 0.,
 /**
 The function that finds (the indices) of nearby points
  */
-
 int find_nearest_particles (coord X, int nn, Particles plist, int * index, 
 			    int neighbor = 1, int * index_periodic_x = NULL,
-			    int * index_periodic_y = NULL, bool self = true,
+			    int * index_periodic_y = NULL, int * index_periodic_z = NULL, bool self = true,
 			    int level = -1, scalar reference = reference,
 			    double * dist = NULL) {
   // Take care of periodically placed particles
@@ -175,14 +174,18 @@ int find_nearest_particles (coord X, int nn, Particles plist, int * index,
 
 A lookup table relating the number of particles to the estimation order (-1)
 */
-int order_barrier_2D[3] = {4, 9, 16}; //2x2, 3x3, 4x4 
+# if dimension == 2
+int order_barrier[3] = {4, 9, 16}; //2x2, 3x3, 4x4
+# else 
+int order_barrier[3] = {8, 18, 30};
+#endif
 int max_particles = 20;
 int order_lookup (int n) {
-  if (n >= order_barrier_2D[2])
+  if (n >= order_barrier[2])
     return 3;
-  if (n >= order_barrier_2D[1])
+  if (n >= order_barrier[1])
     return 2;
-  if (n >= order_barrier_2D[0])
+  if (n >= order_barrier[0])
     return 1;
   return 0;
 }
@@ -191,14 +194,19 @@ int order_lookup (int n) {
 // linear(3)      s1 = s_0 + c_1x + c_2y  
 // quadratic(6)   s2 = s1 + c_3 xy + c_4xx + c_5yy
 // cubic(10)      s3 = s2 + c_6 xxy + c_7 xyy + c_8xxx + c_9yyy
+// 3D
+// li:near(4)     s1 = s_0 + c_1x + c_2y + c_3z  
+// quadratic(10)   s2 = s1 + c_4 xy + c_5 xz + c_6 yz + c_7 xx + c_8 yy + c_9 zz
+// cubic(19)      s3 = s2 + c_10 xxy + c_11 xyy + c_12 xxz + c_13 xzz + c_14 yzz + c_15 yyz c_16xxx + c_17yyy + c_18 zzz
+
 
 int size_lookup (int order) {
   if (order >= 3)
-    return 10;
+    return dimension == 2 ? 10 : 19;
   if (order >= 2)
-    return 6;
+    return dimension == 2 ? 6 : 10;
   if (order >= 1)
-    return 3;
+    return dimension == 2 ? 3 : 4;
   return 1;
 }
 /**
@@ -215,11 +223,12 @@ We do not apply distance weighing (there is enough to tune already)
 #define p_y  (pl[part][index[n]].y - loc.y + L0*periodic_arr_y[n])
 #define p_z  (pl[part][index[n]].z - loc.z + L0*periodic_arr_z[n])
 
-int fill_matrix_2D (int order = 1, Particles part, int m, int * index, double * A, coord loc,
-		    int * periodic_arr_x = NULL, int * periodic_arr_y = NULL) {
+int fill_matrix (int order = 1, Particles part, int m, int * index, double * A, coord loc,
+		    int * periodic_arr_x = NULL, int * periodic_arr_y = NULL, int * periodic_arr_z = NULL) {
   // No periodicity?
   bool alloc_x = false;
   bool alloc_y = false;
+  bool alloc_z = false;
   foreach_dimension() {
     if (periodic_x == false && periodic_arr_x == NULL) {
       alloc_x = true;
@@ -238,17 +247,35 @@ int fill_matrix_2D (int order = 1, Particles part, int m, int * index, double * 
     row++;
     for (int n = 0; n < m; n++) 
       A[max_ind] = p_y;
+#if dimension > 2
+    row++;
+    for (int n = 0; n < m; n++)
+      A[max_ind] = p_z;
+#endif
   }
   if (order > 1) {
     row++;
     for (int n = 0; n < m; n++) 
       A[max_ind] = p_x*p_y;
+#if dimension > 2
+    row++;
+    for (int n = 0; n < m; n++) 
+      A[max_ind] = p_x*p_z;
+    row++;
+    for (int n = 0; n < m; n++) 
+      A[max_ind] = p_y*p_z;
+#endif
     row++;
     for (int n = 0; n < m; n++) 
       A[max_ind] = sq(p_x);
     row++;
     for (int n = 0; n < m; n++) 
       A[max_ind] = sq(p_y);
+#if dimension > 2
+    row++;
+    for (int n = 0; n < m; n++) 
+      A[max_ind] = sq(p_z);
+#endif
   }
   if  (order > 2) {
     row++;
@@ -257,12 +284,31 @@ int fill_matrix_2D (int order = 1, Particles part, int m, int * index, double * 
     row++;
     for (int n = 0; n < m; n++) 
       A[max_ind] = p_x*sq(p_y);
+#if dimension > 2
+    row++;
+    for (int n = 0; n < m; n++) 
+      A[max_ind] = sq(p_x)*p_z;
+    row++;
+    for (int n = 0; n < m; n++) 
+      A[max_ind] = sq(p_z)*p_y;
+    row++;
+    for (int n = 0; n < m; n++) 
+      A[max_ind] = sq(p_y)*p_z;
+    row++;
+    for (int n = 0; n < m; n++) 
+      A[max_ind] = sq(p_z)*p_x;
+#endif
     row++;
     for (int n = 0; n < m; n++) 
       A[max_ind] = cube(p_x);
     row++;
     for (int n = 0; n < m; n++) 
       A[max_ind] = cube(p_y);
+#if dimension > 2
+    row++;
+    for (int n = 0; n < m; n++) 
+      A[max_ind] = cube(p_z);
+#endif
   }
   foreach_dimension()
     if (alloc_x == true)
@@ -280,12 +326,12 @@ extern void dgels_(char *trans, int *m, int *n, int *nrhs,
                    double *a, int *lda, double *b, int *ldb,
                    double *work, int *lwork, int *info);
 
-int least_squares_poly_2D (coord loc, double * coefs, Particles parts,
+int least_squares_poly (coord loc, double * coefs, Particles parts,
 			   bool self = true, int level = -1, scalar reference = reference) {
   int index[max_particles];
   int * periodic_arr_x = NULL;
   int * periodic_arr_y = NULL;
-
+  int * periodic_arr_z = NULL;
   foreach_dimension() {
     if (periodic_x == true) 
       periodic_arr_x = malloc((max_particles)*sizeof(int));
@@ -293,12 +339,12 @@ int least_squares_poly_2D (coord loc, double * coefs, Particles parts,
    // number of equations mat_m
   int mat_m =  find_nearest_particles (loc, max_particles, parts, 
 				       index, 1, periodic_arr_x, periodic_arr_y,
-				       self, level, reference);
+				       periodic_arr_z, self, level, reference);
   int order = order_lookup (mat_m);
   int mat_n = size_lookup (order); // Number of unknowns
   double * A = malloc(sizeof(double)*mat_m*mat_n);
       
-  fill_matrix_2D (order, parts, mat_m, index, A, loc, periodic_arr_x, periodic_arr_y);
+  fill_matrix (order, parts, mat_m, index, A, loc, periodic_arr_x, periodic_arr_y, periodic_arr_z);
   double rhs[mat_m];
   for (int i = 0; i < mat_m; i++) {
     rhs[i] = pl[parts][index[i]].s;
@@ -330,7 +376,6 @@ int least_squares_poly_2D (coord loc, double * coefs, Particles parts,
     if (periodic_x == true) 
       free(periodic_arr_x);
   }
-  
   return order;
 }
 
@@ -341,7 +386,7 @@ void smooth_2D (Particles p) {
   double coefs[9];
   foreach_particle_in(p) {
     coord pc = {x, y};
-    int order = least_squares_poly_2D (pc, coefs, p);
+    int order = least_squares_poly (pc, coefs, p);
     p().z = order > 0 ? coefs[0] : p().s;
   }
   foreach_particle_in(p)
@@ -354,6 +399,22 @@ int N_from_part (int np) {
   return 1<<Ni;
 }
 
+event defaults (i = 0) {
+  foreach_dimension() {
+    reference[left] = 0;
+    reference[right] = 0;
+  }
+  reference.restriction = ref_restriction;
+  reference.prolongation = ref_prolongation;
+#if TREE
+  reference.coarsen = ref_coarsen;
+  reference.refine = ref_prolongation;
+#endif
+}
+
+event cleanup (t = end) {
+    free_scalar_data (reference);
+}
 
 /**
 ## Tests

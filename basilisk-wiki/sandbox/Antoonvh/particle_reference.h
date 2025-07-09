@@ -44,6 +44,16 @@ bool particle_in_cell (particle part, Point point) {
   }
   return true;
 }
+//fix me: particles are in sibling ghost cells
+void ref_prolongation (Point point, scalar s) {
+  double c = s[];
+  foreach_child() {
+    if ((child.x + child.y) == 0)
+      s[] = c;
+    else
+      s[] = 0;
+  }
+}
 
 void p_refine (Point point, scalar s) {
   if (!s[]) { // No particles
@@ -63,7 +73,7 @@ void p_refine (Point point, scalar s) {
 	}
 	n++;
       }
-      if (indc == NULL)
+      if (c == 0)
 	s[] = 0; 
       else
 	s[] = field_v(indc);
@@ -71,8 +81,7 @@ void p_refine (Point point, scalar s) {
   }
 }
 
-void p_coarsen (Point point, scalar s) {
-  s[] = 0;
+void ref_restriction (Point point, scalar s) {
   int nt = 0;
   foreach_child()
     if (s[]) {
@@ -83,9 +92,9 @@ void p_coarsen (Point point, scalar s) {
     }
   if (nt) {
     int * indp = NULL;
-    if (s[])
+    if (s[]) 
       indp = pointer_v(s[]);
-    indp = realloc (indp, sizeof(int)*nt + 1);
+    indp = realloc (indp, sizeof(int)*(nt + 1));
     nt = 0;
     foreach_child()
       if (s[]) {
@@ -99,18 +108,32 @@ void p_coarsen (Point point, scalar s) {
   }
 }
 
+void ref_coarsen (Point point, scalar s) {
+  ref_restriction (point, s);
+  foreach_child() {
+    if (s[])
+      free (pointer_v(s[]));
+    s[] = 0;
+    
+  }
+}
+
 void free_scalar_data (scalar s) {
   foreach_cell_all() {
-    if (s[])
+    fflush(stdout);
+    if (!is_prolongation(cell) && s[] != 0) {
+      fflush (stdout);
       free(pointer_v(s[]));
-    pointer_v(s[]) = NULL;
+      pointer_v(s[]) = NULL;
+    }
     s[] = 0;
+    
   }
 }
 
 void assign_particles (Particles plist, scalar s) {
   if (s.plist > 0)
-    ;//ree_scalar_data (s);
+    free_scalar_data (s);
   s.plist = plist + 1;
   foreach()
     s[] = 0;
@@ -119,9 +142,11 @@ void assign_particles (Particles plist, scalar s) {
     s[left] = 0;
     s[right] = 0;
   }
+  s.prolongation = ref_prolongation;
+  s.restriction = ref_restriction; 
 #if TREE
-  s.refine = s.prolongation = p_refine;
-  s.coarsen = s.restriction = p_coarsen;
+  s.refine = p_refine;
+  s.coarsen = ref_coarsen;
 #endif
   foreach_particle_in(plist) {
     Point point = locate (x, y, z);

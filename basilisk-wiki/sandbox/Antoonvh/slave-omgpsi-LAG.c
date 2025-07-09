@@ -13,15 +13,22 @@ The slave is concerned with finding the streamfunction ($\psi$) */
 
 extern double master_value (const char * name, double xp = 0, double yp = 0,
 			    int i, int j, int lev);
+extern double master_value_p_omg (double xp, double yp, int lev);
 
-void copy_field_master (scalar s){
+void get_omega_parts (scalar omega) {
+  foreach() {
+    omega[] = master_value_p_omg(x, y, level);
+  }
+}
+
+void copy_field_master (scalar s) {
   foreach() {
     s[] = master_value (s.name, x, y, point.i, point.j, level);
   }
 }
-
+trace
 double slave_interpolate(const char * name, double xp = 0, double yp = 0,
-			 double zp = 0, bool linear = false)
+			 double zp = 0, bool linear = true)
 {
   if (!grid) {
     fprintf (stderr, "slave_interpolate: error: no grid! this may be a "
@@ -64,7 +71,7 @@ int slave_init (double L = 8, coord O = {0,0,0}, int maxlvl = 7, bool adapt = fa
     free_grid();
   init_grid (1 << maxlvl);
   psi.prolongation = refine_3rd;
-  TOLERANCE = 1e-4;
+  TOLERANCE = 1e-5;
   adap = adapt;
   return 0;
 }
@@ -76,9 +83,11 @@ void compute_flow() {
   }
 }
 
+scalar omega[];
+trace
 void slave_solve_psi () {
-  scalar omega[];
   copy_field_master (omega);
+  //get_omega_parts(omega);
   poisson (psi, omega); 
   compute_flow();
   if (adap == true) {
@@ -108,6 +117,7 @@ void slave_level() {
 	isoline("psiv", pv, lw = 2, lc = (float[]){0,0.5, 0.5});
     }
     cells();
+    squares ("omega", min = -2, max = 2);
     save ("slave.mp4");
     save ("slave.png");
   }

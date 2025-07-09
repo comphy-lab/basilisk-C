@@ -57,7 +57,7 @@ int main() {
 }
 
 /**
-We initiate gravity, which is opposing to the iniertia of the jet.
+We initiate gravity, which is opposing to the inertia of the jet.
 */
 
 event init (t = 0) {
@@ -76,7 +76,7 @@ event profile (t = end) {
 }
 
 /**
-We save interfaces and all the vector fields in .txt files (I process data with *python* after).
+We save interfaces and all the vector fields in .txt files (I process data with *python* after for now, but some embedded Basilisk direct post-treatments will be added later on).
 */
 
 int ivtk = 1;

@@ -1,3 +1,4 @@
+
 /**
 # Taylor-Green vortex test
 
@@ -13,6 +14,8 @@
 #define VIEW 1
 #include "master-omgpsi_LAG.h"
 #include "higher-order.h"
+
+
 int maxlevel = 6;
 int main() {
   foreach_dimension() {
@@ -24,6 +27,7 @@ int main() {
   
   for (maxlevel = 4; maxlevel <= 7; maxlevel++) {
     N = 1 << (maxlevel);
+    DT = 2*L0/N;
     run();
   }
 }
@@ -37,13 +41,13 @@ event init (t = 0) {
       pn.x = x;
       pn.y = y;
       pn.s = 2.*sin(2.*pi*x)*sin(2.*pi*y);
+      pn.ti = t;
       add_particle(pn, p_omg);
     }
   }
-  // initialize u for CFL timestep
-  velocity (p_omg);
 }
 
+#if 1
 event movie (t += 0.1) {
   if (N == 64) {
     view (width = 800, height = 800, bg = {0,0.5, 0.5});
@@ -56,8 +60,10 @@ event movie (t += 0.1) {
     slave_level();
   }
 }
+#endif
 
 event adapt (i++) {
+  compute_omega(p_omg, omega);
   adapt_number();
 }
 
@@ -65,11 +71,13 @@ event stop (t = 2) {
   double err = 0, me = 0;
   int np = 0;
   foreach_particle_in(p_omg, reduction(+:err) reduction(+:np) reduction(max:me)) {
-    double el = fabs(p().s - 2*sin(2*pi*x)*sin(2*pi*y)); 
-    err += el;
-    if (el > me)
-      me = el;
-    np++;
+    if (p().ti == 0) {
+      double el = fabs(p().s - 2*sin(2*pi*x)*sin(2*pi*y)); 
+      err += el;
+      if (el > me)
+	me = el;
+      np++;
+    }
   }
   printf ("%d %g %g\n", N, err/np, me);
   return 1;
