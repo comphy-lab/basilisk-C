@@ -43,18 +43,22 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{thomas2025,
+title = {Droplet dynamics in capillary parallel plate channel},
+journal = {Computers & Fluids},
+volume = {300},
+pages = {106728},
+year = {2025},
+issn = {0045-7930},
+doi = {https://doi.org/10.1016/j.compfluid.2025.106728},
+url = {https://www.sciencedirect.com/science/article/pii/S0045793025001884},
+author = {Damien Thomas and Stéphanie Lacour and Stéphane Zaleski},
+keywords = {Breakup, Contact lines, Droplet, Clogging, VOF, Spray cooling}
+}
+
 @hal{wu2025, hal-05108994}
 
 @hal{scapin2025, hal-05105692}
 
 @hal{kulkarni2025, hal-05104157}
-
-@article{gai2025, 
-title={Deformation, dynamics and rheology of immersed elastic capsules in an inertial shear flow}, 
-volume={1010}, 
-DOI={10.1017/jfm.2025.294}, 
-journal={Journal of Fluid Mechanics}, 
-author={Gai, Guodong and Huet, Damien P. and Gong, Jiahao and Wachs, Anthony}, 
-year={2025}, 
-pages={A52}}
 ~~~

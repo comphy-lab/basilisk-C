@@ -8,6 +8,28 @@ own papers if they use Basilisk. See also [src/references.bib]().
 ### 2025
 
 ~~~bib
+@article{thomas2025,
+title={Droplet dynamics in capillary parallel plate channel},
+journal={Computers & Fluids},
+volume={300},
+pages={106728},
+year={2025},
+issn={0045-7930},
+doi={https://doi.org/10.1016/j.compfluid.2025.106728},
+url={https://www.sciencedirect.com/science/article/pii/S0045793025001884},
+author={Damien Thomas and Stéphanie Lacour and Stéphane Zaleski},
+keywords={Breakup, Contact lines, Droplet, Clogging, VOF, Spray cooling},
+}
+
+@article{gai2025, 
+title={Deformation, dynamics and rheology of immersed elastic capsules in an inertial shear flow}, 
+volume={1010}, 
+DOI={10.1017/jfm.2025.294}, 
+journal={Journal of Fluid Mechanics}, 
+author={Gai, Guodong and Huet, Damien P. and Gong, Jiahao and Wachs, Anthony}, 
+year={2025}, 
+pages={A52}}
+
 @article{phillips2025,
   title={Modelling two-dimensional droplet rebound off deep fluid baths},
   author={Phillips, Katie A. and Cimpeanu, Radu and Milewski, Paul A.},
@@ -20,7 +42,6 @@ own papers if they use Basilisk. See also [src/references.bib]().
   url = {https://royalsocietypublishing.org/doi/full/10.1098/rspa.2024.0956},
   publisher={The Royal Society}
 }
-
 
 @article{kumar2025,
 title = {3D numerical investigation of fragmentation of wood’s metal in water and estimation of particle size distribution},

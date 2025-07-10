@@ -1,0 +1,34 @@
+# Welcome!
+My name is Spencer Schwartz, and this is my Basilisk sandbox. I am a Master's student at the Univeristy of South Carolina studying immersed boundary methods and flow blurring atomization. Below you will find code related to my projects and publications.
+
+# Immersed Boundary Methods (IBM)
+
+### Immersed Reconstructed Boundary Method (IRBM)
+
+##### Source Code
+* [README](IRBM/README.md)
+* [ibm.h](IRBM/ibm.h)
+* [ibm-utils.h](IRBM/ibm-utils.h) : contains helper functions for ibm.h
+
+##### Test Cases
+
+* [Flow over a 2D cylinder](IRBM/ibm-cylinder.c)
+* [Flow over a 3D sphere](IRBM/ibm-sphere.c)
+* [Flow over a 2D oscillating cylinder](IRBM/ibm-cylinder-osc.c)
+
+
+# Publications
+
+~~~bib
+@article{schwartz2025b,
+title = {An Eulerian-based immersed boundary method using direct forcing on piecewise linear constructed interface},
+journal = {Computers & Fluids},
+volume = {299},
+pages = {106727},
+year = {2025},
+issn = {0045-7930},
+doi = {https://doi.org/10.1016/j.compfluid.2025.106727},
+url = {https://www.sciencedirect.com/science/article/pii/S0045793025001872},
+author = {Spencer Schwartz and Yue Ling}
+}
+~~~
