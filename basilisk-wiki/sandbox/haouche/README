@@ -1,18 +1,55 @@
 /**
 
 # My Sandbox
-Welcome to the README for my sandbox. This page serves as your gateway to exploring the exciting projects within [/sandbox/haouche/]. My aim is to offer you an informative overview of these endeavors, and I hope you discover something that captivates your interest. Feel free to use these codes without worrying about authorship, I just request you to cite the papers where I have introduced the numerical method.
+Welcome to the README for my sandbox! I’m a PhD student passionate about numerical methods — so if you're like me, just enjoy :)
+
+Here, you'll explore the numerical techniques behind fluid simulations and see why Basilisk is such a WONDERFUL tool. I’ll walk you through some classical examples in fluid mechanics and show how numerical methods bring them to life.
+
+Whether you're a beginner or an enthusiast, I hope you find something useful or inspiring here.
+
+Just below, you'll see a beautiful channel...
 
 -*Ilies Haouche*- 
 
 ## [YouTube Channel](https://www.youtube.com/@ilies2924/)
-I share free tutorials on the Basilisk solver and fluid mechanics simulations on my YouTube channel – come learn and explore with me!
+You can just click on my head YouTub Channel :)
 
+So if you're into fluid mechanics and love simulations, check out my YouTube channel — I share hands-on tutorials on Basilisk and the physics behind real fluid flows.
 
+## Numerical methods course
+This section summarizes key numerical techniques used in scientific computing, particularly for solving partial differential equations (PDEs). The focus is on two core approaches: finite difference methods (FDM) and finite volume methods (FVM).
 
-## Soluble surfactants
+-  Finite Difference Methods involve approximating derivatives by using differences between values at discrete grid points. They are intuitive, easy to implement, and suitable for structured grids. FDM is commonly used in early-stage teaching or in problems with regular geometries.
 
+-  Finite Volume Methods, in contrast, are based on the integral form of the conservation laws. They ensure local conservation of physical quantities and are especially suited for complex geometries and unstructured meshes. FVM is widely used in computational fluid dynamics (CFD) and is the method adopted in Basilisk.
 
+This module includes short notes, examples, and code snippets to illustrate these methods and how they relate to real simulations.
+
+#### Finite difference methods [FDM]
+
+#### Finite volume methods [FVM]
+
+## Physical cases
+This section presents various physical mechanisms commonly encountered in fluid dynamics, with a focus on real-world effects that go beyond pure numerical methods.
+
+-  Hydrodynamic instabilities, such as Rayleigh–Taylor and Kelvin–Helmholtz, which arise due to density differences and shear in stratified flows...
+-  Surfactants and Marangoni effects, which influence interfacial tension and drive flows due to surface tension gradients.
+-  Multiphase flows, where interactions between different fluid phases lead to rich and complex behaviors.
+
+These cases combine physics and numerical modeling to better understand fluid systems under realistic conditions.
+
+### [Hydrodynamic instabilities](Hydrodynamic_instabilities)
+* [Rayleigh-Taylor](Rayleigh-Taylor)
+* [Kelvin-Helmholtz](Kelvin-Helmholtz)
+* [Rayleigh-Bénard](Rayleigh-Bénard)
+
+### Soluble surfactants
+* [Course of soluble surfactants and Marangoni effects](Course of insoluble/soluble surfactants and Marangoni effects)
+
+## Post-processing
+* [output_vtu.h](output_vtu.h)
+
+## MPI
 
 ## Contact
 
