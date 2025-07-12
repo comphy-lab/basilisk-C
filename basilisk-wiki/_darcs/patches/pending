@@ -21,6 +21,7 @@ rmdir ./sandbox/esaymeca
 rmdir ./sandbox/fanshuo/Doc/pics
 rmdir ./sandbox/fanshuo/videdossier
 rmdir ./sandbox/flpo
+rmdir ./sandbox/haouche/Hydrodynamic_instabilities
 rmdir ./sandbox/huang/test_cases
 rmdir ./sandbox/huet/tests/eulerian_caps
 rmdir ./sandbox/jmf/Data

@@ -11,7 +11,7 @@ Placed between two plates.
 /**
 I Will define here if I want a fancier/more complex way of computing angular velocity. */
 
-double NP = 32.; // number of agents I want to work with...
+double NP = 1.; // number of agents I want to work with...
 double HEIGHT =64.0;
 double THETA = M_PI/2.*1;
 double RADIUS = 1.0;
