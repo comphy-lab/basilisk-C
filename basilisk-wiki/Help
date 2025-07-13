@@ -397,6 +397,23 @@ Once this is done, you can push your local changes using:
 darcs push wiki@shell.basilisk.fr:wiki
 ~~~
 
+### Troubleshooting RSA keys
+
+If you get a message looking like
+
+~~~bash
+Unable to negotiate with 192.162.68.18 port 22: no matching host key type found. Their offer: ssh-rsa,ssh-dss
+~~~
+
+You may have to allow RSA keys as described [here](https://www.sobyte.net/post/2023-06/debian-enable-ssh-rsa-key/) i.e. using something like
+
+~~~bash
+cat >> ~/.ssh/config << EOF
+HostKeyAlgorithms +ssh-rsa
+PubkeyAcceptedKeyTypes +ssh-rsa
+EOF
+~~~
+
 # How to re-use, modify or fix codes in the `sandbox`
 
 As explained in the [sandbox documentation](sandbox/documentation#basilisks-documentation) anyone (with a login) can access and modify any page in the `sandbox`.
