@@ -1,4 +1,4 @@
-pristine:45124acb14d5ec73b52416db267cf61104e4fea4e882495f4bb860620b9883a8
+pristine:2809af2c6640e21de1d81137ac23c13066134511e7aca0add8bd7f048438645d
 Starting with inventory:
 0000125928-70ed13932b44c314b9b337d2f50af2eef56dace60b1e546c932ca66713d2041e
 [TAG 03-06-25
@@ -1452,3 +1452,13 @@ Stephane Popinet <popinet@basilisk.fr>**20250712130633
  Ignore-this: 5cc7a4310c2156c2bb4c712dee58381e
 ] 
 hash: 0000000597-99340557b2424349a4447edeb58497120122199dc751bbdd7c39e375baf081be
+[Stokes first problem: showing self-similarity with the centered solver
+nicolas.cailler@upmc.fr**20250713184550
+ Ignore-this: 297388f3470b90e855300fc07b389cb91d175e91e8f7f886fea8b195ede0d9785e6364d687d50a8f
+] 
+hash: 0000035265-cd66cafd59092ff079689c1c4e31b62b35cb9c67a61bcd37de0badc75df420f4
+[Stokes first problem done now with a dedicated self-similar solver
+nicolas.cailler@upmc.fr**20250713213448
+ Ignore-this: 4a0149c98f4484ad5d0efd28ae54cf67175a70f9adf8d9a7536320f7878b042f0f2ce558ebc43b3c
+] 
+hash: 0000031925-f97a08216f3e1eaad0d54026c88450714abec8f6da40c49afa68cfbda6f6e9cc
