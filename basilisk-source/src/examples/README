@@ -21,6 +21,7 @@ examples)"*](/src/test/README#running-and-creating-test-cases-and-examples).
 * [Forced isotropic turbulence in a triply-periodic box](isotropic.c)
 * [Stokes flow through a complex 3D porous medium](porous3D.c)
 * [Coupling two solvers](master.c)
+* [Starting vortex of a 2D NACA2414 airfoil at $Re=10000$](naca2414-starting.c)
 
 ## Two-phase flows
 

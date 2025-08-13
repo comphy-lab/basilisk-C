@@ -1,4 +1,4 @@
-pristine:ad0e00962fb7e66c2096f24344b01184e13db4a6dcaf50f9c36735873932a87c
+pristine:8c12259eaebef482aba6df82f5580d77081b1e3b8aa97e76f5177320791ed872
 Starting with inventory:
 0000059985-9b08f44c43023087ea323913c98c24d9439dcf35bbcb3f79a06269386ede0ffb
 [TAG release 25-02-26 (macros)
@@ -128,3 +128,48 @@ Stephane Popinet <popinet@basilisk.fr>**20250612143939
  Ignore-this: 75e7452fa8be2aa1e8493a239183fac6
 ] 
 hash: 0000000705-9fbf862426c9d2305a4afdf5026a310cfa438be6a492fb19c0027e624040bafd
+[Scalings for Rayleigh-Plateau pinchoff
+Stephane Popinet <popinet@basilisk.fr>**20250716185728
+ Ignore-this: 3145179a032672f07323de3f7080c8e2
+] 
+hash: 0000057306-585fab05487a5ae40a93b5c924df76dfd8792e8bf4bfb8f618045ee78122b09f
+[Fixed plot
+Stephane Popinet <popinet@basilisk.fr>**20250716195531
+ Ignore-this: 95fd78c253265944a90eb8a043997917
+] 
+hash: 0000000294-2035a7aa523e761ebc4cc4bd60027ce83878b2f347f34ee4c9c1dbddfd48f49b
+[Fixed reference
+Stephane Popinet <popinet@basilisk.fr>**20250716201420
+ Ignore-this: 50902b8aaedbab645e72e1b4b241ae58
+] 
+hash: 0000000273-e8ab4e50d658b0c87d2bc372c241eca57e8d7de25daf52c525fbaa19defbdbe3
+[Updated perfs.plot for newer versions of gnuplot
+Stephane Popinet <popinet@basilisk.fr>**20250717142600
+ Ignore-this: 44597e007d3bdf7bb6b955a4a03daf72
+] 
+hash: 0000003472-cc326e5b40c8928ca7e016fe6eeacde62f7fa875d3239839f53de2fab99bbcdf
+[Fixed round-off problem and increased levels for Plateau-Rayleigh pinchoff
+Stephane Popinet <popinet@basilisk.fr>**20250717143745
+ Ignore-this: fbe679dfc90bc3dd66093ce72919a5a9
+] 
+hash: 0000106447-c79a0d42331b8a54c2c55b3daa169b6a96d5aed5a5704b694325f6bb7ee173d8
+[Better figure
+Stephane Popinet <popinet@basilisk.fr>**20250717151526
+ Ignore-this: 5aeb8d847954e665abe9bf85367bf61e
+] 
+hash: 0000001035-aad6a13bdd741f0dac21eba731426872804b267d02ceba3600fb226413b683ad
+[Starting vortex of a 2D NACA2414 airfoil at Re=10000
+Stephane Popinet <popinet@basilisk.fr>**20250718072903
+ Ignore-this: a6b21db6bb19d338435e5a6431e989d0
+] 
+hash: 0000006308-fb887f0b35b6fc1d2fdbdfb0d0dd8a6212041d4f1e98285028a8c79eca964a08
+[Dimension
+Stephane Popinet <popinet@basilisk.fr>**20250718074540
+ Ignore-this: ff320269e6741fc6419d622c7f77f6d6
+] 
+hash: 0000000190-70e41aa7b235cc49039016a2a0596cfc3957a4e1f7bb7c6b642fc188a26ad68c
+[Typo
+Stephane Popinet <popinet@basilisk.fr>**20250718075224
+ Ignore-this: 839230c474c39edf3f315269b19d640a
+] 
+hash: 0000000275-53178db920fd0304c687816f7432debc2223e4e290bc80974f3d7962c2ff6b53

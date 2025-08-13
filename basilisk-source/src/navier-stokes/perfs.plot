@@ -1,3 +1,6 @@
+# "infinite" loop
+do for [i=0:1000000] {
+
 reset
 unset mouse
 
@@ -63,8 +66,8 @@ set rmargin at screen right(2)
 set tmargin at screen top(5)
 set bmargin at screen bot(5)
 
-if (STATS_min_y == STATS_max_y) set y2range [STATS_max_y-1:STATS_max_y+1]; \
-else set y2range [STATS_min_y:STATS_max_y];
+if (STATS_min_y == STATS_max_y) { set y2range [STATS_max_y-1:STATS_max_y+1]; } \
+else { set y2range [STATS_min_y:STATS_max_y]; }
 unset ytics
 set y2tics
 unset ylabel
@@ -99,8 +102,8 @@ set tmargin at screen top(4)
 set bmargin at screen bot(4)
 
 stats "perfs" u 1:4 nooutput
-if (STATS_min_y == STATS_max_y) set y2range [STATS_max_y-1:STATS_max_y+1]; \
-else set y2range [STATS_min_y:STATS_max_y];
+if (STATS_min_y == STATS_max_y) { set y2range [STATS_max_y-1:STATS_max_y+1]; } \
+else { set y2range [STATS_min_y:STATS_max_y]; }
 unset ytics
 set y2tics auto
 unset ylabel
@@ -117,8 +120,8 @@ set tmargin at screen top(3)
 set bmargin at screen bot(3)
 
 stats "perfs" u 1:5 nooutput
-if (STATS_min_y == STATS_max_y) set yrange [0:STATS_max_y+1]; \
-else set yrange [STATS_min_y:STATS_max_y];
+if (STATS_min_y == STATS_max_y) { set yrange [0:STATS_max_y+1]; } \
+else { set yrange [STATS_min_y:STATS_max_y]; }
 unset ylabel
 unset y2label
 set ytics auto
@@ -136,8 +139,8 @@ set tmargin at screen top(3)
 set bmargin at screen bot(3)
 
 stats "perfs" u 1:6 nooutput
-if (STATS_min_y == STATS_max_y) set y2range [0:STATS_max_y+1]; \
-else set y2range [STATS_min_y:STATS_max_y];
+if (STATS_min_y == STATS_max_y) { set y2range [0:STATS_max_y+1]; } \
+else { set y2range [STATS_min_y:STATS_max_y]; }
 unset ytics
 set y2tics auto
 unset ylabel
@@ -155,8 +158,8 @@ set tmargin at screen top(2)
 set bmargin at screen bot(2)
 
 stats "perfs" u 1:7 nooutput
-if (STATS_min_y == STATS_max_y) set yrange [0:STATS_max_y+1]; \
-else set y2range [STATS_min_y:STATS_max_y];
+if (STATS_min_y == STATS_max_y) { set yrange [0:STATS_max_y+1]; } \
+else { set y2range [STATS_min_y:STATS_max_y]; }
 unset ylabel
 unset y2label
 set ytics auto
@@ -175,8 +178,8 @@ set tmargin at screen top(2)
 set bmargin at screen bot(2)
 
 stats "perfs" u 1:8 nooutput
-if (STATS_min_y == STATS_max_y) set y2range [0:STATS_max_y+1]; \
-else set y2range [STATS_min_y:STATS_max_y];
+if (STATS_min_y == STATS_max_y) { set y2range [0:STATS_max_y+1]; } \
+else { set y2range [STATS_min_y:STATS_max_y]; }
 unset ytics
 set y2tics auto
 unset ylabel
@@ -212,8 +215,8 @@ set tmargin at screen top(1)
 set bmargin at screen bot(1)
 
 stats "perfs" u 1:($11/$12) nooutput
-if (STATS_min_y == STATS_max_y) set y2range [STATS_max_y-1:STATS_max_y+1]; \
-else set y2range [STATS_min_y:STATS_max_y];
+if (STATS_min_y == STATS_max_y) { set y2range [STATS_max_y-1:STATS_max_y+1]; } \
+else { set y2range [STATS_min_y:STATS_max_y]; }
 unset ytics
 set y2tics auto
 unset ylabel
@@ -224,4 +227,7 @@ plot 'perfs' u 1:($13/$12) every EVERY w boxes lc 0
 unset multiplot
 
 pause 10
-reread
+
+# end of infinite loop
+
+}

@@ -1,4 +1,5 @@
 unset mouse
-load ("< awk -f $BASILISK/trace.awk < profiling")
-pause 10
-reread
+do for [i=0:1000000] {
+  load ("< awk -f $BASILISK/trace.awk < profiling")
+  pause 10
+}
