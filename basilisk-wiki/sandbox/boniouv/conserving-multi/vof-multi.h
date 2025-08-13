@@ -23,17 +23,15 @@ The list of tracers associated with the volume fraction is stored in
 the *tracers* attribute. For each tracer, the "side" of the interface
 (i.e. either $c$ or $1 - c$) is controlled by the *inverse*
 attribute). 
-There is also a *fsum* attribute for the scalar which is proper 
-to the [multi-VOF method](no-coalescence.h). In this specific case,
-$c=\sum_i c_i$ where each vof field $c_i$ is stored in *interfaces* 
-and transported in this routine. 
-If *fsum* is actived for one of the fields stored in *interfaces* then,
-it is not advected directly but computed from the sum of all other 
-fields instead. This option can be useful to obtain the correct tracer
-update compatible with the *inverse* attribute. 
-Note that it works as for the 
-[original version](/src/vof.h)
-when *fsum* is not activated.
+
+There is also a *fsum* attribute for the scalar which is proper to the
+[multi-VOF method](no-coalescence.h). In this specific case, $c=\sum_i c_i$
+where each vof field $c_i$ is stored in *interfaces* and transported in this
+routine. If *fsum* is actived for one of the fields stored in *interfaces* then,
+it is not advected directly but computed from the sum of all other fields
+instead. This option can be useful to obtain the correct tracer update
+compatible with the *inverse* attribute. Note that it works as for the 
+[original version](/src/vof.h) when *fsum* is not activated.
 */
 
 attribute {
@@ -282,8 +280,8 @@ static void sweep_x (scalar c, scalar cc, scalar * tcl)
 
   if (cfl > 0.5 + 1e-6)
     fprintf (ferr, 
-	     "WARNING: CFL must be <= 0.5 for VOF (cfl - 0.5 = %g)\n", 
-	     cfl - 0.5), fflush (ferr);
+	     "conserving-multi/vof-multi.h:%d: warning: CFL must be <= 0.5 for VOF (cfl - 0.5 = %g)\n", 
+	     LINENO, cfl - 0.5), fflush (ferr);
 
   /**
   Once we have computed the fluxes on all faces, we can update the
@@ -296,18 +294,25 @@ static void sweep_x (scalar c, scalar cc, scalar * tcl)
   non-zero for the one-dimensional velocity field -- is approximated using
   a centered volume fraction field `cc` which will be defined below. 
 
-  For tracers, the one-dimensional update is simply
+  For tracers, the corresponding one-dimensional update is
   $$
-  \partial_tt_j = -\nabla_x\cdot(\mathbf{u}_f t_j)
+  \partial_tt_j = -\nabla_x\cdot(\mathbf{u}_f t_j) + t_j\nabla_x\cdot\mathbf{u}_f
   $$
-  */
+  The compressive second-term can be removed by defining the
+  NO_1D_COMPRESSION macro. */
 
 #if !EMBED
   foreach() {
     c[] += dt*(flux[] - flux[1] + cc[]*(uf.x[1] - uf.x[]))/(cm[]*Delta);
+#if NO_1D_COMPRESSION
+    scalar t, tflux;
+    for (t, tflux in tracers, tfluxl)
+      t[] += dt*(tflux[] - tflux[1])/(cm[]*Delta);
+#else // !NO_1D_COMPRESSION
     scalar t, tc, tflux;
     for (t, tc, tflux in tracers, tcl, tfluxl)
       t[] += dt*(tflux[] - tflux[1] + tc[]*(uf.x[1] - uf.x[]))/(cm[]*Delta);
+#endif // !NO_1D_COMPRESSION
   }
 #else // EMBED
   /**
@@ -319,10 +324,15 @@ static void sweep_x (scalar c, scalar cc, scalar * tcl)
   
   foreach()
     if (cs[] > 0.) {
-      c[] += dt*(flux[] - flux[1] + cc[]*(uf.x[1] - uf.x[]))/Delta;
+      c[] += dt*cs[]*(flux[] - flux[1] + cc[]*(uf.x[1] - uf.x[]))/(cm[]*Delta);
+#if NO_1D_COMPRESSION
+      for (t, tflux in tracers, tfluxl)
+	t[] += dt*cs[]*(tflux[] - tflux[1])/(cm[]*Delta);
+#else // !NO_1D_COMPRESSION
       scalar t, tc, tflux;
       for (t, tc, tflux in tracers, tcl, tfluxl)
-	      t[] += dt*(tflux[] - tflux[1] + tc[]*(uf.x[1] - uf.x[]))/Delta;
+	t[] += dt*cs[]*(tflux[] - tflux[1] + tc[]*(uf.x[1] - uf.x[]))/(cm[]*Delta);
+#endif // !NO_1D_COMPRESSION
     }
 #endif // EMBED
 
@@ -351,8 +361,10 @@ void vof_advection (scalar * interfaces, int i)
 
       scalar cc[], * tcl = NULL, * tracers = c.tracers;    
       for (scalar t in tracers) {
+#if !NO_1D_COMPRESSION
         scalar tc = new scalar;
         tcl = list_append (tcl, tc);
+#endif // !NO_1D_COMPRESSION
 #if TREE
         if (t.refine != vof_concentration_refine) {
           t.refine = t.prolongation = vof_concentration_refine;
@@ -364,6 +376,7 @@ void vof_advection (scalar * interfaces, int i)
       }
       foreach() {
         cc[] = (c[] > 0.5);
+#if !NO_1D_COMPRESSION
         scalar t, tc;
         for (t, tc in tracers, tcl) {
           if (t.inverse)
@@ -371,6 +384,7 @@ void vof_advection (scalar * interfaces, int i)
           else
             tc[] = c[] > 0.5 ? t[]/c[] : 0.;
         }
+#endif // !NO_1D_COMPRESSION
       }
 
       /**
@@ -451,7 +465,7 @@ event vof (i++)
   volume = {71},
   year = {2015},
   doi = {doi.org/10.1016/j.ijmultiphaseflow.2014.12.005},
-  url = {http://gfs.sf.net/papers/lopez2015.pdf}
+  url = {http://gerris.dalembert.upmc.fr/papers/lopez2015.pdf}
 }
 ~~~
 */

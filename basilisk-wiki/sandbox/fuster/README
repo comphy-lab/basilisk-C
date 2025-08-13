@@ -18,38 +18,5 @@ Below some old links that could be useful
 * Effects of surface tension on the Richtmyer-Meshkov instability in fully compressible and inviscid fluids. [Tang et al PRF, 2021](https://journals.aps.org/prfluids/abstract/10.1103/PhysRevFluids.6.113901)
 * Optimal subharmonic emission of stable bubble oscillations in a tube [Fan et al, PRE, 2020](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.102.013105)
 
-###Single phase 
-
-* [Propagation of a small perturbation in an ideal gas (axisymmetric flow)](Allmach3.0/gaussianaxi.c)
-* [Propagation of a shockwave in an ideal gas](Allmach3.0/shockwave.c)
-* [Double Mach reflection of a Mach 10 shock from a wall](Allmach3.0/InclinedShockBCG.c)
-* [A Mach-3 wind tunnel with a step](Allmach3.0/stepAllMach.c)
-
-###Multiphase simulations
-
-* [Transport of an interface between two fluids at different pressures](Allmach3.0/DiscontinuityAdvection.c)
-* [Perfect transmission of an acoustic wave through an interface between two fluids with acoustic impedance matching](Allmach3.0/reflectionperfect.c)
-* [Reflection/transmission of an acoustic wave through an interface between two fluids with different acoustic impedance](Allmach3.0/reflectiongaussian3.c)
-
-###Flows in the presence of surface tension
-
-* [Circular droplet in equilibrium (influence of Laplace number)](Allmach3.0/spurioustest.c)
-* [Circular droplet in equilibrium (convergence study)](Allmach3.0/spurioustest2.c)
-* [Shape oscillation of an inviscid droplet](Allmach3.0/oscillation.c)
-* [Sessile bubble test with all-Mach solver](http://basilisk.fr/sandbox/msaini/tests/sessilecomp.c)
 
 
-
-## Tests and examples for the All-Mach formulation including thermal effects
-
-List of tests and examples of the extension including thermal effects [Saeede et al (JCP, 2022)](https://arxiv.org/abs/2206.11294)
-
-This code extension can be downloaded [here](http://basilisk.fr/sandbox/ysaade/allMach/src)
-
-* [Expansion of an initially heated bubble](http://basilisk.fr/sandbox/ysaade/allMach/AXI_expansion.c)
-* [Shrinkage of an intially cooled bubble](http://basilisk.fr/sandbox/ysaade/allMach/AXI_shrinkage.c)
-* [Shrinkage of an initially cooled bubble (sph coord)](http://basilisk.fr/sandbox/ysaade/allMach/SPHERISYM_shrinkage.c)
-* [Bubble collapse near a wall](http://basilisk.fr/sandbox/ysaade/allMach/AXI_collapse.c)
-*/
-
-what is happening????

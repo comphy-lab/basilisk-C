@@ -84,6 +84,7 @@ Please refer to [Tian's sandbox](http://basilisk.fr/sandbox/tianlong/README)
 # Useful postprocessing tools
 * [Facets output in an MPI run](src/output-mpi.h)
 * [Triangulate facets for visualization using Paraview](others/interface.py)
+* [Theoretical solutions of 3D oscillating drop/bubble](others/oscillation_analytical.py)
 
 # Documentation
 I spent some time reading the source code to figure out how the tagging function in Basilisk works. 

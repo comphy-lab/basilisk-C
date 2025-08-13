@@ -204,7 +204,7 @@ event init (i = 0)
   We initialize the embedded boundary. We read the *stl* file that
   contains the network geometry. */
 
-  FILE * fp = fopen ("../data/wind-turbine/windTurbineGeom.stl", "r");
+  FILE * fp = fopen ("wind-turbine-flow.stl", "r");
   fraction_from_stl (cs, fs, fp, 1.e-4, (lmin), max (10, (lmax)));
   fclose (fp);
   

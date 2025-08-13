@@ -22,6 +22,22 @@ sandbox, please refer to:
 @hal{cipriano2025, hal-04962085}
 ~~~
 
+## Gallery
+
+![Maps of temperature and mass fraction fields during methanol droplet combustion under normal gravity and ambient pressure conditions [(code)](run/burningdroplet.c).](https://ars.els-cdn.com/content/image/1-s2.0-S0017931025009238-gr5_lrg.jpg){width=80%}
+
+<div style="margin-bottom:3em;"></div>
+
+![The effect of pressure on the combustion of a methanol droplet under normal gravity [(code)](run/burningdroplet.c).](https://ars.els-cdn.com/content/image/1-s2.0-S0017931025009238-gr6_lrg.jpg){width=90%}
+
+<div style="margin-bottom:3em;"></div>
+
+![Buoyancy-driven flows induced by n-heptane evaporation in nitrogen: influence of ambient pressure [(code)](run/normalgravity.c).](https://ars.els-cdn.com/content/image/1-s2.0-S0017931024009451-gr9_lrg.jpg){width=90%}
+
+<div style="margin-bottom:3em;"></div>
+
+![Temperature (a) and velocity divergence (b) during the thermal expansion of a liquid droplet, simulated using a low-Mach number formulation [(code)](run/expansion.c).](https://ars.els-cdn.com/content/image/1-s2.0-S0017931024009451-gr5_lrg.jpg){width=80%}
+
 ## Source Codes
 
 The main modules implemented in my sandbox are reported below.

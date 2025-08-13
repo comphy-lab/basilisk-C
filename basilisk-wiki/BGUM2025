@@ -34,7 +34,7 @@ The meeting was held on the 7--9th July 2025 at the University of Oxford, United
 
 The format was similar to earlier Basilisk/Gerris meetings held in [Paris, France in 2011](http://gerris.dalembert.upmc.fr/gerris_users'_meeting_2011.html), [Wellington, New Zealand in 2012](http://gerris.dalembert.upmc.fr/gerris_users'_meeting_2012.html), [Sevilla, Spain in 2014](http://gerris.dalembert.upmc.fr/meeting_on_numerical_challenges_in_two-phase_flows.html), [Princeton, USA in 2017](BGUM2017), [Paris, France in 2019](BGUM2019) and [Paris, France in 2023](BGUM2023). Participants were encouraged to share their work using Basilisk (or Gerris) for applications in fluid mechanics, environmental science, engineering etc. Students were especially welcome to participate in this informal and friendly gathering.
 
-## Program
+## Program and presentations
 
 <table>
 <tr><td>**Monday 7th July**</td></tr>
@@ -53,21 +53,21 @@ Welcome. Wouter Mostert, Radu Cimpeanu and Stéphane Popinet
 <td>
 [Stéphane Popinet](/sandbox/popinet/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
 <br>
-*What's new and future plans*
+[*What's new and future plans*](BGUM2025/popinet.pdf)
 <hr></td></tr>
 
 <tr><td>14:20</td>
 <td>
 [Jacob Maarek](http://basilisk.fr/sandbox/jmaarek/), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
 <br>
-*Towards Modeling Non-Isothermal Sloshing of Liquid Hydrogen*
+[*Towards Modeling Non-Isothermal Sloshing of Liquid Hydrogen*](BGUM2025/maarek.pdf)
 <hr></td></tr>
 
 <tr><td>14:40</td>
 <td>
 Pierre-Antoine Maës, Institute for Combustion Technology, Aachen, Germany
 <br>
-*Study of the boundary layer for a solid particle combustion*
+[*Study of the boundary layer for a solid particle combustion*](BGUM2025/maes.pdf)
 
 <hr></td></tr>
 
@@ -75,14 +75,14 @@ Pierre-Antoine Maës, Institute for Combustion Technology, Aachen, Germany
 <td>
 Yuanpeng Zhang, Department of Modern Mechanics, University of Science and Technology of China
 <br>
-*Simulation of melting/icing problems with the phase-field method*
+[*Simulation of melting/icing problems with the phase-field method*](BGUM2025/zhang.pdf)
 <hr></td></tr>
 
 <tr><td>15:20</td>
 <td>
 Wei Qin, [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, Paris, France
 <br>
-*Fluid dynamics of hydrogen production by electrolysis*
+Fluid dynamics of hydrogen production by electrolysis*
 <hr></td></tr>
 
 <tr><td>15:40</td>
@@ -108,14 +108,14 @@ Wei Qin, [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, Paris, France
 <td>
 Miguel A. Quetzeri-Santiago, Instituto de Investigaciones en Materiales, UNAM, Mexico
 <br>
-*Numerical investigation of jet impact cavity dynamics using Basilisk*
+[*Numerical investigation of jet impact cavity dynamics using Basilisk*](BGUM2025/quetzeri.pdf)
 <hr></td></tr>
 
 <tr><td>17:00</td>
 <td>
 [Ayush Dixit](https://pof.tnw.utwente.nl/people/profile/2068), [Physics of Fluids, Univ. Twente](https://pof.tnw.utwente.nl)
 <br>
-*Holey Sheets*
+[*Holey Sheets*](BGUM2025/dixit.pdf)
 <hr></td></tr>
 
 <tr><td>17:20</td>
@@ -129,7 +129,7 @@ Miguel A. Quetzeri-Santiago, Instituto de Investigaciones en Materiales, UNAM, M
 <td>
 Riccardo Caraccio, [Politecnico di Milano](https://www.polimi.it/), Italy
 <br>
-*A One-Grid Framework for Pyrolysis of Porous Biomass Particles*
+[*A One-Grid Framework for Pyrolysis of Porous Biomass Particles*](BGUM2025/caraccio.pdf)
 <hr></td></tr>
 
 <tr><td>**Tuesday 8th July**</td></tr>
@@ -143,14 +143,14 @@ Riccardo Caraccio, [Politecnico di Milano](https://www.polimi.it/), Italy
 <td>
 Canwei Jin, Imperial College London, UK
 <br>
-*Coupled 2-D HOS-Basilisk simulations of multiple breaking waves in dispersively-focused wave groups*
+[*Coupled 2-D HOS-Basilisk simulations of multiple breaking waves in dispersively-focused wave groups*](BGUM2025/jin.pdf)
 <hr></td></tr>
 
 <tr><td>9:20</td>
 <td>
 [Jiarong Wu](https://jiarong-wu.github.io/), Courant Institute of Mathematical Sciences, New York University
 <br>
-*Sensitivity of upper ocean state to air-sea fluxes, tested with Basilisk's GOTM implementation*
+[*Sensitivity of upper ocean state to air-sea fluxes, tested with Basilisk's GOTM implementation*](BGUM2025/wu.pdf)
 <hr></td></tr>
 
 <tr><td>09:40</td>
@@ -176,7 +176,7 @@ Canwei Jin, Imperial College London, UK
 <td>
 [Nicolo Scapin](/sandbox/nscapin/), [Princeton University](https://www.princeton.edu), USA
 <br>
-*Progress in wind-forced breaking waves*
+[*Progress in wind-forced breaking waves*](BGUM2025/scapin.pdf)
 <hr></td></tr>
 
 <tr><td>11:20</td>
@@ -190,7 +190,7 @@ Canwei Jin, Imperial College London, UK
 <td>
 [Bruno Deremble](https://bderembl.github.io/), Université Grenoble Alpes, France
 <br>
-*Will the Gulf Stream disappear? (spoiler: No)*
+[*The Gulf Stream and North Atlantic circulation in a changing climate*](BGUM2025/deremble.pdf)
 <hr></td></tr>
 
 <tr><td>12:00 -- 13:40</td>
@@ -216,7 +216,7 @@ Andriarimina Daniel Rakotonirina, The Ocean Cleanup, The Netherlands
 <td>
 Jean Robin, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne, ArcelorMittal, France
 <br>
-*Melting of a porous iron particle in slag*
+[*Melting of a porous iron particle in slag*](BGUM2025/robin.pdf)
 <hr></td></tr>
 
 <tr><td>14:40</td>
@@ -240,28 +240,28 @@ Panel discussion (1h, industry representatives, Q&A)
 <td>
 Mustapha Aknine, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
 <br>
-*Study of the effect of Regularization Errors on the developpement of Multiphase Fluid Instabilities*
+[*Study of the effect of Regularization Errors on the developpement of Multiphase Fluid Instabilities*](BGUM2025/aknine.pdf)
 <hr></td></tr>
 
 <tr><td>16:40</td>
 <td>
 [Edoardo Cipriano](/sandbox/ecipriano/README), [Politecnico di Milano](https://www.polimi.it/), Italy
 <br>
-*Current state of gas-liquid phase change modeling in Basilisk*
+[*Current state of gas-liquid phase change modeling in Basilisk*](BGUM2025/cipriano.pdf)
 <hr></td></tr>
 
 <tr><td>17:00</td>
 <td>
 Antoine Aubert, LadHyX, Palaiseau, France
 <br>
-*Turbulence Modelling using Basilisk*
+[*Implementation of a $k$-$\epsilon$ RANS turbulence model in Basilisk*](BGUM2025/aubert.pdf)
 <hr></td></tr>
 
 <tr><td>17:20</td>
 <td>
 [Victor Boniou](http://basilisk.fr/sandbox/boniouv/README), IFP-Energies Nouvelles, Rueil-Malmaison, France
 <br>
-*Collision rate of finite-size monodisperse droplets in homogeneous isotropic turbulence*
+[*Coalescence rate of finite-size monodisperse droplets in homogeneous isotropic turbulence*](BGUM2025/boniou.pdf)
 <hr></td></tr>
 
 <tr><td>18:45</td>
@@ -291,7 +291,7 @@ Antoine Aubert, LadHyX, Palaiseau, France
 <td>
 [Datong Wang](http://basilisk.fr/sandbox/Datong/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole Polytechnique, Palaiseau, France
 <br>
-*Numerical study of drop impact on concave surface: spread, jet, and splash*.
+[*Numerical study of drop impact on concave surface: spread, jet, and splash*](BGUM2025/wang.pdf)
 <hr></td></tr>
 
 <tr><td>9:40</td>
@@ -317,7 +317,7 @@ Kaitao Tang, Department of Engineering Science, University of Oxford, UK.
 <td>
 [Paul-Peter Naanouh](http://basilisk.fr/sandbox/pnaanouh/README), [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, IFP-Energies Nouvelles, France
 <br>
-*Study of the marginal pinching of inertial films with the multilayer solver*
+[*Modelling (Not so) Thin Films with the Multilayer Solver*](BGUM2025/naanouh.pdf)
 <hr></td></tr>
 
 <tr><td>11:00</td>
@@ -331,14 +331,14 @@ Yifan Han, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Ge
 <td>
 [Ben Fudge](https://scholar.google.com/citations?user=S5x8qrUAAAAJ&hl=en), Department of Engineering Science, University of Oxford, UK
 <br>
-*The interface dynamics of drops impacting onto a different liquid*
+[*The interface dynamics of drops impacting onto a different liquid*](BGUM2025/fudge.pdf)
 <hr></td></tr>
 
 <tr><td>11:40</td>
 <td>
 [Nicolas Cailler](/sandbox/cailler/README), [D'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
 <br>
-*Viscosity as a regularization mechanism for conical cavity collapse like bursting bubbles*
+[*Viscosity as a regularization mechanism for conical cavity collapse like bursting bubbles*](BGUM2025/cailler.pdf)
 <hr></td></tr>
 
 <tr><td>12:00</td>
@@ -446,6 +446,8 @@ Free time for discussions
 1. Eduard Khramchenkov, slb Abingdon Technology Centre, UK
 1. Isabella Zarpellon Nascimento, Sorbonne, Paris, France
 1. Duygu Sap, Maths Institute, University of Warwick, UK.
+
+![Participants of BGUM2025 in front of [Wadham College](https://en.wikipedia.org/wiki/Wadham_College,_Oxford)](BGUM2025_GroupPhoto.jpg){width="100%"}
 
 ## Organisers
 

@@ -195,7 +195,7 @@ event init (i = 0)
   We initialize the embedded boundary. We read the *stl* file that
   contains the network geometry. */
 
-  FILE * fp = fopen ("../data/jabba-the-hutt/jabba_the_hutt_20k_rot_trans.stl", "r");
+  FILE * fp = fopen ("flow-past-jabba-the-hutt.stl", "r");
   fraction_from_stl (cs, fs, fp, 1.e-4, (lmin), max (10, (lmax)));
   fclose (fp);
   

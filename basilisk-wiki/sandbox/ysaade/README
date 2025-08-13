@@ -19,5 +19,8 @@ VoF](https://arxiv.org/pdf/2206.11294.pdf)"
 * [Spherical Rayleigh collapse](allMach/thermal.c)
 * [Bubble collapse near a rigid boundary](allMach/AXI_collapse.c)
 
+## Test cases
+* [Starting Poiseuille flow in a cylindrical pipe](poiseuille.c)
+
 ## Miscellaneous
 * [Mercedes-AMG F1 W09’s aerodynamics](f1/f1_W09.c)

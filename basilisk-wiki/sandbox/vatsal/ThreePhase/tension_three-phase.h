@@ -31,14 +31,16 @@ $$
 with $\rho_m=(\rho_1+\rho_2)/2.$ and $\rho_1$, $\rho_2$ the densities
 on either side of the interface. */
 
-event stability (i++) {
+event stability (i++)
+{
 
   /**
   We first compute the minimum and maximum values of $\alpha/f_m =
   1/\rho$, as well as $\Delta_{min}$. */
 
   double amin = HUGE, amax = -HUGE, dmin = HUGE;
-  foreach_face (reduction(min:amin) reduction(max:amax) reduction(min:dmin)) {
+  foreach_face (reduction(min:amin) reduction(max:amax) reduction(min:dmin))
+    if (fm.x[] > 0.) {
     if (alpha.x[]/fm.x[] > amax) amax = alpha.x[]/fm.x[];
     if (alpha.x[]/fm.x[] < amin) amin = alpha.x[]/fm.x[];
     if (Delta < dmin) dmin = Delta;
@@ -99,18 +101,8 @@ event acceleration (i++)
   We modify $phi$ accordingly.
   */
   scalar phi1 = f1.phi, phi2 = f2.phi;
-  foreach(){ // To do: Use a better if-else look. Also check if for (scalar f in interfaces) can be used somehow.
-    if(phi1[] < nodata && phi2[] < nodata){
-      phi1[] *= sigma23/2.;
-      phi2[] *= sigma23/2.;
-    } else {
-      if(phi1[] < nodata){
-        phi1[] *= sigma13;
-      } else {
-        if (phi2[] < nodata){
-          phi2[] *= sigma12;
-        }
-      }
-    }
+  foreach(){ // To do: Use a better if-else look. Also check if for (scalar f in interfaces) can be used somehow.    
+    phi1[] = (phi1[] < nodata) ? ((phi2[] < nodata) ? phi1[] * sigma23 / 2.0 : phi1[] * sigma13) : phi1[];
+    phi2[] = (phi2[] < nodata) ? ((phi1[] < nodata) ? phi2[] * sigma23 / 2.0 : phi2[] * sigma12) : phi2[];
   }
 }

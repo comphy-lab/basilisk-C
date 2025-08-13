@@ -34,7 +34,7 @@ See also the [POM Gallery]().
 
 ## News
 
-* [**Basilisk (Gerris) Users' Meeting 2025**](BGUM2025), 7–9th July, University of Oxford, [**Program**](BGUM2025#program).<br>
+* [**Basilisk (Gerris) Users' Meeting 2025**](BGUM2025), 7–9th July, University of Oxford, [**Program and presentations**](BGUM2025#program-and-presentations).<br>
 
 * Next [Basilisk Monthly Meeting](BMM/README): TBA
 
@@ -43,6 +43,8 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@hal{cipriano2025, hal-04962085}
+
 @article{thomas2025,
 title = {Droplet dynamics in capillary parallel plate channel},
 journal = {Computers & Fluids},
@@ -59,6 +61,4 @@ keywords = {Breakup, Contact lines, Droplet, Clogging, VOF, Spray cooling}
 @hal{wu2025, hal-05108994}
 
 @hal{scapin2025, hal-05105692}
-
-@hal{kulkarni2025, hal-05104157}
 ~~~

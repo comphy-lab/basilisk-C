@@ -189,7 +189,7 @@ event init (i = 0)
   We initialize the embedded boundary. We read the *stl* file that
   contains the network geometry. */
 
-  FILE * fp = fopen ("../data/network/network_v2-binary.stl", "r");
+  FILE * fp = fopen ("network-pulsed.stl", "r");
   fraction_from_stl (cs, fs, fp, 5e-4, (lmin), (lmax));
   fclose (fp);
   

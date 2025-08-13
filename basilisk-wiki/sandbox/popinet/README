@@ -24,6 +24,14 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
+@Article{eshima2025,
+author={Jun Eshima and Tristan Aurégan and Palas Kumar Farsoiya and Stéphane Popinet and Howard A. Stone and Luc Deike},
+title={Size Amplification of Jet Drops due to Insoluble Surfactants},
+journal={Physical Review Letters},
+year={2025},
+url={https://arxiv.org/abs/2507.09189v1}
+}
+
 @Article{martin2025,
 author={Clara Martin-Blanco and Nicolo Scapin and Jiarong Wu and Stéphane Popinet and J. Thomas Farrar and Bertrand Chapron and Luc Deike},
 title={Kinematics of gravity-capillary waves above an evolving underwater current},
@@ -52,11 +60,11 @@ year={2025}
   year = 	 {2024}
 }
 
-@Article{deoclecio2024,
-  author = 	 {Deoclecio, Lucas and Soares, Edson and Thompson, Roney and Popinet, Stéphane},
-  title = 	 {Drop rise and interfacial coalescence initiation in elasto-viscoplastic materials},
+@Article{deoclecio2025,
+  author = 	 {Deoclecio, Lucas and Thompson, Roney and Popinet, Stéphane and Soares, Edson},
+  title = 	 {Bubble rise and interfacial coalescence initiation in elasto-viscoplastic materials},
   journal = 	 {Journal of Fluid Mechanics},
-  year = 	 {2024}
+  year = 	 {2025}
 }
 ~~~
 
@@ -1399,7 +1407,7 @@ Workshop](http://facecouncil.org/puf/inthenews/20-24th-june-2011-6th-workshop-on
 University of Florida at Gainesville, 20-24th June 2011.
 
 ~~~bib
-@InProceedings{popinet2011a,
+@InProceedings{popinet2011c,
   author =    {S. Popinet},
   title =     {Introduction to numerical methods for interfacial flows},
   year =      {2011},
@@ -1407,7 +1415,7 @@ University of Florida at Gainesville, 20-24th June 2011.
   url =       {http://gerris.dalembert.upmc.fr/papers/course.pdf}
 }
 
-@InProceedings{popinet2011b,
+@InProceedings{popinet2011d,
   author =    {S. Popinet and A. Antkowiak},
   title =     {Breakup of cylindrical jets: Singularities and self-similar solutions},
   year =      {2011},

@@ -5,7 +5,7 @@ all:	embed-ns-fixed-2D-tests \
 	embed-ns-moving-3D-tests
 
 # the default CFLAGS are set in $(BASILISK)/config
-CFLAGS += -O2 -DMTRACE=3 -DDISPLAY=1
+CFLAGS += -O2 -DMTRACE=3
 
 # Check
 

@@ -1,0 +1,12 @@
+/**
+In this sandbox you will find several topic relative to multiphase flow. It is split in three parts :
+
+# Three-Fluids VOF methods
+In this section you can find differents application of three fluids simulation and the three-fluid file used to produce them.
+
+# Robin boundary condition (regular box and for embed)
+This section is just to advertise on the current wwork. I've been doing some work to make available the robin boundary condition for all. The main objective is to get a key word in basilisk like neumann or dirichlet. This goal is acheived but unfortunately I had to modify a lot of files in the src and I cannot run them in the sandbox framework. If you want to know more about the robin boundary condition do not hesitate to contact me. I've also shared my modify embed file in which you can find all the modification. I have to mention this work as been inspired by M.Tavares and follow the same ideas.
+
+# Surface particles combustion
+
+This work is done in collaboration with Edoardo Cipriano, I'll use his implementation to solve the combustion of a solid particle for a very basic chemistry. The main goal is to develop the interface for solid combustion in Basilisk. This work is currently in progress, and I do not have enough data to share for now.

@@ -81,13 +81,13 @@ impose boundary conditions which match this definition. This is done
 using the functions below. */
 
 foreach_dimension()
-static double boundary_q1_x (Point neighbor, Point point, scalar q1, void * data)
+static double boundary_q1_x (Point neighbor, Point point, scalar q1, bool * data)
 {
   return clamp(f[],0.,1.)*rho1*u.x[];
 }
 
 foreach_dimension()
-static double boundary_q2_x (Point neighbor, Point point, scalar q2, void * data)
+static double boundary_q2_x (Point neighbor, Point point, scalar q2, bool * data)
 {
   return (1. - clamp(f[],0.,1.))*rho2*u.x[];
 }
@@ -143,8 +143,8 @@ event vof (i++) {
 #endif
 
   /**
-  We split the total momentum $q$ into its two components $q_1$ and
-  $q_2$ associated with $f$ and $1 - f$ respectively. */
+  We split the total momentum $q$ into its two components $q1$ and
+  $q2$ associated with $f$ and $1 - f$ respectively. */
 
   foreach()
     foreach_dimension() {
@@ -164,7 +164,7 @@ event vof (i++) {
   }
 
   /**
-  We associate the transport of $q_1$ and $q_2$ with $f$ and transport
+  We associate the transport of $q1$ and $q2$ with $f$ and transport
   all fields consistently using the VOF scheme. */
 
   for (scalar s in interfaces) s.fsum = false; // fix all interfaces to fsum false

@@ -8,6 +8,22 @@ own papers if they use Basilisk. See also [src/references.bib]().
 ### 2025
 
 ~~~bib
+@hal{kulkarni2025, hal-05104157}
+
+@hal{cipriano2025, hal-04962085}
+
+@article{hu2025,
+title={Numerical analysis of binary molten glass microspheres droplets co-directional collision behavior},
+journal={International Journal of Multiphase Flow},
+volume={192},
+pages={105366},
+year={2025},
+issn={0301-9322},
+doi={https://doi.org/10.1016/j.ijmultiphaseflow.2025.105366},
+url={https://www.sciencedirect.com/science/article/abs/pii/S0301932225002447},
+author={Xiaolei Hu and Liangyu Tao and Wei Li and Jiayi Guo and Zhenzhen Liu and Nenggang Xie and Baohong Tong},
+}
+
 @article{thomas2025,
 title={Droplet dynamics in capillary parallel plate channel},
 journal={Computers & Fluids},

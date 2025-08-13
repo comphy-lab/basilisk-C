@@ -12,7 +12,7 @@ Just below, you'll see a beautiful channel...
 -*Ilies Haouche*- 
 
 ## [YouTube Channel](https://www.youtube.com/@ilies2924/)
-You can just click on my head YouTub Channel :)
+You can just click on my head YouTub Channel or [here](https://www.youtube.com/@ilies2924) :)
 
 So if you're into fluid mechanics and love simulations, check out my YouTube channel — I share hands-on tutorials on Basilisk and the physics behind real fluid flows.
 
@@ -39,17 +39,25 @@ This section presents various physical mechanisms commonly encountered in fluid 
 These cases combine physics and numerical modeling to better understand fluid systems under realistic conditions.
 
 ### [Hydrodynamic instabilities](Hydrodynamic_instabilities)
-* [Rayleigh-Taylor](Rayleigh-Taylor)
-* [Kelvin-Helmholtz](Kelvin-Helmholtz)
-* [Rayleigh-Bénard](Rayleigh-Bénard)
+* Rayleigh-Taylor: [(cours)](Hydrodynamic_instabilities/Rayleigh-Taylor) [(code)](Hydrodynamic_instabilities/rayleigh-taylor.c)
+* Kelvin-Helmholtz: [(cours)](Hydrodynamic_instabilities/kelvin-helmholtz) [(code)](Hydrodynamic_instabilities/kelvin-helmholtz.c)
+* Rayleigh-Bénard: [(cours)](Hydrodynamic_instabilities/rayleigh-bénard) [(code)](Hydrodynamic_instabilities/rayleigh-bénard.c)
+* Rayleigh-Plateau: [(cours)](Hydrodynamic_instabilities/rayleigh-plateau) [(code)](Hydrodynamic_instabilities/rayleigh-plateau.c)
+
+### [Other examples](Other_examples)
+* [Heat equation](Other_examples/heat_equation.c)
+* [Rising bubble](Other_examples/rising_bubble.c)
+* [Taylor bubble](Other_examples/taylor_bubble.c)
 
 ### Soluble surfactants
 * [Course of soluble surfactants and Marangoni effects](Course of insoluble/soluble surfactants and Marangoni effects)
 
 ## Post-processing
 * [output_vtu.h](output_vtu.h)
+* [extract.c](extract.c)
 
 ## MPI
+* [Brun.sh](Brun.sh)
 
 ## Contact
 
