@@ -1,2 +1,15 @@
 **/.DS_Store
 **/tIncrement-restriction
+**/docker-results
+**/master-mac
+**/slave.o
+**/*.mp4
+**/*.ppm
+**/*.dat
+**/*.log
+**/*.txt
+**/*.plt
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.gif
