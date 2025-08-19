@@ -48,9 +48,11 @@ coord get_vorticity (coord X, int n_seg, coord * c, coord * dl, double (* fun)(d
   }
   return F;
 }
+
 trace
 void get_vor_vector (vector omg, coord (* C)(double t), double t0,
-		     double te, int n_seg, double (* fun)(double r)) {
+		     double te, int n_seg, double (* fun)(double r),
+		     bool add = false) {
   coord c[n_seg], dl[n_seg];
   double Tl = te - t0, Dt = Tl/(double)n_seg;
   int i = 0;
@@ -63,8 +65,10 @@ void get_vor_vector (vector omg, coord (* C)(double t), double t0,
     i++;     
   }
   foreach() {
-    foreach_dimension()
-      omg.x[] = 0.;
+    if (add == false) {
+      foreach_dimension()
+	omg.x[] = 0.;
+    }
     coord cc = {x, y, z}, vort = {0, 0, 0};
     foreach_child() {
       coord ccc;
@@ -74,8 +78,8 @@ void get_vor_vector (vector omg, coord (* C)(double t), double t0,
       foreach_dimension()
 	vort.x += vor.x/(double)(1 << dimension);
     }
-    foreach_dimension()
-      omg.x[] = vort.x;
+    foreach_dimension() 
+      omg.x[] += vort.x;
   }
   boundary ((scalar*){omg});
 }

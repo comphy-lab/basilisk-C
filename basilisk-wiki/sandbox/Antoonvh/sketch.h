@@ -610,7 +610,7 @@ void mod_pixel_volume (struct _volume inp, ray r, double DG, unsigned char * px)
 	  double xp = mean.x, yp = mean.y, zp = mean.z;
 	  int dim = 0;
 	  foreach_dimension()
-	    dvl[elm*(celld - 1) + 4 + dim++] = interpolate (inp.colorv.x, xp, yp, zp);
+	    dvl[elm*(celld - 1) + (inp.shading ? 4: 3) + dim++] = interpolate (inp.colorv.x, xp, yp, zp);
 	}
       }
     }
@@ -630,12 +630,14 @@ void mod_pixel_volume (struct _volume inp, ray r, double DG, unsigned char * px)
       if (inp.colorv.x.i) {
 	int mx = 0;
 	for (int i = 0; i < 3; i++) {
-	  coll[i] = 255*min(1, fabs(dvl[elm*ind[it] + 4 + i])/inp.max); 
+	  coll[i] = 255*min(1, fabs(dvl[elm*ind[it] + (inp.shading ? 4: 3) + i])/inp.max); 
 	  if (coll[i] > mx)
 	    mx = coll[i];
 	}
-	for (int i = 0; i < 3; i++) 
-	  coll[i] = mx > 0 ? min (255, (255*coll[i])/mx) : 1; 
+	// rescale
+	if (inp.colorv.x.i == 0)
+	  for (int i = 0; i < 3; i++) 
+	    coll[i] = mx > 0 ? min (255, (255*coll[i])/mx) : 1; 
       } else 
 	colormap_pigmentation (coll, cmap, dvl[elm*ind[it] + 1], inp.min, inp.max);
       double sle = dvl[elm*ind[it] + 2]*fabs(dvl[elm*ind[it] + 1]);

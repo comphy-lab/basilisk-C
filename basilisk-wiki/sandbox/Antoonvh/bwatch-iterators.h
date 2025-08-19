@@ -30,9 +30,9 @@ void set_cr (coord * cr, coord * proj, coord * vert) {
 
 void set_apoint (coord * apoint, coord hori, coord vert, int ii, int jj) {
   foreach_dimension() {
-    apoint->x = (cam.poi.x
-		 + cam.fov*((ii + 0.5)/cam.nx - 0.5)*hori.x
-		 + ((float)cam.ny/cam.nx)*cam.fov*((jj + 0.5)/cam.ny - 0.5)*vert.x);  
+    apoint->x = cam.poi.x
+      + cam.fov*((ii + 0.5)/cam.nx - 0.5)*hori.x
+      + cam.fov*((jj + 0.5)/cam.nx - 0.5)*vert.x;  
   }
 }
 

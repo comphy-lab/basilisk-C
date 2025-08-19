@@ -1163,6 +1163,21 @@ double Gauss6_z (double x, double y, double z, double Delta, double (* myfun)(do
 	  w2*(myfun (x - d, y, z) + myfun (x + d, y, z) +
 	      myfun (x, y - d, z) + myfun (x, y + d, z)));
 }
+
+double Gauss6 (double x, double y, double z, double Delta, double (* myfun)(double x, double y, double z)) { //cell integral
+  double w1 = 25./324., w2 = 10./81., w3 = 16./81.;
+  double a[3] = {99};
+  double d = sqrt(3./5.)/2.*Delta;
+  for (int i = -1; i <= 1; i++) {
+    double zp = z + i*d;
+    a[i + 1] =  w3*myfun (x, y, zp) +
+      w1*(myfun (x - d, y - d, zp) + myfun (x - d, y + d, zp) +
+	  myfun (x + d, y + d, zp) + myfun (x + d, y - d, zp)) +
+      w2*(myfun (x - d, y, zp) + myfun (x + d, y, zp) +
+	  myfun (x, y - d, zp) + myfun (x, y + d, zp));
+  }
+  return (5./18.*(a[0] + a[2]) + 4./9.*a[1]); 
+}
 #endif
 
 #if (dimension == 2)

@@ -58,3 +58,5 @@ hilbert.tst: CFLAGS += -disable-dimensions
 multiscale-gpu.tst: CFLAGS += -grid=gpu/multigrid
 
 fpm.tst: CFLAGS += -llapack -lblas -lgfortran -LAntoonvh/lapack/lapack-3.10.0
+
+color_cube.tst: CFLAGS += -fopenmp

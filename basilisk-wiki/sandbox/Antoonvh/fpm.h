@@ -7,7 +7,7 @@ using the finite pointset method.
 We need particles! By default we will assign a  single scalar field "s" to the particles.
  */
 #ifndef ADD_PART_MEM
-#define ADD_PART_MEM double s;
+#define ADD_PART_MEM double s; double * sl;
 #endif
 
 #include "particle_reference.h"
@@ -126,8 +126,12 @@ int find_nearest_particles (coord X, int nn, Particles plist, int * index,
       //printf ("new point\n");
       foreach_neighbor(neighbor) {
 	//printf ("_k = %d, _l = %d\n", _k, _l);
+#if dimension == 2
 	coord ni = {_k, _l, 0};
-	
+#else // 3 dims
+	coord ni = {_l, _m, _n};
+#endif
+
 	foreach_particle_point(reference, point) {
 	  double disti = 0;
 	  foreach_dimension() {
@@ -140,7 +144,7 @@ int find_nearest_particles (coord X, int nn, Particles plist, int * index,
 	    }
 	    disti += sq(X.x - px);
 	  }
-	  if (disti < distm && disti < 2*sq(neighbor*Delta) && (self || disti > Delta*1e-9)) {
+	  if (disti < distm && disti < dimension*sq((neighbor + 0.5)*Delta) && (self || disti > Delta*1e-9)) {
 	    dist[il] = disti;
 	    index[il] = _j_particle;
 	    foreach_dimension() {
@@ -195,14 +199,14 @@ int order_lookup (int n) {
 // quadratic(6)   s2 = s1 + c_3 xy + c_4xx + c_5yy
 // cubic(10)      s3 = s2 + c_6 xxy + c_7 xyy + c_8xxx + c_9yyy
 // 3D
-// li:near(4)     s1 = s_0 + c_1x + c_2y + c_3z  
+// linear(4)     s1 = c_0 + c_1x + c_2y + c_3z  
 // quadratic(10)   s2 = s1 + c_4 xy + c_5 xz + c_6 yz + c_7 xx + c_8 yy + c_9 zz
-// cubic(19)      s3 = s2 + c_10 xxy + c_11 xyy + c_12 xxz + c_13 xzz + c_14 yzz + c_15 yyz c_16xxx + c_17yyy + c_18 zzz
+// cubic(20)      s3 = s2 + c_10 xxy + c_11 xyy + c_12 xxz + c_13 xzz + c_14 yzz + c_15 yyz + c_16 xyz + c_17xxx + c_18yyy + c_19 zzz
 
 
 int size_lookup (int order) {
   if (order >= 3)
-    return dimension == 2 ? 10 : 19;
+    return dimension == 2 ? 10 : 20;
   if (order >= 2)
     return dimension == 2 ? 6 : 10;
   if (order >= 1)
@@ -290,13 +294,16 @@ int fill_matrix (int order = 1, Particles part, int m, int * index, double * A, 
       A[max_ind] = sq(p_x)*p_z;
     row++;
     for (int n = 0; n < m; n++) 
-      A[max_ind] = sq(p_z)*p_y;
+      A[max_ind] = sq(p_z)*p_x;
     row++;
     for (int n = 0; n < m; n++) 
       A[max_ind] = sq(p_y)*p_z;
     row++;
     for (int n = 0; n < m; n++) 
-      A[max_ind] = sq(p_z)*p_x;
+      A[max_ind] = sq(p_z)*p_y;
+    row++;
+    for (int n = 0; n < m; n++) 
+      A[max_ind] = p_x*p_y*p_z;
 #endif
     row++;
     for (int n = 0; n < m; n++) 
@@ -327,7 +334,8 @@ extern void dgels_(char *trans, int *m, int *n, int *nrhs,
                    double *work, int *lwork, int *info);
 
 int least_squares_poly (coord loc, double * coefs, Particles parts,
-			   bool self = true, int level = -1, scalar reference = reference) {
+			bool self = true, int level = -1, scalar reference = reference,
+			int * list = NULL) {
   int index[max_particles];
   int * periodic_arr_x = NULL;
   int * periodic_arr_y = NULL;
@@ -340,43 +348,59 @@ int least_squares_poly (coord loc, double * coefs, Particles parts,
   int mat_m =  find_nearest_particles (loc, max_particles, parts, 
 				       index, 1, periodic_arr_x, periodic_arr_y,
 				       periodic_arr_z, self, level, reference);
+  //printf ("%d\n", mat_m);
   int order = order_lookup (mat_m);
   int mat_n = size_lookup (order); // Number of unknowns
   double * A = malloc(sizeof(double)*mat_m*mat_n);
       
   fill_matrix (order, parts, mat_m, index, A, loc, periodic_arr_x, periodic_arr_y, periodic_arr_z);
-  double rhs[mat_m];
-  for (int i = 0; i < mat_m; i++) {
-    rhs[i] = pl[parts][index[i]].s;
+  int c = 1;
+  if (list != NULL) {
+    c = 0;
+    while (list[c++] >= 0);
+    c--;
   }
+  double rhs[c*mat_m];
+  for (int j = 0; j < c; j++) 
+    for (int i = 0; i < mat_m; i++) {
+      if (list == NULL) {
+	rhs[i] = pl[parts][index[i]].s;
+	//printf ("rhs = %g\n", rhs[i]);
+      }
+	else
+	rhs[j*mat_m + i] = pl[parts][index[i]].sl[list[j]];
+    }
+  
   // LAPACK stuff suggested by chatGPT, worked on first attempt(!) 
-  if (mat_m > 0) { // We a data point
-  int lda = mat_m;
   int ldb = mat_m > mat_n ? mat_m : mat_n;
-  int info;
-  int lwork = -1; // workspace query
-  int nrhs = 1;
-  double wkopt;
-  // printf ("%d %d\n", mat_m, mat_n);
- 
-  dgels_("N", &mat_m, &mat_n, &nrhs, A, &lda, rhs, &ldb, &wkopt, &lwork, &info);
-  lwork = (int)wkopt;
-  double *work = (double *)malloc(lwork * sizeof(double));
-  // Actual computation
-  // printf ("a %d %d\n", mat_m, mat_n);
-  dgels_("N", &mat_m, &mat_n, &nrhs, A, &lda, rhs, &ldb, work, &lwork, &info);
-  free(work);
+  //printf ("%d %d %d\n", mat_m, mat_n, c);
+  if (mat_m > 0) { // We a data point
+    int lda = mat_m;
+    int info;
+    int lwork = -1; // workspace query
+    int nrhs = c;
+    double wkopt;
+    // printf ("%d %d\n", mat_m, mat_n);
+    
+    dgels_("N", &mat_m, &mat_n, &nrhs, A, &lda, rhs, &ldb, &wkopt, &lwork, &info);
+    lwork = (int)wkopt;
+    double *work = (double *)malloc(lwork * sizeof(double));
+    // Actual computation
+    // printf ("a %d %d\n", mat_m, mat_n);
+    dgels_("N", &mat_m, &mat_n, &nrhs, A, &lda, rhs, &ldb, work, &lwork, &info);
+    free(work);
   }
   free(A);
   // solution and order 
-  for (int i = 0; i < mat_n; i++)
-    coefs[i] = rhs[i];
-
+  for (int j = 0; j < c; j++)
+    for (int i = 0; i < ldb; i++) {
+      coefs[j*mat_n + i] = rhs[i + j*ldb];
+    }
   foreach_dimension() {
     if (periodic_x == true) 
       free(periodic_arr_x);
   }
-  return order;
+  return mat_n;
 }
 
 /**
@@ -412,9 +436,20 @@ event defaults (i = 0) {
 #endif
 }
 
+
+void free_p_fpm (Particles p) {
+  foreach_particle() {
+    if (p().sl != NULL)
+      free(p().sl);
+  }
+  free_p();
+}
+
 event cleanup (t = end) {
     free_scalar_data (reference);
 }
+
+
 
 /**
 ## Tests
