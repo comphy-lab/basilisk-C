@@ -15,6 +15,7 @@ stencils.c:56: listc: 0:s
 stencils.c:56: dirty: 11:a
 stencils.c:63: dirty: 0:s
 stencils.c:67: listc: 0:s
+boundary_internal: flux x: 0:s
 stencils.c:67: dirty: 11:a
 stencils.c:74: dirty: 12:f.x 13:f.y
 stencils.c:80: flux y: 13:f.y

@@ -210,8 +210,8 @@ static void relax_nh (scalar * phil, scalar * rhsl, int lev, void * data)
     }
     n *= theta_H*sq(dt);
 
-    double d = - cm[]*Delta;
-    n += d*rhs_eta[];
+    double d = rigid ? 0. : - cm[]*Delta;
+    n -= cm[]*Delta*rhs_eta[];
     eta[] = 0.;
     foreach_dimension() {
       n += alpha.x[0]*a_baro (eta, 0) - alpha.x[1]*a_baro (eta, 1);
@@ -283,13 +283,13 @@ static double residual_nh (scalar * phil, scalar * rhsl,
     /**
     The residual for $\eta$ is computed as
     $$
-    \text{res}_\eta = \text{rhs}_\eta - \eta + 
+    \text{res}_\eta = \text{rhs}_\eta - \beta\eta + 
     \theta_H \Delta t^2 \sum_l \nabla \cdot (- \nabla_z\phi_l + 
     \theta_H h_l g \nabla \eta)
     $$
-    */
+    where $\beta = 1$ for a free surface and $\beta = 0$ for a rigid lid. */
 
-    res_eta[] = rhs_eta[] - eta[];
+    res_eta[] = rhs_eta[] - (rigid ? 0. : eta[]);
     foreach_layer()
       foreach_dimension()
         res_eta[] += theta_H*sq(dt)/2.*(g.x[1] - g.x[])/(Delta*cm[]);
@@ -382,7 +382,7 @@ event pressure (i++)
   scalar res;
   if (res_eta.i >= 0)
     res = new scalar[nl];
-  mgp = mg_solve ({phi,eta}, {rhs,rhs_eta}, residual_nh, relax_nh, &alpha_eta,
+  mgp = mg_solve ({phi,eta_r}, {rhs,rhs_eta}, residual_nh, relax_nh, &alpha_eta,
 		  res = res_eta.i >= 0 ? (scalar *){res,res_eta} : NULL,
 		  nrelax = 4, minlevel = 1,
 		  tolerance = TOLERANCE*sq(h1/(dt*v1)));

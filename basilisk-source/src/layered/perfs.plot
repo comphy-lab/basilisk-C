@@ -1,3 +1,14 @@
+# column indices in perfs.h
+t = 1
+dt = 2
+mgpi = 3
+nrelax = 4
+tn = 5
+wt = 6
+speed = 7
+npe = 8
+ispeed = 9
+
 # "infinite" loop
 do for [i=0:1000000] {
 
@@ -38,7 +49,7 @@ set format x ''
 # start plotting
 set multiplot
 
-stats "perfs" u 1:5 nooutput
+stats "perfs" u t:dt nooutput
 EVERY = ceil(STATS_records/200.)
 unset key
 set style fill solid
@@ -54,7 +65,7 @@ set bmargin at screen bot(3)
 
 set ylabel "dt"
 set logscale y
-plot 'perfs' u 1:2 every EVERY w boxes lc 0
+plot 'perfs' u t:dt every EVERY w boxes lc 0
 unset logscale y
 
 #-----------------------------------------------
@@ -66,14 +77,14 @@ set rmargin at screen right(2)
 set tmargin at screen top(3)
 set bmargin at screen bot(3)
 
-stats "perfs" u 1:5 nooutput
+stats "perfs" u t:tn nooutput
 if (STATS_min_y == STATS_max_y) { set y2range [STATS_max_y-1:STATS_max_y+1]; } \
 else { set y2range [STATS_min_y:STATS_max_y]; }
 unset ytics
 set y2tics
 unset ylabel
 set y2label '# cells'
-plot 'perfs' u 1:5 every EVERY w boxes lc 0
+plot 'perfs' u t:tn every EVERY w boxes lc 0
 set yrange [*:*]
 
 #-----------------------------------------------
@@ -91,7 +102,7 @@ set ytics auto
 unset y2tics
 colori(i) = (i < 10 ? 65280 : i > 20 ? 16711680 : 16753920)
 set ylabel 'mgp.i'
-plot [][0:]'perfs' u 1:3:(colori($3)) every EVERY w boxes lc rgbcolor variable
+plot [][0:]'perfs' u t:mgpi:(colori(column(mgpi))) every EVERY w boxes lc rgbcolor variable
 
 #-----------------------------------------------
 # subplot  2-3
@@ -102,14 +113,14 @@ set rmargin at screen right(2)
 set tmargin at screen top(2)
 set bmargin at screen bot(2)
 
-stats "perfs" u 1:4 nooutput
+stats "perfs" u t:nrelax nooutput
 if (STATS_min_y == STATS_max_y) { set y2range [STATS_max_y-1:STATS_max_y+1]; } \
 else { set y2range [STATS_min_y:STATS_max_y]; }
 unset ytics
 set y2tics auto
 unset ylabel
 set y2label 'mgp.nrelax'
-plot [][0:]'perfs' u 1:4:(colori($4)) every EVERY w boxes lc rgbcolor variable
+plot [][0:]'perfs' u t:nrelax:(colori(column(nrelax))) every EVERY w boxes lc rgbcolor variable
 
 #-----------------------------------------------
 # subplot  1-2
@@ -127,7 +138,7 @@ set xtics auto
 set format x '% g'
 unset y2tics
 set ytics auto
-plot 'perfs' u 1:6 every EVERY w boxes lc 0
+plot 'perfs' u t:wt every EVERY w boxes lc 0
 
 #-----------------------------------------------
 # subplot  2-2
@@ -138,7 +149,7 @@ set rmargin at screen right(2)
 set tmargin at screen top(1)
 set bmargin at screen bot(1)
 
-stats "perfs" u 1:($7/$8) nooutput
+stats "perfs" u t:(column(ispeed)/column(npe)) nooutput
 if (STATS_min_y == STATS_max_y) { set y2range [STATS_max_y-1:STATS_max_y+1]; } \
 else { set y2range [STATS_min_y:STATS_max_y]; }
 unset ytics
@@ -146,7 +157,7 @@ set y2tics auto
 unset ylabel
 set y2label 'points.step/sec/core'
 set format y '%e'
-plot 'perfs' u 1:($9/$8) every EVERY w boxes lc 0
+plot 'perfs' u t:(column(ispeed)/column(npe)) every EVERY w boxes lc 0
 
 unset multiplot
 

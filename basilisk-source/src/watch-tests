@@ -1,0 +1,21 @@
+#!/bin/bash
+
+function progress()
+{
+    echo `find . -name pass | wc -l` passed
+    echo
+    echo `find . -name pid.*tst | wc -l` running
+    for f in $(find . -name tspid\.tst); do
+	id=$(head -n1 $f)
+	SANDBOX=$(tail -n1 $f)
+	echo -n -e ${f%%tspid\.tst}" $SANDBOX "
+	ssh -o 'ControlPath ~/.ssh/controlmasters/%r@%h:%p' -o 'ControlMaster auto' -o 'ControlPersist 1m' \
+	    $SANDBOX "test -f /tmp/$id/progress && ( sed 's/\\r/\\n/g' /tmp/$id/progress | tail -n 1 ) || echo waiting"
+    done | column -t
+    echo
+    echo `find . -name fail | wc -l` failed
+    find . -name fail
+}
+
+export -f progress
+watch -n 10 -x bash -c progress

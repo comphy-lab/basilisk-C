@@ -39,19 +39,44 @@ event defaults0 (i = 0)
 }
 
 /**
+The free-surface can be replaced with a "rigid lid" by setting `rigid`
+to `true`. */
+
+bool rigid = false;
+
+/**
+The rigid lid condition $\partial_t\eta = 0$ implies
+$$
+\begin{aligned}
+0 & = - \sum_k \nabla \cdot [\theta_H (hu)_k^{n + 1} + (1 - \theta_H)  (hu)^n_k] \\
+\frac{(hu)^{n + 1}_k - (hu)_k^n}{\Delta t} &
+  =  - \Delta tgh^{n + 1 / 2}_k  (\theta_H \nabla \eta_r^{n + 1} + 
+                                  (1 - \theta_H) \nabla \eta_r^n)
+\end{aligned}
+$$
+where $\eta_r$ is the equivalent free-surface height (i.e. pressure)
+applied on the rigid lid. */
+
+event defaults (i = 0)
+{
+  if (rigid)
+    eta_r = new scalar;
+}
+
+/**
 The relaxation and residual functions of the multigrid solver are
 derived from the Poisson--Helmholtz equation for $\eta^{n+1}$ derived
 from the equations above
 $$
 \begin{aligned}
-  \eta^{n + 1} + \nabla \cdot (\alpha \nabla \eta^{n + 1}) & = \eta^n -
+  \beta\eta^{n + 1} + \nabla \cdot (\alpha \nabla \eta^{n + 1}) & = \beta\eta^n -
   \Delta t \sum_k \nabla \cdot (hu)_k^{\star}\\
   \alpha & \equiv - g (\theta \Delta t)^2  \sum_k h^{n + 1 / 2}_k\\
   (hu)_k^{\star} & \equiv (hu)_k^n - \Delta tgh^{n + 1 / 2}_k \theta (1 -
   \theta) \nabla \eta^n
 \end{aligned}
 $$
-*/
+where $\beta = 1$ for a free surface and $\beta = 0$ for a rigid lid. */
 
 trace
 static void relax_hydro (scalar * ql, scalar * rhsl, int lev, void * data)
@@ -66,8 +91,8 @@ static void relax_hydro (scalar * ql, scalar * rhsl, int lev, void * data)
   foreach_level_or_leaf (lev)
 #endif
   {
-    double d = - cm[]*Delta;
-    double n = d*rhs_eta[];
+    double d = rigid ? 0. : - cm[]*Delta;
+    double n = - cm[]*Delta*rhs_eta[];
     eta[] = 0.;
     foreach_dimension() {
       n += alpha.x[0]*a_baro (eta, 0) - alpha.x[1]*a_baro (eta, 1);
@@ -90,7 +115,7 @@ static double residual_hydro (scalar * ql, scalar * rhsl,
     g.x[] = alpha.x[]*a_baro (eta, 0);
   
   foreach (reduction(max:maxres)) {
-    res_eta[] = rhs_eta[] - eta[];
+    res_eta[] = rhs_eta[] - (rigid ? 0. : eta[]);
     foreach_dimension()
       res_eta[] += (g.x[1] - g.x[])/(Delta*cm[]);
     if (fabs(res_eta[]) > maxres)
@@ -134,7 +159,7 @@ event acceleration (i++)
   alpha_eta = new face vector;
   double C = - sq(theta_H*dt);
   foreach_face() {
-    double ax = theta_H*a_baro (eta, 0);
+    double ax = theta_H*a_baro (eta_r, 0);
     su.x[] = 0., alpha_eta.x[] = 0.;
     foreach_layer() {
       double hl = h[-1] > dry ? h[-1] : 0.;
@@ -152,13 +177,13 @@ event acceleration (i++)
   /**
   The r.h.s. is
   $$
-  \text{rhs}_\eta = \eta^n - \Delta t\sum_k\nabla\cdot(hu)^\star_k
+  \text{rhs}_\eta = \beta\eta^n - \Delta t\sum_k\nabla\cdot(hu)^\star_k
   $$
   */
   
   rhs_eta = new scalar;
   foreach() {
-    rhs_eta[] = eta[];
+    rhs_eta[] = rigid ? 0. : eta[];
     foreach_dimension()
       rhs_eta[] -= dt*(su.x[1] - su.x[])/(Delta*cm[]);
   }
@@ -189,7 +214,7 @@ gradient term. */
 
 event pressure (i++)
 {
-  mgH = mg_solve ({eta}, {rhs_eta}, residual_hydro, relax_hydro, &alpha_eta,
+  mgH = mg_solve ({eta_r}, {rhs_eta}, residual_hydro, relax_hydro, &alpha_eta,
 		  res = res_eta.i >= 0 ? (scalar *){res_eta} : NULL,
 		  nrelax = 4, minlevel = 1,
 		  tolerance = TOLERANCE);
@@ -215,7 +240,7 @@ event pressure (i++)
   */
   
   foreach_face() {
-    double ax = theta_H*a_baro (eta, 0);
+    double ax = theta_H*a_baro (eta_r, 0);
     foreach_layer() {
       ha.x[] += hf.x[]*ax;
       double hl = h[-1] > dry ? h[-1] : 0.;

@@ -60,6 +60,7 @@ function updatePreviewPane(nostatus) {
 	    render_math();
 	    if (!nostatus && location.pathname.match ("[.][cm]$")) {
 		var url = location.pathname.concat("?status");
+		$.ajaxSetup({ cache: false });
 		$('#status').load(url, function(data) { checkRunning (url, 1000); });
 	    }
 	    $('#previewButton').removeAttr('disabled');

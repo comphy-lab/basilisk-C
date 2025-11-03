@@ -8,4 +8,4 @@ for date in `echo $DARCS_PATCHES_XML | grep --only-matching "date='[0-9]*'" | \
 	rm -f `darcs show repo | grep Root | awk '{print $2}'`/`dirname $f`/Makefile.tests
     done
 done
-# darcs push -a -q wiki@basilisk.fr:wiki
+darcs push -a -q wiki@shell.basilisk.fr:wiki

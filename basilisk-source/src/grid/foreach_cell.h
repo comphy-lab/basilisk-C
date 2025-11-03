@@ -77,7 +77,7 @@ macro2 foreach_cell_root (Point root)
     struct { int l, i, j, k, stage; } stack[STACKSIZE];
 #endif
     int _s = -1;
-    _push (0, root.i, root.j, root.k, 0);
+    _push (root.level, root.i, root.j, root.k, 0);
     while (_s >= 0) {
       int stage;
       _pop();
@@ -291,3 +291,35 @@ macro2 foreach_leaf()
       continue;
     }
 }
+
+#if dimension == 1
+macro2 foreach_cell_restore (ivec d = Dimensions, int rootlevel = 0)
+{
+  for (int ox = 0; ox < d.x; ox++) {
+    Point root = {GHOSTS + ox, rootlevel};
+    foreach_cell_root (root)
+      {...}
+  }
+}
+#elif dimension == 2
+macro2 foreach_cell_restore (ivec d = Dimensions, int rootlevel = 0)
+{
+  for (int ox = 0; ox < d.x; ox++)
+    for (int oy = 0; oy < d.y; oy++) {
+      Point root = {GHOSTS + ox, GHOSTS + oy, rootlevel};
+      foreach_cell_root (root)
+	{...}
+    }
+}
+#elif dimension == 3
+macro2 foreach_cell_restore (ivec d = Dimensions, int rootlevel = 0)
+{
+  for (int ox = 0; ox < d.x; ox++)
+    for (int oy = 0; oy < d.y; oy++)
+      for (int oz = 0; oz < d.z; oz++) {
+	Point root = {GHOSTS + ox, GHOSTS + oy, GHOSTS + oz, rootlevel};
+	foreach_cell_root (root)
+	  {...}
+      }
+}
+#endif // dimension == 3

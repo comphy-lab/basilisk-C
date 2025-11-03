@@ -20,6 +20,7 @@ $(document).ready(function() {
     hide_plots();
     if (location.pathname.match ("[.][cm]$")) {
 	var url = location.pathname.concat("?status");
+	$.ajaxSetup({ cache: false });
 	$('#status').load(url, function(data) { checkRunning (url, 1000); });
     }
 });

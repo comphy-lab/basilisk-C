@@ -198,3 +198,6 @@ Be careful if you have your own '*.html' files for some reason.
 
 * If "history" or "Recent activity" do not work, make sure that the
   version of darcs on the server is less than 2.8.5.
+* If "changes" does not work, this may be due to your version of
+  `awk`: make sure (using `awk --version`) that you are using `gawk`
+  (and not `mawk` for example).

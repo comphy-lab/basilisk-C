@@ -21,6 +21,7 @@ BEGIN {
 	sub("\\.page","",$2)
 	name = $2
 	gsub("%20", " ", name)
+	gsub("%20", "%%20", $2)
 	printf $1 " <a href=\"" $2 "#" $3 "\">." name " " $3 "</a>"
 	for (i = 4; i <= NF; i++)
 	    printf " " $i;

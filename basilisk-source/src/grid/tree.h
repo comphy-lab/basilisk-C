@@ -23,7 +23,8 @@ struct _Point {
 #endif
 };
 
-#include "memindex/range.h"
+//#include "memindex/range.h"
+#include "memindex/virtual.h"
 
 #if LAYERS
 # include "grid/layers.h"
@@ -1152,24 +1153,25 @@ static bool normal_neighbor (Point point, scalar * scalars, vector * vectors)
     foreach_dimension()
       for (int i = -k; i <= k; i += 2*k)
 	if (is_neighbor(i)) {
-	  Point neighbor = neighborp(i);
 	  int id = bid(cell);
 	  for (scalar s in scalars)
-	    foreach_block()
-	      s[] = s.boundary[id](neighbor, point, s, NULL);
-	  for (vector v in vectors)
-	    foreach_block() {
-	      scalar vn = VN;
-	      v.x[] = vn.boundary[id](neighbor, point, v.x, NULL);
+	    foreach_blockf (s)
+	      s[] = s.boundary[id](neighborp(i), point, s, NULL);
+	  for (vector v in vectors) {
+	    scalar vn = VN;
+	    foreach_blockf (v.x)
+	      v.x[] = vn.boundary[id](neighborp(i), point, v.x, NULL);
 #if dimension >= 2
-	      scalar vt = VT;
-	      v.y[] = vt.boundary[id](neighbor, point, v.y, NULL);
+	    scalar vt = VT;
+	    foreach_blockf (v.y)
+	      v.y[] = vt.boundary[id](neighborp(i), point, v.y, NULL);
 #endif
 #if dimension >= 3
-	      scalar vr = VR;
-	      v.z[] = vr.boundary[id](neighbor, point, v.z, NULL);
+	    scalar vr = VR;
+	    foreach_blockf (v.z)
+	      v.z[] = vr.boundary[id](neighborp(i), point, v.z, NULL);
 #endif
-	    }
+	  }
 	  return true;
 	}
   return false;
@@ -1188,30 +1190,30 @@ static bool diagonal_neighbor_2D (Point point,
 	  if (allocated(i,j) && is_neighbor(i,j) &&
 	      allocated(i,0) && is_boundary(neighbor(i,0)) &&
 	      allocated(0,j) && is_boundary(neighbor(0,j))) {
-	    Point n = neighborp(i,j),
-	      n1 = neighborp(i,0), n2 = neighborp(0,j);
 	    int id1 = bid(neighbor(i,0)), id2 = bid(neighbor(0,j));
 	    for (scalar s in scalars)
-	      foreach_block()
-		s[] = (s.boundary[id1](n,n1,s,NULL) +
-		       s.boundary[id2](n,n2,s,NULL) -
+	      foreach_blockf (s)
+		s[] = (s.boundary[id1](neighborp(i,j), neighborp(i,0), s, NULL) +
+		       s.boundary[id2](neighborp(i,j), neighborp(0,j), s,NULL) -
 		       s[i,j]);
-	    for (vector v in vectors)
-	      foreach_block() {
-		scalar vt = VT, vn = VN;
-		v.x[] = (vt.boundary[id1](n,n1,v.x,NULL) +
-			 vn.boundary[id2](n,n2,v.x,NULL) -
+	    for (vector v in vectors) {
+	      scalar vt = VT, vn = VN;
+	      foreach_blockf (v.x)
+		v.x[] = (vt.boundary[id1](neighborp(i,j), neighborp(i,0), v.x, NULL) +
+			 vn.boundary[id2](neighborp(i,j), neighborp(0,j), v.x,NULL) -
 			 v.x[i,j]);
-		v.y[] = (vn.boundary[id1](n,n1,v.y,NULL) +
-			 vt.boundary[id2](n,n2,v.y,NULL) -
+	      foreach_blockf (v.y)
+		v.y[] = (vn.boundary[id1](neighborp(i,j), neighborp(i,0), v.y, NULL) +
+			 vt.boundary[id2](neighborp(i,j), neighborp(0,j), v.y,NULL) -
 			 v.y[i,j]);
 #if dimension == 3
-		scalar vr = VR;
-		v.z[] = (vr.boundary[id1](n,n1,v.z,NULL) +
-			 vr.boundary[id2](n,n2,v.z,NULL) -
+	      scalar vr = VR;
+	      foreach_blockf (v.z)
+		v.z[] = (vr.boundary[id1](neighborp(i,j), neighborp(i,0), v.z, NULL) +
+			 vr.boundary[id2](neighborp(i,j), neighborp(0,j), v.z,NULL) -
 			 v.z[i,j]);
 #endif
-	      }
+	    }
 	    return true;
 	  }
 #endif // dimension >= 2
@@ -1240,27 +1242,25 @@ static bool diagonal_neighbor_3D (Point point,
 	      id2 = bid(neighbor(i,0,k)),
 	      id3 = bid(neighbor(0,j,k));
 	    for (scalar s in scalars)
-	      foreach_block()
-		s[] = (s.boundary[id1](n0,n1,s,NULL) +
-		       s.boundary[id2](n0,n2,s,NULL) +
-		       s.boundary[id3](n0,n3,s,NULL) -
-		       2.*s[i,j,k]);
-	    for (vector v in vectors)
-	      foreach_block() {
-		scalar vt = VT, vn = VN, vr = VR;
-		v.x[] = (vt.boundary[id1](n0,n1,v.x,NULL) +
-			 vt.boundary[id2](n0,n2,v.x,NULL) +
-			 vn.boundary[id3](n0,n3,v.x,NULL) -
-			 2.*v.x[i,j,k]);
-		v.y[] = (vt.boundary[id1](n0,n1,v.y,NULL) +
-			 vn.boundary[id2](n0,n2,v.y,NULL) +
-			 vt.boundary[id3](n0,n3,v.y,NULL) -
-			 2.*v.y[i,j,k]);
-		v.z[] = (vn.boundary[id1](n0,n1,v.z,NULL) +
-			 vr.boundary[id2](n0,n2,v.z,NULL) +
-			 vr.boundary[id3](n0,n3,v.z,NULL) -
-			 2.*v.z[i,j,k]);
-	      }
+	      s[] = (s.boundary[id1](n0,n1,s,NULL) +
+		     s.boundary[id2](n0,n2,s,NULL) +
+		     s.boundary[id3](n0,n3,s,NULL) -
+		     2.*s[i,j,k]);
+	    for (vector v in vectors) {
+	      scalar vt = VT, vn = VN, vr = VR;
+	      v.x[] = (vt.boundary[id1](n0,n1,v.x,NULL) +
+		       vt.boundary[id2](n0,n2,v.x,NULL) +
+		       vn.boundary[id3](n0,n3,v.x,NULL) -
+		       2.*v.x[i,j,k]);
+	      v.y[] = (vt.boundary[id1](n0,n1,v.y,NULL) +
+		       vn.boundary[id2](n0,n2,v.y,NULL) +
+		       vt.boundary[id3](n0,n3,v.y,NULL) -
+		       2.*v.y[i,j,k]);
+	      v.z[] = (vn.boundary[id1](n0,n1,v.z,NULL) +
+		       vr.boundary[id2](n0,n2,v.z,NULL) +
+		       vr.boundary[id3](n0,n3,v.z,NULL) -
+		       2.*v.z[i,j,k]);
+	    }
 	    return true;
 	  }
 #endif
@@ -1316,11 +1316,11 @@ static void box_boundary_level (const Boundary * b, scalar * list, int l)
 	!diagonal_neighbor_3D (point, scalars, vectors)) {
       // no neighbors
       for (scalar s in scalars)
-	foreach_block()
+	foreach_blockf (s)
 	  s[] = undefined;
       for (vector v in vectors)
-	foreach_block()
-	  foreach_dimension()
+	foreach_dimension()
+	  foreach_blockf (v.x)
 	    v.x[] = undefined;
     }
     if (faces) {
@@ -1333,7 +1333,7 @@ static void box_boundary_level (const Boundary * b, scalar * list, int l)
 	    for (vector v in faces) {
 	      scalar vn = VN;
 	      if (vn.boundary[id])
-		foreach_block()
+		foreach_blockf (v.x)
 		  v.x[(i + 1)/2] = vn.boundary[id](neighbor, point, v.x, NULL);
 	    }
 	  }
@@ -1351,14 +1351,14 @@ static void box_boundary_level (const Boundary * b, scalar * list, int l)
 #else // dimension == 3
 		scalar vt = zn ? VT : VR;
 #endif
-		foreach_block()
+		foreach_blockf (v.x)
 		  v.x[] = vt.boundary[id](neighbor, point, v.x, NULL);
 	      }
 	    }
 	    else
 	      // no neighbor
 	      for (vector v in faces)
-		foreach_block()
+		foreach_blockf (v.x)
 		  v.x[] = 0.;
 	  }
 #endif // dimension > 1
@@ -1412,7 +1412,7 @@ static void masked_boundary_restriction (const Boundary * b,
 	scalars = list_add (scalars, s);
     }
   
-  foreach_halo (restriction, l) {
+  foreach_halo (restriction, l) foreach_block() { // fixme: should use foreach_blockf()
     for (scalar s in scalars)
       s[] = masked_average (parent, s);
     for (vector v in faces)

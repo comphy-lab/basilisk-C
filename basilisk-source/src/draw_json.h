@@ -279,6 +279,8 @@ int _labels_json (char * s, int len) {
   s += i, len -= i, len1 += i;
   i = snprintf (s, len, ",\n    \"lw\": { \"type\": \"pfloat\", \"cardinality\": 1, \"value\": \"%f\" }", 0.);
   s += i, len -= i, len1 += i;
+  i = snprintf (s, len, ",\n    \"level\": { \"type\": \"pint\", \"cardinality\": 1, \"value\": \"%d\" }", 0);
+  s += i, len -= i, len1 += i;
   i = snprintf (s, len, "\n  }");
   s += i, len -= i, len1 += i;
   return len1;

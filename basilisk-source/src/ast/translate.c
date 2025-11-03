@@ -1037,10 +1037,11 @@ static Ast * is_point_point (const Ast * n)
   if (identifier && identifier->parent->parent->sym == sym_direct_declarator &&
       !strcmp (ast_terminal (identifier)->start, "point")) {    
     const Ast * decl = n;
-    while (decl->sym != sym_declaration &&
+    while (decl &&
+	   decl->sym != sym_declaration &&
 	   decl->sym != sym_parameter_declaration)
       decl = decl->parent;
-    if (decl->sym == sym_declaration)
+    if (!decl || decl->sym == sym_declaration)
       return NULL;
     if (ast_schema (decl, sym_parameter_declaration,
 		    3, sym_initializer)) {
@@ -2166,6 +2167,119 @@ static void replace_ellipsis_macro (Ast * n)
       replace_ellipsis_macro (*c);
 }
 
+static char * get_type (const char * name, Stack * stack)
+{
+  Ast * decl = ast_find (ast_declaration_from_type (ast_identifier_declaration (stack, name)),
+			 sym_declaration_specifiers);
+  if (!decl) return NULL;
+  AstTerminal * t = ast_left_terminal (decl);
+  char * before = t->before;
+  t->before = NULL;
+  char * type = ast_str_append (decl, NULL);
+  t->before = before;
+  return type;
+}
+
+static char * mpi_operator (char * s, Ast * op)
+{
+  char * operator = ast_left_terminal (op)->start;
+  str_append (s,
+	      !strcmp(operator, "min") ? "MPI_MIN" :
+	      !strcmp(operator, "max") ? "MPI_MAX" :
+	      !strcmp(operator, "+")   ? "MPI_SUM" :
+	      !strcmp(operator, "||")  ? "MPI_LOR" :
+	      "Unknown", ",");
+  return s;
+}
+
+/**
+This function returns "MPI" code to perform the reductions defined in
+`macro_statement` or NULL if no reductions are defined. */
+
+static Ast * mpi_reductions (const Ast * macro_statement, Stack * stack)
+{
+  Ast * reductions = ast_find (ast_schema (macro_statement, sym_macro_statement,
+					   2, sym_argument_expression_list),
+			       sym_reduction_list);
+  if (!reductions)
+    return NULL;
+  char * sreductions = NULL;
+  foreach_item (reductions, 1, reduction) {
+    Ast * identifier = ast_schema (reduction, sym_reduction,
+				   4, sym_reduction_array,
+				   0, sym_generic_identifier,
+				   0, sym_IDENTIFIER);
+    AstTerminal * t = ast_terminal (identifier);
+    Ast * array = ast_schema (reduction, sym_reduction,
+			      4, sym_reduction_array,
+			      3, sym_expression);
+    char * type = get_type (t->start, stack);
+    if (!type) {
+      fprintf (stderr,
+	       "%s:%d: error: cannot determine type of '%s'\n",
+	       t->file, t->line, t->start);
+      exit (1);
+    }
+    const char * mtype = NULL;
+    if (!strcmp (type, "double"))
+      mtype = "MPI_DOUBLE";
+    else if  (!strcmp (type, "int"))
+      mtype = "MPI_INT";
+    else if  (!strcmp (type, "long"))
+      mtype = "MPI_LONG";
+    else if  (!strcmp (type, "bool"))
+      mtype = "MPI_C_BOOL";
+    else if  (!strcmp (type, "unsigned char"))
+      mtype = "MPI_UNSIGNED_CHAR";
+    else if (strcmp (type, "coord") &&
+	     strcmp (type, "mat3")) {
+      fprintf (stderr,
+	       "%s:%d: error: does not know how to reduce "
+	       "type '%s' of '%s'\n",
+	       t->file, t->line, type, t->start);
+      exit (1);
+    }
+    else
+      mtype = type;
+    if (array) {
+      if (strcmp (type, "coord") && strcmp (type, "mat3")) {
+	str_append (sreductions, "mpi_all_reduce_array(", t->start, ",", mtype, ",");
+	sreductions = mpi_operator (sreductions, reduction->child[2]);
+	sreductions = ast_str_append (array, sreductions);
+	str_append (sreductions, ");");
+      } else {
+	str_append (sreductions, "mpi_all_reduce_array((double *)", t->start, ",MPI_DOUBLE,");
+	sreductions = mpi_operator (sreductions, reduction->child[2]);
+	char s[100];
+	snprintf (s, 99, "sizeof(%s)/(sizeof(double))", t->start);
+	str_append (sreductions, s, ");");
+      }
+    }
+    else {
+      char s[100] = "1";
+      if (strcmp (type, "coord") && strcmp (type, "mat3"))
+	str_append (sreductions, "mpi_all_reduce_array(&", t->start,",", mtype);
+      else {
+	// cast the adress of the first member into a double for coord and mat3
+	str_append (sreductions, "mpi_all_reduce_array((double *)&", t->start,",MPI_DOUBLE");
+	snprintf (s, 99, "sizeof(%s)/(sizeof(double))", t->start);
+      }
+      str_append (sreductions, ",");
+      sreductions = mpi_operator (sreductions, reduction->child[2]);
+      str_append (sreductions, s, ");");
+    }
+    free (type);
+  }
+  if (!sreductions)
+    return NULL;
+  str_prepend (sreductions, "{");
+  str_append (sreductions, "}");  
+  Ast * expr = ast_parse_expression (sreductions, ast_get_root (macro_statement));
+  free (sreductions);
+  assert (expr);
+  return expr;
+}
+
 /**
 # First pass: standard macros */
 
@@ -2187,6 +2301,17 @@ static void user_macros (Ast * n, Stack * stack, void * data)
     free (s);
     break;
   }
+
+  case sym_macro_statement:
+    if (!ast_is_foreach_statement (n)) {
+      Ast * reductions = mpi_reductions (n, stack);
+      if (reductions) {
+	Ast * statement = ast_ancestor (n, 2);	  
+	Ast * item = ast_block_list_get_item (statement), * list = item->parent;
+	list = ast_block_list_append (list, item->sym, NN(item, sym_statement, reductions));
+      }
+    }
+    break;
 
   case sym_statement: case sym_function_call: {
     TranslateData * d = data;
@@ -3641,18 +3766,6 @@ static const char * get_field_type (Ast * declaration, AstTerminal * t)
   return typename;
 }
 
-static char * mpi_operator (char * s, Ast * op)
-{
-  char * operator = ast_left_terminal (op)->start;
-  str_append (s,
-	      !strcmp(operator, "min") ? "MPI_MIN" :
-	      !strcmp(operator, "max") ? "MPI_MAX" :
-	      !strcmp(operator, "+")   ? "MPI_SUM" :
-	      !strcmp(operator, "||")  ? "MPI_LOR" :
-	      "Unknown", ",");
-  return s;
-}
-
 Ast * ast_is_function_pointer (const Ast * n, Stack * stack)
 {
   Ast * name;
@@ -3854,19 +3967,6 @@ static void stencils (Ast * n, Stack * stack, void * data)
   }
 }
 
-static char * get_type (const char * name, Stack * stack)
-{
-  Ast * decl = ast_find (ast_declaration_from_type (ast_identifier_declaration (stack, name)),
-			 sym_declaration_specifiers);
-  if (!decl) return NULL;
-  AstTerminal * t = ast_left_terminal (decl);
-  char * before = t->before;
-  t->before = NULL;
-  char * type = ast_str_append (decl, NULL);
-  t->before = before;
-  return type;
-}
-
 const Ast * ast_attribute_access (const Ast * n, Stack * stack)
 {
   if (!ast_schema (n, sym_postfix_expression,
@@ -3932,92 +4032,6 @@ void dotrace (Ast * n, Stack * stack, void * data)
       ast_traverse (compound_statement, stack, trace_return, adata);
     }
   }
-}
-
-/**
-This function returns "MPI" code to perform the reductions defined in
-`foreach` or NULL if no reductions are defined. */
-
-static Ast * mpi_reductions (const Ast * foreach, Stack * stack)
-{
-  Ast * reductions = ast_find (foreach, sym_reduction_list);
-  if (!reductions)
-    return NULL;
-  char * sreductions = NULL;
-  foreach_item (reductions, 1, reduction) {
-    Ast * identifier = ast_schema (reduction, sym_reduction,
-				   4, sym_reduction_array,
-				   0, sym_generic_identifier,
-				   0, sym_IDENTIFIER);
-    AstTerminal * t = ast_terminal (identifier);
-    Ast * array = ast_schema (reduction, sym_reduction,
-			      4, sym_reduction_array,
-			      3, sym_expression);
-    char * type = get_type (t->start, stack);
-    if (!type) {
-      fprintf (stderr,
-	       "%s:%d: error: cannot determine type of '%s'\n",
-	       t->file, t->line, t->start);
-      exit (1);
-    }
-    const char * mtype = NULL;
-    if (!strcmp (type, "double"))
-      mtype = "MPI_DOUBLE";
-    else if  (!strcmp (type, "int"))
-      mtype = "MPI_INT";
-    else if  (!strcmp (type, "long"))
-      mtype = "MPI_LONG";
-    else if  (!strcmp (type, "bool"))
-      mtype = "MPI_C_BOOL";
-    else if  (!strcmp (type, "unsigned char"))
-      mtype = "MPI_UNSIGNED_CHAR";
-    else if (strcmp (type, "coord") &&
-	     strcmp (type, "mat3")) {
-      fprintf (stderr,
-	       "%s:%d: error: does not know how to reduce "
-	       "type '%s' of '%s'\n",
-	       t->file, t->line, type, t->start);
-      exit (1);
-    }
-    else
-      mtype = type;
-    if (array) {
-      if (strcmp (type, "coord") && strcmp (type, "mat3")) {
-	str_append (sreductions, "mpi_all_reduce_array(", t->start, ",", mtype, ",");
-	sreductions = mpi_operator (sreductions, reduction->child[2]);
-	sreductions = ast_str_append (array, sreductions);
-	str_append (sreductions, ");");
-      } else {
-	str_append (sreductions, "mpi_all_reduce_array((double *)", t->start, ",MPI_DOUBLE,");
-	sreductions = mpi_operator (sreductions, reduction->child[2]);
-	char s[100];
-	snprintf (s, 99, "sizeof(%s)/sizeof(double)", t->start);
-	str_append (sreductions, s, ");");
-      }
-    }
-    else {
-      char s[100] = "1";
-      if (strcmp (type, "coord") && strcmp (type, "mat3"))
-	str_append (sreductions, "mpi_all_reduce_array(&", t->start,",", mtype);
-      else {
-	// cast the adress of the first member into a double for coord and mat3
-	str_append (sreductions, "mpi_all_reduce_array((double *)&", t->start,",MPI_DOUBLE");
-	snprintf (s, 99, "sizeof(%s)/sizeof(double)", t->start);
-      }
-      str_append (sreductions, ",");
-      sreductions = mpi_operator (sreductions, reduction->child[2]);
-      str_append (sreductions, s, ");");
-    }
-    free (type);
-  }
-  if (!sreductions)
-    return NULL;
-  str_prepend (sreductions, "{");
-  str_append (sreductions, "}");  
-  Ast * expr = ast_parse_expression (sreductions, ast_get_root (foreach));
-  free (sreductions);
-  assert (expr);
-  return expr;
 }
 
 /**

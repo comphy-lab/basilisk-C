@@ -1,4 +1,4 @@
-pristine:8c12259eaebef482aba6df82f5580d77081b1e3b8aa97e76f5177320791ed872
+pristine:d3701eee95aa9429574c53cb412d992d557d97aa3b8d8d688dc945b1819c55d7
 Starting with inventory:
 0000059985-9b08f44c43023087ea323913c98c24d9439dcf35bbcb3f79a06269386ede0ffb
 [TAG release 25-02-26 (macros)
@@ -173,3 +173,163 @@ Stephane Popinet <popinet@basilisk.fr>**20250718075224
  Ignore-this: 839230c474c39edf3f315269b19d640a
 ] 
 hash: 0000000275-53178db920fd0304c687816f7432debc2223e4e290bc80974f3d7962c2ff6b53
+[Fixed buffer overflow
+Stephane Popinet <popinet@basilisk.fr>**20250902140551
+ Ignore-this: a08e5ab894195c4b138a6a7ef2b385a1
+] 
+hash: 0000000202-ff6dfe0b002bdccd76559ca3d1a27cae9eafdc0e48cf955fc4a8e52bf3c3b177
+[Fixed formatting for recent versions of awk
+Stephane Popinet <popinet@basilisk.fr>**20250916122150
+ Ignore-this: f7c8c6bb8f1b3ab7085caf94c498a0ab46da1cea17717cbdf7556cab56a4357ab32193e39f6cd8f7
+] 
+hash: 0000000261-ca32dd070dbc15ac3115b1bb77b3a851e787258c27a6998b5bfd831e1ad5ea6a
+[Functions returning a pointer also accept optional parameters
+Stephane Popinet <popinet@basilisk.fr>**20250902153053
+ Ignore-this: 3ed28b969e0d4e5cdc499e4cb7f8114
+] 
+hash: 0000018371-1b7a710411f9d6fafe74168b74508443d5f9a7904f31980524ad7db4c3dcf7c9
+['Labels' take an optional 'level' parameter
+Stephane Popinet <popinet@basilisk.fr>**20250506153305
+ Ignore-this: beb2a2e0a9f5bc5f4236209cf05d1ce2
+] 
+hash: 0000000801-d02831ff0903d4b3fd3a93ef7d417a4dc68966155f8cf7d9fb23e8752ceb0605
+[Automatic periodic BCs for face fields were not applied properly on cartesian.h and multigrid.h
+Stephane Popinet <popinet@basilisk.fr>**20250917131237
+ Ignore-this: 63540a5e547db1a6d1fee7012f917a8
+] 
+hash: 0000003133-6eb5aacea6a5bcbc2e34b490813ab065338a52c10242d7cdf2ebf2eca81fb570
+[Added missing manual boundary conditions for bview/squares()
+Stephane Popinet <popinet@basilisk.fr>**20250917152341
+ Ignore-this: 717d3a7689f83e188955acfc00564684
+] 
+hash: 0000000400-f749ad3780002df6f24b604d84190becd73eec7efa7f53cabad626f64de20ecd
+[runtest needs to clean logs to avoid reporting errors multiple times
+Stephane Popinet <popinet@basilisk.fr>**20250917152414
+ Ignore-this: 9f0dae832e2a6b6d59a6e9580c481f45
+] 
+hash: 0000000326-90fd3f9ee924f7679a2c8338df4b55c191e3c00fe9f3c59339d373ef5206084d
+[Updated references
+Stephane Popinet <popinet@basilisk.fr>**20250917154659
+ Ignore-this: 412b17317ac5fb98b19e8dbad2b2bc03
+] 
+hash: 0000015257-bafb543819340584663433dbaba08a1e2af94cb6591b976d6cb0f1a15724e283
+[Figures for VOF rotation test
+Stephane Popinet <popinet@basilisk.fr>**20250918121030
+ Ignore-this: 7a89f5562a735098fae05b8ada5ce2bfbc486898c632bced85560898881f3489905adb0077e36eff
+] 
+hash: 0000003276-d48bc873a6fc63879d08a2cf5debcc2e7766ced9a2806a727fb3170cf269f6d0
+[Minor change to avoid sizeof() warning
+Stephane Popinet <popinet@basilisk.fr>**20250918152632
+ Ignore-this: 76465c1b700e4c018b1cff7c89c31f162487fb43c417ba45a932cc6abea7f57d98bad901b6bd025a
+] 
+hash: 0000000495-8c094ed281b84bce8ebb69dff25b80a4d43d7efce1a12ff8ba58c1af84fcffae
+[Updated darcsit doc
+Stephane Popinet <popinet@basilisk.fr>**20250918152741
+ Ignore-this: d991523625bf6465c9befbacd12c8f6d93197adf4a9a92b62957eb31b705efb0068cfa5286cae3ba
+] 
+hash: 0000000371-2cd91fe7ce30b3f7e9cdd0a27d8d99e3e1c67a8c6614435fdeccb22385821868
+[autotest improvements
+Stephane Popinet <popinet@basilisk.fr>**20250918163141
+ Ignore-this: 50308cc4997ce0584c6071268a55d1978980b7ec599d48a42bdef859270193144fbedcf3c2ffeca5
+] 
+hash: 0000000930-e11b533aea9d030dcf7152cd7d925d2fbeccbe08b307fbe22b7093765893504b
+[Removed obsolete .plot files
+Stephane Popinet <popinet@basilisk.fr>**20250918153232
+ Ignore-this: 31388f8b27408481798d7b9fae2989d1c4c9ecdbc3eaf67108f8992fdf97bda2c986e64ae5e15de2
+] 
+hash: 0000009760-f3ff98963cfdff1c2bbc7916dbd1fc8811ee371af24738b5529d53bef8584502
+[For some reason symbolic links are recreated every time by make
+Stephane Popinet <popinet@basilisk.fr>**20250919075243
+ Ignore-this: b42a8356139926153a4d7fa0c77e7872dca68b01823d92add21743f0d195cbbf9f27a1a3a015d9ce
+] 
+hash: 0000000342-24c5fcbd4bc85df74cf052bcc20c248d93833f5c4140c09e593f020b4dd9b344
+[No key
+Stephane Popinet <popinet@basilisk.fr>**20250919075458
+ Ignore-this: 73c23e39a95db953269060506aa7827078a8322452f15cd74d34202c827c37fd69f861500ce53048
+] 
+hash: 0000000203-199a5459ddf42caa1c8a5e6a2514b82ff0bbd0560c606c0bc43f0330701c74e1
+[mirror() and translate() could not be imbricated
+Stephane Popinet <popinet@basilisk.fr>**20250919090519
+ Ignore-this: 2a7879b8e369accac38eac406c7b8ef6
+] 
+hash: 0000001233-985c2acd9b58c58a9865a8b8dd8391a818260cd3f900aa67515d9908c0ef92af
+[Page cache improvements for HTTPS
+Stephane Popinet <popinet@basilisk.fr>**20250920081241
+ Ignore-this: 308f79d055d1d4f48dcd44421d62ec118050cb5b63ec4b255e3e102becbb64854a2a4d9d598b16d8
+] 
+hash: 0000002501-2b5f04790e752d5293cea5a2322da6294ca9354c2b3f5498b6741e68450c4a63
+[Server updates for upgraded system
+Stephane Popinet <popinet@basilisk.fr>**20250920081916
+ Ignore-this: d02700fa647e12d084f6f0b0c93eebba72e0fea821a05baed8457c23140cd4cb0fcc150bb55c1422
+] 
+hash: 0000004316-8db60c7127cb9a880715c21e70b8e9c4602aa6e74ee2d57c8f9e12e12db3bef2
+[Updated CSS style files for new pandoc version
+Stephane Popinet <popinet@basilisk.fr>**20250920082218
+ Ignore-this: 48c9410d90371c8bed475d0666eb6824c4f77716814ac3bbe3abce7acf96a5aa0c389e150a4ec044
+] 
+hash: 0000003085-3f1c1e994f6df5409b594e1e293f5cf72a232b95814092d232e2bdf886bde07b
+[Generic performance plots
+Stephane Popinet <popinet@basilisk.fr>**20251006144319
+ Ignore-this: 4035c6148b990367b752622797212782
+] 
+hash: 0000007105-a73e57944e7d50eccd3ff1e613891ab6a7445e3dc8ffaddb46b86071f2289898
+[Fixed qcc crash when defining a function called 'point()'
+Stephane Popinet <popinet@basilisk.fr>**20251006144357
+ Ignore-this: c29c34f53d87a3bf3a5694f43541a7c1
+] 
+hash: 0000000414-7375436f5a9eb9b388e4f6372e2db75dcba61f700d32c1593ba9ee8a5650cd4d
+[New 'watch-tests' script to monitor running tests
+Stephane Popinet <popinet@basilisk.fr>**20251006144709
+ Ignore-this: 9a59ca5f1da7be20f03d91c1a30aded4
+] 
+hash: 0000001734-ef052a79e7f9703fae2ad7c8ae13a83043b4291f53271403938e1faad67648e2
+[Simple multi-dimensional arrays
+Stephane Popinet <popinet@basilisk.fr>**20251006145659
+ Ignore-this: c59dd699b0e5381d0a1200ea8b5b8b99
+] 
+hash: 0000004471-2a4e0ef595e106f4c237b7a23d15899aeac0507c687b710a81e1cf023f6d1c29
+[The tree implementation uses virtual memory by default
+Stephane Popinet <popinet@basilisk.fr>**20251006145729
+ Ignore-this: 1a26cd91895a1d678ceeca9eefc9cb74
+] 
+hash: 0000005664-8f3b22e4df678064d8e09cd222b705cb50da7fb57726752608734437d67bae50
+[Bleck test case runs on quadtrees
+Stephane Popinet <popinet@basilisk.fr>**20250415085728
+ Ignore-this: dd7402ab8de64db090e93a105e1eca19
+] 
+hash: 0000036543-efc0623e9330c44c49e692b7c72e3f5f772d5942bb4ad6308b26c9ed4bd74671
+[Fix when resetting layer fields on GPUs
+Stephane Popinet <popinet@basilisk.fr>**20250506154513
+ Ignore-this: 69e72e2a664afb8847a0df54ff5464d8
+] 
+hash: 0000000302-84a8d21273faf788b497476d6b168e588ca9140040e7c89ed085d3a8f81c5587
+[Trees and layers are compatible
+Stephane Popinet <popinet@basilisk.fr>**20251013150822
+ Ignore-this: 70c858e300a82e49297d0b91558f77f5
+] 
+hash: 0000014993-8f5c6dd883b06a528847cbc741fed7acad0a7fbef90788c69e75b38f2d940ff9
+[Tree grids can restore from (non-square/cubic) multigrid dumps with multiple 'roots'
+Stephane Popinet <popinet@basilisk.fr>**20251014143750
+ Ignore-this: 860a9a770331d69a0d2061104d25d807
+] 
+hash: 0000002829-8aa6e346b7d73097d20540a60d78634876895a5c60a9909d295719f19ad5f63d
+[Fix for optional arguments and function pointers
+Stephane Popinet <popinet@basilisk.fr>**20251015123902
+ Ignore-this: f95aac7098962796d4299f3c8881e6b2
+] 
+hash: 0000000438-f21d8dd2fb7f0a198e9dd81e0f6f64040c0f3db2974727fa15a3336625d2d79d
+[MPI reductions are added for user macros
+Stephane Popinet <popinet@basilisk.fr>**20251015162804
+ Ignore-this: 549299b474e743ecb60a8ac05e21b545
+] 
+hash: 0000009187-b75d82ab5a89ab4c47d033420e85614f6d8f1e117c253367ed8b6e90e25c7347
+[Kelvin-Helmoltz test case uses a rigid lid
+Stephane Popinet <popinet@basilisk.fr>**20251101174210
+ Ignore-this: de034c97c6cd1e98a8fd1744013eee88
+] 
+hash: 0000492977-86d072e250e5f37e7529d260fc8c1b89cd9a130b9135f092337f31611d66e731
+[Rigid lid option for the multilayer solver
+Stephane Popinet <popinet@basilisk.fr>**20251101180324
+ Ignore-this: bce6395c076da666940c87d118f6f080
+] 
+hash: 0000003174-80024fa3146d35f7692adaca382f5bc729e753363966b748dc06b49fb315d79c

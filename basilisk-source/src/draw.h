@@ -214,7 +214,6 @@ coordinate system. */
 macro translate (float x = 0, float y = 0., float z = 0.)
 {
   {
-    redraw (clear = false);
     bview * _view = draw();
     glMatrixMode (GL_MODELVIEW);
     glPushMatrix();
@@ -240,30 +239,30 @@ $\alpha$ as explained in
 macro mirror (coord n = {0}, double alpha = 0.)
 {
   {
-    redraw (clear = false);
     bview * _view = draw();
     {
       glMatrixMode (GL_MODELVIEW);
       glPushMatrix();
-      normalize (&n);
+      coord m = n;
+      normalize (&m);
       GLfloat s[16], t[16];
-      s[0] = 1. - 2.*n.x*n.x;
-      s[1] = - 2.*n.x*n.y;  s[2] = - 2.*n.x*n.z;
+      s[0] = 1. - 2.*m.x*m.x;
+      s[1] = - 2.*m.x*m.y;  s[2] = - 2.*m.x*m.z;
       s[3] = 0.;
       s[4] = s[1];
-      s[5] = 1. - 2.*n.y*n.y; s[6] = - 2.*n.y*n.z;
+      s[5] = 1. - 2.*m.y*m.y; s[6] = - 2.*m.y*m.z;
       s[7] = 0.;
-      s[8] = s[2];   s[9] = s[6];  s[10] = 1. - 2.*n.z*n.z; 
+      s[8] = s[2];   s[9] = s[6];  s[10] = 1. - 2.*m.z*m.z;
       s[11] = 0.;
-      s[12] = 0.;    s[13] = 0.;   s[14] = 0.;                    
+      s[12] = 0.;    s[13] = 0.;   s[14] = 0.;
       s[15] = 1.;
 
       t[0] = 1.;  t[1] = 0.;   t[2] = 0.;  t[3] = 0.;
       t[4] = 0.;  t[5] = 1.;   t[6] = 0.;  t[7] = 0.;
       t[8] = 0.;  t[9] = 0.;   t[10] = 1.; t[11] = 0.;
-      t[12] = - 2.*n.x*alpha; 
-      t[13] = - 2.*n.y*alpha;  
-      t[14] = - 2.*n.z*alpha; 
+      t[12] = - 2.*m.x*alpha;
+      t[13] = - 2.*m.y*alpha;
+      t[14] = - 2.*m.z*alpha;
       t[15] = 1.;
       matrix_multiply (s, t);
       glMultMatrixf (s);
@@ -1256,10 +1255,12 @@ bool squares (char * color,
     foreach()
       foreach_dimension()
         fn.x[] = (Z[1] - Z[-1])/(2.*Delta_x);
+    boundary ({fn}); // fixme: necessary because foreach_leaf() below doesn't do automatic BCs
   }
 #endif
   colorize_args();
   scalar f = col;
+  boundary ({f}); // fixme: necessary because foreach_leaf() below doesn't do automatic BCs
   bview * view = draw();
   glShadeModel (GL_SMOOTH);
   if (linear) {
@@ -1704,8 +1705,7 @@ bool draw_string (char * str,
 # *labels()*: displays label fields */
 
 trace
-bool labels (char * f,
-	     float lc[3] = {0}, float lw = 1)
+bool labels (char * f, float lc[3] = {0}, float lw = 1, int level = -1)
 {
 #if dimension == 2
   bool expr = false;
@@ -1717,6 +1717,8 @@ bool labels (char * f,
   float res = view->res;
   if (view->res < 150*view->samples)
     view->res = 150*view->samples;
+  int maxlevel = view->maxlevel;
+  view->maxlevel = level;
   draw_lines (view, lc, lw) {
     glMatrixMode (GL_MODELVIEW);
     foreach_visible (view)
@@ -1732,6 +1734,7 @@ bool labels (char * f,
       }
   }
   view->res = res;
+  view->maxlevel = maxlevel;
   if (expr) delete ({ff});
   return true;
 #else // dimension == 3

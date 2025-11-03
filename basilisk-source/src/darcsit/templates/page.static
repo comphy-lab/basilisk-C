@@ -237,12 +237,14 @@ For more: <a href=http://daringfireball.net/projects/markdown>markdown syntax</a
     $if(users)$
 <script type="text/javascript">
 /* <![CDATA[ */
+  __ESCAPEDDOLLAR__.ajaxSetup({ cache: false });
   __ESCAPEDDOLLAR__.get("$base$/_user", {}, function(username, status) {
      __ESCAPEDDOLLAR__("#logged_in_user").text(username);
      if (username == "") {  // nobody logged in
         __ESCAPEDDOLLAR__("#logoutlink").hide();
         __ESCAPEDDOLLAR__("#loginlink").show();
      } else {
+        __ESCAPEDDOLLAR__("#logoutlink").attr("href", "$base$/_logout?_=" + Date.now());
         __ESCAPEDDOLLAR__("#logoutlink").show();
         __ESCAPEDDOLLAR__("#loginlink").hide();
      };

@@ -5,4 +5,4 @@ for f in `darcs changes --last=1 -v |        \
     sed -E 's/^    (add|rm)file //g'`; do
     rm -f `darcs show repo | grep Root | awk '{print $2}'`/`dirname $f`/Makefile.tests
 done
-# darcs push -a -q wiki@basilisk.fr:wiki
+darcs push -a -q wiki@shell.basilisk.fr:wiki

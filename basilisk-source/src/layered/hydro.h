@@ -50,7 +50,7 @@ vector u;
 double G = 1., dry = 1e-12, CFL_H = 1e40;
 double (* gradient) (double, double, double) = minmod2;
 
-scalar * tracers = NULL;
+scalar * tracers = NULL, eta_r;
 bool linearised = false;
 
 /**
@@ -94,7 +94,7 @@ event defaults0 (i = 0)
   h.restriction = restriction_volume_average;
   h.dirty = true;
 #endif
-  eta = new scalar;
+  eta_r = eta = new scalar;
   reset ({h, zb}, 0.);
 
   /**
@@ -213,7 +213,7 @@ event face_fields (i++, last)
 
   static double pdt = 0.;
   foreach_face (reduction (min:dtmax)) {
-    double ax = a_baro (eta, 0);
+    double ax = a_baro (eta_r, 0);
     double H = 0., um = 0.;
     double Hr = 0., Hl = 0.;
     foreach_layer() {
@@ -488,7 +488,7 @@ must be freed at the end of the run. */
    
 event cleanup (t = end, last)
 {
-  delete ({eta, h, u});
+  delete ({eta, eta_r, h, u});
   free (tracers), tracers = NULL;
 }
 

@@ -87,6 +87,13 @@ int main()
   N = nl*L0;
   nu = 2e-4;
 
+  /**
+  We set the top boundary as a rigid lid rather than a free
+  surface. The tolerance on the divergence needs to be lowered. */
+  
+  rigid = true;
+  TOLERANCE = 1e-4;
+  
   theta_H = 0.51;
   cell_lim = mono_limit;
   DT = 0.03;

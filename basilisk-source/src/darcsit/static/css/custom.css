@@ -7,9 +7,9 @@
   padding-top: 0em;    
   padding-bottom: 0em;
 }
-code > span.pp { color: #007020; }
-code > span.im { color: #007020; }
-code > span.cf {
+.sourceCode .pp { color: #007020; }
+.sourceCode .im { color: #007020; }
+.sourceCode .cf {
   color: #007020; 
   font-weight: bold;
 }
@@ -26,6 +26,14 @@ pre.sourceCode {
 
 .sourceCode a {
     color:inherit;
+}
+
+figure {
+    text-align: center;
+}
+
+figcaption {
+    font-size:  90%;
 }
 
 .figure {

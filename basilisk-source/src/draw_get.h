@@ -291,15 +291,17 @@ else if (!strcmp (s, "labels")) {
   char * f = NULL;
   float lc[3] = {0};
   float lw = 1;
+  int level = -1;
   Params params[] = {
     {"f", pstring, &f},
     {"lc", pfloat, lc, 3},
     {"lw", pfloat, &lw},
+    {"level", pint, &level},
     {NULL}
   };
   if (!parse_params (params))
     return false;
-  if (!labels (f,lc,lw))
+  if (!labels (f,lc,lw,level))
     return false;
 }
 else if (!strcmp (s, "lines")) {

@@ -56,7 +56,7 @@ script()
     test -s warn || rm -f warn
 
     pass=true
-    rm -f log-* stencil stencil-* fine fine-* coarse coarse-*
+    rm -f $log log-* stencil stencil-* fine fine-* coarse coarse-*
     tail -f --pid=$$ --retry display.html 2> /dev/null | grep -o 'http://.*:[0-9]*' &
     tail -f --pid=$$ --retry $log 2> /dev/null | grep -E '.*:[0-9]*:.*(warning|error).*:' &
     retail=$!
@@ -294,7 +294,7 @@ EOF
     rm -r -f $chksum/
 
     if ! ( scp $chksum.tgz $rhost: && rm -f $chksum.tgz && \
-	       ssh $rhost bash -c "\"tar xmzf $chksum.tgz && cd $chksum && $TSP -N \$(test \$($TSP -S) -le $NCORES && echo \$($TSP -S) || echo $NCORES) -L $test -n nice -19 bash $chksum.sh\" && sleep 0 && echo $chksum && $TSP -w" > tspid.$ext && \
+	       ssh $rhost bash -c "\"tar xmzf $chksum.tgz && cd $chksum && $TSP -N \$(test \$($TSP -S) -le $NCORES && echo \$($TSP -S) || echo $NCORES) -L $test -n nice -19 bash $chksum.sh\" && sleep 0 && echo $chksum && echo $rhost && $TSP -w" > tspid.$ext && \
 	       scp -q $rhost:$chksum.tgz $chksum.tgz && \
 	       ssh $rhost rm -r -f $chksum.tgz && \
 	       tar xmzf $chksum.tgz && \
@@ -426,7 +426,7 @@ EOF
     rm -r -f $chksum/
 
     if ! ( scp $chksum.tgz $rhost: && rm -f $chksum.tgz && \
-	       ssh $rhost bash -c "\"tar xmzf $chksum.tgz && cd $chksum && tsp -n nice -19 bash $chksum.sh\" && sleep 0 && echo $chksum && tsp -w" > tspid.$ext && \
+	       ssh $rhost bash -c "\"tar xmzf $chksum.tgz && cd $chksum && tsp -n nice -19 bash $chksum.sh\" && sleep 0 && echo $chksum && echo $rhost && tsp -w" > tspid.$ext && \
 	       scp -q $rhost:$chksum.tgz $chksum.tgz && \
 	       ssh $rhost rm -r -f $chksum.tgz && \
 	       tar xmzf $chksum.tgz && \

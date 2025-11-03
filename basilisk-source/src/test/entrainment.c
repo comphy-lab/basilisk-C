@@ -22,6 +22,7 @@ strength (second figure)."
 set term PNG size 800,400
 set output 'u.png'
 set pm3d map interpolate 4,4
+unset key
 # the matlab 'parula' colormap
 set palette defined (0 '#352a87',1 '#0363e1',2 '#1485d4',3 '#06a7c6',\
            4 '#38b99e',5 '#92bf73',6 '#d9ba56',7 '#fcce2e',8 '#f9fb0e')

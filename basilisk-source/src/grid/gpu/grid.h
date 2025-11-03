@@ -1282,7 +1282,7 @@ void reset_gpu (void * alist, double val)
   scalar * list = alist;
   for (scalar s in list)
     if (!is_constant(s)) {
-      size_t offset = s.i*size, totalsize = s.block*size;
+      size_t offset = s.i*size, totalsize = max(s.block, 1)*size;
       int index = offset/GPUContext.max_ssbo_size;
       offset -= index*GPUContext.max_ssbo_size;
       while (totalsize) {

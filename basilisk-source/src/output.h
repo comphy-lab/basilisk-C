@@ -436,7 +436,7 @@ FILE * open_image (const char * file, const char * options)
 
     int len = strlen ("ppm2???    ") + strlen (file) +
       (options ? strlen (options) : 0);
-    char command[len];
+    char command[len + 1];
     strcpy (command, "ppm2"); strcat (command, ext + 1);
 
     static int has_ffmpeg = -1;
@@ -1334,8 +1334,22 @@ bool restore (const char * file = "dump",
   scalar * listm = is_constant(cm) ? NULL : (scalar *){fm};
 #if TREE && _MPI
   restore_mpi (fp, slist);
-#else
+#else // ! (TREE && _MPI)
+#if !_MPI
+  int rootlevel = 0;
+#endif
+#if TREE
+  foreach_dimension()
+    while ((1 << rootlevel) < header.n.x)
+      rootlevel++;
+  if (rootlevel > 0)
+    init_grid (1 << rootlevel);
+#endif // TREE
+#if _MPI  
   foreach_cell() {
+#else
+  foreach_cell_restore (header.n, rootlevel) {
+#endif
     unsigned flags;
     if (fread (&flags, sizeof(unsigned), 1, fp) != 1) {
       fprintf (ferr, "restore(): error: expecting 'flags'\n");
@@ -1364,7 +1378,7 @@ bool restore (const char * file = "dump",
 #endif // _GPU
   for (scalar s in all)
     s.dirty = true;
-#endif
+#endif // ! (TREE && _MPI)
   
   scalar * other = NULL;
   for (scalar s in all)

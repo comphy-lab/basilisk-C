@@ -127,7 +127,8 @@ ul.tabs li a { text-decoration: none; font-size: 93%; font-weight: bold; margin:
 ul.index {
     max-width: 100%;
     margin: 1em auto;
-    column-width: 12em;
+    -webkit-column-width: 12em;
+            column-width: 12em;
 }
 
 .index li {

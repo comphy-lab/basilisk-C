@@ -21,8 +21,8 @@ year = 86400.*365.
 set grid
 set key center right
 plot [0:5]						\
-   'log' u ($1/year):3 w l t 'top layer',		\
-   'log' u ($1/year):2 w l t 'bottom layer'
+   'clog' u ($1/year):3 w l t 'top layer',		\
+   'clog' u ($1/year):2 w l t 'bottom layer'
 ~~~
 
 ## References
@@ -43,8 +43,6 @@ plot [0:5]						\
 }
 ~~~
 */
-
-#include "grid/multigrid.h"
 
 #define hour 3600.
 #define day (24.*hour)
@@ -103,8 +101,7 @@ event acceleration (i++)
       foreach()
 	foreach_dimension()
 	  d2u.x[] = (h[1]*u.x[1] + h[-1]*u.x[-1] +
-		     h[0,1]*u.x[0,1] + h[0,-1]*u.x[0,-1] - 4.*h[]*u.x[])/
-	sq(Delta);
+		     h[0,1]*u.x[0,1] + h[0,-1]*u.x[0,-1] - 4.*h[]*u.x[])/sq(Delta);
       foreach()
 	if (h[] > dry)
 	  foreach_dimension()
@@ -123,7 +120,11 @@ int main()
   size (6000e3 [1]);
   origin (0, - L0/2.);
   DT = 3000 [0,1];
+#if TREE
+  N = 16;
+#else
   N = 32;
+#endif
   theta_H = 0.51;
   run();
 }
@@ -135,7 +136,9 @@ double sum0 = 0., sum1 = 0.;
 
 event init (i = 0)
 {
-
+#if TREE
+  refine (x < L0/4. && level < 5);
+#endif
   /**
   No-slip (and dry) conditions on all boundaries. Note that this is
   only relevant for "wet" boundaries. For example, given that there is
@@ -193,12 +196,15 @@ event init (i = 0)
 
 event end (t = 5*year)
 {
-#if !_GPU  
-  view (fov = 19.7885,
-	tx = -0.35, ty = 0, width = 440, height = 600);
+#if !_GPU
+  view (fov = 19.7885, tx = -0.35, ty = 0, width = 440, height = 600);
   squares ("zb < 100 ? eta : nodata", spread = -1);
   vectors ("u1", scale = 8e5);
+#if TREE
+  save ("gyre-tree.png");
+#else
   save ("gyre.png");
+#endif
 #endif
 }
 

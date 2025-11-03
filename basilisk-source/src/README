@@ -337,6 +337,7 @@ Several metric spaces/coordinate systems are predefined:
 # Miscellaneous functions/modules
 
 * [Controlling the maximum runtime](maxruntime.h)
+* [Generic performance monitoring](perfs.h)
 
 # Tracking floating-point exceptions
 
