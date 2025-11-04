@@ -81,6 +81,59 @@ We've set up a GitHub Actions workflow to automatically sync this repository wit
 
 The workflow file is located at `.github/workflows/sync-darcs-repositories.yml`.
 
+## Installing Basilisk on macOS
+
+After a recent Basilisk update, the compilation fails on macOS due to missing memory management constants. We maintain a patch to fix this issue.
+
+### Automated Installation (Recommended)
+
+Use the provided installation script which automatically handles the patch:
+
+```shell
+./reset_install_requirements.sh
+```
+
+This script will:
+1. Clone the latest Basilisk from http://basilisk.fr/basilisk
+2. Automatically download and apply all comphy-lab patches (including the macOS compatibility patch)
+3. Configure for macOS (`config.osx`)
+4. Build Basilisk
+
+For a clean reinstall:
+
+```shell
+./reset_install_requirements.sh --hard
+```
+
+### Manual Installation
+
+If you prefer to install manually:
+
+```shell
+# Clone Basilisk
+darcs clone http://basilisk.fr/basilisk
+cd basilisk
+
+# Apply the macOS compatibility patch
+curl -O https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/patches/2025-11-03-macos-mman-compatibility.patch
+patch -p1 < 2025-11-03-macos-mman-compatibility.patch
+
+# Configure and build
+cd src
+ln -s config.osx config
+make -k
+make
+```
+
+### About the Patch
+
+The `2025-11-03-macos-mman-compatibility.patch` fixes compilation issues on macOS by:
+- Defining missing memory mapping constants (`MAP_ANON`, `MAP_ANONYMOUS`)
+- Defining missing memory advice constants (`POSIX_MADV_DONTNEED`, `MADV_DONTNEED`)
+- Explicitly declaring the `madvise()` function
+
+**Credit**: Thanks to Peter Croxford for identifying this issue.
+
 ## Repository Structure
 
 Our fork is organized with two main Darcs repositories:
