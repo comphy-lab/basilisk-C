@@ -1,0 +1,231 @@
+# -*-Makefile-*-
+
+export BASILISK := $(patsubst %/,%,$(dir $(realpath $(lastword $(MAKEFILE_LIST)))))
+
+PNG = png
+GENSUM = md5sum
+CHECKSUM = md5sum -c --status
+
+include $(BASILISK)/config
+include Makefile.tests
+
+export GENSUM
+export CHECKSUM
+export CC99
+export CFLAGS
+export CC
+export AWK
+QCC = $(BASILISK)/qcc
+
+check: $(subst .c,.tst,$(filter-out $(TESTS),$(filter-out $(EXCLUDE),$(ALLTESTS)))) Makefile.deps
+
+compile: $(subst .c,.s,$(filter-out $(TESTS),$(filter-out $(EXCLUDE),$(ALLTESTS)))) Makefile.deps
+
+tags: $(subst .page,.tags,$(ALLPAGES))
+
+itags: $(subst .page,.itags,$(filter %.h.page, $(ALLPAGES)))
+
+clean:
+	rm -f *.o *.s *.*tst *.d *.prof *.itags Makefile.deps Makefile.tests
+
+.PRECIOUS: %.prof %.s %.c %.h %.plot
+
+.DELETE_ON_ERROR:
+
+%.3D.c: %.c
+	ln -s -f $< $@
+%.3D.s:   CFLAGS += -grid=octree
+%.3D.s.d: CFLAGS += -grid=octree
+%.3D.tst: CFLAGS += -grid=octree
+
+%.gpu.c: %.c
+	ln -s -f $< $@
+%.gpu.s:   CFLAGS += -grid=gpu/multigrid
+%.gpu.s: $(BASILISK)/libgpu.a
+%.gpu.s.d: CFLAGS += -grid=gpu/multigrid
+%.gpu.tst: CFLAGS += -grid=gpu/multigrid
+
+%.CADNA.c: %.c
+	ln -s -f $< $@
+
+%.CADNA.tst: %.CADNA.s %.CADNA.c
+	@CFLAGS="$(CFLAGS) -cadna" LIBS="$(LIBS) $(CADNALIBS)" OPENGLIBS="$(OPENGLIBS)"\
+		GDB="$(GDB)" $(BASILISK)/runtest $@
+
+%.tst: %.s %.c
+	@PNG=$(PNG) LIBS="$(LIBS)" OPENGLIBS="$(OPENGLIBS)" \
+		GDB="$(GDB)" $(BASILISK)/runtest $@
+
+%.ctst: %.s %.c
+	@PNG=$(PNG) LIBS="$(LIBS)" OPENGLIBS="$(OPENGLIBS)" \
+		CFLAGS="-grid=multigrid $(CFLAGS)" \
+		GDB="$(GDB)" $(BASILISK)/runtest $@
+
+%.vtst: %.s %.c
+	@PNG=$(PNG) LIBS="$(LIBS)" OPENGLIBS="$(OPENGLIBS)" \
+		EXEC="$(VALGRIND)" \
+		GDB="$(GDB)" $(BASILISK)/runtest $@
+
+%.s: %.c $(QCC)
+	@echo qcc -autolink $(CFLAGS) $(subst .3D_,-grid=octree,$(findstring .3D_,$*_)) \
+		-o $*/$* $*.c $(LIBS) -lm
+	@rm -f $*/fail $*/warn $*.dims
+	@OPENGLIBS="$(OPENGLIBS)" $(QCC) -autolink -nolineno $(STRIPFLAGS) 	\
+		-dimensions=dims -non-finite					\
+		$(subst -g ,,$(subst -O2 ,,$(CFLAGS))) 				\
+		$(subst .3D_,-grid=octree,$(findstring .3D_,$*_)) 		\
+		$< -o $@ $(LIBS) -lm 2> $*.log~ || 				\
+	(mkdir -p $* && 							\
+	 echo "qcc -autolink $(CFLAGS) -o $*/$* $*.c $(LIBS) -lm" > $*/fail &&	\
+	 cat $*.log~ >> $*/fail &&						\
+	 echo "make: *** [$*.s] Error 1" >> $*/fail &&				\
+	 rm -f $@ $*.*tst &&							\
+	 $(GENSUM) $*.c > $*/fail.tst &&					\
+	 cat $*/fail 2> /dev/stderr &&						\
+	 exit 1)
+	@chmod -x $@
+	@test ! -s $*.log~ || ( mkdir -p $* && cat $*.log~ > $*/warn && cat $*/warn 2> /dev/stderr )
+	@rm -f $*.log~ $*/fail
+	@test ! -f $*.dims.ref -o ! -f $*.dims || diff $*.dims $*.dims.ref || (rm -f $@ && exit 1)
+#	@rm -f $*.dims
+
+%.prof: %.c
+	$(QCC) -autolink $(subst -DTRASH=1,,$(CFLAGS)) -g -no-pie -pg $< -o $*/$* -lm
+	cd $* && ./$* 2> log > out
+	gprof $*/$* $*/gmon.out > $@
+
+%.dot: %.prof
+	gprof2dot.py < $< > $@
+
+%.dot.png: %.dot
+	dot -Tpng -o $@ < $<
+
+%.dot.svg: %.dot
+	dot -Tsvg -o $@ < $<
+
+# fixme: this is obsolete
+%/plot.png: %.plot
+	cd $* && gnuplot -e "batch=1; PNG=\"$(PNG)\"; set term $(PNG) enhanced font \",10\"; set output 'plot.png'; set macros;" ../$< || rm -f plot.png
+
+# warning: if this recipe is changed, runtest needs to be updated
+%/plots: %.c $(BASILISK)/gnuplot.awk $(BASILISK)/python.awk \
+		$(BASILISK)/gnuplot.sh
+	cd $* && $(AWK) -f $(BASILISK)/gnuplot.awk < ../$*.c > plots && \
+	PNG=$(PNG) sh $(BASILISK)/gnuplot.sh || rm -f plots
+	cd $* && $(AWK) -f $(BASILISK)/python.awk < ../$*.c > plots.py && \
+	python plots.py || rm -f plots
+	@test -f $*/plots || exit 1
+
+%/plots: %.md $(BASILISK)/gnuplot.awk $(BASILISK)/python.awk \
+		$(BASILISK)/gnuplot.sh
+	mkdir -p $* && cd $* && $(AWK) -f $(BASILISK)/gnuplot.awk < ../$*.md > plots && \
+	PNG=$(PNG) sh $(BASILISK)/gnuplot.sh || rm -f plots
+	cd $* && $(AWK) -f $(BASILISK)/python.awk < ../$*.md > plots.py && \
+	python plots.py || rm -f plots
+	@test -f $*/plots || exit 1
+
+%/pdf-plots: %.c $(BASILISK)/gnuplot.awk $(BASILISK)/python.awk \
+		$(BASILISK)/gnuplot.sh
+	cd $* && \
+	$(AWK) -v pdf=true -f $(BASILISK)/gnuplot.awk < ../$*.c > pdf-plots && \
+	PNG=$(PNG) sh $(BASILISK)/gnuplot.sh . pdf-plots || rm -f pdf-plots
+	@test -f $*/pdf-plots || exit 1
+
+%.gnu: %.eps
+	pstoedit -f gnuplot -flat 0.1 $< $@
+
+%.pdf: %.h
+	pandoc -o $@ $<
+
+%.pdf: %.c
+	pandoc -o $@ $<
+
+%.tags: % $(QCC)
+	$(QCC) $(CFLAGS) -tags $<
+
+%.itags: %.tags $(subst .page,.tags,$(ALLPAGES)) $(BASILISK)/includedin.sh
+	sh $(BASILISK)/includedin.sh $* > $@
+	rm -f $*.html
+
+_%.c: %.c $(QCC)
+	$(QCC) $(CFLAGS) -nolineno -disable-dimensions -source $<
+	@sed -i 's|^#line .*$$||' $@
+
+_src: $(patsubst %,_%, $(filter-out $(TESTS),$(filter-out $(EXCLUDE),$(ALLTESTS))))
+
+# lists external symbols of executables
+extern = nm -u $(1) | sed -n 's/^[ ]*U \(.*\)/\1/p' | sort | uniq
+
+whitelist: $(subst .c,.exe,$(filter-out $(EXCLUDE),$(ALLTESTS))) \
+	$(subst .ctst,.cexe,$(SPECIAL_TESTS))
+	@echo "updating whitelist"
+	@$(call extern,$^) > whitelist
+
+# checks that an executable only links against whitelisted external symbols
+%.wexe: %.exe
+	@( $(call extern,$<) | diff $(BASILISK)/test/whitelist - | \
+		(sed -n 's/^> *\(.*\)/error: \1 not whitelisted/p') | \
+		grep 'not whitelisted' && rm -f $@ ) || cp -f $< $@
+	@test -f $@
+
+# Octave code
+
+%.s: %.m
+	cp -f $< $@
+
+%.tst: %.s %.m
+	$(BASILISK)/runtest $@
+
+# python modules
+
+%.i: %.c $(QCC) $(BASILISK)/python.h
+	$(QCC) $(CFLAGS) -python -c $(MDFLAGS) -I$(PYTHONINCLUDE) $<
+
+%.py: %.i
+	swig -I$(BASILISK) -python $(subst python3,-py3,$(findstring python3, $(PYTHONINCLUDE))) $*.i
+	$(CC) $(CFLAGS) -c $(MDFLAGS) -I$(PYTHONINCLUDE) $*_wrap.c
+	$(CC) -shared $*.o $*_wrap.o -o _$*.so
+
+# HTML
+.SECONDEXPANSION:
+%.html: % %.tags $(BASILISK)/Makefile.defs                \
+		$(BASILISK)/darcsit/basilisk.conf         \
+		$(BASILISK)/darcsit/darcsit.conf 	  \
+		$(BASILISK)/darcsit/templates/page.static \
+		$(BASILISK)/darcsit/literate-c		  \
+		$(BASILISK)/darcsit/codeblock		  \
+		$(BASILISK)/darcsit/filetype		  \
+		$(BASILISK)/darcsit/pagemagic		  \
+		$(BASILISK)/darcsit/decl_anchors.awk	  \
+		$(BASILISK)/page2html			  \
+		$$(wildcard $$(subst .c,,%)/warn)	  \
+		$$(wildcard $$(subst .c,,%)/fail)	  \
+		$$(wildcard $$(subst .c,,%)/pass)
+	$(BASILISK)/page2html $< > $@
+	@test -s $@ || exit 1
+
+LINKCHECKER = linkchecker --no-warnings --no-status --anchors	\
+	--ignore-url='.*/$$'					\
+	--ignore-url='http://groups.google.com/'		\
+	--ignore-url='http://basilisk.fr/_'
+
+%.html.check: %.html
+	$(LINKCHECKER) -r 1 $<
+
+# generated makefiles
+Makefile.tests: $(BASILISK)/tests.sh $(wildcard Makefile)
+	sh $(BASILISK)/tests.sh
+
+%.s.d: %.c $(QCC)
+	$(QCC) $(CFLAGS) -MD -o $@ $<
+
+%.tags.d: % $(QCC)
+	$(QCC) $(CFLAGS) -MD -tags -o $@ $<
+
+Makefile.deps: 	Makefile.tests \
+		$(subst .c,.s.d,$(filter-out $(EXCLUDE),$(ALLTESTS) $(TESTS))) \
+		$(subst .page,.tags.d,$(ALLPAGES))
+	@echo "updating Makefile.deps"
+	@cat /dev/null $^ > Makefile.deps
+
+include Makefile.deps

@@ -1,0 +1,110 @@
+Fri Jan 26 18:49:20 CET 2018  Stephane Popinet <popinet@basilisk.fr>
+  * Added bool conversion operators
+diff -rN -u old-cadna_c-2.0.2-basilisk/src/cadna_convert.cc new-cadna_c-2.0.2-basilisk/src/cadna_convert.cc
+--- old-cadna_c-2.0.2-basilisk/src/cadna_convert.cc	2018-01-26 18:55:33.010599029 +0100
++++ new-cadna_c-2.0.2-basilisk/src/cadna_convert.cc	2018-01-26 18:55:33.034598788 +0100
+@@ -567,6 +567,15 @@
+   }
+   return ((int)(x+y+z)/3.);
+ }
++double_st::operator bool(){
++  bool a;
++  if (_cadna_intrinsic_tag){
++    a=(bool)x;
++    if ((bool)y!=a || (bool)z!=a)
++      instability(&_cadna_intrinsic_count);
++  }
++  return ((bool)(x+y+z));
++}
+ double_st::operator unsigned short(){
+   unsigned short a;
+   if (_cadna_intrinsic_tag){
+@@ -664,6 +673,15 @@
+   }
+   return ((int)(x+y+z)/3.);
+ }
++float_st::operator bool(){
++  bool a;
++  if (_cadna_intrinsic_tag){
++    a=(bool)x;
++    if ((bool)y!=a || (bool)z!=a)
++      instability(&_cadna_intrinsic_count);
++  }
++  return ((bool)(x+y+z));
++}
+ float_st::operator unsigned short(){
+   unsigned short a;
+   if (_cadna_intrinsic_tag){
+@@ -778,6 +796,15 @@
+   }
+   return ((int)(x+y+z)/3.);
+ }
++double_st::operator bool() const{
++  bool a;
++  if (_cadna_intrinsic_tag){
++    a=(bool)x;
++    if ((bool)y!=a || (bool)z!=a)
++      instability(&_cadna_intrinsic_count);
++  }
++  return ((bool)(x+y+z));
++}
+ double_st::operator unsigned short() const{
+   unsigned short a;
+   if (_cadna_intrinsic_tag){
+@@ -875,6 +902,15 @@
+   }
+   return ((int)(x+y+z)/3.);
+ }
++float_st::operator bool() const{
++  bool a;
++  if (_cadna_intrinsic_tag){
++    a=(bool)x;
++    if ((bool)y!=a || (bool)z!=a)
++      instability(&_cadna_intrinsic_count);
++  }
++  return ((bool)(x+y+z));
++}
+ float_st::operator unsigned short() const{
+   unsigned short a;
+   if (_cadna_intrinsic_tag){
+diff -rN -u old-cadna_c-2.0.2-basilisk/src/cadna.h new-cadna_c-2.0.2-basilisk/src/cadna.h
+--- old-cadna_c-2.0.2-basilisk/src/cadna.h	2018-01-26 18:55:33.010599029 +0100
++++ new-cadna_c-2.0.2-basilisk/src/cadna.h	2018-01-26 18:55:33.030598828 +0100
+@@ -638,6 +638,7 @@
+   operator short();  
+   operator unsigned short();  
+   operator int();  
++  operator bool();
+   operator unsigned int();  
+   operator long();  
+   operator unsigned long();  
+@@ -646,12 +647,12 @@
+   operator float();
+   operator double();
+ 
+-  operator float_st() const;
+   operator char() const;  
+   operator unsigned char() const;  
+   operator short() const;  
+   operator unsigned short() const;  
+   operator int() const;  
++  operator bool() const;
+   operator unsigned int() const;  
+   operator long() const;  
+   operator unsigned long() const;  
+@@ -1394,6 +1395,7 @@
+   operator short();  
+   operator unsigned short();  
+   operator int();  
++  operator bool();  
+   operator unsigned();  
+   operator long();  
+   operator unsigned long();  
+@@ -1408,6 +1410,7 @@
+   operator short() const;  
+   operator unsigned short() const;  
+   operator int() const;  
++  operator bool() const;  
+   operator unsigned() const;  
+   operator long() const;  
+   operator unsigned long() const;  

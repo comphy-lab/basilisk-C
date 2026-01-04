@@ -1,0 +1,136 @@
+~~~bash
+rm -f bump2D-gpu.ctst && CFLAGS='-fopenmp -DBENCHMARK -DSINGLE_PRECISION' make bump2D-gpu.ctst
+
+for i in 6 7 8 9 10 11; do OMP_NUM_THREADS=8 ./bump2D-gpu/bump2D-gpu $i; done
+
+# Multigrid, 217 steps, 0.584182 CPU, 0.07575 real, 1.17e+07 points.step/s, 27 var
+# Multigrid, 437 steps, 2.08056 CPU, 0.2613 real, 2.74e+07 points.step/s, 27 var
+# Multigrid, 885 steps, 12.9367 CPU, 1.619 real, 3.58e+07 points.step/s, 27 var
+# Multigrid, 1789 steps, 99.9439 CPU, 12.5 real, 3.75e+07 points.step/s, 27 var
+# Multigrid, 3615 steps, 1110.68 CPU, 138.9 real, 2.73e+07 points.step/s, 27 var
+# Multigrid, 7303 steps, 9532.31 CPU, 1192 real, 2.57e+07 points.step/s, 27 var
+
+rm -f bump2D-gpu.tst && CFLAGS='-DBENCHMARK' make bump2D-gpu.tst
+
+OpenGL renderer string: Mesa Intel(R) UHD Graphics (TGL GT1) (0x9a60)
+Video memory: 3072MB
+
+for i in 6 7 8 9 10 11; do ./bump2D-gpu/bump2D-gpu $i; done
+
+# Cartesian (GPU), 217 steps, 1.72295 CPU, 1.806 real, 4.92e+05 points.step/s, 28 var
+# Cartesian (GPU), 437 steps, 0.32242 CPU, 0.5966 real, 1.2e+07 points.step/s, 28 var
+# Cartesian (GPU), 885 steps, 1.96664 CPU, 3.117 real, 1.86e+07 points.step/s, 28 var
+# Cartesian (GPU), 1789 steps, 3.42581 CPU, 11.82 real, 3.97e+07 points.step/s, 28 var
+# Cartesian (GPU), 3615 steps, 6.07372 CPU, 107.7 real, 3.52e+07 points.step/s, 28 var
+# Cartesian (GPU), 7303 steps, 15.5081 CPU, 955 real, 3.21e+07 points.step/s, 28 var
+
+OpenGL renderer string: NVIDIA GeForce RTX 3050 Ti Laptop GPU/PCIe/SSE2
+Dedicated video memory: 4096 MB
+
+for i in 6 7 8 9 10 11; do __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./bump2D-gpu/bump2D-gpu $i; done
+
+# Cartesian (GPU), 217 steps, 0.061795 CPU, 0.06184 real, 1.44e+07 points.step/s, 28 var
+# Cartesian (GPU), 437 steps, 0.124741 CPU, 0.1248 real, 5.74e+07 points.step/s, 28 var
+# Cartesian (GPU), 885 steps, 0.417376 CPU, 0.4174 real, 1.39e+08 points.step/s, 28 var
+# Cartesian (GPU), 1789 steps, 2.01836 CPU, 2.018 real, 2.32e+08 points.step/s, 28 var
+# Cartesian (GPU), 3615 steps, 12.9819 CPU, 12.98 real, 2.92e+08 points.step/s, 28 var
+# Cartesian (GPU), 7303 steps, 100.6 CPU, 100.6 real, 3.04e+08 points.step/s, 28 var
+
+OpenGL renderer string: Quadro RTX 6000/PCIe/SSE2
+Dedicated video memory: 24576 MB
+
+for i in 6 7 8 9 10 11; do ./bump2D-gpu/bump2D-gpu $i; done
+
+# Cartesian (GPU), 217 steps, 0.410228 CPU, 0.4102 real, 2.17e+06 points.step/s, 28 var
+# Cartesian (GPU), 437 steps, 0.079351 CPU, 0.07935 real, 9.02e+07 points.step/s, 28 var
+# Cartesian (GPU), 885 steps, 0.567819 CPU, 0.5678 real, 1.02e+08 points.step/s, 28 var
+# Cartesian (GPU), 1789 steps, 1.1364 CPU, 1.136 real, 4.13e+08 points.step/s, 28 var
+# Cartesian (GPU), 3615 steps, 4.36244 CPU, 4.363 real, 8.69e+08 points.step/s, 28 var
+# Cartesian (GPU), 7303 steps, 29.2246 CPU, 29.23 real, 1.05e+09 points.step/s, 28 var
+
+OpenGL renderer string: NVIDIA GeForce RTX 4090/PCIe/SSE2
+Dedicated video memory: 24564 MB
+
+for i in 6 7 8 9 10 11; do ./bump2D-gpu/bump2D-gpu $i; done
+
+# Cartesian (GPU), 217 steps, 0.056273 CPU, 0.05627 real, 1.58e+07 points.step/s, 28 var
+# Cartesian (GPU), 437 steps, 0.145359 CPU, 0.146 real, 4.9e+07 points.step/s, 28 var
+# Cartesian (GPU), 885 steps, 0.204354 CPU, 0.2044 real, 2.84e+08 points.step/s, 28 var
+# Cartesian (GPU), 1789 steps, 0.561238 CPU, 0.5614 real, 8.35e+08 points.step/s, 28 var
+# Cartesian (GPU), 3615 steps, 2.63442 CPU, 2.636 real, 1.44e+09 points.step/s, 28 var
+# Cartesian (GPU), 7303 steps, 20.4474 CPU, 20.45 real, 1.5e+09 points.step/s, 28 var
+
+OpenGL renderer string: NVIDIA GeForce RTX 4090 D/PCIe/SSE2 (stokes.lmm.jussieu.fr)
+Dedicated video memory: 24564 MB
+
+for i in 6 7 8 9 10 11; do DISPLAY=:0 ./bump2D-gpu/bump2D-gpu $i; done
+
+# Cartesian (GPU), 217 steps, 0.13414 CPU, 0.1341 real, 6.63e+06 points.step/s, 28 var
+# Cartesian (GPU), 437 steps, 0.267096 CPU, 0.2671 real, 2.68e+07 points.step/s, 28 var
+# Cartesian (GPU), 885 steps, 0.558252 CPU, 0.5583 real, 1.04e+08 points.step/s, 28 var
+# Cartesian (GPU), 1789 steps, 1.30672 CPU, 1.307 real, 3.59e+08 points.step/s, 28 var
+# Cartesian (GPU), 3615 steps, 4.22536 CPU, 4.225 real, 8.97e+08 points.step/s, 28 var
+# Cartesian (GPU), 7303 steps, 23.6968 CPU, 23.7 real, 1.29e+09 points.step/s, 28 var
+
+rm -f bump2D-gpu.tst && CFLAGS='-DBENCHMARK -DTRACE=3' make bump2D-gpu.tst
+# Ignore diff error since the log has not been generated
+
+OpenGL renderer string: NVIDIA GeForce RTX 3050 Ti Laptop GPU/PCIe/SSE2
+Dedicated video memory: 4096 MB
+
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia bump2D-gpu/bump2D-gpu 10
+
+# Cartesian (GPU), 3615 steps, 13.3367 CPU, 13.34 real, 2.84e+08 points.step/s, 28 var
+   calls    total     self   % total   function
+    7230     5.12     4.23     31.7%   foreach():/src/saint-venant.h:275
+    7230     2.60     2.57     19.2%   foreach():/src/utils.h:266
+    7230     2.50     2.47     18.5%   foreach():/src/saint-venant.h:321
+    7230     2.41     2.38     17.8%   foreach():/src/saint-venant.h:129
+    7230     0.69     0.69      5.1%   gpu_reduction():/src/saint-venant.h:207
+    7230    10.84     0.59      4.4%   update_saint_venant():/src/saint-venant.h:331
+   28923     0.31     0.18      1.4%   setup_shader():/src/grid/gpu/grid.h:1403
+
+OpenGL renderer string: Quadro RTX 6000/PCIe/SSE2
+Dedicated video memory: 24576 MB
+
+bump2D-gpu/bump2D-gpu 10
+
+# Cartesian (GPU), 3615 steps, 4.54817 CPU, 4.548 real, 8.33e+08 points.step/s, 28 var
+   calls    total     self   % total   function
+    7230     1.75     1.29     28.3%   foreach():/home/user/basilisk/src/saint-venant.h:275
+    7230     0.93     0.91     20.0%   foreach():/home/user/basilisk/src/utils.h:266
+    7230     0.77     0.75     16.4%   foreach():/home/user/basilisk/src/saint-venant.h:321
+    7230     0.74     0.70     15.4%   foreach():/home/user/basilisk/src/saint-venant.h:129
+    7230     0.32     0.32      7.0%   gpu_reduction():/home/user/basilisk/src/saint-venant.h:207
+    7230     3.78     0.27      6.0%   update_saint_venant():/home/user/basilisk/src/saint-venant.h:331
+   28923     0.23     0.12      2.7%   setup_shader():/home/user/basilisk/src/grid/gpu/grid.h:1402
+      27     0.12     0.12      2.5%   gpu_cpu_sync_scalar():/home/user/basilisk/src/grid/gpu/grid.h:977
+
+...
+Device: Mesa Intel(R) UHD Graphics (TGL GT1) (0x9a60)
+...
+Video memory: 3072MB
+
+./bump2D-gpu/bump2D-gpu 10
+
+# Cartesian (GPU), 3615 steps, 14.4777 CPU, 121 real, 3.13e+07 points.step/s, 28 var
+   calls    total     self   % total   function
+    7230    53.22    44.82     37.0%   foreach():/src/saint-venant.h:275
+    7230    29.79    29.36     24.3%   foreach():/src/utils.h:266
+    7230    19.10    18.53     15.3%   foreach():/src/saint-venant.h:321
+    7230    16.67    16.05     13.3%   foreach():/src/saint-venant.h:129
+    7230     7.57     7.55      6.2%   gpu_reduction():/src/saint-venant.h:207
+   28923     2.45     1.96      1.6%   setup_shader():/src/grid/gpu/grid.h:1396
+    7230   103.84     1.73      1.4%   update_saint_venant():/src/saint-venant.h:331
+
+CFLAGS='-DTRACE=2 -grid=cartesian -fopenmp' make bump2D.tst
+cd bump2D
+OMP_NUM_THREADS=8 ./bump2D 10
+
+# Cartesian, 3615 steps, 2115.91 CPU, 264.5 real, 1.43e+07 points.step/s, 27 var
+   calls    total     self   % total   function
+    7230   223.97   222.45     84.1%   update_saint_venant():/src/saint-venant.h:331
+    7230    40.40    40.40     15.3%   advance_saint_venant():/src/saint-venant.h:130
+   14460     1.52     1.52      0.6%   boundary_internal():/src/grid/cartesian-common.h:530
+       1   264.52     0.14      0.1%   run():/src/predictor-corrector.h:75
+~~~

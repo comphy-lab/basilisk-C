@@ -1,0 +1,62 @@
+/* Side-by-side edit and preview */
+#editcontainer {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    height: 85vh;
+}
+#left-column {
+    min-width: 0; /* weird fix: see https://moduscreate.com/blog/how-to-fix-overflow-issues-in-css-flex-layouts/ */
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+#preview {
+    margin-right: 0.3em;
+    margin-bottom: 1em;
+    overflow-y: auto;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+#status {
+    /*    align-self: center; */
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 98%;
+}
+#right-column {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+#editor {
+    overflow-y: auto;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+#editform textarea {
+    font-family: monospace; font-size: 93%;
+}
+#editform #logMsg {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: 0.3em;
+}

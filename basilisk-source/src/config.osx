@@ -1,0 +1,46 @@
+# -*-Makefile-*-
+
+# the C99 flags
+C99_FLAGS = -std=c99
+
+# how to launch the C99 compiler
+CC99 = $(CC) $(C99_FLAGS) -Wno-unused-result -Wno-unused-function 
+
+# how to strip unused code
+# STRIPFLAGS = -fdata-sections -ffunction-sections -Wl,--gc-sections -w
+
+# other useful (non-standard) flags
+CFLAGS += -g -Wall -Wno-unused-function -pipe
+
+# if you have valgrind, otherwise comment this out
+# VALGRIND = valgrind -q --tool=memcheck \
+#        --suppressions=$(BASILISK)/openmpi.supp \
+# 	 --leak-check=full
+
+# if gnuplot supports pngcairo, otherwise comment this out
+PNG = pngcairo
+
+# Awk
+AWK = awk
+
+# If you have managed to make gdb work (congratulations!), uncomment this
+# GDB = gdb
+
+# if you don't have md5sum, replace it with something equivalent
+GENSUM = shasum
+CHECKSUM = shasum -c --status
+
+# "OpenGL" libraries
+
+OPENGLIBS = -lfb_tiny
+# OPENGLIBS = -lfb_glx -lGLEW -lGL -lX11
+# OPENGLIBS = -L/opt/local/lib/ -lfb_osmesa -lOSMesa 
+
+# Compiler and libraries to use with CADNA.
+# See [README.cadna]() for more documentation.
+CADNACC = clang -D_CADNA=1 -x c++ -m64 \
+	-Wno-unused-function \
+	-Wno-unused-result \
+	-Wno-c++11-compat-deprecated-writable-strings \
+	-Wno-address-of-array-temporary
+CADNALIBS = -lcadnaC -lstdc++

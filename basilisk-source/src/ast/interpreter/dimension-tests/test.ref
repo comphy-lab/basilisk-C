@@ -1,0 +1,19 @@
+dimension-tests/test.c:12: interpreter_verbosity (4): !
+dimension-tests/test.c:13: '1. [1]': [dimension-tests/test.c:13: '1. [1]'] = [1]
+dimension-tests/test.c:13: func (1  + [dimension-tests/test.c:13: '1. [1]'])
+dimension-tests/test.c:6: 'a + b':  + [dimension-tests/test.c:5: 'a = 1.'] - [dimension-tests/test.c:13: '1. [1]'] = [0]
+dimension-tests/test.c:6: a + b: 2  + [dimension-tests/test.c:13: '1. [1]']
+dimension-tests/test.c:13: func (1. [1]): 2  + [dimension-tests/test.c:13: '1. [1]']
+dimension-tests/test.c:14: '1. [2]': [dimension-tests/test.c:14: '1. [2]'] = [2]
+dimension-tests/test.c:14: func (1  + [dimension-tests/test.c:14: '1. [2]'])
+dimension-tests/test.c:6: 'a + b':  + [dimension-tests/test.c:5: 'a = 1.'] - [dimension-tests/test.c:14: '1. [2]'] = [0]
+dimension-tests/test.c:6: a + b: 2  + [dimension-tests/test.c:14: '1. [2]']
+dimension-tests/test.c:14: func (1. [2]): 2  + [dimension-tests/test.c:14: '1. [2]']
+10 constraints, 10 unknowns
+Dimensions of finite constants
+  [1]
+    dimension-tests/test.c:5: 'a = 1.'
+    dimension-tests/test.c:13: '1. [1]'
+  [2]
+    dimension-tests/test.c:5: 'a = 1.'
+    dimension-tests/test.c:14: '1. [2]'

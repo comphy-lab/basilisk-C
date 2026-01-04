@@ -1,0 +1,26 @@
+1 0 GfsPoisson GfsBox GfsGEdge {} {
+  Refine MAX(LEVEL*(1. - sqrt(x*x + y*y)), LEVEL - 2)
+  Init {} { Div = -18.*M_PI*M_PI*sin(3.*M_PI*x)*sin(3.*M_PI*y) }
+  ApproxProjectionParams { 
+      tolerance = 1e-100 nrelax = 4 nitermin = NITER nitermax = NITER
+      minlevel = 0
+  }
+  Time { iend = 1 }
+  OutputErrorNorm { start = end } stderr {
+   	v = P
+  } {
+   	s = (sin (M_PI*3.*x)*sin (M_PI*3.*y))
+   	unbiased = 1
+   	v = E
+  }
+  OutputTime { start = end } stderr
+  OutputProjectionStats { start = end } stderr
+  OutputSimulation { start = end } stdout
+  OutputSimulation { start = end } circle.gerris { format = text }
+}
+GfsBox {
+  left =   Boundary { BcDirichlet P (sin (M_PI*3.*x)*sin (M_PI*3.*y)) }
+  right =  Boundary { BcDirichlet P (sin (M_PI*3.*x)*sin (M_PI*3.*y)) }
+  top =    Boundary { BcDirichlet P (sin (M_PI*3.*x)*sin (M_PI*3.*y)) }
+  bottom = Boundary { BcDirichlet P (sin (M_PI*3.*x)*sin (M_PI*3.*y)) }
+}

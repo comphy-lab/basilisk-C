@@ -1,0 +1,33 @@
+test18.c:8: interpreter_verbosity (4): !
+test18.c:12: sqrt (2  + [test18.c:9: 'a = 1'] + [test18.c:9: 'b = 2'])
+test18.c:13: pow (1.41421  + 0.5*[test18.c:9: 'a = 1'] + 0.5*[test18.c:9: 'b = 2'], 2  + [test18.c:13: '2'])
+test18.c:14: fabs (2  + [test18.c:9: 'a = 1'] + [test18.c:9: 'b = 2'])
+test18.c:15: f*f: 4  + 2*[test18.c:9: 'a = 1'] + 2*[test18.c:9: 'b = 2']
+test18.c:17: a *= g: 4  + 2*[test18.c:9: 'a = 1'] + 2*[test18.c:9: 'b = 2'] + [test18.c:16: 'a = 1.']
+test18.c:18: sin (1  + [test18.c:16: 'a = 1.'])
+test18.c:18: 'sin (a/g)': [test18.c:16: 'a = 1.'] = [0]
+test18.c:25: interpreter_verbosity (4): !
+test18.c:26: sin (-1.5 (unset)  + [/src/common.h:32: 'X0 = 0.'] - [/src/common.h:34: 'L0 = 1. [1]'])
+test18.c:26: 'sin (x/L0)':  + [/src/common.h:32: 'X0 = 0.'] - [/src/common.h:34: 'L0 = 1. [1]'] = [0]
+test18.c:27: val ({...}, 0  + [test18.c:27: '0'], 0  + [test18.c:27: '0'], 0  + [test18.c:27: '0'])
+ast/interpreter/overload.h:132: 1024: 1024  + [ast/interpreter/overload.h:132: '1024']
+ast/interpreter/overload.h:319: igrid->d + s.i*sizeof(real): 0xaddress
+ast/interpreter/overload.h:319: (real *)(igrid->d + s.i*sizeof(real)): 0xaddress
+test18.c:27: val(s,0,0,0) = a*a: 0 (unset)  + 2*[/src/common.h:34: 'L0 = 1. [1]']
+test18.c:28: val ({...}, 0  + [test18.c:28: '0'], 0  + [test18.c:28: '0'], 0  + [test18.c:28: '0'])
+ast/interpreter/overload.h:132: 1024: 1024  + [ast/interpreter/overload.h:132: '1024']
+ast/interpreter/overload.h:319: igrid->d + s.i*sizeof(real): 0xaddress
+ast/interpreter/overload.h:319: (real *)(igrid->d + s.i*sizeof(real)): 0xaddress
+test18.c:28: val(f,0,0,0) = 2: 2  + [test18.c:28: 'f[] = 2']
+test18.c:33: interpreter_verbosity (4): !
+test18.c:34: val ({...}, 0  + [test18.c:34: '0'], 0  + [test18.c:34: '0'], 0  + [test18.c:34: '0'])
+ast/interpreter/overload.h:132: 1024: 1024  + [ast/interpreter/overload.h:132: '1024']
+ast/interpreter/overload.h:319: igrid->d + s.i*sizeof(real): 0xaddress
+ast/interpreter/overload.h:319: (real *)(igrid->d + s.i*sizeof(real)): 0xaddress
+test18.c:34: 'f[] + L0*L0':  + [test18.c:28: 'f[] = 2'] - 2*[/src/common.h:34: 'L0 = 1. [1]'] = [0]
+test18.c:34: val(f,0,0,0) + L0*L0: 3 (unset)  + 2*[/src/common.h:34: 'L0 = 1. [1]']
+test18.c:35: val ({...}, 0  + [test18.c:35: '0'], 0  + [test18.c:35: '0'], 0  + [test18.c:35: '0'])
+ast/interpreter/overload.h:132: 1024: 1024  + [ast/interpreter/overload.h:132: '1024']
+ast/interpreter/overload.h:319: igrid->d + s.i*sizeof(real): 0xaddress
+ast/interpreter/overload.h:319: (real *)(igrid->d + s.i*sizeof(real)): 0xaddress
+test18.c:35: val(s,0,0,0) + L0*L0: 1 (unset)  + 2*[/src/common.h:34: 'L0 = 1. [1]']

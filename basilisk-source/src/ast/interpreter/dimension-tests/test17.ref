@@ -1,0 +1,6 @@
+9 constraints, 9 unknowns
+Dimensions of finite constants
+  [1]
+    dimension-tests/test17.c:6: 'a = 1. + 2.'
+    dimension-tests/test17.c:7: 'c = 1. + 2.*sqrt(2.)'
+    dimension-tests/test17.c:8: 'b = 4 [1]'

@@ -1,0 +1,4 @@
+test16.c:10: warning (interpreter): 'b' undeclared
+test16.c:10: warning (interpreter): undefined argument(s) in 'b'
+test16.c:14: interpreter_verbosity (4): !
+test16.c:15: datasize: 34  + [/src/common.h:130: 'datasize = 0']

@@ -1,0 +1,26 @@
+-------------------
+#line 13 "dimension-tests/test7.c"
+minmod2 (a, b, c)
+
+#line 13 "types.c"
+ast_double
+size: 17, flags: 1, pointer: 0, scope: 4, value: 0 (unset)  + [/src/utils.h:235: '0.']
+===================
+-------------------
+#line 19 "dimension-tests/test7.c"
+minmod2 (a, b, c)
+
+#line 13 "types.c"
+ast_double
+size: 17, flags: 1, pointer: 0, scope: 4, value: 0 (unset)  + [/src/utils.h:235: '0.']
+===================
+17 constraints, 17 unknowns
+Dimensions of finite constants
+  [1]
+    dimension-tests/test7.c:9: 'a = 1.[1]'
+    dimension-tests/test7.c:9: 'b = 2.[1]'
+    dimension-tests/test7.c:9: 'c = 3.[1]'
+  [2]
+    dimension-tests/test7.c:15: 'a = 1.[2]'
+    dimension-tests/test7.c:15: 'b = 2.[2]'
+    dimension-tests/test7.c:15: 'c = 3.[2]'

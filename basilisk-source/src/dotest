@@ -1,0 +1,137 @@
+#!/bin/sh
+
+test=`echo $1 | cut -d. -f1`
+ext=`echo $1 | cut -d. -f2`
+case $ext in
+    ctst) log=clog; out=cout ;;
+    *)    log=log;  out=out  ;;
+esac
+valgrind=$2
+BASILISK_WIKI=`echo $BASILISK | sed 's:/src$::'`
+dir=`echo $PWD | sed "s:$BASILISK_WIKI/::"`
+
+script()
+{
+    cat <<EOF
+rm -f $test.c
+if test -f fail; then
+    cat fail
+    exit 1
+fi
+cat warn
+test -s warn || rm -f warn
+echo \[$test.$ext\]
+if $valgrind ./$test 2> $log > $out; then
+    if test -f $test.ref; then
+        echo diff $log $test.ref > fail
+        diff $log $test.ref >> fail && rm -f fail
+        rm -f $test.ref
+    fi
+else
+    cp -f $log fail
+fi
+if test -f fail; then
+    cat fail
+    exit 1
+fi
+touch pass
+EOF
+}
+
+expirecache()
+{
+    rm -f $BASILISK_WIKI/cache/$dir/$test.c.page
+}
+
+# run locally
+locally()
+{
+    cd $test
+    rm -f warn pass fail $log $out
+    cd ..
+    echo qcc $CFLAGS -o $test/$test $test.c $LIBS -lm;
+    qcc $CFLAGS -o $test/$test $test.c $LIBS -lm > $test/warn 2>&1 \
+	|| mv -f $test/warn $test/fail
+    cd $test
+    script | sh
+    expirecache
+    cd ..
+}
+
+# compile/run on a remote "sandbox"
+remotely()
+{
+    set -e
+    rhost=$1
+    chksum=`$GENSUM $test.s | cut -d' ' -f1`
+    cd $test
+    mkdir $chksum
+    cp -f $test.c $chksum
+    if test -f $test.ref; then cp -f $test.ref $chksum; fi
+    (cat <<EOF
+#!/bin/sh
+rm -f warn pass fail $log $out
+\$BASILISK/qcc $CFLAGS -o $test $test.c $LIBS -lm > warn 2>&1 || mv -f warn fail
+EOF
+    script) > $chksum/$test.sh
+cat <<EOF >> $chksum/$test.sh
+rm -f $test.c $test.sh $test.ref
+tar czf \$HOME/$chksum.tgz *
+rm -r -f \$HOME/$chksum
+EOF
+    tar czf $chksum.tgz $chksum
+    rm -r -f $chksum
+    scp -q $chksum.tgz $rhost: && rm -f $chksum.tgz
+    ssh $rhost sh -c "\"tar xzf $chksum.tgz && cd $chksum && sh $test.sh\""
+    scp -q $rhost:$chksum.tgz $chksum.tgz
+    ssh $rhost rm -r -f $chksum.tgz
+    tar xzf $chksum.tgz
+    rm -f $chksum.tgz $test.c $test.ref pid
+    expirecache
+    if test -f fail && test -n "$MAINTAINER"; then
+	(
+	    echo Latest change:
+	    echo
+	    darcs changes --last=1
+	    echo
+	    if test -f ../$test.c.page; then
+		cat <<EOF
+See http://basilisk.fr/$dir/$test.c
+EOF
+	    else
+		cat fail
+	    fi 
+	) | mail -s "basilisk: $test.$ext failed" $MAINTAINER
+    fi    
+    cd ..
+}
+
+set -e
+
+if test -f $test.$ext && $CHECKSUM $test.$ext; then
+    touch $test.$ext
+    echo "make: '$test' is up to date."
+else
+    rm -f $test.$ext $test/pass $test/fail $test/warn $test/plot.png
+    expirecache
+    mkdir -p $test && cp -f $test.c $test
+    if test -f $test.ref; then cp -f $test.ref $test; fi
+    if test -d $BASILISK_WIKI/static -a \
+	-f $test.c.page -a \
+	! -L $BASILISK_WIKI/static/$dir/$test; then
+	ln -s $PWD/$test $BASILISK_WIKI/static/$dir/$test
+    fi
+
+    if test -n "$SANDBOX"; then
+	echo \[$test.$ext on $SANDBOX\]
+        ( remotely $SANDBOX ) &
+	echo $! > $test/pid
+    else
+	locally
+    fi
+
+    if test -f $test/fail; then
+	exit 1
+    fi
+    $GENSUM $test.s > $test.$ext;
+fi

@@ -1,0 +1,111 @@
+# A Yacc/Bison AST library
+
+This directory contains the implementation of an [Abstract Syntax
+Tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) (AST)
+library which can be used to generate and manipulate a tree
+representation of a code described by a Yacc/Bison [context-free
+grammar](https://www.gnu.org/software/bison/manual/html_node/Language-and-Grammar.html).
+
+Within Basilisk, it is used by [qcc](/src/qcc.c) to parse [Basilisk
+C](/Basilisk%20C) code and transform it into standard C99.
+
+The main files are:
+
+* [basilisk.yacc](): Basilisk C yacc grammar.
+* [tokens.lex](): the corresponding Basilisk C tokens.
+* [ast.h](): the interface for the AST library.
+* [translate.c](): the Basilisk C to C99 translator.
+* [stencil.c](): the analyzer for Basilisk stencils and automatic
+  boundary conditions.
+* [references.c](): find references to non-local variables
+* [kernels.c](): computation kernels (e.g. for GPUs)
+* [interpreter/README](): A generic interpreter for Basilisk C.
+* [interpreter/dimension.c](): Uses the interpreter to check dimensional consistency.
+* [macro.h](): Basilisk macros.
+
+## Example of syntax tree generation
+
+A graphical representation of the syntax tree can be obtained with the
+utility program [expr.c]().
+
+For example
+
+~~~bash
+make expr
+./expr 'int main() { printf ("Hello world!"); }'
+~~~
+
+gives the (rather long) tree-representation
+
+<pre>
+root
+└─translation_unit
+  └─external_declaration
+    └─function_definition
+      ├─function_declaration
+      │ ├─declaration_specifiers
+      │ │ └─type_specifier
+      │ │   └─types
+      │ │     └─INT int <basilisk>:1
+      │ └─declarator
+      │   └─direct_declarator
+      │     ├─direct_declarator
+      │     │ └─generic_identifier
+      │     │   └─IDENTIFIER main <basilisk>:1
+      │     ├─'(' ( <basilisk>:1
+      │     └─')' ) <basilisk>:1
+      └─compound_statement
+        ├─'{' { <basilisk>:1
+        ├─block_item_list
+        │ └─block_item
+        │   └─statement
+        │     └─expression_statement
+        │       ├─expression
+        │       │ └─assignment_expression
+        │       │   └─conditional_expression
+        │       │     └─logical_or_expression
+        │       │       └─logical_and_expression
+        │       │         └─inclusive_or_expression
+        │       │           └─exclusive_or_expression
+        │       │             └─and_expression
+        │       │               └─equality_expression
+        │       │                 └─relational_expression
+        │       │                   └─shift_expression
+        │       │                     └─additive_expression
+        │       │                       └─multiplicative_expression
+        │       │                         └─cast_expression
+        │       │                           └─unary_expression
+        │       │                             └─postfix_expression
+        │       │                               └─function_call
+        │       │                                 ├─postfix_expression
+        │       │                                 │ └─primary_expression
+        │       │                                 │   └─IDENTIFIER printf <basilisk>:1
+        │       │                                 ├─'(' ( <basilisk>:1
+        │       │                                 ├─argument_expression_list
+        │       │                                 │ └─argument_expression_list_item
+        │       │                                 │   └─assignment_expression
+        │       │                                 │     └─conditional_expression
+        │       │                                 │       └─logical_or_expression
+        │       │                                 │         └─logical_and_expression
+        │       │                                 │           └─inclusive_or_expression
+        │       │                                 │             └─exclusive_or_expression
+        │       │                                 │               └─and_expression
+        │       │                                 │                 └─equality_expression
+        │       │                                 │                   └─relational_expression
+        │       │                                 │                     └─shift_expression
+        │       │                                 │                       └─additive_expression
+        │       │                                 │                         └─multiplicative_expression
+        │       │                                 │                           └─cast_expression
+        │       │                                 │                             └─unary_expression
+        │       │                                 │                               └─postfix_expression
+        │       │                                 │                                 └─primary_expression
+        │       │                                 │                                   └─string
+        │       │                                 │                                     └─STRING_LITERAL "Hello world!" <basilisk>:1
+        │       │                                 └─')' ) <basilisk>:1
+        │       └─';' ; <basilisk>:1
+        └─'}' } <basilisk>:1
+</pre>
+
+## See also
+
+[A generic interpreter for Basilisk C](interpreter/README)

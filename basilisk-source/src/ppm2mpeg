@@ -1,0 +1,34 @@
+#!/bin/bash
+
+AVCONV="`which avconv 2> /dev/null`"
+if test -z "$AVCONV"; then
+    AVCONV=`which ffmpeg`
+fi
+
+if test -z "$AVCONV"; then
+    echo "ppm2mpeg: warning: could not find 'avconv' or 'ffmpeg'" >&2
+    echo "ppm2mpeg: the output will just be concatenated PPM files" >&2
+    command=cat
+else
+    command="$AVCONV -f image2pipe -vcodec ppm -i - -vcodec mpeg1video -b 1800K -f mpeg1video"
+    while test $# -gt 0; do
+	command="$command $1"
+	shift
+    done
+fi
+
+if test -d "$TMPDIR" ; then
+    log=`mktemp $TMPDIR/ppm2mpeg.XXXXXX`
+else
+    log=`mktemp /tmp/ppm2mpeg.XXXXXX`
+fi
+
+if $command - 2> $log; then :
+else
+    cat $log >&2
+    rm -f $log
+    exit 1
+fi
+rm -f $log
+
+exit 0

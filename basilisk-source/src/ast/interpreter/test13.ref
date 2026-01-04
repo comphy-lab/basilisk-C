@@ -1,0 +1,3 @@
+test13.c:7: interpreter_verbosity (4): !
+test13.c:10: b: 0  + [test13.c:9: 'b = 0']
+test13.c:12: a.y: 0  + [test13.c:8: '0']

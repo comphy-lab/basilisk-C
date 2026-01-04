@@ -1,0 +1,515 @@
+# Solvers
+
+## [Saint-Venant](saint-venant.h)
+$$
+  \partial_t \int_{\Omega} \mathbf{q} d \Omega =
+  \int_{\partial \Omega} \mathbf{f} (
+  \mathbf{q}) \cdot \mathbf{n}d \partial
+  \Omega - \int_{\Omega} hg \nabla z_b
+$$
+$$
+  \mathbf{q} = \left(\begin{array}{c}
+    h\\
+    hu_x\\
+    hu_y
+  \end{array}\right), 
+  \;\;\;\;\;\;
+  \mathbf{f} (\mathbf{q}) = \left(\begin{array}{cc}
+    hu_x & hu_y\\
+    hu_x^2 + \frac{1}{2} gh^2 & hu_xu_y\\
+    hu_xu_y & hu_y^2 + \frac{1}{2} gh^2
+  \end{array}\right)
+$$
+
+* [Semi-implicit scheme](saint-venant-implicit.h)
+* [Multiple layers](multilayer.h)
+$$
+\partial_th + \partial_x\sum_{l=0}^{nl-1}h_lu_l = 0
+$$
+
+$$
+\partial_t(h\mathbf{u}_l) + \nabla\cdot\left(h\mathbf{u}_l\otimes\mathbf{u}_l + 
+\frac{gh^2}{2}\mathbf{I}\right) = 
+- gh\nabla z_b - \partial_z(h\mathbf{u}w) + \nu h\partial_{z^2}\mathbf{u}
+$$
+
+* [Green-Naghdi](green-naghdi.h)
+$$
+  \partial_t \int_{\Omega} \mathbf{q} d \Omega =
+  \int_{\partial \Omega} \mathbf{f} (
+  \mathbf{q}) \cdot \mathbf{n}d \partial
+  \Omega - \int_{\Omega} hg \nabla z_b +
+  h \left( \frac{g}{\alpha}\nabla \eta - D \right)
+$$
+$$
+\alpha h\mathcal{T} \left( D \right) + hD = b
+$$
+$$
+b = \left[ \frac{g}{\alpha} \nabla \eta +\mathcal{Q}_1 \left( u \right)
+\right]
+$$
+
+* [Multilayer hydrostatic](layered/hydro.h)
+
+$$
+\begin{aligned}
+  \partial_t h_k + \mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k & =
+  0,\\
+  \partial_t \left( h \mathbf{u} \right)_k + \mathbf{{\nabla}} \cdot \left(
+  h \mathbf{u}  \mathbf{u} \right)_k & = - gh_k  \mathbf{{\nabla}} (\eta) 
+\end{aligned}
+$$
+
+## [Systems of conservation laws](conservation.h)
+$$
+\partial_t\left(\begin{array}{c}
+    s_i\\
+    \mathbf{v}_j\\
+ \end{array}\right) + \nabla\cdot\left(\begin{array}{c}
+    \mathbf{F}_i\\
+    \mathbf{T}_j\\
+ \end{array}\right) = 0
+$$
+
+* [Compressible gas dynamics](compressible.h)
+* [All Mach compressible flows](all-mach.h)
+
+$$
+\partial_t\mathbf{q} + \nabla\cdot(\mathbf{q}\mathbf{u}) = 
+- \nabla p + \nabla\cdot(\mu\nabla\mathbf{u}) + \rho\mathbf{a}
+$$
+$$
+\partial_t p + \mathbf{u}\cdot\nabla p = -\rho c^2\nabla\cdot\mathbf{u}
+$$
+
+* [All Mach compressible two-phase flows](compressible/two-phase.h)
+
+$$
+\frac{\partial (f \rho_i)}{\partial t } + 
+\nabla \cdot (f \rho_i \mathbf{u}) = 0 
+$$
+$$
+\frac{\partial (\rho_i \mathbf{u})}{\partial t } + 
+\nabla \cdot ( \rho_i  \mathbf{u} \mathbf{u}) = 
+-\nabla p + \nabla \cdot \tau_i' 
+$$
+$$
+\frac{\partial [\rho_i (e_i + \mathbf{u}^2/2)]}{\partial t } 
++ \nabla \cdot [ \rho_i \mathbf{u} (e_i  + \mathbf{u}^2/2)] =
+-\nabla \cdot (\mathbf{u} p_i) + 
+\nabla \cdot \left( \tau'_i \mathbf{u} \right)
+$$
+
+* [Thermal effects for all Mach compressible two-phase flows](compressible/thermal.h)
+
+$$
+\rho_ic_{p,i}\frac{DT_i}{Dt} = \beta_iT_i\frac{Dp_i}{Dt} - \nabla\cdot\mathbf{q}_i
+$$
+$$
+\left(\frac{\gamma_i}{\rho_ic_i^2} - \frac{\beta_i^2T_i}{\rho_ic_{p,i}}\right)\frac{Dp_i}{Dt} = 
+-\frac{\beta_i}{\rho_ic_{p,i}}\nabla\cdot\mathbf{q}_i - \nabla\cdot\mathbf{u}_i
+$$
+
+## Navier--Stokes
+* [Streamfunction--Vorticity formulation](navier-stokes/stream.h)
+$$
+\partial_t\omega + \mathbf{u}\cdot\nabla\omega = \nu\nabla^2\omega
+$$
+$$
+\nabla^2\psi = \omega
+$$
+
+* ["Markers-And-Cells" (MAC or "C-grid") formulation](navier-stokes/mac.h)
+* [Centered formulation](navier-stokes/centered.h)
+$$
+\partial_t\mathbf{u}+\nabla\cdot(\mathbf{u}\otimes\mathbf{u}) = 
+\frac{1}{\rho}\left[-\nabla p + \nabla\cdot(2\mu\mathbf{D})\right] + \mathbf{a}
+$$
+$$
+\nabla\cdot\mathbf{u} = 0
+$$
+    + [Azimuthal velocity for axisymmetric flows](navier-stokes/swirl.h)
+	$$
+    \partial_t w + u_x \partial_x w + u_y \partial_y w + \frac{u_y w}{y} =
+    \frac{1}{\rho y}  \left[ \nabla \cdot (\mu y \nabla w) - w \left(
+    \frac{\mu}{y} + \partial_y \mu \right) \right]
+	$$
+* [Two-phase interfacial flows](two-phase.h)
+    + [Momentum conservation option](navier-stokes/conserving.h)
+* [Momentum-conserving two-phase interfacial flows](momentum.h)
+* [Multilayer incompressible Euler/Navier-Stokes equations
+   with a free-surface](layered/README)
+
+$$
+\begin{aligned}
+  \partial_t h_k + \mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k & =
+  0,\\
+  \partial_t \left( h \mathbf{u} \right)_k + \mathbf{{\nabla}} \cdot \left(
+  h \mathbf{u}  \mathbf{u} \right)_k & = - gh_k  \mathbf{{\nabla}} (\eta) 
+  - \mathbf{{\nabla}} (h \phi)_k + \left[ \phi 
+      \mathbf{{\nabla}} z \right]_k,\\
+  \partial_t (hw)_k + \mathbf{{\nabla}} \cdot 
+  \left( hw \mathbf{u} \right)_k & = - [\phi]_k,\\
+  \mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k + 
+  \left[ w - \mathbf{u} \cdot \mathbf{{\nabla}} z \right]_k &  = 0
+\end{aligned}
+$$
+
+## Electrohydrodynamics
+
+* [Ohmic conduction](ehd/implicit.h)
+$$
+\partial_t\rho_e = \nabla \cdot(K \nabla \phi)
+$$
+$$
+\nabla \cdot (\epsilon \nabla \phi) = - \rho_e
+$$
+* [Ohmic conduction of charged species](ehd/pnp.h)
+$$
+\partial_tc_i = \nabla \cdot( K_i c_i \nabla \phi)
+$$
+* [Electrohydrodynamic stresses](ehd/stress.h)
+$$
+M_{ij} = \varepsilon (E_i E_j - \frac{E^2}{2}\delta_{ij})
+$$
+
+## Viscoelasticity
+
+* [The log-conformation method for some viscoelastic constitutive 
+models](log-conform.h)
+
+$$
+\rho\left[\partial_t\mathbf{u}+\nabla\cdot(\mathbf{u}\otimes\mathbf{u})\right] = 
+- \nabla p + \nabla\cdot(2\mu_s\mathbf{D}) + \nabla\cdot\mathbf{\tau}_p
++ \rho\mathbf{a}
+$$
+$$
+\mathbf{\tau}_p = \frac{\mu_p \mathbf{f_s}(\mathbf{A})}{\lambda}
+$$
+$$
+\Psi = \log\mathbf{A}
+$$
+$$
+D_t \Psi = (\Omega \cdot \Psi -\Psi \cdot \Omega) + 2 \mathbf{B} +
+\frac{e^{-\Psi} \mathbf{f}_r (e^{\Psi})}{\lambda}
+$$
+
+## Other equations
+* [Hele-Shaw/Darcy flows](hele-shaw.h)
+$$
+\mathbf{u} = \beta\nabla p
+$$
+$$
+\nabla\cdot(\beta\nabla p) = \zeta
+$$
+* [Advection](advection.h)
+$$
+\partial_tf_i+\mathbf{u}\cdot\nabla f_i=0
+$$
+    + [Volume-Of-Fluid advection](vof.h)
+	+ [Contact angles](contact.h)
+* [Avoiding coalescence of VOF interfaces](no-coalescence.h)
+* [Interfacial forces](iforce.h)
+$$
+\phi\mathbf{n}\delta_s
+$$
+    + [Surface tension](tension.h)
+$$
+\sigma\kappa\mathbf{n}\delta_s
+$$
+    + [Reduced gravity](reduced.h)
+$$
+[\rho]\mathbf{g}\cdot\mathbf{x}\mathbf{n}\delta_s
+$$
+    + [Surface tension (integral formulation)](integral.h)
+$$
+\sigma^{x x}_i = \left[ \gamma \frac{t^x}{\Delta} +
+   \left\{\begin{array}{ll}
+     s^x  (p_{j - 1} - p_j) & \text{if } s^x < 1 / 2\\
+     (s^x - 1)  (p_j - p_{j + 1}) & \text{otherwise}
+   \end{array}\right. \right]_i
+$$
+* [Reaction--Diffusion](diffusion.h)
+$$ 
+\theta\partial_tf = \nabla\cdot(D\nabla f) + \beta f + r
+$$ 
+* [Poisson--Helmholtz](poisson.h)
+$$
+\nabla\cdot (\alpha\nabla a) + \lambda a = b
+$$
+* [General spatial linear systems](solve.h)
+$$
+\mathcal{L}(a) = b
+$$
+* [Henry's law](henry.h)
+* [Runge--Kutta time integrators](runge-kutta.h)
+$$
+\frac{\partial\mathbf{u}}{\partial t} = L(\mathbf{u}, t)
+$$
+* [Signed distance field](distance.h)
+* [Redistancing of a distance field](redistance.h)
+$$
+\left\{\begin{array}{ll}
+\phi_t + \text{sign}(\phi^{0}) \left(\left| \nabla \phi\right| - 1 \right) = 0\\ 
+\phi(x,0) = \phi^0(x)
+\end{array}
+\right.
+$$
+* [Okada fault model](okada.h)
+* [Hessenberg systems](hessenberg.h)
+* [Community Ocean Vertical Mixing (CVMix) interface](cvmix/cvmix.h)
+* [A C interface to the General Ocean Turbulence Model](gotm/common.h)
+* [Equilibrium tide](equilibrium_tide.h)
+
+# The Basilisk C preprocessor
+
+* [qcc](qcc.c): the command line preprocessor/compiler
+* [The Abstract Syntax Tree (AST) library](ast/README)
+* [Dimensional Analysis](ast/interpreter/dimension.c)
+* [Running on GPUs](grid/gpu/grid.h)
+
+# General orthogonal coordinates
+
+When not written in vector form, some of the equations above will
+change depending on the choice of coordinate system (e.g. polar rather
+than Cartesian coordinates). In addition, extra terms can appear due
+to the geometric curvature of space (e.g. equations on the sphere). An
+important simplification is to consider only [orthogonal
+coordinates](http://en.wikipedia.org/wiki/Orthogonal_coordinates). In
+this case, consistent finite-volume discretisations of standard
+operators (divergence etc...) can be obtained, for any orthogonal
+curvilinear coordinate system, using only a few additional geometric
+parameters.
+
+![Metric scale factors](figures/metric.svg)
+
+The [face vector](/Basilisk C#face-and-vertex-fields) *fm* is the
+*scale factor* for the length of a face i.e. the physical length is
+$fm\Delta$ and the scalar field *cm* is the scale factor for the area
+of the cell i.e. the physical area is $cm\Delta^2$. By default, these
+fields are constant and unity (i.e. the Cartesian metric).
+
+Several metric spaces/coordinate systems are predefined:
+
+* [Axisymmetric](axi.h)
+    + [Stokes stream function](axistream.h)
+    $$
+    \frac{\partial^2\psi}{\partial z^2} + 
+    \frac{\partial^2\psi}{\partial r^2} - \frac{1}{r}\partial_r\psi 
+    = - \omega r
+    $$
+* [Spherical symmetry](spherisym.h)
+* [Spherical](spherical.h)
+* [Radial/cylindrical](radial.h)
+
+# Data processing
+
+* [Various utility functions](utils.h): timing, field statistics,
+  slope limiters, etc.
+* [Tagging connected neighborhoods](tag.h)
+* [Counting droplets](examples/atomisation.c#counting-droplets)
+* [Harmonic decomposition](harmonic.h)
+
+# Output functions
+
+* [Multiple fields interpolated on a regular grid (text format)](output.h#output_field-multiple-fields-interpolated-on-a-regular-grid-text-format)
+* [Single field interpolated on a regular grid (binary format)](output.h#output_matrix-single-field-interpolated-on-a-regular-grid-binary-format)
+* [Portable PixMap (PPM) image output](output.h#output_ppm-portable-pixmap-ppm-image-output)
+* [Volume-Of-Fluid facets](fractions.h#interface-output)
+* [Basilisk snapshots](output.h#dump-basilisk-snapshots)
+* [Gerris simulation format](output.h#output_gfs-gerris-simulation-format)
+* [ESRI ASCII Grid format](output.h#output_grd-esri-ascii-grid-format)
+* [VTK format](vtk.h)
+
+# Input functions
+
+* [Basilisk snapshots](output.h#dump-basilisk-snapshots)
+* [Gerris simulation format](input.h#input_gfs-gerris-simulation-format)
+* [ESRI ASCII Grid format](input.h#input_grd-raster-format-esri-grid)
+* [Portable Gray Map (PGM) images](input.h#input_pgm-importing-portable-gray-map-pgm-images)
+
+# Basilisk View
+
+* [Javascript interface](jview/README)
+* ["Dump files" server](bview.c)
+* [Online](view.h)
+
+# Miscellaneous functions/modules
+
+* [Controlling the maximum runtime](maxruntime.h)
+* [Generic performance monitoring](perfs.h)
+
+# Tracking floating-point exceptions
+
+On systems which support [signaling
+NaNs](http://en.wikipedia.org/wiki/NaN#Signaling_NaN) (such as
+GNU/Linux), Basilisk is set up so that trying to use an unitialised
+value will cause a floating-point exception to be triggered and the
+program to abort. This is particularly useful when developing adaptive
+algorithms and/or debugging boundary conditions.
+
+To maximise the "debugging potential" of this approach it is also
+recommended to use the `trash()` function to reset any field prior to
+updates. This will guarantee that older values are not mistakenly
+reused. Note that this call is quite expensive and needs to be turned on
+by adding `-DTRASH=1` to the compilation flags (otherwise it is just
+ignored).
+
+Doing
+
+~~~bash
+ulimit -c unlimited
+~~~
+
+before running the code will allow generation of `core` files which
+can be used for post-mortem debugging (e.g. with gdb).
+
+## Visualising stencils
+
+It is often useful to visualise the values of fields in the stencil
+which triggered the exception. This can be done using the `-catch`
+option of `qcc`.
+
+We will take this code as an example:
+
+~~~c
+#include "utils.h"
+
+int main()
+{
+  init_grid (16);
+  scalar a[];
+  trash ({a});
+  foreach()
+    a[] = x;
+  vector ga[];
+  gradients ({a}, {ga});
+}
+~~~
+
+Copy and paste this into `test.c`, then do
+
+~~~bash
+ulimit -c unlimited
+qcc -DTRASH=1 -g -Wall test.c -o test -lm
+./test
+~~~
+
+you should get
+
+~~~
+Floating point exception (core dumped)
+~~~
+
+Then do
+
+~~~bash
+gdb test core
+~~~
+
+you should get
+
+~~~
+...
+Core was generated by `./test'.
+Program terminated with signal 8, Arithmetic exception.
+#0  0x0000000000419dbe in gradients (f=0x7fff5f412430, g=0x7fff5f412420)
+    at /home/popinet/basilisk/wiki/src/utils.h:203
+203		  v.x[] = (s[1,0] - s[-1,0])/(2.*Delta);
+~~~
+
+i.e. the exception occured in the [gradients()](utils.h#gradients)
+function of [utils.h]().
+
+To visualise the stencil/fields which lead to the exception do
+
+~~~bash
+qcc -catch -g -Wall test.c -o test -lm
+./test 
+~~~
+
+you should now get
+
+~~~
+Caught signal 8 (Floating Point Exception)
+Caught signal 6 (Aborted)
+Last point stencils can be displayed using (in gnuplot)
+  set size ratio -1
+  set key outside
+  v=0
+  plot 'cells' w l lc 0, \
+    'stencil' u 1+3*v:2+3*v:3+3*v w labels tc lt 1 title columnhead(3+3*v), \
+	'coarse' u 1+3*v:2+3*v:3+3*v w labels tc lt 3 t ''
+Aborted (core dumped)
+~~~
+
+Follow the instructions i.e.
+
+~~~bash
+gnuplot
+gnuplot> set size ratio -1
+gnuplot> set key outside
+gnuplot> v=0
+gnuplot> plot 'cells' w l lc 0, \
+  'stencil' u 1+3*v:2+3*v:3+3*v w labels tc lt 1 title columnhead(3+3*v), \
+  'coarse' u 1+3*v:2+3*v:3+3*v w labels tc lt 3 t ''
+~~~
+
+With some zooming and panning, you should get this picture
+
+![Example of stencil/field causing an exception](figures/catch.png)
+
+The red numbers represent the stencil the code was working on when the
+exception occured. It is centered on the top-left corner of the
+domain. Cells both inside the domain and outside (i.e. ghost cells)
+are represented. While the field inside the domain has been
+initialised, ghost cell values have not. This causes the `gradients()`
+function to generate the exception when it tries to access ghost cell
+values.
+
+To initialise the ghost-cell values, we need to apply the boundary
+conditions i.e. add
+
+~~~c
+  boundary ({a});
+~~~
+
+after initialisation. Recompiling and re-running confirms that this
+fixes the problem.
+
+Note that the blue numbers are the field values for the parent cells
+(in the quadtree hierarchy). We can see that these are also
+un-initialised but this is not a problem since we don't use them in
+this example.
+
+The `v` value in the gnuplot script is important. It controls which
+field is displayed. `v=0` indicates the first field allocated by the
+program (i.e. `a[]` in this example), accordingly `ga.x[]` and
+`ga.y[]` have indices 1 and 2 respectively.
+
+## Tracing permissions
+
+Some recent systems disallow tracing of processes for security
+reasons. The symptom will be an error message from gdb looking like:
+
+~~~bash
+Attaching to process 9351
+Could not attach to process.  If your uid matches the uid of the target
+process, check the setting of /proc/sys/kernel/yama/ptrace_scope, or try
+again as the root user.  For more details, see /etc/sysctl.d/10-ptrace.conf
+ptrace: Operation not permitted.
+~~~
+
+To enable tracing (which weakens your system's security), you need to do:
+
+~~~bash
+sudo sh -c 'echo 0 > /proc/sys/kernel/yama/ptrace_scope'
+~~~
+
+# See also
+
+* [Tips]()
+* [Built-in profiling](README.trace)
+* [Built-in memory profiling](README.mtrace)
+* [Performance profiling with Paraver](README.paraver)
+* [Profiling round-off errors with CADNA](README.cadna)

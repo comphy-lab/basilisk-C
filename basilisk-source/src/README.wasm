@@ -1,0 +1,38 @@
+# Basilisk and WebAssembly
+
+Basilisk codes can be easily compiled to
+[WebAssembly](https://en.wikipedia.org/wiki/WebAssembly) (Wasm) and
+then run in a web browser.
+
+The simplest is to install the [emscripten
+compiler](https://emscripten.org/) with
+
+~~~bash
+sudo apt install emscripten
+~~~
+
+A Basilisk code can then be compiled using e.g.
+
+~~~bash
+cd $BASILISK/test
+../qcc -source artery1D.c && \
+       emcc -O2 -Wall -Wno-unused -Wno-misleading-indentation _artery1D.c -g -o artery1D.html
+~~~
+
+The resulting javascript can be run locally using e.g.
+
+~~~bash
+nodejs artery1D.js
+~~~
+
+or from a web browser
+
+~~~bash
+python3 -m http.server 8080 &
+firefox http://0.0.0.0:8080/artery1D.html
+~~~
+
+## Links
+
+* [https://marcoselvatici.github.io/WASM_tutorial/]()
+* [https://developer.mozilla.org/en-US/docs/Web/API/FileSystemDirectoryEntry]()

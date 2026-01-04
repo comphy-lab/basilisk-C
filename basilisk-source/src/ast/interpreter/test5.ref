@@ -1,0 +1,4 @@
+test5.c:14: interpreter_verbosity (4): !
+test5.c:18: func (1  + [test5.c:18: '1'])
+test5.c:8: a = b: 1
+test5.c:18: func (1): !

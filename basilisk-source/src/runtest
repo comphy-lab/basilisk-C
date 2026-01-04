@@ -1,0 +1,552 @@
+#!/bin/sh
+
+FILE="$1"
+test="${FILE%.*}"
+ext="${FILE##*.}"
+
+TIMEOUT="timeout --preserve-status 3h"
+
+if test -n "$HTTP_LOGFILE"; then
+    exec 2>> "$HTTP_LOGFILE"
+fi
+
+# for debugging
+# BASH_XTRACEFD=2
+# set -x
+
+if test -f $test.c; then
+    src=$test.c
+elif test -f $test.m; then
+    src=$test.m
+else
+    echo "No source file found for $test" >&2
+    exit 1
+fi
+
+case $ext in
+    ctst) log=clog; out=cout; ref=cref; ;;
+    *)    log=log;  out=out; ref=ref; ;;
+esac
+
+case $CC in
+    *-D_MPI=*) test -z "$EXEC" && EXEC="mpirun -np "`echo $CC | sed 's/.*-D_MPI=\([0-9]*\).*/\1/'`;
+esac
+
+for opt in $CFLAGS; do
+    case $opt in
+	-catch) test -z "$EXEC" && EXEC=" "; # turn off gdb
+    esac
+done
+
+case $OSTYPE in
+    *darwin*) ;; # gdb is (often) broken on Apple OSX
+    *)
+	if test -z "$GDB"; then
+	    GDB=`which gdb`
+	fi
+	;;
+esac
+
+script()
+{
+    rm -f $src display.html
+    if test -f fail; then
+	return 1
+    fi
+    test -s warn || rm -f warn
+
+    pass=true
+    rm -f $log log-* stencil stencil-* fine fine-* coarse coarse-*
+    tail -f --pid=$$ --retry display.html 2> /dev/null | grep -o 'http://.*:[0-9]*' &
+    tail -f --pid=$$ --retry $log 2> /dev/null | grep -E '.*:[0-9]*:.*(warning|error).*:' &
+    retail=$!
+    if test -n "$EXEC" -o -z "$GDB"; then
+	if ! $EXEC ./$test 2> $log > $out; then
+	    pass=false
+	    if test "$EXEC" = " " -a -f core -a -n "$GDB"; then
+		cat $log
+		xterm -e "gnuplot plot -" &
+		$GDB -q ./$test core
+	    fi
+	fi
+    else
+	if ! stdbuf -oL $GDB -batch -return-child-result -ex "run 2> $log > $out" ./$test > gdb.log 2> gdb.err; then
+	    pass=false
+	    $AWK '
+     {
+       if (NF > 0)
+         a[nb++] = $0;
+     }
+     / at .*:[0-9]*$/ {
+       for (i = 0; i < nb - 1; i++)
+	 print $(NF) ":error: " a[i];
+     }
+     ' < gdb.log >> $log
+	fi
+	rm -f gdb.log
+    fi
+    kill $retail
+    
+    if test -f log-1; then
+	mv -f $log log-0
+	cat log-* > $log
+    fi
+    
+    if $pass; then
+	if test -f $test.$ref; then
+	    ref=$ref
+	else
+	    ref=ref
+	fi
+	if test -f $test.$ref; then
+            echo diff $log $test.$ref > fail
+            diff $log $test.$ref >> fail && rm -f fail
+            rm -f $test.$ref
+	fi
+    else
+	cp -f $log fail
+    fi
+    if test -f fail; then
+	return 1
+    fi
+
+    touch pass
+}
+
+# run locally (C code)
+locally()
+{
+    echo \[$test.$ext\]
+    $BASILISK/qcc -autolink -disable-dimensions $CFLAGS -o $test/$test $src $LIBS -lm > $test/log 2>&1 \
+	|| mv -f $test/log $test/fail
+    cd $test
+    script
+    cd ..
+}
+
+# run locally (Octave code)
+locally_octave()
+{
+    echo \[$test.$ext\]
+    cd $test
+    if octave-cli --path .. -W -H -q $src 2> $log > $out && \
+	    ! grep -q '^error:' $log; then
+	touch pass
+    else
+	cp -f $log fail
+    fi
+    cd ..
+}
+
+# run untrusted code using the 'basilisk-untrusted' user if it exists
+run_untrusted()
+{
+    status=0
+    if test -n "$chksum"; then
+	if grep -q basilisk-untrusted /etc/passwd; then
+	    if ! mkdir -m 777 ../$chksum; then
+		return 1
+	    fi
+	    if ! sudo -n -u basilisk-untrusted -- \
+		 bash -c "cp -arf * ../$chksum && cd ../$chksum && $1"; then
+		status=1
+	    fi
+	    if ! cp -arf ../$chksum/* .; then
+		status=1
+	    fi
+	    sudo -n -u basilisk-untrusted -- rm -rf ../$chksum/*
+	    rm -r -f ../$chksum
+	else
+	    echo "Could not find the 'basilisk-untrusted' user" >2
+	    status=1
+	fi
+    fi
+    return $status
+}
+
+doplots()
+{
+    if test -f "$1".plot && ! run_untrusted 'gnuplot -e "batch=1; PNG=\"'$PNG'\"; set term '$PNG' enhanced font \",10\"; set output \"plot.png\"; set macros;" '$1'.plot > tmp 2>&1;'; then
+        cat tmp >> warn
+    fi
+    if ! run_untrusted "PNG=$PNG sh $BASILISK/gnuplot.sh $1 > tmp 2>&1"; then
+	cat tmp >> warn
+    fi
+    if ! run_untrusted "MPLBACKEND=Agg python plots.py > tmp 2>&1"; then
+	cat tmp >> warn
+    fi
+    rm -f tmp
+}
+
+# compile/run on a remote "sandbox"
+# NOTE: update remotely_octave() when changing this
+remotely()
+{
+    rhost=$1
+    autolink=`$BASILISK/qcc -autolink -progress -source -disable-dimensions $CFLAGS $src`
+    chksum=`(cat $test.s && pwd && echo $test) | $GENSUM | cut -d' ' -f1`.$ext
+    mkdir $test/$chksum
+    cd $test
+    run=`echo $test | sed 's/^~//'`
+    if test "$run" != "$test"; then
+	cp -f $run.* $chksum 2> /dev/null || true
+    fi
+    cp -f $test.* $chksum 2> /dev/null || true
+    rm -f $chksum/$src.html
+    if test `echo "$test" | sed 's/^~//'` != "$test"; then
+	cd $chksum
+	for f in "$test".*; do
+	    mv -f "$f" `echo "$f" | sed 's/^~//'`
+	done
+	cd ..
+    fi
+    mv -f ../_$src $chksum/$src
+    if grep -q '#define _GPU 1' $chksum/$src; then
+	TSP="TS_SOCKET=/tmp/tsp-gpu tsp"
+	TIMEOUT="OMP_NUM_THREADS=1 DISPLAY=:0 $TIMEOUT"
+    else
+	TSP=tsp
+    fi
+    PCC="\$CC99"
+    case "$CFLAGS" in
+	*-cadna*) PCC="\$CADNACC" ;;
+    esac
+    PCFLAGS=`echo $CFLAGS | sed -e 's/-grid=[^-]*//g' -e 's/-cadna//g' -e 's/-progress//g' -e 's/-Wdimensions//g' -e 's/-disable-dimensions//g' -e 's/-cpu//g' -e 's/-gpu//g'`
+    NCORES=`echo $EXEC | awk 'BEGIN{ np = 1 }{
+      if ($1 == "mpirun") np = $3; }END{ print np;}'`
+    case "$CFLAGS" in
+	*-fopenmp*)
+	    NCORES=8
+	    TIMEOUT="OMP_NUM_THREADS=8 $TIMEOUT"
+	    ;;
+    esac
+    cat <<EOF >$chksum/$chksum.sh
+#!/bin/bash
+
+run_untrusted()
+{
+  status=0
+  notrust=/tmp/$chksum
+  if ! sudo -n -u basilisk-untrusted -- bash -c "source /home/basilisk/.bashrc-untrusted && mkdir \$notrust && cp -arf * \$notrust && cd \$notrust && rm -f completing && \$1 && touch completing"; then
+     status=1
+  fi
+  if ! cp -arf \$notrust/* .; then
+     status=1
+  fi
+  sudo -n -u basilisk-untrusted -- rm -rf \$notrust/
+  return \$status
+}
+
+$PCC $PCFLAGS -I\$HOME/include -o $chksum $src -L\$HOME/lib $LIBS $autolink -lm > log 2>&1 || mv -f log fail
+rm -f $src
+if ! test -f fail; then
+  pass=true
+  if test -n "$EXEC" -o -z "`which gdb`"; then
+    if ! run_untrusted "$TIMEOUT $EXEC ./$chksum 2> $log > $out"; then
+       pass=false
+    fi
+  else
+    if ! run_untrusted "$TIMEOUT gdb -batch -return-child-result -ex \"run 2>> $log > $out\" $chksum > gdb.log 2> gdb.err" > gdb.log 2> gdb.err; then
+       pass=false
+       cat gdb.err >> $log
+       awk '
+       {
+         if (NF > 0)
+           a[nb++] = \$0;
+       }
+       / at .*:[0-9]*\$/ {
+         for (i = 0; i < nb - 1; i++)
+   	   print \$(NF) ":error: " a[i];
+       }
+       ' < gdb.log >> $log
+    fi
+    rm -f gdb.log
+  fi    
+
+  if test -f log-1; then
+      mv -f $log log-0
+      cat log-* > $log
+  fi
+
+  if \$pass; then
+    if test -f $test.$ref; then
+      ref=$ref
+    else
+      ref=ref
+    fi
+    if test -f $test.\$ref; then
+        echo diff $log $test.\$ref > fail
+        diff $log $test.\$ref >> fail && rm -f fail
+        rm -f $test.\$ref
+    fi
+  else
+    if ! test -s $log; then
+       echo "The code may have timed out." > $log
+    fi
+    sed "s/^$chksum: //g" $log > fail
+  fi
+fi
+rm -f $chksum $src $chksum.sh $test.*ref
+tar czf \$HOME/$chksum.tgz *
+rm -r -f \$HOME/$chksum
+EOF
+    tar czf $chksum.tgz $chksum
+    rm -r -f $chksum/
+
+    if ! ( scp $chksum.tgz $rhost: && rm -f $chksum.tgz && \
+	       ssh $rhost bash -c "\"tar xmzf $chksum.tgz && cd $chksum && $TSP -N \$(test \$($TSP -S) -le $NCORES && echo \$($TSP -S) || echo $NCORES) -L $test -n nice -19 bash $chksum.sh\" && sleep 0 && echo $chksum && echo $rhost && $TSP -w" > tspid.$ext && \
+	       scp -q $rhost:$chksum.tgz $chksum.tgz && \
+	       ssh $rhost rm -r -f $chksum.tgz && \
+	       tar xmzf $chksum.tgz && \
+	       rm -f $chksum.tgz $src $test.*ref progress) > /dev/null 2>> ssh.log;
+    then
+	cat ssh.log >> fail
+    fi
+    rm -f ssh.log
+
+    # generate graphics
+    doplots "$test"
+    
+    if test -f fail; then
+	if test -f ../$test.$ext; then
+	    mv -f ../$test.$ext fail.$ext
+	else
+	    short=`echo $test | sed 's/^~//'`
+	    test -f ../$short.$ext && mv -f ../$short.$ext fail.$ext
+	fi
+	echo
+	echo \[$test.$ext\]
+	cat fail
+    else
+	touch pass
+    fi
+    # Complete
+    rm -f *pid.$ext completing
+}
+
+octave_deps()
+{
+    if test -z "$DOCUMENT_ROOT"; then
+	d=`pwd`
+	while ! test -d _darcs; do
+	    cd ..
+	done
+	DOCUMENT_ROOT=`pwd`
+	cd "$d"	
+    fi
+    path=`dirname $1`" "`grep --only-matching 'addpath[ \t]*( *"[^"]*" *)' $1 | sed -e 's/addpath[ \t]*( *"\([^"]*\)" *)/\1/g' -e "s|^~|$DOCUMENT_ROOT|g"`
+    for i in `grep -E --only-matching -h '[a-zA-Z_0-9]+[ \t]*\(' $1 | sort | uniq | sed 's/(//g'`; do
+	for p in $path; do
+	    test -f "$p/$i.m" -a "$p/$i.m" != "$1" && echo "$p/$i.m" && octave_deps "$p/$i.m" && break;
+	done
+    done | sort | uniq
+}
+
+# compile/run on a remote "sandbox" (OCTAVE)
+remotely_octave()
+{
+    rhost=$1
+    chksum=`(cat $test.s && pwd && echo $test) | $GENSUM | cut -d' ' -f1`.$ext
+    mkdir $test/$chksum
+    mkdir $test/$chksum/lib/
+    cp -f $test.m `octave_deps ./$test.m` $test/$chksum/lib/
+    cd $test
+    run=`echo $test | sed 's/^~//'`
+    if test "$run" != "$test"; then
+	cp -f $run.* $chksum 2> /dev/null || true
+    fi
+    cp -f $test.* $chksum 2> /dev/null || true
+    rm -f $chksum/$src.html
+    if test `echo "$test" | sed 's/^~//'` != "$test"; then
+	cd $chksum
+	for f in "$test".*; do
+	    mv -f "$f" `echo "$f" | sed 's/^~//'`
+	done
+	cd ..
+    fi
+    cp -f ../$src $chksum/$src
+    cat <<EOF >$chksum/$chksum.sh
+#!/bin/bash
+
+run_untrusted()
+{
+  status=0
+  notrust=/tmp/$chksum
+  if ! sudo -n -u basilisk-untrusted -- bash -c "source /home/basilisk/.bashrc-untrusted && mkdir \$notrust && cp -arf * \$notrust && cd \$notrust && rm -f completing && \$1 && touch completing"; then
+     status=1
+  fi
+  if ! cp -arf \$notrust/* .; then
+     status=1
+  fi
+  sudo -n -u basilisk-untrusted -- rm -rf \$notrust/
+  return \$status
+}
+
+# workaround for octave bug with ~ in file names
+src1="$src"
+if [[ "$src" = ~* ]]; then  
+  src1=_\${src1##\~};
+  ln -s -f "$src" "\$src1"
+fi
+
+pass=true
+if ! run_untrusted "$TIMEOUT octave-cli --path lib -W -H -q \$src1 2> $log > $out" || grep -q '^error:' $log; then
+    pass=false
+fi
+
+if [[ "\$src1" != "$src" ]]; then
+   rm -f "\$src1"
+fi
+
+if \$pass; then
+    if test -f $test.$ref; then
+      ref=$ref
+    else
+      ref=ref
+    fi
+    if test -f $test.\$ref; then
+        echo diff $log $test.\$ref > fail
+        diff $log $test.\$ref >> fail && rm -f fail
+        rm -f $test.\$ref
+    fi
+else
+    if ! test -s $log; then
+       echo "The code may have timed out." > $log
+    fi
+    cp -f $log fail
+fi
+if ! test -f fail; then
+    touch pass
+fi
+rm -r -f $chksum $src $chksum.sh $test.*ref lib/
+tar czf \$HOME/$chksum.tgz *
+rm -r -f \$HOME/$chksum
+EOF
+    tar czf $chksum.tgz $chksum
+    rm -r -f $chksum/
+
+    if ! ( scp $chksum.tgz $rhost: && rm -f $chksum.tgz && \
+	       ssh $rhost bash -c "\"tar xmzf $chksum.tgz && cd $chksum && tsp -n nice -19 bash $chksum.sh\" && sleep 0 && echo $chksum && echo $rhost && tsp -w" > tspid.$ext && \
+	       scp -q $rhost:$chksum.tgz $chksum.tgz && \
+	       ssh $rhost rm -r -f $chksum.tgz && \
+	       tar xmzf $chksum.tgz && \
+	       rm -f $chksum.tgz $src $test.*ref progress) > /dev/null 2>> ssh.log;
+    then
+	cat ssh.log >> fail
+    fi
+    rm -f ssh.log
+
+    if test -f fail; then
+	if test -f ../$test.$ext; then
+	    mv -f ../$test.$ext fail.$ext
+	else
+	    short=`echo $test | sed 's/^~//'`
+	    test -f ../$short.$ext && mv -f ../$short.$ext fail.$ext
+	fi
+	echo
+	echo \[$test.$ext\]
+	cat fail
+    else
+	touch pass
+    fi
+    # Complete
+    rm -f *pid.$ext completing
+}
+
+checksum()
+{
+    if grep $1 $2 | $CHECKSUM; then 
+	return 0;
+    else
+	return 1;
+    fi
+}
+
+# check sum for $src
+source_modified=false
+if ! test -f $test.$ext || ! checksum $src $test.$ext; then
+    source_modified=true
+fi
+
+killchildren()
+{
+    p=$1
+    c=`ps -o pid= --ppid $p`
+    kill $p
+    while test -n "$c"; do
+	p=$c
+	c=`ps -o pid= --ppid $p`
+	kill $p
+    done
+}
+
+# check sum for test.s
+if test -f $test.$ext && checksum $test.s $test.$ext; then
+    touch $test.$ext
+    echo "make: '$test.$ext' is up to date."
+    if $source_modified; then
+	if test -n "$SANDBOX"; then
+	    rm -f $test/warn
+	    $AWK -f $BASILISK/gnuplot.awk < $src > $test/plots
+	    $AWK -f $BASILISK/python.awk < $src > $test/plots.py
+	    chksum=`(cat $test.s && pwd && echo $test) | $GENSUM | cut -d' ' -f1`.$ext
+	    cd $test
+	    doplots "$test"
+	    cd ..
+	fi
+	$GENSUM $src $test.s > $test.$ext
+    fi
+# check sum for test.s in fail.tst
+elif ! test -f $test/fail.$ext || ! test -f $test/fail || ! checksum $test.s $test/fail.$ext; then
+    if test -n "$SANDBOX" -a -f $test/pid.$ext; then
+	killchildren `cat $test/pid.$ext`
+	if test -f $test/tspid.$ext; then
+	    ssh $SANDBOX killtest `cat $test/tspid.$ext`
+	fi
+	rm -f $test/*pid.$ext
+    fi
+
+    rm -f $test.$ext $test/pass \
+	$test/fail $test/fail.* $test/plot.png $test/plots $test/core
+    $GENSUM $src $test.s > $test.$ext
+
+    mkdir -p $test && cp -f $src $test
+    $AWK -f $BASILISK/gnuplot.awk < $src > $test/plots
+    $AWK -f $BASILISK/python.awk < $src > $test/plots.py
+    cp -f $test.* $test 2> /dev/null || true
+    run=`echo $test | sed 's/^~//'`
+    if test "$run" != "$test"; then
+	cp -f $run.* $test 2> /dev/null || true
+    fi
+    rm -f $test/*.[sd] $test/*.*tst $test/$src.html 2> /dev/null || true
+
+    if test -n "$SANDBOX"; then
+	case "$src" in
+	    *.c) ( remotely $SANDBOX ) & ;;
+	    *.m) ( remotely_octave $SANDBOX ) & ;;
+	esac
+	echo $! > $test/pid.$ext
+	sleep 1
+    else
+	case "$src" in
+	    *.c) locally ;;
+	    *.m) locally_octave ;;
+	esac
+	rm -f $test/plots $test/plots.py
+    fi
+fi
+
+if test -f $test/fail; then
+    cat $test/fail
+    if test -f $test.$ext; then
+	if test -n "$SANDBOX"; then
+	    mv -f $test.$ext $test/fail.tst
+	else
+	    rm -f $test.$ext $test/fail.tst
+	fi
+    fi
+    exit 1
+elif test -f $test/pid.$ext; then
+    echo \[$test.$ext on $SANDBOX \(`cat $test/pid.$ext`\)\]
+    echo "  running..."
+fi

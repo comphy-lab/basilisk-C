@@ -1,0 +1,26 @@
+------------------- 
+#line 8 "dimension-tests/test1.c"
+b
+
+    
+#line 8 "dimension-tests/test1.c"
+double
+size: 17, flags: 1, pointer: 0, scope: 3, value: 2 (unset)  + [dimension-tests/test1.c:13: 'b = 2.']
+===================
+ast/interpreter/overload.h:217: error (interpreter): array index overflow in '*i'
+-------------------
+#line 22 "dimension-tests/test1.c"
+val(s,0,0,0)
+ 
+#line 1 "/grid/tree.h"
+double
+size: 17, flags: 1, pointer: 0, scope: 0, value: 0 (unset)  + [dimension-tests/test1.c:21: 's[] = 0.']
+===================
+dimension-tests/test1.c:28: error: the dimensional constraints below are not compatible
+dimension-tests/test1.c:28: '1. [2]'
+	└─ [dimension-tests/test1.c:28: 'b = 1. [2]'] = [2]
+dimension-tests/test1.c:25: 'if (a)
+      b = 1. [1];
+    else
+      b = 1. [2];'
+	└─ [dimension-tests/test1.c:28: 'b = 1. [2]'] = [1]

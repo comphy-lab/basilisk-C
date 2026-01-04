@@ -1,0 +1,123 @@
+# Parallel runs with MPI
+
+To compile with MPI parallelism enabled, you need to use something like:
+
+~~~bash
+CC99='mpicc -std=c99' qcc -Wall -O2 -D_MPI=1 example.c -o example -lm
+~~~
+
+where *mpicc* calls the MPI compiler on your system. The resulting
+executable can then be run in parallel using something like
+
+~~~bash
+mpirun -np 8 ./example
+~~~
+
+The details may vary according to how the MPI compiler is setup on
+your system.
+
+## Using Makefiles
+
+The "manual" way above is automated if you use the [standard
+Makefiles](/Tutorial#using-makefiles) provided by Basilisk. You can
+then compile and run the example above on eight processes using:
+
+~~~bash
+CC='mpicc -D_MPI=8' make example.tst
+~~~
+
+This assumes that *mpicc* and *mpirun* are available on your system.
+
+## Running on supercomputers
+
+A simple way to run Basilisk code on a supercomputer is to first
+generate a portable (ISO C99) source code on a machine where *qcc* is
+installed i.e.
+
+~~~bash
+%localmachine: qcc -source -D_MPI=1 example.c
+~~~
+
+Then copy the portable source code *_example.c* (don't forget the
+underscore!) on the supercomputer and compile it:
+
+~~~bash
+%localmachine: scp _example.c login@supercomputer.org:
+%localmachine: ssh login@supercomputer.org
+%supercomputer.org: mpicc -Wall -std=c99 -O2 -D_MPI=1 _example.c -o example -lm
+~~~
+
+where the *-std=c99* option sets the version of the language to C99. Note that 
+this option may change depending on the compiler (the options shown above are 
+valid for *gcc* or *icc*, the Intel compiler).
+
+You will then need to use the job submission system of the
+supercomputer to set the number of processes and run the
+executable. See also the following examples:
+
+* [Parallel scalability](test/mpi-laplacian.c#how-to-run-on-occigen)
+* [Atomisation of a pulsed liquid jet](examples/atomisation.c#running-in-parallel)
+* [Forced isotropic turbulence in a triply-periodic box](examples/isotropic.c#running-with-mpi-on-occigen)
+
+## Non-cubic domains
+
+It is possible to define non-cubic domains when running with MPI but
+also when running on GPUs or in OpenMP or serial mode. It is not
+possible yet to define non-cubic domains on tree grids.
+
+Not that for MPI multigrid, each of the parallel sub-domain is cubic,
+so that the number of processes $n_p$ must verify the relation
+$$
+n_p = 2^{di}\prod_d \text{dimensions}_d
+$$
+with $i$ an integer, $d$ the number of spatial dimensions and
+$\text{dimensions}_d$ the domain dimensions specified using the 
+`dimensions()` function.
+
+### Physical dimensions and spatial resolution
+
+As usual, the physical dimension of the domain is set by calling the
+`size()` function. What is set is the size along the x-axis of the
+entire domain (not of the individual subdomains). This allow one to
+vary the number of processes while keeping the physical size constant
+(i.e. do the same simulation on a different number of processes).
+
+The spatial resolution (N) is handled in a similar way, with the added
+constraint that it must be a multiple of $n_x\times 2^n$ with $n$ an
+integer.
+
+### Examples
+
+A $[0:1]\times[0:1/3]\times[0:1/3]$ channel, periodic along the x-axis
+(with slip walls), with 96 points along the x-axis:
+
+~~~literatec
+#include "grid/multigrid3D.h"
+...
+int main() {
+  dimensions (nx = 3, ny = 1, nz = 1);
+  periodic (right);
+  init_grid (128);
+  ...
+}
+~~~
+
+The simulation above can run in OpenMP/GPU/serial or on 3, 24, 192,
+1536 etc. MPI processes.
+
+A cube centered on the origin, of size 1.5, all-periodic, with 512
+points along each axis, on 8 = 2^3^ or 64 = 4^3^ or 512 = 8^3^ or 4096
+= 16^3^ etc... processes:
+
+~~~literatec
+#include "grid/multigrid3D.h"
+...
+int main() {
+  size (1.5);
+  origin (-0.75, -0.75, -0.75);
+  foreach_dimension()
+    periodic (right);
+  init_grid (512);
+  ...
+}
+~~~

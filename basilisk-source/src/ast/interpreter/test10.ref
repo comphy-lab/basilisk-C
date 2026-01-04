@@ -1,0 +1,28 @@
+test10.c:9: interpreter_verbosity (4): !
+test10.c:11: val ({...}, 0  + [test10.c:11: '0'], 0  + [test10.c:11: '0'], 0  + [test10.c:11: '0'])
+ast/interpreter/overload.h:132: 1024: 1024  + [ast/interpreter/overload.h:132: '1024']
+ast/interpreter/overload.h:319: igrid->d + s.i*sizeof(real): 0xaddress
+ast/interpreter/overload.h:319: (real *)(igrid->d + s.i*sizeof(real)): 0xaddress
+test10.c:11: val(s,0,0,0): 0 (unset)
+test10.c:11: '0 > (s[])': [test10.c:11: '0'] = [0]
+test10.c:11: warning (interpreter): undefined condition '0 > (val(s,0,0,0))'
+test10.c:11: 0: 0  + [test10.c:11: '0']
+test10.c:11: val ({...}, 0  + [test10.c:11: '0'], 0  + [test10.c:11: '0'], 0  + [test10.c:11: '0'])
+ast/interpreter/overload.h:132: 1024: 1024  + [ast/interpreter/overload.h:132: '1024']
+ast/interpreter/overload.h:319: igrid->d + s.i*sizeof(real): 0xaddress
+ast/interpreter/overload.h:319: (real *)(igrid->d + s.i*sizeof(real)): 0xaddress
+test10.c:11: val(s,0,0,0): 0 (unset) [0]
+test10.c:11: '0 > (s[]) ? 0 : (s[])': [test10.c:11: '0'] = [0]
+test10.c:11: 0 > (val(s,0,0,0)) ? 0 : (val(s,0,0,0)): 0 (unset) [0]
+test10.c:11: '( 0 > (s[]) ? 0 : (s[])) > 0': [test10.c:11: '0'] = [0]
+test10.c:11: ( 0 > (val(s,0,0,0)) ? 0 : (val(s,0,0,0))) > 0: 0 (unset)
+test10.c:11: warning (interpreter): undefined condition '( 0 > (val(s,0,0,0)) ? 0 : (val(s,0,0,0))) > 0'
+test10.c:14: q: 1  + [test10.c:12: 'q = 1']
+test10.c:15: a = u: {...}
+test10.c:16: q = a.x: 0  + [test10.c:13: '0']
+test10.c:17: q: 0  + [test10.c:13: '0']
+test10.c:20: a.x: 33  + [test10.c:10: '33']
+test10.c:21: a.x = 2: 2  + [test10.c:21: 'a.x = 2']
+test10.c:23: 'a.x > 0':  + [test10.c:21: 'a.x = 2'] - [test10.c:23: '0'] = [0]
+test10.c:23: a.x > 0: 1 (unset)
+test10.c:23: warning (interpreter): undefined condition 'a.x > 0'

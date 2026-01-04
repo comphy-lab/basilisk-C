@@ -1,0 +1,99 @@
+# Profiling round-off errors with CADNA
+
+The [CADNA](http://www-pequan.lip6.fr/cadna) (Control of Accuracy and
+Debugging for Numerical Applications) library estimates round-off
+errors in numerical simulations.
+
+See the documentation in
+[doc/ug_cadna.pdf](/src/ug_cadna.pdf) in the CADNA
+[source code](http://cadna.lip6.fr/Download_Dir/register.php)
+distribution for details.
+
+Codes written with Basilisk can be automatically instrumented using
+CADNA to control round-off errors.
+
+## Installation
+
+1. Get the latest C/C++ version of CADNA from the
+[Download](http://cadna.lip6.fr/Download_Dir/register.php) page and
+untar it.
+
+2. Apply this [patch](cadna.patch) using:
+
+~~~bash
+cd cadna_c-2.0.2/
+patch -p1 < $BASILISK/cadna.patch
+~~~
+
+This is necessary to add missing double/float to bool conversion
+operators.
+
+3. Then follow the installation instructions. On most systems,
+something like:
+
+~~~bash
+./configure
+make
+sudo make install
+~~~
+
+should be enough.
+
+4. Install the [clang](https://clang.llvm.org/) C++ compiler. This is
+necessary since limitations in g++ mean it cannot be used to compile
+Basilisk. On Debian-based systems, just do:
+
+~~~bash
+sudo apt-get install clang
+~~~
+
+5. In the Basilisk source code, check that the CADNA section of your
+[config](config.gcc) file is filled properly. In particular, if you
+have installed CADNA in a non-standard location (e.g. not
+`/usr/local`), you will need to add the corresponding
+`-L/path/to/cadna/lib` option to the `CADNALIBS` variable.
+
+6. [Recompile Basilisk](INSTALL#compilation).
+
+## Usage
+
+To compile and run with CADNA support, you can use the default
+[Makefile](/Tutorial#using-makefiles) recipe:
+
+~~~bash
+make mytest.CADNA.tst
+~~~
+
+Alternatively, you can also compile the code manually using:
+
+~~~bash
+qcc -cadna -Wall -O2 mytest.c -o mytest -lcadnaC -lstdc++ -lm
+~~~
+
+where the linking arguments follow those given in CADNALIBS.
+
+Note that both the compilation and the execution of the code are much
+slower (10 to 100 times) than without CADNA.
+
+The [printf()](http://man7.org/linux/man-pages/man3/printf.3.html)
+formatting of the floating-point results is changed to reflect the
+number of significant digits, and CADNA diagnostics are written on
+standard output. See the
+[documentation](/src/ug_cadna.pdf) for details.
+
+## Known bugs
+
+* The [ternary operator](https://en.wikipedia.org/wiki/%3F:) can cause
+  trouble when compiling with C++. For example one may get a message
+  looking like:
+
+~~~bash
+cyl_axi.c:124:46: error: conditional expression is ambiguous; 'int' can be
+      converted to 'double_st' and vice versa
+  ...(double_st)0.1 ? 0 : (double_st)0.5*sq((double_st)0.1)*(double_st)0.5/y);
+~~~
+
+  The solution here is to replace the '0' constant with '0.', to
+  explicitly cast it to a double. Note that this also holds for the
+  `min()`, `max()` and `clamp()` macros which are implemented using
+  the ternary operator.

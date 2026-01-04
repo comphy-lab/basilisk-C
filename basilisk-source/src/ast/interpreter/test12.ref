@@ -1,0 +1,8 @@
+test12.c:13: warning (interpreter): undefined condition 'val(s,-1,0,0)'
+/utils.h:225: warning (interpreter): undefined condition 's0 < s1 && s1 < s2'
+/utils.h:227: warning (interpreter): undefined condition 'd2 < d1'
+/utils.h:228: warning (interpreter): undefined condition 'd1 < d3'
+/utils.h:230: warning (interpreter): undefined condition 's0 > s1 && s1 > s2'
+/utils.h:232: warning (interpreter): undefined condition 'd2 > d1'
+/utils.h:233: warning (interpreter): undefined condition 'd1 > d3'
+test12.c:15: warning (interpreter): undefined condition 'a'

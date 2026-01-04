@@ -1,0 +1,4 @@
+test19.c:7: interpreter_verbosity (5): !
+test19.c:11: warning (interpreter): 'fprintf' undeclared
+test19.c:11: warning (interpreter): undefined function call 'fprintf (4)'
+test19.c:11: fprintf (uf): !

@@ -1,0 +1,84 @@
+# Profiling with Paraver
+
+Basilisk can be compiled to generate execution traces which can be
+analyzed with [Paraver](https://tools.bsc.es/paraver).
+
+## Extrae installation
+
+Traces are generated using the [Extrae](https://tools.bsc.es/extrae)
+library which needs to be installed on the system. See the [Extrae
+documentation](https://tools.bsc.es/sites/default/files/documentation/pdf/extrae-3.5.2-user-guide.pdf)
+for a detailed description of installation. On a Debian-like system,
+the following can help you.
+
+~~~bash
+sudo apt-get install libunwind-dev libboost-dev libpapi-dev \
+     libxml2-dev binutils-dev libiberty-dev
+./configure --prefix=$HOME/local --with-mpi=/usr/lib/openmpi \
+	    --with-unwind=/usr --without-dyninst --with-papi=/usr \
+	    --with-binutils=/usr --enable-instrument-io
+make
+make install
+~~~
+
+
+## Extrae configuration and usage
+
+Add to e.g. `.bashrc`
+
+~~~bash
+export EXTRAE_HOME=$HOME/local
+source $EXTRAE_HOME/etc/extrae.sh
+~~~
+
+To profile a sequential test case (e.g. `bump2D.tst`), you can use
+
+~~~bash
+export EXTRAE_CONFIG_FILE=$BASILISK/paraver/extrae.xml
+CFLAGS="-DTRACE=1 -I$EXTRAE_HOME/include" \
+	LIBS="-L$EXTRAE_HOME/lib -lseqtrace" make bump2D.tst
+~~~
+
+For an MPI test case, use `-lmpitrace` instead. See the [Extrae
+documentation](https://tools.bsc.es/sites/default/files/documentation/pdf/extrae-3.5.2-user-guide.pdf)
+for detailed explanations. The doc is also in
+`$EXTRAE_HOME/share/doc/user-guide.pdf`.
+
+After the run, several files are generated (e.g. `bump2D/bump2D.prv`,
+`bump2D/bump2D.pcf` etc...) which can be displayed with Paraver.
+
+To get you started with Paraver, several configuration files are
+provided in `$BASILISK/paraver`. You should also install and do the
+useful [tutorials](https://tools.bsc.es/tutorial_guidelines).
+
+## Paraver installation
+
+Paraver should be installable from source, however it does not seem to
+work with recent versions of wxwidget (see below). Binaries for
+various operating systems are available for
+[download](https://tools.bsc.es/downloads).
+
+This is the script which eventually fails on Debian 8.
+
+~~~bash
+sudo apt-get install libwxgtk3.0-dev libboost-serialization-dev
+cd paraver-toolset
+./configure --prefix=$HOME/local
+make && make install
+cd ../ptools_common_files
+./configure --prefix=$HOME/local
+make && make install
+cd ../paraver-kernel
+./configure --prefix=$HOME/local \
+	    --with-boost-serialization=boost_serialization \
+	    --with-ptools-common-files=$HOME/local
+make && make install
+cd ../wxparaver
+./configure --prefix=$HOME/local \
+	    --with-boost-serialization=boost_serialization \
+	    --with-paraver=$HOME/local \
+	    --with-extrae=$HOME/local
+make && make install
+~~~
+
+Unfortunately this does not work. Seems to be a problem with WxPropertyGrid.

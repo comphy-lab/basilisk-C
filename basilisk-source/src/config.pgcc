@@ -1,0 +1,7 @@
+# -*-Makefile-*-
+
+# how to launch the (Portland) C99 compiler
+CC99 = pgcc -c99 -D_GNU_SOURCE=1
+
+# other useful (non-standard) flags
+CFLAGS +=

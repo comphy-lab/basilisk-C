@@ -1,0 +1,1928 @@
+diff -ur ./airsea/airsea.F90 ../../GOTM-5.2.1/src/airsea/airsea.F90
+--- ./airsea/airsea.F90	2018-04-30 09:45:54.000000000 +0200
++++ ../../GOTM-5.2.1/src/airsea/airsea.F90	2020-04-25 12:01:45.032182672 +0200
+@@ -52,6 +52,144 @@
+ #ifdef _PRINTSTATE_
+    public                              :: print_state_airsea
+ #endif
++   
++!-------------------------------------------------------------------------------
++! airsea
++!-------------------------------------------------------------------------------
++! calc_fluxes           [bool]
++!                         surface fluxes calculated by means of bulk formulae
++! fluxes_method         [integer]
++!                         bulk formulae according to
++!                         1: Kondo (1975)
++!                         2: Fairall et al. (1996)
++!                         This variable is only used if calc_fluxes = True
++! back_radiation_method [integer]
++!                         calculation of long-wave back radiation according to
++!                         1: Clark et al. (1974)
++!                         2: Hastenrath and Lamb (1978)
++!                         3: Bignami et al. (1995)
++!                         4: Berliandand Berliand (1952)
++!                         This variable is only used if calc_fluxes = True
++! meteo_file            [file path]
++!                         file with meteo data
++!                         This variable is only used if calc_fluxes = True
++! wind_factor           [float]
++!                         Scale factor for wind. If set to one, the original
++!                           values are used. A value different from one might be
++!                           applied to convert from non-GOTM units, or to test
++!                           model sensitivity.
++!                         This variable is only used if calc_fluxes = True
++! hum_method            [integer]
++!                         decides what is given in 7. column in meteo_file
++!                         1: relative humidity (%)
++!                         2: wet bulb temperature
++!                         3: dew point temperature
++!                         4: specific humidity (kg/kg)
++!                         This variable is only used if calc_fluxes = True
++! rain_impact           [bool]
++!                         include effect of rain fall on fluxes of sensible heat
++!                           and momentum
++!                         This variable is only used if calc_fluxes = True
++! calc_evaporation      [bool]
++!                         calculate evaporation from meteorological conditions
++!                         This variable is only used if calc_fluxes = True
++! heat_method           [integer]
++!                         type of surface heat flux
++!                         0: none
++!                         1: constant value prescribed
++!                         2: custom, temporally variable
++!                         This variable is only used if calc_fluxes = False
++! const_heat            [float, minimum = -1000, maximum = 1000, unit = W/m^2]
++!                         Constant value for the surface heat flux, i.e., the
++!                           sum of the sensible, latent and back-radiation
++!                           fluxes (but not short wave radiation).
++!                         This variable is only used if (calc_fluxes = False and
++!                           heat_method = 1)
++! heatflux_file         [file path]
++!                         custom heat fluxes (negative for net outgoing)
++!                         This variable is only used if (calc_fluxes = False and
++!                           heat_method = 2)
++! swr_method            [integer]
++!                         type of short wave radiation
++!                         0: none
++!                         1: constant value prescribed
++!                         2: custom, temporally variable
++!                         3: calculated from time, location and cloud cover
++! albedo_method         [integer]
++!                         albedo correction method
++!                         0: constant albedo
++!                         1: according to Payne (1972)
++!                         2: according to Cogley (1979)
++! const_albedo          [float, minimum = 0, maximum = 1]
++!                         constant albedo
++!                         This variable is only used if albedo_method = 1
++! const_swr             [float, minimum = 0, maximum = 1000, unit = W/m^2]
++!                         constant incoming short wave radiation
++!                         This variable is only used if swr_method = 1
++! swr_file              [file path]
++!                         custom short wave radiation
++!                         This variable is only used if swr_method = 2
++! swr_factor            [float]
++!                         Scale factor for short wave solar radiation. If set to
++!                           one, the original values are used. A value different
++!                           from one might be applied to convert from non-GOTM
++!                           units, or to test model sensitivity.
++!                         This variable is only used if swr_method = 2
++! momentum_method       [integer]
++!                         type of momentum flux
++!                         0: none
++!                         1: constant surface momentum fluxes given
++!                         2: surface momentum fluxes given from file
++!                           momentumflux_file
++!                         This variable is only used if calc_fluxes = False
++! const_tx              [float, minimum = -1000, maximum = 1000, unit = N/m^2]
++!                         x-component of surface momentum flux
++!                         This variable is only used if (calc_fluxes = False and
++!                           momentum_method = 1)
++! const_ty              [float, minimum = -1000, maximum = 1000, unit = N/m^2]
++!                         y-component of surface momentum flux
++!                         This variable is only used if (calc_fluxes = False and
++!                           momentum_method = 1)
++! momentumflux_file     [file path]
++!                         file with tx and ty given in N/m^2
++!                         This variable is only used if (calc_fluxes = False and
++!                           momentum_method = 2)
++! precip_method         [integer]
++!                         method how precipitation is given
++!                         0: precipitation not used
++!                         1: constant value for precipitation (in m/s) used
++!                         2: values for precipitation read from file
++! const_precip          [float, minimum = -0.01, maximum = 0.01, unit = m/s]
++!                         constant value for precipitation
++!                         This variable is only used if precip_method = 1
++! precip_file           [file path]
++!                         file with value for precipitation
++!                         This variable is only used if precip_method = 2
++! precip_factor         [float]
++!                         precipitation factor
++!                         This variable is only used if precip_method = 2
++! sst_method            [integer]
++!                         method how sea surface temperature (SST) is given
++!                         0: no independent SST observation is read from file
++!                         2: independent SST observation is read from file, only
++!                           for output
++! sst_file              [file path]
++!                         file with independent SST observation
++!                         This variable is only used if sst_method = 2
++! sss_method            [integer]
++!                         method how sea surface salinity (SSS) is given
++!                         0: no independent SSS observation is read from file
++!                         2: independent SSS observation is read from file, only
++!                           for output
++! sss_file              [file path]
++!                         file with independent SSS observation
++!                         This variable is only used if sss_method = 2
++! ssuv_method           [integer]
++!                         wind speed correction for current velocity
++!                         0: use absolute wind speed
++!                         1: use relative wind speed
++!                         This variable is only used if calc_fluxes = True
++!-------------------------------------------------------------------------------
+ !
+ ! !PUBLIC DATA MEMBERS:
+    logical,  public                    :: calc_fluxes
+Only in ../../GOTM-5.2.1/src/airsea: airsea.F90~
+Only in ../../GOTM-5.2.1/src: _darcs
+Only in ../../GOTM-5.2.1/src/gotm: gotm.F90~
+Only in ../../GOTM-5.2.1/src/gotm: register_all_variables.F90~
+Only in .: gotm.patch
+diff -ur ./meanflow/meanflow.F90 ../../GOTM-5.2.1/src/meanflow/meanflow.F90
+--- ./meanflow/meanflow.F90	2018-04-30 09:45:54.000000000 +0200
++++ ../../GOTM-5.2.1/src/meanflow/meanflow.F90	2020-04-23 11:23:49.065066240 +0200
+@@ -17,7 +17,7 @@
+    private
+ !
+ ! !PUBLIC MEMBER FUNCTIONS:
+-   public init_meanflow, clean_meanflow
++   public post_init_meanflow, init_meanflow, clean_meanflow
+ #ifdef _PRINTSTATE_
+    public print_state_meanflow
+ #endif
+@@ -67,35 +67,110 @@
+ 
+ # endif
+ 
++!-------------------------------------------------------------------------------
++! meanflow
++!-------------------------------------------------------------------------------
++! h0b          [float, unit = m]
++!                bottom roughness  - Note: z0b=0.03*h0b+0.1*nu/ustar
++! z0s_min      [float, unit = m]
++!                minimum value of z0s, default value if charnock=.false.
++! charnock     [bool]
++!                adaptation of Charnock 1955 formula used
++! charnock_val [float]
++!                emp. constant in Charnock 1955 formula (default = 1400.)
++!                This variable is only used if charnock = True
++! ddu          [float]
++!                grid zooming (surface), 0: no zooming; > 3 strong zooming
++!                This variable is only used if grid_method = 0
++! ddl          [float]
++!                grid zooming (bottom), 0: no zooming; > 3 strong zooming
++!                This variable is only used if grid_method = 0
++! grid_method  [integer]
++!                type of vertical grid
++!                0: zooming of grid with ddl, ddu >= 0
++!                1: sigma grid (relative depth fractions) read from file
++!                2: cartesian grid (fixed layer height in m) read from file
++!                3: adaptive grid
++! c1ad         [float]
++!                weighting factor for adaptation to buoyancy frequency
++!                This variable is only used if grid_method = 3
++! c2ad         [float]
++!                weighting factor for adaptation to shear frequency
++!                This variable is only used if grid_method = 3
++! c3ad         [float]
++!                weighting factor for adaptation to surface distance
++!                This variable is only used if grid_method = 3
++! c4ad         [float]
++!                weighting factor for adaptation to background
++!                This variable is only used if grid_method = 3
++! Tgrid        [float]
++!                grid adaptation time scale
++!                This variable is only used if grid_method = 3
++! NNnorm       [float]
++!                normalisation factor for adaptation to buoyancy frequency
++!                This variable is only used if grid_method = 3
++! SSnorm       [float]
++!                normalisation factor for adaptation to shear frequency
++!                This variable is only used if grid_method = 3
++! dsurf        [float]
++!                normalisation factor for adaptation to surface distance
++!                This variable is only used if grid_method = 3
++! dtgrid       [float]
++!                time step for grid adaptation (must be fraction of dt)
++!                This variable is only used if grid_method = 3
++! grid_file    [file path]
++!                file for sigma or cartesian grid. the first line gives the
++!                  number of layers, the following lines give fractions or layer
++!                  heights in m from the surface down to the bottom.
++!                This variable is only used if (grid_method = 1 or grid_method =
++!                  2)
++! gravity      [float, unit = m/s^2]
++!                gravitational acceleration
++! rho_0        [float, unit = kg/m^3]
++!                reference density
++! cp           [float, unit = J/kg/K]
++!                specific heat of sea water
++! avmolu       [float, unit = m^2/s]
++!                molecular viscosity for momentum
++! avmolt       [float, unit = m^2/s]
++!                molecular diffusity for temperature
++! avmols       [float, unit = m^2/s]
++!                molecular diffusity for salinity
++! MaxItz0b     [integer, minimum = 1, maximum = 1000]
++!                max # of iterations for z0b as function of u_taub
++! no_shear     [bool]
++!                .true.: shear production term P is set to zero
++!-------------------------------------------------------------------------------
+ !  the 'meanflow' namelist
+-   REALTYPE, public                    :: h0b
+-   REALTYPE, public                    :: z0s_min
+-   logical,  public                    :: charnock
+-   REALTYPE, public                    :: charnock_val
+-   REALTYPE, public                    :: ddu
+-   REALTYPE, public                    :: ddl
+-   integer,  public                    :: grid_method
+-   REALTYPE, public                    :: c1ad
+-   REALTYPE, public                    :: c2ad
+-   REALTYPE, public                    :: c3ad
+-   REALTYPE, public                    :: c4ad
+-   REALTYPE, public                    :: Tgrid
+-   REALTYPE, public                    :: NNnorm
+-   REALTYPE, public                    :: SSnorm
+-   REALTYPE, public                    :: dsurf
+-   REALTYPE, public                    :: dtgrid
+-   character(LEN=PATH_MAX), public     :: grid_file
+-   REALTYPE, public                    :: gravity
+-   REALTYPE, public                    :: rho_0
+-   REALTYPE, public                    :: cp
+-   REALTYPE, public                    :: avmolu
+-   REALTYPE, public                    :: avmolT
+-   REALTYPE, public                    :: avmolS
+-   integer,  public                    :: MaxItz0b
+-   logical,  public                    :: no_shear
++   
++   REALTYPE, public                    :: h0b          = 0.05_8
++   REALTYPE, public                    :: z0s_min      = 0.02_8
++   logical,  public                    :: charnock     = .false.
++   REALTYPE, public                    :: charnock_val = 1400._8
++   REALTYPE, public                    :: ddu          = _ZERO_
++   REALTYPE, public                    :: ddl          = _ZERO_
++   integer,  public                    :: grid_method  = 1
++   REALTYPE, public                    :: c1ad         = 0.8_8
++   REALTYPE, public                    :: c2ad         = 0.0_8
++   REALTYPE, public                    :: c3ad         = 0.1_8
++   REALTYPE, public                    :: c4ad         = 0.1_8
++   REALTYPE, public                    :: Tgrid        = 3600._8
++   REALTYPE, public                    :: NNnorm       = 0.2_8
++   REALTYPE, public                    :: SSnorm       = 0.2_8
++   REALTYPE, public                    :: dsurf        = 10._8
++   REALTYPE, public                    :: dtgrid       = 5._8
++   character(LEN=PATH_MAX), public     :: grid_file    = 'grid.dat'
++   REALTYPE, public                    :: gravity      = 9.81_8
++   REALTYPE, public                    :: rho_0        = 1027._8
++   REALTYPE, public                    :: cp           = 3985._8
++   REALTYPE, public                    :: avmolu       = 1.3e-6_8
++   REALTYPE, public                    :: avmolT       = 1.4e-7_8
++   REALTYPE, public                    :: avmolS       = 1.1e-9_8
++   integer,  public                    :: MaxItz0b     = 10
++   logical,  public                    :: no_shear     = .false.
+ 
+ !  the roughness lengths
+-   REALTYPE, public                    :: z0b,z0s,za
++   REALTYPE, public                    :: z0b, z0s, za
+ 
+ !  the coriolis parameter
+    REALTYPE, public                    :: cori
+@@ -112,7 +187,7 @@
+    REALTYPE, public                    :: runtimeu, runtimev
+ !
+ ! !DEFINED PARAMETERS:
+-   REALTYPE, public, parameter         :: pi=3.141592654
++   REALTYPE, public, parameter         :: pi=3.14159265359
+ !
+ ! !REVISION HISTORY:
+ !  Original author(s): Karsten Bolding & Hans Burchard
+@@ -154,8 +229,6 @@
+ !
+ !EOP
+ !
+-! !LOCAL VARIABLES:
+-   integer                   :: rc
+ 
+    namelist /meanflow/  h0b,z0s_min,charnock,charnock_val,ddu,ddl,     &
+                         grid_method,c1ad,c2ad,c3ad,c4ad,Tgrid,NNnorm,  &
+@@ -166,42 +239,52 @@
+ !BOC
+    LEVEL1 'init_meanflow'
+ 
+-!  Initialize namelist variables with default values.
+-!  Note that namelists should preferably contain all variables,
+-!  which implies that all defaults defined below will be overwritten.
+-   h0b          = 0.05
+-   z0s_min      = 0.02
+-   charnock     = .false.
+-   charnock_val = 1400.
+-   ddu          = _ZERO_
+-   ddl          = _ZERO_
+-   grid_method  = 1
+-   c1ad         = 0.8
+-   c2ad         = 0.0
+-   c3ad         = 0.1
+-   c4ad         = 0.1
+-   Tgrid        = 3600.
+-   NNnorm       = 0.2
+-   SSnorm       = 0.2
+-   dsurf        = 10.0
+-   dtgrid       = 5.
+-   grid_file    = 'grid.dat'
+-   gravity      = 9.81
+-   rho_0        = 1027.
+-   cp           = 3985.
+-   avmolu       = 1.3e-6
+-   avmolT       = 1.4e-7
+-   avmolS       = 1.1e-9
+-   MaxItz0b     = 10
+-   no_shear     = .false.
+-
+-!  Read namelist from file.
++   !  Read namelist from file.
+    open(namlst,file=fn,status='old',action='read',err=80)
+    LEVEL2 'reading meanflow namelists..'
+    read(namlst,nml=meanflow,err=81)
+    close (namlst)
+    LEVEL2 'done.'
+ 
++   call post_init_meanflow(nlev,latitude)
++   return
++
++80 FATAL 'I could not open: ',trim(fn)
++   stop 'init_meanflow'
++81 FATAL 'I could not read "meanflow" namelist'
++   stop 'init_meanflow'
++ end subroutine init_meanflow
++!EOC
++
++!-----------------------------------------------------------------------
++!BOP
++!
++! !IROUTINE: Allocates the mean flow variables
++!
++! !INTERFACE:
++ subroutine post_init_meanflow(nlev,latitude)
++!
++! !DESCRIPTION:
++!  Allocates memory and initialises everything related
++!  to the `meanflow' component of GOTM.
++!
++! !USES:
++   IMPLICIT NONE
++!
++! !INPUT PARAMETERS:
++   integer, intent(in)                      :: nlev
++   REALTYPE, intent(in)                     :: latitude
++!
++! !REVISION HISTORY:
++!  Original author(s): Karsten Bolding & Hans Burchard
++!
++!  See log for the meanflow module
++!
++!EOP
++!
++! !LOCAL VARIABLES:
++   integer                   :: rc
++   
+ !  Important: we do not initialize "depth" here, because it has already been initialized by gotm.F90.
+ 
+ !  Initialize bottom and surface stress to zero
+@@ -363,12 +446,8 @@
+    LEVEL2 'done.'
+ 
+    return
+-80 FATAL 'I could not open: ',trim(fn)
+-   stop 'init_meanflow'
+-81 FATAL 'I could not read "meanflow" namelist'
+-   stop 'init_meanflow'
+ 
+-   end subroutine init_meanflow
++   end subroutine post_init_meanflow
+ !EOC
+ 
+ !-----------------------------------------------------------------------
+Only in ../../GOTM-5.2.1/src/meanflow: meanflow.F90~
+Only in ../../GOTM-5.2.1/src/meanflow: temperature.F90~
+diff -ur ./meanflow/uequation.F90 ../../GOTM-5.2.1/src/meanflow/uequation.F90
+--- ./meanflow/uequation.F90	2018-04-30 09:45:54.000000000 +0200
++++ ../../GOTM-5.2.1/src/meanflow/uequation.F90	2020-04-22 12:19:21.670138867 +0200
+@@ -165,7 +165,7 @@
+       Lsour(i) = _ZERO_
+ 
+ !     add external and internal pressure gradients
+-      Qsour(i) = Qsour(i) - gravity*dzetadx + idpdx(i)
++      Qsour(i) = Qsour(i) - gravity*dzetadx ! + idpdx(i)
+ 
+ #ifdef SEAGRASS
+       Lsour(i) = -drag(i)/h(i)*sqrt(u(i)*u(i)+v(i)*v(i))
+Only in ../../GOTM-5.2.1/src/meanflow: uequation.F90~
+diff -ur ./meanflow/vequation.F90 ../../GOTM-5.2.1/src/meanflow/vequation.F90
+--- ./meanflow/vequation.F90	2018-04-30 09:45:54.000000000 +0200
++++ ../../GOTM-5.2.1/src/meanflow/vequation.F90	2020-04-22 12:19:35.198207901 +0200
+@@ -143,7 +143,7 @@
+       Lsour(i) = _ZERO_
+ 
+ !     add external and internal pressure gradients
+-      Qsour(i) = Qsour(i) - gravity*dzetady + idpdy(i)
++      Qsour(i) = Qsour(i) - gravity*dzetady ! + idpdy(i)
+ 
+ #ifdef SEAGRASS
+       Lsour(i) = -drag(i)/h(i)*sqrt(u(i)*u(i)+v(i)*v(i))
+Only in ../../GOTM-5.2.1/src/meanflow: vequation.F90~
+diff -ur ./observations/observations.F90 ../../GOTM-5.2.1/src/observations/observations.F90
+--- ./observations/observations.F90	2018-04-30 09:45:54.000000000 +0200
++++ ../../GOTM-5.2.1/src/observations/observations.F90	2020-04-23 13:24:09.735392847 +0200
+@@ -74,7 +74,7 @@
+    REALTYPE, public, target                            :: w_adv,w_height
+ 
+ !  Parameters for water classification - default Jerlov type I
+-   REALTYPE, public, target                            :: A,g1,g2
++   REALTYPE, public, target                            :: A = 0.7_8, g1 = 0.40_8, g2 = 8.0_8
+ 
+ !------------------------------------------------------------------------------
+ !
+@@ -84,108 +84,112 @@
+ !------------------------------------------------------------------------------
+ 
+ !  Salinity profile(s)
+-   integer, public           :: s_prof_method
+-   integer, public           :: s_analyt_method
+-   character(LEN=PATH_MAX)   :: s_prof_file
+-   REALTYPE                  :: z_s1,s_1,z_s2,s_2
+-   REALTYPE                  :: s_obs_NN
+-   REALTYPE                  :: SRelaxTauM
+-   REALTYPE                  :: SRelaxTauS
+-   REALTYPE                  :: SRelaxTauB
+-   REALTYPE                  :: SRelaxSurf
+-   REALTYPE                  :: SRelaxBott
++   integer, public           :: s_prof_method     = 0
++   integer, public           :: s_analyt_method   = 1
++   character(LEN=PATH_MAX)   :: s_prof_file       = 'sprof.dat'
++   REALTYPE                  :: &
++        z_s1 = _ZERO_, s_1 = _ZERO_, z_s2 = _ZERO_, s_2 = _ZERO_
++   REALTYPE                  :: s_obs_NN   = _ZERO_
++   REALTYPE                  :: SRelaxTauM = _ZERO_
++   REALTYPE                  :: SRelaxTauS = _ZERO_
++   REALTYPE                  :: SRelaxTauB = _ZERO_
++   REALTYPE                  :: SRelaxSurf = _ZERO_
++   REALTYPE                  :: SRelaxBott = _ZERO_
+ 
+ !  Temperature profile(s)
+-   integer, public           :: t_prof_method
+-   integer, public           :: t_analyt_method
+-   character(LEN=PATH_MAX)   :: t_prof_file
+-   REALTYPE                  :: z_t1,t_1,z_t2,t_2
+-   REALTYPE                  :: t_obs_NN
+-   REALTYPE                  :: TRelaxTauM
+-   REALTYPE                  :: TRelaxTauS
+-   REALTYPE                  :: TRelaxTauB
+-   REALTYPE                  :: TRelaxSurf
+-   REALTYPE                  :: TRelaxBott
++   integer, public           :: t_prof_method      = 0
++   integer, public           :: t_analyt_method    = 1
++   character(LEN=PATH_MAX)   :: t_prof_file        = 'tprof.dat'
++   REALTYPE                  :: &
++        z_t1 = _ZERO_, t_1 = _ZERO_, z_t2 = _ZERO_, t_2 = _ZERO_
++   REALTYPE                  :: t_obs_NN   = _ZERO_
++   REALTYPE                  :: TRelaxTauM = _ZERO_
++   REALTYPE                  :: TRelaxTauS = _ZERO_
++   REALTYPE                  :: TRelaxTauB = _ZERO_
++   REALTYPE                  :: TRelaxSurf = _ZERO_
++   REALTYPE                  :: TRelaxBott = _ZERO_
+ 
+ !  Oxygen profile(s)
+-   integer, public           :: o2_prof_method
+-   integer, public           :: o2_units
+-   character(LEN=PATH_MAX)   :: o2_prof_file
++   integer, public           :: o2_prof_method = 0
++   integer, public           :: o2_units       = 1
++   character(LEN=PATH_MAX)   :: o2_prof_file   = 'o2.dat'
+ 
+ !  External pressure - 'press' namelist
+-   integer, public           :: ext_press_method,ext_press_mode
+-   character(LEN=PATH_MAX)   :: ext_press_file
+-   REALTYPE, public          :: PressConstU
+-   REALTYPE, public          :: PressConstV
+-   REALTYPE, public          :: PressHeight
+-   REALTYPE, public          :: PeriodM
+-   REALTYPE, public          :: AmpMu
+-   REALTYPE, public          :: AmpMv
+-   REALTYPE, public          :: PhaseMu
+-   REALTYPE, public          :: PhaseMv
+-   REALTYPE, public          :: PeriodS
+-   REALTYPE, public          :: AmpSu
+-   REALTYPE, public          :: AmpSv
+-   REALTYPE, public          :: PhaseSu
+-   REALTYPE, public          :: PhaseSv
++   integer, public           :: ext_press_method = 0, ext_press_mode = 0
++   character(LEN=PATH_MAX)   :: ext_press_file = ''
++   REALTYPE, public          :: PressConstU    = _ZERO_
++   REALTYPE, public          :: PressConstV    = _ZERO_
++   REALTYPE, public          :: PressHeight    = _ZERO_
++   REALTYPE, public          :: PeriodM        = 44714._8
++   REALTYPE, public          :: AmpMu          = _ZERO_
++   REALTYPE, public          :: AmpMv          = _ZERO_
++   REALTYPE, public          :: PhaseMu        = _ZERO_
++   REALTYPE, public          :: PhaseMv        = _ZERO_
++   REALTYPE, public          :: PeriodS        = 43200._8
++   REALTYPE, public          :: AmpSu          = _ZERO_
++   REALTYPE, public          :: AmpSv          = _ZERO_
++   REALTYPE, public          :: PhaseSu        = _ZERO_
++   REALTYPE, public          :: PhaseSv        = _ZERO_
+ 
+ !  Internal pressure - 'internal_pressure' namelist
+-   integer, public           :: int_press_method
+-   character(LEN=PATH_MAX)   :: int_press_file
+-   REALTYPE, public          :: const_dsdx
+-   REALTYPE, public          :: const_dsdy
+-   REALTYPE, public          :: const_dtdx
+-   REALTYPE, public          :: const_dtdy
+-   logical, public           :: s_adv
+-   logical, public           :: t_adv
++   integer, public           :: int_press_method = 0
++   character(LEN=PATH_MAX)   :: int_press_file   = ''
++   REALTYPE, public          :: const_dsdx       = _ZERO_
++   REALTYPE, public          :: const_dsdy       = _ZERO_
++   REALTYPE, public          :: const_dtdx       = _ZERO_
++   REALTYPE, public          :: const_dtdy       = _ZERO_
++   logical, public           :: s_adv            = .false.
++   logical, public           :: t_adv            = .false.
+ 
+ !  Light extinction - the 'extinct' namelist
+-   integer                   :: extinct_method
+-   character(LEN=PATH_MAX)   :: extinct_file
++   integer                   :: extinct_method   = 1
++   character(LEN=PATH_MAX)   :: extinct_file     = 'extinction.dat'
++   ! extinct_method=7 - user defined
++   ! default values are from Lago Maggiore, Stips
+ 
+ !  Vertical advection velocity - 'w_advspec' namelist
+-   integer, public           :: w_adv_method
+-   REALTYPE, public          :: w_adv0
+-   REALTYPE, public          :: w_adv_height0
+-   character(LEN=PATH_MAX)   :: w_adv_file
+-   integer, public           :: w_adv_discr
++   integer, public           :: w_adv_method   = 0
++   REALTYPE, public          :: w_adv0         = _ZERO_
++   REALTYPE, public          :: w_adv_height0  = _ZERO_
++   character(LEN=PATH_MAX)   :: w_adv_file     = 'w_adv.dat'
++   integer, public           :: w_adv_discr    = 1
+ 
+ !  Sea surface elevations - 'zetaspec' namelist
+-   integer,public            :: zeta_method
+-   character(LEN=PATH_MAX)   :: zeta_file
+-   REALTYPE, public          :: zeta_scale
+-   REALTYPE, public          :: zeta_offset
+-   REALTYPE, public          :: zeta_0
+-   REALTYPE, public          :: period_1
+-   REALTYPE, public          :: amp_1
+-   REALTYPE, public          :: phase_1
+-   REALTYPE, public          :: period_2
+-   REALTYPE, public          :: amp_2
+-   REALTYPE, public          :: phase_2
++   integer,public            :: zeta_method = 0
++   character(LEN=PATH_MAX)   :: zeta_file   = 'zeta.dat'
++   REALTYPE, public          :: zeta_scale  = _ONE_
++   REALTYPE, public          :: zeta_offset = _ZERO_
++   REALTYPE, public          :: zeta_0      = _ZERO_
++   REALTYPE, public          :: period_1    = 44714._8
++   REALTYPE, public          :: amp_1       = _ZERO_
++   REALTYPE, public          :: phase_1     = _ZERO_
++   REALTYPE, public          :: period_2    = 43200._8
++   REALTYPE, public          :: amp_2       = _ZERO_
++   REALTYPE, public          :: phase_2     = _ZERO_
+ 
+ !  Wind waves - 'wave_nml' namelist
+-   integer,public            :: wave_method
+-   character(LEN=PATH_MAX)   :: wave_file
+-   REALTYPE, public          :: Hs
+-   REALTYPE, public          :: Tz
+-   REALTYPE, public          :: phiw
++   integer,public            :: wave_method = 0
++   character(LEN=PATH_MAX)   :: wave_file   = 'wave.dat'
++   REALTYPE, public          :: Hs          = _ZERO_
++   REALTYPE, public          :: Tz          = _ZERO_
++   REALTYPE, public          :: phiw        = _ZERO_
+ 
+ !  Observed velocity profile profiles - typically from ADCP
+-   integer                   :: vel_prof_method
+-   CHARACTER(LEN=PATH_MAX)   :: vel_prof_file
+-   REALTYPE, public          :: vel_relax_tau
+-   REALTYPE, public          :: vel_relax_ramp
++   integer                   :: vel_prof_method = 0
++   CHARACTER(LEN=PATH_MAX)   :: vel_prof_file   = 'velprof.dat'
++   REALTYPE, public          :: vel_relax_tau   = 3600._8
++   REALTYPE, public          :: vel_relax_ramp  = 86400._8
+ 
+ !  Observed dissipation profiles
+-   integer                   :: e_prof_method
+-   REALTYPE                  :: e_obs_const
+-   CHARACTER(LEN=PATH_MAX)   :: e_prof_file
++   integer                   :: e_prof_method = 0
++   REALTYPE                  :: e_obs_const   = 1.e-12_8
++   CHARACTER(LEN=PATH_MAX)   :: e_prof_file   = 'eprof.dat'
+ 
+ !  Buoyancy - 'bprofile' namelist
+-   REALTYPE, public          :: b_obs_surf,b_obs_NN
+-   REALTYPE, public          :: b_obs_sbf
++   REALTYPE, public          :: b_obs_surf = _ZERO_, b_obs_NN = _ZERO_
++   REALTYPE, public          :: b_obs_sbf = _ZERO_
+ 
+-   REALTYPE,public, parameter:: pi=3.141592654d0
++   REALTYPE,public, parameter:: pi = 3.14159265359d0
+ 
+ ! !DEFINED PARAMETERS:
+ 
+@@ -302,121 +306,6 @@
+ !BOC
+    LEVEL1 'init_observations'
+ 
+-!  Salinity profile(s)
+-   s_prof_method=0
+-   s_analyt_method=1
+-   s_prof_file='sprof.dat'
+-   z_s1 = _ZERO_
+-   s_1 = _ZERO_
+-   z_s2 = _ZERO_
+-   s_2 = _ZERO_
+-   s_obs_NN = _ZERO_
+-   SRelaxTauM=_ZERO_
+-   SRelaxTauS=_ZERO_
+-   SRelaxTauB=_ZERO_
+-   SRelaxSurf=_ZERO_
+-   SRelaxBott=_ZERO_
+-
+-!  Temperature profile(s)
+-   t_prof_method=0
+-   t_analyt_method=1
+-   t_prof_file='tprof.dat'
+-   z_t1 = _ZERO_
+-   t_1 = _ZERO_
+-   z_t2 = _ZERO_
+-   t_2 = _ZERO_
+-   t_obs_NN = _ZERO_
+-   TRelaxTauM=_ZERO_
+-   TRelaxTauS=_ZERO_
+-   TRelaxTauB=_ZERO_
+-   TRelaxSurf=_ZERO_
+-   TRelaxBott=_ZERO_
+-
+-!  Oxygen profile(s)
+-   o2_prof_method=0
+-   o2_units=1
+-   o2_prof_file='o2.dat'
+-
+-!  External pressure - 'press' namelist
+-   ext_press_method=0
+-   ext_press_mode=0
+-   ext_press_file=''
+-   PressConstU=_ZERO_
+-   PressConstV=_ZERO_
+-   PressHeight=_ZERO_
+-   PeriodM=44714.
+-   AmpMu=_ZERO_
+-   AmpMv=_ZERO_
+-   PhaseMu=_ZERO_
+-   PhaseMv=_ZERO_
+-   PeriodS=43200.
+-   AmpSu=_ZERO_
+-   AmpSv=_ZERO_
+-   PhaseSu=_ZERO_
+-   PhaseSv=_ZERO_
+-
+-!  Internal pressure - 'internal_pressure' namelist
+-   int_press_method=0
+-   int_press_file=''
+-   const_dsdx=_ZERO_
+-   const_dsdy=_ZERO_
+-   const_dtdx=_ZERO_
+-   const_dtdy=_ZERO_
+-   s_adv=.false.
+-   t_adv=.false.
+-
+-!  Light extinction - the 'extinct' namelist
+-   extinct_method=1
+-   extinct_file='extinction.dat'
+-   ! extinct_method=7 - user defined
+-   ! default values are from Lago Maggiore, Stips
+-   A=0.7
+-   g1=0.40
+-   g2=8.0
+-
+-!  Vertical advection velocity - 'w_advspec' namelist
+-   w_adv_method=0
+-   w_adv0=_ZERO_
+-   w_adv_height0=_ZERO_
+-   w_adv_file='w_adv.dat'
+-   w_adv_discr=1
+-
+-!  Sea surface elevations - 'zetaspec' namelist
+-   zeta_method=0
+-   zeta_file='zeta.dat'
+-   zeta_scale=_ONE_
+-   zeta_offset=_ZERO_
+-   zeta_0=_ZERO_
+-   period_1=44714.
+-   amp_1=_ZERO_
+-   phase_1=_ZERO_
+-   period_2=43200.
+-   amp_2=_ZERO_
+-   phase_2=_ZERO_
+-
+-!  Wind waves - 'wave_nml' namelist
+-   wave_method=0
+-   wave_file='wave.dat'
+-   Hs=_ZERO_
+-   Tz=_ZERO_
+-   phiw=_ZERO_
+-
+-!  Observed velocity profile profiles - typically from ADCP
+-   vel_prof_method=0
+-   vel_prof_file='velprof.dat'
+-   vel_relax_tau=3600.
+-   vel_relax_ramp=86400.
+-
+-!  Observed dissipation profiles
+-   e_prof_method=0
+-   e_obs_const=1.e-12
+-   e_prof_file='eprof.dat'
+-
+-!  Buoyancy - 'bprofile' namelist
+-   b_obs_surf=_ZERO_
+-   b_obs_NN=_ZERO_
+-   b_obs_sbf=_ZERO_
+-
+    open(namlst,file=fn,status='old',action='read',err=80)
+    read(namlst,nml=sprofile,err=81)
+    read(namlst,nml=tprofile,err=82)
+Only in ../../GOTM-5.2.1/src/observations: observations.F90~
+Only in ../../GOTM-5.2.1/src/observations: toto.c
+Only in ../../GOTM-5.2.1/src/observations: toto.F90
+Only in ../../GOTM-5.2.1/src/observations: toto.F90~
+diff -ur ./turbulence/kpp.F90 ../../GOTM-5.2.1/src/turbulence/kpp.F90
+--- ./turbulence/kpp.F90	2018-04-30 09:45:54.000000000 +0200
++++ ../../GOTM-5.2.1/src/turbulence/kpp.F90	2020-04-26 11:50:47.099275148 +0200
+@@ -8,7 +8,7 @@
+    module kpp
+ !
+ ! !DESCRIPTION:
+-! This implentation of the KPP turbulence parameterisation is based on the
++! This implementation of the KPP turbulence parameterisation is based on the
+ ! publications of \cite{Largeetal94} and \cite{Durskietal2004}.
+ ! The general expression for the turbulent fluxes used in the KPP model is identical to
+ ! that suggested in \eq{fluxes}. It assumes that the turbulent flux is the sum of a
+@@ -343,16 +343,16 @@
+    REALTYPE                              ::    gorho0
+ 
+ !  critical bulk Richardson number
+-   REALTYPE                              ::    Ric
++   REALTYPE, public                      ::    Ric
+ 
+ !  compute surface and bottom BBL
+-   logical                               ::    kpp_sbl,kpp_bbl
++   logical, public                       ::    kpp_sbl,kpp_bbl
+ 
+ !  compute internal mixing
+-   logical                               ::    kpp_interior
++   logical, public                       ::    kpp_interior
+ 
+ !  use clipping of MLD at Ekman and Monin-Oboukhov scale
+-   logical                               ::    clip_mld
++   logical, public                       ::    clip_mld
+ 
+ !  positions of grid faces and centers
+    REALTYPE, dimension(:), allocatable   ::    z_w,z_r
+@@ -431,17 +431,19 @@
+ !-----------------------------------------------------------------------
+ !BOC
+ 
+-   LEVEL1 'init_kpp...'
++   if (namlst.ge.0) then
++      LEVEL1 'init_kpp...'
+ 
+-   ! read the variables from the namelist file
+-   open(namlst,file=fn,status='old',action='read',err=80)
++      ! read the variables from the namelist file
++      open(namlst,file=fn,status='old',action='read',err=80)
+ 
+-   LEVEL2 'reading kpp namelist...'
++      LEVEL2 'reading kpp namelist...'
+ 
+-   read(namlst,nml=kpp,err=81)
+-   close (namlst)
++      read(namlst,nml=kpp,err=81)
++      close (namlst)
+ 
+-   LEVEL2 'done.'
++      LEVEL2 'done.'
++   end if
+ 
+ !  allocate memory for variables defined in other modules
+ !
+Only in ../../GOTM-5.2.1/src/turbulence: kpp.F90~
+diff -ur ./turbulence/turbulence.F90 ../../GOTM-5.2.1/src/turbulence/turbulence.F90
+--- ./turbulence/turbulence.F90	2018-04-30 09:45:54.000000000 +0200
++++ ../../GOTM-5.2.1/src/turbulence/turbulence.F90	2020-04-26 11:28:07.026740388 +0200
+@@ -36,7 +36,7 @@
+    private
+ !
+ ! !PUBLIC MEMBER FUNCTIONS:
+-   public init_turbulence, do_turbulence
++   public post_init_turbulence, init_turbulence, do_turbulence, report_model
+    public k_bc,q2over2_bc,epsilon_bc,psi_bc,q2l_bc
+    public clean_turbulence
+ #ifdef _PRINTSTATE_
+@@ -99,154 +99,459 @@
+ # endif
+ 
+ !  some additional constants
+-   REALTYPE, public                              :: cm0,cmsf,cde,rcm, b1
++   REALTYPE, public                              :: &
++        cm0 = _ZERO_, cmsf = _ZERO_, cde = _ZERO_, rcm = _ZERO_, b1 = _ZERO_
+ 
+ !  Prandtl-number in neutrally stratified flow
+-   REALTYPE, public                              :: Prandtl0
++   REALTYPE, public                              :: &
++        Prandtl0 = _ZERO_
+ 
+ !  parameters for wave-breaking
+-   REALTYPE, public                              :: craig_m,sig_e0
++   REALTYPE, public                              :: &
++        craig_m = _ZERO_, sig_e0 = _ZERO_
+ 
++!-------------------------------------------------------------------------------
++! general
++!-------------------------------------------------------------------------------
++! turb_method      [integer]
++!                    type of turbulence closure
++!                    0: convective adjustment
++!                    1: analytical eddy visc. and diff. profiles, not coded yet
++!                    2: turbulence Model calculating TKE and length scale
++!                    3: second-order model
++!                    99: KPP model
++! tke_method       [integer]
++!                    type of equation for TKE
++!                    1: algebraic equation
++!                    2: dynamic equation (k-epsilon style)
++!                    3: dynamic equation (Mellor-Yamada style)
++!                    This variable is only used if (turb_method = 2 or
++!                      turb_method = 3)
++! len_scale_method [integer]
++!                    type of model for dissipative length scale
++!                    1: parabolic shape
++!                    2: triangle shape
++!                    3: Xing and Davies [1995]
++!                    4: Robert and Ouellet [1987]
++!                    5: Blackadar (two boundaries) [1962]
++!                    6: Bougeault and Andre [1986]
++!                    7: Eifler and Schrimpf (ISPRAMIX) [1992]
++!                    8: dynamic dissipation rate equation
++!                    9: dynamic Mellor-Yamada q^2l-equation
++!                    10: generic length scale (GLS)
++!                    This variable is only used if (turb_method = 2 or
++!                      turb_method = 3)
++! stab_method      [integer]
++!                    type of stability function
++!                    1: constant stability functions
++!                    2: Munk and Anderson [1954]
++!                    3: Schumann and Gerz [1995]
++!                    4: Eifler and Schrimpf [1992]
++!                    This variable is only used if turb_method = 2
++!-------------------------------------------------------------------------------
+ !  the 'turbulence' namelist
+-   integer, public                               :: turb_method
+-   integer, public                               :: tke_method
+-   integer, public                               :: len_scale_method
+-   integer, public                               :: stab_method
+-
++   
++   integer, public                               :: turb_method      = 2
++   integer, public                               :: tke_method       = 2
++   integer, public                               :: len_scale_method = 8
++   integer, public                               :: stab_method      = 3
++
++!-------------------------------------------------------------------------------
++! boundary conditions
++!-------------------------------------------------------------------------------
++! k_ubc    [integer]
++!            upper boundary condition for k-equation
++!            0: prescribed BC
++!            1: flux BC
++! k_lbc    [integer]
++!            lower boundary condition for k-equation
++!            0: prescribed BC
++!            1: flux BC
++! psi_ubc  [integer]
++!            upper boundary condition for the length-scale equation (e.g.
++!              epsilon, kl, omega, GLS)
++!            0: prescribed BC
++!            1: flux BC
++! psi_lbc  [integer]
++!            lower boundary condition for the length-scale equation (e.g.
++!              epsilon, kl, omega, GLS)
++!            0: prescribed BC
++!            1: flux BC
++! ubc_type [integer]
++!            type of upper boundary layer
++!            0: viscous sublayer (not yet impl.)
++!            1: logarithmic law of the wall
++!            2: tke-injection (breaking waves)
++! lbc_type [integer]
++!            type of lower boundary layer
++!            0: viscous sublayer (not yet impl.)
++!            1: logarithmic law of the wall
++!-------------------------------------------------------------------------------
+ !  the 'bc' namelist
+-   integer, public                               :: k_ubc
+-   integer, public                               :: k_lbc
+-   integer, public                               :: kb_ubc
+-   integer, public                               :: kb_lbc
+-   integer, public                               :: psi_ubc
+-   integer, public                               :: psi_lbc
+-   integer, public                               :: ubc_type
+-   integer, public                               :: lbc_type
+ 
++   integer, public                               :: k_ubc    = 1   
++   integer, public                               :: k_lbc    = 1      
++   integer, public                               :: kb_ubc   = 1
++   integer, public                               :: kb_lbc   = 1
++   integer, public                               :: psi_ubc  = 1
++   integer, public                               :: psi_lbc  = 1
++   integer, public                               :: ubc_type = 1
++   integer, public                               :: lbc_type = 1
++
++!-------------------------------------------------------------------------------
++! turbulence parameters
++!-------------------------------------------------------------------------------
++! cm0_fix       [float]
++!                 value of cm0
++!                 This variable is only used if /gotmturb/turbulence/turb_method
++!                   = 2
++! Prandtl0_fix  [float]
++!                 value of the turbulent Prandtl-number
++!                 This variable is only used if /gotmturb/turbulence/turb_method
++!                   = 2
++! cw            [float]
++!                 constant of the wave-breaking model (Craig & Banner (1994) use
++!                   cw=100)
++! compute_kappa [bool]
++!                 compute von Karman constant from model parameters
++! kappa         [float]
++!                 the desired von Karman constant
++!                 This variable is only used if compute_kappa = True
++! compute_c3    [bool]
++!                 compute c3 (E3 for Mellor-Yamada) for given Ri_st
++! Ri_st         [float]
++!                 the desired steady-state Richardson number
++!                 This variable is only used if compute_c3 = True
++! length_lim    [bool]
++!                 apply length scale limitation (see Galperin et al. 1988)
++! galp          [float]
++!                 coef. for length scale limitation
++!                 This variable is only used if length_lim = True
++! const_num     [float, unit = m^2/s]
++!                 minimum eddy diffusivity
++!                 This variable is only used if /gotmturb/turbulence/turb_method
++!                   = 0
++! const_nuh     [float, unit = m^2/s]
++!                 minimum heat diffusivity
++!                 This variable is only used if /gotmturb/turbulence/turb_method
++!                   = 0
++! k_min         [float, unit = m^2/s^2]
++!                 minimum TKE
++! eps_min       [float, unit = m^2/s^3]
++!                 minimum dissipation rate
++! kb_min        [float, unit = m^2/s^4]
++!                 minimum buoyancy variance
++! epsb_min      [float, unit = m^2/s^5]
++!                 minimum buoyancy variance destruction rate
++!-------------------------------------------------------------------------------
+ !  the 'turb_param' namelist
+-   REALTYPE, public                              :: cm0_fix
+-   REALTYPE, public                              :: Prandtl0_fix
+-   REALTYPE, public                              :: cw
+-   logical                                       :: compute_kappa
+-   REALTYPE, public                              :: kappa
+-   logical                                       :: compute_c3
+-   REALTYPE                                      :: ri_st
+-   logical,  public                              :: length_lim
+-   REALTYPE, public                              :: galp
+-   REALTYPE, public                              :: const_num
+-   REALTYPE, public                              :: const_nuh
+-   REALTYPE, public                              :: k_min
+-   REALTYPE, public                              :: eps_min
+-   REALTYPE, public                              :: kb_min
+-   REALTYPE, public                              :: epsb_min
+ 
++   REALTYPE, public                              :: cm0_fix       = 0.5477_8
++   REALTYPE, public                              :: Prandtl0_fix  = 0.74_8
++   REALTYPE, public                              :: cw            = 100.0_8
++   logical,  public                              :: compute_kappa = .false.
++   REALTYPE, public                              :: kappa         = 0.4_8
++   logical,  public                              :: compute_c3    = .false.
++   REALTYPE, public                              :: ri_st         = 0.25_8
++   logical,  public                              :: length_lim    = .false.
++   REALTYPE, public                              :: galp          = 0.53_8
++   REALTYPE, public                              :: const_num     = 5.0e-4_8
++   REALTYPE, public                              :: const_nuh     = 5.0e-4_8
++   REALTYPE, public                              :: k_min         = 1.0e-8_8
++   REALTYPE, public                              :: eps_min       = 1.0e-12_8
++   REALTYPE, public                              :: kb_min        = 1.0e-8_8
++   REALTYPE, public                              :: epsb_min      = 1.0e-12_8
++
++!-------------------------------------------------------------------------------
++! the generic model (Umlauf & Burchard, J. Mar. Res., 2003)
++!-------------------------------------------------------------------------------
++! compute_param [bool]
++!                 compute the model parameters
++! gen_m         [float]
++!                 exponent for k
++! gen_n         [float]
++!                 exponent for l
++!                 This variable is only used if compute_param = False
++! gen_p         [float]
++!                 exponent for cm0
++!                 This variable is only used if compute_param = False
++! cpsi1         [float]
++!                 emp. coef. cpsi1 in psi equation
++!                 This variable is only used if compute_param = False
++! cpsi2         [float]
++!                 emp. coef. cpsi2 in psi equation
++!                 This variable is only used if compute_param = False
++! cpsi3minus    [float]
++!                 cpsi3 for stable stratification
++!                 This variable is only used if compute_param = False
++! cpsi3plus     [float]
++!                 cpsi3 for unstable stratification
++!                 This variable is only used if compute_param = False
++! sig_kpsi      [float]
++!                 Schmidt number for TKE diffusivity
++!                 This variable is only used if compute_param = False
++! sig_psi       [float]
++!                 Schmidt number for psi diffusivity
++!                 This variable is only used if compute_param = False
++! gen_d         [float]
++!                 gen_d
++!                 This variable is only used if compute_param = False
++! gen_alpha     [float]
++!                 gen_alpha
++!                 This variable is only used if compute_param = False
++! gen_l         [float]
++!                 gen_l
++!                 This variable is only used if compute_param = False
++!-------------------------------------------------------------------------------   
+ !  the 'generic' namelist
+-   logical                                       :: compute_param
+-   REALTYPE, public                              :: gen_m
+-   REALTYPE, public                              :: gen_n
+-   REALTYPE, public                              :: gen_p
+-   REALTYPE, public                              :: cpsi1
+-   REALTYPE, public                              :: cpsi2
+-   REALTYPE, public                              :: cpsi3minus
+-   REALTYPE, public                              :: cpsi3plus
+-   REALTYPE                                      :: sig_kpsi
+-   REALTYPE, public                              :: sig_psi
+-   REALTYPE                                      :: gen_d
+-   REALTYPE                                      :: gen_alpha
+-   REALTYPE                                      :: gen_l
+-
++   
++   logical,  public                              :: compute_param = .false.
++   REALTYPE, public                              :: gen_m         = 1.5_8
++   REALTYPE, public                              :: gen_n         = -1.0_8
++   REALTYPE, public                              :: gen_p         = 3.0_8
++   REALTYPE, public                              :: cpsi1         = 1.44_8
++   REALTYPE, public                              :: cpsi2         = 1.92_8
++   REALTYPE, public                              :: cpsi3minus    = 0.0_8
++   REALTYPE, public                              :: cpsi3plus     = 1.0_8
++   REALTYPE, public                              :: sig_kpsi      = 1.0_8
++   REALTYPE, public                              :: sig_psi       = 1.3_8
++   REALTYPE, public                              :: gen_d         = -1.2_8
++   REALTYPE, public                              :: gen_alpha     = -2.0_8
++   REALTYPE, public                              :: gen_l         = 0.2_8
++
++!-------------------------------------------------------------------------------
++! the k-epsilon model (Rodi 1987)
++!-------------------------------------------------------------------------------
++! ce1      [float]
++!            emp. coef. ce1 in diss. eq.
++! ce2      [float]
++!            emp. coef. ce2 in diss. eq.
++! ce3minus [float]
++!            ce3 for stable stratification
++!            This variable is not used if /gotmturb/turb_param/compute_c3 = True
++! ce3plus  [float]
++!            ce3 for unstable stratification (Rodi 1987: ce3plus=1.0)
++! sig_k    [float]
++!            Schmidt number for TKE diffusivity
++! sig_e    [float]
++!            Schmidt number for diss. diffusivity
++! sig_peps [bool]
++!            if .true. -> the wave breaking parameterisation suggested by
++!              Burchard (JPO 31, 2001, 3133-3145) will be used.
++!-------------------------------------------------------------------------------
+ !  the 'keps' namelist
+-   REALTYPE, public                              :: ce1
+-   REALTYPE, public                              :: ce2
+-   REALTYPE, public                              :: ce3minus
+-   REALTYPE, public                              :: ce3plus
+-   REALTYPE, public                              :: sig_k
+-   REALTYPE, public                              :: sig_e
+-   logical,  public                              :: sig_peps
+-
++   
++   REALTYPE, public                              :: ce1      = 1.44_8
++   REALTYPE, public                              :: ce2      = 1.92_8
++   REALTYPE, public                              :: ce3minus = 0.0_8
++   REALTYPE, public                              :: ce3plus  = 1.0_8
++   REALTYPE, public                              :: sig_k    = 1.0_8
++   REALTYPE, public                              :: sig_e    = 1.3_8
++   logical,  public                              :: sig_peps = .false.
++
++!-------------------------------------------------------------------------------
++! the Mellor-Yamada model (Mellor & Yamada 1982)
++!-------------------------------------------------------------------------------
++! e1         [float]
++!              coef. e1 in MY q**2 l equation
++! e2         [float]
++!              coef. e2 in MY q**2 l equation
++! e3         [float]
++!              coef. e3 in MY q**2 l equation
++! sq         [float]
++!              turbulent diffusivities of q**2 (= 2k)
++! sl         [float]
++!              turbulent diffusivities of q**2 l
++! my_length  [integer]
++!              prescribed barotropic lengthscale in q**2 l equation of MY
++!              1: parabolic
++!              2: triangular
++!              3: lin. from surface
++! new_constr [bool]
++!              stabilisation of Mellor-Yamada stability functions according to
++!                Burchard & Deleersnijder (2001)
++!-------------------------------------------------------------------------------   
+ !  the 'my' namelist
+-   REALTYPE, public                              :: e1
+-   REALTYPE, public                              :: e2
+-   REALTYPE, public                              :: e3
+-   REALTYPE, public                              :: sq
+-   REALTYPE, public                              :: sl
+-   integer,  public                              :: my_length
+-   logical,  public                              :: new_constr
+ 
++   REALTYPE, public                              :: e1         = 1.8_8
++   REALTYPE, public                              :: e2         = 1.33_8
++   REALTYPE, public                              :: e3         = 1.8_8
++   REALTYPE, public                              :: sq         = 0.2_8
++   REALTYPE, public                              :: sl         = 0.2_8
++   integer,  public                              :: my_length  = 1
++   logical,  public                              :: new_constr = .false.
++
++!-------------------------------------------------------------------------------
++! the second-order model
++!-------------------------------------------------------------------------------
++! scnd_method [integer]
++!               type of second-order model
++!               1: EASM with quasi-equilibrium
++!               2: EASM with weak equilibrium, buoy.-variance algebraic
++!               3: EASM with weak equilibrium, buoy.-variance from PDE
++! kb_method   [integer]
++!               type of equation for buoyancy variance
++!               1: algebraic equation for buoyancy variance
++!               2: PDE for buoyancy variance
++! epsb_method [integer]
++!               type of equation for variance destruction
++!               1: algebraic equation for variance destruction
++!               2: PDE for variance destruction
++! scnd_coeff  [integer]
++!               coefficients of second-order model
++!               0: read the coefficients from this file
++!               1: coefficients of Gibson and Launder (1978)
++!               2: coefficients of Mellor and Yamada (1982)
++!               3: coefficients of Kantha and Clayson (1994)
++!               4: coefficients of Luyten et al. (1996)
++!               5: coefficients of Canuto et al. (2001) (version A)
++!               6: coefficients of Canuto et al. (2001) (version B)
++!               7: coefficients of Cheng et al. (2002)
++! cc1         [float]
++!               coefficient cc1
++!               This variable is only used if scnd_coeff = 0
++! cc2         [float]
++!               coefficient cc2
++!               This variable is only used if scnd_coeff = 0
++! cc3         [float]
++!               coefficient cc3
++!               This variable is only used if scnd_coeff = 0
++! cc4         [float]
++!               coefficient cc4
++!               This variable is only used if scnd_coeff = 0
++! cc5         [float]
++!               coefficient cc5
++!               This variable is only used if scnd_coeff = 0
++! cc6         [float]
++!               coefficient cc6
++!               This variable is only used if scnd_coeff = 0
++! ct1         [float]
++!               coefficient ct1
++!               This variable is only used if scnd_coeff = 0
++! ct2         [float]
++!               coefficient ct2
++!               This variable is only used if scnd_coeff = 0
++! ct3         [float]
++!               coefficient ct3
++!               This variable is only used if scnd_coeff = 0
++! ct4         [float]
++!               coefficient ct4
++!               This variable is only used if scnd_coeff = 0
++! ct5         [float]
++!               coefficient ct5
++!               This variable is only used if scnd_coeff = 0
++! ctt         [float]
++!               coefficient ctt
++!               This variable is only used if scnd_coeff = 0
++!-------------------------------------------------------------------------------
+ !  the 'scnd' namelist
+-   integer                                       ::  scnd_method
+-   integer                                       ::  kb_method
+-   integer                                       ::  epsb_method
+-   integer                                       ::  scnd_coeff
+-   REALTYPE ,public                              ::  cc1
+-   REALTYPE, public                              ::  ct1,ctt
+-   REALTYPE, public                              ::  cc2,cc3,cc4,cc5,cc6
+-   REALTYPE, public                              ::  ct2,ct3,ct4,ct5
+-
+-!  the a_i's for the ASM
+-   REALTYPE, public                              ::  a1,a2,a3,a4,a5
+-   REALTYPE, public                              ::  at1,at2,at3,at4,at5
+ 
++   integer,  public                              ::  scnd_method = 0
++   integer,  public                              ::  kb_method   = 0
++   integer,  public                              ::  epsb_method = 0
++   integer,  public                              ::  scnd_coeff  = 0
++   REALTYPE ,public                              :: &
++        cc1 = _ZERO_
++   REALTYPE, public                              :: &
++        ct1 = _ZERO_, ctt = _ZERO_
++   REALTYPE, public                              :: &
++        cc2 = _ZERO_, cc3 = _ZERO_, cc4 = _ZERO_, cc5 = _ZERO_, cc6 = _ZERO_
++   REALTYPE, public                              :: &
++        ct2 = _ZERO_, ct3 = _ZERO_, ct4 = _ZERO_, ct5 = _ZERO_
+ 
++!  the a_i's for the ASM
++   REALTYPE, public                              ::  &
++        a1 = _ZERO_, a2 = _ZERO_, a3 = _ZERO_, a4 = _ZERO_, a5 = _ZERO_
++   REALTYPE, public                              ::  &
++        at1 = _ZERO_, at2 = _ZERO_, at3 = _ZERO_, at4 = _ZERO_, at5 = _ZERO_
++
++!-------------------------------------------------------------------------------
++! internal wave model
++!-------------------------------------------------------------------------------
++! iw_model [integer]
++!            method to compute internal wave mixing
++!            0: no internal wave mixing parameterisation
++!            1: Mellor 1989 internal wave mixing
++!            2: Large et al. 1994 internal wave mixing
++! alpha    [float]
++!            coeff. for Mellor IWmodel (0: no IW, 0.7 Mellor 1989)
++!            This variable is only used if iw_model = 1
++! klimiw   [float, unit = m**2/s**2]
++!            critical value of TKE
++!            This variable is only used if iw_model = 2
++! rich_cr  [float]
++!            critical Richardson number for shear instability
++!            This variable is only used if iw_model = 2
++! numshear [float, unit = m**2/s]
++!            background diffusivity for shear instability
++!            This variable is only used if iw_model = 2
++! numiw    [float, unit = m**2/s]
++!            background viscosity for internal wave breaking
++!            This variable is only used if iw_model = 2
++! nuhiw    [float, unit = m**2/s]
++!            background diffusivity for internal wave breaking
++!            This variable is only used if iw_model = 2
++!-------------------------------------------------------------------------------
+ !  the 'iw' namelist
+-   integer,  public                              :: iw_model
+-   REALTYPE, public                              :: alpha
+-   REALTYPE, public                              :: klimiw
+-   REALTYPE, public                              :: rich_cr
+-   REALTYPE, public                              :: numiw
+-   REALTYPE, public                              :: nuhiw
+-   REALTYPE, public                              :: numshear
++   
++   integer,  public                              :: iw_model = 0
++   REALTYPE, public                              :: alpha    = 0.0_8
++   REALTYPE, public                              :: klimiw   = 1e-6_8
++   REALTYPE, public                              :: rich_cr  = 0.7_8
++   REALTYPE, public                              :: numiw    = 1.e-4_8
++   REALTYPE, public                              :: nuhiw    = 5.e-5_8
++   REALTYPE, public                              :: numshear = 5.e-3_8
+ !
+ ! !DEFINED PARAMETERS:
+ 
+ !  general outline of the turbulence model
+-   integer, parameter, public                    :: convective=0
+-   integer, parameter, public                    :: algebraic=1
+-   integer, parameter, public                    :: first_order=2
+-   integer, parameter, public                    :: second_order=3
++   integer, parameter, public                    :: convective   = 0
++   integer, parameter, public                    :: algebraic    = 1
++   integer, parameter, public                    :: first_order  = 2
++   integer, parameter, public                    :: second_order = 3
+ 
+ !  method to update TKE
+-   integer, parameter, public                    :: tke_local_eq=1
+-   integer, parameter, public                    :: tke_keps=2
+-   integer, parameter, public                    :: tke_MY=3
++   integer, parameter, public                    :: tke_local_eq = 1
++   integer, parameter, public                    :: tke_keps     = 2
++   integer, parameter, public                    :: tke_MY       = 3
+ 
+ !  stability functions
+-   integer, parameter, public                    :: Constant=1
+-   integer, parameter, public                    :: MunkAnderson=2
+-   integer, parameter, public                    :: SchumGerz=3
+-   integer, parameter, public                    :: EiflerSchrimpf=4
++   integer, parameter, public                    :: Constant       = 1
++   integer, parameter, public                    :: MunkAnderson   = 2
++   integer, parameter, public                    :: SchumGerz      = 3
++   integer, parameter, public                    :: EiflerSchrimpf = 4
+ 
+ !  method to update length scale
+-   integer, parameter                            :: Parabola=1
+-   integer, parameter                            :: Triangle=2
+-   integer, parameter                            :: Xing=3
+-   integer, parameter                            :: RobertOuellet=4
+-   integer, parameter                            :: Blackadar=5
+-   integer, parameter                            :: BougeaultAndre=6
+-   integer, parameter                            :: ispra_length=7
+-   integer, parameter, public                    :: diss_eq=8
+-   integer, parameter, public                    :: length_eq=9
+-   integer, parameter, public                    :: generic_eq=10
++   integer, parameter                            :: Parabola       = 1
++   integer, parameter                            :: Triangle       = 2
++   integer, parameter                            :: Xing           = 3
++   integer, parameter                            :: RobertOuellet  = 4
++   integer, parameter                            :: Blackadar      = 5
++   integer, parameter                            :: BougeaultAndre = 6
++   integer, parameter                            :: ispra_length   = 7
++   integer, parameter, public                    :: diss_eq        = 8
++   integer, parameter, public                    :: length_eq      = 9
++   integer, parameter, public                    :: generic_eq     = 10
+ 
+ !  boundary conditions
+-   integer, parameter, public                    :: Dirichlet=0
+-   integer, parameter, public                    :: Neumann=1
+-   integer, parameter, public                    :: viscous=0
+-   integer, parameter, public                    :: logarithmic=1
+-   integer, parameter, public                    :: injection=2
++   integer, parameter, public                    :: Dirichlet   = 0
++   integer, parameter, public                    :: Neumann     = 1
++   integer, parameter, public                    :: viscous     = 0
++   integer, parameter, public                    :: logarithmic = 1
++   integer, parameter, public                    :: injection   = 2
+ 
+ !  type of second-order model
+-   integer, parameter                            :: quasiEq=1
+-   integer, parameter                            :: weakEqKbEq=2
+-   integer, parameter                            :: weakEqKb=3
++   integer, parameter                            :: quasiEq    = 1
++   integer, parameter                            :: weakEqKbEq = 2
++   integer, parameter                            :: weakEqKb   = 3
+ 
+ !  method to solve equation for k_b
+-   integer, parameter                            :: kb_algebraic=1
+-   integer, parameter                            :: kb_dynamic=2
++   integer, parameter                            :: kb_algebraic = 1
++   integer, parameter                            :: kb_dynamic   = 2
+ 
+ !  method to solve equation for epsilon_b
+-   integer, parameter                            :: epsb_algebraic=1
+-   integer, parameter                            :: epsb_dynamic=2
++   integer, parameter                            :: epsb_algebraic = 1
++   integer, parameter                            :: epsb_dynamic   = 2
+ 
+ !
+ ! !BUGS:
+@@ -307,10 +612,6 @@
+ !
+ !EOP
+ !
+-! !LOCAL VARIABLES:
+-   integer                            :: rc
+-   REALTYPE                           :: L_min
+-!
+    namelist /turbulence/    turb_method,tke_method,            &
+                             len_scale_method,stab_method
+ 
+@@ -346,124 +647,6 @@
+ !BOC
+    LEVEL1 'init_turbulence'
+ 
+-   a1 = _ZERO_
+-   a2 = _ZERO_
+-   a3 = _ZERO_
+-   a4 = _ZERO_
+-   a5 = _ZERO_
+-
+-   at1 = _ZERO_
+-   at2 = _ZERO_
+-   at3 = _ZERO_
+-   at4 = _ZERO_
+-   at5 = _ZERO_
+-
+-   cm0 = _ZERO_
+-   cmsf = _ZERO_
+-   cde = _ZERO_
+-   rcm = _ZERO_
+-   b1 = _ZERO_
+-
+-!  Prandtl-number in neutrally stratified flow
+-   Prandtl0 = _ZERO_
+-
+-!  parameters for wave-breaking
+-   craig_m = _ZERO_
+-   sig_e0 = _ZERO_
+-
+-   ! Initialize all namelist variables to reasonable defaults.
+-   turb_method=2
+-   tke_method=2
+-   len_scale_method=8
+-   stab_method=3
+-
+-!  the 'bc' namelist
+-   k_ubc=1
+-   k_lbc=1
+-   kb_ubc=1
+-   kb_lbc=1
+-   psi_ubc=1
+-   psi_lbc=1
+-   ubc_type=1
+-   lbc_type=1
+-
+-!  the 'turb_param' namelist
+-   cm0_fix=0.5477
+-   Prandtl0_fix=0.74
+-   cw=100.0
+-   compute_kappa=.false.
+-   kappa=0.4
+-   compute_c3=.false.
+-   ri_st=0.25
+-   length_lim=.false.
+-   galp=0.53
+-   const_num=5.0e-4
+-   const_nuh=5.0e-4
+-   k_min=1.0e-8
+-   eps_min=1.0e-12
+-   kb_min=1.0e-8
+-   epsb_min=1.0e-12
+-
+-!  the 'generic' namelist
+-   compute_param=.false.
+-   gen_m=1.5
+-   gen_n=-1.0
+-   gen_p=3.0
+-   cpsi1=1.44
+-   cpsi2=1.92
+-   cpsi3minus=0.0
+-   cpsi3plus=1.0
+-   sig_kpsi=1.0
+-   sig_psi=1.3
+-   gen_d=-1.2
+-   gen_alpha=-2.0
+-   gen_l=0.2
+-
+-!  the 'keps' namelist
+-   ce1=1.44
+-   ce2=1.92
+-   ce3minus=0.0
+-   ce3plus=1.0
+-   sig_k=1.0
+-   sig_e=1.3
+-   sig_peps=.false.
+-
+-!  the 'my' namelist
+-   e1=1.8
+-   e2=1.33
+-   e3=1.8
+-   sq=0.2
+-   sl=0.2
+-   my_length=1
+-   new_constr=.false.
+-
+-!  the 'scnd' namelist
+-   scnd_method = 0
+-   kb_method   = 0
+-   epsb_method = 0
+-   scnd_coeff  = 0
+-   cc1 = _ZERO_
+-   ct1 = _ZERO_
+-   ctt = _ZERO_
+-   cc2 = _ZERO_
+-   cc3 = _ZERO_
+-   cc4 = _ZERO_
+-   cc5 = _ZERO_
+-   cc6 = _ZERO_
+-   ct2 = _ZERO_
+-   ct3 = _ZERO_
+-   ct4 = _ZERO_
+-   ct5 = _ZERO_
+-
+-!  the 'iw' namelist
+-   iw_model=0
+-   alpha=0.0
+-   klimiw=1e-6
+-   rich_cr=0.7
+-   numiw=1.e-4
+-   nuhiw=5.e-5
+-   numshear=5.e-3
+-
+    ! read the variables from the namelist file
+ 
+    open(namlst,file=fn,status='old',action='read',err=80)
+@@ -488,149 +671,194 @@
+       close (namlst)
+       LEVEL2 'done.'
+    endif
++   call post_init_turbulence(nlev)
++!  report on parameters and properties of the model
++   call report_model
++   return
+ 
++80 FATAL 'I could not open "gotmturb.nml"'
++   stop 'init_turbulence'
++81 FATAL 'I could not read "turbulence" namelist'
++   stop 'init_turbulence'
++82 FATAL 'I could not read "bc" namelist'
++   stop 'init_turbulence'
++83 FATAL 'I could not read "turb_param" namelist'
++   stop 'init_turbulence'
++84 FATAL 'I could not read "generic" namelist'
++   stop 'init_turbulence'
++85 FATAL 'I could not read "keps" namelist'
++   stop 'init_turbulence'
++86 FATAL 'I could not read "my" namelist'
++   stop 'init_turbulence'
++87 FATAL 'I could not read "scnd" namelist'
++   stop 'init_turbulence'
++88 FATAL 'I could not read "iw" namelist'
++   stop 'init_turbulence'
+ 
+-!  allocate memory
+-
++ end subroutine init_turbulence
++!EOC
++ 
++!-----------------------------------------------------------------------
++!BOP
++!
++! !IROUTINE: Allocate memory for the turbulence module
++!
++! !INTERFACE:
++ subroutine post_init_turbulence(nlev)
++! !USES:
++   IMPLICIT NONE
++!
++! !INPUT PARAMETERS:
++   integer,          intent(in)        :: nlev
++!EOP
++!
++! !LOCAL VARIABLES:
++   integer                            :: rc
++   REALTYPE                           :: L_min
++!-----------------------------------------------------------------------
++!BOC
++   
++   !  allocate memory
++   
+    LEVEL2 'allocation memory..'
+    allocate(tke(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (tke)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (tke)'
+    tke = k_min
+ 
+    allocate(tkeo(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (tkeo)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (tkeo)'
+    tkeo = k_min
+ 
+    allocate(eps(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (eps)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (eps)'
+    eps = eps_min
+ 
+    allocate(L(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (L)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (L)'
+    L = _ZERO_
+ 
+    LEVEL2 'allocation memory..'
+    allocate(kb(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (kb)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (kb)'
+    kb = kb_min
+ 
+    LEVEL2 'allocation memory..'
+    allocate(epsb(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (epsb)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (epsb)'
+    epsb = epsb_min
+ 
+    allocate(P(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (P)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (P)'
+    P = _ZERO_
+ 
+    allocate(B(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (B)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (B)'
+    B = _ZERO_
+ 
+    allocate(Pb(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (Pb)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (Pb)'
+    Pb = _ZERO_
+ 
+    allocate(num(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (num)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (num)'
+    num = 1.0D-6
+ 
+    allocate(nuh(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (nuh)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (nuh)'
+    nuh = 1.0D-6
+ 
+    allocate(nus(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (nus)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (nus)'
+    nus = 1.0D-6
+ 
+    allocate(gamu(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (gamu)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (gamu)'
+    gamu = _ZERO_
+ 
+    allocate(gamv(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (gamv)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (gamv)'
+    gamv = _ZERO_
+ 
+    allocate(gamb(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (gamb)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (gamb)'
+    gamb = _ZERO_
+ 
+    allocate(gamh(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (gamh)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (gamh)'
+    gamh = _ZERO_
+ 
+    allocate(gams(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (gams)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (gams)'
+    gams = _ZERO_
+ 
+    allocate(cmue1(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (cmue1)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (cmue1)'
+    cmue1 = _ZERO_
+ 
+    allocate(cmue2(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (cmue2)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (cmue2)'
+    cmue2 = _ZERO_
+ 
+    allocate(gam(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (gam)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (gam)'
+    gam = _ZERO_
+ 
+    allocate(an(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (an)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (an)'
+    an = _ZERO_
+ 
+    allocate(as(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (as)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (as)'
+    as = _ZERO_
+ 
+    allocate(at(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (at)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (at)'
+    at = _ZERO_
+ 
+    allocate(r(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (r)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (r)'
+    r = _ZERO_
+ 
+    allocate(Rig(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (Rig)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (Rig)'
+    Rig = _ZERO_
+ 
+    allocate(xRf(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (xRf)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (xRf)'
+    xRf = _ZERO_
+ 
+    allocate(uu(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (uu)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (uu)'
+    uu = _ZERO_
+ 
+    allocate(vv(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (vv)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (vv)'
+    vv = _ZERO_
+ 
+    allocate(ww(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (ww)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (ww)'
+    ww = _ZERO_
+ 
+ # ifdef EXTRA_OUTPUT
+ 
+    allocate(turb1(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (turb1)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (turb1)'
+    turb1 = _ZERO_
+ 
+    allocate(turb2(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (turb2)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (turb2)'
+    turb2 = _ZERO_
+ 
+    allocate(turb3(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (turb3)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (turb3)'
+    turb3 = _ZERO_
+ 
+    allocate(turb4(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (turb4)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (turb4)'
+    turb4 = _ZERO_
+ 
+    allocate(turb5(0:nlev),stat=rc)
+-   if (rc /= 0) stop 'init_turbulence: Error allocating (turb5)'
++   if (rc /= 0) stop 'post_init_turbulence: Error allocating (turb5)'
+    turb5 = _ZERO_
+ 
+ # endif
+@@ -659,37 +887,17 @@
+    L=L_min
+ 
+ !  generate or analyse the model constants
+-   if ((len_scale_method.eq.generic_eq).and.compute_param) then
+-      call generate_model
+-   else
+-      call analyse_model
+-   endif
+-
+-!  report on parameters and properties of the model
+-   call report_model
+-
++   if (turb_method.ne.99) then
++      if ((len_scale_method.eq.generic_eq).and.compute_param) then
++         call generate_model
++      else
++         call analyse_model
++      endif
++   end if
++      
+    return
+ 
+-80 FATAL 'I could not open "gotmturb.nml"'
+-   stop 'init_turbulence'
+-81 FATAL 'I could not read "turbulence" namelist'
+-   stop 'init_turbulence'
+-82 FATAL 'I could not read "bc" namelist'
+-   stop 'init_turbulence'
+-83 FATAL 'I could not read "turb_param" namelist'
+-   stop 'init_turbulence'
+-84 FATAL 'I could not read "generic" namelist'
+-   stop 'init_turbulence'
+-85 FATAL 'I could not read "keps" namelist'
+-   stop 'init_turbulence'
+-86 FATAL 'I could not read "my" namelist'
+-   stop 'init_turbulence'
+-87 FATAL 'I could not read "scnd" namelist'
+-   stop 'init_turbulence'
+-88 FATAL 'I could not read "iw" namelist'
+-   stop 'init_turbulence'
+-
+- end subroutine init_turbulence
++ end subroutine post_init_turbulence
+ !EOC
+ 
+ 
+Only in ../../GOTM-5.2.1/src/turbulence: turbulence.F90~
+diff -ur ./util/diff_center.F90 ../../GOTM-5.2.1/src/util/diff_center.F90
+--- ./util/diff_center.F90	2018-04-30 09:45:54.000000000 +0200
++++ ../../GOTM-5.2.1/src/util/diff_center.F90	2020-04-22 12:22:15.135070238 +0200
+@@ -182,12 +182,12 @@
+    end select
+ 
+ !  relaxation to observed value
+-   if (minval(Taur).lt.1.d10) then
+-      do i=1,N
+-         bu(i)=bu(i)+dt/Taur(i)
+-         du(i)=du(i)+dt/Taur(i)*Yobs(i)
+-      end do
+-   end if
++   ! if (minval(Taur).lt.1.d10) then
++   !    do i=1,N
++   !       bu(i)=bu(i)+dt/Taur(i)
++   !       du(i)=du(i)+dt/Taur(i)*Yobs(i)
++   !    end do
++   ! end if
+ 
+ !  solve linear system
+    call tridiagonal(N,1,N,Y)
+Only in ../../GOTM-5.2.1/src/util: diff_center.F90~
+diff -ur ./util/eqstate.F90 ../../GOTM-5.2.1/src/util/eqstate.F90
+--- ./util/eqstate.F90	2018-04-30 09:45:54.000000000 +0200
++++ ../../GOTM-5.2.1/src/util/eqstate.F90	2020-04-24 10:12:14.468189300 +0200
+@@ -60,10 +60,53 @@
+ !
+ !EOP
+ !
+-!  private data memebers
+-   integer, public           :: eq_state_method, eq_state_mode
+-   REALTYPE                  :: T0,S0,p0,dtr0,dsr0
+-   logical                   :: init_linearised
++!-------------------------------------------------------------------------------
++! equation of state
++!-------------------------------------------------------------------------------
++! eq_state_mode   [integer]
++!                   choice for empirical formula for equation of state
++!                   1: UNESCO equation of state by Fofonoff and Millard (1983)
++!                   2: equation of state according Jackett et al. (2005)
++! eq_state_method [integer]
++!                   method to compute density and buoyancy from salinity,
++!                     potential temperature and pressure
++!                   1: full equation of state (i.e. with the LOCAL pressure).
++!                     This implies that T is NOT treated as the potential
++!                     temperature but rather as the in-situ temperature!
++!                   2: equation of state with pressure evaluated at the surface.
++!                     This implies that T is treated as the potential
++!                     temperature and thus rho as the potential density.
++!                   3: linearized equation of state at T0,S0,p0 (again, use
++!                     p0=p_surf to work with potential temperature and density.)
++!                   4: linear equation of state with T0,S0,dtr0,dsr0
++! T0              [float, unit = degC]
++!                   reference temperature for linear equation of state
++!                   This variable is only used if (eq_state_method = 3 or
++!                     eq_state_method = 4)
++! S0              [float, unit = psu]
++!                   reference salinity for linear equation of state
++!                   This variable is only used if (eq_state_method = 3 or
++!                     eq_state_method = 4)
++! p0              [float, unit = bar]
++!                   reference pressure for linear equation of state
++!                   This variable is only used if (eq_state_method = 3 or
++!                     eq_state_method = 4)
++! dtr0            [float]
++!                   thermal expansion coefficient for linear equation of state
++!                   This variable is only used if eq_state_method = 4
++! dsr0            [float]
++!                   saline expansion coefficient for linear equation of state
++!                   This variable is only used if eq_state_method = 4
++!-------------------------------------------------------------------------------
++
++   integer, public           :: eq_state_method = 1
++   integer, public           :: eq_state_mode   = 2
++   logical                   :: init_linearised = .true.
++   REALTYPE, public          :: T0   =  10.0_8
++   REALTYPE, public          :: S0   =  35.0_8
++   REALTYPE, public          :: p0   =   0.0_8
++   REALTYPE, public          :: dtr0 =  -0.17_8
++   REALTYPE, public          :: dsr0 =   0.78_8
+ !
+ !-----------------------------------------------------------------------
+ 
+@@ -98,7 +141,6 @@
+ !-----------------------------------------------------------------------
+ !BOC
+    LEVEL1 'init_eqstate'
+-   init_linearised = .true.
+    if(present(namlst)) then
+       read(namlst,nml=eqstate,err=80)
+    end if
+Only in ../../GOTM-5.2.1/src/util: eqstate.F90~

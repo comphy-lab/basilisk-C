@@ -1,0 +1,243 @@
+# Javascript interface for Basilisk View
+
+This directory contains the javascript implementation of the Basilisk
+View interface. It is a fork of the [three.js](https://threejs.org/)
+[editor](https://threejs.org/editor/) which allows connection to the
+[server](/src/display.h) typically running within a Basilisk solver.
+
+Using javascript and three.js has several advantages: portability
+issues, including OpenGL support (via
+[WebGL](https://en.wikipedia.org/wiki/WebGL)), are delegated to the
+maintainers of web browsers and features such as: import/export in
+several 3D object formats, scene editing, fancy materials and lighting
+etc. are directly inherited from the three.js editor.
+
+The rendering of Basilisk 3D objects is partitioned according to the
+following client/server scheme:
+
+* **Server**: this is implemented by [display.h](/src/display.h)
+  included in the running Basilisk code. The server computes the 3D
+  coordinates, normals and colors of the objects described by the
+  various [drawing functions](/src/draw.h) and sends them to the
+  client(s).
+
+* **Client**: the client (i.e. this javascript implementation) runs in
+  the web browser and sends [drawing functions](/src/draw.h) to the
+  server and receives the corresponding 3D coordinates etc. It then
+  applies camera transformations, texturing, materials, lights,
+  shading etc. to render the final 3D view.
+
+The client interface to the server is generated dynamically i.e. the
+server controls which objects can be displayed and what their
+parameters are. This configuration information is sent to the client
+when connection is established.
+
+This can also be used to generate simple interactive interfaces to
+control numerical parameters of the running code. See
+[display_control()](/src/display.h#display-control) for details.
+
+The server can serve multiple clients (up to sixteen), which can be
+useful when teaching for example, or to setup multiple views of the
+same simulation.
+
+Offline visualisation of [dump files](/src/output.h#dump) is also
+possible using the [bview server](/src/bview.c).
+
+The drawing functions corresponding to a particular setup can also be
+exported/imported as Basilisk code.
+
+# Quick-start guide
+
+As usual the simplest way to get started is to [use the default
+Makefile](/Tutorial#using-makefiles). For example the
+[karman.c](/src/examples/karman.c) simulation can be run interactively
+using:
+
+~~~bash
+cd $BASILISK/examples
+CFLAGS=-DDISPLAY=-1 make karman.tst
+~~~
+
+This will compile and start the simulation in "paused" mode (see
+[display.h](/src/display.h) for other options). The Basilisk View
+interface can then be opened using e.g.
+
+~~~bash
+chromium-browser $BASILISK/examples/karman/display.html
+~~~
+
+Then select the 'SETTINGS' tab and click on 'RUN' in the 'BASILISK'
+section.
+
+Note that google chrome (or better 'chromium-browser' which is the
+google-free version shipped with Debian and other distros) seems to be
+somewhat faster than firefox for 3D display.
+
+You can rotate, pan, zoom etc. using the left/right/middle mouse
+buttons, scrollwheel or one, two-fingers trackpad motions etc.
+
+For this particular example you can also interactively change the
+Reynolds number and maximum level of refinement.
+
+If you get disconnected from the running code (for example when it
+terminates) and want to reconnect (e.g. if you restart the same code),
+just use the 'CONNECT' button. If nothing happens when you click then
+the server is probably not listening (or unreachable).
+
+# Interactive display of a remote simulation
+
+The client/server architecture is designed to allow visualisation of
+simulations running on a remote server (for example a large parallel
+computer). On these systems, access to network ports is typically
+tightly controlled by system administrators, since open ports can be a
+security vulnerability.
+
+A (legal) workaround for this restriction is to use [Secure Shell
+tunneling](https://en.wikipedia.org/wiki/Tunneling_protocol#Secure_Shell_tunneling).
+
+The recipe is simple enough:
+
+1. Start the simulation on the server (say `server.org`): compile using
+   the `-DDISPLAY` flag then run using the queueing system etc.
+2. Still on the server, check the content of the `display.html`
+   file, which will be generated when the simulation starts. It should
+   look like
+
+~~~bash
+<head><meta .... ?ws://machine.somedomain.somewhere:7155"></head>
+~~~
+   
+   Just note the machine name and port number.
+
+3. On your local machine (i.e. where your web browser runs), use your
+   SSH account to
+   [forward](https://help.ubuntu.com/community/SSH/OpenSSH/PortForwarding)
+   the remote port (7155) to a local port (for example 7100):
+   
+~~~bash
+ssh -L 7100:machine.somedomain.somewhere:7155 username@server.org
+~~~
+   
+   Note that this will also log you onto the remote system. If you are
+   not running multiple simulations simultaneously, then the default
+   7100 port will be free on both the server and client and the
+   command will just be
+   
+~~~bash
+ssh -L 7100:machine.somedomain.somewhere:7100 username@server.org
+~~~
+
+4. Open Basilisk View using `ws://localhost:7100` as server address.
+
+You probably want to warn the system administrator of the remote
+system that you are opening and forwarding ports, since this may
+trigger security warnings on the administrator side. If explanations
+are required you can of course point to this documentation. Note also
+that other better-known visualisation applications
+([paraview](https://www.paraview.org/) for example) use the same kind
+of techniques, with similar potential security issues.
+
+## Option when SSH port forwarding is not allowed
+
+On some systems, administrators may block SSH port forwarding
+(i.e. the -L option of ssh used above). The wisdom of doing so is
+questionable since a relatively simple workaround is to use a unix
+named pipe instead, like so:
+
+1. Do steps 1 and 2 above.
+
+2. On your local machine (i.e. where your web browser runs), do
+
+~~~bash
+rm -f /tmp/bview
+mkfifo /tmp/bview
+nc -l -p 7100 < /tmp/bview | \
+  ssh username@server.org "nc machine.somedomain.somewhere 7100" > /tmp/bview
+~~~
+
+3. Open Basilisk View using `ws://localhost:7100` as server address.
+
+Note that you will need to redo step 2 everytime you disconnect. Note
+also that `nc` (i.e. `netcat`) need to be installed on the remote
+machine (this is usually the case).
+
+## Troubleshooting
+
+Depending on how the remote system is configured, you may get an error
+message looking like:
+
+~~~bash
+nc -l -p 7100 < /tmp/bview | \
+  ssh username@server.org "nc machine.somedomain.somewhere 7100" > /tmp/bview
+machine.somedomain.somewhere: forward host lookup failed: ...
+~~~
+
+This means that the [DNS](https://en.wikipedia.org/wiki/Domain_Name_System) server on the remote system is strangely configured. A solution is to log onto the remote system and do
+
+~~~bash
+ssh username@server.org
+ping machine.somedomain.somewhere
+PING machine.somedomain.somewhere (132.30.0.84) 56(84) bytes of data.
+64 bytes from machine.somedomain.somewhere (132.30.0.84): icmp_seq=1 ttl=64 time=9.05 ms
+...
+~~~
+
+then copy the IP address (here 132.30.0.84) and replace
+'machine.somedomain.somewhere' with this IP in all the commands above.
+
+# Main differences with the old interactive `bview`
+
+* Cannot yet export to Gnuplot, OBJ, PS, PDF, SVG etc.
+
+# Installation
+
+This is only required if you want to setup your own Basilisk web
+server.
+
+~~~bash
+cd $BASILISK/bview/three.js
+git init
+git remote add origin https://github.com/mrdoob/three.js.git
+git fetch
+git reset origin/master
+git checkout r124 -- .
+darcs revert -a .
+~~~
+
+Note that `r124` is the three.js release on which the current version
+of bview is based.
+
+To update the version of three.js...
+
+~~~bash
+cd $BASILISK/bview/three.js
+git checkout -- .
+darcs revert .
+~~~
+
+... and review the changes being reverted i.e. only keep the changes
+which are linked to the new version of three.js (and not to the custom
+bview version). The remaining changes can then be `darcs record`ed and
+of course the `r124` release tag needs to be updated here.
+
+# To do
+
+* non-basilisk objects (sphere, cube etc...) are sent to Basilisk
+* scalar fields / colormapping
+* squares z should force linear (or work without linear)
+* deprecate lc/fc
+* more accurate focus (intersection with surfaces etc.)
+* hash table for vertices
+* gnuplot, kml, obj, ply outputs (using view (format = "gnuplot"); interface)
+* tooltips
+* colormaps
+* link Basilisk commands with documentation
+
+# Bugs
+
+* using the xyz gizmo (or Import .bv) does not reset the controls
+  properly (it jumps)
+
+# See also
+
+![Basilisk View demonstration](/BMM/2-march-21-1.mp4)(width="100%")

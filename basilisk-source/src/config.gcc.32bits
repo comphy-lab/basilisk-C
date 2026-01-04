@@ -1,0 +1,20 @@
+# -*-Makefile-*-
+
+# how to launch the C99 compiler
+CC99 = $(CC) -std=c99
+
+# other useful (non-standard) flags
+# trick to turn off extended precision on 32-bits intel systems
+# http://www.network-theory.co.uk/docs/gccintro/gccintro_70.html
+CFLAGS += -Wall -msse2 -mfpmath=sse
+
+# if you have valgrind, otherwise comment this out
+VALGRIND = valgrind -q --tool=memcheck --suppressions=$(BASILISK)/openmpi.supp \
+	--leak-check=full
+
+# if gnuplot supports pngcairo, otherwise comment this out
+PNG = pngcairo
+
+# configuration for python modules (requires swig)
+MDFLAGS = -fpic
+PYTHONINCLUDE = /usr/include/python2.7

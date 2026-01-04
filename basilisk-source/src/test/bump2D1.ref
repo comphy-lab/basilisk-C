@@ -1,0 +1,868 @@
+0 0 0.1 1.09392 0.11570796
+# refined 0 cells, coarsened 3756 cells
+0.00372024 1 0.1 1.08585 0.11570796
+# refined 0 cells, coarsened 904 cells
+0.00744048 2 0.1 1.06928 0.11570796
+# refined 0 cells, coarsened 204 cells
+0.0111159 3 0.1 1.04373 0.11570796
+# refined 0 cells, coarsened 32 cells
+0.014747 4 0.1 1.01032 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.0183344 5 0.1 0.971284 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.0218786 6 0.1 0.929002 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.02538 7 0.1 0.885469 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.0288815 8 0.1 0.841544 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.0323403 9 0.1 0.798766 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.035799 10 0.1 0.757263 0.11570796
+# refined 0 cells, coarsened 8 cells
+0.0392578 11 0.1 0.717504 0.11570796
+# refined 8 cells, coarsened 0 cells
+0.0426733 12 0.1 0.680207 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.0460888 13 0.1 0.644964 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.0495044 14 0.1 0.611788 0.11570796
+# refined 8 cells, coarsened 0 cells
+0.0529199 15 0.1 0.580639 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.0563354 16 0.1 0.551447 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.059751 17 0.1 0.52412 0.11570796
+# refined 8 cells, coarsened 0 cells
+0.0631665 18 0.1 0.498552 0.11570796
+# refined 8 cells, coarsened 0 cells
+0.066582 19 0.1 0.474636 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.0699975 20 0.1 0.452266 0.11570796
+# refined 8 cells, coarsened 24 cells
+0.0734131 21 0.1 0.431325 0.11570796
+# refined 4 cells, coarsened 0 cells
+0.0768286 22 0.1 0.411681 0.11570796
+# refined 8 cells, coarsened 8 cells
+0.0802943 23 0.1 0.393003 0.11570796
+# refined 8 cells, coarsened 16 cells
+0.0837601 24 0.1 0.375517 0.11570796
+# refined 8 cells, coarsened 28 cells
+0.0872259 25 0.1 0.359148 0.11570796
+# refined 16 cells, coarsened 24 cells
+0.0906916 26 0.1 0.343781 0.11570796
+# refined 8 cells, coarsened 12 cells
+0.0941574 27 0.1 0.335297 0.11570796
+# refined 32 cells, coarsened 12 cells
+0.097679 28 0.1 0.329433 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.101201 29 0.1 0.324522 0.11570796
+# refined 8 cells, coarsened 24 cells
+0.104722 30 0.1 0.320054 0.11570796
+# refined 28 cells, coarsened 16 cells
+0.108244 31 0.1 0.315568 0.11570796
+# refined 32 cells, coarsened 8 cells
+0.111827 32 0.1 0.312691 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.115411 33 0.1 0.310018 0.11570796
+# refined 0 cells, coarsened 4 cells
+0.118994 34 0.1 0.30688 0.11570796
+# refined 12 cells, coarsened 0 cells
+0.122578 35 0.1 0.304424 0.11570796
+# refined 16 cells, coarsened 0 cells
+0.12623 36 0.1 0.302168 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.129882 37 0.1 0.299146 0.11570796
+# refined 0 cells, coarsened 16 cells
+0.133535 38 0.1 0.297139 0.11570796
+# refined 16 cells, coarsened 8 cells
+0.137187 39 0.1 0.294592 0.11570796
+# refined 20 cells, coarsened 8 cells
+0.140917 40 0.1 0.292061 0.11570796
+# refined 32 cells, coarsened 0 cells
+0.144647 41 0.1 0.290603 0.11570796
+# refined 24 cells, coarsened 0 cells
+0.148377 42 0.1 0.287979 0.11570796
+# refined 8 cells, coarsened 24 cells
+0.152107 43 0.1 0.285882 0.11570796
+# refined 0 cells, coarsened 0 cells
+0.155837 44 0.1 0.283661 0.11570796
+# refined 24 cells, coarsened 0 cells
+0.159658 45 0.1 0.280954 0.11570796
+# refined 8 cells, coarsened 0 cells
+0.16348 46 0.1 0.278994 0.11570796
+# refined 16 cells, coarsened 16 cells
+0.167301 47 0.1 0.276338 0.11570796
+# refined 16 cells, coarsened 12 cells
+0.171122 48 0.1 0.27517 0.11570796
+# refined 8 cells, coarsened 8 cells
+0.174943 49 0.1 0.272431 0.11570796
+# refined 16 cells, coarsened 4 cells
+0.178873 50 0.1 0.271114 0.11570796
+# refined 24 cells, coarsened 32 cells
+0.182803 51 0.1 0.268957 0.11570796
+# refined 16 cells, coarsened 8 cells
+0.186733 52 0.1 0.26748 0.11570797
+# refined 24 cells, coarsened 8 cells
+0.190663 53 0.1 0.265258 0.11570797
+# refined 8 cells, coarsened 16 cells
+0.194594 54 0.1 0.263811 0.11570797
+# refined 20 cells, coarsened 8 cells
+0.198524 55 0.1 0.262347 0.11570797
+# refined 44 cells, coarsened 32 cells
+0.202594 56 0.1 0.260982 0.11570797
+# refined 24 cells, coarsened 8 cells
+0.206665 57 0.1 0.259121 0.11570797
+# refined 0 cells, coarsened 8 cells
+0.210736 58 0.1 0.25789 0.11570797
+# refined 0 cells, coarsened 0 cells
+0.214806 59 0.1 0.255784 0.11570797
+# refined 32 cells, coarsened 16 cells
+0.218877 60 0.1 0.254667 0.11570797
+# refined 16 cells, coarsened 32 cells
+0.222947 61 0.1 0.252613 0.11570797
+# refined 8 cells, coarsened 32 cells
+0.227018 62 0.1 0.251433 0.11570797
+# refined 56 cells, coarsened 8 cells
+0.231089 63 0.1 0.250849 0.11570797
+# refined 16 cells, coarsened 8 cells
+0.235159 64 0.0981275 0.24889 0.11570797
+# refined 16 cells, coarsened 32 cells
+0.23923 65 0.0956955 0.248229 0.11570797
+# refined 48 cells, coarsened 24 cells
+0.2433 66 0.093359 0.246468 0.11570797
+# refined 16 cells, coarsened 16 cells
+0.247371 67 0.0911129 0.244973 0.11570797
+# refined 0 cells, coarsened 24 cells
+0.251713 68 0.0888113 0.243928 0.11570797
+# refined 8 cells, coarsened 0 cells
+0.256055 69 0.0866016 0.242429 0.11570797
+# refined 28 cells, coarsened 56 cells
+0.260397 70 0.0844788 0.240981 0.11570797
+# refined 36 cells, coarsened 24 cells
+0.264739 71 0.0824382 0.240265 0.11570797
+# refined 16 cells, coarsened 8 cells
+0.269081 72 0.0804753 0.238935 0.11570797
+# refined 16 cells, coarsened 16 cells
+0.273422 73 0.078586 0.237766 0.11570797
+# refined 48 cells, coarsened 32 cells
+0.277764 74 0.0767666 0.236119 0.11570797
+# refined 24 cells, coarsened 0 cells
+0.282106 75 0.0750134 0.235173 0.11570797
+# refined 24 cells, coarsened 16 cells
+0.286448 76 0.0733231 0.233898 0.11570797
+# refined 8 cells, coarsened 32 cells
+0.29079 77 0.0716925 0.232551 0.11570797
+# refined 24 cells, coarsened 56 cells
+0.295132 78 0.0701187 0.231627 0.11570797
+# refined 24 cells, coarsened 16 cells
+0.299474 79 0.0685991 0.23068 0.11570797
+# refined 24 cells, coarsened 48 cells
+0.303816 80 0.0671309 0.229562 0.11570797
+# refined 40 cells, coarsened 0 cells
+0.308158 81 0.0657117 0.228626 0.11570797
+# refined 16 cells, coarsened 8 cells
+0.3125 82 0.0643394 0.227421 0.11570797
+# refined 8 cells, coarsened 16 cells
+0.317164 83 0.062915 0.226207 0.11570797
+# refined 16 cells, coarsened 32 cells
+0.321828 84 0.0615396 0.225039 0.11570797
+# refined 56 cells, coarsened 16 cells
+0.326493 85 0.060211 0.224013 0.11570797
+# refined 36 cells, coarsened 24 cells
+0.331231 86 0.0589068 0.222853 0.11570797
+# refined 44 cells, coarsened 24 cells
+0.335969 87 0.0576465 0.222156 0.11570797
+# refined 16 cells, coarsened 40 cells
+0.340707 88 0.0564279 0.220916 0.11570797
+# refined 8 cells, coarsened 56 cells
+0.345526 89 0.0552296 0.219971 0.11570797
+# refined 40 cells, coarsened 24 cells
+0.350344 90 0.0540707 0.218785 0.11570797
+# refined 24 cells, coarsened 16 cells
+0.355163 91 0.0529494 0.21782 0.11570797
+# refined 0 cells, coarsened 0 cells
+0.359981 92 0.051864 0.216683 0.11570797
+# refined 8 cells, coarsened 12 cells
+0.364889 93 0.0507938 0.215746 0.11570798
+# refined 40 cells, coarsened 64 cells
+0.369797 94 0.0497578 0.215277 0.11570798
+# refined 56 cells, coarsened 8 cells
+0.374705 95 0.0487544 0.214253 0.11570798
+# refined 48 cells, coarsened 8 cells
+0.379612 96 0.0477822 0.21315 0.11570798
+# refined 24 cells, coarsened 32 cells
+0.38462 97 0.046821 0.212314 0.11570798
+# refined 32 cells, coarsened 72 cells
+0.389628 98 0.0458897 0.211393 0.11570798
+# refined 16 cells, coarsened 16 cells
+0.394636 99 0.0449869 0.210576 0.11570798
+# refined 36 cells, coarsened 48 cells
+0.399644 100 0.0441115 0.209271 0.11570798
+# refined 32 cells, coarsened 24 cells
+0.404652 101 0.0432624 0.209052 0.11570798
+# refined 20 cells, coarsened 0 cells
+0.40966 102 0.0424386 0.208295 0.11570798
+# refined 16 cells, coarsened 64 cells
+0.414787 103 0.0416202 0.207119 0.11570798
+# refined 40 cells, coarsened 24 cells
+0.419914 104 0.0408262 0.206507 0.11570798
+# refined 40 cells, coarsened 16 cells
+0.425041 105 0.0400555 0.205811 0.11570798
+# refined 24 cells, coarsened 0 cells
+0.430168 106 0.0393074 0.204892 0.11570798
+# refined 24 cells, coarsened 16 cells
+0.435296 107 0.0385808 0.203722 0.11570798
+# refined 40 cells, coarsened 72 cells
+0.440423 108 0.037875 0.203291 0.11570798
+# refined 40 cells, coarsened 64 cells
+0.445696 109 0.0371699 0.202643 0.11570798
+# refined 56 cells, coarsened 32 cells
+0.45097 110 0.0364851 0.201934 0.11570798
+# refined 24 cells, coarsened 24 cells
+0.456244 111 0.0358198 0.201005 0.11570798
+# refined 0 cells, coarsened 32 cells
+0.461517 112 0.0351733 0.200559 0.11570798
+# refined 48 cells, coarsened 56 cells
+0.466791 113 0.034545 0.199701 0.11570798
+# refined 24 cells, coarsened 8 cells
+0.472064 114 0.033934 0.198385 0.11570798
+# refined 12 cells, coarsened 16 cells
+0.477338 115 0.0334332 0.198271 0.11570798
+# refined 64 cells, coarsened 24 cells
+0.482612 116 0.0328564 0.197878 0.11570798
+# refined 44 cells, coarsened 56 cells
+0.487885 117 0.032295 0.197166 0.11570799
+# refined 48 cells, coarsened 48 cells
+0.493159 118 0.0317485 0.196169 0.11570799
+# refined 32 cells, coarsened 56 cells
+0.498433 119 0.0312164 0.195311 0.11570799
+# refined 32 cells, coarsened 16 cells
+0.503936 120 0.0306759 0.194566 0.11570799
+# refined 24 cells, coarsened 64 cells
+0.509439 121 0.0301499 0.194117 0.11570799
+# refined 24 cells, coarsened 12 cells
+0.514941 122 0.029638 0.193437 0.11570799
+# refined 40 cells, coarsened 60 cells
+0.520444 123 0.0291396 0.193069 0.11570799
+# refined 48 cells, coarsened 16 cells
+0.525947 124 0.0286543 0.192437 0.11570800
+# refined 16 cells, coarsened 0 cells
+0.53145 125 0.0281816 0.191542 0.11570800
+# refined 40 cells, coarsened 64 cells
+0.536953 126 0.0277211 0.190637 0.11570800
+# refined 48 cells, coarsened 40 cells
+0.542456 127 0.0272723 0.190246 0.11570801
+# refined 64 cells, coarsened 16 cells
+0.547959 128 0.0268349 0.189583 0.11570801
+# refined 24 cells, coarsened 40 cells
+0.553462 129 0.0264085 0.188691 0.11570801
+# refined 28 cells, coarsened 40 cells
+0.558965 130 0.0259928 0.188263 0.11570802
+# refined 48 cells, coarsened 88 cells
+0.564468 131 0.0255873 0.187897 0.11570803
+# refined 28 cells, coarsened 56 cells
+0.569971 132 0.0251917 0.18732 0.11570804
+# refined 56 cells, coarsened 56 cells
+0.575474 133 0.0248057 0.186605 0.11570806
+# refined 24 cells, coarsened 4 cells
+0.580977 134 0.0244291 0.186096 0.11570810
+# refined 0 cells, coarsened 40 cells
+0.58648 135 0.0240615 0.18568 0.11570817
+# refined 64 cells, coarsened 32 cells
+0.591982 136 0.0237027 0.184762 0.11570826
+# refined 72 cells, coarsened 24 cells
+0.597485 137 0.0233523 0.184271 0.11570835
+# refined 56 cells, coarsened 32 cells
+0.602988 138 0.0230101 0.184025 0.11570846
+# refined 32 cells, coarsened 40 cells
+0.608491 139 0.0226758 0.183589 0.11570861
+# refined 40 cells, coarsened 104 cells
+0.613994 140 0.0223493 0.182947 0.11570884
+# refined 24 cells, coarsened 48 cells
+0.619497 141 0.0220303 0.182194 0.11570926
+# refined 48 cells, coarsened 40 cells
+0.625 142 0.0217184 0.181697 0.11571014
+# refined 24 cells, coarsened 0 cells
+0.630896 143 0.0213921 0.181134 0.11571230
+# refined 24 cells, coarsened 48 cells
+0.636792 144 0.0210737 0.180472 0.11571774
+# refined 20 cells, coarsened 40 cells
+0.642689 145 0.0207627 0.180316 0.11573221
+# refined 64 cells, coarsened 40 cells
+0.648585 146 0.0204591 0.180022 0.11576227
+# refined 36 cells, coarsened 72 cells
+0.654604 147 0.0201566 0.197332 0.11580739
+# refined 16 cells, coarsened 40 cells
+0.660623 148 0.0198611 0.223392 0.11586221
+# refined 24 cells, coarsened 48 cells
+0.666642 149 0.0195726 0.244145 0.11592203
+# refined 24 cells, coarsened 112 cells
+0.672661 150 0.0192909 0.257824 0.11598080
+# refined 48 cells, coarsened 16 cells
+0.67868 151 0.0190156 0.266165 0.11603495
+# refined 24 cells, coarsened 56 cells
+0.684843 152 0.0187404 0.270265 0.11608484
+# refined 48 cells, coarsened 36 cells
+0.691005 153 0.0184715 0.271422 0.11612859
+# refined 48 cells, coarsened 40 cells
+0.697167 154 0.0182089 0.271183 0.11616712
+# refined 24 cells, coarsened 72 cells
+0.70333 155 0.0179523 0.269934 0.11620113
+# refined 24 cells, coarsened 40 cells
+0.709492 156 0.0177015 0.268109 0.11623118
+# refined 16 cells, coarsened 8 cells
+0.715654 157 0.0174564 0.266822 0.11625785
+# refined 64 cells, coarsened 52 cells
+0.721993 158 0.0172101 0.26545 0.11628152
+# refined 52 cells, coarsened 32 cells
+0.728331 159 0.0169694 0.263846 0.11630197
+# refined 72 cells, coarsened 40 cells
+0.734483 160 0.0167409 0.262724 0.11631946
+# refined 36 cells, coarsened 64 cells
+0.740635 161 0.0165175 0.26158 0.11633531
+# refined 40 cells, coarsened 48 cells
+0.746787 162 0.0162989 0.260579 0.11634921
+# refined 24 cells, coarsened 24 cells
+0.752939 163 0.0160851 0.25955 0.11636134
+# refined 24 cells, coarsened 64 cells
+0.758893 164 0.0158825 0.258339 0.11636900
+# refined 64 cells, coarsened 24 cells
+0.764847 165 0.0156841 0.257444 0.11637415
+# refined 40 cells, coarsened 24 cells
+0.7708 166 0.0154897 0.256528 0.11637856
+# refined 40 cells, coarsened 72 cells
+0.776754 167 0.0152993 0.255574 0.11638217
+# refined 24 cells, coarsened 40 cells
+0.782707 168 0.0151127 0.254501 0.11638470
+# refined 48 cells, coarsened 72 cells
+0.788661 169 0.01493 0.253548 0.11638545
+# refined 32 cells, coarsened 56 cells
+0.794614 170 0.0147508 0.252679 0.11638553
+# refined 96 cells, coarsened 40 cells
+0.800568 171 0.0145753 0.251933 0.11638566
+# refined 40 cells, coarsened 28 cells
+0.806273 172 0.0144103 0.250694 0.11638648
+# refined 48 cells, coarsened 68 cells
+0.811979 173 0.0142485 0.250382 0.11638565
+# refined 56 cells, coarsened 24 cells
+0.817684 174 0.0140897 0.249148 0.11638416
+# refined 64 cells, coarsened 40 cells
+0.82339 175 0.013934 0.248488 0.11638318
+# refined 60 cells, coarsened 72 cells
+0.829095 176 0.0137812 0.247585 0.11638192
+# refined 56 cells, coarsened 48 cells
+0.834801 177 0.0136312 0.246865 0.11638011
+# refined 64 cells, coarsened 32 cells
+0.840506 178 0.0134839 0.246289 0.11637861
+# refined 48 cells, coarsened 68 cells
+0.846212 179 0.0133394 0.245273 0.11637660
+# refined 56 cells, coarsened 32 cells
+0.851917 180 0.0131974 0.244641 0.11637563
+# refined 72 cells, coarsened 48 cells
+0.857623 181 0.013058 0.244228 0.11637439
+# refined 40 cells, coarsened 24 cells
+0.863328 182 0.012921 0.243399 0.11637228
+# refined 100 cells, coarsened 92 cells
+0.869034 183 0.0127863 0.242633 0.11636954
+# refined 64 cells, coarsened 8 cells
+0.874739 184 0.012654 0.242161 0.11636655
+# refined 144 cells, coarsened 40 cells
+0.880445 185 0.0125236 0.241319 0.11636442
+# refined 48 cells, coarsened 120 cells
+0.88615 186 0.0123955 0.240483 0.11636142
+# refined 56 cells, coarsened 72 cells
+0.891856 187 0.0122696 0.240079 0.11635630
+# refined 40 cells, coarsened 88 cells
+0.897561 188 0.0121459 0.239358 0.11635024
+# refined 64 cells, coarsened 48 cells
+0.903267 189 0.0120242 0.238652 0.11634434
+# refined 32 cells, coarsened 56 cells
+0.908157 190 0.0119216 0.238301 0.11633438
+# refined 84 cells, coarsened 80 cells
+0.913048 191 0.0118205 0.237474 0.11632454
+# refined 24 cells, coarsened 88 cells
+0.917938 192 0.0117209 0.237286 0.11631402
+# refined 28 cells, coarsened 96 cells
+0.922829 193 0.0116227 0.236522 0.11630075
+# refined 16 cells, coarsened 72 cells
+0.927719 194 0.0115259 0.236358 0.11628560
+# refined 16 cells, coarsened 72 cells
+0.93261 195 0.0114305 0.235659 0.11627089
+# refined 72 cells, coarsened 24 cells
+0.9375 196 0.0113365 0.235472 0.11625459
+# refined 24 cells, coarsened 64 cells
+0.94308 197 0.0112308 0.234991 0.11623675
+# refined 24 cells, coarsened 16 cells
+0.948661 198 0.0111268 0.23442 0.11621979
+# refined 56 cells, coarsened 56 cells
+0.954241 199 0.0110245 0.233906 0.11620100
+# refined 88 cells, coarsened 76 cells
+0.959821 200 0.0109238 0.233038 0.11618221
+# refined 80 cells, coarsened 32 cells
+0.965402 201 0.0108247 0.232962 0.11616454
+# refined 56 cells, coarsened 24 cells
+0.970982 202 0.0107271 0.231947 0.11614769
+# refined 24 cells, coarsened 52 cells
+0.976562 203 0.010631 0.231831 0.11613158
+# refined 56 cells, coarsened 16 cells
+0.982143 204 0.0105363 0.231202 0.11611609
+# refined 64 cells, coarsened 32 cells
+0.987723 205 0.0104431 0.230779 0.11609861
+# refined 12 cells, coarsened 72 cells
+0.993187 206 0.0103532 0.230416 0.11608178
+# refined 80 cells, coarsened 112 cells
+0.998651 207 0.0102645 0.229641 0.11606327
+# refined 40 cells, coarsened 40 cells
+1.00412 208 0.0101771 0.229557 0.11604499
+# refined 36 cells, coarsened 64 cells
+1.00958 209 0.0100909 0.228547 0.11602742
+# refined 32 cells, coarsened 56 cells
+1.01504 210 0.0100058 0.228694 0.11600875
+# refined 48 cells, coarsened 64 cells
+1.02051 211 0.00992173 0.227456 0.11599068
+# refined 8 cells, coarsened 40 cells
+1.02597 212 0.00983864 0.227853 0.11597406
+# refined 144 cells, coarsened 24 cells
+1.03144 213 0.00975647 0.226709 0.11596042
+# refined 64 cells, coarsened 64 cells
+1.0369 214 0.00967527 0.226987 0.11594741
+# refined 56 cells, coarsened 16 cells
+1.04236 215 0.00959502 0.225659 0.11593493
+# refined 32 cells, coarsened 72 cells
+1.04783 216 0.00951579 0.225956 0.11592277
+# refined 102 cells, coarsened 36 cells
+1.05329 217 0.00943362 0.224902 0.11590942
+# refined 64 cells, coarsened 0 cells
+1.05876 218 0.00935261 0.225285 0.11589785
+# refined 80 cells, coarsened 16 cells
+1.06422 219 0.00927271 0.22383 0.11588757
+# refined 28 cells, coarsened 72 cells
+1.06968 220 0.00919393 0.223848 0.11587709
+# refined 36 cells, coarsened 144 cells
+1.07515 221 0.00911624 0.225692 0.11586689
+# refined 32 cells, coarsened 40 cells
+1.08061 222 0.00903963 0.246848 0.11586065
+# refined 40 cells, coarsened 72 cells
+1.08608 223 0.00896406 0.278981 0.11585667
+# refined 36 cells, coarsened 56 cells
+1.09154 224 0.00888952 0.347434 0.11585372
+# refined 44 cells, coarsened 64 cells
+1.09701 225 0.00881598 0.391387 0.11585141
+# refined 100 cells, coarsened 48 cells
+1.10247 226 0.0087434 0.410525 0.11584727
+# refined 56 cells, coarsened 64 cells
+1.10814 227 0.00866902 0.414418 0.11584029
+# refined 64 cells, coarsened 104 cells
+1.11405 228 0.00859252 0.408726 0.11583075
+# refined 32 cells, coarsened 88 cells
+1.11996 229 0.00851682 0.396184 0.11581976
+# refined 80 cells, coarsened 56 cells
+1.12588 230 0.00844186 0.382791 0.11580833
+# refined 40 cells, coarsened 48 cells
+1.13179 231 0.00836753 0.373201 0.11579494
+# refined 52 cells, coarsened 40 cells
+1.1377 232 0.00829371 0.363125 0.11578187
+# refined 44 cells, coarsened 104 cells
+1.14361 233 0.0082202 0.354537 0.11576623
+# refined 64 cells, coarsened 124 cells
+1.14952 234 0.00814676 0.348999 0.11574523
+# refined 40 cells, coarsened 96 cells
+1.15543 235 0.00807179 0.341754 0.11572542
+# refined 56 cells, coarsened 56 cells
+1.16134 236 0.00799364 0.336948 0.11570462
+# refined 24 cells, coarsened 32 cells
+1.16725 237 0.00791087 0.330814 0.11568395
+# refined 20 cells, coarsened 56 cells
+1.17316 238 0.00782894 0.326555 0.11566274
+# refined 96 cells, coarsened 32 cells
+1.17907 239 0.00774807 0.321058 0.11564649
+# refined 60 cells, coarsened 56 cells
+1.18498 240 0.00766836 0.316105 0.11562977
+# refined 36 cells, coarsened 48 cells
+1.19089 241 0.00758992 0.311768 0.11561359
+# refined 64 cells, coarsened 32 cells
+1.1968 242 0.00751289 0.306517 0.11559783
+# refined 40 cells, coarsened 28 cells
+1.20271 243 0.00743749 0.3036 0.11558139
+# refined 80 cells, coarsened 68 cells
+1.20863 244 0.00736391 0.298059 0.11555873
+# refined 32 cells, coarsened 44 cells
+1.21454 245 0.00729254 0.295835 0.11553807
+# refined 36 cells, coarsened 156 cells
+1.22045 246 0.00722423 0.291129 0.11551747
+# refined 24 cells, coarsened 24 cells
+1.22636 247 0.00716014 0.287366 0.11549715
+# refined 28 cells, coarsened 80 cells
+1.23227 248 0.00709311 0.28472 0.11547712
+# refined 48 cells, coarsened 40 cells
+1.23818 249 0.00702586 0.280699 0.11545734
+# refined 24 cells, coarsened 28 cells
+1.24409 250 0.00695917 0.279021 0.11543791
+# refined 92 cells, coarsened 140 cells
+1.25 251 0.00689224 0.274804 0.11541564
+# refined 72 cells, coarsened 48 cells
+1.25601 252 0.00682291 0.27169 0.11539199
+# refined 88 cells, coarsened 28 cells
+1.26202 253 0.00675247 0.268868 0.11537376
+# refined 58 cells, coarsened 56 cells
+1.26803 254 0.00668528 0.26529 0.11535633
+# refined 16 cells, coarsened 8 cells
+1.27404 255 0.00662258 0.263653 0.11533989
+# refined 40 cells, coarsened 24 cells
+1.28005 256 0.00656831 0.25976 0.11532396
+# refined 40 cells, coarsened 72 cells
+1.28606 257 0.00653197 0.25747 0.11530920
+# refined 24 cells, coarsened 96 cells
+1.29207 258 0.00652218 0.254589 0.11529488
+# refined 52 cells, coarsened 72 cells
+1.29808 259 0.00654915 0.251499 0.11528091
+# refined 44 cells, coarsened 68 cells
+1.30409 260 0.00667914 0.250125 0.11526715
+# refined 24 cells, coarsened 72 cells
+1.31024 261 0.00711664 0.246963 0.11524885
+# refined 88 cells, coarsened 32 cells
+1.31625 262 0.00827396 0.245492 0.11523028
+# refined 52 cells, coarsened 32 cells
+1.3224 263 0.0115246 0.242698 0.11521170
+# refined 64 cells, coarsened 32 cells
+1.3284 264 0.0178907 0.238976 0.11519401
+# refined 16 cells, coarsened 36 cells
+1.33441 265 0.0279813 0.23767 0.11517606
+# refined 76 cells, coarsened 64 cells
+1.34057 266 0.0412897 0.23471 0.11515839
+# refined 32 cells, coarsened 44 cells
+1.34657 267 0.0482268 0.233076 0.11514154
+# refined 56 cells, coarsened 52 cells
+1.35274 268 0.0489676 0.231024 0.11512201
+# refined 48 cells, coarsened 108 cells
+1.35891 269 0.049661 0.227736 0.11509945
+# refined 36 cells, coarsened 72 cells
+1.36508 270 0.0503544 0.226616 0.11507776
+# refined 48 cells, coarsened 56 cells
+1.37125 271 0.050955 0.223888 0.11505695
+# refined 52 cells, coarsened 44 cells
+1.37742 272 0.0515204 0.221924 0.11503952
+# refined 72 cells, coarsened 24 cells
+1.38359 273 0.0520838 0.220617 0.11502065
+# refined 64 cells, coarsened 88 cells
+1.38976 274 0.052609 0.218614 0.11500234
+# refined 52 cells, coarsened 44 cells
+1.39593 275 0.0530072 0.217659 0.11498817
+# refined 56 cells, coarsened 56 cells
+1.40209 276 0.0536107 0.215207 0.11497446
+# refined 84 cells, coarsened 48 cells
+1.40826 277 0.0539423 0.212165 0.11496139
+# refined 36 cells, coarsened 40 cells
+1.41443 278 0.0542761 0.210835 0.11494672
+# refined 44 cells, coarsened 64 cells
+1.4206 279 0.0546118 0.208299 0.11493213
+# refined 60 cells, coarsened 96 cells
+1.42677 280 0.0549488 0.206832 0.11491756
+# refined 40 cells, coarsened 64 cells
+1.43294 281 0.0552507 0.204936 0.11490339
+# refined 72 cells, coarsened 48 cells
+1.43911 282 0.0555031 0.20217 0.11489008
+# refined 44 cells, coarsened 104 cells
+1.44528 283 0.0557561 0.201179 0.11487713
+# refined 68 cells, coarsened 24 cells
+1.45145 284 0.0560072 0.199384 0.11486462
+# refined 88 cells, coarsened 44 cells
+1.45762 285 0.0562708 0.198568 0.11485244
+# refined 48 cells, coarsened 24 cells
+1.46379 286 0.0565439 0.197224 0.11484220
+# refined 76 cells, coarsened 56 cells
+1.46996 287 0.0568253 0.194664 0.11483250
+# refined 44 cells, coarsened 32 cells
+1.47613 288 0.0571137 0.193261 0.11482290
+# refined 72 cells, coarsened 56 cells
+1.4823 289 0.0574079 0.191617 0.11481300
+# refined 32 cells, coarsened 96 cells
+1.48847 290 0.0577092 0.189861 0.11480274
+# refined 60 cells, coarsened 52 cells
+1.49464 291 0.058019 0.188686 0.11479316
+# refined 16 cells, coarsened 84 cells
+1.50081 292 0.0583392 0.186483 0.11478356
+# refined 68 cells, coarsened 64 cells
+1.50698 293 0.0586758 0.184648 0.11477493
+# refined 32 cells, coarsened 44 cells
+1.51314 294 0.0590336 0.183417 0.11476628
+# refined 100 cells, coarsened 44 cells
+1.51931 295 0.0593143 0.182381 0.11475757
+# refined 76 cells, coarsened 52 cells
+1.52548 296 0.0596139 0.181562 0.11474815
+# refined 96 cells, coarsened 40 cells
+1.53165 297 0.0599478 0.180175 0.11473759
+# refined 44 cells, coarsened 68 cells
+1.53782 298 0.0603153 0.178521 0.11472669
+# refined 48 cells, coarsened 108 cells
+1.54399 299 0.0607228 0.177489 0.11471131
+# refined 40 cells, coarsened 104 cells
+1.55016 300 0.0611924 0.175768 0.11469456
+# refined 56 cells, coarsened 100 cells
+1.55633 301 0.0616996 0.174555 0.11467814
+# refined 56 cells, coarsened 96 cells
+1.5625 302 0.0622629 0.173453 0.11466208
+# refined 48 cells, coarsened 48 cells
+1.56901 303 0.0629558 0.171556 0.11464413
+# refined 44 cells, coarsened 56 cells
+1.57552 304 0.0635262 0.170584 0.11462656
+# refined 40 cells, coarsened 40 cells
+1.58203 305 0.0642045 0.169309 0.11460940
+# refined 92 cells, coarsened 8 cells
+1.58854 306 0.0651067 0.168257 0.11459263
+# refined 100 cells, coarsened 76 cells
+1.59505 307 0.0659526 0.167424 0.11457942
+# refined 60 cells, coarsened 120 cells
+1.60156 308 0.0670261 0.166395 0.11456681
+# refined 52 cells, coarsened 120 cells
+1.60807 309 0.0682695 0.165645 0.11454798
+# refined 64 cells, coarsened 100 cells
+1.61458 310 0.0697726 0.164476 0.11452927
+# refined 28 cells, coarsened 104 cells
+1.62109 311 0.0717717 0.162757 0.11451554
+# refined 56 cells, coarsened 52 cells
+1.6276 312 0.0747674 0.161919 0.11449779
+# refined 72 cells, coarsened 56 cells
+1.63411 313 0.0801296 0.160735 0.11447895
+# refined 64 cells, coarsened 76 cells
+1.64063 314 0.0817012 0.159973 0.11446054
+# refined 56 cells, coarsened 48 cells
+1.64714 315 0.0813221 0.158967 0.11444253
+# refined 92 cells, coarsened 56 cells
+1.65384 316 0.080939 0.15755 0.11442437
+# refined 80 cells, coarsened 64 cells
+1.66054 317 0.080564 0.156692 0.11440166
+# refined 80 cells, coarsened 84 cells
+1.66724 318 0.0801973 0.15564 0.11437981
+# refined 28 cells, coarsened 64 cells
+1.67394 319 0.079839 0.163612 0.11435876
+# refined 64 cells, coarsened 104 cells
+1.68064 320 0.0794891 0.175366 0.11433683
+# refined 40 cells, coarsened 56 cells
+1.68735 321 0.0791477 0.183806 0.11431569
+# refined 96 cells, coarsened 60 cells
+1.69405 322 0.0788147 0.189231 0.11429532
+# refined 64 cells, coarsened 96 cells
+1.70075 323 0.0784891 0.192501 0.11427535
+# refined 60 cells, coarsened 96 cells
+1.70745 324 0.0781703 0.194083 0.11425605
+# refined 88 cells, coarsened 32 cells
+1.71415 325 0.077858 0.19443 0.11423759
+# refined 100 cells, coarsened 92 cells
+1.72086 326 0.0775521 0.193993 0.11421967
+# refined 72 cells, coarsened 40 cells
+1.72756 327 0.0772524 0.192798 0.11420284
+# refined 56 cells, coarsened 80 cells
+1.73426 328 0.0769587 0.191318 0.11418655
+# refined 64 cells, coarsened 64 cells
+1.74096 329 0.0766717 0.189463 0.11417065
+# refined 96 cells, coarsened 128 cells
+1.74766 330 0.0763901 0.187814 0.11415458
+# refined 48 cells, coarsened 40 cells
+1.75437 331 0.0761142 0.186422 0.11413886
+# refined 28 cells, coarsened 112 cells
+1.76107 332 0.0758438 0.184828 0.11412350
+# refined 28 cells, coarsened 72 cells
+1.76777 333 0.0755786 0.183595 0.11410824
+# refined 104 cells, coarsened 112 cells
+1.77447 334 0.0753186 0.182287 0.11408954
+# refined 64 cells, coarsened 32 cells
+1.78117 335 0.0750636 0.181538 0.11407154
+# refined 92 cells, coarsened 72 cells
+1.78788 336 0.0748103 0.180747 0.11405397
+# refined 137 cells, coarsened 56 cells
+1.79458 337 0.0745564 0.191165 0.11403648
+# refined 72 cells, coarsened 56 cells
+1.80128 338 0.0743082 0.21887 0.11401954
+# refined 64 cells, coarsened 116 cells
+1.80798 339 0.0740661 0.24382 0.11399942
+# refined 32 cells, coarsened 64 cells
+1.81468 340 0.0738298 0.263981 0.11397955
+# refined 68 cells, coarsened 140 cells
+1.82138 341 0.0735988 0.279136 0.11395916
+# refined 52 cells, coarsened 96 cells
+1.82809 342 0.0733719 0.288637 0.11393931
+# refined 72 cells, coarsened 60 cells
+1.83479 343 0.0731322 0.293331 0.11392002
+# refined 40 cells, coarsened 72 cells
+1.84149 344 0.0728961 0.293572 0.11390104
+# refined 56 cells, coarsened 72 cells
+1.84819 345 0.0726636 0.290689 0.11388256
+# refined 72 cells, coarsened 48 cells
+1.85489 346 0.0724345 0.285403 0.11386473
+# refined 96 cells, coarsened 72 cells
+1.8616 347 0.0722085 0.279332 0.11384731
+# refined 100 cells, coarsened 64 cells
+1.8683 348 0.0719854 0.274774 0.11383280
+# refined 64 cells, coarsened 52 cells
+1.875 349 0.0717654 0.272665 0.11381876
+# refined 72 cells, coarsened 88 cells
+1.8821 350 0.0715361 0.268577 0.11380426
+# refined 64 cells, coarsened 112 cells
+1.8892 351 0.0713106 0.264017 0.11378961
+# refined 60 cells, coarsened 96 cells
+1.89631 352 0.0710892 0.259467 0.11377530
+# refined 36 cells, coarsened 96 cells
+1.90341 353 0.0708721 0.255739 0.11376159
+# refined 24 cells, coarsened 48 cells
+1.91051 354 0.0706593 0.25278 0.11374985
+# refined 40 cells, coarsened 56 cells
+1.91761 355 0.0704508 0.250274 0.11373815
+# refined 72 cells, coarsened 32 cells
+1.92472 356 0.0702461 0.247661 0.11372697
+# refined 128 cells, coarsened 80 cells
+1.93182 357 0.0700451 0.244504 0.11371617
+# refined 176 cells, coarsened 84 cells
+1.93892 358 0.069862 0.241453 0.11370531
+# refined 40 cells, coarsened 52 cells
+1.94602 359 0.0696856 0.239304 0.11369468
+# refined 64 cells, coarsened 40 cells
+1.95312 360 0.0695125 0.238018 0.11368428
+# refined 60 cells, coarsened 60 cells
+1.96023 361 0.0693461 0.236458 0.11367410
+# refined 44 cells, coarsened 232 cells
+1.96733 362 0.0691907 0.233963 0.11366496
+# refined 76 cells, coarsened 136 cells
+1.97467 363 0.0690427 0.230853 0.11365545
+# refined 72 cells, coarsened 88 cells
+1.98201 364 0.06891 0.228321 0.11364608
+# refined 68 cells, coarsened 20 cells
+1.98935 365 0.0687984 0.226315 0.11363684
+# refined 36 cells, coarsened 40 cells
+1.99669 366 0.0687237 0.225424 0.11362747
+# refined 132 cells, coarsened 72 cells
+2.00402 367 0.0686269 0.223994 0.11361868
+# refined 160 cells, coarsened 56 cells
+2.01136 368 0.0685151 0.222724 0.11361025
+# refined 96 cells, coarsened 72 cells
+2.0187 369 0.0684472 0.220106 0.11360202
+# refined 56 cells, coarsened 56 cells
+2.02604 370 0.0684533 0.217631 0.11359377
+# refined 64 cells, coarsened 64 cells
+2.03338 371 0.0685938 0.216071 0.11358527
+# refined 32 cells, coarsened 256 cells
+2.04072 372 0.0689997 0.214745 0.11357786
+# refined 16 cells, coarsened 112 cells
+2.04806 373 0.0700748 0.213354 0.11357031
+# refined 56 cells, coarsened 68 cells
+2.0554 374 0.0721462 0.212385 0.11356214
+# refined 36 cells, coarsened 32 cells
+2.06274 375 0.0773932 0.210364 0.11355405
+# refined 12 cells, coarsened 52 cells
+2.07008 376 0.0871443 0.20739 0.11354534
+# refined 32 cells, coarsened 80 cells
+2.07741 377 0.0922403 0.2063 0.11353668
+# refined 32 cells, coarsened 164 cells
+2.08475 378 0.0917488 0.205051 0.11352481
+# refined 32 cells, coarsened 104 cells
+2.09209 379 0.0912682 0.202772 0.11351073
+# refined 48 cells, coarsened 128 cells
+2.09943 380 0.0907988 0.2016 0.11349599
+# refined 28 cells, coarsened 48 cells
+2.10677 381 0.0903402 0.200395 0.11348159
+# refined 16 cells, coarsened 56 cells
+2.11411 382 0.0898934 0.198134 0.11346758
+# refined 40 cells, coarsened 44 cells
+2.12145 383 0.0894561 0.196652 0.11345397
+# refined 32 cells, coarsened 28 cells
+2.12879 384 0.0890294 0.1959 0.11343834
+# refined 16 cells, coarsened 24 cells
+2.13613 385 0.0886129 0.195914 0.11342305
+# refined 16 cells, coarsened 16 cells
+2.14347 386 0.0881773 0.200347 0.11340809
+# refined 32 cells, coarsened 8 cells
+2.1508 387 0.0877314 0.204103 0.11339344
+# refined 24 cells, coarsened 8 cells
+2.15814 388 0.0872949 0.205404 0.11337908
+# refined 40 cells, coarsened 0 cells
+2.16548 389 0.0868323 0.205181 0.11336501
+# refined 48 cells, coarsened 48 cells
+2.17282 390 0.0861978 0.20473 0.11335120
+# refined 120 cells, coarsened 32 cells
+2.18016 391 0.0855782 0.204828 0.11333820
+# refined 48 cells, coarsened 0 cells
+2.1875 392 0.0849731 0.204855 0.11332553
+# refined 16 cells, coarsened 8 cells
+2.19512 393 0.0843597 0.204157 0.11331260
+# refined 24 cells, coarsened 20 cells
+2.20274 394 0.0837576 0.203282 0.11329780
+# refined 28 cells, coarsened 40 cells
+2.21037 395 0.083252 0.201424 0.11328518
+# refined 56 cells, coarsened 44 cells
+2.21799 396 0.0827482 0.199919 0.11327027
+# refined 8 cells, coarsened 16 cells
+2.22561 397 0.0822492 0.199192 0.11325394
+# refined 44 cells, coarsened 32 cells
+2.23323 398 0.0817565 0.197439 0.11323788
+# refined 24 cells, coarsened 8 cells
+2.24085 399 0.0812713 0.195285 0.11322206
+# refined 36 cells, coarsened 64 cells
+2.24848 400 0.0807956 0.194192 0.11320649
+# refined 48 cells, coarsened 48 cells
+2.2561 401 0.0803294 0.192861 0.11319115
+# refined 48 cells, coarsened 92 cells
+2.26372 402 0.0800762 0.191298 0.11317406
+# refined 36 cells, coarsened 144 cells
+2.27134 403 0.0795551 0.19398 0.11315709
+# refined 80 cells, coarsened 36 cells
+2.27896 404 0.0790488 0.195597 0.11313642
+# refined 104 cells, coarsened 24 cells
+2.28659 405 0.0785578 0.19626 0.11311624
+# refined 40 cells, coarsened 32 cells
+2.29421 406 0.0780812 0.196264 0.11309624
+# refined 40 cells, coarsened 20 cells
+2.30183 407 0.0776182 0.195795 0.11307662
+# refined 40 cells, coarsened 64 cells
+2.30945 408 0.0771682 0.195022 0.11305734
+# refined 40 cells, coarsened 16 cells
+2.31707 409 0.0767305 0.1941 0.11303840
+# refined 40 cells, coarsened 80 cells
+2.3247 410 0.0763045 0.192965 0.11301977
+# refined 32 cells, coarsened 40 cells
+2.33232 411 0.0758895 0.19159 0.11300143
+# refined 32 cells, coarsened 112 cells
+2.33994 412 0.0754851 0.190123 0.11298337
+# refined 60 cells, coarsened 136 cells
+2.34756 413 0.0750905 0.18858 0.11296446
+# refined 64 cells, coarsened 48 cells
+2.35518 414 0.0747053 0.186813 0.11294590
+# refined 76 cells, coarsened 36 cells
+2.3628 415 0.0743291 0.185413 0.11292771
+# refined 128 cells, coarsened 80 cells
+2.37043 416 0.0739614 0.184001 0.11291539
+# refined 92 cells, coarsened 48 cells
+2.37805 417 0.0736016 0.182655 0.11290331
+# refined 100 cells, coarsened 84 cells
+2.38567 418 0.0732494 0.181314 0.11289181
+# refined 12 cells, coarsened 128 cells
+2.39329 419 0.0729045 0.179909 0.11288062
+# refined 40 cells, coarsened 40 cells
+2.40091 420 0.0725663 0.178538 0.11286971
+# refined 56 cells, coarsened 40 cells
+2.40854 421 0.0722346 0.177329 0.11285906
+# refined 48 cells, coarsened 24 cells
+2.41616 422 0.071909 0.176257 0.11284863
+# refined 60 cells, coarsened 80 cells
+2.42378 423 0.0715892 0.1751 0.11283840
+# refined 104 cells, coarsened 80 cells
+2.4314 424 0.071275 0.173919 0.11282837
+# refined 80 cells, coarsened 152 cells
+2.43902 425 0.0709658 0.17273 0.11281839
+# refined 64 cells, coarsened 136 cells
+2.44665 426 0.0706616 0.171588 0.11280778
+# refined 24 cells, coarsened 96 cells
+2.45427 427 0.0703543 0.170494 0.11279742
+# refined 28 cells, coarsened 68 cells
+2.46189 428 0.0700157 0.169388 0.11278731
+# refined 80 cells, coarsened 72 cells
+2.46951 429 0.0696575 0.168378 0.11277742
+# refined 71 cells, coarsened 52 cells
+2.47713 430 0.0692885 0.167361 0.11276905
+# refined 112 cells, coarsened 80 cells
+2.48476 431 0.0689247 0.166269 0.11276095
+# refined 64 cells, coarsened 72 cells
+2.49238 432 0.0685658 0.165127 0.11275301
+# refined 28 cells, coarsened 24 cells
+2.5 433 0.0682121 0.164163 0.11274521
+# refined 68 cells, coarsened 68 cells

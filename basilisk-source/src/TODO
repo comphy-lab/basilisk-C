@@ -1,0 +1,18 @@
+# Projects
+
+The level of difficulty is indicated.
+
+* Implement and test the "constant density" method of [Dodd and
+  Ferrante,
+  2014](http://dx.doi.org/10.1016/j.jcp.2014.05.024). (Medium)
+* Implement and test the "conservative SGN model" of [Clamond et al,
+  2016](https://hal.archives-ouvertes.fr/hal-01232370). (Medium)
+* Implement and test the "reference map" method of [Kamrin and Nave,
+  2009](https://arxiv.org/abs/0901.3799) (and subsequent papers). (Hard)
+* Rewrite the Basilisk parser using a proper [yacc/bison
+  grammar](https://en.wikipedia.org/wiki/GNU_bison). (Hard)
+* Interface Basilisk with [Kokkos](https://github.com/kokkos/kokkos). (hard)
+
+# Other
+
+* Better parser for bview (semicolon, comments, blocks)

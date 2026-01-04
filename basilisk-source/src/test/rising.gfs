@@ -1,0 +1,53 @@
+Define VAR(T,min,max)   (min + CLAMP(T,0,1)*(max - min))
+Define RHO(T)            VAR(T, 1, 1000)
+Define MU(T)             VAR(T, 0.1, 10)
+
+1 0 GfsSimulation GfsBox GfsGEdge { x = 0.5 y = 0.5 } {
+    Time { end = 3 }
+    Refine 8
+    PhysicalParams { L = 1 }
+    VariableTracerVOFHeight T
+    VariableFiltered T1 T 1
+    InitFraction T ((x - 0.5)*(x - 0.5) + y*y - 0.25*0.25)
+    PhysicalParams { alpha = 1./RHO(T1) }
+
+    SourceViscosity MU(T1) { tolerance = 1e-4 }
+    ApproxProjectionParams { tolerance = 1e-4 }
+    ProjectionParams { tolerance = 1e-4 }
+    
+    VariableCurvature K T
+    SourceTension T 1.96 K
+#    Source U -0.98
+    VariablePosition X T x
+    # g = 0.98, g' = 0.98*(rho1 - rho2)
+    SourceTension T -0.98*(1000. - 1.) X
+    
+    OutputSimulation { istep = 10 } stdout
+
+    OutputTime { istep = 1 } stderr
+    OutputProjectionStats { istep = 1 } stderr
+    OutputDiffusionStats  { istep = 1 } stderr
+
+    ## compute bubble volume (needed to compute centroid)
+    SpatialSum { istep = 10 } bubble_volume (1. - T)
+
+    ## write bubble position and velocity
+    OutputScalarSum { istep = 10 } {
+	awk '{
+	  if (NR == 1) {
+	    print $3, $5, 0.;
+	  }
+          else { 
+	    print (t+$3)/2., $5, ($5-x)/($3-t);
+	  }
+          t = $3; x = $5;
+          fflush(stdout)
+        }' > xv
+    } { v = x*(1. - T)/bubble_volume }
+}
+GfsBox {
+    bottom = Boundary
+    top = Boundary
+    left = Boundary
+    right = Boundary
+}

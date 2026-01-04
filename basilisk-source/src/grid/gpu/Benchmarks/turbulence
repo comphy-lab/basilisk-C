@@ -1,0 +1,121 @@
+~~~bash
+cd $BASILISK/examples
+
+CFLAGS='-DSINGLE_PRECISION -DBENCHMARK=1' make turbulence.ctst
+for i in 128 256 512 1024 2048 4096; do 
+  OMP_NUM_THREADS=8 turbulence/turbulence $i 2> /tmp/log; 
+done
+
+# Multigrid, 2008 steps, 13.5656 CPU, 1.698 real, 1.94e+07 points.step/s, 8 var
+# Multigrid, 2073 steps, 37.6603 CPU, 4.71 real, 2.88e+07 points.step/s, 8 var
+# Multigrid, 2363 steps, 125.084 CPU, 15.64 real, 3.96e+07 points.step/s, 8 var
+# Multigrid, 2887 steps, 566.771 CPU, 70.87 real, 4.27e+07 points.step/s, 8 var
+# Multigrid, 3010 steps, 2484.88 CPU, 310.7 real, 4.06e+07 points.step/s, 8 var
+# Multigrid, 3110 steps, 10083.9 CPU, 1261 real, 4.14e+07 points.step/s, 8 var
+
+CFLAGS='-DBENCHMARK=1' make turbulence.gpu.tst
+
+OpenGL renderer string: Mesa Intel(R) UHD Graphics (TGL GT1) (0x9a60)
+Video memory: 3072MB
+
+for i in 128 256 512 1024 2048 4096; do 
+  OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu $i 2> /tmp/log; 
+done
+
+# Multigrid (GPU), 2009 steps, 2.59921 CPU, 5.478 real, 6.01e+06 points.step/s, 8 var
+# Multigrid (GPU), 2008 steps, 1.992 CPU, 8.546 real, 1.54e+07 points.step/s, 8 var
+# Multigrid (GPU), 2328 steps, 4.43931 CPU, 25.36 real, 2.41e+07 points.step/s, 8 var
+# Multigrid (GPU), 2767 steps, 10.0743 CPU, 97.95 real, 2.96e+07 points.step/s, 8 var
+# Multigrid (GPU), 2991 steps, 17.2899 CPU, 391.4 real, 3.21e+07 points.step/s, 8 var
+
+OpenGL renderer string: NVIDIA GeForce RTX 3050 Ti Laptop GPU/PCIe/SSE2
+Dedicated video memory: 4096 MB
+
+for i in 128 256 512 1024 2048 4096; do 
+  OMP_NUM_THREADS=1 nvidia turbulence.gpu/turbulence.gpu $i 2> /tmp/log; 
+done
+
+# Multigrid (GPU), 2009 steps, 1.53716 CPU, 1.537 real, 2.14e+07 points.step/s, 8 var
+# Multigrid (GPU), 2008 steps, 1.63853 CPU, 1.639 real, 8.03e+07 points.step/s, 8 var
+# Multigrid (GPU), 2328 steps, 3.30781 CPU, 3.308 real, 1.84e+08 points.step/s, 8 var
+# Multigrid (GPU), 2767 steps, 11.4863 CPU, 11.49 real, 2.53e+08 points.step/s, 8 var
+# Multigrid (GPU), 2991 steps, 45.4397 CPU, 45.44 real, 2.76e+08 points.step/s, 8 var
+# Multigrid (GPU), 3011 steps, 179.499 CPU, 179.5 real, 2.81e+08 points.step/s, 8 var
+
+OpenGL renderer string: Quadro RTX 6000/PCIe/SSE2
+Dedicated video memory: 24576 MB
+
+for i in 128 256 512 1024 2048 4096; do 
+  OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu $i 2> /tmp/log; 
+done
+
+# Multigrid (GPU), 2009 steps, 1.32091 CPU, 1.321 real, 2.49e+07 points.step/s, 8 var
+# Multigrid (GPU), 2008 steps, 1.45009 CPU, 1.45 real, 9.07e+07 points.step/s, 8 var
+# Multigrid (GPU), 2328 steps, 2.27639 CPU, 2.276 real, 2.68e+08 points.step/s, 8 var
+# Multigrid (GPU), 2767 steps, 4.9143 CPU, 4.915 real, 5.9e+08 points.step/s, 8 var
+# Multigrid (GPU), 2991 steps, 14.5549 CPU, 14.56 real, 8.62e+08 points.step/s, 8 var
+# Multigrid (GPU), 3011 steps, 53.9424 CPU, 53.95 real, 9.36e+08 points.step/s, 8 var
+
+OpenGL renderer string: NVIDIA GeForce RTX 4090/PCIe/SSE2
+Dedicated video memory: 24564 MB
+
+for i in 128 256 512 1024 2048 4096; do
+  OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu $i 2> /tmp/log;
+done
+
+# Multigrid (GPU), 2009 steps, 1.26929 CPU, 1.27 real, 2.59e+07 points.step/s, 8 var
+# Multigrid (GPU), 2008 steps, 1.41643 CPU, 1.416 real, 9.29e+07 points.step/s, 8 var
+# Multigrid (GPU), 2328 steps, 2.00638 CPU, 2.007 real, 3.04e+08 points.step/s, 8 var
+# Multigrid (GPU), 2767 steps, 3.154 CPU, 3.154 real, 9.2e+08 points.step/s, 8 var
+# Multigrid (GPU), 2991 steps, 6.92783 CPU, 6.928 real, 1.81e+09 points.step/s, 8 var
+# Multigrid (GPU), 3011 steps, 31.0801 CPU, 31.08 real, 1.63e+09 points.step/s, 8 var
+
+OpenGL renderer string: NVIDIA GeForce RTX 4090 D/PCIe/SSE2 (stokes.lmm.jussieu.fr)
+Dedicated video memory: 24564 MB
+
+# Multigrid (GPU), 2009 steps, 1.39246 CPU, 1.392 real, 2.36e+07 points.step/s, 8 var
+# Multigrid (GPU), 2008 steps, 1.5809 CPU, 1.581 real, 8.32e+07 points.step/s, 8 var
+# Multigrid (GPU), 2328 steps, 2.20537 CPU, 2.205 real, 2.77e+08 points.step/s, 8 var
+# Multigrid (GPU), 2767 steps, 3.45719 CPU, 3.457 real, 8.39e+08 points.step/s, 8 var
+# Multigrid (GPU), 2991 steps, 7.41217 CPU, 7.413 real, 1.69e+09 points.step/s, 8 var
+# Multigrid (GPU), 3011 steps, 31.3258 CPU, 31.33 real, 1.61e+09 points.step/s, 8 var
+
+CFLAGS='-DTRACE=2 -DBENCHMARK=1' make turbulence.gpu.tst
+
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu 256
+
+# Multigrid (GPU), 2008 steps, 5.22215 CPU, 5.223 real, 2.52e+07 points.step/s, 8 var
+   calls    total     self   % total   function
+    4025     4.64     4.11     78.6%   mg_cycle():/src/poisson.h:92
+  336353     0.56     0.55     10.5%   setup_shader():/src/grid/gpu/grid.h:1721
+    6034     0.14     0.14      2.7%   gpu_reduction():/src/poisson.h:381
+    2009     4.97     0.14      2.6%   mg_solve():/src/poisson.h:230
+    2009     0.09     0.08      1.6%   tracer_fluxes():/src/bcg.h:61
+
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu 512
+# Multigrid (GPU), 2328 steps, 8.17009 CPU, 8.17 real, 7.47e+07 points.step/s, 8 var
+   calls    total     self   % total   function
+    4670     6.88     6.17     75.6%   mg_cycle():/src/poisson.h:92
+  440039     0.75     0.73      9.0%   setup_shader():/src/grid/gpu/grid.h:1721
+    2329     7.58     0.33      4.1%   mg_solve():/src/poisson.h:230
+    6999     0.26     0.26      3.1%   gpu_reduction():/src/poisson.h:381
+    2329     0.25     0.23      2.8%   tracer_fluxes():/src/bcg.h:61
+    2329     0.34     0.09      1.1%   advection():/src/bcg.h:99
+    2329     0.08     0.08      1.0%   gpu_reduction():/src/timestep.h:6
+    2329     0.08     0.08      1.0%   gpu_reduction():/src/poisson.h:163
+    2329     0.17     0.08      1.0%   velocity():/src/advection.h:54
+
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu 1024
+# Multigrid (GPU), 2767 steps, 17.2732 CPU, 17.27 real, 1.68e+08 points.step/s, 8 var
+   calls    total     self   % total   function
+    5559    13.17    12.23     70.8%   mg_cycle():/src/poisson.h:92
+    2768    15.34     1.15      6.7%   mg_solve():/src/poisson.h:230
+  574414     0.99     0.97      5.6%   setup_shader():/src/grid/gpu/grid.h:1721
+    2768     0.85     0.83      4.8%   tracer_fluxes():/src/bcg.h:61
+    8327     0.76     0.76      4.4%   gpu_reduction():/src/poisson.h:381
+    2768     1.17     0.32      1.8%   advection():/src/bcg.h:99
+    2768     0.50     0.26      1.5%   velocity():/src/advection.h:54
+    2768    15.59     0.25      1.4%   velocity_0():/src/navier-stokes/stream.h:87
+    2768     0.24     0.24      1.4%   gpu_reduction():/src/timestep.h:6
+    2768     0.23     0.23      1.3%   gpu_reduction():/src/poisson.h:163
+~~~

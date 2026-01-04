@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2 Patchlevel 5d -->
+
+<!-- CreationDate: Thu Nov  7 21:13:08 2013 -->
+
+<!-- Magnification: 1.050 -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="154"
+   height="95.000008"
+   viewBox="4472 2712 2031.2545 1260.479"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="fractions.svg"
+   inkscape:export-filename="/home/popinet/basilisk/wiki/src/figures/fractions.png"
+   inkscape:export-xdpi="31.062906"
+   inkscape:export-ydpi="31.062906">
+  <metadata
+     id="metadata40">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs38" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="709"
+     id="namedview36"
+     showgrid="true"
+     showborder="false"
+     inkscape:zoom="5.3789469"
+     inkscape:cx="77.000003"
+     inkscape:cy="47.500004"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <g
+     id="g3771"
+     transform="matrix(0.27428778,0.21131974,-0.21034259,0.27556198,4960.1983,276.46803)">
+    <polyline
+       points="6614,6141 6614,5416 "
+       style="fill:none;stroke:#000000;stroke-width:39.80459595;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+       id="polyline20" />
+    <polygon
+       points="6551,5461 6614,5406 6677,5461 6677,5461 6614,5186 "
+       style="fill:#000000;stroke:#000000;stroke-width:39.80459595;stroke-miterlimit:8;stroke-dasharray:none"
+       id="polygon22" />
+  </g>
+  <rect
+     id="rect24"
+     style="fill:none;stroke:#000000;stroke-width:13.79060268;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none"
+     rx="0"
+     height="984.13861"
+     width="979.58795"
+     y="2779.5901"
+     x="5068.7681" />
+  <text
+     xml:space="preserve"
+     style="font-size:183.87471008px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="5652.6641"
+     y="3345.3096"
+     id="text3804"
+     sodipodi:linespacing="125%"
+     transform="scale(0.9976853,1.0023201)"><tspan
+       sodipodi:role="line"
+       id="tspan3806"
+       x="5652.6641"
+       y="3345.3096">n</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:183.87471008px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="4633.1411"
+     y="3451.3618"
+     id="text3804-1"
+     sodipodi:linespacing="125%"
+     transform="scale(0.9976853,1.0023201)"><tspan
+       sodipodi:role="line"
+       id="tspan3806-5"
+       x="4633.1411"
+       y="3451.3618">s.x[]</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:183.87471008px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="5326.6787"
+     y="3925.0366"
+     id="text3804-1-68"
+     sodipodi:linespacing="125%"
+     transform="scale(0.9976853,1.0023201)"><tspan
+       sodipodi:role="line"
+       id="tspan3806-5-6"
+       x="5326.6787"
+       y="3925.0366">s.y[]</tspan></text>
+  <path
+     style="fill:#a3a3a3;fill-opacity:1;stroke:#000000;stroke-width:13.79060268;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     d="m 5071.2883,3027.0628 893.5816,732.9381 83.1811,0.081 -979.1164,2.3646 z"
+     id="path3873"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="ccccc"
+     inkscape:export-xdpi="31.062906"
+     inkscape:export-ydpi="31.062906" />
+  <text
+     xml:space="preserve"
+     style="font-size:183.87471008px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="5394.5498"
+     y="3560.7397"
+     id="text3804-1-6"
+     sodipodi:linespacing="125%"
+     transform="scale(0.9976853,1.0023201)"><tspan
+       sodipodi:role="line"
+       id="tspan3806-5-0"
+       x="5394.5498"
+       y="3560.7397">c</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:183.87471008px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="4759.4897"
+     y="3917.5718"
+     id="text3804-1-4"
+     sodipodi:linespacing="125%"
+     transform="scale(0.9976853,1.0023201)"><tspan
+       sodipodi:role="line"
+       id="tspan3806-5-3"
+       x="4759.4897"
+       y="3917.5718">Φ[]</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:183.87471008px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="4461.1113"
+     y="2845.4243"
+     id="text3804-1-4-0"
+     sodipodi:linespacing="125%"
+     transform="scale(0.9976853,1.0023201)"><tspan
+       sodipodi:role="line"
+       id="tspan3806-5-3-6"
+       x="4461.1113"
+       y="2845.4243">Φ[0,1]</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:183.87471008px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="5954.2983"
+     y="3924.7896"
+     id="text3804-1-4-1"
+     sodipodi:linespacing="125%"
+     transform="scale(0.9976853,1.0023201)"><tspan
+       sodipodi:role="line"
+       id="tspan3806-5-3-9"
+       x="5954.2983"
+       y="3924.7896">Φ[1,0]</tspan></text>
+</svg>

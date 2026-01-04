@@ -1,0 +1,56 @@
+#!/bin/bash
+
+AVCONV="`which avconv 2> /dev/null`"
+if test -z "$AVCONV"; then
+    AVCONV=`which ffmpeg`
+fi
+
+while test $# -gt 0; do
+    case $1 in
+	-r) shift; rate="-r $1" ;;
+	-*) options="$options $1" ;;
+	*)  file="$1"
+    esac
+    shift
+done
+
+if test -z "$file"; then
+    echo "usage: ppm2mp4 [OPTIONS] FILE" >&2
+    exit 1
+fi
+
+if test -z "$AVCONV"; then
+    echo "ppm2mp4: warning: could not find 'avconv' or 'ffmpeg'" >&2
+    echo "ppm2mp4: the output will just be concatenated PPM files" >&2
+    command="cat > $file"
+else
+    # -crf 18 low compression/high quality, 28 high compression/low quality
+    # see https://trac.ffmpeg.org/wiki/Encode/H.264
+    # -r 15  '15 frames/sec'
+    command="$AVCONV -f image2pipe -vcodec ppm $rate -i - -c:v libx264 -preset slow -tune zerolatency -crf 18 -vf format=yuv420p -y -f mpegts $options $file"
+fi
+
+if test -d "$TMPDIR" ; then
+    log=`mktemp $TMPDIR/ppm2mp4.XXXXXX`
+else
+    log=`mktemp /tmp/ppm2mp4.XXXXXX`
+fi
+
+if $command 2> $log; then :
+else
+    cat $log >&2
+    rm -f $log
+    exit 1
+fi
+
+# we reformat to create a standard (and more compressed) mp4 file
+if $AVCONV -i "$file" -crf 18 -movflags +faststart $log.mp4 2> $log; then
+    mv -f $log.mp4 "$file"
+else
+    cat $log >&2
+    rm -f $log $log.mp4
+    exit 1
+fi    
+rm -f $log
+
+exit 0

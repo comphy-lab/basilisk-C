@@ -1,0 +1,38 @@
+#!/bin/bash
+
+CONVERT="`which convert`"
+GIFSICLE="`which gifsicle`"
+
+if test -z "$CONVERT" -o -z "$GIFSICLE"; then
+    echo "ppm2gif: warning: could not find 'convert' or 'gifsicle'" >&2
+    echo "ppm2gif: the output will just be concatenated PPM files" >&2
+    cat
+else
+    command="gifsicle --colors 256 --optimize --delay 5"
+    ppm="convert"
+    while test $# -gt 0; do
+	case $1 in
+	    -s)
+		ppm="$ppm -extract $2"
+		shift
+		;;
+	    *)
+		command="$command $1"
+		;;
+	esac
+	shift
+    done
+    if test -d "$TMPDIR" ; then
+	log=`mktemp $TMPDIR/ppm2gif.XXXXXX`
+    else
+	log=`mktemp /tmp/ppm2gif.XXXXXX`
+    fi
+    $ppm ppm:- $log-%04d.gif
+    if $command $log-*.gif 2> $log; then :
+    else
+	cat $log >&2
+	rm -f $log*
+	exit 1
+    fi
+    rm -f $log*
+fi

@@ -1,0 +1,30 @@
+* Francesco De Vita: [multi-layer Saint-Venant](multilayer.h)
+* Palas Kumar Farsoiya: [Henry's law](henry.h)
+* Nicolas Fintzi: [Einstein summation convention](/src/ast/einstein_sum.h)
+* Jose-Maria Fullana: [Conway's game of life](examples/life.c),
+  [Brusselator](examples/brusselator.c),
+  [reaction--diffusion](diffusion.h), [1D arterial
+  flow](test/artery1D.c)
+* [Daniel Fuster](/sandbox/fuster/README): [All-Mach two-phase
+  compressible solver](compressible/two-phase.h)
+* [Geoffroy Kirstetter](/sandbox/geoffroy/README): [flow rates for
+  multiple rivers](test/multiriverinflow.c)  
+* [Pierre-Yves Lagrée](/sandbox/M1EMN/README): [SAG equation](test/sag.c)
+* Emily Lane: GRD export
+* [Alexandre Limare](/sandbox/alimare/README): [Redistancing of a distance field](redistance.h)
+* Jose Lopez-Herrera: [Electrohydrodynamics](README#electrohydrodynamics), 
+  [Viscoelasticity](README#viscoelasticity)
+* [John MacFarlane](https://johnmacfarlane.net/) CSS stylesheets and
+  icons for the web pages (from
+  [gitit](http://hackage.haskell.org/package/gitit))
+* [Stéphane Popinet](/sandbox/popinet/README)
+* Clément Robert: [Galilean invariance
+  test](test/galilean_invariance.c), [Surface tension for the
+  multilayer solver](layered/hydro-tension.h)
+* [Youssef Saadeh](/sandbox/ysaade/README): [Spherically-symmetric
+  coordinates](spherisym.h), [thermal effects for the two-phase
+  compressible solver](compressible/thermal.h)
+* Dmitry V. Sokolov: A modified version of
+  [tinyrenderer](https://github.com/ssloy/tinyrenderer) is used by [view.h]().
+* [Antoon van Hooft](/sandbox/Antoonvh/README): [Examples,
+  documentation, Lagrangian particules etc.](/sandbox/Antoonvh/README)

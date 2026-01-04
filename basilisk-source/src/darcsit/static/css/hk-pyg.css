@@ -1,0 +1,20 @@
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+.sourceCode .kw { color: #007020; font-weight: bold; }
+.sourceCode .bu { color: #007020; font-weight: bold; }
+.sourceCode .dt { color: #902000; }
+.sourceCode .dv { color: #40a070; }
+.sourceCode .bn { color: #40a070; }
+.sourceCode .fl { color: #40a070; }
+.sourceCode .ch { color: #4070a0; }
+.sourceCode .st { color: #4070a0; }
+.sourceCode .sc { color: #4070a0; }
+.sourceCode .co { color: #60a0b0; font-style: italic; }
+.sourceCode .ot { color: #007020; }
+.sourceCode .al { color: #ff0000; font-weight: bold; }
+.sourceCode .fu { color: #06287e; }
+.sourceCode .er { color: #40a070; }
+

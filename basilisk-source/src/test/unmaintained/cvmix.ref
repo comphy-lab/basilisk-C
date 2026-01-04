@@ -1,0 +1,99 @@
+Test 1: determining OBL depth
+----------
+OBL depth = 17.436902811724739
+kw of interface above OBL depth = 2
+kt of cell center above OBL depth = 2
+
+Test 2: Computing G(sigma)
+----------
+Coefficients are: 0.000 1.000 -2.000 1.000
+
+Test 3: determining phi_m and phi_s (inversely proportional to w_m and w_s, respectively)
+----------
+Coefficients for computing phi_m and phi_s:
+a_m = 1.257361570184418
+c_m = 8.382410467896117
+a_s = -28.861739379323623
+c_s = 98.954535014823847
+Done! Data is stored in test3.out, run make cvmix/plots
+to see output.
+
+Test 4: Computing Diffusivity in boundary layer
+        (2 cases - boundary layer above and below cell center
+        (Both cases run with and without enhanced diffusivity)
+----------
+OBL_depth = 11.25
+kOBL_depth = 3.250000
+Height and Diffusivity throughout column: 
+ -0.00  1.00000
+ -5.00  0.00273
+-10.00  1.25016
+-15.00  0.00000
+-20.00  0.00000
+-25.00  0.00000
+
+OBL_depth = 13.75
+kOBL_depth = 3.750000
+Height and Diffusivity throughout column: 
+ -0.00  1.00000
+ -5.00  0.00293
+-10.00  0.00108
+-15.00  0.00002
+-20.00  0.00000
+-25.00  0.00000
+
+OBL_depth = 11.25
+kOBL_depth = 3.250000
+Height and Diffusivity throughout column: 
+ -0.00  1.00000
+ -5.00  0.00273
+-10.00  0.00022
+-15.00  0.00000
+-20.00  0.00000
+-25.00  0.00000
+
+OBL_depth = 13.75
+kOBL_depth = 3.750000
+Height and Diffusivity throughout column: 
+ -0.00  1.00000
+ -5.00  0.00293
+-10.00  0.00108
+-15.00  0.00000
+-20.00  0.00000
+-25.00  0.00000
+
+
+Test 5: Computing Bulk Richardson number
+----------
+-2.500000000000000 0.000000000000000
+-7.500000000000000 0.000000000000000
+-12.500000000000000 0.000000000000000
+-17.500000000000000 0.500361003104069
+-22.500000000000000 2.749222218149715
+-27.500000000000000 4.649861922325493
+-32.500000000000000 5.995772936954708
+-37.500000000000000 6.940090421428079
+-42.500000000000000 7.613042087758277
+-47.500000000000000 8.103881432934150
+OBL has depth of 15.497835544126163
+Done! Data is stored in test5.out, run plot_bulk_Rich.ncl
+to see output.
+
+Test 6: 2 simple tests for velocity scale
+----------
+6a: Bf = 0 m^2/s^3 and u* = sqrt(tao/rho0)
+                          =   1.3900960937138319E-02
+    => w_m = w_s ~= vonkarman*u*
+                  =   5.5603843748553280E-03
+w_m =   5.5603843748553280E-03
+w_s =   5.5603843748553280E-03
+
+6b: u* = 0 m/s and Bf = (grav*alpha/(rho0*Cp0))*Qnonpen
+                      =  -5.9297338638629921E-08
+    => w_m = vonkarman * (-Bf * OBL_depth)^1/3 * (c_m*0.1*vonkarman)^1/3 m/s
+           =   1.9690879464369034E-02
+    => w_s = vonkarman * (-Bf * OBL_depth)^1/3 * (c_s*0.1*vonkarman)^1/3 m/s
+           =   4.4835364693284696E-02
+w_m =   1.9690879464369034E-02
+w_s =   4.4835364693284696E-02
+

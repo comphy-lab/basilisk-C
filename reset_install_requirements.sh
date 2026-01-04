@@ -1,6 +1,6 @@
 #!/bin/zsh
 # tested on MacOS only. Let us know if you find issues running with Linux by opening an issue. 
-# modify using http://basilisk.fr/src/INSTALL 
+# modify using https://basilisk.fr/src/INSTALL 
 # ensures that we are always using the latest version of basilisk
 
 # Check if --hard flag is passed
@@ -103,7 +103,7 @@ check_prerequisites() {
 
 # Function to install basilisk
 install_basilisk() {
-    darcs clone http://basilisk.fr/basilisk
+    darcs clone https://basilisk.fr/basilisk
     cd basilisk
 
     # Apply comphy-lab patches (macOS only)

@@ -1,0 +1,8 @@
+43 constraints, 43 unknowns
+Dimensions of finite constants
+  [1]
+    dimension-tests/test3.c:16: '1. [1]'
+  [0,-1]
+    dimension-tests/test3.c:20: 'omega[] = 1. [0,-1]'
+  [0,-2]
+    dimension-tests/test3.c:26: 'omega[] = 2. [0,-2]'

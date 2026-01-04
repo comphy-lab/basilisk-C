@@ -1,0 +1,64 @@
+-------------------
+#line 9 "test22.c"
+b && a
+
+#line 7 "types.c"
+ast_int
+size: 5, flags: 1, pointer: 0, scope: 2, value: 0 (unset)
+===================
+-------------------
+#line 10 "test22.c"
+b || a
+
+#line 7 "types.c"
+ast_int
+size: 5, flags: 0, pointer: 0, scope: 2, value: 1
+===================
+-------------------
+#line 11 "test22.c"
+a && b
+
+#line 7 "types.c"
+ast_int
+size: 5, flags: 1, pointer: 0, scope: 2, value: 0 (unset)
+===================
+-------------------
+#line 12 "test22.c"
+a || b
+
+#line 7 "types.c"
+ast_int
+size: 5, flags: 0, pointer: 0, scope: 2, value: 1
+===================
+-------------------
+#line 14 "test22.c"
+b && a
+
+#line 7 "types.c"
+ast_int
+size: 5, flags: 0, pointer: 0, scope: 2, value: 0
+===================
+-------------------
+#line 15 "test22.c"
+b || a
+
+#line 7 "types.c"
+ast_int
+size: 5, flags: 1, pointer: 0, scope: 2, value: 0 (unset)
+===================
+-------------------
+#line 16 "test22.c"
+a && b
+
+#line 7 "types.c"
+ast_int
+size: 5, flags: 0, pointer: 0, scope: 2, value: 0
+===================
+-------------------
+#line 17 "test22.c"
+a || b
+
+#line 7 "types.c"
+ast_int
+size: 5, flags: 1, pointer: 0, scope: 2, value: 0 (unset)
+===================

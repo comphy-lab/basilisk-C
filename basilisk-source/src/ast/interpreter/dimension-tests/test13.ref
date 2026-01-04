@@ -1,0 +1,17 @@
+------------------- 
+#line 130 "/common.h"
+datasize
+ 
+#line 37 "ast/defaults.h"
+long
+size: 17, flags: 0, pointer: 0, scope: 0, value: 34  + [/src/common.h:130: 'datasize = 0']
+===================
+-------------------
+#line 15 "dimension-tests/test13.c"
+_attribute[1].freed
+ 
+#line 36 "ast/defaults.h"
+int
+size: 5, flags: 0, pointer: 0, scope: 0, value: 1
+===================
+6 constraints, 6 unknowns

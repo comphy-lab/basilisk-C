@@ -1,0 +1,411 @@
+# Test cases
+
+The following test cases are run automatically whenever the code
+changes.
+
+Note that only the documented test cases appear in the list below
+(follow the [All tests](/src/test/) link for a complete list).
+
+## Advection
+
+* [Pure rotation of a smooth tracer field](rotation.c)
+* [Time-reversed advection in a vortex](advection.c)
+
+## Systems of conservation laws
+
+* [Bouncing Saint-Venant bump](bump2D1.c)
+* [1D arterial flow](artery1D.c)
+* [Two- and three-dimensional explosions](explosion.c)
+
+## Incompressible Euler/Navier--Stokes
+
+* [Lid-driven cavity at Re=1000](lid.c)
+* [Merging of two vertices](stream.c)
+* [Merging of two vortices (centered Euler solver)](vortex.c)
+* [Taylor--Green vortices](taylor-green.c)
+* [Non-hydrostatic lock-exchange](kh-ns.c)
+
+## Shallow-water flows
+
+* [Drying of a lake](dry.c)
+* [Simple Saint-Venant Riemann problem](bore1.c)
+* [Oscillations in a parabolic container](parabola.c)
+* [Undular bores for the Green-Naghdi equations](bore.c)
+* [Green-Naghdi soliton](soliton.c)
+* [Solitary wave run-up on a plane beach](beach.c)
+* [Solitary wave overtopping a seawall](seawall.c)
+* [Sinusoidal wave propagation over a bar](bar.c)
+* [Runup of a solitary wave on a conical island](conical.c)
+* [Stress test for wetting and drying](ponds.c)
+* [Shock reflection by a circular cylinder](shock.c)
+* [Flow rates for multiple rivers](multiriverinflow.c)
+* [Source of a river](source.c)
+* [Implicit Saint-Venant solutions for waves](implicit.c)
+* [Viscous hydraulic jump](higuera.c)
+* [Transcritical flow over a bump with multiple layers](layered.c)
+* [Wind-driven lake](wind-driven-stvt.c)
+* [Lake flowing into itself](lake-tr.c)
+
+## Multilayer model
+
+* [Dispersion relation](dispersion.c)
+* [Solitary wave run-up on a plane beach](beach-ml.c)
+* [Solitary wave overtopping a seawall](seawall.c)
+* [Runup of a solitary wave on a conical island](conical.c)
+* [Stress test for wetting and drying](ponds-ml.c)
+* [Sinusoidal wave propagation over a bar](bar-ml.c)
+* [Oscillations in a parabolic container](parabola.c)
+* [Circular dam break on a sphere](lonlat-ml.c)
+* [Wind-driven lake](wind-driven.c)
+* [Large-amplitude standing wave](large.c)
+* [Transcritical flow over a bump with multiple layers](gaussian.c)
+* [Breaking Stokes wave](stokes.c)
+* [Galilean invariance](galilean_invariance.c)
+* [Typical (1D) tsunami wave](tsunami.c)
+* [3D meniscus](meniscus3D.c)
+* [Dispersion relation of gravito-capillary waves](dispersion_gravitocap.c)
+
+## Coriolis
+
+* [Stommel gyre](stommel-ml.c)
+* [Geostrophic adjustment](geo.c)
+* [Non-linear geostrophic adjustment](nonlinear.c)
+
+## Stratified multilayer
+
+* [Internal solitary waves](horn.c)
+* [Overflow](overflow.c)
+* [Lock-exchange](lock.c)
+* [Non-hydrostatic lock-exchange](kh.c)
+* [Isopycnal gyres intersecting the bathymetry](bleck.c)
+
+## Volume-Of-Fluid
+
+* [Computation of volume fractions from a levelset function](fractions.c)
+* [Computation of volume fractions on a variable-resolution grid](fractions1.c)
+* [Fractions in marginal cases](fractions2.c)
+* [Convergence of the face fraction field](facefraction.c)
+* [Computation of a levelset field from a contour](basilisk.c)
+* [Rotation of a circular interface](rotate.c)
+* [Time-reversed VOF advection in a vortex](reversed.c)
+* [Preventing coalescence of VOF tracers](no-coalescence.c)
+
+## Surface tension
+
+* [Curvature of a circular/spherical interface](curvature.c)
+* [Circular droplet in equilibrium](spurious.c)
+* [Capillary wave](capwave.c)
+* [Gravity wave](gravity.c)
+* [Shape oscillation of an inviscid droplet](oscillation.c)
+* [Scalings for Plateau–Rayleigh pinchoff](plateau.c)
+* [Rising bubble](rising.c)
+* [Sessile drop](sessile.c)
+* [3D Sessile drop](sessile3D.c)
+* [Marangoni-induced translation due to a temperature gradient](marangoni.c)
+
+## Compressible two-phase flows
+
+* [Shock tube problem for a single ideal gas (strong shock wave)](shockwave.c)
+* [Advection of two fluids at different pressures](discontinuity-advection.c)
+* [Zero reflection of a wave propagating across an interface between two fluids
+   with impedance matching](reflectionperfect.c)
+* [Transmission/reflection of a wave propagating across an interface
+  between two fluids](reflectiongaussian3.c)
+* [Propagation of an acoustic disturbance in a tube](gaussianaxi.c)
+* [Small-amplitude oscillations due to surface tension](bubble.c)
+* [Small-amplitude spherically-symmetric oscillations due to surface tension](bubble-spherical.c)
+* [Rayleigh collapse of a compressible gas bubble](collapse.c)
+* [Double Mach reflection of a Mach 10 shock from a wall](inclined-shock.c)
+* [Shape oscillation of an inviscid droplet](oscillation.c)
+
+### Compressible two-phase flows with thermal effects
+
+* [Bubble shrinking due to thermal effects](shrinking.c)
+
+## General orthogonal coordinates
+
+* [Circular dam break on a sphere](lonlat.c)
+* [Axisymmetric mass conservation](axiadvection.c)
+* [Axisymmetric Poiseuille flow](poiseuille-axi.c)
+* [Convergence of axisymmetric viscous terms](axi.c)
+* [Refinement of axisymmetric metric](refine-axi.c)
+* [Boundary layer on a rotating disk](swirl.c)
+
+## Embedded boundaries
+
+* [Poisson equation on complex domains](neumann.c)
+* [Poisson equation on complex domains in 3D](neumann3D.c)
+* [Poisson equation on complex axisymmetric domains](neumann-axi.c)
+* [Stability of the embedded face velocity interpolation](uf.c)
+* [Hydrostatic balance with refined embedded boundaries](hydrostatic2.c)
+* [Hydrostatic balance with refined embedded boundaries in 3D](hydrostatic3.c)
+* [Compatibility of embedded boundaries, axi and VOF](missing_metric.c)
+
+### Stokes
+
+* [Poiseuille flow in a periodic channel inclined at 45 degrees](poiseuille45.c)
+* [Couette flow between rotating cylinders](couette.c)
+* [Wannier flow between rotating excentric cylinders](wannier.c)
+* [Stokes flow past a periodic array of cylinders](cylinders.c)
+* [Stokes flow past a periodic array of spheres](spheres.c)
+* [Stokes flow through a complex porous medium](porous.c)
+* [Stokes flow through a complex porous medium, randomly refined](porous1.c)
+
+### Navier--Stokes
+
+* [Starting flow around a cylinder](starting.c)
+
+## Electrohydrodynamics
+
+* [Gouy-Chapman Debye layer](debye.c)
+* [Electrostatic in planar layers](planar.c)
+* [Convergence of axisymmetric EHD stresses](ehd_axi_stress.c)
+* [Charge relaxation in an axisymmetric insulated conducting column](cyl_axi.c)
+* [Charge relaxation in a planar cross-section](cyl_planar.c)
+* [Equilibrium of a droplet suspended in an electric field](taylor.c)
+
+## Viscoelasticity
+
+* [Transient planar Poiseuille flow for 
+   an Oldroyd-B or FENE-P fluid](poiseuille-oldroydb.c)
+* [Oldroyd-B lid-driven cavity](lid-oldroydb.c)
+* [Viscoelastic 2D drop in a Couette Newtonian shear flow](viscodrop.c)
+* [Impact of a viscoelastic drop on a solid](fall.c)
+
+## Reaction--Diffusion
+
+* [The SAG equation](sag.c)
+* [Soluble gas diffusing from a static bubble](static_bubble.c)
+* [Soluble gas diffusing from a rising bubble](axi_rising_bubble.c)
+
+## General Ocean Turbulence Model (GOTM)
+
+* [Turbulent Couette flow](couette-gotm.c)
+* [Entrainment](entrainment.c)
+* [Ocean Weather Ship Papa](ows_papa.c)
+
+## MPI
+
+* [Reduction operations](mpi-reduce.c)
+* [Boundary conditions and restriction](mpi-restriction.c)
+* [Z-order indexing](indexing.c)
+* [Parallel scalability](mpi-laplacian.c)
+* [Parallel refinement](mpi-refine.c)
+* [Poisson solver on non-uniform mesh](mpi-circle.c)
+* [Boundary conditions for face fluxes](mpi-flux.c)
+* [Boundary conditions for face vector fields](mpi-interpu.c)
+* [Simple test of Basilisk View](view.c)
+
+## GPU tests
+
+These tests can be run manually using:
+
+~~~bash
+make -k gpu-tests
+~~~
+
+* [A range of GPU tests](gpu.c)
+* [Layers](layers.c)
+* [Reductions on GPUs](gpu-reduce.c)
+* [Non-linear geostrophic adjustment](nonlinear.c)
+* [Time-reversed advection in a vortex](advection.c)
+* [Saint-Venant bump](bump2D-gpu.c)
+* [Time-reversed VOF advection in a vortex](reversed.c)
+* [Stommel gyre](stommel-ml.c)
+* [Isopycnal gyres intersecting the bathymetry](bleck.c)
+
+Tests for the multigrid solver on GPUs.
+
+* [Convergence of axisymmetric viscous terms](axi.c)
+* [Lid-driven cavity](lid.c)
+* [Rising bubble (CLSVOF version)](rising.c)
+
+See also the [GPU Benchmarks](/src/grid/gpu/Benchmarks.md).
+
+## Speed benchmarks
+
+* [Speed of elementary operations on different grids](laplacian.c)
+* [Poisson equation](poisson.c)
+* [Poisson equation with a circular refined patch](circle.c)
+
+## Basic operations
+
+* [Periodic boundary conditions on face fields](boundary_face.c)
+* [Automatic stencils / boundary conditions](stencils.c)
+* [Interpolation on halos](interp.c)
+* [Tangential interpolation on face vector fields](interpu.c)
+* [Height Functions](hf.c)
+
+## Other
+
+* [Kuramoto--Sivashinsky equation](kuramoto.c)
+* [Convergence of the Runge--Kutta solvers](runge-kutta.c)
+* [Segment traversal](segment.c)
+* [Redistancing of a perturbed distance field](redistance-ellipse.c)
+* [Einstein summation](einstein_sum.c)
+* [Macros](macro.c)
+
+## Unmaintained
+
+The following tests are not maintained anymore.
+
+* [CVMix KPP interface](unmaintained/cvmix.c)
+
+## [All tests](/src/test/)
+
+# Running and creating test cases (and examples)
+
+First make sure to read the [section on
+Makefiles](/Tutorial#using-makefiles) in the [tutorial](/Tutorial).
+
+To run a particular test case yourself, you can then just do
+
+~~~bash
+cd src/test
+make bump2D1.tst
+~~~
+
+which should give something like
+
+    ...
+    qcc -g -O2 -Wall -o bump2D1/bump2D1 bump2D1.c -lm
+    [bump2D1.tst]
+
+This indicates that the test compiled and ran successfully. 
+
+## Error checking
+
+If the test fails, you will get something like
+
+    ...
+    > 2.5 434 0.0678117 0.164104 0.11299303
+    > # refined 80 cells, coarsened 108 cells
+    make: *** [bump2D1.tst] Error 1
+
+The last line indicates that make failed. The lines before this are
+the output of
+
+~~~bash
+diff bump2D1/log bump2D1.ref
+~~~
+
+That is, to check whether the test case succeeded or not, the default
+Makefile of Basilisk just compares (using
+[*diff*](http://man7.org/linux/man-pages/man1/diff.1.html)) the *log*
+file created by the program to the matching reference log file (with
+the *.ref* extension).
+
+To create your own test case (let's call it *mytest*), you only need
+to create the source code (i.e. *mytest.c*), run it to create the
+*mytest/log* file, check that you are happy with the results and copy
+*mytest/log* into *mytest.ref*.
+
+## Graphics
+
+Most tests (but not all) also produce some kind of graph summarising
+the results (which allows for example to understand more easily
+how/why a particular test failed). Some tests produce these graphs
+directly when they run, but most rely on *gnuplot* to generate the
+graphs in a post-processing step.
+
+This step is not automatically executed when doing *make
+test.tst*. This allows for example to run the test suite on *bare
+bones* systems which do not have gnuplot installed.
+
+The makefile system knows about two kinds of graphics: *"inline" plots*
+and *"offline" plots*.
+
+### Inline plots
+
+These are generated using gnuplot or python commands embedded directly
+in the documentation comments of the source code (*mytest.c*). Using
+the standard wiki syntax for scripts these commands appear as
+
+    ~~~gnuplot Caption
+    ...
+    ~~~
+
+    ~~~pythonplot Caption
+    import matplotlib.pyplot as plt
+    ...
+    plt.savefig('plot.png')
+    ~~~
+
+and are replaced by the corresponding figure when the page is displayed
+in the wiki.
+
+To generate the figures from the command line, just do
+
+~~~bash
+make mytest/plots
+~~~
+
+### Offline plots
+
+Alternatively, one can put the gnuplot commands in a separate 
+*mytest.plot* file. Note that this method offers few advantages
+compared to "inline plots" (the prefered option).
+
+To generate the corresponding plots, one can then do
+
+~~~bash
+make bump2D1/plot.png
+~~~
+
+which should give something like
+
+    cd bump2D1 && gnuplot -e "batch=1; PNG=\"pngcairo\" ... ../bump2D1.plot ...
+
+Note that, while *plot.png* is the default name for the generated
+graph, the gnuplot script can also generate other graphs. Doing
+
+~~~bash
+ls bump2D1/*.png
+~~~
+
+(or *`eog bump2D1/*.png`*) reveal them all.
+
+Note that if you try to generate plots for a test case which does not
+have a corresponding *.plot* gnuplot script, you will get something
+like
+
+~~~bash
+make events/plot.png
+make: *** No rule to make target `events/plot.png'.  Stop.
+~~~
+
+## Running the entire test suite
+
+Use something like
+
+~~~bash
+cd src/test/
+make -k -j8
+~~~
+
+where *-k* tells *make* not to stop at the first error and *-j8* uses
+parallel processing (assuming you have at least 8 cores on your
+system).
+
+## Testing dimensional analysis
+
+[Dimensional analysis](/src/ast/interpreter/dimension.c) can be tested
+using reference files with a `.dims.ref` extension. The default
+Makefile will then compile the corresponding `.c` file using the
+`-dimensions` option to generate a `.dims` file which will be compared
+(using `diff`) to the reference file.
+
+A simple way to generate a new reference file for e.g. `test.c` is to do
+
+~~~bash
+touch test.dims.ref
+make test.s
+~~~
+
+The `make test.s` command will fail (since the reference file is empty)
+and one can then copy the generated `.dims` file as the new reference
+file (after checking that it is correct!) i.e.
+
+~~~bash
+cp test.dims test.dims.ref
+~~~

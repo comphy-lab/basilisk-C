@@ -1,0 +1,26 @@
+--- codemirror-5.46.0/mode/clike/clike.js	2019-04-22 13:35:10.000000000 +0200
++++ codemirror/mode/clike/clike.js	2019-05-04 15:56:04.781205957 +0200
+@@ -418,6 +418,23 @@ CodeMirror.defineMode("clike", function(
+     modeProps: {fold: ["brace", "include"]}
+   });
+ 
++  def(["text/x-basiliskc"], {
++    name: "clike",
++    keywords: words(cKeywords + " attribute bool scalar vector tensor event face vertex"
++		      + " foreach foreach_face foreach_vertex foreach_dimension foreach_level foreach_coarse_level foreach_cell foreach_child"),
++    types: cTypes,
++    blockKeywords: words("case do else for foreach foreach_face foreach_vertex foreach_dimension foreach_level foreach_coarse_level foreach_cell foreach_child if switch while struct"),
++    defKeywords: words(cDefKeywords),
++    typeFirstDefinitions: true,
++    atoms: words("NULL true false"),
++    isReservedIdentifier: cIsReservedIdentifier,
++    hooks: {
++      "#": cppHook,
++      "*": pointerHook,
++    },
++    modeProps: {fold: ["brace", "include"]}
++  });
++
+   def(["text/x-c++src", "text/x-c++hdr"], {
+     name: "clike",
+     // Keywords from https://en.cppreference.com/w/cpp/keyword includes C++20.

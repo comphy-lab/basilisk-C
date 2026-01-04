@@ -1,0 +1,9 @@
+# -*-Makefile-*-
+
+# for the Intel C compiler
+
+# how to launch the C99 compiler
+CC99 = icc -std=c99 -D_POSIX_SOURCE -D_BSD_SOURCE
+
+# other useful flags
+CFLAGS += -Wall

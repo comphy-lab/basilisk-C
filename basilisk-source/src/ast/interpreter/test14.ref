@@ -1,0 +1,54 @@
+test14.c:9: interpreter_verbosity (4): !
+test14.c:11: array_new()
+/grid/array.h:10: 1: 1 [0]
+/grid/array.h:10: pmalloc (59)
+ast/interpreter/overload.h:35: malloc (59)
+ast/interpreter/overload.h:35: malloc (size): 0xaddress
+/grid/array.h:10: (Array *) pmalloc ((1)*sizeof(Array),__func__,__FILE__,__LINE__): 0xaddress
+/grid/array.h:11: a->p = NULL: 0xaddress
+/grid/array.h:12: a->max = a->len = 0: 0  + [/src/grid/array.h:12: 'a->len = 0']
+/grid/array.h:13: a: 0xaddress
+test14.c:13: array_append (0xaddress, 0xaddress, 5)
+/grid/array.h:24: a->len + size >= a->max: 1
+/grid/array.h:25: size > 4096 ? size : 4096: 4096  + [/src/grid/array.h:25: '4096']
+/grid/array.h:25: a->max += ( size > 4096 ? size : 4096): 4096  + [/src/grid/array.h:12: 'a->len = 0']
+/grid/array.h:26: prealloc (0xaddress, 4096  + [/src/grid/array.h:12: 'a->len = 0'])
+ast/interpreter/overload.h:45: realloc (0xaddress, 4096  + [/src/grid/array.h:12: 'a->len = 0'])
+ast/interpreter/overload.h:45: realloc (ptr, size): 0xaddress
+/grid/array.h:26: a->p = prealloc (a->p, a->max,__func__,__FILE__,__LINE__): 0xaddress
+/grid/array.h:28: (char *)a->p: 0xaddress
+/grid/array.h:28: memcpy (0xaddress, 0xaddress, 5)
+/grid/array.h:28: memcpy (((char *)a->p) + a->len, elem, size): 0xaddress
+/grid/array.h:29: a->len += size: 5  + [/src/grid/array.h:12: 'a->len = 0']
+/grid/array.h:30: (char *)a->p: 0xaddress
+/grid/array.h:30: ((char *)a->p) + a->len - size: 0xaddress
+/grid/array.h:30: (void *)(((char *)a->p) + a->len - size): 0xaddress
+test14.c:13: array_append (a, &b, sizeof(Elem)): 0xaddress
+test14.c:16: i < a->len/sizeof(Elem): 1
+test14.c:17: *j: 1
+test14.c:16: i++: 0
+test14.c:16: i < a->len/sizeof(Elem): 0
+test14.c:19: b = 2: 2
+test14.c:20: array_append (0xaddress, 0xaddress, 5)
+/grid/array.h:24: a->len + size >= a->max: 0
+/grid/array.h:28: (char *)a->p: 0xaddress
+/grid/array.h:28: memcpy (0xaddress, 0xaddress, 5)
+/grid/array.h:28: memcpy (((char *)a->p) + a->len, elem, size): 0xaddress
+/grid/array.h:29: a->len += size: 10  + [/src/grid/array.h:12: 'a->len = 0']
+/grid/array.h:30: (char *)a->p: 0xaddress
+/grid/array.h:30: ((char *)a->p) + a->len - size: 0xaddress
+/grid/array.h:30: (void *)(((char *)a->p) + a->len - size): 0xaddress
+test14.c:20: array_append (a, &b, sizeof(Elem)): 0xaddress
+test14.c:22: a->p: 0xaddress
+test14.c:23: (char *)a->p: 0xaddress
+test14.c:23: ((char *)a->p) + 5: 0xaddress
+test14.c:25: j = (Elem *) a->p: 0xaddress
+test14.c:26: i < a->len/sizeof(Elem): 1
+test14.c:27: j: 0xaddress
+test14.c:28: *j: 1
+test14.c:26: i++: 0
+test14.c:26: i < a->len/sizeof(Elem): 1
+test14.c:27: j: 0xaddress
+test14.c:28: *j: 2
+test14.c:26: i++: 1
+test14.c:26: i < a->len/sizeof(Elem): 0

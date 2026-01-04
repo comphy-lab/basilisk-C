@@ -1,0 +1,152 @@
+# Tsunami benchmark
+
+On fitzroy (NIWA's IBM/AIX Power6 supercomputer), follow the [installation
+instructions](/src/INSTALL), then edit `src/examples/tsunami.c` and
+replace `/home/popinet/terrain/etopo2` with
+e.g. `/hpcf/data/popinet/terrain/etopo2`, then do
+
+~~~bash
+cd src/examples
+qcc -O2 -g -pg tsunami.c -o tsunami ../kdt/kdt.o -lm
+~~~
+
+Create e.g. `tsunami.sh` as
+
+~~~bash
+#!/bin/bash
+
+#@ job_name         = basilisk
+#@ class            = General
+#@ job_type         = serial
+#@ output           = tsunami.out
+#@ error            = tsunami.log
+#@ account_no       = HAFS1301
+#@ wall_clock_limit = 45:00
+#@ environment      = COPY_ALL
+#@ queue
+
+./tsunami
+~~~
+
+then do
+
+~~~bash
+llsubmit tsunami.sh
+~~~
+
+After completion of the run do
+
+~~~bash
+tail -n1 tsunami.out
+# Quadtree, 2992 steps, 2095.75 CPU, 2260 real, 6.85e+04 points.step/s, 28 var
+~~~
+
+Note that the computational speed (in points.step/s) is computed using
+the real runtime (not the CPU time). For reference, the results on my
+system `popinet-new` (Intel(R) Core(TM)2 Quad CPU Q9400 @ 2.66GHz) are
+
+~~~bash
+tail -n1 tsunami.out
+# Quadtree, 2992 steps, 1190.36 CPU, 1216 real, 1.28e+05 points.step/s, 28 var
+~~~
+
+## Profiling graphs
+
+They can be generated using
+[gprof2dot](http://code.google.com/p/jrfonseca/wiki/Gprof2Dot)
+
+~~~bash
+gprof tsunami gmon.out | gprof2dot.py | dot -Tpng -o tsunami.dot.png
+~~~
+
+- [popinet-new](tsunami/tsunami.dot.png)
+- [fitzroy](tsunami/fitzroy.dot.png)
+
+## Parallel run
+
+We will first turn off the generation of movies as they
+are expensive. To do this edit `tsunami.c` and add
+
+~~~c
+#if 0
+event movies (t++) {
+...
+#endif
+event do_adapt (i++) adapt();
+...
+~~~
+
+To use OpenMP on fitzroy do
+
+~~~bash
+qcc -O2 -qsmp=omp tsunami.c -o tsunami ../kdt/kdt.o -lm
+~~~
+
+and submit the job as
+
+~~~bash
+#!/bin/bash
+
+#@ job_name         = basilisk
+#@ class            = General
+#@ job_type         = parallel
+#@ node             = 1
+#@ tasks_per_node   = 4
+#@ task_affinity    = core(1)
+#@ output           = tsunami-4.out
+#@ error            = tsunami-4.log
+#@ account_no       = HAFS1301
+#@ wall_clock_limit = 30:00
+#@ environment      = COPY_ALL
+#@ queue
+
+OMP_NUM_THREADS=4 ./tsunami
+~~~
+
+The results on `fitzroy` are
+
+~~~bash
+1 core
+# Quadtree, 2718 steps, 838.585 CPU, 921.3 real, 1.52e+05 points.step/s, 28 var
+4 cores
+# Quadtree, 2718 steps, 1030.61 CPU, 642.4 real, 2.17e+05 points.step/s, 28 var
+8 cores
+# Quadtree, 2718 steps, 1224.36 CPU, 536.5 real, 2.6e+05 points.step/s, 28 var
+~~~
+
+The results on `popinet-new` are
+
+~~~bash
+1 core
+# Quadtree, 2719 steps, 643.21 CPU, 647.8 real, 2.17e+05 points.step/s, 28 var
+4 cores
+# Quadtree, 2719 steps, 1398.57 CPU, 388.8 real, 3.62e+05 points.step/s, 28 var
+~~~
+
+The results on `mesu` (UPMC's cluster) are
+
+~~~bash
+1 core
+# Quadtree, 2810 steps, 451.53 CPU, 451.9 real, 3.78e+05 points.step/s, 28 var
+2 cores
+# Quadtree, 2810 steps, 512.59 CPU, 315.4 real, 5.42e+05 points.step/s, 28 var
+4 cores
+# Quadtree, 2810 steps, 567.32 CPU, 229.8 real, 7.44e+05 points.step/s, 28 var
+8 cores
+# Quadtree, 2810 steps, 546.32 CPU, 147.1 real, 1.16e+06 points.step/s, 28 var
+16 cores
+# Quadtree, 2810 steps, 2236.47 CPU, 292.1 real, 5.85e+05 points.step/s, 28 var
+32 cores
+# Quadtree, 2810 steps, 5255.56 CPU, 361.4 real, 4.73e+05 points.step/s, 28 var
+64 cores
+# Quadtree, 2810 steps, 13266.5 CPU, 410.9 real, 4.16e+05 points.step/s, 28 var
+~~~
+
+The results on `heyward.dalembert.upmc.fr` are
+
+~~~bash
+1 core
+# Quadtree, 2810 steps, 898.34 CPU, 898.9 real, 1.89e+05 points.step/s, 28 var
+8 cores
+# Quadtree, 2810 steps, 1692.4 CPU, 393.6 real, 4.31e+05 points.step/s, 28 var
+~~~

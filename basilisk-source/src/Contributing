@@ -1,0 +1,266 @@
+# How to contribute new code or bug fixes
+
+## Using darcs
+
+This is the preferred option since [darcs](http://darcs.net/) is the
+[version control system](https://en.wikipedia.org/wiki/Version_control)
+used to manage the source code and wiki of Basilisk.
+
+If you followed the [installation instructions](INSTALL#using-darcs)
+(using darcs), you can easily generate a new patch for the Basilisk
+main distribution using the following workflow:
+
+1. `cd $BASILISK`
+2. Synchronize your repo with the main branch using `darcs pull`.
+3. Edit the source files.
+4. Test that the changes work:
+   [add a test case](test/README#running-and-creating-test-cases-and-examples),
+   [run the test suite](test/README#running-and-creating-test-cases-and-examples).
+5. If you created new files, add them to the distribution using `darcs add`.
+6. Check that your code follows the
+   [coding style guidelines](#coding-style-guidelines).
+7. Review and record the changes using `darcs record`.
+8. If you are still not happy with your patch, you can go back
+   to 1. and use `darcs amend` to modify it until your are satistfied.
+
+Note that, for consistency, the patch title should start with a capital
+and also be reasonably descriptive. Avoid titles such as "Modified
+this file", we (through darcs) already know which files are modified
+by the patch, rather you should explain concisely what the patch does. Use
+
+~~~bash
+darcs changes | more
+~~~
+
+to see examples of patch titles and summary.
+
+Also for consistency, your identity/authorship should be something
+like:
+
+~~~
+Joe Bloggs <joe.bloggs@foo.net>
+~~~
+
+You can change it by editing the `$HOME/.darcs/author` file.
+
+You are then ready to submit your patch. You have two options: a
+simple one (email) and a more systematic one (publishing your repo).
+
+### Emailing your patch(es)
+
+Just use `darcs send -o patches` (with a better name than `patches`)
+and select which patches you want to submit. Attach the `patches` file
+to an email and send it (with some explanations) to the
+[basilisk-fr mailing list](http://groups.google.com/d/forum/basilisk-fr).
+
+### Publishing your repository
+
+You can use a darcs hosting service, such as
+[darcs hub](https://hub.darcs.net/) to publish your repository. Note
+that both the Basilisk wiki and source code are
+[mirrored on darcs hub](https://hub.darcs.net/basilisk). To create
+your own branch, login into darcs hub, go to the
+[basilisk repo](https://hub.darcs.net/basilisk/basilisk) and use the
+`fork` button.
+
+Note that if you have ssh/scp access to a web server somewhere, you
+can also simply copy your repository there.
+
+To publish your changes, you can then `darcs push` them to this
+repository and send its http:// address together with your message to
+the mailing list.
+
+## Using Unix patches
+
+If for some reason you don't want/can't use darcs, you can simply send
+a [Unix patch](https://en.wikipedia.org/wiki/Patch_(Unix)) to the
+mailing list. Let's assume you modified `src/fractions.h`. You first
+need to get back to the original version of this file (using the
+original tarball, getting the raw page source on the wiki etc.) and
+save it as `src/fractions.h.orig`, then do:
+
+~~~bash
+cd $BASILISK
+diff -u fractions.h.orig fractions.h > fractions.patch
+~~~
+
+You can then review the changes in the patch file and send it to the
+mailing list if you are happy with it. Note that much more complex
+patches (for multiple files and directories etc.) can be
+generated. See the many online tutorials if you want to know more
+about patching.
+
+# Coding style guidelines
+
+Before submitting new patches, please check that your code verifies
+the following conventions:
+
+1. It is indented properly. You should (must!) use a text editor which
+   does this automatically. The standard indentation is two
+   spaces. This is the default in emacs for example. In emacs you can
+   easily indent/reindent an entire block of code by selecting it
+   (with Ctrl-space or the mouse) and hitting the TAB key.
+
+2. Lines are not longer than 80 characters. If necessary reformat the
+   code by cutting lines in logical places to make them fit. This is
+   also true of comment/documentation blocks. Note that emacs will
+   automatically reformat long paragraphs of text if you use ESC-q.
+
+3. Comments starting with "/**" are assumed to be formatted using the
+   [wiki markdown](/Help#markdown) syntax. Please respect/use
+   this. They are meant to be written using
+   grammatically/typographically correct sentences i.e. starting with
+   capitals, ending with ., with a subject and a verb, proper spelling
+   etc. This is what
+   [literate programming](https://en.wikipedia.org/wiki/Literate_programming)
+   is about.
+   
+4. Check that your code 'fits in' stylistically with the existing code
+   i.e. look around and copy what you see!. In particular, the
+   Basilisk convention is to use "natural" punctuation/spaces. For
+   example, commas are always followed by a space and opening and
+   closing parenthesis are preceded (resp. followed) by a space. For
+   readability, the '+' and '-' operators are preceded and followed by
+   a space, but the '*' and '/' operators are not.
+
+This may seem like nitpicking but think how disagreable it is to read
+a text which is full of spelling mistakes and/or typographic
+errors. The same holds for code and, with some discipline (which is
+also generally useful when programming...) and some training,
+following the conventions above is not difficult.
+
+# Markdown documentation
+
+The Basilisk wiki uses [pandoc](https://pandoc.org/) to generate HTML
+pages from the documented source files. Markdown is a fairly common
+and quite simple text formatting language. Most of the common text
+formatting objects are available: headings, bold, italics, lists,
+tables, figures, code listings etc. A useful extension provided by
+pandoc is the [support](https://pandoc.org/MANUAL.html#math) for
+mathematical expressions written in TeX. Have a look at the extensive
+[pandoc Markdown manual](https://pandoc.org/MANUAL.html#pandocs-markdown)
+for details.
+
+In addition to what is available in pandoc, Basilisk also provides
+support for [inline plots](test/README#inline-plots).
+
+## Generating local HTML pages
+
+Documented source files included in patches pushed to the wiki will
+automatically be rendered as HTML. Before pushing a patch, it is
+important to check that the Markdown documentation is formatted and
+renders properly in HTML (and also that links to images and other
+content are not broken etc.).
+
+A simple, but cumbersome way to do this is to cut-and-paste the entire
+source file into a temporary page, created using the web interface of
+the wiki, and use the "Preview" button. Repeat until satisfied and
+then cut-and-paste from the web interface back into the local
+file. Then use the "Discard" button.
+
+A better way to do this is to generate a local HTML file and open it
+with your web browser. To do this, you first need to
+[install pandoc](https://pandoc.org/installing.html). If you want to
+use BiBTeX-style references (see
+[this example](examples/swasi.c#references)), you will also need to
+install [bibtex2html](https://www.lri.fr/~filliatr/bibtex2html/). If
+you are using a Debian-like system, just do:
+
+~~~bash
+sudo apt-get install pandoc bibtex2html
+~~~
+
+As an exercise, we will generate the documentation for a simple test
+case: [Oscillations in a parabolic container](test/parabola.c). We
+first run the test case using:
+
+~~~bash
+cd $BASILISK/test
+make parabola.tst
+~~~
+
+which should return either
+
+~~~
+make: `parabola.tst' is up to date.
+~~~
+
+or
+
+~~~
+qcc -autolink -g -Wall ... parabola.c -lm
+qcc -autolink -g -Wall ... parabola-explicit.c -lm
+[parabola-explicit.tst]
+[parabola.tst]
+~~~
+
+We then generate the corresponding
+[inline plots](test/README#inline-plots) using:
+
+~~~bash
+make parabola/plots
+~~~
+
+Finally, we generate the HTML page using:
+
+~~~bash
+make parabola.c.html
+~~~
+
+The HTML file can then be rendered using e.g.
+
+~~~bash
+firefox parabola.c.html
+~~~
+
+Once the file is opened in the web browser, one can repeat the steps
+above and use the "Reload" button of the browser to refresh the
+rendering. Plugins such as
+[Firefox Auto Reload](https://addons.mozilla.org/fr/firefox/addon/auto-reload/)
+can also be used to automate this step.
+
+## Emacs Basilisk mode
+
+If you are using [emacs](https://www.gnu.org/software/emacs/) (if not
+you should!), you can use the [Basilisk mode](basilisk-mode.el) to
+automate many of the steps above and benefit from a better interface
+to edit both the C code and Markdown documentation.
+
+To install it, you will need both
+[mmm-mode](https://github.com/purcell/mmm-mode) and
+[markdown-mode](https://jblevins.org/projects/markdown-mode/), which
+are easily installable on Debian-like systems using:
+
+~~~bash
+sudo apt-get install mmm-mode elpa-markdown-mode
+~~~
+
+Then add the following to your `.emacs` (or `.emacs.d/init.el`) file:
+
+~~~commonlisp
+;; Use markdown-mode for .page files
+(add-to-list 'auto-mode-alist '("\\.page\\'" . markdown-mode))
+
+;; Basilisk mode
+(add-to-list 'load-path "$BASILISK")
+(require 'basilisk-mode)
+~~~
+
+where you need to manually replace `$BASILISK` with the corresponding path.
+
+Restart emacs and open [test/parabola.c](test/parabola.c). This should
+use the standard C-mode by default. To switch to Basilisk mode just
+type
+
+~~~bash
+Esc-x basilisk-mode
+~~~
+
+The Mardown-formatted comments should now use a different background
+color. The emacs mode menus will also change depending on where the
+cursor is positioned.
+
+To generate the HTML page and open it in your web browser, just move
+the cursor within a Markdown comment block and hit F8. To refresh the
+HTML page hit F9 and use the "Reload" button of your web browser (or
+the F5 or Ctrl-R keys within the web browser).

@@ -1,0 +1,27 @@
+1 0 GfsAdvection GfsBox GfsGEdge {} {
+    Refine 7
+    Global {
+	#define pi M_PI
+    }
+#    VariableStreamFunction { istep = 1 } Psi {
+#	return 1.5*sin(2.*M_PI*t/5.)*sin((x + 0.5)*M_PI)*sin((y + 0.5)*M_PI)/M_PI;
+#    }
+    Init { istep = 1 } {
+	U =   1.5*sin(2.*pi*t/5.)*sin((x + 0.5)*pi)*cos((y + 0.5)*pi)
+	V = - 1.5*sin(2.*pi*t/5.)*cos((x + 0.5)*pi)*sin((y + 0.5)*pi)
+    }
+    VariableTracer F { cfl = 0.8 gradient = gfs_center_gradient }
+    Init {} {
+	F = exp(-100.*((x + 0.2)*(x + 0.2) + (y + .236338)*(y + .236338)))
+    }
+    Time { end = 5 dtmax = 0.1 }
+    OutputScalarSum { istep = 1 } sum { v = F }
+    OutputScalarStats { istep = 1 } f { v = F }
+    OutputErrorNorm { start = end } stderr { v = F } { 
+	s = exp(-100.*((x + 0.2)*(x + 0.2) + (y + .236338)*(y + .236338))) 
+	v = E
+    }
+#    OutputSimulation { step = 0.1 } stdout
+    OutputSimulation { start = end } end.gfs
+}
+GfsBox {}

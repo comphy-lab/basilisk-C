@@ -1,0 +1,64 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 13.04.2 ] */
+
+/* [wxMaxima: input   start ] */
+m:matrix(
+ [1,-1,1,-1,1,-1,1,-1,1], 
+ [1,0,0,-1,0,0,1,0,0], 
+ [1,1,1,-1,-1,-1,1,1,1], 
+ [1,-1,1,0,0,0,0,0,0], 
+ [1,0,0,0,0,0,0,0,0], 
+ [1,1,1,0,0,0,0,0,0], 
+ [1,-1,1,1,-1,1,1,-1,1], 
+ [1,0,0,1,0,0,1,0,0], 
+ [1,1,1,1,1,1,1,1,1]
+)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+im:invert(m);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+f:matrix(
+ [f00], 
+ [f01], 
+ [f02], 
+ [f10], 
+ [f11], 
+ [f12], 
+ [f20], 
+ [f21], 
+ [f22]
+)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+a:im.f;
+/* [wxMaxima: input   end   ] */
+
+
+/* [wxMaxima: input   start ] */
+p:matrix(
+ [1], 
+ [1/4], 
+ [1/16], 
+ [1/4], 
+ [1/16], 
+ [1/64], 
+ [1/16], 
+ [1/64], 
+ [1/256]
+)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+a.p;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+ratsimp(%);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

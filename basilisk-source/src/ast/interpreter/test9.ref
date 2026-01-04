@@ -1,0 +1,4 @@
+test9.c:5: interpreter_verbosity (4): !
+test9.c:7: p.x = 2.: 2  + [test9.c:7: 'p.x = 2.']
+test9.c:9: a = p.x: 2  + [test9.c:7: 'p.x = 2.']
+test9.c:10: b = p.y: 0 (unset) [0]

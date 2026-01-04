@@ -1,0 +1,24 @@
+Define END 15.
+
+1 0 GfsAdvection GfsBox GfsGEdge {} {
+    Refine LEVEL
+    VariableTracerVOFHeight T
+    InitFraction T (0.2*0.2 - ((x + 0.2)*(x + 0.2) + (y + .236338)*(y + .236338)))
+    Time { end = END dtmax = 0.1 }
+    VariableStreamFunction { istep = 1 } Psi (1.5*sin(2.*M_PI*t/END)*sin((x + 0.5)*M_PI)*sin((y + 0.5)*M_PI)/M_PI)
+
+    VariableCurvature K T
+    AdaptFunction { istep = 1 } {
+    	cmax = 0.1 maxlevel = LEVEL
+    	cfactor = 2. 
+    } (T > 0. && T < 1.)*dL*fabs(K)
+    AdaptThickness { istep = 1 } { maxlevel = LEVEL } T
+
+    OutputSimulation { istep = 10 } stdout
+    GModule gfsview
+    OutputView { step = 3.75 } interface-LEVEL { format = Gnuplot } reversed.gfv
+    Variable T0
+    InitFraction { start = end } T0 (0.2*0.2 - ((x + 0.2)*(x + 0.2) + (y + .236338)*(y + .236338)))
+    OutputErrorNorm { start = end } stderr { v = T } { s = T0 }
+}
+GfsBox {}

@@ -1,0 +1,8 @@
+-------------------
+#line 13 "test27.c"
+func()
+
+#line 6 "test27.c"
+int
+size: 5, flags: 0, pointer: 0, scope: 4, value: 0
+===================

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Linux version - uses wget and tar instead of darcs (which is broken on Linux)
-# Based on http://basilisk.fr/src/INSTALL
+# Based on https://basilisk.fr/src/INSTALL
 # Ensures that we are always using the latest version of basilisk
 
 # Check if --hard flag is passed
@@ -79,7 +79,7 @@ check_prerequisites() {
 # Function to install basilisk using wget
 install_basilisk() {
     echo "\033[0;36mDownloading basilisk using wget...\033[0m"
-    wget http://basilisk.fr/basilisk/basilisk.tar.gz
+    wget https://basilisk.fr/basilisk/basilisk.tar.gz
 
     if [[ $? -ne 0 ]]; then
         echo "\033[0;31mError: Failed to download basilisk.tar.gz\033[0m"
@@ -138,7 +138,7 @@ if ! qcc --version > /dev/null 2>&1; then
     echo "\033[0;31mError: qcc is not working properly.\033[0m"
     echo "Please ensure you have build-essential installed."
     echo "You can install it by running: sudo apt install build-essential"
-    echo "For more details, visit: http://basilisk.fr/src/INSTALL"
+    echo "For more details, visit: https://basilisk.fr/src/INSTALL"
     exit 1
 else
     echo "\033[0;32m✅ qcc is properly installed.\033[0m"

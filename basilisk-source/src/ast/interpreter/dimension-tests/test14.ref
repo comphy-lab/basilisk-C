@@ -1,0 +1,61 @@
+dimension-tests/test14.c:8: warning: stencils: point function 'display_value' is not defined
+------------------- 
+#line 107 "ast/interpreter/overload.h"
+point
+
+# 4 "/grid/tree.h" 2
+
+
+
+
+struct _Point {
+
+  int i;
+
+  int j;
+
+
+
+
+  int level;
+
+
+
+
+  @define _BLOCK_INDEX
+
+}
+size: 15, flags: 0, pointer: 0, scope: 2, value: {...}
+===================
+------------------- 
+#line 107 "ast/interpreter/overload.h"
+point
+
+# 4 "/grid/tree.h" 2
+
+
+
+
+struct _Point {
+
+  int i;
+
+  int j;
+
+
+
+
+  int level;
+
+
+
+
+  @define _BLOCK_INDEX
+
+}
+size: 15, flags: 0, pointer: 0, scope: 2, value: {...}
+===================
+8 constraints, 8 unknowns
+Dimensions of finite constants
+  [1]
+    /src/common.h:34: 'L0 = 1. [1]'
