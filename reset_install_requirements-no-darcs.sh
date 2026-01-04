@@ -100,11 +100,59 @@ download_file() {
     fi
 }
 
+# Function to apply comphy-lab patches (macOS only)
+apply_patches() {
+    local target_dir="$1"
+
+    if [[ "$OSTYPE" != "darwin"* ]]; then
+        # Patches are macOS-specific, skip on other platforms
+        return 0
+    fi
+
+    echo "\033[0;36mApplying comphy-lab patches...\033[0m"
+
+    # Create temp directory for patches
+    mkdir -p "$target_dir/.patches_temp"
+
+    # GitHub URLs for patches
+    local PATCHES_URL="https://api.github.com/repos/comphy-lab/basilisk-C/contents/patches"
+    local RAW_BASE_URL="https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/patches"
+
+    # Get list of patch files (sorted by name for chronological order due to YYYY-MM-DD format)
+    local PATCH_FILES
+    PATCH_FILES=$(curl -s "$PATCHES_URL" | grep -o '"name": "[^"]*\.patch"' | sed 's/"name": "//;s/"//' | sort)
+
+    if [[ -z "$PATCH_FILES" ]]; then
+        echo "\033[0;33mWarning: No patches found or unable to fetch patch list\033[0m"
+    else
+        # Download and apply each patch
+        echo "$PATCH_FILES" | while read -r patch_file; do
+            if [[ -n "$patch_file" ]]; then
+                echo "  Downloading $patch_file..."
+                if curl -s -f "$RAW_BASE_URL/$patch_file" -o "$target_dir/.patches_temp/$patch_file"; then
+                    echo "  Applying $patch_file..."
+                    if (cd "$target_dir" && patch -p1 < ".patches_temp/$patch_file"); then
+                        echo "  \033[0;32m✓ Successfully applied $patch_file\033[0m"
+                    else
+                        echo "  \033[0;31m✗ Failed to apply $patch_file\033[0m"
+                    fi
+                else
+                    echo "  \033[0;31m✗ Failed to download $patch_file\033[0m"
+                fi
+            fi
+        done
+    fi
+
+    # Clean up
+    rm -rf "$target_dir/.patches_temp"
+    echo ""
+}
+
 # Function to install basilisk using wget/curl from GitHub
 install_basilisk() {
     local DOWNLOAD_URL="https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/basilisk-source.tar.gz"
 
-    echo "\033[0;36mDownloading basilisk-source from comphy-lab/basilisk-C...\033[0m"
+    echo "\033[0;36mDownloading basilisk from comphy-lab/basilisk-C...\033[0m"
     download_file "$DOWNLOAD_URL" "basilisk-source.tar.gz"
 
     if [[ $? -ne 0 ]]; then
@@ -124,7 +172,10 @@ install_basilisk() {
     # Clean up the tar file
     rm basilisk-source.tar.gz
 
-    cd basilisk-source/src
+    # Apply comphy-lab patches (macOS only)
+    apply_patches "basilisk"
+
+    cd basilisk/src
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "\033[0;36mUsing macOS configuration...\033[0m"
@@ -147,14 +198,14 @@ check_prerequisites
 # Remove project config always
 rm -rf .project_config
 
-# Check if basilisk-source needs to be installed
-if [[ "$HARD_RESET" == true ]] || [[ ! -d "basilisk-source" ]]; then
-    echo "\033[0;36mInstalling basilisk-source...\033[0m"
-    rm -rf basilisk-source
+# Check if basilisk needs to be installed
+if [[ "$HARD_RESET" == true ]] || [[ ! -d "basilisk" ]]; then
+    echo "\033[0;36mInstalling basilisk...\033[0m"
+    rm -rf basilisk
     install_basilisk
 else
-    echo "\033[0;36mUsing existing basilisk-source installation...\033[0m"
-    cd basilisk-source/src
+    echo "\033[0;36mUsing existing basilisk installation...\033[0m"
+    cd basilisk/src
 fi
 
 # Setup environment variables
