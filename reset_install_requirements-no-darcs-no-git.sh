@@ -165,7 +165,7 @@ install_basilisk() {
     # Apply comphy-lab patches (macOS only)
     apply_patches "basilisk"
 
-    cd basilisk/src
+    cd basilisk/src || { printf "\033[0;31mError: Failed to change directory to basilisk/src\033[0m\n" >&2; exit 1; }
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
         printf "\033[0;36mUsing macOS configuration...\033[0m\n"
@@ -195,7 +195,7 @@ if [[ "$HARD_RESET" == true ]] || [[ ! -d "basilisk" ]]; then
     install_basilisk
 else
     printf "\033[0;36mUsing existing basilisk installation...\033[0m\n"
-    cd basilisk/src
+    cd basilisk/src || { printf "\033[0;31mError: Failed to change directory to basilisk/src\033[0m\n" >&2; exit 1; }
 fi
 
 # Setup environment variables
