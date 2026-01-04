@@ -1,6 +1,6 @@
 #!/bin/bash
-# Linux/macOS version - uses wget and tar instead of darcs
-# Downloads basilisk-source from comphy-lab/basilisk-C GitHub repo
+# Linux/macOS version - uses git instead of darcs
+# Clones basilisk-source from comphy-lab/basilisk-C GitHub repo
 # Ensures that we are always using the latest version from our fork
 
 # Check if --hard flag is passed
@@ -22,7 +22,7 @@ check_prerequisites() {
         missing_tools+=("make")
     else
         found_tools+=("make")
-        echo "\033[0;32m✓ make is installed\033[0m"
+        printf "\033[0;32m✓ make is installed\033[0m\n"
     fi
 
     # Check for gawk
@@ -30,28 +30,15 @@ check_prerequisites() {
         missing_tools+=("gawk")
     else
         found_tools+=("gawk")
-        echo "\033[0;32m✓ gawk is installed\033[0m"
+        printf "\033[0;32m✓ gawk is installed\033[0m\n"
     fi
 
-    # Check for wget or curl
-    if command -v wget > /dev/null 2>&1; then
-        found_tools+=("wget")
-        echo "\033[0;32m✓ wget is installed\033[0m"
-        USE_WGET=true
-    elif command -v curl > /dev/null 2>&1; then
-        found_tools+=("curl")
-        echo "\033[0;32m✓ curl is installed\033[0m"
-        USE_WGET=false
+    # Check for git
+    if ! command -v git > /dev/null 2>&1; then
+        missing_tools+=("git")
     else
-        missing_tools+=("wget or curl")
-    fi
-
-    # Check for tar
-    if ! command -v tar > /dev/null 2>&1; then
-        missing_tools+=("tar")
-    else
-        found_tools+=("tar")
-        echo "\033[0;32m✓ tar is installed\033[0m"
+        found_tools+=("git")
+        printf "\033[0;32m✓ git is installed\033[0m\n"
     fi
 
     # Check for gcc
@@ -59,13 +46,13 @@ check_prerequisites() {
         missing_tools+=("gcc")
     else
         found_tools+=("gcc")
-        echo "\033[0;32m✓ gcc is installed\033[0m"
+        printf "\033[0;32m✓ gcc is installed\033[0m\n"
     fi
 
     echo ""
 
     if [[ ${#missing_tools[@]} -gt 0 ]]; then
-        echo "\033[0;31mError: Missing required tools: ${missing_tools[*]}\033[0m"
+        printf "\033[0;31mError: Missing required tools: ${missing_tools[*]}\033[0m\n"
         echo ""
 
         if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -83,20 +70,8 @@ check_prerequisites() {
         echo "Please install the missing tools and try again."
         exit 1
     else
-        echo "\033[0;32m✅ All prerequisites are satisfied!\033[0m"
+        printf "\033[0;32m✅ All prerequisites are satisfied!\033[0m\n"
         echo ""
-    fi
-}
-
-# Function to download file using wget or curl
-download_file() {
-    local url="$1"
-    local output="$2"
-
-    if [[ "$USE_WGET" == true ]]; then
-        wget -O "$output" "$url"
-    else
-        curl -L -o "$output" "$url"
     fi
 }
 
@@ -109,7 +84,7 @@ apply_patches() {
         return 0
     fi
 
-    echo "\033[0;36mApplying comphy-lab patches...\033[0m"
+    printf "\033[0;36mApplying comphy-lab patches...\033[0m\n"
 
     # Create temp directory for patches
     mkdir -p "$target_dir/.patches_temp"
@@ -123,7 +98,7 @@ apply_patches() {
     PATCH_FILES=$(curl -s "$PATCHES_URL" | grep -o '"name": "[^"]*\.patch"' | sed 's/"name": "//;s/"//' | sort)
 
     if [[ -z "$PATCH_FILES" ]]; then
-        echo "\033[0;33mWarning: No patches found or unable to fetch patch list\033[0m"
+        printf "\033[0;33mWarning: No patches found or unable to fetch patch list\033[0m\n"
     else
         # Download and apply each patch
         echo "$PATCH_FILES" | while read -r patch_file; do
@@ -132,12 +107,12 @@ apply_patches() {
                 if curl -s -f "$RAW_BASE_URL/$patch_file" -o "$target_dir/.patches_temp/$patch_file"; then
                     echo "  Applying $patch_file..."
                     if (cd "$target_dir" && patch -p1 < ".patches_temp/$patch_file"); then
-                        echo "  \033[0;32m✓ Successfully applied $patch_file\033[0m"
+                        printf "  \033[0;32m✓ Successfully applied $patch_file\033[0m\n"
                     else
-                        echo "  \033[0;31m✗ Failed to apply $patch_file\033[0m"
+                        printf "  \033[0;31m✗ Failed to apply $patch_file\033[0m\n"
                     fi
                 else
-                    echo "  \033[0;31m✗ Failed to download $patch_file\033[0m"
+                    printf "  \033[0;31m✗ Failed to download $patch_file\033[0m\n"
                 fi
             fi
         done
@@ -148,29 +123,31 @@ apply_patches() {
     echo ""
 }
 
-# Function to install basilisk using wget/curl from GitHub
+# Function to install basilisk using git sparse checkout from GitHub
 install_basilisk() {
-    local DOWNLOAD_URL="https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/basilisk-source.tar.gz"
+    local REPO_URL="https://github.com/comphy-lab/basilisk-C.git"
 
-    echo "\033[0;36mDownloading basilisk from comphy-lab/basilisk-C...\033[0m"
-    download_file "$DOWNLOAD_URL" "basilisk-source.tar.gz"
+    printf "\033[0;36mCloning basilisk-source from comphy-lab/basilisk-C (sparse checkout)...\033[0m\n"
+
+    # Use sparse checkout to only get basilisk-source directory
+    git clone --depth 1 --filter=blob:none --sparse "$REPO_URL" basilisk-C-temp
 
     if [[ $? -ne 0 ]]; then
-        echo "\033[0;31mError: Failed to download basilisk-source.tar.gz\033[0m"
-        echo "URL: $DOWNLOAD_URL"
+        printf "\033[0;31mError: Failed to clone repository\033[0m\n"
+        echo "URL: $REPO_URL"
         exit 1
     fi
 
-    echo "\033[0;36mExtracting basilisk-source.tar.gz...\033[0m"
-    tar xzf basilisk-source.tar.gz
+    cd basilisk-C-temp
+    git sparse-checkout set basilisk-source
+    cd ..
 
-    if [[ $? -ne 0 ]]; then
-        echo "\033[0;31mError: Failed to extract basilisk-source.tar.gz\033[0m"
-        exit 1
-    fi
+    # Move basilisk-source to basilisk
+    printf "\033[0;36mSetting up basilisk directory...\033[0m\n"
+    mv basilisk-C-temp/basilisk-source basilisk
 
-    # Clean up the tar file
-    rm basilisk-source.tar.gz
+    # Clean up temp clone
+    rm -rf basilisk-C-temp
 
     # Apply comphy-lab patches (macOS only)
     apply_patches "basilisk"
@@ -178,17 +155,17 @@ install_basilisk() {
     cd basilisk/src
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "\033[0;36mUsing macOS configuration...\033[0m"
+        printf "\033[0;36mUsing macOS configuration...\033[0m\n"
         ln -s config.osx config
     else
-        echo "\033[0;36mUsing Linux configuration...\033[0m"
+        printf "\033[0;36mUsing Linux configuration...\033[0m\n"
         ln -s config.gcc config
     fi
 
-    echo "\033[0;36mBuilding basilisk (first pass with -k to continue on errors)...\033[0m"
+    printf "\033[0;36mBuilding basilisk (first pass with -k to continue on errors)...\033[0m\n"
     make -k
 
-    echo "\033[0;36mBuilding basilisk (final build)...\033[0m"
+    printf "\033[0;36mBuilding basilisk (final build)...\033[0m\n"
     make
 }
 
@@ -200,11 +177,11 @@ rm -rf .project_config
 
 # Check if basilisk needs to be installed
 if [[ "$HARD_RESET" == true ]] || [[ ! -d "basilisk" ]]; then
-    echo "\033[0;36mInstalling basilisk...\033[0m"
+    printf "\033[0;36mInstalling basilisk...\033[0m\n"
     rm -rf basilisk
     install_basilisk
 else
-    echo "\033[0;36mUsing existing basilisk installation...\033[0m"
+    printf "\033[0;36mUsing existing basilisk installation...\033[0m\n"
     cd basilisk/src
 fi
 
@@ -216,9 +193,9 @@ source ../../.project_config
 
 # Check if qcc is working properly
 echo ""
-echo "\033[0;36mChecking qcc installation...\033[0m"
+printf "\033[0;36mChecking qcc installation...\033[0m\n"
 if ! qcc --version > /dev/null 2>&1; then
-    echo "\033[0;31mError: qcc is not working properly.\033[0m"
+    printf "\033[0;31mError: qcc is not working properly.\033[0m\n"
     if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Please ensure you have Xcode Command Line Tools installed."
         echo "You can install them by running: xcode-select --install"
@@ -229,6 +206,6 @@ if ! qcc --version > /dev/null 2>&1; then
     echo "For more details, visit: https://basilisk.fr/src/INSTALL"
     exit 1
 else
-    echo "\033[0;32m✅ qcc is properly installed.\033[0m"
+    printf "\033[0;32m✅ qcc is properly installed.\033[0m\n"
     qcc --version
 fi
