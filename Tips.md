@@ -81,28 +81,60 @@ We've set up a GitHub Actions workflow to automatically sync this repository wit
 
 The workflow file is located at `.github/workflows/sync-darcs-repositories.yml`.
 
-## Installing Basilisk on macOS
+## Installing Basilisk
 
-After a recent Basilisk update, the compilation fails on macOS due to missing memory management constants. We maintain a patch to fix this issue.
+We provide three installation scripts depending on your system and available tools:
 
-### Automated Installation (Recommended)
-
-Use the provided installation script which automatically handles the patch:
+### Option 1: Using Darcs (macOS with Homebrew)
 
 ```shell
 ./reset_install_requirements.sh
 ```
 
-This script will:
-1. Clone the latest Basilisk from http://basilisk.fr/basilisk
-2. Automatically download and apply all comphy-lab patches (including the macOS compatibility patch)
-3. Configure for macOS (`config.osx`)
-4. Build Basilisk
+This script:
+1. Clones the latest Basilisk from http://basilisk.fr/basilisk using Darcs
+2. Automatically downloads and applies all comphy-lab patches (including macOS compatibility)
+3. Configures for your platform (`config.osx` or `config.gcc`)
+4. Builds Basilisk
 
-For a clean reinstall:
+**Requirements**: `darcs`, `make`, `gcc`
+
+### Option 2: Using Git (Recommended for most users)
+
+```shell
+./reset_install_requirements-no-darcs.sh
+```
+
+This script:
+1. Uses git sparse checkout to clone only `basilisk-source/` from our GitHub fork
+2. Applies comphy-lab patches (macOS only)
+3. Configures and builds Basilisk
+
+**Requirements**: `git`, `make`, `gcc`, `gawk`
+
+### Option 3: Using wget/tar (No version control needed)
+
+```shell
+./reset_install_requirements-no-darcs-no-git.sh
+```
+
+This script:
+1. Downloads Basilisk directly from http://basilisk.fr/basilisk/basilisk.tar.gz
+2. Applies comphy-lab patches (macOS only)
+3. Configures and builds Basilisk
+
+**Requirements**: `wget`, `tar`, `make`, `gcc`, `gawk`
+
+### Clean Reinstall
+
+For any script, use the `--hard` flag to remove existing installation and start fresh:
 
 ```shell
 ./reset_install_requirements.sh --hard
+# or
+./reset_install_requirements-no-darcs.sh --hard
+# or
+./reset_install_requirements-no-darcs-no-git.sh --hard
 ```
 
 ### Manual Installation
@@ -114,13 +146,13 @@ If you prefer to install manually:
 darcs clone http://basilisk.fr/basilisk
 cd basilisk
 
-# Apply the macOS compatibility patch
+# Apply the macOS compatibility patch (macOS only)
 curl -O https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/patches/2025-11-03-macos-mman-compatibility.patch
 patch -p1 < 2025-11-03-macos-mman-compatibility.patch
 
 # Configure and build
 cd src
-ln -s config.osx config
+ln -s config.osx config  # or config.gcc for Linux
 make -k
 make
 ```
