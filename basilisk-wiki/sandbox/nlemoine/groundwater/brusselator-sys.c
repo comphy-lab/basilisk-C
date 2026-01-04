@@ -1,7 +1,7 @@
 /**
 # Coupled reaction--diffusion equations
 
-This is a test of a [Poisson-Helmoltz solver with coupled equations](http://basilisk.fr/sandbox/nlemoine/groundwater/diffusion-crossreact.h), it is based on the [Brusselator](/src/examples/brusselator.c) test case.
+This is a test of a [Poisson-Helmoltz solver with coupled equations](/sandbox/nlemoine/groundwater/diffusion-crossreact.h), it is based on the [Brusselator](/src/examples/brusselator.c) test case.
 
 Two chemical compounds with concentrations $C_1$ and $C_2$ interact
 according to the coupled reaction--diffusion equations:

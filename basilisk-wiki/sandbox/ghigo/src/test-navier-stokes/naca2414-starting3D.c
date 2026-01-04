@@ -2,7 +2,7 @@
 # Wingtip vortex of a 3D NACA2414 wing at $Re=1000$
 
 This test case is inspired from the Gerris test case
-[wingtip](http://gerris.dalembert.upmc.fr/gerris/examples/examples/wingtip.html). Wingtip
+[wingtip](https://gerris.dalembert.upmc.fr/gerris/examples/examples/wingtip.html). Wingtip
 vortices are tubes of circulating air which are left behind a wing as
 it generates lift. One wingtip vortex trails from the tip of each
 wing. The cores of vortices spin at very high speed and are regions of

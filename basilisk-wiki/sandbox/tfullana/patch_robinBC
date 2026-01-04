@@ -30,7 +30,7 @@ u.n[bottom] = dirichlet(0);
 ##**Warning**
 *Currently working on this issue.*
 
-We define the homogeneous counterpart of the Robin boundary condition as $\boldsymbol{u}$ is solution of the [*Poisson problem*](http://basilisk.fr/src/poisson.h#homogeneous-boundary-conditions). The value of the slip length $\lambda$ of the robin homogeneous boundary condition, found in the file [common.h](http://basilisk.fr/src/common.h), has to be changed **manually**.
+We define the homogeneous counterpart of the Robin boundary condition as $\boldsymbol{u}$ is solution of the [*Poisson problem*](/src/poisson.h#homogeneous-boundary-conditions). The value of the slip length $\lambda$ of the robin homogeneous boundary condition, found in the file [common.h](/src/common.h), has to be changed **manually**.
 
 For example, for $\lambda = 0.1$ :
 
@@ -38,7 +38,7 @@ For example, for $\lambda = 0.1$ :
 u.t[bottom] = robin(U_plate,0.1)
 ~~~
 
-Go to the robin_homogeneous line in the [common.h](http://basilisk.fr/src/common.h) file :
+Go to the robin_homogeneous line in the [common.h](/src/common.h) file :
 
 ~~~bash
 cd $BASILISK

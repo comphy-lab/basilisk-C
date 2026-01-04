@@ -41,7 +41,7 @@ void selfsim_tracer_fluxes (scalar f,
 
     /**
     HERE, we do not have to be very careful contrary to the 
-    [documentation](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README#a.-prediction-projection-steps) 
+    [documentation](/sandbox/cailler/self_sim_DNS/README#a.-prediction-projection-steps) 
     explaining how to build a self-similar solver, 
     because the advection velocity IS divergence 
     free. We are indeed in the **very special case** where:

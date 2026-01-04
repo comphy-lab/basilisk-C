@@ -642,7 +642,7 @@ void explicit_transfer_and_diffusion (scalar c, scalar f, face vector Diff, doub
 
   /*if height is declared use height functions to compute the normal. this is needed to have second order
   convergence of interfacial area. mixed young centered scheme produces 0th order convergence of surface
-  area see http://basilisk.fr/sandbox/Antoonvh/interface.c
+  area see https://basilisk.fr/sandbox/Antoonvh/interface.c
   */
 
   if (f.height.x.i){

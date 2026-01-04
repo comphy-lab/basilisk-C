@@ -1,5 +1,5 @@
 /**
-The Scriven problem setup. This file is copied from [Edorado's sandbox](http://basilisk.fr/sandbox/ecipriano/README) and modified with EBIT.
+The Scriven problem setup. This file is copied from [Edorado's sandbox](/sandbox/ecipriano/README) and modified with EBIT.
 */
 #define SEMUPC 1
 #define INTGRAD_3rd 1

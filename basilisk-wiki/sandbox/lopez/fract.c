@@ -37,12 +37,11 @@ int main()
 }
 
 /**
-   ~~~gnuplot Reconstructed face fractions
-   set terminal @PNG enhanced size 640,640 font ",8"
-   set size ratio -1
-   unset key 
-   unset border
-   unset tics
-   plot 'cells' w l, 'facet' w l, 'log' u 1:2:3 with labels
-   ~~~
+~~~gnuplot Reconstructed face fractions
+set size ratio -1
+unset key 
+unset border
+unset tics
+plot 'cells' w l, 'facet' w l, 'log' u 1:2:3 with labels
+~~~
 */

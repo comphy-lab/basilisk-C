@@ -1,0 +1,34 @@
+# Dockerfile for testing Darcs sync workflow
+# Build once, reuse for fast local testing
+#
+# Build:  docker build -f Dockerfile.darcs-test -t darcs-test .
+# Run:    docker run --rm darcs-test
+
+# Use Debian which has darcs in its repos
+FROM debian:bookworm
+
+# Prevent interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install Darcs from Debian repos
+RUN apt-get update \
+    && apt-get install -y darcs ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify installation
+RUN darcs --version
+
+# Default command: run the sync test
+CMD ["bash", "-c", "\
+    echo '=== Testing HTTPS connectivity to basilisk.fr ===' && \
+    echo '' && \
+    echo 'Testing basilisk-source...' && \
+    darcs get --lazy https://basilisk.fr/basilisk /tmp/test_source && \
+    echo 'SUCCESS: basilisk-source accessible' && \
+    echo '' && \
+    echo 'Testing basilisk-wiki...' && \
+    darcs get --lazy https://basilisk.fr/wiki /tmp/test_wiki && \
+    echo 'SUCCESS: basilisk-wiki accessible' && \
+    echo '' && \
+    echo '=== ALL TESTS PASSED ===' \
+"]

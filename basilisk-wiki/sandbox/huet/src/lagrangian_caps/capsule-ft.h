@@ -20,7 +20,7 @@ In the Lagrangian mesh, each node is assigned several attributes:
 * ```curv```, the (mean) curvature of the membrane at the node coordinates
 * ```ref_curv```, the reference (mean) curvature of the membrane at the node coordinates (default is zero)
 * ```lagForce```, an elastic and/or bending force exerted by the membrane on its surrounding fluid
-* ```stencil```, a [Cache](http://basilisk.fr/src/grid/tree.h#82) structure used for averaging the neighboring velocities and spreading the Lagrangian force as a body force on the neighboring Eulerian nodes
+* ```stencil```, a [Cache](/src/grid/tree.h#82) structure used for averaging the neighboring velocities and spreading the Lagrangian force as a body force on the neighboring Eulerian nodes
 * in case of MPI simulations, ```pid```, the rank of the processor owning the Eulerian cell which contains the lagNode
 * ```edge_ids```, the IDs of its connecting edges: 2 in 2D, up to 6 in 3D (because every considered shape is derived by subdividing in icosahedron, leading to 5 or 6 neighbors only).
 

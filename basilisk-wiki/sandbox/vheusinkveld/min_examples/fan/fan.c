@@ -1,7 +1,7 @@
 /** 
 # Intro 
 
-This is a minimal example for implementing a 'fan' after geometry examples that can be found [here](http://basilisk.fr/sandbox/Antoonvh/puck.c). The mentioned function is updated to be applicable for general phi and theta. Also this script adds a velocity based on a stated fan power. All functions can be found at the end of this file. They are merely ment as a showcase of how to implement a forcing, the details of how power is translated into velocity is not of interest. For that my master Thesis can be read in a few months;)
+This is a minimal example for implementing a 'fan' after geometry examples that can be found [here](/sandbox/Antoonvh/puck.c). The mentioned function is updated to be applicable for general phi and theta. Also this script adds a velocity based on a stated fan power. All functions can be found at the end of this file. They are merely ment as a showcase of how to implement a forcing, the details of how power is translated into velocity is not of interest. For that my master Thesis can be read in a few months;)
 
 # The code
 First we include relevant files for 2D navier stokes solving and geometric tricks.

@@ -231,7 +231,7 @@ $$
 (it is admitted that the saddle point verifies the "steepest descent path" property) 
 
 4. Compute the spatial stability branches $k(\omega)$ of this model and plot them in the convective and absolute cases (you may start from [this program]( 
-http://basilisk.fr/sandbox/easystab/SpatioTemporal_ModelEquations.m) and adapt it).
+https://basilisk.fr/sandbox/easystab/SpatioTemporal_ModelEquations.m) and adapt it).
 
 
 ### **Exercice 2** Numerical resolution of the spatial stability problem.

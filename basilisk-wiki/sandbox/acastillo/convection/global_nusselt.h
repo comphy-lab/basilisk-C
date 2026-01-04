@@ -8,42 +8,47 @@
 #define dV pow(Delta,3)
 #endif
 
-double nusselt_top (scalar T)
-{
-  double nutop = 0.;
-  foreach_boundary (top,reduction(+:nutop))
-    nutop += dA*(T[] - T[ghost])/Delta;
-  return nutop;
+double nusselt_top (scalar T){
+  double flux = 0.;
+
+  foreach_boundary (top, reduction(+:flux))
+    flux += dA*(T[] - T[0,1])/Delta;
+
+  return flux;
 }
 
-double nusselt_bot (scalar T)
-{
-  double nubot=0.;
-  foreach_boundary (bottom,reduction(+:nubot))
-    nubot += dA*(T[ghost] - T[])/Delta;
-    return nubot;
+double nusselt_bot (scalar T){
+  double flux=0.;
+
+  foreach_boundary (bottom, reduction(+:flux))
+    flux += dA*(T[0,-1] - T[])/Delta;
+
+  return flux;
 }
 
-double nusselt_right (scalar T)
-{
-  double nuright=0.;
-  foreach_boundary (right,reduction(+:nuright))
-    nuright += dA*(T[] - T[ghost])/Delta;
-  return nuright;
+double nusselt_right (scalar T){
+  double flux=0.;
+  
+  foreach_boundary (right, reduction(+:flux))
+    flux += dA*(T[] - T[1,0])/Delta;
+  
+  return flux;
 }
 
-double nusselt_left (scalar T)
-{
-  double nuleft=0.;
-  foreach_boundary (left,reduction(+:nuleft))
-    nuleft += dA*(T[ghost] - T[])/Delta;
-  return nuleft;
+double nusselt_left (scalar T){
+  double flux=0.;
+  
+  foreach_boundary (left, reduction(+:flux))
+    flux += dA*(T[-1,0] - T[])/Delta;
+
+  return flux;
 }
 
-double nusselt_vol (scalar T, vector u)
-{
-  double nuvol=0.;
-  foreach(reduction(+:nuvol))
-    nuvol += dV*(sqrt(Ra)*u.y[]*T[] - (T[0,1] - T[0,-1])/(2*Delta));
-  return nuvol;
+double nusselt_vol (scalar T, vector u){
+  double flux=0.;
+  
+  foreach(reduction(+:flux))
+    flux += dV*(sqrt(Ra)*u.y[]*T[] - (T[0,1] - T[0,-1])/(2*Delta));
+  
+  return flux;
 }

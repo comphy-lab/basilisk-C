@@ -1,6 +1,6 @@
 /**
 # Collapse of granular columns with basal friction
-We propose an implementation of the Jop Pouliquen Forterre µ(I) rheology with friction at the base. This is the counterpart  of the [no slip](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column.c) case.
+We propose an implementation of the Jop Pouliquen Forterre µ(I) rheology with friction at the base. This is the counterpart  of the [no slip](/sandbox/M1EMN/Exemples/granular_column.c) case.
  
 # Code 
 Includes and definitions
@@ -57,7 +57,7 @@ double eps=3e-3,mu_w=0.48;
 //u.t[bottom] = neumann(mu.y[] ? -(mu_c*p[]/mu.y[])*u1.x[]/sqrt( sq(u1.x[]) + sq(eps)) : 0.);
 u.t[bottom] = neumann(mu.y[] ? -(mu_w*p[]/mu.y[] * u1.x[]/(fabs(u1.x[] + eps)))  : 0.);
 /**
-see [couette with stress](http://basilisk.fr/sandbox/M1EMN/Exemples/couette_muw.c) case.*/
+see [couette with stress](/sandbox/M1EMN/Exemples/couette_muw.c) case.*/
 
 int main() {
   L0 = LDOMAIN;

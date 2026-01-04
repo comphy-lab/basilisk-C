@@ -5,7 +5,7 @@ We simulate a simple shear cell for a granular media of glass beads in the prese
 
 ## Equations
 
-Constitutive equation for granular media is included in Navier-Stokes and available in [http://basilisk.fr/sandbox/M1EMN/Exemples/granular.h]()
+Constitutive equation for granular media is included in Navier-Stokes and available in [https://basilisk.fr/sandbox/M1EMN/Exemples/granular.h]()
 
 Analytical solution can be evaluated by integrating the ODE (see [Cawthorn 2011](https://www.repository.cam.ac.uk/items/6aff8476-2979-42b8-97d7-bbb5ad9922ce)):
 $$\frac{\text{d} u}{\text{d} z} =  \frac{I_0\sqrt{P_c/\rho-gz}}{d}\left(\frac{\theta-P_c/\rho+z}{\mu_2/\mu_1(P_c/\rho g - z)-\theta}\right) $$ 

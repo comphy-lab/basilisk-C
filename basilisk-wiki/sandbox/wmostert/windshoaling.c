@@ -277,7 +277,7 @@ double wall_law(double y){
 }
 
 //==GN soliton equation, code from MOSTERT & DEIKE (2020):
-// http://basilisk.fr/sandbox/wmostert/shallow.c
+// https://basilisk.fr/sandbox/wmostert/shallow.c
 double waveGN( double x, double y, double a0 ){
   // Try "analytical solution of G-N equations":
   double k = sqrt(3.*a0)/(2.*sqrt(1. + a0));
@@ -445,7 +445,7 @@ event switch_stage(t = T_TRANSITION){
   //initialize wind via law of the wall, incl. galilean transform
   foreach(){
 //==GN soliton equation==
-//code from MOSTERT&DEIKE(2020): http://basilisk.fr/sandbox/wmostert/shallow.c
+//code from MOSTERT&DEIKE(2020): https://basilisk.fr/sandbox/wmostert/shallow.c
     double eta = waveGN(x-X0, 0, A0);
     double deta = detax(x-X0, A0);
     //u = f * u_solit + (1-f) * u_air

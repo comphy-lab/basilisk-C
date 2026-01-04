@@ -1,6 +1,6 @@
 /** 
 This file is a copy of the code
-[`u_BC_dipolar_flow.h`](http://basilisk.fr/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h). 
+[`u_BC_dipolar_flow.h`](/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h). 
 Please refer to the link provided for a detailed documentation on this file.
 */
 

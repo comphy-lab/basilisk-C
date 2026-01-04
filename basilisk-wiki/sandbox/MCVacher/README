@@ -1,4 +1,21 @@
-This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I work on a hydrodynamic instability of a jet/bubble plume impinging on a free-surface. Here are some Basilisk simulations that reproduce the phenomenon. You can learn more about by work here : [Website](https://sites.google.com/view/marc-vacher/)
+This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I work on a hydrodynamic instability of a jet/bubble plume impinging on a free-surface. Here are some Basilisk simulations on this subject, and more ! You can also learn things here : [Website](https://sites.google.com/view/marc-vacher/)
 
-[Self-induced sloshing by a jet](slosh_reg.c)
+## Free Jets
+
+* [Schlichting 2D Jet](schlichting.c)
+* [Unstable 2D Jet](unstable_2D_jet.c)
+
+## Confined Jets
+
+* [Jet confined in a box](box_jet.c)
+* [Impinging planar jets](imp_jets.c)
+
+* [Stable jet under a free-surface](slosh_reg_stable.c)
+* [Self-induced sloshing by a jet](slosh_reg.c)
+
+## Sloshing
+
+* [Sloshing as a damped oscillator](slosh_dissipation.c)
+* [Sloshing with wall dissipation](slosh_dissipation_wall.c)
+* [Capillary Sloshing](slosh_dissipation_cap.c)
 

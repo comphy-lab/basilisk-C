@@ -20,13 +20,13 @@ $$\frac{\partial h}{\partial t}+  \frac{\partial Q(h)}{\partial x}=0, \;
   Y=
   \text{max}( h - \frac{B}{|S -  \frac{\partial h}{\partial x}|}  ,0)$$
 this is Balmforth formulation. This formulation is more simple than the Liu & Mei's one (or Hogg). Note a new formulation by Saramito (to be tested).
-See [Bingham simple example](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_simple.c)  for the derivation.
+See [Bingham simple example](/sandbox/M1EMN/Exemples/bingham_simple.c)  for the derivation.
 
-It can be written for [Herschel–Bulkley](http://basilisk.fr/sandbox/M1EMN/Exemples/herschel-column-noSV.c)  as well.
+It can be written for [Herschel–Bulkley](/sandbox/M1EMN/Exemples/herschel-column-noSV.c)  as well.
 
 The numerical algorithm is very trivial (based on heat equation) and centrered here, it can be inproved (see Fernandez-Nieto et al.).
 
-We added a flux correction to reobtain Huppert second problem in case of large slope $S$. See a [discussion of that](http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt_noSV.c) in the case of the 
+We added a flux correction to reobtain Huppert second problem in case of large slope $S$. See a [discussion of that](/sandbox/M1EMN/Exemples/viscolsqrt_noSV.c) in the case of the 
 full Huppert problem which is for $B=0$, $Y=h$
 $$\frac{\partial h}{\partial t}+  \frac{\partial Q(h)}{\partial x}=0, \;
   \text{with} \;\;  Q = \frac{h^3}{3}  (-Z'_b - \frac{\partial h}{\partial x})$$
@@ -372,7 +372,7 @@ plot [475:756][155:290]'../Img/balmf06.png' binary filetype=png with rgbimage no
 
 # Links
 
-* [Huppert first and secod problems](http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt_noSV.c)
+* [Huppert first and secod problems](/sandbox/M1EMN/Exemples/viscolsqrt_noSV.c)
 * [Bingham periodic 2D on a slope](bingham_simple.c)
 * [Bingham concrete 2D slump test](column_SCC.c)
 * [Bingham 1D collapse on a incline](bingham_collapse_noSV.c)
@@ -395,7 +395,7 @@ J. Non-Newtonian Fluid Mech. 139 (2006) 103–127
 * Enrique D. Fernández-Nieto, José M. Gallardo, Paul Vigneaux, 
 ["Efficient numerical schemes for viscoplastic avalanches. Part 1: The 1D case"](http://www.sciencedirect.com/science/article/pii/S0021999114000539)
 Journal of Computational Physics Volume 264, 1 May 2014, Pages 55–90
-* [Bingham simple example](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_simple.c)  for the derivation. 
+* [Bingham simple example](/sandbox/M1EMN/Exemples/bingham_simple.c)  for the derivation. 
 
 * Lagrée  [M2EMN
 Master 2 Ecoulements en Milieu Naturel](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/mainM2EMN.pdf)

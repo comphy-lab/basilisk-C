@@ -4,14 +4,11 @@
 ## *get_distribution_function()*: Cumulative distribution function of an scalar
 
 This function calculates the cumulative distribution function of a scalar field
-*c* within a specified region defined by *f* using histograms. Fields are
-weighted by the cell volume. The function uses parallel reduction to accumulate
-values and weights, then normalizes the accumulated values. 
+*c* using histograms. Fields are weighted by the cell volume. The function uses
+parallel reduction to accumulate values and weights, then normalizes the
+accumulated values. 
 
 The arguments and their default values are:
-
-*f*
-: Scalar field defining the region-of-interest.
 
 *c*
 : Scalar field for which the CDF is computed.
@@ -42,7 +39,7 @@ The arguments and their default values are:
 #define NBIN 220
 
 
-void get_distribution_function(scalar f, scalar c, double cmin=0, double cmax=1, int nbin=NBIN, double p_range[nbin], double p_sum[nbin], bool store=true){
+void get_distribution_function(scalar c, double cmin=0, double cmax=1, int nbin=NBIN, double p_range[nbin], double p_sum[nbin], bool store=true){
 
   double crange = (cmax - cmin);
   /* Set the number of bins */
@@ -58,12 +55,20 @@ void get_distribution_function(scalar f, scalar c, double cmin=0, double cmax=1,
   /* Obtain the total volume per pid */
   double vol_cells=0.0, vol_cells_pid=0.0;
   foreach(serial, noauto)
-     vol_cells_pid += f[]*dv();
+  #if EMBED
+    vol_cells_pid += dv()*cs[];
+  #else
+    vol_cells_pid += dv();
+  #endif
 
   /* Populate a 1D histogram using fields weighted by volume */
   if (vol_cells_pid > 0){
     foreach()
-      gsl_histogram_accumulate(h, c[], f[]*dv());
+    #if EMBED
+      gsl_histogram_accumulate(h, c[], dv()*cs[]);
+    #else
+      gsl_histogram_accumulate(h, c[], dv());
+    #endif
 
     /* Obtain the cumulative distribution from the histogram */
     gsl_histogram_pdf * p = gsl_histogram_pdf_alloc (nbin);
@@ -113,18 +118,14 @@ void get_distribution_function(scalar f, scalar c, double cmin=0, double cmax=1,
 /**
 ## *reference_height()*: Compute the reference height field using a cumulative distribution function
 
-This function computes the reference height `yref` for a scalar field `c` within
-a specified region defined by the scalar field `f`. It uses the cumulative
-distribution function (CDF) of `c` to determine the reference height as prposed 
-by [Tseng & Ferzinger (2001)](#tseng2001).
+This function computes the reference height `yref` for a scalar field `c`. 
+It uses the cumulative distribution function (CDF) of `c` to determine the 
+reference height as proposed by [Tseng & Ferzinger (2001)](#tseng2001).
 
 The arguments and their default values are:
 
 *yref*
 : Scalar field to store the computed reference height.
-
-*f*
-: Scalar field defining the region-of-interest.
 
 *c*
 : Scalar field for which the CDF is computed.
@@ -145,20 +146,35 @@ The output `ymix` is the reference height at the midpoint of the CDF.
 
 */
 
-double reference_height(scalar yref, scalar f, scalar c, double cmin=0, double cmax=1, bool store=true, double H0=L0){
+double reference_height(scalar yref, scalar c, double cmin=0, double cmax=1, bool store=true, double H0=L0, bool reverse=true){
 
   /* Get the Cumulative distribution function of c*/
   double p_range[NBIN], p_sum[NBIN];
-  get_distribution_function(f, c, cmin, cmax, NBIN, p_range, p_sum, store);
+  get_distribution_function(c, cmin, cmax, NBIN, p_range, p_sum, store);
 
   /* Use the CDF to compute the reference height Yref(x,y,z,t) */
   gsl_interp_accel *acc = gsl_interp_accel_alloc();
   gsl_spline *spline = gsl_spline_alloc(gsl_interp_linear, NBIN);
   gsl_spline_init(spline, p_range, p_sum, NBIN);
-  foreach()
-    yref[] = (1.0 - gsl_spline_eval (spline, c[], acc))*(H0/2) + Y0;
+  
+  double ymix;
+  double offset;
+#if dimension == 2
+  offset = Y0;
+#else
+  offset = Z0;
+#endif
 
-  double ymix = (1.0 - gsl_spline_eval (spline, (cmax+cmin)/2, acc))*(H0/2) + Y0;
+  if (reverse) {
+    foreach()
+      yref[] = (1.0 - gsl_spline_eval (spline, c[], acc))*(H0/2) + offset;
+    ymix = (1.0 - gsl_spline_eval (spline, (cmax+cmin)/2, acc))*(H0/2) + offset;
+  } else {
+    foreach()
+      yref[] = gsl_spline_eval (spline, c[], acc)*(H0/2) + offset;
+    ymix = gsl_spline_eval (spline, (cmax+cmin)/2, acc)*(H0/2) + offset;
+  }
+
   gsl_spline_free (spline);
   gsl_interp_accel_free (acc);
   return ymix;

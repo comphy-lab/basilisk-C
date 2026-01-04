@@ -1,7 +1,7 @@
 %{
 # The Falkner Skan boundary layer
 
-Here we have tried to validate the falkner skan code but we met some problems [http://basilisk.fr/sandbox/easystab/falkner_skan.m]()
+Here we have tried to validate the falkner skan code but we met some problems [https://basilisk.fr/sandbox/easystab/falkner_skan.m]()
 
 We use the analytical Pohlhausen equation to compare the final result but we didn't ad the pressure gradient part of the equation. We use an equation for u0 of the form: 
 $$

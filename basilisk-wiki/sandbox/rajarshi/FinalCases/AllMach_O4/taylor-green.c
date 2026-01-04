@@ -149,5 +149,5 @@ plot 'Re' w lp t 'centered', 'Re-all-mach' w lp t 'all Mach'
 
 ## See also
 
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/reynolds.html)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/reynolds.html)
 */

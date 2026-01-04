@@ -40,6 +40,7 @@ struct SparkModel {
   scalar T;
   bool linear;
   bool constant;
+  Phase * phase;
   SparkPolicy policy;
 };
 
@@ -53,6 +54,7 @@ struct SparkModel spark = {
   .linear = false,            // Linear temperature profile
   .constant = false,          // Constant temperature profile
   .policy = 3,                // Default spark policy is SPARK_HEATFLUX
+  .phase = NULL,              // Pointer to the respective phase
 };
 
 /**
@@ -77,6 +79,7 @@ increase is applied on these cells.
 We define a function that setups a spark given a spark struct. */
 
 void set_spark (struct SparkModel * spark) {
+  Phase * phase = spark->phase;
 #if TREE
   if (t <= spark->time + spark->duration) {
     extern int maxlevel;
@@ -85,6 +88,10 @@ void set_spark (struct SparkModel * spark) {
 #endif
 
   scalar spark_T = spark->T;
+  scalar rho = phase->rho;
+  scalar cp = phase->cp;
+  scalar STexp = phase->STexp;
+
   if (t >= spark->time && t <= (spark->time + spark->duration)) {
     foreach() {
       if (sparkd(x,y,0.5*spark->diameter) > 0.) {
@@ -106,7 +113,7 @@ void set_spark (struct SparkModel * spark) {
 
           case 3:   // SPARK_HEATFLUX
             spark_T[] = spark->temperature;
-            sgT[] += spark_T[]*rho2v[]*cp2v[]*cm[];
+            STexp[] += spark_T[]*rho[]*cp[]*cm[];
             break;
 
           default:

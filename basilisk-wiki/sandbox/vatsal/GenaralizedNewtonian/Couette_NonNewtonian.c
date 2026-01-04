@@ -284,12 +284,12 @@ The post-processing codes and simulation data are available at: [PostProcess](ht
 
 # Bibliography
 
-* [Same example in Basilisk using the calculation of D2 at cell centers](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_simple.c)
-  and its application to [1D Collapse](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
+* [Same example in Basilisk using the calculation of D2 at cell centers](/sandbox/M1EMN/Exemples/bingham_simple.c)
+  and its application to [1D Collapse](/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
 
-* [Related example in Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/couette.html)
+* [Related example in Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/couette.html)
 
-* [Related example with augmented Lagrangian](http://basilisk.fr/sandbox/popinet/poiseuille-periodic.c)
+* [Related example with augmented Lagrangian](/sandbox/popinet/poiseuille-periodic.c)
 
 *  K. F. Liu and C. C. Mei
  Liu, K.F. and Mei, C.C., 1990. Approximate equations for the slow spreading of a thin sheet of Bingham plastic fluid.

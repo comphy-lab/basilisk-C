@@ -9,7 +9,7 @@ Knowing the tide and the currents is of the uttermost importance for sailors.
  
  
  
- Relation between [moon and sun movment](http://basilisk.fr/sandbox/M1EMN/BASIC/sundial.c) has been long recognized (since  [Pythéas from Marseille](https://fr.wikipedia.org/wiki/Pythéas)
+ Relation between [moon and sun movment](/sandbox/M1EMN/BASIC/sundial.c) has been long recognized (since  [Pythéas from Marseille](https://fr.wikipedia.org/wiki/Pythéas)
  voyage of exploration to northwestern Europe in -325)...<br>
  Since Poincaré and his "Marée du Baccalauréat" (cf Bouteloup) we now that the "tide acceleration" is   $\gamma(M)-\gamma(0)=\frac{2 G M_LR}{D^3}=2 \frac{G M_T}{R^2}\frac{M_L R^3}{M_T D^3}$....  
  <br>
@@ -19,7 +19,7 @@ Knowing the tide and the currents is of the uttermost importance for sailors.
  <br><br>
  <hr>
   <br>
- Here we propose a numerical implementation of a temptative to compute tides around France based on [Tsunami example](http://basilisk.fr/src/examples/tsunami.c).
+ Here we propose a numerical implementation of a temptative to compute tides around France based on [Tsunami example](/src/examples/tsunami.c).
  Only  M2 wave is given (only Moon contribution) at the left of the domain in Atlantic ocean the first of August 2017 (time in TU+1). It needs 3 days to obtain the forced state which is compared to the values of the M2 contibution from "Table des Marées des grands Ports du Monde".
  
  
@@ -137,7 +137,7 @@ scalar hmax[];
 We set the normal velocity component on the left, right and bottom
 boundaries to a "radiation condition" with a reference sealevel of
 zero. see
-[http://basilisk.fr/src/elevation.h#radiation-boundary-conditions]()
+[https://basilisk.fr/src/elevation.h#radiation-boundary-conditions]()
 
 The bottom boundary is always "dry" in this example so can be left
 alone. Note that the sign is important and needs to reflect the
@@ -216,7 +216,7 @@ int adapt() {
 
 We first specify the terrain database to use to reconstruct the
 topography $z_b$. This KDT database needs to be built beforehand. See the
-[`xyz2kdt` manual](http://gerris.dalembert.upmc.fr/xyz2kdt.html)
+[`xyz2kdt` manual](https://gerris.dalembert.upmc.fr/xyz2kdt.html)
 for explanations on how to do this.
  
 
@@ -571,9 +571,9 @@ p[2000:5000][:8]'saintmalo.txt' w lp,sm2(x) t'SM M2','brest.txt' w lp,h2(x) t'B 
 
 # Links
 
-* inspired/plagied from [tsunami 2004](http://basilisk.fr/src/examples/tsunami.c)
-* see [http://basilisk.fr/src/examples/tides.c]()
-* [http://gerris.dalembert.upmc.fr/gerris/examples/examples/tides.html]()
+* inspired/plagied from [tsunami 2004](/src/examples/tsunami.c)
+* see [https://basilisk.fr/src/examples/tides.c]()
+* [https://gerris.dalembert.upmc.fr/gerris/examples/examples/tides.html]()
 * [Gerris/modules/fes2004/]()
 
 # bibliography

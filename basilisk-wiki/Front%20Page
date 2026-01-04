@@ -13,7 +13,7 @@ Basilisk is also the name of a [Free
 Software](http://en.wikipedia.org/wiki/Free_software) program for the
 solution of 
 [partial differential equations](http://en.wikipedia.org/wiki/Partial_differential_equation)
-on adaptive Cartesian meshes. It is the successor of [Gerris](http://gerris.dalembert.upmc.fr) and is
+on adaptive Cartesian meshes. It is the successor of [Gerris](https://gerris.dalembert.upmc.fr) and is
 developed by the same [authors](src/AUTHORS).
 
 If you want to find out more about Basilisk see:
@@ -28,13 +28,11 @@ If you want to find out more about Basilisk see:
 
 ## Picture of the month
 
-![[Global Tides](src/examples/global-tides.c)](src/examples/global-tides/M2.png){width="100%"}
+![[Three-dimensional elliptic instability](sandbox/Antoonvh/elliptic.c) by [Antoon van Hooft](sandbox/Antoonvh/README)](https://www.antoonvanhooft.nl/media/elliptical.mp4){width="80%"}
 
 See also the [POM Gallery]().
 
 ## News
-
-* [**Basilisk (Gerris) Users' Meeting 2025**](BGUM2025), 7–9th July, University of Oxford, [**Program and presentations**](BGUM2025#program-and-presentations).<br>
 
 * Next [Basilisk Monthly Meeting](BMM/README): TBA
 
@@ -43,22 +41,35 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
-@hal{cipriano2025, hal-04962085}
+@hal{eshima2025, hal-05419560}
 
-@article{thomas2025,
-title = {Droplet dynamics in capillary parallel plate channel},
-journal = {Computers & Fluids},
-volume = {300},
-pages = {106728},
-year = {2025},
-issn = {0045-7930},
-doi = {https://doi.org/10.1016/j.compfluid.2025.106728},
-url = {https://www.sciencedirect.com/science/article/pii/S0045793025001884},
-author = {Damien Thomas and Stéphanie Lacour and Stéphane Zaleski},
-keywords = {Breakup, Contact lines, Droplet, Clogging, VOF, Spray cooling}
+@article{xu2025,
+  title = {Theoretical and numerical studies on azimuthal modes transition of viscoelastic swirling liquid jets},
+  author = {Xu, Yiqian and Mu, Kai and Qiao, Ran and Zhao, Chengxi and Si, Ting},
+  journal = {Phys. Rev. Fluids},
+  volume = {10},
+  issue = {12},
+  pages = {124002},
+  numpages = {34},
+  year = {2025},
+  month = {Dec},
+  publisher = {American Physical Society},
+  doi = {10.1103/slpv-jhlh},
+  url = {https://link.aps.org/doi/10.1103/slpv-jhlh}
 }
 
-@hal{wu2025, hal-05108994}
+@hal{fullana2025, hal-05417162}
 
-@hal{scapin2025, hal-05105692}
+@article{deAquino2025, 
+  title={Interaction regimes of a vortex ring and an inertial particle},
+  volume={1024}, 
+  DOI={10.1017/jfm.2025.10909}, 
+  journal={Journal of Fluid Mechanics}, 
+  author={de Aquino, Guilherme Siqueira and Viroulet,
+  Sylvain and Sasso, Nicolas and Albagnac, Julie},
+  year={2025},
+  month = {December},
+  pages={A55},
+  url = {https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/interaction-regimes-of-a-vortex-ring-and-an-inertial-particle/30ED9E220F7CBF4D3F0BC3AEF32C3B54}
+}
 ~~~

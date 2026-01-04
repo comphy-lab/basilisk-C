@@ -1,5 +1,5 @@
 /**
-To test the implementation of the gradient of viscosity term in the viscous solver when a solid is present, we use the test case of a rising bubble. We just include the file "embed.h" to make sure that Basilisk uses the viscosity-embed solver. Since our simulation does not really needs solid, we can compare our results with the classical solver given [there](http://basilisk.fr/src/test/rising.c). */
+To test the implementation of the gradient of viscosity term in the viscous solver when a solid is present, we use the test case of a rising bubble. We just include the file "embed.h" to make sure that Basilisk uses the viscosity-embed solver. Since our simulation does not really needs solid, we can compare our results with the classical solver given [there](/src/test/rising.c). */
 
 /**
 # Rising bubble

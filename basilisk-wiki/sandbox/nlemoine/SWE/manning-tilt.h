@@ -1,5 +1,5 @@
 /**
-[Return to my homepage](http://basilisk.fr/sandbox/nlemoine/README)
+[Return to my homepage](/sandbox/nlemoine/README)
 
 # Friction term with detrended topography
 
@@ -34,7 +34,7 @@ $$
 \quad+\qquad\qquad \mathbf{S'_f}(\mathbf{W})\qquad\qquad
 $$
 
-We can then give the detrended $z^\ast_b$ as input in Basilisk, and add the effect of regional tilt in the second source term $\mathbf{S'_f}$ that must be provided anyway to take friction into account. A steady-state solution, where the topographic source term exactly balances the friction term, will translate into a "lake-at-rest" water surface profile. This decomposition is also necessary for [periodic solutions](http://basilisk.fr/src/test/lake-tr.c).
+We can then give the detrended $z^\ast_b$ as input in Basilisk, and add the effect of regional tilt in the second source term $\mathbf{S'_f}$ that must be provided anyway to take friction into account. A steady-state solution, where the topographic source term exactly balances the friction term, will translate into a "lake-at-rest" water surface profile. This decomposition is also necessary for [periodic solutions](/src/test/lake-tr.c).
 
 ##Implementation with Manning friction
 

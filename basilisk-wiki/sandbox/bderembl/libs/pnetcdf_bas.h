@@ -37,7 +37,6 @@ and 3d variable.
 #include <string.h>
 #include <pnetcdf.h>
 
-#define NDIMS 4
 #define Z_NAME "z"
 #define Y_NAME "y"
 #define X_NAME "x"
@@ -96,7 +95,6 @@ void create_nc(scalar * list_out, char* file_out){
    /* LOCAL IDs for the netCDF file, dimensions, and variables. */
    int x_dimid, y_dimid, z_dimid, rec_dimid;
    int z_varid, y_varid, x_varid;
-   int dimids[NDIMS];
    
    // make it global variable
    sprintf (nc_file,"%s", file_out);
@@ -112,8 +110,8 @@ void create_nc(scalar * list_out, char* file_out){
     * unlimited length - it can grow as needed. In this example it is
     * the time dimension.*/
 #if _MPI
-   int npx = mpi_dims[0];
-   int npy = mpi_dims[1];
+   int npx = Dimensions.x;
+   int npy = Dimensions.y;
 #else
    int npx = 1;
    int npy = 1;
@@ -127,7 +125,7 @@ void create_nc(scalar * list_out, char* file_out){
 
 #if dimension > 2
 #if _MPI
-   int npz = mpi_dims[2];
+   int npz = Dimensions.z;
 #else
    int npz = 1;
 #endif // MPI
@@ -174,17 +172,38 @@ void create_nc(scalar * list_out, char* file_out){
       the netCDF variables. Both of the netCDF variables we are
       creating share the same four dimensions. In C, the
       unlimited dimension must come first on the list of dimids. */
-   dimids[0] = rec_dimid;
-   dimids[1] = z_dimid;
-   dimids[2] = y_dimid;
-   dimids[3] = x_dimid;
 
    /* Define the netCDF variables */
    int nvarout = 0;
    for (scalar s in nc_scalar_list){
+
+        int nl_loc = _attribute[s.i].block;
+
+        if (nl_loc == 1){ // store 1-layer variables without layer dimension
+          int dimids[3];
+          int NDIMS = 3;
+          dimids[0] = rec_dimid;
+          dimids[1] = y_dimid;
+          dimids[2] = x_dimid;
+
        if ((nc_err = ncmpi_def_var(ncid, s.name, NC_FLOAT, NDIMS,
                                    dimids, &nc_varid[nvarout])))
          handle_error(nc_err, __LINE__);
+
+        } else {
+
+        int dimids[4];
+        int NDIMS = 4;
+        dimids[0] = rec_dimid;
+        dimids[1] = z_dimid;
+        dimids[2] = y_dimid;
+        dimids[3] = x_dimid;
+
+       if ((nc_err = ncmpi_def_var(ncid, s.name, NC_FLOAT, NDIMS,
+                                   dimids, &nc_varid[nvarout])))
+         handle_error(nc_err, __LINE__);
+        }
+
        nvarout += 1;
    }
    
@@ -268,42 +287,7 @@ void write_nc() {
   float * field = (float *)malloc(nl*Nloc*Nloc*sizeof(float));
 #endif
   
-  /* The start and count arrays will tell the netCDF library where to
-     write our data. */
-  MPI_Offset start[NDIMS], count[NDIMS];
-  
-  
-  /* These settings tell netcdf to write one timestep of data. (The
-     setting of start[0] inside the loop below tells netCDF which
-     timestep to write.) */
-  start[0] = nc_rec; //time
-#if dimension > 2
-#if _MPI
-  start[1] = mpi_coords[2]*Nloc;     //z
-#else
-  start[1] = 0;
-#endif  // MPI
-#else
-  start[1] = 0;     //level
-#endif
-#if _MPI
-  start[2] = mpi_coords[1]*Nloc;      //y
-  start[3] = mpi_coords[0]*Nloc;      //x
-#else
-  start[2] = 0;      //y
-  start[3] = 0;      //x
-#endif
-  
-  count[0] = 1;
-#if dimension > 2
-  count[1] = Nloc;     //z
-#else
-  count[1] = nl;
-#endif
-  count[2] = Nloc;
-  count[3] = Nloc;
-  
-  
+    
    int nv = -1;
   for (scalar s in nc_scalar_list){
     nv += 1;
@@ -322,12 +306,65 @@ void write_nc() {
 #endif
     }
   
-    
+
+    int nl_loc = _attribute[s.i].block;
+    /* The start and count arrays will tell the netCDF library where to
+       write our data. */
+    if (nl_loc == 1 && dimension < 3){ // skip layer dimension
+      MPI_Offset start[3], count[3];
+      start[0] = nc_rec; //time
+#if _MPI
+      start[1] = mpi_coords[1]*Nloc;      //y
+      start[2] = mpi_coords[0]*Nloc;      //x
+#else
+      start[1] = 0;      //y
+      start[2] = 0;      //x
+#endif
+      
+      count[0] = 1;
+      count[1] = Nloc;
+      count[2] = Nloc;
+      
     if ((nc_err = ncmpi_put_vara_float_all(ncid, nc_varid[nv], start, count,
                                            &field[0])))
       //                                           &field[0][0])))
       handle_error(nc_err, __LINE__);
-    
+  
+    } else { // with layer
+      MPI_Offset start[4], count[4];
+      
+      start[0] = nc_rec; //time
+#if dimension > 2
+#if _MPI
+      start[1] = mpi_coords[2]*Nloc;     //z
+#else
+      start[1] = 0;
+#endif  // MPI
+#else
+      start[1] = 0;     //level
+#endif
+#if _MPI
+      start[2] = mpi_coords[1]*Nloc;      //y
+      start[3] = mpi_coords[0]*Nloc;      //x
+#else
+      start[2] = 0;      //y
+      start[3] = 0;      //x
+#endif
+      
+      count[0] = 1;
+#if dimension > 2
+      count[1] = Nloc;     //z
+#else
+      count[1] = nl;
+#endif
+      count[2] = Nloc;
+      count[3] = Nloc;
+      
+    if ((nc_err = ncmpi_put_vara_float_all(ncid, nc_varid[nv], start, count,
+                                           &field[0])))
+      //                                           &field[0][0])))
+      handle_error(nc_err, __LINE__);
+    } 
   }
   free(field);
 
@@ -342,7 +379,7 @@ void write_nc() {
 */
 
 
-void read_nc(scalar * list_in, char* file_in){
+void read_nc(scalar * list_in, char* file_in, bool read_time = false){
 
   int i, ret;
   int ncfile, ndims, nvars, ngatts, unlimited;
@@ -375,36 +412,9 @@ void read_nc(scalar * list_in, char* file_in){
     /* no communication needed after ncmpi_open: all processors have a cached
      * view of the metadata once ncmpi_open returns */
 
-    ret = ncmpi_inq(ncfile, &ndims, &nvars, &ngatts, &unlimited);
-    if (ret != NC_NOERR) handle_error(ret, __LINE__);
-
-
-  MPI_Offset start[NDIMS], count[NDIMS];
-  // default (no MPI)
-  start[0] = 0; //time
-  start[1] = 0; //z or level
-  start[2] = 0;
-  start[3] = 0;
-#if _MPI
-#if dimension > 2
-  start[1] = mpi_coords[2]*Nloc; 
-#endif
-  start[2] = mpi_coords[1]*Nloc;      //y
-  start[3] = mpi_coords[0]*Nloc;      //x
-#endif  
-
-  count[0] = 1;
-#if dimension > 2
-  count[1] = Nloc;
-#else
-  count[1] = nl;
-#endif
-  count[2] = Nloc;
-  count[3] = Nloc;
-
-
-
-
+  ret = ncmpi_inq(ncfile, &ndims, &nvars, &ngatts, &unlimited);
+  if (ret != NC_NOERR) handle_error(ret, __LINE__);
+  
   for (scalar s in list_in){
     for(i=0; i<nvars; i++) {
 
@@ -417,6 +427,61 @@ void read_nc(scalar * list_in, char* file_in){
       if (strcmp(varname,s.name) == 0) {
         fprintf(stdout,"Reading variable  %s!\n", s.name);
 
+  
+        if (var_ndims == 3){ // no layer
+
+          MPI_Offset start[3], count[3];
+          // default (no MPI)
+          start[0] = 0; //time
+          start[1] = 0;
+          start[2] = 0;
+#if _MPI
+          start[1] = mpi_coords[1]*Nloc;      //y
+          start[2] = mpi_coords[0]*Nloc;      //x
+#endif  
+        
+          count[0] = 1;
+          count[1] = Nloc;
+          count[2] = Nloc;
+        
+
+          if ((nc_err = ncmpi_get_vara_float_all(ncfile, i, start, count,
+                                                 &field[0])))
+            handle_error(nc_err, __LINE__);
+
+          foreach(noauto){
+            int i = point.i - GHOSTS;
+            int j = point.j - GHOSTS;
+              s[] = field[Nloc*j + i];
+          } // end foreach
+
+        } else { // layer
+
+
+          MPI_Offset start[4], count[4];
+          // default (no MPI)
+          start[0] = 0; //time
+          start[1] = 0; //z or level
+          start[2] = 0;
+          start[3] = 0;
+#if _MPI
+#if dimension > 2
+          start[1] = mpi_coords[2]*Nloc; 
+#endif
+          start[2] = mpi_coords[1]*Nloc;      //y
+          start[3] = mpi_coords[0]*Nloc;      //x
+#endif  
+        
+          count[0] = 1;
+#if dimension > 2
+          count[1] = Nloc;
+#else
+          count[1] = nl;
+#endif
+          count[2] = Nloc;
+          count[3] = Nloc;
+        
+
           if ((nc_err = ncmpi_get_vara_float_all(ncfile, i, start, count,
                                                  &field[0])))
             handle_error(nc_err, __LINE__);
@@ -426,27 +491,28 @@ void read_nc(scalar * list_in, char* file_in){
             int j = point.j - GHOSTS;
 #if dimension > 2
             int k = point.k - GHOSTS;
-             s[] = field[Nloc*Nloc*k + Nloc*j + i];
+            s[] = field[Nloc*Nloc*k + Nloc*j + i];
 #else
-             for (_layer = 0; _layer < nl; _layer++){
-               int k = _layer;
-                s[] = field[Nloc*Nloc*k + Nloc*j + i];
-             }
-             _layer = 0;
+            for (_layer = 0; _layer < nl; _layer++){
+              int k = _layer;
+              s[] = field[Nloc*Nloc*k + Nloc*j + i];
+            }
+            _layer = 0;
 #endif
-          }
+          } // end foreach
 
-
-        }
-
-    }
-  }
+        } // end if layer
+      } // end if strcmp
+    } // end loop nvars
+  } // end scalar loop
 
 //  matrix_free (field);
   free(field);
 
   ret = ncmpi_close(ncfile);
   if (ret != NC_NOERR) handle_error(ret, __LINE__);
+
+  boundary(list_in);
 
 }
 

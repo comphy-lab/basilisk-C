@@ -173,10 +173,10 @@ fig.text(0.02, 0.98, '$(a)$', fontsize=14, fontweight='bold')
 fig.text(0.34, 0.98, '$(b)$', fontsize=14, fontweight='bold')
 fig.text(0.66, 0.98, '$(c)$', fontsize=14, fontweight='bold')
 
-savefig("spurious.pdf",bbox_inches='tight', pad_inches=0.3/2.54)
+savefig("spurious.svg",bbox_inches='tight', pad_inches=0.3/2.54)
 
 ~~~
 ## See also
 
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/spurious.html)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/spurious.html)
 */

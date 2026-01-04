@@ -2,7 +2,7 @@
 # Antoon's adaptation function to allowing different maximum level for each
 field.
 
-The code below is copy-pasted from [this page](http://basilisk.fr/sandbox/Antoonvh/adapt2.h)
+The code below is copy-pasted from [this page](/sandbox/Antoonvh/adapt2.h)
 and was written by Antoon Van Hooft.
 */
 

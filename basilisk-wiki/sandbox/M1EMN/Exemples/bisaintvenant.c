@@ -43,7 +43,7 @@ q_s\\
 This is a first test, many other sophistications are possible...
 
  
-We use the generic solver [http://basilisk.fr/src/conservation.h]() to solve the system.
+We use the generic solver [https://basilisk.fr/src/conservation.h]() to solve the system.
  The system has
  4 eigen values
  $u \pm \sqrt{gh}$ and  $u_s \pm \sqrt{gh_s}$ (no coupling in the conservative part here, density are supposed the same).
@@ -251,7 +251,7 @@ plot at time 0, 1, 5 and 10
  
 ## Links
  
- * [http://basilisk.fr/src/test/artery1D.c]()
+ * [https://basilisk.fr/src/test/artery1D.c]()
  
  * etc
  

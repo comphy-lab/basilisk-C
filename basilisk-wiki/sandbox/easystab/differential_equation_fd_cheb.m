@@ -12,7 +12,7 @@ Whose theoretical solution is : $F(x) = x^2/2 + (1-L) x$.
 
 
 This code is an improvement of the previous code
-[differential_equation_chebychev.m](http://basilisk.fr/sandbox/easystab/differential_equation_chebychev.m), but
+[differential_equation_chebychev.m](/sandbox/easystab/differential_equation_chebychev.m), but
 uses dif1D.m to build the matrices.
 In addition it also demonstrate the way to compute an integral of a function using the "weight" vector.
 
@@ -90,7 +90,7 @@ Whose theoretical solution is : $F(x) = x^2/2 + (1-L) x$.
 
 
 This code is an improvement of the previous code
-[differential_equation_chebychev.m](http://basilisk.fr/sandbox/easystab/differential_equation_chebychev.m), but
+[differential_equation_chebychev.m](/sandbox/easystab/differential_equation_chebychev.m), but
 uses dif1D.m to build the matrices.
 In addition it also demonstrate the way to compute an integral of a function using the "weight" vector.
 

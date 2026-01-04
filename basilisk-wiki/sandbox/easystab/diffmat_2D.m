@@ -163,7 +163,7 @@ We have the function [dif2D.m]() which is like [dif1D.m]() but for 2D grids. So 
 * Please do a convergence study with grid resolution => [diffmat_2D_convergence.m](/sandbox/easystab/stab2014/diffmat_2D_convergence.m)
 * Please change the differentiation matrices to use finite differences as in the example [diffmat.m]() and compare the convergence with grid resolution => [diffmat_2d_finite_differences.m]()
 * Please use an other test function for the validation of the derivative [diffmat_2D_test_functions.m](/sandbox/easystab/stab2014/diffmat2D_test_functions.m) 
-* Please test also higher order derivatives (third, fourth...) and show how the accuracy changes => [diffmat_2D_higer_order_derivatives.m](http://basilisk.fr/sandbox/easystab/stab2014/diffmat_2D_higher_order_derivatives.m)
+* Please test also higher order derivatives (third, fourth...) and show how the accuracy changes => [diffmat_2D_higer_order_derivatives.m](/sandbox/easystab/stab2014/diffmat_2D_higher_order_derivatives.m)
 * Please do the validation also for cross derivatives $f_{xy}$ and show the structure of the matrices using *spy* => [diffmat_2d_crossed_derivatives.m](/sandbox/easystab/stab2014/diffmat_2d_crossed_derivatives.m)
 
 %}

@@ -82,7 +82,7 @@ event init (i = 0){
    
    It is not well known (?) that the default (*smart*) adaptation
    rules tend to apply a coarser resolution when an interface is
-   alligned with the grid (see [here](http://basilisk.fr/sandbox/Antoonvh/circle.c)). For a near circular bubble, I would *guess*
+   alligned with the grid (see [here](/sandbox/Antoonvh/circle.c)). For a near circular bubble, I would *guess*
    that this makes no sense when evaluating the curvature
    (?). Therefore, during the second run (i.e. $j=1$), the algorithm
    is forced to adapt all interfacial cells to the maximum level of
@@ -183,5 +183,5 @@ event bviewer (t += 0.1; t <= 5){
    error is not able to identify the challinging regions for curvature
    reconstruction correctly.
    
-   Some addional analysis is presented [here](http://basilisk.fr/sandbox/Antoonvh/circle.c).
+   Some addional analysis is presented [here](/sandbox/Antoonvh/circle.c).
 */

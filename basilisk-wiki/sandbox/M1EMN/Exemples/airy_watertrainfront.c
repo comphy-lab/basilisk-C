@@ -202,14 +202,14 @@ Comparison of theoretical Airy solution and numerical timeseries in $x=50,...300
 ~~~
 
 ## Links
- * [Popinet (2019)](/Bibliography#popinet2019)  from [bar.c](http://basilisk.fr/src/test/bar.c) test case
+ * [Popinet (2019)](/Bibliography#popinet2019)  from [bar.c](/src/test/bar.c) test case
  
- * [PYL](http://basilisk.fr/sandbox/M1EMN/Exemples/boussinesqc.c) linearised example in C of Boussinesq, boussinesqc.c
+ * [PYL](/sandbox/M1EMN/Exemples/boussinesqc.c) linearised example in C of Boussinesq, boussinesqc.c
  
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/airy_watertrainfront.c]() this example
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/airy_watertrainfront.c]() this example
 
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/ressaut_mascaret.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/ressaut_mascaret.c]()
  Poor’s man dispersive model
 
 

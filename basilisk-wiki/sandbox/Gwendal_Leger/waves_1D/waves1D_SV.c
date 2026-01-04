@@ -1,8 +1,8 @@
 /**
-This work is an adaptation of my [first example](http://basilisk.fr/sandbox/Gwendal_Leger/wave_topo/beach_topo.c) based on [beach.c](http://basilisk.fr/src/test/beach.c), 
+This work is an adaptation of my [first example](/sandbox/Gwendal_Leger/wave_topo/beach_topo.c) based on [beach.c](/src/test/beach.c), 
 but with wave theory based on the dispersion relation $\omega=\sqrt{gk\tanh(kH)}$.
 
-See [the version using the multilayer solver](http://basilisk.fr/sandbox/Gwendal_Leger/waves_1D/waves_1D.c) for an illustration of dispersive effects (wave velocity dependant on wavelength).
+See [the version using the multilayer solver](/sandbox/Gwendal_Leger/waves_1D/waves_1D.c) for an illustration of dispersive effects (wave velocity dependant on wavelength).
 */
 
 /**
@@ -212,7 +212,7 @@ event compute_vertical_scalars (i++) {
 
 
 /**
-This is the friction event from [beach.c](http://basilisk.fr/src/test/beach.c).
+This is the friction event from [beach.c](/src/test/beach.c).
 */
 #if 1
 event friction (i++) {

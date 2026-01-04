@@ -263,7 +263,7 @@ p[][-1:2]'xprof' t'u comp',''u 1:5 t'p','' u 1:($6/1.) t'exact' w l
 
 * R. Darby Viscoelastic fluids, Dekker ed. (1976) p 223-225, p 194 
 
-* [same with Bingham](http://basilisk.fr/sandbox/M1EMN/Exemples/nonnewtube.c)
+* [same with Bingham](/sandbox/M1EMN/Exemples/nonnewtube.c)
 
 
 */

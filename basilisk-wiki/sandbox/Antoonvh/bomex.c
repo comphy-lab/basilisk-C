@@ -1,7 +1,7 @@
 /**
 ![Shallow cumulus convection may brighten your day! Image by Hongbin
 Chen via
-[phys.org](https://phys.org/news/2017-05-intensive-shallow-cumulus-clouds-mongolia.html)](https://3c1703fe8d.site.internapcdn.net/newman/gfx/news/hires/2017/firstintensi.jpg)
+[phys.org](https://phys.org/news/2017-05-intensive-shallow-cumulus-clouds-mongolia.html)](https://scx1.b-cdn.net/csz/news/800a/2017/firstintensi.jpg)
 
 # Shallow cumulus convection
 

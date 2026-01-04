@@ -8,7 +8,7 @@ or
 [dolphins](https://youtu.be/bT-fctr32pE) and last a long time.
 We are curious about the generation and evolution of this phenomenes.
 
-In another [code](http://basilisk.fr/sandbox/yonghui/vortex/swirlaj.c),
+In another [code](/sandbox/yonghui/vortex/swirlaj.c),
 we showed that the swirling dynamics around the bubble will stabilize it and avoid R-P instability occurs.
 
 In this code, we are mainly interested in the generation of the toroidal bubble and its evolution with different parameters ($Re,We,Wb$),
@@ -137,7 +137,7 @@ event mydata (i++; t <= tend){
 
 /**
 Here with ELIMINATE, we can remove the small "size" (actually surface) toroidal bubbles or drops which will occur for a small We number or at the detachment.
-We use the [tag](http://basilisk.fr/src/tag.h#tag) function, and some ideas from [lopez](http://basilisk.fr/sandbox/lopez/droplet_stat.h).
+We use the [tag](/src/tag.h#tag) function, and some ideas from [lopez](/sandbox/lopez/droplet_stat.h).
 */
 #if 1 //ELIMINATE_AIR
 event bubblecount( i += 20){
@@ -236,7 +236,7 @@ $$
 a_{\mathrm{B}}=\sqrt{\frac{I_{1}}{\pi}} R_{0} \quad \text { and } \quad \Gamma_{\mathrm{B}}=I_{2} U_{0} R_{0}, \quad \text { with } \quad I_{1}=\int_{S} \mathrm{d} x \mathrm{d} r, \quad I_{2}=\int_{S} \omega \mathrm{d} x \mathrm{d} r
 $$
 
-The results noted $(B)$ is linked to the paramaters used in another [code](http://basilisk.fr/sandbox/yonghui/vortex/swirlaj.c) noted $(A)$ via:
+The results noted $(B)$ is linked to the paramaters used in another [code](/sandbox/yonghui/vortex/swirlaj.c) noted $(A)$ via:
 $$
 Re_{B} \sqrt{ \frac{a_B}{ L_c We_B} } = Re_A
 , \quad 

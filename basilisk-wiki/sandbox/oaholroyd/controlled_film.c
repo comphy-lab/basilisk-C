@@ -135,7 +135,7 @@ u.n[bottom] = dirichlet(control(x));
 u.t[bottom] = dirichlet(0.0);
 
 /**
-We use [embed](http://basilisk.fr/src/embed.h) for the top boundary, applying a
+We use [embed](/src/embed.h) for the top boundary, applying a
 free-outflow condition.
  */
 u.n[embed] = neumann(0.0);

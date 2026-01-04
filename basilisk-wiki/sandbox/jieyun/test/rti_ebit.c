@@ -31,7 +31,7 @@ $$ Re = \frac{\rho_1 g^{1/2} d^{3/2}}{\mu_1}  = 3000, d = 1 $$
 
 int main() {
   Reynolds = 3000. [0];
-  rho1 = 3. [0];
+  rho1 = 3. [-3, 0, 1];
   rho2 = 1.;
   f.sigma = 0.;
   gra = 9.81 [1, -2];
@@ -101,8 +101,12 @@ event amplitude (i++) {
       ymin = yc;
   }
 
-  fprintf (fp_amp, "%g %g %g\n", t/TREF, ymax - MEANPOS, ymin - MEANPOS);
+  fprintf (fp_amp, "%.5e %.5e %.5e\n", t/TREF, ymax - MEANPOS, ymin - MEANPOS);
   fflush (fp_amp);
+
+  // reference file
+  fprintf (stderr, "%.5e %.5e %.5e\n", t/TREF, ymax - MEANPOS, ymin - MEANPOS);
+  fflush (stderr);
 }
 
 /** The vertical acceleration is added here. */

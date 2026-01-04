@@ -2,7 +2,7 @@
 # [Witzig (1914)](#references) flow
 
 This pages mimics [other
-pages](http://basilisk.fr/_search?patterns=Womersley) on pulsatile
+pages](/_search?patterns=Womersley) on pulsatile
 flow in a tube.
 
 ![The numerical solution and the analytical one](witzig/mov.mp4)

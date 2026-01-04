@@ -1,6 +1,36 @@
 
 # Sandbox of Jieyun
 
+# Correct way to use the code from my sandbox
+
+* Suppose that *Basilisk* is installed in the directory $(BASILISK).
+
+* During your code development, you should work in a separate directory,
+for example **~/basilisk_dev_jieyun** (as in my case). This directory should
+not contain any source code from the original Basilisk distribution, 
+but only your own code. You are free to use any version control system
+for your work, such as Git or Darcs.
+
+* After downloading the code from my sandbox, place all the directories
+and files under **~/basilisk_dev_jieyun**.
+Next, add a **Makefile** in **~/basilisk_dev_jieyun/test**.
+A basic Makefile should include at least the following two lines:
+
+``` Makefile
+include $(BASILISK)/Makefile.defs
+CFLAGS += -I../src
+```
+
+The first line gives you access to the header files provided by Basilisk.
+The second line instructs the qcc compiler to search for header files in your
+local source directory, i.e. ~/basilisk_dev_jieyun/src.
+
+* **DO NOT** add or overwrite any files in $(BASILISK).
+
+* By following this approach, you will avoid contaminating the Basilisk
+source code and maintain a clean separation between Basilisk and
+your own development code.
+
 # Edge-Based Interface-Tracking (EBIT) / Semushin method
 
 The Edge-Based Interface Tracking (EBIT) method is a novel Front-Tracking method
@@ -53,6 +83,7 @@ allows almost automatic parallelization on a quad/octree grid.
 The main header files can be found on the following pages:
 
 * [Interface advection](src/ebit-2d.h)
+* [Interface advection with an unsplit scheme](src/ebit-unsplit.h)
 * [Two-phase flow with the EBIT method](src/two-phase-ebit.h)
 * [Fitting functions](src/fitting-ebit.h)
 * [Helper functions for EBIT method](src/utils-ebit.h)
@@ -71,6 +102,10 @@ Verification test cases can be found on the following pages:
 * [Rayleigh-Taylor instability](test/rti_ebit.c)
 * [Rising bubble](test/rising_ebit.c)
 
+### Benchmark test cases with the EBIT method (Unsplit)
+* [Single vortex](test/vortex_ebit_unsplit.c)
+* [Zalesak's disk](test/zalesak_ebit_unsplit.c)
+
 ### Relevant test cases with the VOF method
 * [Translation](test/translation_vof.c)
 * [Single vortex](test/vortex_vof.c)
@@ -79,7 +114,7 @@ Verification test cases can be found on the following pages:
 
 ### Phase change problems with the EBIT method
 
-Please refer to [Tian's sandbox](http://basilisk.fr/sandbox/tianlong/README)
+Please refer to [Tian's sandbox](/sandbox/tianlong/README)
 
 # Useful postprocessing tools
 * [Facets output in an MPI run](src/output-mpi.h)

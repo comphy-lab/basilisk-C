@@ -2,7 +2,7 @@
 # Shape oscillation of an inviscid droplet
 
 This test case, discussed in [Popinet, 2009](/src/references.bib#popinet2009)
-and included in the [incompressible version](http://basilisk.fr/src/test/oscillation.c)
+and included in the [incompressible version](/src/test/oscillation.c)
 , it is used here to test
 the compressible solver
 
@@ -226,7 +226,7 @@ plot 'laplace' t "standard" w p pt 5 ps 2
 
 ## See also
 
-* [Same test with the incompressible version](http://basilisk.fr/src/test/oscillation.c)
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/oscillation.html)
+* [Same test with the incompressible version](/src/test/oscillation.c)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/oscillation.html)
 */
 

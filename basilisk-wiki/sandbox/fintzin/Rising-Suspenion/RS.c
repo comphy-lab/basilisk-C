@@ -2,7 +2,7 @@
 ## Tri/Bi-periodic simulations of rising droplets aiming to close the Navier-Stokes averaged equations.
 
 Warning : Before running this file apply this 
-[patch](http://basilisk.fr/sandbox/fintzin/Patches/einstein_sum2.patch)
+[patch](/sandbox/fintzin/Patches/einstein_sum2.patch)
 with darcs apply file.patch on your basilisk installation. 
 */
 

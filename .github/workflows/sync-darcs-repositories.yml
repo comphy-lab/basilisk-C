@@ -10,62 +10,28 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    # Use Debian container where darcs is readily available via apt
+    container:
+      image: debian:bookworm
     steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y darcs git ca-certificates
+          darcs --version
+          git --version
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Install Darcs
-        run: |
-          echo "Installing Darcs following official methods from darcs.net..."
-
-          # Method 1: Install using Stack (preferred method according to darcs.net)
-          echo "Checking if Stack is installed..."
-          if ! command -v stack &> /dev/null; then
-            echo "Installing Stack..."
-            curl -sSL https://get.haskellstack.org/ | sh -s - -f
-          else
-            echo "Stack is already installed"
-            stack --version
-          fi
-
-          echo "Installing Darcs with Stack..."
-          stack install darcs || echo "Stack install encountered an issue, will try with Cabal next"
-          export PATH="$HOME/.local/bin:$PATH"
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-          # Check if Darcs was installed successfully
-          if command -v darcs &> /dev/null; then
-            echo "Darcs installed successfully using Stack"
-            darcs --version
-          else
-            echo "Stack installation failed, trying with Cabal..."
-
-            # Method 2: Install using Cabal as fallback
-            sudo apt-get update
-            sudo apt-get install -y ghc cabal-install
-            cabal update
-
-            echo "Installing Darcs with Cabal..."
-            cabal install darcs
-            export PATH="$HOME/.cabal/bin:$PATH"
-            echo "$HOME/.cabal/bin" >> $GITHUB_PATH
-
-            # Verify installation
-            if command -v darcs &> /dev/null; then
-              echo "Darcs installed successfully using Cabal"
-              darcs --version
-            else
-              echo "Failed to install Darcs. Exiting."
-              exit 1
-            fi
-          fi
-
       - name: Configure Git
         run: |
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
+          # Mark the workspace as safe (required when running in container)
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Pull from Darcs into basilisk-source
         run: |
@@ -76,7 +42,7 @@ jobs:
             echo "No _darcs directory found in $TARGET_DIR. Initializing Darcs repository..."
 
             # Set the Darcs repository URL
-            DARCS_REPO="http://basilisk.fr/basilisk"
+            DARCS_REPO="https://basilisk.fr/basilisk"
 
             echo "Getting from Darcs repository: $DARCS_REPO"
             darcs get --lazy "$DARCS_REPO" temp_repo_source
@@ -108,7 +74,7 @@ jobs:
             echo "No _darcs directory found in $TARGET_DIR. Initializing Darcs repository..."
 
             # Set the Darcs repository URL for the wiki
-            DARCS_REPO="http://basilisk.fr/wiki"
+            DARCS_REPO="https://basilisk.fr/wiki"
 
             echo "Getting from Darcs repository: $DARCS_REPO"
             darcs get --lazy "$DARCS_REPO" temp_repo_wiki
@@ -134,7 +100,7 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          if [[ -n "$(git status --porcelain basilisk-source)" || -n "$(git status --porcelain basilisk-wiki)" ]]; then
+          if [ -n "$(git status --porcelain basilisk-source)" ] || [ -n "$(git status --porcelain basilisk-wiki)" ]; then
             echo "changes=true" >> $GITHUB_OUTPUT
             echo "Changes detected in repositories."
           else
@@ -146,14 +112,14 @@ jobs:
         if: steps.check_changes.outputs.changes == 'true'
         run: |
           # Add any changes in basilisk-source
-          if [[ -n "$(git status --porcelain basilisk-source)" ]]; then
+          if [ -n "$(git status --porcelain basilisk-source)" ]; then
             echo "Committing changes in basilisk-source directory..."
             git add basilisk-source
             git commit -m "Auto-update basilisk-source from Darcs repository"
           fi
 
           # Add any changes in basilisk-wiki
-          if [[ -n "$(git status --porcelain basilisk-wiki)" ]]; then
+          if [ -n "$(git status --porcelain basilisk-wiki)" ]; then
             echo "Committing changes in basilisk-wiki directory..."
             git add basilisk-wiki
             git commit -m "Auto-update basilisk-wiki from Darcs repository"

@@ -32,7 +32,9 @@ title: Basilisk (Gerris) Users' Meeting 2025
 
 The meeting was held on the 7--9th July 2025 at the University of Oxford, United Kingdom, in the Department of Engineering Science.
 
-The format was similar to earlier Basilisk/Gerris meetings held in [Paris, France in 2011](http://gerris.dalembert.upmc.fr/gerris_users'_meeting_2011.html), [Wellington, New Zealand in 2012](http://gerris.dalembert.upmc.fr/gerris_users'_meeting_2012.html), [Sevilla, Spain in 2014](http://gerris.dalembert.upmc.fr/meeting_on_numerical_challenges_in_two-phase_flows.html), [Princeton, USA in 2017](BGUM2017), [Paris, France in 2019](BGUM2019) and [Paris, France in 2023](BGUM2023). Participants were encouraged to share their work using Basilisk (or Gerris) for applications in fluid mechanics, environmental science, engineering etc. Students were especially welcome to participate in this informal and friendly gathering.
+The format was similar to earlier Basilisk/Gerris meetings held in [Paris, France in 2011](https://gerris.dalembert.upmc.fr/gerris_users'_meeting_2011.html), [Wellington, New Zealand in 2012](https://gerris.dalembert.upmc.fr/gerris_users'_meeting_2012.html), [Sevilla, Spain in 2014](https://gerris.dalembert.upmc.fr/meeting_on_numerical_challenges_in_two-phase_flows.html), [Princeton, USA in 2017](BGUM2017), [Paris, France in 2019](BGUM2019) and [Paris, France in 2023](BGUM2023). Participants were encouraged to share their work using Basilisk (or Gerris) for applications in fluid mechanics, environmental science, engineering etc. Students were especially welcome to participate in this informal and friendly gathering.
+
+The meeting was supported in part by funding from the Engineering and Physical Sciences Research Council IAA (Grant number EP/X525777/1).
 
 ## Program and presentations
 
@@ -58,7 +60,7 @@ Welcome. Wouter Mostert, Radu Cimpeanu and Stéphane Popinet
 
 <tr><td>14:20</td>
 <td>
-[Jacob Maarek](http://basilisk.fr/sandbox/jmaarek/), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
+[Jacob Maarek](/sandbox/jmaarek/), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
 <br>
 [*Towards Modeling Non-Isothermal Sloshing of Liquid Hydrogen*](BGUM2025/maarek.pdf)
 <hr></td></tr>
@@ -82,14 +84,14 @@ Yuanpeng Zhang, Department of Modern Mechanics, University of Science and Techno
 <td>
 Wei Qin, [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, Paris, France
 <br>
-Fluid dynamics of hydrogen production by electrolysis*
+[*Three-dimensional numerical study on hydrogen bubble growth at electrode*](BGUM2025/qin.pdf)
 <hr></td></tr>
 
 <tr><td>15:40</td>
 <td>
 [Vatsal Sanjay](https://comphy-lab.org), [Physics of Fluids, Univ. Twente](https://pof.tnw.utwente.nl)
 <br>
-*Can polymeric flows be the 'Drosophila' of continuum mechanics?*
+[*Can polymeric flows be the 'Drosophila' of continuum mechanics?*](BGUM2025/sanjay.pdf)
 <hr></td></tr>
 
 <tr><td>16:00</td>
@@ -99,7 +101,7 @@ Fluid dynamics of hydrogen production by electrolysis*
 
 <tr><td>16:20</td>
 <td>
-[Marc Cordelle Vacher](http://basilisk.fr/sandbox/MCVacher/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), CNRS & Ecole Polytechnique, Palaiseau, France
+[Marc Cordelle Vacher](/sandbox/MCVacher/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), CNRS & Ecole Polytechnique, Palaiseau, France
 <br>
 *Jet impinging on a free-surface : jet flutter and self-induced sloshing*
 <hr></td></tr>
@@ -122,7 +124,7 @@ Miguel A. Quetzeri-Santiago, Instituto de Investigaciones en Materiales, UNAM, M
 <td>
 [Francesco Picella](/sandbox/fpicella/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
 <br>
-*Modelling microswimmer instabilities with embed*
+[*Role of Hydrodynamics in Bioconvection*](BGUM2025/picella.pdf)
 <hr></td></tr>
 
 <tr><td>17:40</td>
@@ -160,16 +162,16 @@ Canwei Jin, Imperial College London, UK
 
 <tr><td>10:20</td>
 <td>
-[Lars Willas Dreyer](http://basilisk.fr/sandbox/larswd/README), Department of Mathematics, [University of Oslo](https://www.mn.uio.no/math), Oslo, Norway
+[Lars Willas Dreyer](/sandbox/larswd/README), Department of Mathematics, [University of Oslo](https://www.mn.uio.no/math), Oslo, Norway
 <br>
-*What goes in the water? Combining circulation models and sensor data*
+[*Creating a circulation model for the Oslo fjord – A step-by-step guide*](BGUM2025/dreyer.pdf)
 <hr></td></tr>
 
 <tr><td>10:40</td>
 <td>
 [Palas Kumar Farsoiya](https://sites.google.com/view/farsoiya/home?authuser=0), Indian Institute of Technology (IIT), Roorkee, India
 <br>
-*Surfactant transport at high Peclet numbers*
+[*Surfactant transport at high Peclet numbers*](BGUM2025/farsoiya.pdf)
 <hr></td></tr>
 
 <tr><td>11:00</td>
@@ -181,9 +183,9 @@ Canwei Jin, Imperial College London, UK
 
 <tr><td>11:20</td>
 <td>
-[Mathilde Tavares](http://basilisk.fr/sandbox/tavares/README), ∂'Alembert, Sorbonne Université, Paris, France
+[Mathilde Tavares](/sandbox/tavares/README), ∂'Alembert, Sorbonne Université, Paris, France
 <br>
-*Waves impulsed by a granular collapse*
+[*Gravity Flows, towards Tsunamis generation with the multi-layer solver*](BGUM2025/tavares.pdf)
 <hr></td></tr>
 
 <tr><td>11:40</td>
@@ -200,16 +202,16 @@ Canwei Jin, Imperial College London, UK
 
 <tr><td>13:40</td>
 <td>
-[Øystein Lande](http://basilisk.fr/sandbox/oystelan/), [Ocean Oasis AS](https://www.oceanoasis.co) & Department of Mathematics, [University of Oslo](https://www.mn.uio.no/math), Oslo, Norway
+[Øystein Lande](/sandbox/oystelan/), [Ocean Oasis AS](https://www.oceanoasis.co) & Department of Mathematics, [University of Oslo](https://www.mn.uio.no/math), Oslo, Norway
 <br>
-*Validation work on wave breaking with the multilayer wave model*
+[*Experimental validation of wave models*](BGUM2025/lande.pdf)
 <hr></td></tr>
 
 <tr><td>14:00</td>
 <td>
 Andriarimina Daniel Rakotonirina, The Ocean Cleanup, The Netherlands
 <br>
-*Basilisk and Plastic Marine Debris Tracking*
+[*Basilisk and Plastic Marine Debris Tracking*](BGUM2025/rakotonirina.pdf)
 <hr></td></tr>
 
 <tr><td>14:20</td>
@@ -233,7 +235,7 @@ Panel discussion (1h, industry representatives, Q&A)
 <td>
 [Daniel Fuster](/sandbox/fuster/README), [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
 <br>
-*Regularization errors in the one-fluid formulation*
+[*Regularization errors in the one-fluid formulation*](BGUM2025/fuster.pdf)
 <hr></td></tr>
 
 <tr><td>16:20</td>
@@ -259,7 +261,7 @@ Antoine Aubert, LadHyX, Palaiseau, France
 
 <tr><td>17:20</td>
 <td>
-[Victor Boniou](http://basilisk.fr/sandbox/boniouv/README), IFP-Energies Nouvelles, Rueil-Malmaison, France
+[Victor Boniou](/sandbox/boniouv/README), IFP-Energies Nouvelles, Rueil-Malmaison, France
 <br>
 [*Coalescence rate of finite-size monodisperse droplets in homogeneous isotropic turbulence*](BGUM2025/boniou.pdf)
 <hr></td></tr>
@@ -284,12 +286,12 @@ Antoine Aubert, LadHyX, Palaiseau, France
 <td>
 [Aman Bhargava](https://pof.tnw.utwente.nl/people/profile/2120), [Physics of Fluids, Univ. Twente](https://pof.tnw.utwente.nl)
 <br>
-*Dancing droplets: the physics of post-impact retraction dynamics*
+[*Dancing droplets: the physics of post-impact retraction dynamics*](BGUM2025/bhargava.pdf)
 <hr></td></tr>
 
 <tr><td>9:20</td>
 <td>
-[Datong Wang](http://basilisk.fr/sandbox/Datong/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole Polytechnique, Palaiseau, France
+[Datong Wang](/sandbox/Datong/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole Polytechnique, Palaiseau, France
 <br>
 [*Numerical study of drop impact on concave surface: spread, jet, and splash*](BGUM2025/wang.pdf)
 <hr></td></tr>
@@ -298,14 +300,14 @@ Antoine Aubert, LadHyX, Palaiseau, France
 <td>
 Kaitao Tang, Department of Engineering Science, University of Oxford, UK.
 <br>
-*Inertial fragmentation processes associated with oceanic breaking*
+[*Spray Drop Generation by Breaking Waves*](BGUM2025/tang.pdf)
 <hr></td></tr>
 
 <tr><td>10:00</td>
 <td>
 [Ilies Haouche](https://www.linkedin.com/in/ilies-haouche-a862a2192/), Institut d'Electronique de Microélectronique et de Nanotechnologie, University of Lille, France
 <br>
-*Numerical method to simulate soluble surfactant at high Péclet numbers in Basilisk*
+[*Numerical method to simulate soluble surfactant at high Péclet numbers in Basilisk*](BGUM2025/haouche.pdf)
 <hr></td></tr>
 
 <tr><td>10:20</td>
@@ -315,7 +317,7 @@ Kaitao Tang, Department of Engineering Science, University of Oxford, UK.
 
 <tr><td>10:40</td>
 <td>
-[Paul-Peter Naanouh](http://basilisk.fr/sandbox/pnaanouh/README), [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, IFP-Energies Nouvelles, France
+[Paul-Peter Naanouh](/sandbox/pnaanouh/README), [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, IFP-Energies Nouvelles, France
 <br>
 [*Modelling (Not so) Thin Films with the Multilayer Solver*](BGUM2025/naanouh.pdf)
 <hr></td></tr>
@@ -324,7 +326,7 @@ Kaitao Tang, Department of Engineering Science, University of Oxford, UK.
 <td>
 Yifan Han, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, German
 <br>
-*Wetting effects on the dynamics of droplets and bubbles at surfaces*
+[*Wetting effects on the dynamics of droplets and bubbles at surfaces*](BGUM2025/han.pdf)
 <hr></td></tr>
 
 <tr><td>11:20</td>
@@ -379,7 +381,7 @@ Free time for discussions
 1. Jieyun Pan, Sorbonne & CNRS, Paris, France
 1. Jie Li, University of Cambridge, UK
 1. Ziyao Zhang, Department of Engineering Science, University of Oxford, UK.
-1. [Paul-Peter Naanouh](http://basilisk.fr/sandbox/pnaanouh/README), [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, IFP-Energies Nouvelles, France
+1. [Paul-Peter Naanouh](/sandbox/pnaanouh/README), [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, IFP-Energies Nouvelles, France
 1. Jean Robin, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne, ArcelorMittal, France
 1. Wei Qin [∂'Alembert](http://www.dalembert.upmc.fr), Sorbonne, Paris, France
 1. Tianyang Han, Sorbonne University, Paris, France
@@ -388,9 +390,9 @@ Free time for discussions
 1. M. A. Herrada, [Dept. Ing. Aeroespacial y Mec. de Fluidos](https://departamento.us.es/iaymdf/), ETSI, U. de Sevilla, Sevilla, España.
 1. Mina Jafari ∂'Alembert CNRS Sorbonne Université
 1. [Pierre-Yves Lagrée](/sandbox/M1EMN/README) ∂'Alembert CNRS Sorbonne Université
-1. [Antoine Hajczak](http://basilisk.fr/sandbox/hajczak/) ∂'Alembert CNRS Sorbonne Université
-1. [Jacob Maarek](http://basilisk.fr/sandbox/jmaarek/) ∂'Alembert CNRS Sorbonne Université
-1. [Mathilde Tavares](http://basilisk.fr/sandbox/tavares/README) ∂'Alembert  Sorbonne Université
+1. [Antoine Hajczak](/sandbox/hajczak/) ∂'Alembert CNRS Sorbonne Université
+1. [Jacob Maarek](/sandbox/jmaarek/) ∂'Alembert CNRS Sorbonne Université
+1. [Mathilde Tavares](/sandbox/tavares/README) ∂'Alembert  Sorbonne Université
 1. [Pavan Kumar Kirar](https://scholar.google.com/citations?user=tavJeXUAAAAJ&hl=en), [∂'Alembert](http://www.dalembert.upmc.fr/ijlrda/) CNRS Sorbonne Université, Paris, France
 1. Theo Witkamp, Fluids & Flows, Eindhoven University of Technology, Netherlands
 1. [Bruno Deremble](https://bderembl.github.io/), Université Grenoble Alpes
@@ -398,11 +400,11 @@ Free time for discussions
 1. [Hiroya Watanabe](https://researchmap.jp/hiroya_watanabe?lang=en), Tokyo University of Agriculture and Technology, Japan
 1. Mustapha Aknine, [∂'Alembert](http://dalembert.upmc.fr), Sorbonne & CNRS, Paris, France
 1. Eswara Arun Kishore, Marine Engineering, [Indian Maritime University](https://www.imu.edu.in), Kolkata, India
-1. [Lars Willas Dreyer](http://basilisk.fr/sandbox/larswd/README), Department of Mathematics, [University of Oslo](https://www.mn.uio.no/math), Oslo, Norway
+1. [Lars Willas Dreyer](/sandbox/larswd/README), Department of Mathematics, [University of Oslo](https://www.mn.uio.no/math), Oslo, Norway
 1. [Jiarong Wu](https://jiarong-wu.github.io/), Courant Institute of Mathematical Sciences, New York University
-1. [Øystein Lande](http://basilisk.fr/sandbox/oystelan/), [Ocean Oasis AS](https://www.oceanoasis.co) & Department of Mathematics, [University of Oslo](https://www.mn.uio.no/math), Oslo, Norway
-1. [Victor Boniou](http://basilisk.fr/sandbox/boniouv/README), IFP-Energies Nouvelles, Rueil-Malmaison, France
-1. [Marc Cordelle Vacher](http://basilisk.fr/sandbox/MCVacher/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), CNRS & Ecole Polytechnique, Palaiseau, France
+1. [Øystein Lande](/sandbox/oystelan/), [Ocean Oasis AS](https://www.oceanoasis.co) & Department of Mathematics, [University of Oslo](https://www.mn.uio.no/math), Oslo, Norway
+1. [Victor Boniou](/sandbox/boniouv/README), IFP-Energies Nouvelles, Rueil-Malmaison, France
+1. [Marc Cordelle Vacher](/sandbox/MCVacher/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), CNRS & Ecole Polytechnique, Palaiseau, France
 1. Alfonso Castrejon-Pita, Department of Engineering Science, University of Oxford, UK.
 1. Ben Fudge, Department of Engineering Science, University of Oxford, UK.
 1. Sherry Majidi, The Royal Grammar School High Wycombe, UK.
@@ -418,7 +420,7 @@ Free time for discussions
 1. Fanshuo MA, ∂'Alembert CNRS Sorbonne Université
 1. Ian Roberts, Aerotex UK
 1. Sai Raja Gopal Vadlamudi, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Germany.
-1. [Datong Wang](http://basilisk.fr/sandbox/Datong/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole Polytechnique, Palaiseau, France
+1. [Datong Wang](/sandbox/Datong/README), [LadHyX](https://www.ladhyx.polytechnique.fr/), Ecole Polytechnique, Palaiseau, France
 1. Yifan Han, Institute of Fluid Dynamics, Helmholtz-Zentrum Dresden-Rossendorf, Germany
 1. [Minerva Schuler](https://warwick.ac.uk/fac/sci/hetsys/people/cohort5/minervaschuler/), Department of Engineering, University of Warwick, UK.
 1. Muwanguzi Stephen Kyazze, College of Ocean and Civil Engineering, Shanghai Jiaotong University 
@@ -460,6 +462,6 @@ Free time for discussions
 * [Basilisk/Gerris Users' Meeting 2023](BGUM2023)
 * [Basilisk/Gerris Users' Meeting 2019](BGUM2019)
 * [Basilisk/Gerris Users' Meeting 2017](BGUM2017)
-* [Meeting on Numerical challenges in two-phase flows 2014](http://gerris.dalembert.upmc.fr/meeting_on_numerical_challenges_in_two-phase_flows.html)
-* [Gerris Users' meeting 2012](http://gerris.dalembert.upmc.fr/gerris_users'_meeting_2012.html)
-* [Gerris Users' meeting 2011](http://gerris.dalembert.upmc.fr/gerris_users'_meeting_2011.html)
+* [Meeting on Numerical challenges in two-phase flows 2014](https://gerris.dalembert.upmc.fr/meeting_on_numerical_challenges_in_two-phase_flows.html)
+* [Gerris Users' meeting 2012](https://gerris.dalembert.upmc.fr/gerris_users'_meeting_2012.html)
+* [Gerris Users' meeting 2011](https://gerris.dalembert.upmc.fr/gerris_users'_meeting_2011.html)

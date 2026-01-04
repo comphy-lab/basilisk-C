@@ -41,7 +41,7 @@ unset multiplot
 # Code
 We use the [multilayer hydrostatic solver](basilisk.fr/src/layered/hydro.h) in
 1D. The `diffusion_neumann.h` file is equivalent to the
-[diffusion.h](http://basilisk.fr/src/layered/hydro.h) file but with a different
+[diffusion.h](/src/layered/hydro.h) file but with a different
 boundary condition at the bottom.
 
 

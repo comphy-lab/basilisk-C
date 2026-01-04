@@ -1,5 +1,5 @@
 /**
-The bubble evaporation and condensation with a fixed flux. This file is copied from [Edorado's sandbox](http://basilisk.fr/sandbox/ecipriano/README) and modified with EBIT.
+The bubble evaporation and condensation with a fixed flux. This file is copied from [Edorado's sandbox](/sandbox/ecipriano/README) and modified with EBIT.
 */
 #define SEMUPC 1
 #define ADV_SCHEME 2

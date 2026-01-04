@@ -71,9 +71,9 @@ void draw_space_curve_with_vectors(int n_seg, coord *p, coord *t, coord *n, coor
   }
 }
 
-void draw_tube_along_curve(int n, coord *p, double *a, int segments=16) {
+void draw_tube_along_curve(int n, coord *p, double *a, int segments=16, double scale=1.0) {
   // // Set the clear color to a shade of blue (RGBA)
-  // glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  // glClearColor(0.384f, 0.365f, 0.353f, 1.0f);
 
   // // Clear the color buffer
   // glClear(GL_COLOR_BUFFER_BIT);
@@ -83,9 +83,9 @@ void draw_tube_along_curve(int n, coord *p, double *a, int segments=16) {
   for (int i = 0; i < n - 1; ++i) {
     // Define the two endpoints of the current segment
     coord p1 = p[i];
-    float a1 = a[i];
+    float a1 = a[i]*scale;
     coord p2 = p[i + 1];    
-    float a2 = a[i + 1];
+    float a2 = a[i + 1]*scale;
 
     // Calculate the tangent vector of the curve segment
     coord tangent = vecdiff(p2, p1);

@@ -55,10 +55,10 @@ There are 4 ways of solid treatment:
 
 (iv) Brinkman Penalization method (BPM) (with MPI, multiphase flow, accurate, moving solids)
 
-More detailed information in [compatability table](http://basilisk.fr/src/COMPATIBILITY). As you can see Brinkman Penalisation method is appropriate for multiphase flows.
+More detailed information in [compatability table](/src/COMPATIBILITY). As you can see Brinkman Penalisation method is appropriate for multiphase flows.
 
 In the Brinkman Penalization method the penalization term is handled implicitly together with the viscous term. Fortunately, this linear term lead to diagonally dominant "matrix", which will converges quickly.
-Detailed information about verification you can find [here](http://basilisk.fr/sandbox/weugene/cylinder_penalization.c).
+Detailed information about verification you can find [here](/sandbox/weugene/cylinder_penalization.c).
 
 To activate Brinkman Penalization Method it is necessary to%
 

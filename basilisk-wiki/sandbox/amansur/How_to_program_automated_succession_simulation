@@ -30,7 +30,7 @@ echo Created $COUNTER Folders
 
 ## Succession of simulations
 
-Put the files you want to compute, with the [Makefile](http://basilisk.fr/src/Makefile) in the different folders you just created and put the right value into those files (*for example: change the value of Ca, Re, the level, the size of the box, ...*).
+Put the files you want to compute, with the [Makefile](/src/Makefile) in the different folders you just created and put the right value into those files (*for example: change the value of Ca, Re, the level, the size of the box, ...*).
 
 Then launch the 'succession_simulation.sh' file by this command : 
 

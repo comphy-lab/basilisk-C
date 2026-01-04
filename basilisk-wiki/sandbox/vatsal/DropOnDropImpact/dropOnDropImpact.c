@@ -24,13 +24,13 @@ Id 1 is for the sessile drop, and Id 2 is mobile/impacting drop.
 #include "navier-stokes/centered.h"
 #define FILTERED // Smear density and viscosity jumps
 /**
-To model non-coalescing drops, we use two different Volume of Fluid tracers (f1 and f2). For this, we use a modified version of [two-phase.h](http://basilisk.fr/src/two-phase.h). A proof-of-concept example is [here](http://basilisk.fr/sandbox/popinet/non-coalescence.c).
+To model non-coalescing drops, we use two different Volume of Fluid tracers (f1 and f2). For this, we use a modified version of [two-phase.h](/src/two-phase.h). A proof-of-concept example is [here](/sandbox/popinet/non-coalescence.c).
 */
 #include "two-phaseDOD.h"
 #include "tension.h"
 #include "distance.h"
 /**
-We use a modified adapt-wavelet algorithm available [(here)](http://basilisk.fr/sandbox/pairetti/bag_mode/adapt_wavelet_limited.h). It is written by *César Pairetti* (Thanks :)). We use to ensure that refinement is higher near the substrate.
+We use a modified adapt-wavelet algorithm available [(here)](/sandbox/pairetti/bag_mode/adapt_wavelet_limited.h). It is written by *César Pairetti* (Thanks :)). We use to ensure that refinement is higher near the substrate.
 */
 #include "pairetti/bag_mode/adapt_wavelet_limited.h"
 
@@ -124,7 +124,7 @@ int refRegion(double x, double y, double z){
 event init(t = 0){
   if(!restore (file = "dump")){
     /**
-    For Bond numbers $> 0.1$, assuming the sessile drop to be spherical is inaccurate. One can also see this in the experimental video above. So, we used the code [(here)](http://basilisk.fr/sandbox/vatsal/DropDeposition/DropDeposition.c) to get the initial shape of the sessile drop. We import an [STL file](https://www.dropbox.com/s/uenhig7lfhvss66/Sessile-Bo0.3080.stl?dl=0).
+    For Bond numbers $> 0.1$, assuming the sessile drop to be spherical is inaccurate. One can also see this in the experimental video above. So, we used the code [(here)](/sandbox/vatsal/DropDeposition/DropDeposition.c) to get the initial shape of the sessile drop. We import an [STL file](https://www.dropbox.com/s/uenhig7lfhvss66/Sessile-Bo0.3080.stl?dl=0).
     */
     char filename[60];
     sprintf(filename,"Sessile-Bo0.3080.stl");
@@ -159,14 +159,14 @@ event init(t = 0){
     boundary((scalar *){f1, f2, u.x, u.y});
     dump (file = "dump");
     /**
-    **Note:** I think [distance.h](http://basilisk.fr/src/distance.h) is not compatible with mpi. So, I ran the file to import .stl file and generate the dump file at t = 0 locally. For this, OpenMP multi-threading can be used.
+    **Note:** I think [distance.h](/src/distance.h) is not compatible with mpi. So, I ran the file to import .stl file and generate the dump file at t = 0 locally. For this, OpenMP multi-threading can be used.
     */
     return 1;
   }
 }
 
 /**
-Gravity is added as a body forces. It would be nice to use something like [reduced.h](http://basilisk.fr/src/reduced.h). But, I could not figure out how to do it with two different VoF tracers.
+Gravity is added as a body forces. It would be nice to use something like [reduced.h](/src/reduced.h). But, I could not figure out how to do it with two different VoF tracers.
 */
 event acceleration(i++) {
   face vector av = a;
@@ -239,7 +239,7 @@ export OMP_NUM_THREADS=8
 ./dropOnDropImpact
 ~~~
 
-**Step 2:** Follow the method described [(here)](http://basilisk.fr/src/Tips#running-on-supercomputers). Do not forget to use the dump file generated in the previous step.
+**Step 2:** Follow the method described [(here)](/src/Tips#running-on-supercomputers). Do not forget to use the dump file generated in the previous step.
 
 # Output and Results
 The post-processing codes and simulation data are available at: [PostProcess](https://www.dropbox.com/sh/dgrzvobxiyrw86i/AAAQii9uMCu0MfR897V4Fxw2a?dl=0)

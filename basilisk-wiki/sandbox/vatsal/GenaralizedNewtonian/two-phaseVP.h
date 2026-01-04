@@ -1,10 +1,10 @@
 /**
 # Two-phase interfacial flows
-This is a modified version of [two-phase.h](http://basilisk.fr/src/two-phase.h). It contains the implementation of
+This is a modified version of [two-phase.h](/src/two-phase.h). It contains the implementation of
 Viscoplastic Fluid (Bingham Fluid).<br/>
 This file helps setup simulations for flows of two fluids separated by
 an interface (i.e. immiscible fluids). It is typically used in
-combination with a [Navier--Stokes solver](http://basilisk.fr/src/navier-stokes/centered.h).
+combination with a [Navier--Stokes solver](/src/navier-stokes/centered.h).
 
 The interface between the fluids is tracked with a Volume-Of-Fluid
 method. The volume fraction in fluid 1 is $f=1$ and $f=0$ in fluid

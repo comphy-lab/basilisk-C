@@ -260,5 +260,5 @@ Le programme est maintenant terminé. Avant de l'éxecuter, vous devez fixer un 
 Tracez les courbes de l'évolution de la hauteur d'eau en fonction du temps pour toutes les stations de mesures. Que pouvez-vous dire pour Nice ? Pour toutes les autres stations ? Pour chaque station, donnez le temps pour lequel l'amplitude de la vague est maximale, que remarque-t-on ? Que se passe-t-il pour ce temps pour Calvi et Nice? Pourquoi ?
 Regardez attentivement le film de votre simulation. Que pouvez-vous dire sur l'impact d'un tel tsunami sur la côte d'azur ? Donnez une explication qualitative de ce phénomène.
 
-[Retour Sommaire Cours](http://basilisk.fr/sandbox/geoffroy/teaching/README)
+[Retour Sommaire Cours](/sandbox/geoffroy/teaching/README)
 */

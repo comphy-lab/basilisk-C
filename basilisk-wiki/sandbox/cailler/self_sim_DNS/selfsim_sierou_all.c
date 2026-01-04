@@ -11,14 +11,14 @@ $$
 $$
 
 This is an extension to the **axisymmetric** case of 
-[this simulation](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_keller_all.c). 
+[this simulation](/sandbox/cailler/self_sim_DNS/selfsim_keller_all.c). 
 Therefore, we strongly suggest to the reader to take a look to the following 
 *Wiki* pages:
 
 * The simpler 2D--case (*Keller \& Miksis* problem) is exposed 
-[here](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c);
+[here](/sandbox/cailler/keller_miksis/keller_fig2_conv.c);
 * The self-similar solver used in this file is explained 
-[there](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README).
+[there](/sandbox/cailler/self_sim_DNS/README).
 
 ~~~pythonplot Self-similar solver *VS* Sierou \& Lister
 import numpy as np
@@ -167,10 +167,10 @@ compared to the potential results of the reference paper, as in 2D.
 ### General Parameters 
 
 The numerical configuration proceeds from previous preliminary studies done 
-both in the [physical domain](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c), 
+both in the [physical domain](/sandbox/cailler/keller_miksis/keller_fig2_conv.c), 
 where it appeared that a box of size $[12 \times 12]$ would be relevant to 
 avoid border effects and visualizing a conical shape interface at boundaries, 
-and in the [self-similar domain](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_keller_all.c) 
+and in the [self-similar domain](/sandbox/cailler/self_sim_DNS/selfsim_keller_all.c) 
 for the 2D--case, in order to know the optimized resolution and running time 
 parameters for converging to a steady (scale invariant) state with the 
 self-similar solver. 

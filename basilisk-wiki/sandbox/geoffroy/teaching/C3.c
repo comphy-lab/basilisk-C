@@ -12,7 +12,7 @@ solveurs de Riemann vu pendant le cours précédant la séance de TP. Ce
 fichier aura la forme d'une bibliothèque de fonctions et aura pour but 
 d'être appelée par d'autres programmes. Les fonctions devront avoir la même forme que
 celles déjà présentes dans la bibliothèque
-[riemann.h](http://basilisk.fr/src/riemann.h) de
+[riemann.h](/src/riemann.h) de
 Basilisk. Inspirez-vous en.
 
 Appelez votre professeur lorsque vous avez fini cette étape.
@@ -178,6 +178,6 @@ de Riemann. Lequel est le meilleur pour ce cas ?
 Ce TP est très largement inspiré de [celui de Pierre Yves Lagrée](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/code_C_saintvenant.pdf) sur le même sujet, avec son aimable autorisation.
 
 
-## [Retour Sommaire Cours](http://basilisk.fr/sandbox/geoffroy/teaching/README)
+## [Retour Sommaire Cours](/sandbox/geoffroy/teaching/README)
 */
 

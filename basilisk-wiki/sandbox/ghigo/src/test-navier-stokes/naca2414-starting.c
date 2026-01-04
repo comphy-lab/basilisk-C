@@ -2,7 +2,7 @@
 # Starting vortex of a 2D NACA2414 airfoil at $Re=10000$
 
 This test case is inspired from the Gerris test case
-[starting](http://gerris.dalembert.upmc.fr/gerris/examples/examples/starting.html). A
+[starting](https://gerris.dalembert.upmc.fr/gerris/examples/examples/starting.html). A
 starting vortex is a vortex which forms in the air adjacent to the
 trailing edge of an airfoil as it is accelerated from rest in a
 fluid. It leaves the airfoil and remains (nearly) stationary in the

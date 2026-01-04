@@ -2,7 +2,7 @@
 ![Mountain waves can induce [lenticular
  clouds](https://en.wikipedia.org/wiki/Lenticular_cloud). Photo
  courtesy of Jacob Kollegger, hosted via
- [skybrary](https://www.skybrary.aero/index.php/Mountain_Waves).](https://skybrary.aero/sites/default/files/Mwaves.jpg)
+ [skybrary](https://www.skybrary.aero/index.php/Mountain_Waves).](https://skybrary.aero/sites/default/files/Mwaves.jpg){width=400px}
 
 # Lee waves
 

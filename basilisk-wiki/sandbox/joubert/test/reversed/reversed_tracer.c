@@ -5,7 +5,7 @@ This is a modified version of the [reversed](http://www.basilisk.fr/src/test/rev
 test case. We add a VOF tracer and a Godunov tracer (standard tracer) center on the right
 side of the circle interface and test its advection.
 There is a similar test case using Gerris
-([see](http://gerris.dalembert.upmc.fr/gerris/tests/tests/shear.html)).
+([see](https://gerris.dalembert.upmc.fr/gerris/tests/tests/shear.html)).
 */
 
 #define ADAPT 0

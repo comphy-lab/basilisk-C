@@ -1,7 +1,7 @@
 /**
 # Relaxation function in basilisk
 
-The [relaxation function](http://basilisk.fr/src/poisson.h#relax) in poisson solver is used here to solver 1D poisson equation same as [here](http://basilisk.fr/sandbox/YiDai/BASI/relax1D.c)*/
+The [relaxation function](/src/poisson.h#relax) in poisson solver is used here to solver 1D poisson equation same as [here](/sandbox/YiDai/BASI/relax1D.c)*/
 
 #include "grid/multigrid1D.h"
 #include "utils.h"

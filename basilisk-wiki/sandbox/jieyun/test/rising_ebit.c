@@ -45,7 +45,7 @@ FILE * fp_dis;
 int main() {
   TOLERANCE = 1e-4 [*];
   DT = 1.e-2 [0, 1];
-  rho1 = 1000. [0];
+  rho1 = 1000. [-3, 0, 1];
   mu1 = 10.;
   double sigma_in;
 
@@ -132,20 +132,23 @@ event interface (t = 3.) {
   char out[100];
   sprintf (out, "rising_intf_ebit.dat");
   output_facets_ebit (out);
+
+  // reference file
+  output_facets_ebit ("", stderr);
 }
 
 /**
 ## Results
 
 The final shape of the bubble is compared to that obtained with the VOF method in the Basilisk
-[Rising bubble](http://basilisk.fr/src/test/rising.c) test.
+[Rising bubble](/src/test/rising.c) test.
 
 ~~~gnuplot Bubble shapes at the final time ($t=3$) for test case 1.
 set term push
 set term @SVG size 640,320
 set size ratio -1
 set grid
-plot [][0:0.4]'http://basilisk.fr/src/test/rising/log' u 1:2 w l t 'Basilisk', \
+plot [][0:0.4]'https://basilisk.fr/src/test/rising/log' u 1:2 w l t 'Basilisk', \
               'rising_intf_ebit.dat' u 1:2 w l t 'EBIT'
 ~~~
 
@@ -157,7 +160,7 @@ reset
 set grid
 set xlabel 'Time'
 set key bottom right
-plot [0:3][0:]'http://basilisk.fr/src/test/rising/out' u 1:5 w l t 'Basilisk', \
+plot [0:3][0:]'https://basilisk.fr/src/test/rising/out' u 1:5 w l t 'Basilisk', \
               'rising_dis.dat' u 1:5 w l t 'EBIT'
 ~~~
 

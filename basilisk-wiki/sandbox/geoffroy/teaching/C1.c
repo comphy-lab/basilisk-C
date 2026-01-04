@@ -4,13 +4,13 @@
 ## Basilisk, qu'est ce que c'est ?
 
   Basilisk est un code créé par
-  [S. Popinet](http://gerris.dalembert.upmc.fr/user.html:Popinet)
+  [S. Popinet](https://gerris.dalembert.upmc.fr/user.html:Popinet)
   à l'[Institut Jean le Rond
   d'Alembert](http://www.dalembert.upmc.fr/ijlrda/) (Paris VI) et est
   développé par [différents
-  chercheurs](http://basilisk.fr/src/AUTHORS) à travers le monde. On
+  chercheurs](/src/AUTHORS) à travers le monde. On
   peut considérer Basilisk comme étant le petit frère de
-  [Gerris](http://gerris.dalembert.upmc.fr/main_page.html) du
+  [Gerris](https://gerris.dalembert.upmc.fr/main_page.html) du
   même auteur. En effet, tout comme Gerris, Basilisk est un [logiciel
   libre](https://fr.wikipedia.org/wiki/Logiciel_libre) qui permet de
   résoudre des équations différentielles partielles sur un maillage
@@ -20,7 +20,7 @@
 ## Installer Basilisk
 
 Pour commencer, installez Basilisk en suivant [ce
-lien](http://basilisk.fr/src/INSTALL). Veillez à bien faire
+lien](/src/INSTALL). Veillez à bien faire
 l'installation à l'aide de darcs et n'oubliez pas d'installer tous les
 paquages additionels précisées en pied de page. Une fois que vous avez
 compilé le code à l'aide de l'instructions "make", verifiez que tout
@@ -36,7 +36,7 @@ passez à la suite.
 ## Inclure des fichiers sources
 
  Nous allons programmer le cas d'une [Vague qui déferle sur un plage
-1D](http://basilisk.fr/sandbox/M1EMN/Exemples/slope.c). (Ce cas est 
+1D](/sandbox/M1EMN/Exemples/slope.c). (Ce cas est 
 reproduit d'après les cours de [Pierre-Yves Lagrée](http://www.lmm.jussieu.fr/~lagree/), avec
 son aimable autorisation)
 
@@ -75,7 +75,7 @@ source de Basilisk, dans le répertoire :
 ~~~
 Vous êtes libre d'écrire dans ces fichiers donc faites attention ou il
 vous faudra réinstaller Basilisk. Vous pouvez également lire ce fichier 
-sur le net en suivant ce lien : [http://basilisk.fr/src/saint-venant.h](http://basilisk.fr/src/saint-venant.h).
+sur le net en suivant ce lien : [https://basilisk.fr/src/saint-venant.h](/src/saint-venant.h).
 Vous pouvez remarquer que le code est commenté et mis en page. Vous pouvez voir que le fichier
 "saint-venant.h" est composé d'une première partie où sont déclarées les
 variables, suivie par la déclaration des fonctions
@@ -199,7 +199,7 @@ commande foreach(){} ainsi qu'à son contenu dans le paragraphe
 suivant.
 
 Exercice : Ouvrir le fichier "~/basilisk/src/test/events.c" dans un
-editeur texte ou sur le wiki : [http://basilisk.fr/src/test/events.c](http://basilisk.fr/src/test/events.c).
+editeur texte ou sur le wiki : [https://basilisk.fr/src/test/events.c](/src/test/events.c).
 Indiquez à quel moment les events se déclenchent. (On
 pourra l'executer en rajoutant l'option "-events" lors de la
 compilation pour voir le déclenchement des events, voir la partie
@@ -346,5 +346,5 @@ load './out'
 
   Notez que vous pouvez accéder à la page source de cette page wiki à l'aide du lien "raw page source" qui se trouve en bas du menu défilant à gauche. Nous aurons l'occasion de revenir sur ce point, mais il est important de noter que dans Basilisk, le wiki et le code ne font qu'un.
 
-[Retour Sommaire Cours](http://basilisk.fr/sandbox/geoffroy/teaching/README)
+[Retour Sommaire Cours](/sandbox/geoffroy/teaching/README)
 */

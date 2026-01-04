@@ -43,7 +43,7 @@ double cexact(double y)
 c[top]    =  dirichlet(1);
 //c[bottom] = (fabs(x)<w)? neumann(0) :  c[]*(2.-bi*Delta)/(2.+bi*Delta) ;
 /**
- [problem with mixed](http://basilisk.fr/sandbox/bugs/mixed.c?revision=20150430065500-97dfb-d0b07d6c87ceaa6b781d757ecfd3270f1cfbca0f.gz)
+ [problem with mixed](/sandbox/bugs/mixed.c?revision=20150430065500-97dfb-d0b07d6c87ceaa6b781d757ecfd3270f1cfbca0f.gz)
 */
 
 c[bottom] = (fabs(x)<w)? neumann(0) : val(_s,0)*(2.-bi*Delta)/(2.+bi*Delta)   ; 

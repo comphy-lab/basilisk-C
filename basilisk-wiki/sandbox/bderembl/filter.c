@@ -6,7 +6,7 @@ Filter function
 #include "run.h"
 
 /**
-The function below will replace the [default one](http://basilisk.fr/src/grid/multigrid-common.h#72).
+The function below will replace the [default one](/src/grid/multigrid-common.h#72).
 */
 
 void waveletb (scalar s, scalar w)

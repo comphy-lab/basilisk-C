@@ -189,5 +189,5 @@ event end (t = 100){}
 ## See also
 
 * [Similar test with
-   Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/sessile.html)
+   Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/sessile.html)
 */

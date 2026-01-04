@@ -2,11 +2,11 @@
 ## Intro
 This is the main.c file of the Krabbendijke case. Here all main simulation settings are put.
 
-* The physics functions and events can be found [here](http://basilisk.fr/sandbox/vheusinkveld/afm/krabbendijke/physics.h)
-* The fan functions and events can be found [here](http://basilisk.fr/sandbox/vheusinkveld/afm/krabbendijke/fan.h)
-* The diagnostics functions and events can be found [here](http://basilisk.fr/sandbox/vheusinkveld/afm/krabbendijke/diagnostics.h)
+* The physics functions and events can be found [here](/sandbox/vheusinkveld/afm/krabbendijke/physics.h)
+* The fan functions and events can be found [here](/sandbox/vheusinkveld/afm/krabbendijke/fan.h)
+* The diagnostics functions and events can be found [here](/sandbox/vheusinkveld/afm/krabbendijke/diagnostics.h)
 
-For the imported centered Navier-Stokes formulation, see [this page](http://basilisk.fr/src/navier-stokes/centered.h)
+For the imported centered Navier-Stokes formulation, see [this page](/src/navier-stokes/centered.h)
 
 ## Overview of the simulation
 ### main.c (here named krabbendijke.h)
@@ -17,7 +17,7 @@ For the imported centered Navier-Stokes formulation, see [this page](http://basi
 * The simulation is initialized (also using functions from fan.h and physics.h). In this initialization the grid is adapted to the initialzed velocity and buoyancy fields. 
 * At every time step adaptivity is taken care of and some information is printed.
 
-### [physics.h](http://basilisk.fr/sandbox/vheusinkveld/afm/krabbendijke/physics.h)
+### [physics.h](/sandbox/vheusinkveld/afm/krabbendijke/physics.h)
 
 * Physics init functions sets boundary conditions and velocity and buoyancy field (after which the grid is adapted to them in main.c)
 * Subgrid scale closure is turned on via SGS.h
@@ -26,13 +26,13 @@ For the imported centered Navier-Stokes formulation, see [this page](http://basi
 * The acceleration event applied 'gravity' via the buoyancy field
 * In the outer part of the domain wind and buoyancy are forced to their initialized profiles with a relaxation time
 
-### [fan.h](http://basilisk.fr/sandbox/vheusinkveld/afm/krabbendijke/fan.h)
+### [fan.h](/sandbox/vheusinkveld/afm/krabbendijke/fan.h)
 
 * The rot structure is defined, containing properties of the fan/rotor (i.e. height, power, rotation time)
 * Fan is rotated at every simulation step and corresponding properties updated (i.e. normal vector, volume fraction field)
 * Forcing is applied at every simulation step.
 
-### [diagnostics.h](http://basilisk.fr/sandbox/vheusinkveld/afm/krabbendijke/diagnostics.h)
+### [diagnostics.h](/sandbox/vheusinkveld/afm/krabbendijke/diagnostics.h)
 
 * dia structure is defined containing diagnosed properties (i.e. kinetic energy in the system, work done by the fan)
 * out structure is defined containing output information (i.e. folder names, file name prefixes)

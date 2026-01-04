@@ -15,13 +15,13 @@ We investigate the bursting of rising bubbles at an air-water interface when the
 **Authors:** Z. Yang, B. Ji, J. T. Ault, and J. Feng*
 
 
-**Sample results:** Here, we initialize the interface shapes using the model developed in the above paper, and we simulate the coupled transport. Note that these results use the three-phase contact line implementation by Dr. Vatsal Sanjay ([Basilisk sandbox](http://basilisk.fr/sandbox/vatsal/README)). A typical result of the simulations is shown below over time for a case that experiences singular jet formation.
+**Sample results:** Here, we initialize the interface shapes using the model developed in the above paper, and we simulate the coupled transport. Note that these results use the three-phase contact line implementation by Dr. Vatsal Sanjay ([Basilisk sandbox](/sandbox/vatsal/README)). A typical result of the simulations is shown below over time for a case that experiences singular jet formation.
 <img src="https://jesseault.com/nextcloud/index.php/s/65tQ5BEZLNJKRr2/preview"  width="1000">
 
 
 
 # Simulation of an oil-coated bubble bursting
-As mentioned, this simulation uses the three-phase solver developed by Dr. Vatsal Sanjay ([Basilisk sandbox](http://basilisk.fr/sandbox/vatsal/README)) to simulate the bursting of an oil-coated bubble at an air-water interface. The different needed codes are published below along with some documentation, and over 1 TB of data from simulation runs can be made available upon request.
+As mentioned, this simulation uses the three-phase solver developed by Dr. Vatsal Sanjay ([Basilisk sandbox](/sandbox/vatsal/README)) to simulate the bursting of an oil-coated bubble at an air-water interface. The different needed codes are published below along with some documentation, and over 1 TB of data from simulation runs can be made available upon request.
 
 # The needed codes are found below:
 

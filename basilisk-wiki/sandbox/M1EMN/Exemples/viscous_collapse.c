@@ -183,9 +183,9 @@ collapse over the selfsimilar solution for $Cf=.125$
  Version 1: Sydney Juillet 13,  OK v2
  
 # Links
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c]()
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]()
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c]()
  with Bingham
  * [Bingham 1D collapse on a incline](bingham_collapse_noSV.c)
  

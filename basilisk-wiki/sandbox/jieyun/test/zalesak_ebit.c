@@ -24,7 +24,7 @@ double ddt;
 int IT, level;
 
 int main() {
-  for (level = 5; level < 8; level++) {
+  for (level = 6; level < 7; level++) {
     init_grid (1 << level);
     ddt = 1. [0, 1]/N/16.;
     IT = 16*N;
@@ -133,6 +133,9 @@ event calc_infty_norm (t = end) {
 
   // shape error and area error
   printf ("%d %e %e %e %e\n", N, area0, area, fabs(area0 - area)/area0, l_inf);
+
+  // reference file
+  output_facets_ebit ("", stderr);
 }
 
 /**
@@ -141,13 +144,13 @@ event calc_infty_norm (t = end) {
 The shapes of the interface at $t = T/2$ and
 $t = T$ are displayed below.
 
-~~~gnuplot Shapes of the interface ($N = 128$).
+~~~gnuplot Shapes of the interface ($N = 64$).
 reset
 set size ratio -1
-plot [0.:1.][0.:1.]'zalesak_ebit_128_1.dat' w l lw 3 t "EBIT, t = T/2", \
-  'zalesak_ebit_128_2.dat' w l lw 3 t "EBIT, t = T", \
-  '../zalesak_ana_2.dat' w l t "Ref. t = T/2", \
-  '../zalesak_ana_4.dat' w l t "Ref. t = T"
+plot [0.:1.][0.:1.]'zalesak_ebit_64_1.dat' w l lw 3 t "EBIT, t = T/2", \
+  'zalesak_ebit_64_2.dat' w l lw 3 t "EBIT, t = T", \
+  '../zalesak_ana_2.dat' w l dt 2 t "Ref. t = T/2", \
+  '../zalesak_ana_4.dat' w l dt 2 t "Ref. t = T"
 ~~~
 
 ## See also

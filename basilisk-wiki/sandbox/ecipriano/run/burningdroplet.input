@@ -1,0 +1,52 @@
+// NOTE: Write floating point numbers as 1.0 or 1. instead of 1, or libconfig
+// won't parse them as floats.
+
+domain : {
+    maxlevel = 10;
+    Ytol = 1.e-1;
+    Ttol = 1.e0;
+    Utol = 1.e-1;
+    fiber = 0.1;
+    environment = 7.986462e+01;
+    gravity = -9.81;
+    diameter = 1e-3;
+};
+
+physics : {
+    combustion = true;
+    fick_corrected = true;
+    molar_diffusion = true;
+    mass_diffusion_enthalpy = true;
+    divergence = true;
+};
+
+kinetics : {
+    kinfolder = "two-step/methanol";
+    liqfolder = "LiquidProperties";
+};
+
+gas : {
+    temperature = 300.0;
+    pressure = 1.0;
+    composition = "N2_0.79_O2_0.21";
+};
+
+liquid : {
+    temperature = 300.0;
+    composition = "CH3OH_1.";
+    sigma = 0.03;
+    emissivity = 0.0;
+};
+
+spark : {
+    diameter = 0.2;
+    start = 0.0;
+    time = 0.005;
+    value = 5e7;
+};
+
+postprocessing : {
+    dump_every = 0.005;
+    movie_every = 0.001;
+};
+

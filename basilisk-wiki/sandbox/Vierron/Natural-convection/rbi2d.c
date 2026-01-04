@@ -10,7 +10,7 @@ From the Basilisk source code, we include multigrid.h and perfs.h. We use multig
 /**
 For run the code in parallel with make using 4 process :
 CC='mpicc -D_MPI=4' make rbi2d.tst
-([Parallel informations](http://basilisk.dalembert.upmc.fr/src/Tips)).
+([Parallel informations](/src/Tips)).
 
 ## Model equations
 
@@ -55,10 +55,10 @@ Morevoer we use profil5.h to have acces of averaged profiles scalarfields in the
 
 ## Dimensionless parameters
 
-MINLEVEL and MAXLEVEL are variables used for adaptive meshing but here we use a non-cubic domain (multigrid.h). Non-cubic and adaptive simulations are not possible yet. That is why they are equal. the function npe() gives the number of processor used and dimension(ny()) imposes the number of processes along y axis ([more details here](http://basilisk.dalembert.upmc.fr/src/Tips)). For this example we have a $2^{6} grid$.
+MINLEVEL and MAXLEVEL are variables used for adaptive meshing but here we use a non-cubic domain (multigrid.h). Non-cubic and adaptive simulations are not possible yet. That is why they are equal. the function npe() gives the number of processor used and dimension(ny()) imposes the number of processes along y axis ([more details here](/src/Tips)). For this example we have a $2^{6} grid$.
 
 DT is the maximum time step to help run the code.
-Then TOLERANCE define the minimum resisdus to be reached ([Multigrid Poisson–Helmholtz solvers](http://basilisk.dalembert.upmc.fr/src/poisson.h#multigrid-solver)).
+Then TOLERANCE define the minimum resisdus to be reached ([Multigrid Poisson–Helmholtz solvers](/src/poisson.h#multigrid-solver)).
 
 Here Ra=1e5 and Pr=1.
 
@@ -116,7 +116,7 @@ event init (t=0) {
 ## Outputs
 
 We write in the log file all statistical quantities.
-statsf() function returns the minimum, maximum, volume sum, standard deviation and volume for a field ([utils.h](http://basilisk.dalembert.upmc.fr/src/utils.h#simple-field-statistics)).
+statsf() function returns the minimum, maximum, volume sum, standard deviation and volume for a field ([utils.h](/src/utils.h#simple-field-statistics)).
 We write in the data file all our physical quantities allowing us to characterize our physical problem.
 
 */

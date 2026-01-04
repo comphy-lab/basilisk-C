@@ -8,7 +8,7 @@ solution branches in the bifurcation plane.
 
 The position of the interface is found solving the stress equilibrium at
 the interface. Similarly at the problem
-[pendant_drop_volume.m](http://basilisk.fr/sandbox/easystab/pendant_drop_volume.m), the stresses acting on the interface are given
+[pendant_drop_volume.m](/sandbox/easystab/pendant_drop_volume.m), the stresses acting on the interface are given
 by the surface tension forces and the gravity which introduce an
 hydrostatic pressure inside the droplet. Thus we write the stress
 equilibrium as 
@@ -129,9 +129,9 @@ set(0,'defaultaxesfontsize',20,'defaultaxeslinewidth',.7,'defaultlinelinewidth',
         # Newton loop
 
         Now we are in the Newtoon loop to find the shape of the droplet with a specific volume. See
-        [meniscus.m](http://basilisk.fr/sandbox/easystab/meniscus.m) for
+        [meniscus.m](/sandbox/easystab/meniscus.m) for
         more details.
-        The implementation follows the one adopted in [pendant_drop_volume.m](http://basilisk.fr/sandbox/easystab/pendant_drop_volume.m)
+        The implementation follows the one adopted in [pendant_drop_volume.m](/sandbox/easystab/pendant_drop_volume.m)
         where we find same governing equation and same type of
         boundary conditions.
         $$
@@ -190,7 +190,7 @@ set(0,'defaultaxesfontsize',20,'defaultaxeslinewidth',.7,'defaultlinelinewidth',
         are the discretized Jacobian matrices of the different components
         w.r.t. the variables. They are found by perturbing all variables in the
         considered equation with small parameters and neglecting the nonlinear 
-        terms, in the same way as what described in [meniscus.m](http://basilisk.fr/sandbox/easystab/meniscus.m).
+        terms, in the same way as what described in [meniscus.m](/sandbox/easystab/meniscus.m).
         %}
         
         % analytical jacobian

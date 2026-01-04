@@ -423,13 +423,13 @@ there are many other possibilities with gnuplot....
  
 # Links
 
- * [http://basilisk.fr/sandbox/amansur/Gnuplot]()
+ * [https://basilisk.fr/sandbox/amansur/Gnuplot]()
  
  * [heat.c]() the explicit heat equation
  
  * [heat_imp.c]() the implicit heat equation
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/herschel-column-noSV.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/herschel-column-noSV.c]()
  
  * [../Exemples/damb.c]()
  

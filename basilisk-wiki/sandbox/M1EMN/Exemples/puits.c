@@ -183,8 +183,8 @@ Plot of $h(X_0/2,t)$, we notice the stair steps due to the reflection of the sig
 # Links
  
  
- see non viscous dam break with [standard C](http://basilisk.fr/sandbox/M1EMN/Exemples/svdb.c) 
-and with [Basilisk](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c)
+ see non viscous dam break with [standard C](/sandbox/M1EMN/Exemples/svdb.c) 
+and with [Basilisk](/sandbox/M1EMN/Exemples/damb.c)
 
 # Bibliographie
  

@@ -1,7 +1,26 @@
 /**
-# Poiseuille flow in a periodic channel
-but oriented in x direction.
-I try to work with simple maks function
+# Single cylindrical particle in a 2D couette flow, Stokes regime.
+- Physical configuration [Dvinsky & Popel 1987](https://doi.org/10.1016/0045-7930(87)90031-4)
+- Numerical method: Fluid Particle method [Tanaka & Araki 200](https://doi.org/10.1103/PhysRevLett.85.1338)
+
+Here we determine what is the angular velocity of a force-torque free cylindrical particle in a plane couette flow.
+
+The Fluid Particle method is implemented in basilisk [here](/sandbox/fpicella/src/driver-FluidParticleDynamics.h)
+
+Loosely speaking, it consist of accounting for a rigid, force-free and torque free particle,
+as a blob of fluid having a _high_ viscosity. 
+
+Usually the ratio between fluid viscosity and _particle viscosity_
+is set to be the variable $\eta\approx100$.
+
+In this page, we test the effectiveness of the method, as a function of spatial resolution.
+
+### REMARK
+The following implementation requires the use of standard [viscosity.h](/src/viscosity.h),
+hence boundaries are accounted using the *mask()* function (now obsolete).
+
+This is due to the fact that using embedded boundaries, [viscosity-embed.h](/src/viscosity-embed.h)
+does not account by default of variable viscosity.
 */
 
 #include "navier-stokes/centered.h"
@@ -68,8 +87,8 @@ int main()
   TOLERANCE = 1e-10;
 
   output_file = fopen ("Free_Particle.dat", "w");
-  for (N = 16; N <= 256; N *= 2)
-		for (RADIUS = 0.1; RADIUS <= 0.4; RADIUS += 0.05)
+  for (N = 16; N <= 128; N *= 2)
+		for (RADIUS = 0.15; RADIUS <= 0.4; RADIUS += 0.05)
 	//N=128;
     run();
 	fclose(output_file);
@@ -163,4 +182,14 @@ plot \
      with lines lw 5 lc rgb "black" title "Dvinsky Popel 1987, fig 11"
 
 ~~~
+*/
+
+/**
+The bigger the particle, the higher the confinement, the higher the resolution required to converge.
+
+Still, it is quite expensive to be qualitatively acceptable.
+
+Is there something else I should work on?
+
+Or the approach is just not good enough for my purposes?
 */

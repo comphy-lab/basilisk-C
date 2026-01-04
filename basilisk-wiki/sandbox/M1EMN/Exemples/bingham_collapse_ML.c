@@ -32,7 +32,7 @@ where $Q=\int_0^h udy$. If we neglect inertia in the momentum equation, we solve
 $$0 =  -   \rho g  Z'_b -
   \dfrac{\partial   p}{\partial   x} + 
    \dfrac{\partial   \tau_{xy}}{\partial   y} $$
- were the pressure is hydrostatic $p=\rho g (h-y)$, and with the Bingham rheology. This gives then $Q=\int_0^h udy$ that we put in the mass conservation, and hence we obtain the [1D kinetic wave](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c) from the paper of Balmforth. 
+ were the pressure is hydrostatic $p=\rho g (h-y)$, and with the Bingham rheology. This gives then $Q=\int_0^h udy$ that we put in the mass conservation, and hence we obtain the [1D kinetic wave](/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c) from the paper of Balmforth. 
 Here we use the Multilayer Solver to see the influence of the inertia neglected in the 1D model.
 
 # Code
@@ -203,11 +203,11 @@ Montpellier 07/17
 # Links  
 
 * see the related example in 1D  
-   [1D kinetic wave](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
+   [1D kinetic wave](/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
 * see the related example in 1D  for Herschel-Bulkley 
-   [1D kinetic wave](http://basilisk.fr/sandbox/M1EMN/Exemples/herschel-column-noSV.c)
+   [1D kinetic wave](/sandbox/M1EMN/Exemples/herschel-column-noSV.c)
 * see the related example in 2D for comparison
-   [with hydro.h](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_NH.c)
+   [with hydro.h](/sandbox/M1EMN/Exemples/bingham_collapse_NH.c)
    
 # Bibliography   
 

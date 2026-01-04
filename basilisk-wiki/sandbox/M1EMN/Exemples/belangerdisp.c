@@ -230,13 +230,13 @@ set xlabel "x"
  
 # Liens
  
- * Cas dispersif [http://basilisk.fr/sandbox/M1EMN/BASIC/disperse.c]()
+ * Cas dispersif [https://basilisk.fr/sandbox/M1EMN/BASIC/disperse.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/airy_watertrainfront.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/airy_watertrainfront.c]()
  
- * [http://basilisk.fr/sandbox/crobert/1_Layered/tension.h]()
+ * [https://basilisk.fr/sandbox/crobert/1_Layered/tension.h]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/ressaut_mascaret.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/ressaut_mascaret.c]()
  
 # Bibliographie
  

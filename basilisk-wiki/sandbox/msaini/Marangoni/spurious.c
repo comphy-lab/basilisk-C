@@ -149,5 +149,5 @@ plot 'La-120' w l t "CSF,La=120",\
 
 ## See also
 
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/spurious.html)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/spurious.html)
 */

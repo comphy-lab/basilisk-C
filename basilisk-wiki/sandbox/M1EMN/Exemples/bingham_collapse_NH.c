@@ -5,7 +5,7 @@
 ## Problem of Liu and Mei/ Balmforth: collapse of Bingham fluid
  
  A heap of fluid following Bingham rheology is released along a constant slope.
- We see the front moving to the right, and the left front going slowly up hill to the left. A real Bingham flow should stop. See Balmforth 1D  related examples  with [only mass equation and lubrication](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) 
+ We see the front moving to the right, and the left front going slowly up hill to the left. A real Bingham flow should stop. See Balmforth 1D  related examples  with [only mass equation and lubrication](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) 
  
 ![animation of the collapse](bingham_collapse_NH/a2.gif)
  
@@ -28,7 +28,7 @@
  We define an equivalent viscosity
  $$\tau_{xy}=  \rho \nu_{eq} \dfrac{\partial u}{\partial z}
  \text{ with } \nu_{eq}=\rho \nu (1 + \dfrac{\tau_y/{\rho \nu}}{|\dfrac{\partial u}{\partial z}|})$$
- the `layered/hydro.h` is changed in [http://basilisk.fr/sandbox/M1EMN/Exemples/hydroNN.h]()
+ the `layered/hydro.h` is changed in [https://basilisk.fr/sandbox/M1EMN/Exemples/hydroNN.h]()
 
 ## Link with 1D model
  
@@ -38,28 +38,28 @@
  $$0 =  -   \rho g  Z'_b -
  \dfrac{\partial   p}{\partial   x} +
  \dfrac{\partial   \tau_{xy}}{\partial y} $$
- were the pressure is hydrostatic $p=\rho g (h-y)$, and with the Bingham rheology. This gives then $Q=\int_0^h udy$ that we put in the mass conservation, and hence we obtain the [1D kinetic wave](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c) from the paper of Balmforth.
+ were the pressure is hydrostatic $p=\rho g (h-y)$, and with the Bingham rheology. This gives then $Q=\int_0^h udy$ that we put in the mass conservation, and hence we obtain the [1D kinetic wave](/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c) from the paper of Balmforth.
  Here we use the Hydro Solver to see the influence of the inertia neglected in the 1D model.
 
 
 ## Link with viscous collapse
  
  The example is linked to the  collapse of a viscous fluid (Huppert 82 “The propagation of two-dimensional and axisymmetric viscous gravity currents over a rigid horizontal surface”), here we have a slope.
- It is done with only mass equation and lubrication [here](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and
- with shallow water [there](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c).
+ It is done with only mass equation and lubrication [here](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and
+ with shallow water [there](/sandbox/M1EMN/Exemples/viscous_collapse.c).
  The same RNSP equations are solved 
- [with Multilayer shallow water](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c)
+ [with Multilayer shallow water](/sandbox/M1EMN/Exemples/viscous_collapse_ML.c)
  (using the Multilayer Shallow Water (Saint Venant Multi Couches) strategy of Audusse Sainte-Marie  et al 2011. See De Vita 2020 for details). 
  We compare here  with
  [Popinet (2019)](/Bibliography#popinet2019)
   both resolutions of RNSP system.
   The  hydrostatic
- [http://basilisk.fr/src/layered/hydro.h]()
+ [https://basilisk.fr/src/layered/hydro.h]()
  "hydro.h" has been changed in "hydroNN.h" to include variable viscosity.
  "difusion.h" has been chenged in it and is now "difusionNN.h" (Non-Newtonian).
  
  it is possible to test the  non hydrostatic
- [http://basilisk.fr/src/layered/nh.h](), it should be done next.
+ [https://basilisk.fr/src/layered/nh.h](), it should be done next.
 
  
  
@@ -258,19 +258,19 @@ confine 03/20 (instead of using alcoholic gel, use hydro include file!)
  
 ## Links
 
-* see the related example  bingham collapse in 1D    [1D kinetic wave](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
+* see the related example  bingham collapse in 1D    [1D kinetic wave](/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
 
 * see the related example in 2D Multilayer for comparison
-   [with `multilayer.h`](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_ML.c)
+   [with `multilayer.h`](/sandbox/M1EMN/Exemples/bingham_collapse_ML.c)
    
 * 
- related examples [only mass equation and lubrication newtonian ](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and
- [with shallow water, newtonian](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c)
+ related examples [only mass equation and lubrication newtonian ](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and
+ [with shallow water, newtonian](/sandbox/M1EMN/Exemples/viscous_collapse.c)
  see as well Navier Stokes solution.
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c]() viscous `multilayer.h`
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c]() viscous `multilayer.h`
 
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_NH.c]() viscous with `hydro.h`
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_NH.c]() viscous with `hydro.h`
  
 ## Bibliography
  

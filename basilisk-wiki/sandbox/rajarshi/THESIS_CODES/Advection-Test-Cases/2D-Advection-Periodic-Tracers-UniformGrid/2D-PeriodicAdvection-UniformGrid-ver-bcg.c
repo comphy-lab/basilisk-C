@@ -4,7 +4,7 @@
 
 In this test case we wish to observe the convergence and performance of the WENO solver in 2D, where an additional gaussian-quadrature interpolation is
 required to implement the higher-order scheme. For details see (Rajarshi-PhD-Thesis) section 2.8. We have a setup similar to the 
-[1D-case](http://basilisk.fr/sandbox/rajarshi/THESIS_CODES/Advection-Test-Cases/1D-Advection-Periodic-Function/Test_Case-Advection1DPeriodic-bcg_O5_weno-ver-bcg.c) here in 2D, and the convergence and performance is compared with the bcg solver.
+[1D-case](/sandbox/rajarshi/THESIS_CODES/Advection-Test-Cases/1D-Advection-Periodic-Function/Test_Case-Advection1DPeriodic-bcg_O5_weno-ver-bcg.c) here in 2D, and the convergence and performance is compared with the bcg solver.
 */
 
 #define dimension 2

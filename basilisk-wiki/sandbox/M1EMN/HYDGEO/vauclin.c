@@ -163,7 +163,7 @@ event pressurevelocities (i++; t<tmax)
      We solve Poisson equation
      $\nabla \cdot (\beta \nabla p  ) + \gamma_d \; p = s$
     
-     with [http://basilisk.fr/src/poisson.h](http://basilisk.fr/src/poisson.h)
+     with [https://basilisk.fr/src/poisson.h](/src/poisson.h)
      */
 
     mgp = poisson (p, source, beta , gammad);
@@ -172,7 +172,7 @@ event pressurevelocities (i++; t<tmax)
      $$ \overrightarrow{  u} = - \beta  \overrightarrow{\nabla} - \beta \overrightarrow{ e_y}$$
      
      (note the `face_gradient_x p=  ((p[i] - p[i-1])/Delta)`) see
-     [http://basilisk.fr/src/poisson.h](http://basilisk.fr/src/poisson.h)
+     [https://basilisk.fr/src/poisson.h](/src/poisson.h)
      
      */
     foreach_face()
@@ -393,17 +393,17 @@ Cuts of pressure at both ends of the domain, showing that at $x=0$ saturation is
  
  * [https://stackoverflow.com/questions/20977368/filled-contour-plot-with-constant-color-between-contour-lines]()
  
- * see [http://basilisk.fr/src/hele-shaw.h](http://basilisk.fr/src/hele-shaw.h)
+ * see [https://basilisk.fr/src/hele-shaw.h](/src/hele-shaw.h)
  
- * see [http://basilisk.fr/sandbox/M1EMN/Exemples/darcyLambSneddon.c]()
+ * see [https://basilisk.fr/sandbox/M1EMN/Exemples/darcyLambSneddon.c]()
  
- * see [http://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuit2D.c]()
+ * see [https://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuit2D.c]()
  
- * see [http://basilisk.fr/sandbox/M1EMN/HYDGEO/richards.c]() Richards problem
+ * see [https://basilisk.fr/sandbox/M1EMN/HYDGEO/richards.c]() Richards problem
  
- * see [http://basilisk.fr/sandbox/M1EMN/HYDGEO/toddbear59.c]()
+ * see [https://basilisk.fr/sandbox/M1EMN/HYDGEO/toddbear59.c]()
 
- * see [http://basilisk.fr/sandbox/M1EMN/HYDGEO/vauclin.c]()
+ * see [https://basilisk.fr/sandbox/M1EMN/HYDGEO/vauclin.c]()
  
 ## Bibliography
 

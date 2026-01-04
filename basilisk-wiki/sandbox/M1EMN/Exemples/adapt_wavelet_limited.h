@@ -1,8 +1,8 @@
 /**
  
  
- an adaptation by [Cesar Pairetti](http://basilisk.fr/sandbox/pairetti/) of his
- [http://basilisk.fr/sandbox/pairetti/bag_mode/adapt_wavelet_limited.h]()
+ an adaptation by [Cesar Pairetti](/sandbox/pairetti/) of his
+ [https://basilisk.fr/sandbox/pairetti/bag_mode/adapt_wavelet_limited.h]()
  is used here.
  
  As Stephane says: "Ideally, automatic adaptation using only error control (i.e. cmax in adapt_wavelet) should be more reliable and less susceptible to "user error". I know of many examples where the adaptation functions in Gerris have been abused in this way, leading to erroneous simulations. So, hand-tuning should only be used as a last resort."

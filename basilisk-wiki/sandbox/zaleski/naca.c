@@ -3,7 +3,7 @@
 # 2D NACA2414 airfoil at $Re=1,000$
 
 This test case is inspired from the Gerris test case
-[starting](http://gerris.dalembert.upmc.fr/gerris/examples/examples/starting.html). 
+[starting](https://gerris.dalembert.upmc.fr/gerris/examples/examples/starting.html). 
 
 We solve here the Navier-Stokes equations and add the NACA2414 using
 an [embedded boundary](/src/embed.h). */

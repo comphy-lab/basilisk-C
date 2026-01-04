@@ -29,7 +29,7 @@ sudo apt-get install emacs
   instructions](src/INSTALL) to setup basilisk on your system.
   
 * If you are using a Mac please see special installation instructions 
-  for [make and gdb](http://basilisk.fr/sandbox/INSTALL_MACOS). 
+  for [make and gdb](/sandbox/INSTALL_MACOS). 
 
 # Getting started
 
@@ -475,7 +475,7 @@ which should produce
 ![Min and max](tuto/minmax.png)
 
 Read one of the many [tutorials](http://www.gnuplot.info/help.html) if
-you want to know more about gnuplot.
+you want to know more about gnuplot. See also the excellent [gnuplotting.org](https://gnuplotting.org/about/index.html).
 
 # Increasing the resolution
 

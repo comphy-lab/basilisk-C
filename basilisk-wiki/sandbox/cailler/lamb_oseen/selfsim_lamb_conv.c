@@ -23,7 +23,7 @@ since we should stay on the initial condition solution.
 
 ## Performing a self-similar DNS: *a recap*
 
-Thanks to the [results obtained in the physical space](http://basilisk.fr/sandbox/cailler/lamb_oseen/lamb.c), 
+Thanks to the [results obtained in the physical space](/sandbox/cailler/lamb_oseen/lamb.c), 
 we know the self-similar space-extension of the profiles for appreciable 
 reproduction of the self-similar solution: $[-20 \, ; 20]$. 
 Therefore, a box *five times larger* should be enough for avoiding border effects, 
@@ -33,13 +33,13 @@ $L_0 = 200$ centered on the origin of the Cartesian coordinate system.
 <div class="message">
 <div id="msg_logo"><img src="/img/warning.png"></div>
 **For detailed explanations upon the self-similar solver: 
-*[go to this page](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README)!***
+*[go to this page](/sandbox/cailler/self_sim_DNS/README)!***
 </div>
 
 In short, the self-similar solver for the *Lamb--Oseen* problem is composed of 
 the following additions:
 
-  + in the file [`selfsim_centered_lamb.h`](http://basilisk.fr/sandbox/cailler/lamb_oseen/selfsim_centered_lamb.h):
+  + in the file [`selfsim_centered_lamb.h`](/sandbox/cailler/lamb_oseen/selfsim_centered_lamb.h):
 
     - new variables: `vector xi[]` | `face vectors uf_temp[], lambdaf[]`;
     - boundary conditions modified for the pressure for symmetry conditions;
@@ -76,7 +76,7 @@ the following additions:
       2. `lambdaf[]` face vector is re-built as `uf[]` is projected to determine 
           the $n+1$ state;
 
-  + in the file [`selfsim_bcg_lamb.h`](http://basilisk.fr/sandbox/cailler/lamb_oseen/selfsim_bcg_lamb.h):
+  + in the file [`selfsim_bcg_lamb.h`](/sandbox/cailler/lamb_oseen/selfsim_bcg_lamb.h):
     - supplementary source terms have to be taken into account, as the original 
       BCG algorithm assumes divergence-free advection velocity 
       [and so $\boldsymbol{\nabla} \cdot \left(\mathbf{u} \otimes \mathbf{u} \right) 
@@ -134,7 +134,7 @@ $$
 
 However, the case $N_{max} = 10$ is done remotely, as it would exceed the 
 `Basilisk` server capacities. Related results can be found in 
-[`lamb_data`](http://basilisk.fr/sandbox/cailler/lamb_oseen/lamb_data/). 
+[`lamb_data`](/sandbox/cailler/lamb_oseen/lamb_data/). 
 */
 
 int k; // counter
@@ -487,7 +487,7 @@ reference solution and the numerical one obtaineds with `Basilisk`, when
 variying the spatial resolution of the grid. 
 
 Hence, we compute such a difference and collect some statistics upon it thanks 
-to [utility functions](http://basilisk.fr/src/utils.h#simple-field-statistics) 
+to [utility functions](/src/utils.h#simple-field-statistics) 
 of `Basilisk`, for the different grid levels tested (reminder: $N_{max} = 10$ 
 done locally):
 */
@@ -621,7 +621,7 @@ coming rapidly from the borders (can be seen when enabling the cells in BView).
 # APPENDIX: analytical solutions in Cartesian coordinates
 
 It has been seen for the 
-[*Lamb--Oseen* problem simulated in the physical space](http://basilisk.fr/sandbox/cailler/lamb_oseen/lamb.c#towards-self-similarity) 
+[*Lamb--Oseen* problem simulated in the physical space](/sandbox/cailler/lamb_oseen/lamb.c#towards-self-similarity) 
 that the exact solution of the azimuth velocity is:
 
 $$

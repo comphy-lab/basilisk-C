@@ -68,7 +68,7 @@ int main () {
   fractions_cleanup (cs, fs);
   view (fov = 13, width = 800, height = 800, tx = -0.2);
   draw_vof("cs", "fs", edges = true, color = "J", min = -1, max = 4);
-  cells();
+  //cells();
   save ("splitsmt.png");
   double fillval = 1e5;
   //Again, no smoothening
@@ -87,7 +87,7 @@ int main () {
   tree_interface (branches, cs, fs, J);
   fractions_cleanup (cs, fs);
   draw_vof("cs", "fs", edges = true, color = "J", min = -1, max = 4);
-  cells();
+  //cells();
   save ("split.png");
 
 }

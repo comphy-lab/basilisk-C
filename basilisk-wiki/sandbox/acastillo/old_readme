@@ -13,7 +13,7 @@ different formats.
 
 * [output_matrix_mpi()](output_fields/output_gnuplot.h) - This format is
  compatible with the binary matrix format of gnuplot like the one implemented
- on [output.h](http://basilisk.fr/src/output.h) but works for simulations
+ on [output.h](/src/output.h) but works for simulations
  using MPI.
 
 
@@ -102,7 +102,7 @@ This includes a series of routines to read existing results and use them as
 initial conditions for a new simulation.
 
 * [input_matrix()](input_fields/auxiliar_input.h) - This format reads a binary
- file written using [output_matrix()](http://basilisk.fr/src/output.h) or
+ file written using [output_matrix()](/src/output.h) or
  [output_matrix_mpi()](output_fields/output_gnuplot.h) and loads it into a
  field selected by the user. For instance, to read a square field of size
  **L0** defined inside a regular  Cartesian grid with **N** points, starting
@@ -128,7 +128,7 @@ An example on how to generate some arbitrary initial condition using matlab is a
 *****
 
 # Boussinesq equations
-This includes an implementation of the Boussinesq equations by combining the centered Navier-Stokes solver (see [centered.h](http://basilisk.fr/src/navier-stokes/centered.h)) and an advection-diffusion problem for the temperature field using the diffusion solver (see [diffusion.h](http://basilisk.fr/src/diffusion.h)) and the advection of a passive scalar.
+This includes an implementation of the Boussinesq equations by combining the centered Navier-Stokes solver (see [centered.h](/src/navier-stokes/centered.h)) and an advection-diffusion problem for the temperature field using the diffusion solver (see [diffusion.h](/src/diffusion.h)) and the advection of a passive scalar.
 
 For this work, we focus on the Rayleigh-Bénard convection which involves a
 horizontal fluid layer of height H, which is heated uniformly from below and

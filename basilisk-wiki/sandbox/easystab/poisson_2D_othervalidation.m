@@ -1,6 +1,6 @@
 %{
 # Poisson problem in 2D
-Here we solve a Poisson problem in 2D with another forcing solution to validate the [first case](http://basilisk.fr/sandbox/easystab/poisson2D.m). The boundary conditions are the same. 
+Here we solve a Poisson problem in 2D with another forcing solution to validate the [first case](/sandbox/easystab/poisson2D.m). The boundary conditions are the same. 
 %}
 
 clear all; clf

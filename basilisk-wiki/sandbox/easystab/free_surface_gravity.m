@@ -197,7 +197,7 @@ print('-dpng','-r100','free_surface_gravity.png');
 
 # Exercices/Contributions
 
-* Please check that in the limit of short wavelength compared to the fluid depth, (deep water limit), we have a dispersive system of waves. Both theoretially and numerically ---> [free_surface_gravity-short_wavelength](http://basilisk.fr/sandbox/easystab/free_surface_gravity-short_wavelength.m)
+* Please check that in the limit of short wavelength compared to the fluid depth, (deep water limit), we have a dispersive system of waves. Both theoretially and numerically ---> [free_surface_gravity-short_wavelength](/sandbox/easystab/free_surface_gravity-short_wavelength.m)
 * Please check that in the limit of long wavelength compared to the fluid depth, (shallow water limit), we have a non-dispersive system of waves. Both theoretially and numerically
 * Please write a theory for a very thin and viscous layer (the lubrication limit) and show that our codes works well also in this limit.
 * Please invert the direction of the gravity and show that we have a system of unstable waves without propagation (the Rayleigh-Taylor instability), show that the theory works still well.

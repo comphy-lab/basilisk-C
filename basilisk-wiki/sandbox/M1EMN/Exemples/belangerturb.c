@@ -265,11 +265,11 @@ Position of shock
  
 # Liens
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/belanger.c]() Cas normal
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/belanger.c]() Cas normal
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/belangerdisp.c]() Cas dispersif
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/belangerdisp.c]() Cas dispersif
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/belangerturb.c]() Cas "turbulent"
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/belangerturb.c]() Cas "turbulent"
  
  
 # Bibliographie

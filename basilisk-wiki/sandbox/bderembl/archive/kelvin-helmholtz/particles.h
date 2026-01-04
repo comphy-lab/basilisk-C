@@ -457,7 +457,7 @@ void update_mpi (int step) {
 * [Test for the MPI particle exchange](test_manyparticles.c)
 
 ## Usage   
-* [All pages using `particles.h`](http://basilisk.fr/_search?patterns=particles.h)
+* [All pages using `particles.h`](/_search?patterns=particles.h)
 * [Tag a portion of a fluid](splash.c)
 * [Settling of volcanic ash](ash.c)
 * [Flow in a thermosyphon](tube.c)

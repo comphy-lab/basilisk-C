@@ -1,23 +1,7 @@
 /**
 # Flow past a fractal tree
 
-<div class="figure">
-<video controls="" preload="metadata" width="700px">
-<source src="https://surfdrive.surf.nl/files/index.php/s/5eWRNDyDKHLDNY7/download" type="video/mp4">
-Your browser does not support the video tag. </video>
-<p class="caption">
-Flow past a fractal tree with one generation of branches (via surfdrive)
-</p>
-</div>
-
-<div class="figure">
-<video controls="" preload="metadata" width="700px">
-<source src="https://surfdrive.surf.nl/files/index.php/s/6JmnOyn4DsOjoPe/download" type="video/mp4">
-Your browser does not support the video tag. </video>
-<p class="caption">
-Flow past a fractal tree with two generations of branches (via surfdrive)
-</p>
-</div>
+![](https://www.antoonvanhooft.nl/media/fractreel2.mp4)
 
 
 See also this [page](endmovie.c), for the generation of the last

@@ -1,4 +1,4 @@
-**(This document belongs to the lecture notes for the [M2-DET](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md) course, D. Fabre, nov. 2018-dec. 2023)**
+**(This document belongs to the lecture notes for the [M2-DET](/sandbox/easystab/M2DET/Instabilities.md) course, D. Fabre, nov. 2018-dec. 2025)**
 
 
 This documents gives mathematical support for the study of dynamical systems (lectures 1-2 of the course)
@@ -42,8 +42,7 @@ to consider the dynamics of the system from a global point of view by investigat
 
 ### Illustration : the pendulum
 
-( use program [PhasePortrait_NonLinear.m](/sandbox/easystab/PhasePortrait_NonLinear.m) 
-
+( Use program [PhasePortrait.py](/sandbox/easystab/easyPYstab/PhasePortrait.py) )
 
 ### Conservative vs. non-conservative systems
 
@@ -154,7 +153,7 @@ According on the eigenvalues we are in one of the three following cases:
 Note that if $A$ is symmetric (or hermitian), the condition for stability implies monotonous stability. If $A$ is nonsymmetric, on the other hand, the system may be exponentially stable but not monotonously stable. This situation corresponds to "transient growth" and will be reviewed in lecture 9.
 
 
-A more complete document on linear systems of order $N$ can be found [here](http://basilisk.fr/sandbox/easystab/david/LinearSystems.md#linear-dynamical-systems). In the sequel of this document we restrict to the case of 2-dimensional dynamical systems ($N=2$).
+A more complete document on linear systems of order $N$ can be found [here](/sandbox/easystab/david/LinearSystems.md#linear-dynamical-systems). In the sequel of this document we restrict to the case of 2-dimensional dynamical systems ($N=2$).
 
 
 ## Classification of fixed points in two dimensions
@@ -218,7 +217,7 @@ In the two first cases, it is necessary to include nonlinear terms to conclude f
  
 **Exercice :**
 Study the possible types of fixed points in 2D using the program 
-[PhasePortrait_Linear.m](/sandbox/easystab/PhasePortrait_Linear.m) 
+[PhasePortrait_Linear.py](/sandbox/easystab/easyPYstab/PhasePortrait_Linear.py) )
  
  
 ### Map of all possible cases
@@ -252,7 +251,7 @@ $$m \ddot x = - k x - \mu \dot x$$
 
 ## 1.2. Brusselator 
 
-[Correction](http://basilisk.fr/sandbox/easystab/Correction_Exercices.md#exercice-1.2)
+[Correction](/sandbox/easystab/Correction_Exercices.md#exercice-1.2)
 
 
 Consider the "Brusselator" 2D dynamical system:
@@ -280,7 +279,7 @@ a. Find the equilibrium points of the system.
 
 b. Determine their nature (stable/unstable, node/saddle/foci...)
 
-c. Draw a phase portrait of this system (you may use the program [/sandbox/easystab/PhasePortrait_NonLinear.m](PhasePortrait_NonLinear.m)).
+c. Draw a phase portrait of this system (you may use the program [PhasePortrait.py](/sandbox/easystab/easyPYstab/PhasePortrait.py)).
 
 ## 1.4. Linear problem modelling thermal conduction (preparation for chapter 5)
 
@@ -327,8 +326,7 @@ In other words, when changing the parameter $r$, at least one eigenvalue crosses
 
 ### Illustrations (practical work)
 
-Using programs [PhasePortrait_NonLinear.m](/sandbox/easystab/PhasePortrait_NonLinear.m) and 
-[PhasePortrait_NonLinear.m](/sandbox/easystab/PhasePortrait_NonLinear.m), build the bifurcation diagrams of the following problems:
+Using program [PhasePortrait.py](/sandbox/easystab/easyPYstab/PhasePortrait.py) ), build the bifurcation diagrams of the following problems:
 - Rotating pendulum
 - Inverted pendulum
 - Brusselator
@@ -358,7 +356,7 @@ It is convenient to introduce the *potential* function $V(x)$ such that $f(x) = 
 
 <span style="color:blue">
 Illustration by a physical example :  **The rotating pendulum**. 
-See exercice 2.2 and play with the program [PhasePortrait_NonLinear.m](/sandbox/easystab/PhasePortrait_NonLinear.m) ! 
+See exercice 2.2 and play with the program [PhasePortrait.py](https://basilisk.fr/sandbox/easystab/easyPYstab/PhasePortrait.py) ! 
 </span>
 
 The *normal form* of a pitchfork bifurcation occuring at $r_c = 0$ is :
@@ -375,7 +373,7 @@ The pitchfork bifurcation is generic to systems admitting a spatial (reflexion) 
 
 <span style="color:blue">
 Illustration by a physical example :  **The inverted pendulum**. 
-Play with the program [PhasePortrait_NonLinear.m](/sandbox/easystab/PhasePortrait_NonLinear.m) ! 
+Play with the program [PhasePortrait.py](https://basilisk.fr/sandbox/easystab/easyPYstab/PhasePortrait.py) ! 
 </span>
 
 The *normal form* of a saddle-node bifurcation occuring at $r_c = 0$ is :
@@ -390,7 +388,7 @@ This bifurcation is a "fold" connecting two branches of fixed-point solutions. O
 
 <span style="color:blue">
 Illustration by a physical example :  **The Buffalo-Wolf system**. 
-See exercice 2.3 and play with the program [PhasePortrait_NonLinear.m](/sandbox/easystab/PhasePortrait_NonLinear.m). You should observe two successive transcritial bifurcations for $r=0$ and for $r\approx 0.51$ ! 
+See exercice 2.3 and play with the program [PhasePortrait.py](https://basilisk.fr/sandbox/easystab/easyPYstab/PhasePortrait.py). You should observe two successive transcritial bifurcations for $r=0$ and for $r\approx 0.51$ ! 
 </span>
 
 The *normal form* of a transcritical bifurcation occuring at $r_c = 0$ is :
@@ -441,7 +439,7 @@ Verify that the bifurcation diagram is the one given in figure 11.20 of Charru. 
 
 ## 2.2. Bifurcation analysis of the rotating pendulum
 
-[Correction](http://basilisk.fr/sandbox/easystab/Correction_Exercices.md#exercice-2.2)
+[Correction](/sandbox/easystab/Correction_Exercices.md#exercice-2.2)
 
 
 Consider a pendulum with mass $m$ length $L$. The pivot is characterized by a friction coefficient $\mu_f$. The pendulum is in a uniformly rotating frame with rotation rate $\Omega$ with vertical axis.
@@ -469,7 +467,7 @@ Show that a bifurcation occurs for $r=0$ and that a qualitative change of the na
 
 ## 2.3. Buffalo-Wolf system
 
-Using programs [PhasePortrait_NonLinear.m](/sandbox/easystab/PhasePortrait_NonLinear.m), build the bifurcation diagram of the buffalo-wolf system :
+Using program [PhasePortrait.py](/sandbox/easystab/easyPYstab/PhasePortrait.py) ), build the bifurcation diagram of the buffalo-wolf system :
 
 $$
 \frac{d x_1}{dt} = r x_1 -A x_1 (x_2+E x_2^2) - B x_1^2,
@@ -532,7 +530,7 @@ where $r$ is a control parameter.
 
 
 
-a. Using the program  [/sandbox/easystab/PhasePortrait_NonLinear.m](), draw phase portraits for various values of $r$. 
+a. Using the program [PhasePortrait.py](/sandbox/easystab/easyPYstab/PhasePortrait.py), draw phase portraits for various values of $r$. 
 
 b. Study the number of fixed points and their stability as function of $r$.
 

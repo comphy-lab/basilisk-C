@@ -1,7 +1,7 @@
 /** 
 # Self-similar recoiling cones in the presence of a negative *dipolar flow* 
 
-This page is mirroring [this one](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c). 
+This page is mirroring [this one](/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c). 
 As such, please **refer to the link provided** for explanations upon motivations, 
 parameters, source code tips...  
 
@@ -96,7 +96,7 @@ $N_{max} = 7 \Rightarrow \widetilde{\Delta} = 7.8 \times 10^{-3}$, hence, a
 ***very low resolution*** to run on the `Basilisk` server. For your own 
 purpose, it is suggested to go as high as $N_{max} = 9$ for better accuracy 
 and convergence of the apex shapes (see the 
-[*Discussion* section](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c.#discussion)).
+[*Discussion* section](/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c.#discussion)).
 </div>
 
 

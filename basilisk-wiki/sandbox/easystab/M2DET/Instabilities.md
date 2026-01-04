@@ -6,11 +6,11 @@
 D. Fabre, décembre 2023 - janvier 2024.
 
 Adresse de cette page : 
-[http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md]()
+[https://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md]()
 
-#Presentation of the course
+# Presentation of the course
 
-##Objectives of the course
+## Objectives of the course
 
 The concept of *Instability* generally means the spontaneous transition of a system
 from a "regular state" (steady, symmetric, ...) to a "less regular state" (unsteady, asymetric, ...).
@@ -26,23 +26,35 @@ This course is an introduction to:
 - The specific *numerical* methods used in the study of instability phenomena.
 
 
-##Material provided for this course.
+## Material provided for this course.
 
 This webpage gathers the online material for the course. The material consists of various documents, including lecture notes, complementary documents, exercices, and **commented programs**.
 
-The commented programs aim at providing simple, self-contained programs incorporating their own documentation, written in Matlab/Octave language. The proposed programs allow to study the main classes of instabilities considered in this course, and to produce most of the numerical results illustrating the course. 
+The commented programs aim at providing simple, self-contained programs incorporating their own documentation, in a "notebook" style. The proposed programs allow to study the main classes of instabilities considered in this course, and to produce most of the numerical results illustrating the course. 
 
-The programs are largely built using the support and the philosophy of the  [**easystab**](/sandbox/easystab/README) project launched by J. Hoeffner and his colleagues from Université Paris VI.
+Up to feb. 2025, the programs were in Matlab/Octave, and issued from the
+ [**easystab**](/sandbox/easystab/README) project. Starting from nov. 2025, the programs are now progressively translated in python, as part of the  [**easyPYstab**](/sandbox/easystab/easyPYstab/README) project.
 
-The website of the present course is actually hosted by the website of the easystab project, which is itself hosted by the website of the basilisk numerical simulation code.
+The website of the present course is hosted by the website of the basilisk numerical simulation code, maintained by Sorbonne-University.
 
-## How to use the programs provided in these pages :
+### How to use the **Python** programs provided in these pages (with spyder):
+
+- To download a program, open its web page, click "raw page source" in the left column, cut-paste into the matlab/octave editor window, and save it with the corresponding name and ".py" extension.
+- Note that most of the programs begin with "import EasyStab as ES", meaning that they require that you have previously downloaded the library [EasyStab.py](/sandbox/easystab/easyPYstab/EasyStab.py) which contains 
+the basic bricks of the project (functions to build matricial operators, etc...)  
+
+
+### How to use the older **Matlab/Octave** programs provided in these pages :
 
 - You must first install either Octave (free software) or Matlab (licence needed).
-- Get the basic bricks of the project (functions to build matricial operators, etc...)  by downloading and unpacking [easypack.zip](http://basilisk.fr/sandbox/easystab/easypack.zip)
+- Get the basic bricks of the project (functions to build matricial operators, etc...)  by downloading and unpacking [easypack.zip](/sandbox/easystab/easypack.zip)
 - To download a program, open its web page, click "raw page source" in the left column, cut-paste into the matlab/octave editor window, and save it with the corresponding name and ".m" extension.
 - Once it is downloaded, just play with the programs and have fun !
-- If you have improved a program and wish to share it, you are welcome ! the collection of programs is handled under the form of a wiki, so after creating an account you can easily edit, discuss, and create new programs.
+
+
+### How to contribute to easystab/easyPYstab
+
+The totolboxes easystab and easyPYstab are developed as collaborative open-source projects. If you have improved a program and wish to share it, you are welcome ! the collection of programs is handled under the form of a wiki, so after creating an account you can easily edit, discuss, and create new programs.
 
 
 ## Personal work
@@ -86,15 +98,18 @@ The programs will be used and modified during the lectures, so it is advised tha
 ### Material for the lecture :
 
 
-- Lecture notes for lectures 1 and 2 : [DynamicalSystems.md](http://basilisk.fr/sandbox/easystab/LectureNotes_DynamicalSystems.md)
+- Lecture notes for lectures 1 and 2 : [DynamicalSystems.md](/sandbox/easystab/LectureNotes_DynamicalSystems.md)
 
-- Complements on linear systems [LinearSystems.md](http://basilisk.fr/sandbox/easystab/LinearSystems.md)
+- Complements on linear systems [LinearSystems.md](/sandbox/easystab/LinearSystems.md)
 
-- Commented programs [(PhasePortrait_Linear.m](/sandbox/easystab/PhasePortrait_Linear.m) and [PhasePortrait_NonLinear.m](/sandbox/easystab/PhasePortrait_NonLinear.m).
+- (**New**) Python programs [(PhasePortrait_Linear.py](/sandbox/easystab/easyPYstab/PhasePortrait_Linear.py) and [PhasePortrait_NonLinear.py](/sandbox/easystab/easyPYstab/PhasePortrait.py).
+
+
+- Matlab/Octave programs [(PhasePortrait_Linear.m](/sandbox/easystab/PhasePortrait_Linear.m) and [PhasePortrait_NonLinear.m](/sandbox/easystab/PhasePortrait_NonLinear.m).
 
 ### Personal work : 
 
-[Exercices for lecture 1](http://basilisk.fr/sandbox/easystab/LectureNotes_DynamicalSystems.md#exercices-for-lecture-1)
+[Exercices for lecture 1](/sandbox/easystab/LectureNotes_DynamicalSystems.md#exercices-for-lecture-1)
 
 
 
@@ -106,14 +121,18 @@ The programs will be used and modified during the lectures, so it is advised tha
 
 ### Material for the lecture :
 
-- Lecture notes for lectures 1 and 2 : [DynamicalSystems.md](http://basilisk.fr/sandbox/easystab/LectureNotes_DynamicalSystems.md)
+- Lecture notes for lectures 1 and 2 : [DynamicalSystems.md](/sandbox/easystab/LectureNotes_DynamicalSystems.md)
 
-- Commented programs [/sandbox/easystab/PhasePortrait_Linear.m]() and  [/sandbox/easystab/PhasePortrait_NonLinear.m]()
+- (**New**) Python programs [(PhasePortrait_Linear.py](/sandbox/easystab/easyPYstab/PhasePortrait_Linear.py) and [PhasePortrait_NonLinear.py](/sandbox/easystab/easyPYstab/PhasePortrait.py).
+
+
+
+- Matlab/Octave programs [/sandbox/easystab/PhasePortrait_Linear.m]() and  [/sandbox/easystab/PhasePortrait_NonLinear.m]()
 
 ### Personal work :
 
 
-[Exercices on lecture 2](http://basilisk.fr/sandbox/easystab/LectureNotes_DynamicalSystems.md#exercices-for-lecture-2)
+[Exercices on lecture 2](/sandbox/easystab/LectureNotes_DynamicalSystems.md#exercices-for-lecture-2)
 
 ### Going further:
 - Charru, chapter 11
@@ -129,7 +148,9 @@ The programs will be used and modified during the lectures, so it is advised tha
 
 ### Material for the lecture:
 
-Lecture notes [NumericalMethodsForEigenvalueProblems.md](http://basilisk.fr/sandbox/easystab/NumericalMethodsForEigenvalueProblems.md)
+**New** Python program [Demo_EigenvalueProblem_Diffusion1D.py](https://basilisk.fr/sandbox/easystab/easyPYstab/Demo_EigenvalueProblem_Diffusion1D.py)
+
+Lecture notes [NumericalMethodsForEigenvalueProblems.md](/sandbox/easystab/NumericalMethodsForEigenvalueProblems.md)
 
 Example program for a simple linear problem [/sandbox/easystab/diffusion_eigenmodes.m]()
 
@@ -143,9 +164,9 @@ Another example problem for a model equation displaying instabilities and nonlin
 
 ### Personal work:
 
-[Exercices for lecture 3](http://basilisk.fr/sandbox/easystab/NumericalMethodsForEigenvalueProblems.md#exercices-for-lecture-3)
+[Exercices for lecture 3](/sandbox/easystab/NumericalMethodsForEigenvalueProblems.md#exercices-for-lecture-3)
 
-[Additional Exercices for lectures 1-2-3](http://basilisk.fr/sandbox/easystab/david/LinearSystems.md#exercices)
+[Additional Exercices for lectures 1-2-3](/sandbox/easystab/david/LinearSystems.md#exercices)
 
 
 ## **Lecture 4**  Gravity-capillary waves and Rayleigh-Taylor instabilities 
@@ -211,7 +232,7 @@ $$
 
 ### Material for the course:
 
--  (**NEW**) [Lecture notes on Rayleigh-Taylor instability](http://basilisk.fr/sandbox/easystab/LectureNotes_RayleighTaylor.md)
+-  (**NEW**) [Lecture notes on Rayleigh-Taylor instability](/sandbox/easystab/LectureNotes_RayleighTaylor.md)
 
 - Commented program [/sandbox/easystab/RayleighBenard.m]() performing the resolution of the linear eigenvalue problem for convection in a horizontal cell.
 
@@ -222,7 +243,7 @@ $$
 
 ### Personal work:
 
-[Exercices for lecture 5](http://basilisk.fr/sandbox/easystab/LectureNotes_RayleighTaylor.md#exercices-for-lecture-5)
+[Exercices for lecture 5](/sandbox/easystab/LectureNotes_RayleighTaylor.md#exercices-for-lecture-5)
 
 
 ## **Lecture 6** Shear flow instabilities I  (inviscid instabilities)
@@ -269,7 +290,7 @@ Charru, sections 5.2 and 5.3.
 
 * Viscous stability analysis of the plane Poiseuille flow
 
->  Commented program [Poiseuille_temporal_viscous.m](http://basilisk.fr/sandbox/easystab/Poiseuille_temporal_viscous.m) for computing a spectrum and plotting the eigenmodes.
+>  Commented program [Poiseuille_temporal_viscous.m](/sandbox/easystab/Poiseuille_temporal_viscous.m) for computing a spectrum and plotting the eigenmodes.
 
 >  Program [TS_PlanePoiseuille.m](/sandbox/easystab/david/TS_PlanePoiseuille.m) for parametric study.
 
@@ -329,7 +350,7 @@ Charru, Chapter 3.
 
 ### Material for the lecture:
 
-* Lecture notes [LectureNotes_Global.md](http://basilisk.fr/sandbox/easystab/LectureNotes_Global)
+* Lecture notes [LectureNotes_Global.md](/sandbox/easystab/LectureNotes_Global)
 
 
 * This final lecture is based on a paper available [here:](https://gitlab.com/stabfem/stabfem_publications/-/blob/master/Fabre_etal_AMR_2018.pdf)
@@ -353,7 +374,7 @@ git clone https://gitlab.com/stabfem/StabFem
 # Tips for the exam
 
 
-- [january 2021 exam](http://basilisk.fr/sandbox/easystab/M2DET/Exam_M2RDET_Stabilite_janv2021_CORRECTION.pdf). The program which has been used to generate the results of exercice 1 is [here](http://basilisk.fr/sandbox/easystab/Poiseuille_temporal_viscous_compressible_adiabatic.m) 
+- [january 2021 exam](/sandbox/easystab/M2DET/Exam_M2RDET_Stabilite_janv2021_CORRECTION.pdf). The program which has been used to generate the results of exercice 1 is [here](/sandbox/easystab/Poiseuille_temporal_viscous_compressible_adiabatic.m) 
 
 - [february 2022 exam](https://gitlab.com/stabfem/UPS_L3ME_Fluides/-/blob/master/DIVERS/Exam_M2RDET_Stabilite_fev2022_correction.pdf)
 
@@ -363,10 +384,10 @@ git clone https://gitlab.com/stabfem/StabFem
 
 - A few other exam subjects from the past years are available here:
 
-[http://basilisk.fr/sandbox/easystab/M2DET/]()
+[https://basilisk.fr/sandbox/easystab/M2DET/]()
 
 
 - Corrections for a number of exercices are regrouped here:
 
-[http://basilisk.fr/sandbox/easystab/Correction_Exercices.md]()
+[https://basilisk.fr/sandbox/easystab/Correction_Exercices.md]()
 

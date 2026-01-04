@@ -49,7 +49,7 @@ Required for using hybrid level-set/embedded boundary method
 #define GHIGO 1
 #define NS_emerged 1
 
-#include "ghigo/src/myembed.h"
+#include "../../ghigo/src/myembed.h"
 #include "navier-stokes/centered.h"
 #include "tracer.h"
 #include "diffusion.h"
@@ -57,7 +57,8 @@ Required for using hybrid level-set/embedded boundary method
 #include "curvature.h"
 #include "view.h"
 // #define dtLS 1
-#include "alimare/LS_diffusion.h"
+#include "../LS_diffusion.h"
+#include "redistance.h"
 
 /**
 ## Miscalleneous functions for this test case
@@ -116,11 +117,15 @@ double energy_density(){
 Function to calculate the average height of the interface
 */
 
-double output_height (struct OutputFacets p){
-  scalar c = p.c;
-  face vector s = p.s;
-  if (!p.fp) p.fp = stdout;
-  if (!s.x.i) s.x.i = -1;
+//double output_height (struct OutputFacets p){
+  
+double output_height(scalar c, face vector s)
+{
+ // scalar c = p.c;
+ // face vector s = p.s;
+  
+ // if (!p.fp) p.fp = stdout;
+  //if (!s.x.i) s.x.i = -1;
   double hsum = 0.;
   double xsum = 0.;
   foreach(reduction(+:hsum))
@@ -142,7 +147,7 @@ double output_height (struct OutputFacets p){
       }
     }
   return hsum/xsum+ratio/2.;
-  fflush (p.fp);
+  //fflush (p.fp);
 }
 
 
@@ -231,8 +236,8 @@ event init (t = 0) {
 
   boundary ({dist});
   restriction({dist});
-  LS_reinit(dist);
-
+  //LS_reinit(dist);
+  redistance(dist);
   LS2fractions(dist,cs,fs);
 
   foreach_face(){
@@ -357,8 +362,8 @@ We create an event to output effective Rayleigh number, everge height of interfa
 
 
 event Calculation(i++){
-  double Rae = Ra*(1-T_eq)*pow(output_height(cs,stdout),3);
-  fprintf(stdout, "%g %g %g %g \n", t, Rae, energy_density(), output_height(cs,stdout));
+  double Rae = Ra*(1-T_eq)*pow(output_height(cs,fs),3);
+  fprintf(stdout, "%g %g %g %g \n", t, Rae, energy_density(), output_height(cs,fs));
   fprintf(stderr, "t = %g \n", t);
 }
 

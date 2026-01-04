@@ -7,19 +7,19 @@ The tsunami generation potential of pyroclastic density currents (PDCs) entering
 
 The setup is based on the experimental
 geometry of [Bougouin et al., 2020](#bougouin2020), where a laboratory
-fluidised granular flow runs down a ramp and into water. We assume the fluidized grains from the experiments of [Bougouin et al., 2020](#bougouin2020) to behave as a continuum. This takes the form of a dense, viscous and incompressible Newtonian fluid. The dense fluid and the water are assumed to be miscible with one another, but immiscible with air: they are separated from the air by a sharp interface. Surface tension is assumed to have negligible effect on interaction dynamics and wave propagation, due to the contrast of scales. Please see [fluidised_flow.c](http://basilisk.fr/sandbox/lbattershill/pdc_final/fluidised_flow.c) for details of implementation.
+fluidised granular flow runs down a ramp and into water. We assume the fluidized grains from the experiments of [Bougouin et al., 2020](#bougouin2020) to behave as a continuum. This takes the form of a dense, viscous and incompressible Newtonian fluid. The dense fluid and the water are assumed to be miscible with one another, but immiscible with air: they are separated from the air by a sharp interface. Surface tension is assumed to have negligible effect on interaction dynamics and wave propagation, due to the contrast of scales. Please see [fluidised_flow.c](/sandbox/lbattershill/pdc_final/fluidised_flow.c) for details of implementation.
 
-We update [conserving.h](http://basilisk.fr/src/navier-stokes/conserving.h) (see  [myconserving.h](http://basilisk.fr/sandbox/lbattershill/pdc_final/myconserving.h)) to implement momentum-conserving VOF advection of the velocity components for the two-phase Navier–Stokes solver, with the addition of a density tracer on one side of the interface. This provides an alternative to a more classic "three phase" approach, where the phases are seperated by interfaces. 
+We update [conserving.h](/src/navier-stokes/conserving.h) (see  [myconserving.h](/sandbox/lbattershill/pdc_final/myconserving.h)) to implement momentum-conserving VOF advection of the velocity components for the two-phase Navier–Stokes solver, with the addition of a density tracer on one side of the interface. This provides an alternative to a more classic "three phase" approach, where the phases are seperated by interfaces. 
 
 ## Multi-Layer model: pyroclastic density current generated tsunami
 The setup is dimensionless and based on the experimental
 geometry of [Bougouin et al., 2020](#bougouin2020), where a laboratory
 fluidised granular flow runs down a ramp and into water.
 We use assumptions from experimental literature to approximate the fluidized grains as a continuum, which takes the form of a dense, incompressible fluid. This assumption is confirmed to be adequate in the context of wave generation, by the numerical work of [Battershill et al.,
-2021](#battershill2021). This [non-hydrostatic multi-layer numerical model](http://basilisk.fr/src/layered/nh.h) assumes the dense fluid and the water to be miscible with one another. We consider only small variations in density between the granular-flow and the water, and we therefore justify the [Boussinesq buoyancy approximation](http://basilisk.fr/src/layered/dr.h).
+2021](#battershill2021). This [non-hydrostatic multi-layer numerical model](/src/layered/nh.h) assumes the dense fluid and the water to be miscible with one another. We consider only small variations in density between the granular-flow and the water, and we therefore justify the [Boussinesq buoyancy approximation](/src/layered/dr.h).
 
-* [Layered density version](http://basilisk.fr/sandbox/lbattershill/multilayer-slide/slide_layered.c) We simulate a dense layer at base of flow, overlayed by a lighter layer. Note: the reference to density layering is different from the vertical disretisation of the multilayer scheme.
-* [Single density version](http://basilisk.fr/sandbox/lbattershill/multilayer-slide/slide.c) We simulate a dense flow (of a single density) propogating into water.
+* [Layered density version](/sandbox/lbattershill/multilayer-slide/slide_layered.c) We simulate a dense layer at base of flow, overlayed by a lighter layer. Note: the reference to density layering is different from the vertical disretisation of the multilayer scheme.
+* [Single density version](/sandbox/lbattershill/multilayer-slide/slide.c) We simulate a dense flow (of a single density) propogating into water.
 
 /**
 ## References

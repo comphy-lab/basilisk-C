@@ -1,0 +1,19 @@
+I am Rui Yang, a Postdoc at Princeton Universty advised by Profs. Luc Deike
+
+/**
+
+# My Sandbox
+
+Here is a summary of [ongoing projects](/sandbox/ryang/)
+
+# Multilayer with variable density
+
+[multilayer_varydensity/bar.c](): a modified version of [/test/bar.c](/src/test/bar.c) with constant density.
+
+[multilayer_varydensity/horn_Boussinesq.c](): a modified version of [/test/horn.c](/src/test/horn.c), with the density affecting only the buoyancy term.
+
+[multilayer_varydensity/horn_fulleq.c](): a modified version of [/test/horn.c](/src/test/horn.c), with the density affecting the full equation.
+
+[multilayer_varydensity/flat.c](): a modified version of [/test/horn.c](/src/test/horn.c) without tilt.
+
+[multilayer_varydensity/dispersion.c](): a modified version of [/test/dispersion.c](/src/test/dispersion.c) without tilt.

@@ -9,7 +9,7 @@
 
 ## Equations
  
-Here we do not use Navier Stokes like in [houle.c](http://basilisk.fr/sandbox/M1EMN/Exemples/houle.c), but instead we solve the Laplacian.
+Here we do not use Navier Stokes like in [houle.c](/sandbox/M1EMN/Exemples/houle.c), but instead we solve the Laplacian.
 
 
 
@@ -258,7 +258,7 @@ AA & PYL Paris 02/16
  
 # Links
 
-  * [houle.c](http://basilisk.fr/sandbox/M1EMN/Exemples/houle.c)
+  * [houle.c](/sandbox/M1EMN/Exemples/houle.c)
  
  
 # Bibliography

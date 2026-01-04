@@ -1,12 +1,12 @@
 /**
 #Higher-order advection - Comparing RK2 vs RK4 vs SSP-RK3 time-marching.
 
-This test case is an extension of the [Periodic-Tracer-Advection](http://basilisk.fr/sandbox/rajarshi/THESIS_CODES/Advection-Test-Cases/1D-Advection-Periodic-Function/Test_Case-Advection1DPeriodic-bcg_O5_weno-ver-bcg.c) test-case, where we have kept the advection scheme as the O5 scheme, and use different time marching schemes to observe their effects on the error-norms. We have implemented the classical RK2,RK4 and a strong-stability-preserving RK3 scheme in Basilisk, and will observe from
+This test case is an extension of the [Periodic-Tracer-Advection](/sandbox/rajarshi/THESIS_CODES/Advection-Test-Cases/1D-Advection-Periodic-Function/Test_Case-Advection1DPeriodic-bcg_O5_weno-ver-bcg.c) test-case, where we have kept the advection scheme as the O5 scheme, and use different time marching schemes to observe their effects on the error-norms. We have implemented the classical RK2,RK4 and a strong-stability-preserving RK3 scheme in Basilisk, and will observe from
 the error-norm plots as to where the error is dictated by the advection scheme discretizations and in which cases is it dictated by the temporal scheme discretizations.
 
 The simulations have been run from a CFL number of 0.82 (equivalent time-step = 0.016) to 0.05 (equivalent time-step = 0.001). The equivalent time-steps have been plotted
 on the graph as data-point-labels. From the graph, it becomes clear that the RK4 scheme shows a saturated error-value accruing from the temporal scheme even for high-CFL numbers, which require a shorter computation time, and hence we naturally choose RK4 schemes to be used along with WENO schemes (continuous tracer-fields), but we will
-use SSP-RK3 scheme for tracer-fields with discontinuities as done in the test case on [Discontinuous-Tracer-Advection](http://basilisk.fr/sandbox/rajarshi/THESIS_CODES/Advection-Test-Cases/1D-Advection-Discontinuous-Tracers/discontinuousadvection1D-NoLimiter.c).  
+use SSP-RK3 scheme for tracer-fields with discontinuities as done in the test case on [Discontinuous-Tracer-Advection](/sandbox/rajarshi/THESIS_CODES/Advection-Test-Cases/1D-Advection-Discontinuous-Tracers/discontinuousadvection1D-NoLimiter.c).  
 */
 
 #define dimension 1

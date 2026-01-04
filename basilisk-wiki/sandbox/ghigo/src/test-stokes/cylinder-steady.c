@@ -6,7 +6,7 @@ same speed. The presence of the embedded boundary should not create
 any disturbance in the flow.
 
 A similar test case we used in Gerris:
-[hexagon](http://gerris.dalembert.upmc.fr/gerris/tests/tests/hexagon.html).
+[hexagon](https://gerris.dalembert.upmc.fr/gerris/tests/tests/hexagon.html).
 
 We solve here the Stokes equations and add the cylinder using an
 [embedded boundary](/src/embed.h). */

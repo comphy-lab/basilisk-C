@@ -1,13 +1,13 @@
 /**
 # blood flow in curved pipe
 
-Idea from Antoonvh [tube](http://basilisk.fr/sandbox/Antoonvh/tube.c)
+Idea from Antoonvh [tube](/sandbox/Antoonvh/tube.c)
 
 Some exemples of the functions used in this code.
 [RRC](biomeca/2dworrc.c) \&
 [Womersley](biomeca/2dwoflow.c) 
 
-We want to test if the new "[embed](http://basilisk.fr/src/embed.h)" function can better treat with the non-slip wall conditions (and the sharp velocity/pressure differences at the inlet outlet surface).
+We want to test if the new "[embed](/src/embed.h)" function can better treat with the non-slip wall conditions (and the sharp velocity/pressure differences at the inlet outlet surface).
 
 We want to simulate the blood circulation in a torus shape pipe (a simplified model for the aortic arche) with major radius $R_t$ and minor radius $r_t$. 
 

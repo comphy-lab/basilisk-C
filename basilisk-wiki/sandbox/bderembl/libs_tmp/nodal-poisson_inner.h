@@ -3,7 +3,7 @@
 
 
 code adapted from 
-http://basilisk.fr/sandbox/Antoonvh/nodal-poisson.h
+https://basilisk.fr/sandbox/Antoonvh/nodal-poisson.h
 
 Special attention is required for dealing with resolution boundaries
 where vertices are shared and the restriciton of the residual.

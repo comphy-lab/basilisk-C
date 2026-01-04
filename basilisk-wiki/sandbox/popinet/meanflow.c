@@ -27,7 +27,7 @@ int main()
   L0 = 1 [0];
   origin (-0.5, -0.5);
   N = 64;
-  // this is the diffusive timestep limit (with diffusion coeff unity)
+  /* this is the diffusive timestep limit (with diffusion coeff unity) */
   DT = sq(L0/N)/2.;
   run();
 }

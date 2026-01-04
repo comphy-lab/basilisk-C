@@ -148,6 +148,6 @@ event end (t = 10.)
 
 ## See also
 
-* [Similar test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/sessile.html)
-* [Similar test with incompressible solver](http://basilisk.fr/src/test/sessile.c)
+* [Similar test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/sessile.html)
+* [Similar test with incompressible solver](/src/test/sessile.c)
 */

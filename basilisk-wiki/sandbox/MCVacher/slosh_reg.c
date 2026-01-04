@@ -1,5 +1,5 @@
 /**
-##Self-Induced Sloshing by a Jet
+# Self-Induced Sloshing by a Jet
 
 It is an adaptation from a similar experiment to 'Mechanism of jet-flutter : Self-Induced Oscillation of an Upward Plane Jet Impinging on a Free-Surface', *Madarame et al.*, 1998. Viscosity is 100 times higher than for water, showing that the Re has little influence on the instability threshold ($Fr \approx 0.6$). Grid is regular.
 
@@ -9,13 +9,18 @@ The code has dimensions as it is right now.
 #include "grid/multigrid.h"
 #include "navier-stokes/centered.h"
 #include "two-phase.h" 
+#include "tension.h"
 #include "navier-stokes/conserving.h"
-#include "vtknew.h" //paraview visualisation (from Fulster's sandbox)
 #include "tracer.h"
+#include "tag.h"
+#include "harmonic.h"
 
 double h;
 double U0;
 double R_d;
+double grav;
+
+double omegas[3]; //to use harmonic.h
 
 /**
 A passive tracer is injected with the jet to follow lagrangian paths.
@@ -23,6 +28,8 @@ A passive tracer is injected with the jet to follow lagrangian paths.
 
 scalar s[];
 scalar * tracers = {s};
+
+FILE * fpmax; //
 
 int main() {
 
@@ -33,7 +40,8 @@ int main() {
   mu1 = 0.1;
   mu2 = 0.01*mu1;
   U0=0.6;
-  h=0.15;
+  h=0.1;
+  grav=9.81;
 
   TOLERANCE = 1e-3 [*];
 
@@ -49,9 +57,13 @@ int main() {
   u.t[left] = y < R_d ? neumann(0.) : dirichlet(0.);
   u.t[right] = y < R_d ? neumann(0.) : dirichlet(0.);
  
-  N=64;
-  origin (-L0/2, 0); //set the origin
+  N=256;
+  origin (-L0/2, 0);
   init_grid(N);
+  
+  fpmax =  fopen("log.dat", "w");
+  
+  f.sigma = 0.072;
 
   run();
 }
@@ -62,13 +74,39 @@ We initiate gravity, which is opposing to the inertia of the jet.
 
 event init (t = 0) {
   fraction (f, y<h);
-  const face vector G[] = {0,-9.81};
-  a=G;
+  
+  double fs1 = sqrt(1.0*grav/(4.0*M_PI*L0) * tanh(M_PI*h/L0));
+  double fs3 = sqrt(3.0*grav/(4.0*M_PI*L0) * tanh(3.0*M_PI*h/L0));
+  double fj1 = 1/(2*M_PI)*sqrt(grav/h);
+  omegas[0] = 2.0*M_PI*fs1;
+  omegas[1] = 2.0*M_PI*fs3;
+  omegas[2] = 2.0*M_PI*fj1;
+  omegas[3] = 0.0;
 }
+
+#if 1
+event acceleration (i++) {
+  face vector av = a;
+  foreach_face(y)
+    av.y[] = -9.81;
+}
+#endif
 
 event logfile (i++) {
   fprintf (stderr, "%d %g \n", i, t);
   fprintf (fpmax, "%d %g \n", i, t);
+}
+
+/**
+We kill eventual numerical bubbles (not real bubbles because there is no surface tension here.
+*/
+
+event remove_droplets (i++) {
+  remove_droplets (f, threshold=0.05, bubbles=true);
+}
+
+event harmonic_analysis (t += 0.05; t <= 70) {
+  harmonic_decomposition(u.y, t, omegas);
 }
 
 event profile (t = end) {
@@ -76,55 +114,66 @@ event profile (t = end) {
 }
 
 /**
-We save interfaces and all the vector fields in .txt files (I process data with *python* after for now, but some embedded Basilisk direct post-treatments will be added later on).
+We save interfaces for complex orthogonal decomposition (to find the solshing modes). We can also track at each height $y$ the maximum of $|\underline{u}|$ and have the "position" of the jet through time, and apply the same post-treatment. A version with harmonics.h should be uploaded soon...
 */
 
-int ivtk = 1;
-event res_save (t += 0.01; t <= 100) 
-  scalar omega[];
-  vorticity (u, omega);
-
+int isave1 = 1;
+event res_save (t += 0.05; t <= 70) {
   char name[80];
   
-  sprintf (name, "interface-%d.txt", ivtk);
+  sprintf (name, "interface-%d.txt", isave1);
   FILE * fpfacet = fopen(name, "w");
   output_facets (f, fpfacet);
   fclose(fpfacet);
-
-  sprintf (name, "res-%d.txt", ivtk);
-  FILE * fpres = fopen(name, "w");
-  foreach()
-    fprintf (fpres, "%g %g %g %g %g %g %g %g\n", x, y, u.x[], u.y[], p[], f[],s[],omega[]);
-  fclose(fpfacet);
-
-  ivtk++;
+  
+  isave1++;
 }
 
 /**
-.vtk snapshots are generated 10 times per seconds to visualize the velocities in real time. 
+To visualize both the surface and the jet, we can follow lagrangian trajectories using a passive tracer. We generate videos:
 */
-
-int ivtk2 = 1;
-event movies (t += 0.1; t <= 100) 
-{
-  scalar omega[];
-  vorticity (u, omega);
-
+event ppm_output (t = 0; t += 0.05; t <= 70) {
   char name[80];
-  sprintf (name, "snapshot-%d.vtk", ivtk2);
-  FILE * fpvtk = fopen(name, "w");
-  output_vtk ({omega,u.x,u.y,p,f,s}, fpvtk);
-  fclose(fpvtk);
+  sprintf (name, "f.mp4");
+  output_ppm (f, file = name, n = 512, min = 0, max = 1, linear = true);
+  
+  char name1[80];
+  sprintf (name1, "uY.mp4");
+  output_ppm (u.y, file = name1, n = 512, min = -U0, max = +U0, linear = true);
 
-  ivtk2++;
+  // optionally tracer
+  char name2[80];
+  sprintf (name2, "s.mp4");
+  output_ppm (s, file = name2, n = 512, min = 0., max = U0, linear = true);
+  
+   // amplitude for mode 1 sloshing (omegas[0])
+  scalar amp_mode_1[];
+  int k1 = 0;
+  foreach()
+    amp_mode_1[] = sqrt(sq(val(u.y.harmonic.A[k1])) + sq(val(u.y.harmonic.B[k1])));
+  boundary ({amp_mode_1});
+  char name_u_1[80];
+  sprintf(name_u_1, "u_y_1.mp4");
+  output_ppm(amp_mode_1, file = name_u_1, n = 512, min = -0.1, max = 0.1, linear = true);
+
+  // amplitude for jet mode (omegas[1])
+  scalar amp_mode_jet[];
+  int k3 = 2;
+  foreach()
+    amp_mode_jet[] = sqrt(sq(val(u.y.harmonic.A[k3])) + sq(val(u.y.harmonic.B[k3])));
+  boundary ({amp_mode_jet});
+  char name_u_3[80];
+  sprintf(name_u_3, "u_y_jet.mp4");
+  output_ppm(amp_mode_jet, file = name_u_3, n = 512, min = -0.1, max = 0.1, linear = true);
 }
 
 /**
-#Video : Passive tracer
-
-[Click me](https://drive.google.com/file/d/1RvgZekWZUlp5pdYI7DVEN7V2ZgJgbOpr/view?usp=drive_link)
-
-<!--[![try](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DcfL_EcfYiFM)](https://www.youtube.com/watch?v=cfL_EcfYiFM)-->
-
+![Free-surface](slosh_reg/f.mp4)
+![Passive tracer](slosh_reg/s.mp4)
+![Vertical velocity](slosh_reg/uY.mp4)
+![Projection of vertical velocity on sloshing freq. - mode n°1](slosh_reg/u_y_1.mp4)
+![Projection of vertical velocity on jet freq.](slosh_reg/u_y_jet.mp4)
 */
+
+
 

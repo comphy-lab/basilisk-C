@@ -1,11 +1,8 @@
 /**
 # Flow past a cylinder in 3D
 
-<center> <video controls> <source
-src="https://surfdrive.surf.nl/files/index.php/s/N79po3rbsweYyxi/download"
-type="video/mp4"> <caption><p align="center">Via Surfdrive</caption>
-</video></center>
- 
+![](https://antoonvanhooft.nl/media/mov20003D.mp4)
+
  */
 #include "grid/octree.h"
 #include "embed.h"

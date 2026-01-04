@@ -10,17 +10,17 @@ Other interests include problems in compressible gases and continuum plasma mode
 ### Some problems
 *[A shoaling and breaking solitary wave](shallow.c)
 
-*[A shoaling and breaking solitary wave in the presence of wind](windshoaling.c) (due especially to hard work by Kentaro Hanson - see also [Falk Feddersen's sandbox](http://basilisk.fr/sandbox/ffeddersen/) )
+*[A shoaling and breaking solitary wave in the presence of wind](windshoaling.c) (due especially to hard work by Kentaro Hanson - see also [Falk Feddersen's sandbox](/sandbox/ffeddersen/) )
 
 *[Deformation of a bubble in a turbulent environment](turbulent_bubble.c)
 
-*[Breaking Stokes wave](http://basilisk.fr/sandbox/popinet/wave.c) (from [Stephane Popinet's sandbox](http://basilisk.fr/sandbox/popinet))
+*[Breaking Stokes wave](/sandbox/popinet/wave.c) (from [Stephane Popinet's sandbox](/sandbox/popinet))
 
-*[Droplet bag-breakup in a cross-flow](http://basilisk.fr/sandbox/kaitaotang/dw14l11.c) (from [Kaitao Tang's sandbox](http://basilisk.fr/sandbox/kaitaotang) and, crucially, using the manifold death algorithm from [Leonardo Chirco's sandbox](http://basilisk.fr/sandbox/lchirco/))
+*[Droplet bag-breakup in a cross-flow](/sandbox/kaitaotang/dw14l11.c) (from [Kaitao Tang's sandbox](/sandbox/kaitaotang) and, crucially, using the manifold death algorithm from [Leonardo Chirco's sandbox](/sandbox/lchirco/))
 
-*[Transverse collision of two liquid rims](http://basilisk.fr/sandbox/kaitaotang/docoll3d.c) (from [Kaitao Tang's sandbox](http://basilisk.fr/sandbox/kaitaotang))
+*[Transverse collision of two liquid rims](/sandbox/kaitaotang/docoll3d.c) (from [Kaitao Tang's sandbox](/sandbox/kaitaotang))
 
-*[Richtmyer-Meshkov instability of an interface with surface tension](http://basilisk.fr/sandbox/kaitaotang/rmst.c) (from [Kaitao Tang's sandbox](http://basilisk.fr/sandbox/kaitaotang))
+*[Richtmyer-Meshkov instability of an interface with surface tension](/sandbox/kaitaotang/rmst.c) (from [Kaitao Tang's sandbox](/sandbox/kaitaotang))
 
 ### Published work using Basilisk
 ~~~bib

@@ -14,17 +14,34 @@ a few cells across the interface, without covering the whole
 domain.
 */
 
+#ifndef ASLAM_H
+#define ASLAM_H
+
 #include "mapregion.h"
 #include "redistance.h"
+#include "fractions.h"
 
-void vof_to_ls (scalar f, scalar levelset, int imax = 3) {
+void vof_to_ls (scalar f, scalar ls, int imax = 3) {
+#if 0
+  double weight = 0.1;
+  foreach()
+    if (f[] > 1e-6 && f[] < 1. - 1e-6) {
+      coord n = interface_normal (point, f);
+      normalize (&n);
+      double alpha = plane_alpha (f[], n);
+      ls[] = (1. - weight)*ls[] + weight*Delta*alpha;
+      ls[] *= -1;
+    }
+
+  redistance (ls, imax = imax);
+#endif
   double deltamin = L0/(1 << grid->maxdepth);
   foreach()
-    levelset[] = -(2.*f[] - 1.)*deltamin*0.75;
+    ls[] = -(2.*f[] - 1.)*deltamin*0.75;
 #if TREE
-  restriction({levelset});
+  restriction({ls});
 #endif
-  redistance (levelset, imax);
+  redistance (ls, imax);
 }
 
 /**
@@ -63,7 +80,9 @@ void constant_extrapolation (
   (const) scalar s = {-1},    // source term, default zero
   (const) scalar c = {-1},    // vof field, optional
   int nl = 0,                 // from which layer of cells (optional, min=0, max=2)
-  int nointerface = 0         // remove the interface from the heaviside (default false)
+  int nointerface = 0,        // remove the interface from the heaviside (default false)
+  int inverse = 0,            // the vof field if = 1 if gas (default false)
+  double tol = 1e-10          // tolerance which defines the interface
 )
 {
   scalar H[];
@@ -89,10 +108,14 @@ void constant_extrapolation (
   it can be set to 1 or 2. */
 
   if (c.i > 0)
-    mapregion (H, c, nl=nl, nointerface=nointerface);
+    mapregion (H, c, nl=nl, nointerface=nointerface, inverse=inverse,
+        tol=tol);
   else
     foreach()
-      H[] = (ls[] <= 0.) ? 0. : 1.;
+      if (inverse)
+        H[] = (-ls[] <= 0.) ? 0. : 1.;
+      else
+        H[] = (ls[] <= 0.) ? 0. : 1.;
 
   foreach() {
     double maggf = 0.;
@@ -100,7 +123,7 @@ void constant_extrapolation (
       maggf += sq (n.x[]);
     maggf = sqrt (maggf);
     foreach_dimension()
-      n.x[] /= (maggf + 1.e-10);
+      n.x[] /= inverse ? -(maggf + 1.e-10) : (maggf + 1.e-10);
   }
 
   /**
@@ -178,7 +201,9 @@ void linear_extrapolation (
   (const) scalar s = {-1},    // source term, default zero
   (const) scalar c = {-1},    // vof field, optional
   int nl = 0,                 // from which layer of cells (optional, min=0, max=2)
-  int nointerface = 0         // remove the interface from the heaviside (default false)
+  int nointerface = 0,        // remove the interface from the heaviside (default false)
+  int inverse = 0,            // the vof field if = 1 if gas (default false)
+  double tol = 1e-10          // tolerance which defines the interface
 )
 {
   scalar H[], fn[];
@@ -206,10 +231,13 @@ void linear_extrapolation (
 
   if (c.i > 0)
     mapregion (H, c, nl = (nl == 0.) ? 1. : min (nl+1, 2),
-        nointerface=nointerface);
+        nointerface=nointerface, inverse=inverse, tol=tol);
   else
     foreach()
-      H[] = (ls[]+Delta <= 0.) ? 0. : 1.;
+      if (inverse)
+        H[] = (ls[]+Delta <= 0.) ? 0. : 1.;
+      else
+        H[] = (-ls[]+Delta <= 0.) ? 0. : 1.;
 
   foreach() {
     double maggf = 0.;
@@ -217,7 +245,7 @@ void linear_extrapolation (
       maggf += sq (n.x[]);
     maggf = sqrt (maggf);
     foreach_dimension()
-      n.x[] /= (maggf + 1.e-10);
+      n.x[] /= inverse ? -(maggf + 1.e-10) : (maggf + 1.e-10);
   }
 
   /**
@@ -261,10 +289,12 @@ void linear_extrapolation (
   the directional derivative. */
 
   if (c.i > 0)
-    constant_extrapolation (f, ls, cfl, nmax, fn, c, nl, nointerface);
+    constant_extrapolation (f, ls, cfl, nmax, fn, c, nl, nointerface, tol=tol);
   else
-    constant_extrapolation (f, ls, cfl, nmax, fn);
+    constant_extrapolation (f, ls, cfl, nmax, fn, tol=tol);
 }
+
+#endif
 
 /**
 ## References

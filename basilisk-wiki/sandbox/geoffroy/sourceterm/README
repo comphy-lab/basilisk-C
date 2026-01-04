@@ -31,8 +31,8 @@ momentum source).
 ## Note
 
 These source terms are especially designed to be used with the
-[predictor-corrector-source.h](http://basilisk.fr/sandbox/geoffroy/dev/predictor-corrector-source.h)
+[predictor-corrector-source.h](/sandbox/geoffroy/dev/predictor-corrector-source.h)
 You can use it by downloading it and replacing it in "saint-venant.h"
 
-[Return to home page](http://basilisk.fr/sandbox/geoffroy/README)
+[Return to home page](/sandbox/geoffroy/README)
 */

@@ -13,7 +13,7 @@ the equation  without dimension is :
 $$ \frac{d}{dx}(Z^{5/2})= Z $$
 we solve it with a relaxation as:
 $$ \frac{\partial}{\partial x}Z  + \frac{\partial}{\partial x}(Z^{5/2})= Z $$
-the method is similar to  [http://basilisk.fr/sandbox/M1EMN/BASIC/advecte1.c]() which explains the notions of advection, testing the flux, coded with Basilisk (see the end, maybe $\frac{\partial}{\partial x}Z^2 $ is better).
+the method is similar to  [https://basilisk.fr/sandbox/M1EMN/BASIC/advecte1.c]() which explains the notions of advection, testing the flux, coded with Basilisk (see the end, maybe $\frac{\partial}{\partial x}Z^2 $ is better).
 
 Starting by a slope and a flat bottom, we wil compute evolution to the steady power law 
 ~~~gnuplot 

@@ -1,7 +1,7 @@
 /**
 # An axi-symmetric Womersley flow in a tube 
 
-It is almost identical to the code [2dwoflow.c](http://basilisk.fr/sandbox/yonghui/biomeca/2dwoflow.c).
+It is almost identical to the code [2dwoflow.c](/sandbox/yonghui/biomeca/2dwoflow.c).
 Here, we study the effects of womersley numbers and compare the results with theoretical results. Mesh adaptation is used by default.
 */
 

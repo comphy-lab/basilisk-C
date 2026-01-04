@@ -3,7 +3,7 @@
 
 ## Description
 
-It has been shown in this ["naive" test case](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/vel_tan_no_correction.c) 
+It has been shown in this ["naive" test case](/sandbox/cailler/test-cases/vel_tan/vel_tan_no_correction.c) 
 that a straight gas-liquid interface placed in a tangent flow 
 and crossing left and bottom borders of the simulation box 
 does not behave as intended when surface tension is taken into account 
@@ -20,12 +20,12 @@ described in the figure below:
 ![Initialization of the interface](img_vel_tan/vel_tan_no_correc_init.svg)
 
 Therefore, some modifications have been made to the initial code given 
-[here](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/vel_tan_no_correction.c) 
+[here](/sandbox/cailler/test-cases/vel_tan/vel_tan_no_correction.c) 
 to tackle *curvature computation* problems arising from contact angles 
 subjected to inflow/outflow:
 
   + automatic update of ghost cells volumic fractions via 
-    [f_BC_vel_tan.h](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/f_BC_vel_tan.h); 
+    [f_BC_vel_tan.h](/sandbox/cailler/test-cases/vel_tan/f_BC_vel_tan.h); 
   
   + introduction of an *auxiliary volume fraction field* `f0[]` 
     applied as a *Dirichlet* condition to the advected volume 
@@ -35,7 +35,7 @@ subjected to inflow/outflow:
   + correction of the normal at the interface at boundaries, 
     as symmetry conditions are imposed in the default `vof.h` file: 
     some tweaks in `vof.h` were needed to pass the proper BCs, 
-    see [vof_vel_tan.h](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/vof_vel_tan.h);
+    see [vof_vel_tan.h](/sandbox/cailler/test-cases/vel_tan/vof_vel_tan.h);
 
   + systematic reevaluation of `f[]` boundaries and height functions after 
     each `foreach()` procedure they are used in (it is extremely important for 
@@ -51,7 +51,7 @@ the one used in the *naive* code, otherwise one could think that nothing
 happens during the simulation 
 (and this is precisely our goal: *nothing should happen*.) 
 
-Contrary to the [*naive* test case](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/vel_tan_no_correction.c), 
+Contrary to the [*naive* test case](/sandbox/cailler/test-cases/vel_tan/vel_tan_no_correction.c), 
 Adaptive Mesh Refinement (AMR) does not produce capillary perturbations of 
 the interface which remains straight as expected.  
 
@@ -118,7 +118,7 @@ alpha_front[left] = plane_alpha (f[ghost], (coord){
 /** 
 These definitions are directly put in this user file for a better 
 visibility, but are actually managed in 
-[vof_vel_tan.h](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/vof_vel_tan.h). 
+[vof_vel_tan.h](/sandbox/cailler/test-cases/vel_tan/vof_vel_tan.h). 
 
 Then, we apply the auxiliary volume fraction field 
 to the advected one in ghost cells:
@@ -370,7 +370,7 @@ plt.savefig('vel_tan_correc_curv.svg')
 
 As we can see, the curvature computation has been nicely improved, 
 with a reduction by a factor of **25** compared to the 
-[*naive* test case](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/vel_tan_no_correction.c#curvature-evolution).
+[*naive* test case](/sandbox/cailler/test-cases/vel_tan/vel_tan_no_correction.c#curvature-evolution).
 That is to say a value of $2.10^{-2}$ instead of $5.10^{-1}$.
 */
 

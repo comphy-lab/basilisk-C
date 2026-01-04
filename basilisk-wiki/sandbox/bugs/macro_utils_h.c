@@ -1,6 +1,12 @@
 /**
 # Macros are incompatible with utils.h
 
+<div class="message">
+<div id="msg_logo"><img src="/img/warning.png"></div>
+This has nothing to do with macros. This is a conflict between the
+type `stats` declared in `utils.h` and the variable `stats` declared
+at line 73. Choosing a different name for this variable solves the problem.</div>
+
 Using `utils.h` or `run.h` with macros results in a compilation error. This behaviour is illustrated with the [kuramoto example](/src/test/kuramoto.c)
 
 ## Kuramoto--Sivashinsky equation

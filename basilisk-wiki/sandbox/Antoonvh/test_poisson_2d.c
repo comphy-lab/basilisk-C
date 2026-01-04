@@ -6,7 +6,7 @@ This page concerns the convergence of the Poisson solver for $f(x,y)$,
 $$\nabla^2 f = s.$$
 
 Since [sine-rich
-solutions](http://gerris.dalembert.upmc.fr/gerris/tests/tests/poisson.html) are
+solutions](https://gerris.dalembert.upmc.fr/gerris/tests/tests/poisson.html) are
 *not* suitable for testing, we design another test case where $s$ is
 a dipole,
 

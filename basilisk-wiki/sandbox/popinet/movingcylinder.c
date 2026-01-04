@@ -100,7 +100,7 @@ swimming of 3D bionic fish school},
   booktitle =  {Computational Mechanics, Proceedings of ISCM 2007},
   year =  {2007},
   pages =  {1-17},
-  url =  {http://gerris.dalembert.upmc.fr/Wu-Wang-2007-Comp_Mech.pdf},
+  url =  {https://gerris.dalembert.upmc.fr/Wu-Wang-2007-Comp_Mech.pdf},
 }
 
 @Article{Lin-Lin2016,

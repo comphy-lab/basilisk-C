@@ -1,0 +1,6 @@
+# Precursor
+
+This folder hosts the **precursor** configuration used to supply the DNS with turbulent wind.
+
+## Contents
+- [`precursor.c`](precursor.c) —

@@ -123,8 +123,8 @@ event information (t = 0; t <= MAXTIME; t=t+0.05) {
     if (f[] > 1.0e-4 && f[] < 1) {
       coord p;
       coord n = mycs (point, f); // n is a vector normal to the interface 
-      double alpha = plane_alpha (f[], n);// and alpha is the intercept (http://basilisk.fr/src/geometry.h).
-      double s = plane_area_center (n, alpha, &p);//s denotes the surface fractions i.e. the fractions of the faces of the cell which are inside the interface.(http://basilisk.fr/src/fractions.h#mycs)
+      double alpha = plane_alpha (f[], n);// and alpha is the intercept (/src/geometry.h).
+      double s = plane_area_center (n, alpha, &p);//s denotes the surface fractions i.e. the fractions of the faces of the cell which are inside the interface.(/src/fractions.h#mycs)
       double rad  = sqrt(sq(x + Delta*p.x-xb/sb) + sq(y + Delta*p.y-yb/sb) + sq(z + Delta*p.z)); 
       if (rad > rmax)
 		 rmax = rad;

@@ -117,7 +117,7 @@ event velocity(i++){
 
 ## Study the evolution of a tracer for a given abscisse or ordinate
 
-The function [interpolate()](http://basilisk.fr/src/grid/cartesian-common.h#598) allows to take the values for given coordinates.
+The function [interpolate()](/src/grid/cartesian-common.h#598) allows to take the values for given coordinates.
 
 ~~~ literatec
 event print (i+=10) {

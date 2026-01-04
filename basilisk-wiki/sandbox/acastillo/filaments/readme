@@ -1,0 +1,155 @@
+# Vortex Filament Simulations
+
+This module provides comprehensive tools and simulations for vortex filament
+dynamics using the Biot-Savart law and related frameworks. The implementation
+includes steady solutions, validation tests, and Navier-Stokes extensions for
+studying complex vortex phenomena.
+
+---
+
+## Slender Vortex Framework
+
+### `biot-savart.h`
+**Location:** [`biot-savart.h`](biot-savart.h)
+
+**Description:**
+Implementation of the vortex filament framework based on the Biot-Savart law for
+three-dimensional flows. Vortex filaments evolve according to:
+$$
+\begin{aligned}
+  \frac{\partial\vec{x}_c}{\partial t}\bigg\vert_\xi
+  +\frac{\partial\vec{x}_c}{\partial \xi}\bigg\vert_t
+  \frac{\text{d}\xi_0}{\text{d}t}
+  =
+  \vec{u}(\vec{x}_c,t) + \vec{u}^\infty
+\end{aligned}
+$$
+
+The induced velocity is computed using the Biot-Savart law:
+$$
+\begin{aligned}
+  \vec{u}_\text{BS}(\vec{x}) =
+  \frac{1}{2} \kappa \ln\left(\frac{s}{\delta a}\right) \vec{e}_b +
+  \frac{1}{2} \oint_{\mathcal{C}}^{'} \frac{(\vec{x}_c-\vec{x}) \times 
+  {\rm d}\vec{T}}{\lVert \vec{x}_c-\vec{x} \rVert^2}
+\end{aligned}
+$$
+Here, the first term is the local contribution from a curved-line element of
+length $s$ acting on itself, which is derived using the expression for a vortex
+ring, while the second term, the non-local contribution, is obtained by
+integrating along the rest of the filament. The parameter $\delta$ is a
+dimensionless constant that depends on the vorticity distribution within the
+vortex core, taken here as $\delta \approx 0.8736$.
+
+**Key Functions:**
+
+- **`local_induced_velocity_segment()`**: Computes local self-induced velocity
+  using the cutoff formula with arc of circle approximation for three
+  consecutive points
+- **`local_induced_velocity()`**: Evaluates the complete local auto-induced
+  velocity field for an entire filament
+- **`nonlocal_induced_velocity()`**: Computes velocity contributions from
+  distant filament segments using discretized Biot-Savart law
+- **`write_filament_state()`**: Outputs filament configuration and velocity
+  fields to file for analysis and visualization
+
+**Implementation Details:**
+
+- Frenet-Serret frame computation (tangent, normal, binormal vectors)
+- Curvature calculation using three-point arc approximation
+
+---
+
+## Steady Solutions using Biot-Savart Law
+
+### `steady_solutions_biot_savart/`
+**Location:** [`steady_solutions_biot_savart/`](steady_solutions_biot_savart/)
+
+**Description:**
+Contains simulations of quasi-steady vortex filament solutions using the
+Biot-Savart law. Focuses on vortex filaments in the shape of torus unknots,
+which can be viewed as vortex rings superimposed with Kelvin waves of different
+azimuthal wavenumbers and amplitudes.
+
+**Key Simulations:**
+
+- [**`helical_rings_p2.c`**](steady_solutions_biot_savart/helical_rings_p2.c): Torus unknot with fixed wavenumber $p=2$ and varying
+  amplitudes ($A = 0.1R, 0.2R, 0.3R$).
+- [**`helical_rings_A015.c`**](steady_solutions_biot_savart/helical_rings_A015.c): Multiple torus unknots with fixed amplitude $A =
+  0.15R$ and varying wavenumbers ($p = 2, 4, 8$)
+
+**Associated Data:**
+Each simulation includes filament initialization files (`.filament1.txt`,
+`.filament2.txt`, `.filament3.txt`) containing segment coordinates, core sizes,
+and geometric parameters.
+
+---
+
+## Biot-Savart Validation Tests
+
+### `tests_biot_savart/`
+**Location:** [`tests_biot_savart/`](tests_biot_savart/)
+
+**Description:**
+Comprehensive validation suite for the vortex filament framework using
+analytical solutions and known theoretical results. These tests verify the
+accuracy of the Biot-Savart implementation across different geometric
+configurations and discretizations.
+
+**Test Cases:**
+
+- [**`test_vortex_ring0.c`**](tests_biot_savart/test_vortex_ring0.c): Test convergence of numerical approach
+- [**`test_vortex_ring1.c`**](tests_biot_savart/test_vortex_ring1.c): Advection of a thin vortex ring
+- [**`test_2vortex_rings1.c`**](tests_biot_savart/test_2vortex_rings1.c): Two interacting vortex rings
+- [**`test_3vortex_rings1.c`**](tests_biot_savart/test_3vortex_rings1.c): Three interacting vortex rings
+- [**`test_vortex_ellipse1.c`**](tests_biot_savart/test_vortex_ellipse1.c): Elliptical vortex ring
+
+---
+
+# References
+
+~~~bib
+
+@article{duran2019, 
+  title={Generalized helical vortex pairs},
+  volume={865}, 
+  DOI={10.1017/jfm.2019.65}, 
+  journal={Journal of Fluid Mechanics},
+  author={Durán Venegas, E. and Le Dizès, S.}, 
+  year={2019}, 
+  pages={523–545}
+}
+
+@article{castillo2021,
+  title = {Closely spaced corotating helical vortices: General solutions},
+  author = {Castillo-Castellanos, A. and Le Diz\`es, S. and Dur\'an Venegas, E.},
+  journal = {Phys. Rev. Fluids},
+  volume = {6},
+  issue = {11},
+  pages = {114701},
+  numpages = {22},
+  year = {2021},
+  month = {Nov},
+  publisher = {American Physical Society},
+  doi = {10.1103/PhysRevFluids.6.114701},
+  url = {https://link.aps.org/doi/10.1103/PhysRevFluids.6.114701}
+}
+
+@article{castillo2022, 
+  title={Closely spaced co-rotating helical vortices: long-wave instability}, 
+  volume={946},
+  DOI={10.1017/jfm.2022.569}, 
+  journal={Journal of Fluid Mechanics},
+  author={Castillo-Castellanos, A. and Le Dizès, S.}, 
+  year={2022}, 
+  pages={A10}
+}
+
+@article{leishman2000,
+  title={Principles of helicopter aerodynamics, cambridge univ},
+  author={Leishman, J},
+  journal={Press, New},
+  year={2000}
+}
+
+~~~

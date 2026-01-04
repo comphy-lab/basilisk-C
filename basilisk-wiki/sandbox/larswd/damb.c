@@ -20,7 +20,7 @@ int main(){
 }
 
 /**
-Similar setup as the dam break example in [this dam break example](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c) 
+Similar setup as the dam break example in [this dam break example](/sandbox/M1EMN/Exemples/damb.c) 
 Flat bottom and initially fluid at rest. The leftmost 25 meters are subjet to a 
 greater layer thickness $h$. The initial $h$-field is given by
 

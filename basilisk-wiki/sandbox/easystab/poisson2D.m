@@ -3,7 +3,7 @@
 
 (We do this in 3D in [poisson3D.m]())
 
-Here we solve a Poisson problem in 2D to give an example of the differentiatino matrices and the boundary conditions in 2D. This is the same example as done in the [Poisson test case of gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/poisson.html).
+Here we solve a Poisson problem in 2D to give an example of the differentiatino matrices and the boundary conditions in 2D. This is the same example as done in the [Poisson test case of gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/poisson.html).
 %}
 
 clear all; clf

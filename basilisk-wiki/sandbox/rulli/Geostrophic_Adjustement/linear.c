@@ -19,7 +19,7 @@ plot "h0.dat" using 1:2 with lines title 'Initial surface height', \
 
 ### Boundary conditions
 
-In order to get the steady state as soon as possible, we avoid reflection on the right boundary by using an [open boundary condition](http://basilisk.fr/src/layered/hydro.h#radiation-boundary-conditions) while keeping a dirichlet boundary condition on the left side to prevent the height to decrease.
+In order to get the steady state as soon as possible, we avoid reflection on the right boundary by using an [open boundary condition](/src/layered/hydro.h#radiation-boundary-conditions) while keeping a dirichlet boundary condition on the left side to prevent the height to decrease.
 
 ## Basilisk Code
 */

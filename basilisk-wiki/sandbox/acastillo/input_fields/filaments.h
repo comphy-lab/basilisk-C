@@ -5,84 +5,26 @@
 
 This section borrows from the development for a general curved vortex presented
 by [Callegari and Ting (1978)](#callegari1978) and notes from the book by
-Maurice Rossi, Ivan Delbende, Stéphane Le Dizès, and others.
+Maurice Rossi, Stéphane Le Dizès, and others.
 
-## Curvilinear coordinate system
+<center>
+![Geometrical elements for a curved line (a) in the osculating plane (b) 
+in the plane orthogonal to the vortex axis](rossi1.png)
+</center>
 
-A curvilinear coordinate system can be defined starting from the orthogonal
-Cartesian one. If $x$, $y$, $z$ are the Cartesian coordinates, the curvilinear
-ones, $u$, $v$, $w$, can be expressed as smooth functions of $x$, $y$, $z$,
-according to $u = u(x,y,z)$, $v = v(x,y,z)$, and $w = w(x,y,z)$, which can be
-inverted as $x = x(u,v,w)$, $y = y(u,v,w)$, $z = z(u,v,w)$. The infinitesimal
-increment $d\vec{r}$ is the same regardless the coordinate system. For instance,
-starting from Cartesian coordinates, the infinitesimal increment
-$d\vec{r}=(dx,dy,dz)$ can be written as:
-$$
-\begin{aligned}
-  d\vec{r} =\frac{\partial\vec{r}}{\partial u} du 
-  + \frac{\partial\vec{r}}{\partial v} dv 
-  + \frac{\partial\vec{r}}{\partial w} dw
-\end{aligned}
-$$
-or alternatively as
-$$
-\begin{aligned}
-  d\vec{r} =
-  h_u du \uvec{e}_u  + h_v dv \uvec{e}_v + h_w dw \uvec{e}_w
-\end{aligned}
-$$
-where $h_u$, $h_v$, and $h_w$, are the scale (also known as Lamé) coefficients
-$$
-\begin{aligned}
-  h_u \equiv \sqrt{ \frac{\partial\vec{r}}{\partial u} \cdot \frac{\partial\vec{r}}{\partial u} }, \quad
-  h_v \equiv \sqrt{ \frac{\partial\vec{r}}{\partial v} \cdot \frac{\partial\vec{r}}{\partial v} }, \quad
-  h_w \equiv \sqrt{ \frac{\partial\vec{r}}{\partial w} \cdot \frac{\partial\vec{r}}{\partial w} }
-\end{aligned}
-$$
-and $\vec{e}_u$, $\vec{e}_v$, and $\vec{e}_w$, are the curvilinear
-orthonormal basis vectors
-$$
-\begin{aligned}
-  \uvec{e}_u = \frac{1}{h_u} \frac{\partial\vec{r}}{\partial u}, \quad
-  \uvec{e}_v = \frac{1}{h_v} \frac{\partial\vec{r}}{\partial v}, \quad
-  \uvec{e}_w = \frac{1}{h_w} \frac{\partial\vec{r}}{\partial w}
-\end{aligned}
-$$
+Let us define a curvilinear orthogonal basis associated with a reference
+**space-curve** $\mathcal{C}(s,t)$. Here $s$ is the **arc-length** along the
+initial curve measured from a given reference point. 
 
-For instance, in this system, the elementary arc length reads
-$$
-\begin{aligned}  
-  ds \equiv
-  \sqrt{d\vec{r}\cdot d\vec{r}} =
-  \sqrt{ (h_u du)^2 + (h_v dv)^2 + (h_w dw)^2 }
-\end{aligned}
-$$
-while the divergence of a vector field $\vec{v}$ reads as
+Each point along $\mathcal{C}(s,t)$ is characterized by its **position vector**
+$\vec{x}_c$, local **curvature** $\kappa(s,t)$, local **torsion** $\tau(s,t)$,
+and the corresponding **Frenet–Serret** frame composed of three vectors
+$(\uvec{t}, \uvec{n}, \uvec{b})$
 $$
 \begin{aligned}
-  \nabla\cdot\vec{v} =
-  \frac{1}{h_u h_v h_w}
-  \left[
-  \frac{ \partial(v_u h_v h_w) }{\partial u}  +
-  \frac{ \partial(v_v h_u h_w) }{\partial v}  +
-  \frac{ \partial(v_w h_v h_u) }{\partial w}
-  \right]
-\end{aligned}
-$$
-
-## Frenet–Serret basis 
-
-Now, let us define a curvilinear orthogonal basis associated with a reference
-space curve $\mathcal{C}(s)$, which lies in the filament. Here $s$ is the arc
-length along the initial curve measured from a given reference point. Each point
-along $\mathcal{C}(s)$ is characterized by its position $\vec{x}_c$, local
-curvature $\kappa(s)$, local torsion $\tau(s)$, and the corresponding
-Frenet–Serret frame composed of three vectors $(\uvec{T}, \uvec{N}, \uvec{B})$
-$$
-\begin{aligned}
-  \uvec{T}(s) \equiv \frac{d\vec{x}_c}{ds}, \quad
-  \uvec{N}(s) \equiv \frac{1}{\kappa}\frac{d\uvec{T}}{ds}, \quad
-  \uvec{B}(s) \equiv \uvec{T}\times\uvec{N}
+  \uvec{t}(s) \equiv \frac{d\vec{x}_c}{ds}, \quad
+  \uvec{n}(s) \equiv \frac{1}{\kappa}\frac{d\uvec{T}}{ds}, \quad
+  \uvec{b}(s) \equiv \uvec{T}\times\uvec{N}
 \end{aligned}
 $$
 which are related to one another as:
@@ -90,7 +32,7 @@ $$
 \begin{aligned}
 \frac{d}{ds}
 \begin{bmatrix}
-\uvec{T} \\ \uvec{N} \\ \uvec{B}
+\uvec{t} \\ \uvec{n} \\ \uvec{b}
 \end{bmatrix}
 =
 \begin{bmatrix}
@@ -99,131 +41,52 @@ $$
 0 & -\tau(s) & 0 
 \end{bmatrix}
 \begin{bmatrix}
-\uvec{T} \\ \uvec{N} \\ \uvec{B}
+\uvec{t} \\ \uvec{n} \\ \uvec{b}
 \end{bmatrix}
 \end{aligned}
 $$
 
-Here $\kappa(s, t)$ and $\tau(s, t)$ are called the curvature and torsion at
-point $O(s, t)$
+The position of a given point $M$ can be expressed as two coordininates in the
+plane $\mathcal{A}(s,t)$ locally perpendicular to $\mathcal{C}(s,t)$ and one
+coordinate $s$ along $\mathcal{C}(s,t)$. This way, we may introduce a local
+**radial** and **angular** coordinates $(\rho,\varphi)$ and write the position
+vector of a point $M$ as:
 $$
 \begin{aligned}
-\kappa(s, t) &\equiv 
-\frac{\lVert \vec{r}'(s,t) \times \vec{r}''(s,t) \rVert}{\lVert \vec{r}'(s,t) \rVert^3}
-\\
-\tau(s, t) &\equiv \frac{\lVert (\vec{r}'(s,t) \times \vec{r}''(s,t)) \cdot \vec{r}'''(s,t) \rVert}{\lVert \vec{r}'(s,t) \times \vec{r}''(s,t) \rVert^2}
+  \vec{x} = \vec{x}_c (s) + \rho\vec{e}_\rho(s,\varphi)
 \end{aligned}
 $$
-
-## Position vector in the Frenet-Serret frame 
-
-<center>![Geometrical elements for a curved line (a) in the osculating plane (b) 
-in the plane orthogonal to the vortex axis](rossi1.png)</center>
-
-### Introducing the two local Cartesian coordinates
-
-The position of a given point $M$ can be expressed as
+where the unit vectors $\vec{e}_\rho$ and $\vec{e}_\varphi$ are defined as
 $$
 \begin{aligned}
-  \vec{x} = \vec{x}_c (s) + \vec{a}
-\end{aligned}
-$$
-where $\vec{a}$ lies in the plane $A_n(s)$ perpendicular to $\mathcal{C}(s)$
-$$
-\begin{aligned}
-  \vec{a} = a_2 \uvec{N}(s) + a_3 \uvec{B}(s)
-\end{aligned}
-$$
-
-### Introducing the local radial and angular coordinates
-We introduce a local radial and angular coordinates $(\rho,\phi)$ in the plane
-$A(s)$
-$$
-\begin{aligned}
-  \uvec{e}_\rho &=& \cos\phi\uvec{N} + \sin\phi\uvec{B}
+  \uvec{e}_\rho &=& \cos\varphi\uvec{n} + \sin\varphi\uvec{b}
   \\
-  \uvec{e}_\phi &=& -\sin\phi\uvec{N} + \cos\phi\uvec{B}
-\end{aligned}
-$$
-such that
-$$
-\begin{aligned}
-  \vec{x} = \vec{x}_c (s) + \rho \vec{e}_\rho(s,\phi)
-\end{aligned}
-$$
-Differentiating with respect to $s$ gives
-$$
-\begin{aligned}
-  \frac{d\vec{x}}{ds} &=& \frac{d\rho}{ds} \uvec{e}_\rho(s,\phi)
-    + \rho\left(\frac{d\phi}{ds} + \tau(s)\right)\uvec{e}_\phi(s,\phi)
-    + (1-\kappa(s)\rho\cos\phi)\uvec{T}(s)
-\end{aligned}
-$$
-from which we deduce the following expression:
-$$
-\begin{aligned}
-  d\vec{x} = d\rho \uvec{e}_\rho(s,\phi)
-    + \rho\left( d\phi + \tau(s)ds\right)\uvec{e}_\phi(s,\phi) + (1-\kappa(s)\rho\cos\phi)\uvec{T}(s) ds
+  \uvec{e}_\varphi &=& -\sin\varphi\uvec{n} + \cos\varphi\uvec{b}
 \end{aligned}
 $$
 
-### A Locally Orthogonal basis
-
-Note that $(\rho,\phi,s)$ are curvilinear coordinates but they are not
-orthogonal in general. However, if we define an angle $\varphi$
+Note that $(\rho,\varphi,s)$ are curvilinear coordinates but they are not
+orthogonal in general. However, if we define an angle $\theta$
 $$
 \begin{aligned}
-  \varphi = \phi - \varphi_0(s), \quad \text{ where } \quad
-  \frac{d\varphi_0}{ds} = \tau(s)
+  \theta = \varphi - \theta_0(s), \quad \text{ where } \quad
+  \frac{d\theta_0}{ds} = -\tau(s)
 \end{aligned}
 $$
-then $(\rho,\varphi,s)$ form a set of curvilinear orthogonal coordinates. In
+then $(\rho,\theta,s)$ form a set of curvilinear orthogonal coordinates. In
 this system, the infinitesimal increment reads as
 $$
 \begin{aligned}
-  d\vec{x} &=&  h_\rho d\rho ~\uvec{e}_\rho(s,\varphi)
-      + h_\varphi d\varphi ~\uvec{e}_\varphi(s,\varphi) + h_s ds ~\uvec{T}(s)
+  d\vec{x} &=&  d\rho ~\uvec{e}_\rho(s,\varphi)
+      + \rho d\varphi ~\uvec{e}_\varphi(s,\varphi) + h_s ds ~\uvec{T}(s)
 \end{aligned}
 $$
-where the Lamé coefficients read:
+where 
 $$
 \begin{aligned}
-  h_\rho = 1, \quad
-  h_\varphi = \rho, \quad
-  h_s = (1-\kappa(s)\rho\cos(\varphi+\varphi_0(s)))
+  h_s = (1-\kappa(s)\rho\cos(\theta+\theta_0(s)))
 \end{aligned}
 $$
-and the new orthogonal basis reads:
-$$
-\begin{aligned}
-  \begin{bmatrix}
-    \uvec{e}_\rho(\varphi,s) \\
-    \uvec{e}_\varphi(\varphi,s) \\
-    \uvec{T}(s)
-  \end{bmatrix}
-  =
-  \begin{bmatrix}
-  \cos(\varphi+\varphi_0(s)) & \sin(\varphi+\varphi_0(s)) & 0 \\
-  -\sin(\varphi+\varphi_0(s)) & \cos(\varphi+\varphi_0(s)) & 0 \\
-  0 & 0 & 1
-  \end{bmatrix}
-  \begin{bmatrix}
-    \uvec{N}(s) \\
-    \uvec{B}(s) \\
-    \uvec{T}(s)
-  \end{bmatrix}
-\end{aligned}
-$$
-
-For instance, in this system, the divergence of a vector field
-$\vec{v}=(v_\rho\uvec{e}_\rho + v_\varphi\uvec{e}_\varphi + v_t\uvec{T})$ would
-read as: 
-\begin{aligned}
-  \nabla\cdot\vec{v} &=&
-  \frac{1}{\rho h_s(\varphi,s)}\left(
-  \frac{d(\rho h_s(\varphi,s) v_\rho)}{d\rho} + \frac{d(h_s(\varphi,s) v_\varphi)}{d\varphi} + \frac{d(\rho v_t)}{ds}
-  \right)
-\end{aligned}
 
 \br
 
@@ -267,7 +130,7 @@ geometry and orientation of the filament.
 *tau*
 : local torsion, $\tau(s(\xi_n))$  (optional)
 
-*varphi0*
+*theta0*
 : cumulative torsion, $\varphi_0(s(\xi_n))$  (optional)
 
 */
@@ -275,7 +138,7 @@ geometry and orientation of the filament.
 #include "PointTriangle.h"
 struct vortex_filament{
   int     nseg;     // number of segments
-  double* theta;    // arbitrary parametrisation of C  
+  double* phi;    // arbitrary parametrisation of C  
   coord*  C;        // cartesian coords of filament
   coord*  Tvec;     // unit tangent vector
   coord*  Nvec;     // unit normal vector
@@ -285,7 +148,7 @@ struct vortex_filament{
   double* sigma;    // Stretching factor
   double* kappa;    // Curvature
   double* tau;      // Torsion
-  double* varphi0;  // Cumulative torsion
+  double* theta0;  // Cumulative torsion
   double* a;        // Core size
   coord*  dC;       // 
   coord*  d2C;      // 
@@ -313,14 +176,14 @@ void allocate_vortex_filament_members(struct vortex_filament* filament, int nseg
   filament->pcar  = (coord) {0.0, 0.0, 0.0};
 
   // Allocate memory for the double arrays
-  filament->theta = malloc(nseg * sizeof(double));  
+  filament->phi = malloc(nseg * sizeof(double));  
   filament->s     = malloc(nseg * sizeof(double));
   filament->sigma = malloc(nseg * sizeof(double));
   filament->kappa = malloc(nseg * sizeof(double));
   filament->tau   = malloc(nseg * sizeof(double));  
   filament->a     = malloc(nseg * sizeof(double));
   filament->vol   = malloc(nseg * sizeof(double));
-  filament->varphi0 = malloc(nseg * sizeof(double));
+  filament->theta0 = malloc(nseg * sizeof(double));
   
   // Allocate memory for the coord arrays
   filament->C     = malloc(nseg * sizeof(coord));
@@ -347,14 +210,14 @@ void free_vortex_filament_members(struct vortex_filament* filament) {
   }
 
   // Free the double arrays
-  free(filament->theta);    filament->theta = NULL; // Set to NULL after freeing
+  free(filament->phi);      filament->phi = NULL; // Set to NULL after freeing
   free(filament->s);        filament->s = NULL;
   free(filament->sigma);    filament->sigma = NULL;
   free(filament->kappa);    filament->kappa = NULL;
   free(filament->tau);      filament->tau = NULL;
   free(filament->a);        filament->a = NULL;
   free(filament->vol);      filament->vol = NULL;
-  free(filament->varphi0);  filament->varphi0 = NULL;
+  free(filament->theta0);   filament->theta0 = NULL;
 
   // Free the coord arrays
   free(filament->C);        filament->C = NULL;
@@ -374,7 +237,7 @@ void free_vortex_filament_members(struct vortex_filament* filament) {
 
 struct local_filament{  
   bool near;       // flag based on distance from C
-  double theta;    // arbitrary parametrisation of C  
+  double phi;      // arbitrary parametrisation of C  
   coord  C;        // cartesian coords of filament
   coord  Tvec;     // unit tangent vector
   coord  Nvec;     // unit normal vector
@@ -384,12 +247,12 @@ struct local_filament{
   double sigma;    // Stretching factor
   double kappa;    // Curvature
   double tau;      // Torsion
-  double varphi0;  // Cumulative torsion
+  double theta0;   // Cumulative torsion
   double a;        // Core size
   coord Mcar;      //
   coord Mrad;      //
   double rho;      //
-  double phi;      //
+  double theta;    //
 };
 
 
@@ -399,28 +262,28 @@ struct local_filament{
 
 This function performs 1D interpolation on a vector using cubic splines from the
 GNU Scientific Library (GSL). It takes discretized coord values `V0` at given
-spatial coordinate `theta0` and interpolates to find the corresponding value at 
-a coordinate `thetaq`.
+spatial coordinate `phi0` and interpolates to find the corresponding value at 
+a coordinate `phiq`.
 
 The arguments and their descriptions are:
 
 *nseg*
 : number of segments
 
-*theta0*
-: array with the coordinates $\theta_0$
+*phi0*
+: array with the coordinates $\phi_0$
 
 *V0*
 : array with the coord values $V_0$
 
-*thetaq*
+*phiq*
 : target value at which to interpolate $V_q$
 
 */
 
 #pragma autolink -lgsl -lgslcblas
 #include <gsl/gsl_spline.h>
-coord gsl_interp1d_vector( int nseg, double* theta0, coord * V0, double thetaq){
+coord gsl_interp1d_vector( int nseg, double* phi0, coord * V0, double phiq){
   coord Vq;
   gsl_interp_accel *acc = gsl_interp_accel_alloc();
 
@@ -431,8 +294,8 @@ coord gsl_interp1d_vector( int nseg, double* theta0, coord * V0, double thetaq){
       V_x[i] = V0[i].x;
 
     gsl_spline *spline_x = gsl_spline_alloc(gsl_interp_cspline, nseg);
-    gsl_spline_init(spline_x, theta0, V_x, nseg);
-    Vq.x = gsl_spline_eval (spline_x, thetaq, acc);
+    gsl_spline_init(spline_x, phi0, V_x, nseg);
+    Vq.x = gsl_spline_eval (spline_x, phiq, acc);
     gsl_spline_free (spline_x);
     free(V_x);
   }
@@ -445,30 +308,30 @@ coord gsl_interp1d_vector( int nseg, double* theta0, coord * V0, double thetaq){
 
 This function performs 1D interpolation on a scalar using cubic splines from the
 GNU Scientific Library (GSL). It takes discretized scalar values `P0` at given
-spatial coordinate `theta0` and interpolates to find the corresponding value at 
-a coordinate `thetaq`.
+spatial coordinate `phi0` and interpolates to find the corresponding value at 
+a coordinate `phiq`.
 
 The arguments and their descriptions are:
 
 *nseg*
 : number of segments
 
-*theta0*
-: array with the coordinates $\theta_0$
+*phi0*
+: array with the coordinates $\phi_0$
 
 *P0*
 : array with the scalar values $P_0$
 
-*thetaq*
+*phiq*
 : target value at which to interpolate $P_q$
 */
 
-double gsl_interp1d_scalar( int nseg, double* theta0, double * P0, double thetaq){
+double gsl_interp1d_scalar( int nseg, double* phi0, double * P0, double phiq){
   double Pq;
   gsl_interp_accel *acc = gsl_interp_accel_alloc();
   gsl_spline *spline_x = gsl_spline_alloc(gsl_interp_cspline, nseg);
-  gsl_spline_init(spline_x, theta0, P0, nseg);
-  Pq = gsl_spline_eval (spline_x, thetaq, acc);
+  gsl_spline_init(spline_x, phi0, P0, nseg);
+  Pq = gsl_spline_eval (spline_x, phiq, acc);
   gsl_spline_free (spline_x);
   gsl_interp_accel_free (acc);
   return Pq;
@@ -507,15 +370,15 @@ vectors.
 
 */
 
-double frenet_projection (double thetaq, void *params){
+double frenet_projection (double phiq, void *params){
   struct vortex_filament *p = (struct vortex_filament *) params;
 
   coord ccar, frenet[3];
-  ccar = gsl_interp1d_vector( p->nseg, p->theta, p->C, thetaq);
+  ccar = gsl_interp1d_vector( p->nseg, p->phi, p->C, phiq);
 
-  frenet[0] = gsl_interp1d_vector( p->nseg, p->theta, p->Tvec, thetaq);
-  frenet[1] = gsl_interp1d_vector( p->nseg, p->theta, p->Nvec, thetaq);
-  frenet[2] = gsl_interp1d_vector( p->nseg, p->theta, p->Bvec, thetaq);
+  frenet[0] = gsl_interp1d_vector( p->nseg, p->phi, p->Tvec, phiq);
+  frenet[1] = gsl_interp1d_vector( p->nseg, p->phi, p->Nvec, phiq);
+  frenet[2] = gsl_interp1d_vector( p->nseg, p->phi, p->Bvec, phiq);
 
   return vecdot(vecdiff(p->pcar, ccar), frenet[0]); 
 }
@@ -631,7 +494,7 @@ struct local_filament get_local_coordinates(int spatial_period, double max_dista
   struct local_filament local_coordinates = {0}; 
 
   coord cart_coord, radial_coord; 
-  double min_distance = 1e30, min_theta = 0;
+  double min_distance = 1e30, min_phi = 0;
   double local_radial_coord, local_angular_coord;
   
   // Iterate through each segment to find the segment closest to the point
@@ -640,29 +503,29 @@ struct local_filament get_local_coordinates(int spatial_period, double max_dista
     double current_distance = vecdist2(vortex->pcar, vortex->C[i]);
     if (current_distance < min_distance) {
       min_distance = current_distance;
-      min_theta = vortex->theta[i];
+      min_phi = vortex->phi[i];
     }
   }
 
-  // Adjust the initial theta guess if the curve has periodicity
+  // Adjust the initial phi guess if the curve has periodicity
   if (spatial_period != 0)
-    min_theta = fmod(min_theta + spatial_period * 2 * pi, spatial_period * 2 * pi);
+    min_phi = fmod(min_phi + spatial_period * 2 * pi, spatial_period * 2 * pi);
 
   
   // If the point is close enough to the vortex, refine the initial guess
   if (min_distance < max_distance) {
     
     // Find the value of xi
-    double theta = frenet_projection_min(*vortex, min_theta);
+    double phi = frenet_projection_min(*vortex, min_phi);
 
     // Find the Cartesian coordinates of point O(xi)
-    coord Ocar = gsl_interp1d_vector(vortex->nseg, vortex->theta, vortex->C, theta);
+    coord Ocar = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->C, phi);
 
-    // Compute the Frenet-Serret frame vectors at the projected theta
+    // Compute the Frenet-Serret frame vectors at the projected phi
     coord Tvec, Nvec, Bvec;
-    Tvec = gsl_interp1d_vector(vortex->nseg, vortex->theta, vortex->Tvec, theta);
-    Nvec = gsl_interp1d_vector(vortex->nseg, vortex->theta, vortex->Nvec, theta);
-    Bvec = gsl_interp1d_vector(vortex->nseg, vortex->theta, vortex->Bvec, theta);
+    Tvec = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->Tvec, phi);
+    Nvec = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->Nvec, phi);
+    Bvec = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->Bvec, phi);
     
     // Compute local coordinates in the Frenet-Serret frame
     cart_coord.x = vecdot(vecdiff(vortex->pcar, Ocar), Tvec); // x_T (must be zero) 
@@ -674,7 +537,7 @@ struct local_filament get_local_coordinates(int spatial_period, double max_dista
     local_angular_coord = atan2(cart_coord.z, cart_coord.y);
     
     // Compute the torsion angle
-    double torsion_angle = gsl_interp1d_scalar(vortex->nseg, vortex->theta, vortex->varphi0, theta);
+    double torsion_angle = gsl_interp1d_scalar(vortex->nseg, vortex->phi, vortex->theta0, phi);
 
     // Set radial coordinates
     radial_coord.x = cart_coord.x;
@@ -682,13 +545,13 @@ struct local_filament get_local_coordinates(int spatial_period, double max_dista
     radial_coord.z = local_angular_coord - torsion_angle;
 
     // Then, we compute the other properties
-    double s       = gsl_interp1d_scalar( vortex->nseg, vortex->theta, vortex->s,       theta);
-    double sigma   = gsl_interp1d_scalar( vortex->nseg, vortex->theta, vortex->sigma,   theta);
-    double kappa   = gsl_interp1d_scalar( vortex->nseg, vortex->theta, vortex->kappa,   theta);
-    double tau     = gsl_interp1d_scalar( vortex->nseg, vortex->theta, vortex->tau,     theta);    
-    double a       = gsl_interp1d_scalar( vortex->nseg, vortex->theta, vortex->a,       theta);    
+    double s       = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->s,       phi);
+    double sigma   = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->sigma,   phi);
+    double kappa   = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->kappa,   phi);
+    double tau     = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->tau,     phi);    
+    double a       = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->a,       phi);    
 
-    local_coordinates = (struct local_filament){1, theta, Ocar, Tvec, Nvec, Bvec, 
+    local_coordinates = (struct local_filament){1, phi, Ocar, Tvec, Nvec, Bvec, 
       s, vortex->pcar, sigma, kappa, tau, torsion_angle, a, cart_coord, radial_coord, 
       local_radial_coord, local_angular_coord - torsion_angle}; 
   }
@@ -724,7 +587,7 @@ The arguments and their descriptions are:
 *n*
 : integer representing the number of points in the coordinate array.
 
-*dtheta*
+*dphi*
 : double representing the spacing between consecutive points in the array, used
 as the step size in the finite difference calculation.
 
@@ -739,15 +602,15 @@ boundary condition.
 : pointer to a `coord` array where the computed derivatives will be stored.
 */
 
-void fd_derivative( int n, double dtheta, coord shift, coord *X, coord *dX){
+void fd_derivative( int n, double dphi, coord shift, coord *X, coord *dX){
   for (int i = 1; i < n-1; i++){
     foreach_dimension(){
-      dX[i].x = (X[i+1].x - X[i-1].x)/(2*dtheta);
+      dX[i].x = (X[i+1].x - X[i-1].x)/(2*dphi);
     }
   }
   foreach_dimension(){
-    dX[0].x   = (X[1].x - X[n-2].x + shift.x)/(2*dtheta);
-    dX[n-1].x = (X[1].x - X[n-2].x + shift.x)/(2*dtheta);
+    dX[0].x   = (X[1].x - X[n-2].x + shift.x)/(2*dphi);
+    dX[n-1].x = (X[1].x - X[n-2].x + shift.x)/(2*dphi);
   }
 }
 
@@ -755,21 +618,21 @@ void fd_derivative( int n, double dtheta, coord shift, coord *X, coord *dX){
  Finally, we create a macro so we can initialize the vortex filaments more
  easily
 */
-macro initialize_filaments (struct vortex_filament filament, int nseg, double dtheta, double* theta, double* a, coord* C, coord xshift, coord dxshift)
+macro initialize_filaments (struct vortex_filament filament, int nseg, double dphi, double* phi, double* a, coord* C, coord xshift, coord dxshift)
 {
   
   for (int i = 0; i < nseg; i++){   
     filament.a[i] = a[i]; 
-    filament.theta[i] = theta[i]; 
+    filament.phi[i] = phi[i]; 
     foreach_dimension(){            
       filament.C[i].x =  C[i].x;  
     }
   }  
 
   // Find the 1st, 2nd, and 3rd derivatives of C  
-  fd_derivative(nseg, dtheta,  xshift,   filament.C,  filament.dC);
-  fd_derivative(nseg, dtheta, dxshift,  filament.dC, filament.d2C);
-  fd_derivative(nseg, dtheta, dxshift, filament.d2C, filament.d3C);
+  fd_derivative(nseg, dphi,  xshift,   filament.C,  filament.dC);
+  fd_derivative(nseg, dphi, dxshift,  filament.dC, filament.d2C);
+  fd_derivative(nseg, dphi, dxshift, filament.d2C, filament.d3C);
 
   // Compute the Frenet-Serret frame, curvature, and torsion
   for (int i = 0; i < nseg; i++){   
@@ -786,12 +649,295 @@ macro initialize_filaments (struct vortex_filament filament, int nseg, double dt
   }
 
   // Compute the arc-lenght coordinate and cumulative torsion  
-  memset (filament.s,       0, nseg*sizeof (double));
-  memset (filament.varphi0, 0, nseg*sizeof (double));  
+  memset (filament.s,      0, nseg*sizeof (double));
+  memset (filament.theta0, 0, nseg*sizeof (double));  
   for (int i = 0; i < nseg-1; i++){
-    filament.s[i+1] = filament.s[i] + filament.sigma[i+1]*dtheta;
-    filament.varphi0[i+1] = filament.varphi0[i] + filament.sigma[i+1]*filament.tau[i+1]*dtheta;
+    filament.s[i+1] = filament.s[i] + filament.sigma[i+1]*dphi;
+    filament.theta0[i+1] = filament.theta0[i] - filament.sigma[i+1]*filament.tau[i+1]*dphi;
   }
+}
+
+/**
+## Compute the curvature terms at next to leading order for a Batchelor vortex
+
+At the next to leading order, corrections due to curvature are obtained by
+solving a second- order differential equation
+$$
+\mathbf{L} \psi = R 
+$$
+
+
+
+In the functions below, we solve numerically $\psi$ and compute the corrections
+at this order.
+
+*/
+
+#pragma autolink -lgsl -lgslcblas
+#include <gsl/gsl_integration.h>
+#include <gsl/gsl_errno.h>
+
+/** Struct to pass parameters ($a$, $U_c$) to the GSL integration functions
+*/ 
+typedef struct {
+  double a;
+  double U_c;
+} integration_params;
+
+/** Struct to hold the results: $\psi(\rho)$ and its first two derivatives
+*/ 
+typedef struct {
+  double A;    // Psi(rho)
+  double A_p;  // First derivative Psi'(rho)
+  double A_pp; // Second derivative Psi''(rho)
+} integration_results;
+
+/** 
+
+$$
+f(\rho,a) = \exp(-\rho^2/a^2)
+$$
+ 
+*/ 
+double gauss(double s, const integration_params *params) {
+  return exp(-s * s / (params->a * params->a));
+}
+
+/**
+$$
+R = u^{(0)}_\theta + 2\rho\omega^{(0)}_\xi - 2\rho\omega^{(0)}_\theta u^{(0)}_\xi/u^{(0)}_\theta
+$$
+Here, $\vec{u}^{(0)}$ and $\vec{\omega}^{(0)}$ are the leading order solutions.
+Subscripts $(\rho,\theta,\xi)$ indicate the local **radial**, **azimuthal**, and
+**axial** components, respectively. 
+*/
+
+double right_hand_side(double s, void *p) {
+  integration_params *params = (integration_params *)p;
+  const double a = params->a;
+  const double U_c = params->U_c;
+  const double tol = 1e-18;
+
+  if (fabs(s) < tol) return 0.0;
+
+  double gs = gauss(s, params);
+  double u_th = (1.0 / s) * (1.0 - gs);
+  double u_xi = U_c * gs;
+  double w_th = U_c * (2.0 * s / sq(a)) * gs;
+  double w_xi = (2.0 / sq(a)) * gs;
+  double R = 2.0 * s * w_xi + u_th - 2.0 * s * w_th * u_xi / (u_th + tol);
+  return R;
+}
+
+/**
+The solution of $\psi$ is obtained using the method of variation of constants
+$$
+\psi = y_1 \int_0^\rho G(s)/(s y_1^2(s)) ds
+$$
+where the integrand $G(s)$ reads
+$$
+G(\rho) = \int_0^\rho s y_1(s) R(s) ds
+$$
+and $y_1$ is the fundamental solution 
+$$
+y_1 = u^{(0)}_\theta = \frac{1}{\rho} (1 - f(\rho,a))
+$$
+*/
+
+double integrand_G(double s, void *p) {
+  integration_params *params = (integration_params *)p;
+  return (1.0 - gauss(s, params)) * right_hand_side(s, p);
+}
+
+double integrand_Psi(double s, void *p) {
+  integration_params *params = (integration_params *)p;
+
+  if (fabs(s) < 1e-9) return 0.0;
+
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(1000);
+  double G_s, error;
+  
+  gsl_function F_G;
+  F_G.function = &integrand_G;
+  F_G.params = p;
+
+  gsl_integration_qag(&F_G, 0, s, 0, 1e-7, 1000, GSL_INTEG_GAUSS61, w, &G_s, &error);
+  gsl_integration_workspace_free(w);
+
+  double gs = gauss(s, params);
+  double denominator = sq(1.0 - gs);
+  
+  if (fabs(denominator) < 1e-18) return 0.0;
+  
+  return (s * G_s) / denominator;
+}
+
+/**
+
+We perform the numerical integration using GLS and evaluate the first and 
+second derivatives with respect to $\rho$
+
+*/
+
+void compute_A_with_derivatives(double rho, double a, double U_c, integration_results *results) {
+  const double tol = 1e-18;
+  if (rho < tol){
+    results->A = 0.;
+    results->A_p = 0.;
+    results->A_pp = 0.; 
+    return;
+  }
+
+  integration_params params = {a, U_c};
+
+  // --- Step 1: Compute the necessary integrals ---
+  gsl_integration_workspace *w = gsl_integration_workspace_alloc(1000);
+  double G_rho, I_psi_rho, error;
+  
+  gsl_function F_G, F_psi;
+  F_G.function = &integrand_G;
+  F_G.params = &params;
+  F_psi.function = &integrand_Psi;
+  F_psi.params = &params;
+  
+  // Temporarily turn off default GSL error handler
+  gsl_error_handler_t *old_handler = gsl_set_error_handler_off();
+
+  // Integral G(rho)
+  gsl_integration_qag(&F_G, 0, rho, 0, 1e-7, 1000, GSL_INTEG_GAUSS61, w, &G_rho, &error);
+  
+  // Integral for A(rho), which we call I_psi(rho)
+  gsl_integration_qag(&F_psi, 0, rho, 0, 1e-7, 1000, GSL_INTEG_GAUSS61, w, &I_psi_rho, &error);
+  
+  gsl_set_error_handler(old_handler); // Restore handler
+  gsl_integration_workspace_free(w);
+
+  // --- Step 2: Compute intermediate values at rho ---
+  double g_rho = gauss(rho, &params);
+  double R_rho = right_hand_side(rho, &params);
+
+  // --- Step 3: Calculate A, A', and A'' using analytical formulas ---
+  results->A = (1.0 / rho) * (1.0 - g_rho) * I_psi_rho;
+
+  // First derivative A'(rho)
+  double C1 = -(1.0 - g_rho) / sq(rho) + (2.0 * g_rho) / sq(a);
+  results->A_p = C1 * I_psi_rho + G_rho / (1.0 - g_rho);
+
+  // Second derivative A''(rho)
+  double one_minus_g_sq = sq(1.0 - g_rho);
+  double Ipsip_rho = (rho * G_rho) / one_minus_g_sq; // This is I_psi'(rho)
+  
+  double C1p = 2.0 * (1.0 - g_rho) / cube(rho) 
+         - (2.0 * g_rho) / (sq(a) * rho) 
+         - (4.0 * rho * g_rho) / (sq(a) * sq(a));
+         
+  double C2p = R_rho - (2.0 * rho * g_rho * G_rho) / (sq(a) * one_minus_g_sq);
+  
+  results->A_pp = C1p * I_psi_rho + C1 * Ipsip_rho + C2p;
+}
+
+/**
+Having solved $\psi$ we may compute the velocity and vorticity terms
+*/
+
+// Struct to hold the final calculated output values.
+typedef struct {
+  double u0_r;  // Velocity at leading order
+  double u0_th; 
+  double u0_xi;
+  double w0_r;  // Vorticity at leading order
+  double w0_th;
+  double w0_xi;
+  double u1_r;  // Velocity at the following order
+  double u1_th;
+  double u1_xi;
+  double w1_r;  // Vorticity at the following order
+  double w1_th;
+  double w1_xi;
+} batchelor_vortex;
+
+/**
+ 
+At **leading-order**, the velocity reads 
+$$
+u^{(0)}_\rho = 0,
+\quad
+u^{(0)}_\theta = \frac{1}{\rho}(1 - f(\rho,a)),
+\quad 
+u^{(0)}_\xi = U_c f(\rho,a)
+$$
+while the vorticity reads 
+$$
+\omega^{(0)}_\rho = 0,
+\quad
+\omega^{(0)}_\theta = (2 U_c \rho / a^2) f(\rho,a),
+\quad 
+\omega^{(0)}_\xi = (2/a^2) f(\rho,a)
+$$
+
+while the **next-to-leading-order** terms are functions of $\psi$, $\kappa$, 
+$\varphi$ and the leading order terms.
+
+*/
+
+batchelor_vortex calculate_vortex_flow(struct local_filament* vortex, double U_c, 
+  const integration_results* corr) {
+  
+  batchelor_vortex results;
+
+  // Extracting values for readability
+  double rho = vortex->rho; 
+  double a = vortex->a; 
+  double kappa = vortex->kappa; 
+  double phi = vortex->theta + vortex->theta0;
+
+  double A = corr->A;
+  double dA = corr->A_p;
+  double d2A = corr->A_pp;
+  
+
+  // Intermediate calculations
+  double g_rho = exp(-sq(rho / a));
+  double rho2 = sq(rho);
+  double a2 = sq(a);
+
+  // --- Zeroth-Order Base Flow (u0, w0) ---
+  results.u0_r = 0.0;
+  results.u0_th = (1.0 / rho) * (1.0 - g_rho);
+  results.u0_xi = U_c * g_rho;
+
+  results.w0_r = 0.0;
+  results.w0_th = U_c * (2.0 * rho / a2) * g_rho;
+  results.w0_xi = (2.0 / a2) * g_rho;
+
+  // --- Intermediate terms needed for first-order terms ---
+  // --- Swirl number at leading order
+  double S0 = rho * results.w0_th / results.u0_th; 
+  double denom = 1.0 - g_rho;
+  double dS0_dr = (3.0 * rho2 - 2.0 * sq(rho2) / a2) * g_rho / denom
+                - (2.0 * sq(rho2) / a2) * g_rho / (denom * denom);
+  dS0_dr *= 2.0 * U_c / a2;
+
+  // --- First-Order Perturbations (u1, w1) ---
+  double cos_phi = cos(phi);
+  double sin_phi = sin(phi);
+
+  results.u1_r  = -A/rho2;
+  results.u1_th = results.u0_th - dA/rho;
+  results.u1_xi = results.u0_xi + S0*A/rho2;
+
+  results.w1_r  = -S0*A/cube(rho);
+  results.w1_th = results.w0_th + S0*A/cube(rho) - S0*dA/rho2 - dS0_dr*A/rho2;
+  results.w1_xi = results.u0_th/rho + results.w0_xi - d2A/rho - dA/rho2 + A/cube(rho);
+  
+  results.u1_r  *= kappa * rho * sin_phi;
+  results.u1_th *= kappa * rho * cos_phi; 
+  results.u1_xi *= kappa * rho * cos_phi;
+  results.w1_r  *= kappa * rho * sin_phi; 
+  results.w1_th *= kappa * rho * cos_phi;
+  results.w1_xi *= kappa * rho * cos_phi;
+
+  return results;
 }
 
 /**
@@ -810,6 +956,15 @@ macro initialize_filaments (struct vortex_filament filament, int nseg, double dt
   publisher={SIAM}
 }
 
+@article{blanco2015internal,
+  title={Internal structure of vortex rings and helical vortices},
+  author={Blanco-Rodr{\'\i}guez, Francisco J and Le Diz{\`e}s, St{\'e}phane and Sel{\c{c}}uk, Can and Delbende, Ivan and Rossi, Maurice},
+  journal={Journal of Fluid Mechanics},
+  volume={785},
+  pages={219--247},
+  year={2015},
+  publisher={Cambridge University Press}
+}
 
 ~~~
 */

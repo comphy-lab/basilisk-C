@@ -1,9 +1,20 @@
 /**
 
 # My Sandbox
-Welcome to the README for my sandbox. This page serves as your gateway to exploring the exciting projects within [/sandbox/farsoiya/]. My aim is to offer you an informative overview of these endeavors, and I hope you discover something that captivates your interest. Feel free to use these codes without worrying about authorship, I just request you to cite the papers where I have introduced the numerical method.
+Welcome to my sandbox repository.
+This space serves as a gateway to exploring the projects hosted in /sandbox/farsoiya/. The repository contains experimental ideas, numerical methods, and prototype implementations developed alongside my research.
+
+You are welcome to use, modify, and build upon the codes provided here without concern for authorship. I only request that you cite the relevant publications in which the underlying numerical methods were originally introduced.
+
+I hope you find something here that sparks your interest or supports your work.
 
 -*Palas Kumar Farsoiya*- 
+
+## Surfactant transport and Marangoni Force (Planar, axisymmetric-2D and 3D capable)
+
+* [Surfactant laden rising bubble](marangoni_surfactant/axi_rising_bubble.c)
+
+
 
 ## Viscous droplet breakup in Homogeneous and Isotropic Turbulent flow
 
@@ -32,4 +43,4 @@ The mass transfer module developed [henry.h](/src/henry.h)
 ## Contact
 
 If you like to discuss a specific topic, feel free to e-mail me:
-farsoiya-AT-gmail.com. */
+farsoiya@gmail.com. */

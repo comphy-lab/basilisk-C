@@ -357,7 +357,7 @@ V.1 Noeux les Mines, 04 Juillet 15
 #Bibliography
   
 * see
-["svvk"](http://basilisk.fr/sandbox/M1EMN/Exemples/svvk_3.c) 
+["svvk"](/sandbox/M1EMN/Exemples/svvk_3.c) 
 
 * Schlichting, 1968 (with Gersten 00) ["Boundary Layer theory"](https://books.google.fr/books?id=8YugVtom1y4C&printsec=frontcover&dq=schlichting+boundary+layer+theory&hl=fr&sa=X&ei=gwOZVe_JPMmtU83jgIAE&ved=0CCEQ6AEwAA#v=onepage&q=schlichting%20boundary%20layer%20theory&f=false)
 

@@ -5,7 +5,7 @@
 
 b-flood est une partie de code basilisk spécialement développée pour faire de la simulation d'hydraulique (inondation, crue, etc...)
 
-Télécharger le code b-flood et copier-le dans le dossier /basilisk/src/ (si possible) : [http://basilisk.fr/sandbox/b-flood/Readme](http://basilisk.fr/sandbox/b-flood/Readme)
+Télécharger le code b-flood et copier-le dans le dossier /basilisk/src/ (si possible) : [https://basilisk.fr/sandbox/b-flood/Readme](/sandbox/b-flood/Readme)
 
 ## Pluie sur un plan incliné
 
@@ -37,9 +37,9 @@ COpier/coller depuis le dossier b-flood les fichiers saint-venant-topo.h darcy.h
 #include "./rain.h"
 /**
 
-Pour comprendre comment imposer une pluie : ouvrir [b-flood/rain.h](http://basilisk.fr/sandbox/b-flood/rain.h)
+Pour comprendre comment imposer une pluie : ouvrir [b-flood/rain.h](/sandbox/b-flood/rain.h)
 
-Pour comprendre comment imposer une friction de manning : ouvrir [b-flood/manning.h](http://basilisk.fr/sandbox/b-flood/manning.h)
+Pour comprendre comment imposer une friction de manning : ouvrir [b-flood/manning.h](/sandbox/b-flood/manning.h)
 
 ### Fonction main()
 

@@ -5,7 +5,7 @@ This test case compares the effect of different Prolongation-functions when appl
 prolongation, and two different versions of the fifth-order prolongation function. We take a simple 1D-discontinuous function, and the grid is
 refined by one level in the sub-domain : ( −0.25 < x < 0.25 ). The refinement region includes the field-discontinuity. The prolongated fine-cell values (marked by blue dots) along with the coarse cell values (marked by red dots) are plotted. We also demonstrate the third order convergence of the error-norm
 which is caused due to the field discontinuity. A continuous field will display an error convergence of order-five using the same prolongation function
-as can be seen in the test case :- [PROLONGATION - CONTINUOUS FUNCTIONS](http://basilisk.fr/sandbox/rajarshi/THESIS_CODES/Adaptivity-Test-Cases/Non-Limited-Version/Test_Case-Prolongation-NoLimiting-ver_bilinear.c)
+as can be seen in the test case :- [PROLONGATION - CONTINUOUS FUNCTIONS](/sandbox/rajarshi/THESIS_CODES/Adaptivity-Test-Cases/Non-Limited-Version/Test_Case-Prolongation-NoLimiting-ver_bilinear.c)
 */
 
 #define dimension 1

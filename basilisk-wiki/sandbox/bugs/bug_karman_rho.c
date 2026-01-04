@@ -25,12 +25,12 @@ than the default one?
 
 I also added a movie for "rho". I also saw artefacts similar to the
 ones I previously reported in:\
-[http://basilisk.fr/sandbox/bugs/bug_karman.c](http://basilisk.fr/sandbox/bugs/bug_karman.c)\
+[https://basilisk.fr/sandbox/bugs/bug_karman.c](/sandbox/bugs/bug_karman.c)\
 so maybe the artefacts in "omega" are caused by artefacts in "rho".
 
 Did I make a mistake or did I encounter a bug? Based on this and on
 the previous report about setting the viscosity:\
-[http://basilisk.fr/sandbox/bugs/porous3D_mu.c](http://basilisk.fr/sandbox/bugs/porous3D_mu.c)\
+[https://basilisk.fr/sandbox/bugs/porous3D_mu.c](/sandbox/bugs/porous3D_mu.c)\
 results obtained with Basilisk could be questionable. It looks to me
 that both the density and the viscosity cannot be set to desired
 values. */
@@ -168,5 +168,5 @@ event adapt (i++) {
 /**
 ## See also
 
-* [Same example with Gerris](http://gerris.dalembert.upmc.fr/gerris/examples/examples/cylinder.html)
+* [Same example with Gerris](https://gerris.dalembert.upmc.fr/gerris/examples/examples/cylinder.html)
 */

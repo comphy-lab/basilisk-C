@@ -1,7 +1,7 @@
 #ifndef _MY_SOLID_H
 #define _MY_SOLID_H
 /**
-The header file for [my solid boundary](http://basilisk.fr/sandbox/tianlong/src/solidboundary/README) implementation. 
+The header file for [my solid boundary](/sandbox/tianlong/src/solidboundary/README) implementation. 
 */
 
 const bool is_slip_x = false; //slip wall or no-slip wall. 

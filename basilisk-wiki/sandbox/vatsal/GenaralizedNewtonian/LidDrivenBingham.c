@@ -167,7 +167,7 @@ The post-processing codes and simulation data are available at: [PostProcess](ht
 
 # Bibliography
 
-* [Same example in Basilisk using the Augmented Lagrangian Method](http://basilisk.fr/sandbox/popinet/lid-bingham.c)
+* [Same example in Basilisk using the Augmented Lagrangian Method](/sandbox/popinet/lid-bingham.c)
 
 * Vola, D., Boscardin, L. and Latché, J.C., 2003. Laminar unsteady flows of Bingham fluids: a numerical strategy and some benchmark results. Journal of Computational Physics, 187(2), pp.441-456.
   [doi: 10.1016/S0021-9991(03)00118-9](https://doi.org/10.1016/S0021-9991(03)00118-9)

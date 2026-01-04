@@ -283,5 +283,5 @@ plot "< awk '{if ($2==".t.") print $0;}' atomisation.out" u \
 
 ## See also
 
-* [Same example with Gerris](http://gerris.dalembert.upmc.fr/gerris/examples/examples/atomisation.html)
+* [Same example with Gerris](https://gerris.dalembert.upmc.fr/gerris/examples/examples/atomisation.html)
 */

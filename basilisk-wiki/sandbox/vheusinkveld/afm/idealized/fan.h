@@ -1,5 +1,5 @@
 /** 
-This page contains all functions associated with the fan. Note that this is the 3D extension off the well documented [fan page](http://basilisk.fr/sandbox/vheusinkveld/fan.c) 
+This page contains all functions associated with the fan. Note that this is the 3D extension off the well documented [fan page](/sandbox/vheusinkveld/fan.c) 
 */
 
 #include "fractions.h"	// Needed to compute fan fractions

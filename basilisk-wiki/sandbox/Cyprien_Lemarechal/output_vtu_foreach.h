@@ -2,7 +2,7 @@
 # Changes
 
 This function is borrowed from acastillo's sandbox :
-[output_vtu_foreach.h](http://basilisk.fr/sandbox/acastillo/output_fields/output_vtu_foreach.h)
+[output_vtu_foreach.h](/sandbox/acastillo/output_fields/output_vtu_foreach.h)
 
 The addition is a function "time_output_test()" that can be called during the run to write
 a time-series collection of files, either in squential or MPI.
@@ -11,7 +11,7 @@ to diplay each timestep saved with "output_vtu()".
 
 The header / footer will be missing in restart / brut stop.
 
-An example [here](http://basilisk.fr/sandbox/Cyprien_Lemarechal/pipe_geometry.c).
+An example [here](/sandbox/Cyprien_Lemarechal/pipe_geometry.c).
 */
 
 #include <stdint.h>

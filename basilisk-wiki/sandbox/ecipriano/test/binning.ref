@@ -1,0 +1,81 @@
+Total number of active bins         = 18
+Average number of cells in the bins = 881
+Maximum number of cells in the bins = 8152
+Minimum number of cells in the bins = 4
+Number of masked/excluded cells     = 514
+
+BIN[103] has 77 cells
+BIN[113] has 4 cells
+BIN[102] has 29 cells
+BIN[ 92] has 89 cells
+BIN[ 93] has 35 cells
+BIN[ 82] has 134 cells
+BIN[ 71] has 81 cells
+BIN[ 72] has 75 cells
+BIN[ 61] has 188 cells
+BIN[ 50] has 160 cells
+BIN[ 51] has 70 cells
+BIN[ 40] has 299 cells
+BIN[ 29] has 386 cells
+BIN[ 30] has 36 cells
+BIN[ 19] has 712 cells
+BIN[  8] has 868 cells
+BIN[  9] has 4475 cells
+BIN[ 10] has 8152 cells
+
+BIN[0] has phi[0] = 341.204
+BIN[0] has phi[1] = 0.566421
+
+BIN[1] has phi[0] = 300.579
+BIN[1] has phi[1] = 0.606003
+
+BIN[2] has phi[0] = 310.827
+BIN[2] has phi[1] = 0.596474
+
+BIN[3] has phi[0] = 381.356
+BIN[3] has phi[1] = 0.522544
+
+BIN[4] has phi[0] = 407.134
+BIN[4] has phi[1] = 0.491724
+
+BIN[5] has phi[0] = 436.466
+BIN[5] has phi[1] = 0.453325
+
+BIN[6] has phi[0] = 468.447
+BIN[6] has phi[1] = 0.408435
+
+BIN[7] has phi[0] = 488.456
+BIN[7] has phi[1] = 0.378382
+
+BIN[8] has phi[0] = 516.771
+BIN[8] has phi[1] = 0.3334
+
+BIN[9] has phi[0] = 547.9
+BIN[9] has phi[1] = 0.281569
+
+BIN[10] has phi[0] = 565.402
+BIN[10] has phi[1] = 0.251537
+
+BIN[11] has phi[0] = 588.784
+BIN[11] has phi[1] = 0.210955
+
+BIN[12] has phi[0] = 623.555
+BIN[12] has phi[1] = 0.151611
+
+BIN[13] has phi[0] = 641.278
+BIN[13] has phi[1] = 0.122597
+
+BIN[14] has phi[0] = 665.395
+BIN[14] has phi[1] = 0.0871012
+
+BIN[15] has phi[0] = 703.721
+BIN[15] has phi[1] = 0.0408259
+
+BIN[16] has phi[0] = 767.687
+BIN[16] has phi[1] = 0.00590395
+
+BIN[17] has phi[0] = 800
+BIN[17] has phi[1] = 4.23601e-05
+
+Total change of Y = 10
+Total change of T = 10

@@ -1,6 +1,6 @@
 ![](oberwolfach.jpg){width="200px" style="padding: 0 10px; float: left;"}
 I am Stéphane Popinet, the creator
-of [Gerris](http://gerris.dalembert.upmc.fr) and [Basilisk](http://basilisk.fr). Since 2013 I have been
+of [Gerris](https://gerris.dalembert.upmc.fr) and [Basilisk](https://basilisk.fr). Since 2013 I have been
 a ''directeur de recherche'' at Centre National de la Recherche
 Scientifique ([CNRS](http://www.cnrs.fr/index.php)) based at Institut
 Jean le Rond d'Alembert ([∂’Alembert](http://www.dalembert.upmc.fr))
@@ -24,18 +24,31 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
-@Article{eshima2025,
-author={Jun Eshima and Tristan Aurégan and Palas Kumar Farsoiya and Stéphane Popinet and Howard A. Stone and Luc Deike},
-title={Size Amplification of Jet Drops due to Insoluble Surfactants},
-journal={Physical Review Letters},
-year={2025},
-url={https://arxiv.org/abs/2507.09189v1}
+@Article{miller2025,
+author={Lennard Miller and Antoine Venaille and Stéphane Popinet and Bruno Deremble},
+title={Enhanced Gulf Stream Path Variability Under Intensified Stratification},
+journal={Science Advances},
+year={2025}
+}
+
+@Article{han2025,
+author={Tian-yang Han and Jie-yun Pan and Chong-sen Huang and Jie Zhang and Ming-jiu Ni and Stéphane Popinet and Stéphane Zaleski},
+title={Applying contact angles based on a continuously moving contact line in {2D} {VOF} simulations},
+journal={Journal of Computational Physics},
+year={2025}
+}
+
+@Article{yang2025,
+author={Yang, Rui and Liu, Zehua and Farsoiya, Palas and Popinet, Stéphane and Deike, Luc},
+title={Surfactants effects on gravity-capillary waves},
+journal={Journal of Fluid Mechanics},
+year={2025}
 }
 
 @Article{martin2025,
 author={Clara Martin-Blanco and Nicolo Scapin and Jiarong Wu and Stéphane Popinet and J. Thomas Farrar and Bertrand Chapron and Luc Deike},
 title={Kinematics of gravity-capillary waves above an evolving underwater current},
-journal={Geophysical Research Letters},
+journal={Journal of Fluid Mechanics},
 year={2025}
 }
 
@@ -43,13 +56,6 @@ year={2025}
 author={Nicolo Scapin and Jiarong Wu and Bertrand Chapron and J. Thomas Farrar and Stéphane Popinet and Luc Deike},
 title={Growth and dissipation in wind-forced breaking waves},
 journal={Geophysical Research Letters},
-year={2025}
-}
-
-@Article{saini2025,
-author={Mandeep Saini and Vatsal Sanjay and Youssef Saade and Detlef Lohse and Stephane Popinet},
-title={Implementation of integral surface tension formulations in a volume of fluid framework and their applications to Marangoni flows},
-journal={Journal of Computational Physics},
 year={2025}
 }
 
@@ -63,7 +69,7 @@ year={2025}
 @Article{deoclecio2025,
   author = 	 {Deoclecio, Lucas and Thompson, Roney and Popinet, Stéphane and Soares, Edson},
   title = 	 {Bubble rise and interfacial coalescence initiation in elasto-viscoplastic materials},
-  journal = 	 {Journal of Fluid Mechanics},
+  journal = 	 {Journal of Non-Newtonian Fluid Mechanics},
   year = 	 {2025}
 }
 ~~~
@@ -108,7 +114,7 @@ year={2025}
   number =       {12},
   year = 	 {2013},
   doi =          {10.1615/AtomizSpr.2013007619},
-  url =          {http://gerris.dalembert.upmc.fr/papers/chen2013.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/chen2013.pdf}
 }
 
 @Article{fuster2013,
@@ -129,7 +135,7 @@ year={2025}
   volume =       {39},
   number =       {10},
   pages =        {1864-1874},
-  url =          {http://gerris.dalembert.upmc.fr/papers/tomar2010.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/tomar2010.pdf}
 }
 
 @Article{bague2010,
@@ -139,7 +145,7 @@ year={2025}
   year = 	 {2010},
   volume =       {22},
   number =       {092104},
-  url =          {http://gerris.dalembert.upmc.fr/papers/bague2010.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/bague2010.pdf}
 }
 ~~~
 
@@ -165,7 +171,7 @@ doi = {10.5194/gmd-11-4727-2018}
   year =  {2010},
   volume = {115},
   number = {C11025},
-  url =          {http://gerris.dalembert.upmc.fr/papers/ocallaghan2010.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/ocallaghan2010.pdf}
 }
 
 @Article{rickard2009,
@@ -175,7 +181,7 @@ doi = {10.5194/gmd-11-4727-2018}
   year = 	 {2009},
   volume =       {30},
   pages =        {16-28},
-  url =          {http://gerris.dalembert.upmc.fr/papers/isw.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/isw.pdf}
 }
 ~~~
 
@@ -224,7 +230,7 @@ doi = {10.5194/gmd-11-4727-2018}
   pages = {541-569},
   year = {2015},
   doi = {10.1017/jfm.2015.103},
-  url = {http://gerris.dalembert.upmc.fr/papers/deike2015.pdf}
+  url = {https://gerris.dalembert.upmc.fr/papers/deike2015.pdf}
 }
 
 @Article{tsai2013,
@@ -234,7 +240,7 @@ doi = {10.5194/gmd-11-4727-2018}
   pages =        {108-119},
   year = 	 {2013},
   doi =          {10.1016/j.coastaleng.2013.02.011},
-  url =          {http://gerris.dalembert.upmc.fr/papers/tsai2013.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/tsai2013.pdf}
 }
 
 @Article{popinet2010,
@@ -244,13 +250,15 @@ doi = {10.5194/gmd-11-4727-2018}
   year = 	 {2010},
   volume =       {34},
   pages =        {36-49},
-  url =          {http://gerris.dalembert.upmc.fr/papers/wave.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/wave.pdf}
 }
 ~~~
 
 ### Drops and bubbles
 
 ~~~bib
+@hal{eshima2025, hal-05419560}
+
 @hal{saini2024, hal-04563704}
 
 @hal{fintzi2024b, hal-04694017}
@@ -456,7 +464,7 @@ url={http://www.tsunamisociety.org/STHVol35N3Y2016.pdf}
   number =       {4},
   pages =        {1213-1227},
   doi =          {10.5194/nhess-12-1213-2012},
-  url =          {http://gerris.dalembert.upmc.fr/papers/popinet2012.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/popinet2012.pdf}
 }
 
 @Article{popinet2011,
@@ -464,7 +472,7 @@ url={http://www.tsunamisociety.org/STHVol35N3Y2016.pdf}
   title = 	 {Quadtree-adaptive tsunami modelling},
   journal = 	 {Ocean Dynamics},
   year = 	 {2011},
-  url =          {http://gerris.dalembert.upmc.fr/papers/tsunami.pdf},
+  url =          {https://gerris.dalembert.upmc.fr/papers/tsunami.pdf},
   volume =       {61},
   number =       {9},
   pages =        {1261-1285}
@@ -477,7 +485,7 @@ url={http://www.tsunamisociety.org/STHVol35N3Y2016.pdf}
   year = 	 {2007},
   number =       {16},
   pages =        {224-249},
-  url =          {http://gerris.dalembert.upmc.fr/ocean.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/ocean.pdf}
 }
 ~~~
 
@@ -516,7 +524,7 @@ DOI = {10.5194/nhess-22-617-2022}
   title = 	 {High-resolution computational fluid dynamics modelling of suspended shellfish structures},
   journal = 	 {Environmental Fluid Mechanics},
   year = 	 {2010},
-  url =          {http://gerris.dalembert.upmc.fr/papers/delaux2010.pdf},
+  url =          {https://gerris.dalembert.upmc.fr/papers/delaux2010.pdf},
   volume =       {11},
   number =       {4},
   pages =        {405-425},
@@ -551,7 +559,7 @@ DOI = {10.5194/nhess-22-617-2022}
   volume =       {21},
   number =       {10},
   pages =        {1574-1589},
-  url =          {http://gerris.dalembert.upmc.fr/tangaroa.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/tangaroa.pdf}
 }
 ~~~
 
@@ -587,7 +595,7 @@ url={https://doi.org/10.1017/jfm.2017.543}
   volume = {37},
   number = {5},
   year = {2014},
-  url =          {http://gerris.dalembert.upmc.fr/papers/staron2014.pdf},
+  url =          {https://gerris.dalembert.upmc.fr/papers/staron2014.pdf},
   doi = {10.1140/epje/i2014-14005-6}
 }
 
@@ -608,7 +616,7 @@ url={https://doi.org/10.1017/jfm.2017.543}
   volume =       {24},
   pages =        {103301},
   doi =          {10.1063/1.4757390},
-  url =          {http://gerris.dalembert.upmc.fr/papers/staron2012.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/staron2012.pdf}
 }
 
 @Article{lagree2011,
@@ -618,7 +626,7 @@ url={https://doi.org/10.1017/jfm.2017.543}
   year = 	 {2011},
   volume =       {686},
   pages =        {378-408},
-  url =          {http://gerris.dalembert.upmc.fr/papers/lagree2011.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/lagree2011.pdf}
 }
 ~~~
 
@@ -641,7 +649,7 @@ url={https://doi.org/10.1017/jfm.2017.543}
   volume = {71},
   year = {2015},
   doi = {doi.org/10.1016/j.ijmultiphaseflow.2014.12.005},
-  url = {http://gerris.dalembert.upmc.fr/papers/lopez2015.pdf}
+  url = {https://gerris.dalembert.upmc.fr/papers/lopez2015.pdf}
 }
 
 @Article{herrada2012,
@@ -652,7 +660,7 @@ url={https://doi.org/10.1017/jfm.2017.543}
   number =       {2},
   pages =        {026305},
   year = 	 {2012},
-  url = {http://gerris.dalembert.upmc.fr/papers/herrada2012.pdf}
+  url = {https://gerris.dalembert.upmc.fr/papers/herrada2012.pdf}
 }
 
 @Article{lopez-herrera2011,
@@ -662,7 +670,7 @@ url={https://doi.org/10.1017/jfm.2017.543}
   year = 	 {2011},
   volume =       {230},
   pages =        {1939-1955},
-  url =          {http://gerris.dalembert.upmc.fr/papers/ehd.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/ehd.pdf}
 }
 ~~~
 
@@ -686,6 +694,8 @@ url={https://doi.org/10.1017/jfm.2017.543}
 ### Numerical methods
 
 ~~~bib
+@hal{saini2025, hal-05240635}
+
 @article{pan2024,
   title={An edge-based interface tracking (EBIT) method for multiphase-flow simulation with surface tension},
   author={Pan, Jieyun and Long, Tian and Chirco, Leonardo and Scardovelli, Ruben and Popinet S\'{e}phane and Zaleski S\'{e}phane},
@@ -755,7 +765,7 @@ abstract = "Abstract This work reports a direct numerical simulation study on su
   title = 	 {Parallel simulation of multiphase flows using octree adaptivity and the volume-of-fluid method},
   journal = 	 {Compte-rendus de l'Académie des Sciences, Paris},
   year = 	 {2011},
-  url =          {http://gerris.dalembert.upmc.fr/papers/agbaglah2011.pdf},
+  url =          {https://gerris.dalembert.upmc.fr/papers/agbaglah2011.pdf},
   volume =       {339},
   pages =        {194-207}
 }
@@ -767,7 +777,7 @@ abstract = "Abstract This work reports a direct numerical simulation study on su
   year = 	 {2009},
   volume =       {41},
   pages =        {065001},
-  url =          {http://gerris.dalembert.upmc.fr/papers/FDR.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/FDR.pdf}
 }
 
 @Article{popinet2009,
@@ -777,7 +787,7 @@ abstract = "Abstract This work reports a direct numerical simulation study on su
   year = 	 {2009},
   volume =       {228},
   pages =        {5838–5866},
-  url =          {http://gerris.dalembert.upmc.fr/papers/tension.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/papers/tension.pdf}
 }
 
 @Article{fuster2009a,
@@ -800,7 +810,7 @@ abstract = "Abstract This work reports a direct numerical simulation study on su
   volume =	 {190},
   number =	 {2},
   pages =	 {572-600},
-  url =          {http://gerris.dalembert.upmc.fr/gerris.pdf}
+  url =          {https://gerris.dalembert.upmc.fr/gerris.pdf}
 }
 
 @article{popinet1999,
@@ -818,6 +828,13 @@ abstract = "Abstract This work reports a direct numerical simulation study on su
 ## Conferences
 
 ~~~bib
+@InProceedings{popinet2025b,
+  author = {Stéphane Popinet and Pierre-Yves Lagrée and Matthew Hayward and Emily Lane and Eddie Beetham and Paul S. Kench and Jiarong Wu and Luc Deike},
+  title = {Mécanique des fluides pour l'environnement : de d'{A}lembert et {B}enjamin {F}ranklin à nos jours (invited opening plenary lecture)},
+  year =	 2025,
+  booktitle =	 {26ème Congrès Francais de Mécanique, Metz, 25-29 August}
+}
+
 @InProceedings{popinet2025,
   author = {Stéphane Popinet and Arnaud Antkowiak and Pierre-Yves Lagrée and Luc Deike and Jiarong Wu},
   title =	 {Thick or thin? {M}odelling film flows from microns to kilometers (invited Keynote lecture)},
@@ -1214,7 +1231,7 @@ waves},
   booktitle =	 {Newton Institute Scoping Meeting on Multi-scale
                   Modelling of the Atmosphere and Ocean, University of
                   Reading, UK, 25-26 March},
-  url =		 {http://gerris.dalembert.upmc.fr/papers/newton.pdf}
+  url =		 {https://gerris.dalembert.upmc.fr/papers/newton.pdf}
 }
 
 @InProceedings{popinet2009a,
@@ -1412,7 +1429,7 @@ University of Florida at Gainesville, 20-24th June 2011.
   title =     {Introduction to numerical methods for interfacial flows},
   year =      {2011},
   booktitle = {Lecture notes},
-  url =       {http://gerris.dalembert.upmc.fr/papers/course.pdf}
+  url =       {https://gerris.dalembert.upmc.fr/papers/course.pdf}
 }
 
 @InProceedings{popinet2011d,
@@ -1420,6 +1437,6 @@ University of Florida at Gainesville, 20-24th June 2011.
   title =     {Breakup of cylindrical jets: Singularities and self-similar solutions},
   year =      {2011},
   booktitle = {Lecture notes},
-  url =       {http://gerris.dalembert.upmc.fr/papers/course2.pdf}
+  url =       {https://gerris.dalembert.upmc.fr/papers/course2.pdf}
 }
 ~~~

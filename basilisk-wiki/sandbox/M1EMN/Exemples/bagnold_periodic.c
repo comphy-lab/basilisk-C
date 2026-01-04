@@ -71,7 +71,7 @@ this gives  (mind square root of 2):
  so that we have, as we wish:
 $$ \tau_{12} =   2 \mu(I) p \frac{D_{12}}{ \sqrt{2}D_2} =
    \mu(I)p $$
- The component  $\tau_{12}$ is as we wish $\mu(I)p $.
+ The component  $\tau_{12}$ is as we wish $\mu(I)p$.
  
  
 Equilibrium between pressure gradient and viscosity (writing $\tau$ for a shorthand of $\tau_{12}$), the projection of the equations
@@ -85,13 +85,13 @@ the stress $\tau$  and the pressure increase from the free surface, and by the C
 $\mu(I) = \tan(\alpha)$
 as
 $$\mu(I)= \mu_0 + (\Delta \mu) I/(I_0 + I) = \tan (\alpha)$$
-this gives teh constant value of $I_\alpha$ across the layer :
-$I_\alpha =  (-I_0 \mu_0 + I_0 \tan( \alpha) )/(\Delta \mu + \mu_0 - tan (\alpha))$
+this gives the constant value of $I_\alpha$ across the layer :
+$I_\alpha =  (-I_0 \mu_0 + I_0 \tan( \alpha) )/(\Delta \mu + \mu_0 - \tan (\alpha))$
 but remember
 $I = d_g \sqrt{2} D_2 /\sqrt{p/\rho}$
 so that
-  $$I_\alpha = d_g  \frac{\partial u}{\partial y}/\sqrt{g (h-y) cos(\alpha)}$$
-this allows to find  $\frac{\partial u}{\partial y} $ and the velocity by integration.
+  $$I_\alpha = d_g  \frac{\partial u}{\partial y}/\sqrt{g (h-y) \cos(\alpha)}$$
+this allows to find  $\frac{\partial u}{\partial y}$ and the velocity by integration.
 */
 /**
  just before, let us include the NS code, define the precision $2^N$, define the angle 24.64 degrees
@@ -104,7 +104,7 @@ double dg;
     scalar mu_eq[],foo[];
 /**
 now, come back to the velocity shear which  is
- $$  \frac{\partial u}{\partial y} = \frac{I_\alpha}{d_g} \sqrt{g  cos(\alpha)} \sqrt{(h-y)} $$
+ $$  \frac{\partial u}{\partial y} = \frac{I_\alpha}{d_g} \sqrt{g  \cos(\alpha)} \sqrt{(h-y)} $$
  note the
  numerical value  `(0.114 - 0.3 tan(alpha))/(-0.64 + 1. tan(alpha))` of $I_\alpha$
  where  $\mu_0=0.38$ $\Delta \mu = 0.26$ and $I_0=0.3$, so the exact Bagnold shear velocity is:
@@ -115,7 +115,7 @@ double dUb( double y){
 }
 /**
 This gives the Bagnold's solution
-$$ u = \frac{2}{3} \frac{I_\alpha}{d_g} \sqrt{g h^3 cos(\alpha)}   (1 - (1 - \frac{y}{h})^{3/2})$$
+$$ u = \frac{2}{3} \frac{I_\alpha}{d_g} \sqrt{g h^3 \cos(\alpha)}   (1 - (1 - \frac{y}{h})^{3/2})$$
  (note the  numerical value  for alpha=0.43, dg=0.04 U0 = 2.06631)
 */
 double Ub( double y){
@@ -188,8 +188,8 @@ event init (t = 0) {
   mu = muv;
 /**
   pressure gradient, gravity acceleartion `mdpdx`
- $$-\frac{\partial p}{\partial x} = \sin(alpha) $$
- $$-\frac{\partial p}{\partial y} = -\cos(alpha) $$
+ $$-\frac{\partial p}{\partial x} = \sin(\alpha) $$
+ $$-\frac{\partial p}{\partial y} = -\cos(\alpha) $$
 */
     const face vector mdpdx[] = {sin(alpha),-cos(alpha)};
 
@@ -318,7 +318,7 @@ Plots of the velocity,  $\tau$ and $p$, the two last are linear as expected:
  p'xprof' u 1:2 t'U computed' ,''u 1:($7*$3) t'tau comp.','' u 1:6 t'p'
 ~~~
 
-We check the pressure $p$ is $cos(alpha)*(1-y)$
+We check the pressure $p$ is $\cos(\alpha)*(1-y)$
  
  
 ~~~gnuplot pressure profiles compared to the lithostatic for Bagnold flow
@@ -327,7 +327,7 @@ We check the pressure $p$ is $cos(alpha)*(1-y)$
  p[][0:]'xprof' u 1:6 t'Pression',''u 1:($5) t'cos(alpha)*(1-y)' w l
 ~~~
  
- we verify that $(\mu_{eq} \partial u/ \partial y)/tan(\alpha)$ is  $p$
+ we verify that $(\mu_{eq} \partial u/ \partial y)/ \tan(\alpha)$ is  $p$
  and that the computed velocity is the Bagnold one.
  
  
@@ -350,13 +350,13 @@ We check that $(\partial u/ \partial y)$ is $\sqrt{2}D_2$
 
 ## Links
  
- * This rheology is implemented in [http://basilisk.fr/sandbox/M1EMN/Exemples/granular.h]() for collapses, silos etc.
+ * This rheology is implemented in [https://basilisk.fr/sandbox/M1EMN/Exemples/granular.h]() for collapses, silos etc.
 
  * see Bingham examples
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_segregation.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_segregation.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c]()
  
 ## Bibliography
  
@@ -368,7 +368,7 @@ We check that $(\partial u/ \partial y)$ is $\sqrt{2}D_2$
  * Pierre Jop, Yoël Forterre & Olivier Pouliquen
  "A constitutive law for dense granular flows", Vol 441 8 June 2006 doi:10.1038/nature04801
 
- * [related example in Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/poiseuille.html#bagnold)
+ * [related example in Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/poiseuille.html#bagnold)
 
  
  

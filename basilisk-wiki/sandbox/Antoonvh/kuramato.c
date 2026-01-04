@@ -60,10 +60,11 @@ int main()
     scalar b[];
     foreach()
       b[] = u[];
-    solve (u,
-	   u[] + dt/2.*u[]*(u[1] - u[-1])/(2.*Delta) + dt/2*(u[-1] - 2.*u[] + u[1])/sq(Delta)
-	   + dt/2*(u[-2] - 4.*u[-1] + 6.*u[] - 4.*u[1] + u[2])/sq(sq(Delta)),
-	   b);
+    mgstats solve_stats = 
+      solve (u,
+             u[] + dt/2.*u[]*(u[1] - u[-1])/(2.*Delta) + dt/2*(u[-1] - 2.*u[] + u[1])/sq(Delta)
+             + dt/2*(u[-2] - 4.*u[-1] + 6.*u[] - 4.*u[1] + u[2])/sq(sq(Delta)),
+             b[]);
     foreach()
       u[] += (u[] - b[]); 
     fprintf (stderr, "%g %d\n", t, solve_stats.i);

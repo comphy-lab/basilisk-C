@@ -16,7 +16,7 @@ We look at a 2D column of cohesive grains collapsing on a flat surface.
 $$ \tau = (Co + \mu(I) P ) \frac{D}{|D|}$$
  the equivalent viscosity
  $$\eta =\frac{Co + \mu(I) P}{\sqrt{2} D_2}$$
-is included in Navier Stokes in [http://basilisk.fr/sandbox/M1EMN/Exemples/granular.h]()
+is included in Navier Stokes in [https://basilisk.fr/sandbox/M1EMN/Exemples/granular.h]()
 
 ## Code
  
@@ -298,7 +298,7 @@ make granular_column_cohesif.c.html;
 ## Results
 
  First we check that we have exactly the same results than in the pure
- [dry column](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column.c) test
+ [dry column](/sandbox/M1EMN/Exemples/granular_column.c) test
  (small differences are maybe due to mesh adaptation) and
  with superposition of contact dynamics method DCM:
  
@@ -416,19 +416,19 @@ collapse
 ## Related examples, links
  
 
- * [The basic Bagnold flow](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic.c)
+ * [The basic Bagnold flow](/sandbox/M1EMN/Exemples/bagnold_periodic.c)
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c]()
 
- * [dry column](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column.c)
+ * [dry column](/sandbox/M1EMN/Exemples/granular_column.c)
 
- * [silos](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass.c)
+ * [silos](/sandbox/M1EMN/Exemples/granular_sandglass.c)
 
  
- * le 1D [http://basilisk.fr/_edit/sandbox/M1EMN/Exemples/cohesive_savagehutter.c]()
+ * le 1D [https://basilisk.fr/_edit/sandbox/M1EMN/Exemples/cohesive_savagehutter.c]()
  
  * le 2D RNSP en multilayer
- [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_ML.c]()
+ [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_ML.c]()
 
 
 ## Bibliography

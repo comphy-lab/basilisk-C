@@ -385,7 +385,7 @@ NB this method is easy for a dimension-2 problem, but not applicable to larger p
 
 **3.b Second method : using adjoint basis **
 
-The dual basis is defined by the property $\hat X_i^\dag \cdot  \hat X_j = \delta_{ij}$ (see the reference document [LinearSystems.md](http://basilisk.fr/sandbox/easystab/LinearSystems.md).
+The dual basis is defined by the property $\hat X_i^\dag \cdot  \hat X_j = \delta_{ij}$ (see the reference document [LinearSystems.md](/sandbox/easystab/LinearSystems.md).
 
 This leads to :
 $$

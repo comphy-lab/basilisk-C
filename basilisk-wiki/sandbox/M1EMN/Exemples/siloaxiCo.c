@@ -399,11 +399,11 @@ linear = true,
  
 ## Links
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/granular.h]()  $\mu(I)$ and silo and Co 
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/granular.h]()  $\mu(I)$ and silo and Co 
  
  * same in 2D, to come....
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column_cohesif.c]() collapse granular 
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/granular_column_cohesif.c]() collapse granular 
  
 ## Bibliography
  

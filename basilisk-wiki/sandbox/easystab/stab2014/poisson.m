@@ -80,8 +80,8 @@ A=DDxx+DDyy+DDzz;
 
 %{
 # I change the test function and the boundary condition
-I have changed the test function from sine to cosine,the original function sin(pi*k*X).*sin(pi*l*Y).*sin(pi*m*Z) is from [poisson.m](http://basilisk.fr/sandbox/easystab/poisson3D.m).And
-i change the the boundary conditon by using identity matrix instead of sparse matrix,and i also change the value of 'b' in boudary condition to move the position of graph,and this method come from the boundary condition of [poisson.m](http://basilisk.fr/sandbox/easystab/poisson3D.m),i just add a direction z.
+I have changed the test function from sine to cosine,the original function sin(pi*k*X).*sin(pi*l*Y).*sin(pi*m*Z) is from [poisson.m](/sandbox/easystab/poisson3D.m).And
+i change the the boundary conditon by using identity matrix instead of sparse matrix,and i also change the value of 'b' in boudary condition to move the position of graph,and this method come from the boundary condition of [poisson.m](/sandbox/easystab/poisson3D.m),i just add a direction z.
  %}
 % forcing
 k=1; l=1; m=1;

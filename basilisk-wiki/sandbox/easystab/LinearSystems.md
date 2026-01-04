@@ -1,4 +1,4 @@
-**(This document belongs to the lecture notes for the [M2-DET](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md) course, D. Fabre, nov. 2018-dec. 2023)**
+**(This document belongs to the lecture notes for the [M2-DET](/sandbox/easystab/M2DET/Instabilities.md) course, D. Fabre, nov. 2018-dec. 2023)**
 
 This documents gives mathematical support for the study of linear dynamical systems. The notions will
 be used throughout the course, especially in lecture 1 and lecture 9.
@@ -270,7 +270,7 @@ $$
 $$
 
 A Python program solving this problem using both **scipy.linalg.eig** (direct method) and **scipy.sparse.linalg.eigs** (iterative method) can be found 
-[here](http://basilisk.fr/sandbox/easystab/demo_eig.py).
+[here](/sandbox/easystab/demo_eig.py).
 
 
 The program returns the following set of eigenvalues : 

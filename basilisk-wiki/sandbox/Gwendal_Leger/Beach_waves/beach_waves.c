@@ -1,7 +1,7 @@
 /**
-This is a small example heavily based on [beach.c](http://basilisk.fr/src/test/beach.c).\
-It is basically a fusion of my [first](http://basilisk.fr/sandbox/Gwendal_Leger/wave_topo/beach_topo.c) 
-and [second](http://basilisk.fr/sandbox/Gwendal_Leger/waves_1D/waves_1D.c) tests, in which one can specify the bathymetry *and* the type of waves used.
+This is a small example heavily based on [beach.c](/src/test/beach.c).\
+It is basically a fusion of my [first](/sandbox/Gwendal_Leger/wave_topo/beach_topo.c) 
+and [second](/sandbox/Gwendal_Leger/waves_1D/waves_1D.c) tests, in which one can specify the bathymetry *and* the type of waves used.
 */
 
 
@@ -86,7 +86,7 @@ FILE *ftime, *fanim;
 
 
 /**
-We can choose among the same waves than in [my first example](http://basilisk.fr/sandbox/Gwendal_Leger/wave_topo/beach_topo.c),
+We can choose among the same waves than in [my first example](/sandbox/Gwendal_Leger/wave_topo/beach_topo.c),
 or by supplying a 0 we can use the wave theory :
 
 * 1 = square

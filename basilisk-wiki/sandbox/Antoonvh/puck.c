@@ -2,7 +2,7 @@
 # A Puck
 
 After the succes of 
-[Alexis](http://basilisk.fr/sandbox/aberny/csgBool.c) we try to
+[Alexis](/sandbox/aberny/csgBool.c) we try to
 construct a shape.
 */
 #include "grid/octree.h"

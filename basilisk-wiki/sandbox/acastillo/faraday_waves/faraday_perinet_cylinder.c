@@ -134,7 +134,7 @@ which can be solved using existing Basilisk code.
 
 Our simulation utilizes Basilisk's two-phase incompressible solver with embedded
 boundaries, along with modifications from
-[contact-embed.h](http://basilisk.fr/sandbox/tavares/contact-embed.h) to achieve
+[contact-embed.h](/sandbox/tavares/contact-embed.h) to achieve
 correct aspect ratios. More details are available in [Tavares et al.
 (2024)](#tavares2024). This case is 3D only. 
 

@@ -29,9 +29,7 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
-* [Default arguments do not work for functions returning a pointer](defaultargs.c)
-* [user-defined macros do not apply reductions](reductions.c)
-* [Iterative convergence on a multigrid is unreasonably bad compared to a tree grid](poisson_mg.c)
+* [Limited timer resolution can cause a crash](too_fast.c)
 * [No-slip condition violated for viscous Stokes flow with embedded boundary](marginal_embed_2.c)
 * [Vertex scalar: refinement of the vertex scalar on the block boundary for MPI run is not correct](my_adapt_bug.c)
 * [Bview: `squares()` may not slice the cells correctly](plane.c)
@@ -54,7 +52,7 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 * [Fails of fractions() when an interface crosses exactly in the center of cells](bug-fractions.c)
 * [Error solving the Poisson equation of a program compiled in parallel that runs in serial](http://www.basilisk.fr/sandbox/fuster/Miscellaneous/bugpoisMPI.c)
 * [Neumann conditions are false in the second row of ghost cells](boundary_2_neumann.c)
-* [Fail of line_length_center() in geometry.h when an interface is exactly inbetween two cells](http://basilisk.fr/sandbox/crobert/geometry_mwe.c)
+* [Fail of line_length_center() in geometry.h when an interface is exactly inbetween two cells](/sandbox/crobert/geometry_mwe.c)
 * [Interactive bview does not understand keys to `save()`](bv.c)
 * [Restore function resetting N to 1](test_restart.c)
 * [Box-boundary values are not set consistently among grid types](mgbc.c)
@@ -70,7 +68,6 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 * [Multilayer vertical diffusion becomes singular if there exist dry cells in the domain](singularity_diffusion.c)
 * [Minor qcc errors when compiling+linking with OpenMPI,Petsc libraries](openmpi_petsc_minimal.c)
 * [Tracer noise when there are embedded boundaries and two viscosities](tracer_noise.c)
-* [Macros are incompatible with utils.h or run.h](macro_utils_h.c)
 
 # [It's not a bug, it's a feature](https://fr.wiktionary.org/wiki/it%E2%80%99s_not_a_bug,_it%E2%80%99s_a_feature)
 
@@ -95,6 +92,10 @@ mistakes.
 
 The bugs below should be fixed in the most recent release.
 
+* [user-defined macros do not apply reductions](reductions.c) [15/10/25](/src/?changes=20251015162804)
+* [Optional arguments and function pointers](optional.c) [15/10/25](/src/?changes=20251015123902)
+* [Iterative convergence on a multigrid is unreasonably bad compared to a tree grid](poisson_mg.c) [17/09/25](/src/?changes=20250917131237)
+* [Default arguments do not work for functions returning a pointer](defaultargs.c) [02/09/25](/src/?changes=20250902153053)
 * [qcc crashes when using the diagonalize macro with a list of scalars](diagonalize_list.c) [31/03/25](/src/?changes=20250331163933)
 * [foreach_neighbor() not properly nested with for (scalar ...)](neighbor.c) [12/02/2025](/src/?changes=20250212195155)
 * [Unused variable in example case ginzburg-landau.c](unused_var_ginzburg-landau.c) [10/11/2024](/src/?changes=20241110160056)
@@ -122,7 +123,7 @@ The bugs below should be fixed in the most recent release.
 * [Squares() does not work properly with underscores](bugsquaresmwe.c) 21/10/2020
 * [collision of types](segment.c): foreach_segment() use *p* for the coordinates of the segments which often collides with the global scalar *p* of the solvers. The obvious simple solution is to rename the coord *p*. 28/4/2020
 * [Periodic boundaries don't work with cartesian1D](periodic.c) 10/4/2020
-* [path to "/home/basilisk/terrain/etopo2" missing](http://basilisk.fr/sandbox/M1EMN/Exemples/maree_bretagne.c) 30/9/2019
+* [path to "/home/basilisk/terrain/etopo2" missing](/sandbox/M1EMN/Exemples/maree_bretagne.c) 30/9/2019
 * [Bview order mirror do not color lines](mirror.c) 18/12/2018
 * [Cells don't intersect with interface correctly at high refinement levels in bview3D](grid_view.c) 10/7/2018
 * [Multigrid MPI crashes in the `boundary()` routine](MGmpiboundary.c) 11/3/2018
@@ -150,6 +151,7 @@ The bugs below should be fixed in the most recent release.
 
 # Not bugs
 
+* [Macros are incompatible with utils.h or run.h](macro_utils_h.c)
 * [bump2D-gpu run in to error "> # 15 shaders"](http://www.basilisk.fr/src/test/bump2D-gpu.c)
 * [We can't change the date of the final `event` during the run](bug_end_time.c)
 * [qcc hangs and create size-increasing file when using a wrong option](qcc_wrong_option.c)
@@ -192,35 +194,36 @@ Critical information is lacking to be able to reproduce the bugs reported below:
 ## Suggestions
 
 * **Please add any suggested improvements/wishlist etc.**
-* https for login page.
 * Option for CUA keys (copy paste with Ctrl + c/v etc)
 * Remove the run timer. *(not sure what this means?)*
-* The changes and history pages could be faster?
 * On side-by-side edit view, add button to match left and right scroll positions
 * Add anchors for plots
 * "Show changes" button in edit mode
 * `gnuplot` on all pages (e.g. a `*.h` page)
-* HTML in "diff" document breaks changes page. [e.g. here](http://basilisk.fr/sandbox/Antoonvh/two_rings.c?changes=20240514102413)
+* HTML in "diff" document breaks changes page. [e.g. here](/sandbox/Antoonvh/two_rings.c?changes=20240514102413)
+* could be nice to use vtk on python scripts  
 * ...
 
 ## Bugs
 
-* **Please report any problem here. Ideally including links to broken pages etc.**
+**Please report any problem here. Ideally including links to broken pages etc.**
+
 * On my mac keyboard the square brackets do not work ! (don't know if it is a bug or not)
 * The left panel "This page" is not available for auxiliary files like [rising.log_centered](/sandbox/lopez/rising.log_centered). How could be then deleted with the wiki?
 * Comments in gnuplot scripts are not ignored as they should.
-* Multilayer link from [general introduction](http://basilisk.fr/src/layered/README) to [horizontal viscosity module](http://basilisk.fr/src/layered/viscosity.h) is broken (points to nonexistant file).   
+* Multilayer link from [general introduction](/src/layered/README) to [horizontal viscosity module](/src/layered/viscosity.h) is broken (points to nonexistant file).   
 * [Bug in search box dialog](searchbox)
 
 ## Not (darcsit) bugs
 
 * Plot is not generated [here](/sandbox/Antoonvh/timeaccuracy.c): *this is because SVG in gnuplot does not support the {/Symbol } fonts, use unicode characters instead as shown [here](/sandbox/Antoonvh/timeaccuracy.c.page?changes=20190514064828)*.
-* This page does not exist any more: [here](/sandbox/Antoonvh/two_rings.c.nopage): *Well, it does not exist [here](http://basilisk.fr/sandbox/Antoonvh/two_rings.c.nopage) either.*
-* [This page](/sandbox/Antoonvh/two_rings.nopage) does not exist, whereas [this mirror](http://basilisk.fr/sandbox/Antoonvh/two_rings.nopage) does exists. Note that [this](/sandbox/Antoonvh/two_rings) page now exists, where it would link to a folder on the old website? *It existed on the old site only because an obsolete version of the file was cached and not correctly updated, so this was a bug in the old site, not the new.*
+* This page does not exist any more: [here](/sandbox/Antoonvh/two_rings.c.nopage): *Well, it does not exist [here](/sandbox/Antoonvh/two_rings.c.nopage) either.*
+* [This page](/sandbox/Antoonvh/two_rings.nopage) does not exist, whereas [this mirror](/sandbox/Antoonvh/two_rings.nopage) does exists. Note that [this](/sandbox/Antoonvh/two_rings) page now exists, where it would link to a folder on the old website? *It existed on the old site only because an obsolete version of the file was cached and not correctly updated, so this was a bug in the old site, not the new.*
 * I want to ignore a warning [here](/sandbox/Antoonvh/distanceat.c), but it is treated as an error. *Calling undeclared functions is (really) bad, so you should find the cause of the warning/error in your code and fix it, rather than ignoring it.*
 
 ## Fixed bugs
 
+* [Forbidden search queries](jacod.md) this was due to a weird "URL filter" on the Jussieu firewall
 * All pages in [the sandbox](/sandbox/) give an "Internal Error" message.
 * SIGFPE in progress.h: [e.g. here](/sandbox/Antoonvh/internalwacesMG.c)
 * Cannot `#include` a specific header file: [e.g. here](/sandbox/Antoonvh/parttest.c)
@@ -247,6 +250,8 @@ all the modifications are lost in the editor (don't know if it is a bug but as f
 * Math/Equations display proper using any browser.
 * Documented files do not need the ".page" suffix anymore.
 * Documented files do not have to start with a comment block.
+* https for login page.
+* The changes and history pages could be faster?
 
 ## Notes
 

@@ -4,9 +4,9 @@
 # aka Saint Venant instationnaires avec frottement de Coulomb sur fond plat
 # Solution de la rupture de barrage
 # http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/code_C_saintvenant.pdf
-# http://basilisk.fr/sandbox/M1EMN/Exemples/svdb.c
-# http://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c
-# friction solide (http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass_muw.c)
+# https://basilisk.fr/sandbox/M1EMN/Exemples/svdb.c
+# https://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c
+# friction solide (/sandbox/M1EMN/Exemples/granular_sandglass_muw.c)
 #
 #  voir Kerswell
 #

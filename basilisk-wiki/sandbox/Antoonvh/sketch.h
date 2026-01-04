@@ -550,17 +550,22 @@ double get_attenuation (coord a, struct _volume inp) {
   scalar s = inp.s;
   double sl = 0;
   foreach_ray_cell_intersection_volume (r, HUGE, s.possible) {
+    double val1 = interpolate_linear (point, inp.s, _a[0].x, _a[0].y, _a[0].z);
+    double val2 = interpolate_linear (point, inp.s, _a[1].x, _a[1].y, _a[1].z);
     coord mean = {0, 0, 0};
     double len = 0;
     foreach_dimension() {
       mean.x = (_a[0].x + _a[1].x)/2.;
       len += sq(_a[0].x - _a[1].x);
     }
-    double val = interpolate (inp.s, mean.x, mean.y, mean.z);
-    if (val > inp.mval) {
+    if (val1 > inp.mval && val2 > inp.mval) {
       len = sqrt(len);
       if (len > 0)
-	sl += fabs(val)*len;
+	sl += fabs((val1 + val2)/2)*len;
+    } else {
+      len = sqrt(len)*((max(val1, val2) - inp.mval)/fabs(val1 - val2));
+      if (len > 0)
+	sl += len*fabs(max(val1, val2) + inp.mval)/2.;
     }
   }
   return sl;
@@ -579,15 +584,23 @@ void mod_pixel_volume (struct _volume inp, ray r, double DG, unsigned char * px)
   int celld = 0; // Number if cells
   double sl = 0; //integral of s times length;
   foreach_ray_cell_intersection_volume(r, DG, s.possible) {
+    double val1 = interpolate_linear (point, inp.s, _a[0].x, _a[0].y, _a[0].z);
+    double val2 = interpolate_linear (point, inp.s, _a[1].x, _a[1].y, _a[1].z);
+    double val = 0;
     coord mean = {0, 0, 0};
     double len = 0;
     foreach_dimension() {
       mean.x = (_a[0].x + _a[1].x)/2.;
       len += sq(_a[0].x - _a[1].x);
     }
-    double val = interpolate (inp.s, mean.x, mean.y, mean.z);
-    if (val > inp.mval) {
+    if (val1 > inp.mval && val2 > inp.mval) {
       len = sqrt(len);
+      val = (val1 + val2)/2.;
+    } else if (val1 > inp.mval || val2 > inp.mval) {
+      len = sqrt(len)*((max(val1, val2) - inp.mval)/fabs(val1 - val2));
+      val = (max(val1,val2) + inp.mval)/2.;
+      }
+    if (val > inp.mval) {
       if (len > 0)
 	sl += fabs(val)*len;
       if (inp.cols) { // Record data 

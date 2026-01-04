@@ -76,6 +76,8 @@ void compute_variable_viscosity()
 	The effective acceleration field will be obtained
 	by interpolating the face values, as is done in
 	compute_variable_viscosity(). */
+/**
+ * Now it is turned off
 vector bodyForce[];
 void compute_bodyForce(Particles p)
 {
@@ -87,6 +89,7 @@ void compute_bodyForce(Particles p)
 			foreach_dimension()
 				bodyForce.x[] = p().B.x*STRENGTH/dv();
 }
+*/
 
 //extern face vector av;
 //

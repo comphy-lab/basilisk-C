@@ -191,8 +191,8 @@ Ce glissement est dû à l'étape visqueuse
 
 # Links
 
-* same example with [Multilayer](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapsesqrt_ML.c)
-* same example with [Bingham](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
+* same example with [Multilayer](/sandbox/M1EMN/Exemples/viscous_collapsesqrt_ML.c)
+* same example with [Bingham](/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
 
 # Bibliographie
 * [Huppert H.](http://www.itg.cam.ac.uk/people/heh/Paper49.pdf)

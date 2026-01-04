@@ -1,10 +1,10 @@
 /**
 ##  Copy of axisymmetric toroidal bubble field
-The same code as the [toroidal](http://basilisk.fr/sandbox/yonghui/vortex/toroidalbubble.c)
+The same code as the [toroidal](/sandbox/yonghui/vortex/toroidalbubble.c)
 code ,
 we want to output a small region near the biggest bubble 
 and then "copy" it to 
-[another](http://basilisk.fr/sandbox/yonghui/vortex/planarvort.c)
+[another](/sandbox/yonghui/vortex/planarvort.c)
 2D simulation.
 */
 #include "axi.h"  

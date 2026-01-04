@@ -281,5 +281,5 @@ plot 'laplace' t "standard GFM" w p pt 5 ps 1
 
 ## See also
 
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/oscillation.html)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/oscillation.html)
 */

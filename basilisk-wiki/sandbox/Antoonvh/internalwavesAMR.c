@@ -80,7 +80,7 @@ event adapt(i++)
 }
 /**
 ## Results
-The results appears fine and the grid seems to refine consistenly. One may compare the results against those obtained with a fixed equidistant grid at the maximum resolution via [this](http://basilisk.fr/sandbox/Antoonvh/internalwacesMG.c) link.  
+The results appears fine and the grid seems to refine consistenly. One may compare the results against those obtained with a fixed equidistant grid at the maximum resolution via [this](/sandbox/Antoonvh/internalwacesMG.c) link.  
 
 ![Magnitude of the gradient  of the buoyancy field ($\|\nabla b\|$)](internalwavesAMR/internalwavesbf2nd.mp4)
 

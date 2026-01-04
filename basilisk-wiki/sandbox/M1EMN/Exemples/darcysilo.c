@@ -179,7 +179,7 @@ event pressure (i++, last)
 {
 /** 
 solve $$\nabla \cdot (\beta \nabla p  )= s$$ 
-with [http://basilisk.fr/src/poisson.h](http://basilisk.fr/src/poisson.h)
+with [https://basilisk.fr/src/poisson.h](/src/poisson.h)
 */
   mgp = poisson (p, source, beta);
 }
@@ -293,7 +293,7 @@ plot [:1][:] 'pressure.txt' u 2:(abs($1)<.01?($3):NaN) t'num.'\
 
 * see [https://fr.wikipedia.org/wiki/Théorème_de_factorisation_de_Weierstrass](https://fr.wikipedia.org/wiki/Théorème_de_factorisation_de_Weierstrass)
 
-* see [http://basilisk.fr/src/hele-shaw.h](http://basilisk.fr/src/hele-shaw.h)
+* see [https://basilisk.fr/src/hele-shaw.h](/src/hele-shaw.h)
 
 * see [darcyLambSneddon.c]()   
 

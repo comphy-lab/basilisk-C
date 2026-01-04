@@ -1,0 +1,94 @@
+description: |-
+  VERSION:  17_03
+  AUTHORS:  C1-C3   Burcat   
+  NOTE:     SPECIES RE-ARRANGED AS THE SAME ORDER IN MECH
+
+  VERSION:  17_05
+  Following species are updated from Burcat's Database:Kik
+   C6H5CHCH3	FLUORENE	C5H6	INDENYL	C14H19	C12H7	C12H9        
+   C6H5CH2C6H5	C10H7	CH3C6H4	C6H5C2H	C6H5O	C6H5C2H3	C10H7CH3
+   C10H7CHO	RXYLENE	C10H7CH2	XYLENE	C6H2	Toluene	C6H5OH
+   C14H10	C6H5C2H4C6H5	C4H2	C16H10	C5H5CH3	C7H7	BENZYNE
+   C6H5C2H2	C12H8	C6H5C2H5	C10H7O	BENZENE	C4H4	INDENE
+   C5H5	C10H6CH3	C6H5 	C10H8	FULVENE	BIPHENYL	C6H4C2H
+  Following species are updated from ATcT's Database:Ghobad
+   H	H2	O	O2	HE
+   OH	H2O	N2	HO2	HCO
+   H2O2	AR	CO	CO2
+
+generator: ck2yaml
+input-files: [gas.CKI, therm.dat, tran.dat]
+cantera-version: 3.1.0
+date: Tue, 28 Oct 2025 15:37:07 +0100
+
+units: {length: cm, time: s, quantity: mol, activation-energy: cal/mol}
+
+phases:
+- name: gas
+  thermo: ideal-gas
+  elements: [C, H, N]
+  species: [NC7H16, N2]
+  transport: mixture-averaged
+  state: {T: 300.0, P: 1 atm}
+- name: liq
+  thermo: ideal-gas
+  elements: [C, H]
+  species: [NC7H16(L)]
+  transport: mixture-averaged
+  state: {T: 300.0, P: 1 atm}
+
+species:
+- name: NC7H16
+  composition: {C: 7, H: 16}
+  thermo:
+    model: NASA7
+    temperature-ranges: [300.0, 1000.0, 4000.0]
+    data:
+    - [-0.67953134, 0.081075676, -4.2327931e-05, 6.9796577e-09, 
+        8.3732695e-13, -2.5690703e+04, 32.98156]
+    - [20.5103125, 0.034638964, -1.0774374e-05, 1.6039976e-09, 
+        -9.3701753e-14, -3.26499224e+04, -80.708118]
+  transport:
+    model: gas
+    geometry: nonlinear
+    well-depth: 459.98
+    diameter: 6.31
+    rotational-relaxation: 1.0
+- name: N2
+  composition: {N: 2}
+  thermo:
+    model: NASA7
+    temperature-ranges: [200.0, 1000.0, 6000.0]
+    data:
+    - [3.53603521, -1.58270944e-04, -4.26984251e-07, 2.3754259e-09, 
+        -1.39708206e-12, -1047.49645, 2.94603724]
+    - [2.9380297, 1.4183803e-03, -5.03281045e-07, 8.07555464e-11, 
+        -4.76064275e-15, -917.18099, 5.95521985]
+    note: |-
+      ATcT3E
+      N2                      N   2               G    300.00   4000.00 1000.00      1
+       .295257637E+01 .139690040E-02-.492631603E-06 .786010195E-10-.460755204E-14    2
+      -.923948688E+03 .587188762E+01 .353100528E+01-.123660988E-03-.502999433E-06    3
+       .243530612E-08-.140881235E-11-.104697628E+04 .296747038E+01                   4
+       [Ghobad] N2 <g> ATcT ver. 1.122, DHf298 = 0.000 � 0.000 kJ/mol - fit MAR17
+  transport:
+    model: gas
+    geometry: linear
+    well-depth: 97.53
+    diameter: 3.621
+    polarizability: 1.76
+    rotational-relaxation: 4.0
+- name: NC7H16(L)
+  composition: {C: 7, H: 16}
+  thermo:
+    model: NASA7
+    temperature-ranges: [200.0, 2000.0]
+    data:
+    - [-0.365898892, 0.0806263194, -4.08441389e-05, 5.26535178e-09, 
+        1.40862609e-12, -2.55335952e+04, 32.0909174]
+  transport:
+    model: gas
+    geometry: nonlinear
+    well-depth: 459.98
+    diameter: 6.31
+    rotational-relaxation: 1.0

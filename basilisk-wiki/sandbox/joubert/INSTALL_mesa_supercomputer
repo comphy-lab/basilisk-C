@@ -39,8 +39,8 @@ recipe should work on most UNIX systems:
 On the local system:
 
 ~~~bash
-wget http://basilisk.fr/src/gl/mesa-17.2.4.tar.gz
-wget http://basilisk.fr/src/gl/glu-9.0.0.tar.gz
+wget https://basilisk.fr/src/gl/mesa-17.2.4.tar.gz
+wget https://basilisk.fr/src/gl/glu-9.0.0.tar.gz
 scp mesa-17.2.4.tar.gz login@supercomputer.org:
 scp glu-9.0.0.tar.gzlogin@supercomputer.org:
 ~~~

@@ -2,6 +2,37 @@
 # Helper functions for output_vtu.h
 */
 
+#include "geometry.h"
+#include "fractions.h"
+
+#if dimension == 1
+coord mycs(Point point, scalar c)
+{
+  coord n = {1.};
+  return n;
+}
+#elif dimension == 2
+#include "myc2d.h"
+#define mfacets int m = facets(n, alpha, v);
+#else // dimension == 3
+#include "myc.h"
+#define mfacets int m = facets(n, alpha, v, 1.);
+#endif
+
+/** Macro to simplify facets calculation */ 
+#define shortcut_facets               \
+  coord n;                            \
+  n = mycs(point, c);                 \
+  double alpha = plane_alpha(c[], n); \
+  coord v[12];                        \
+  mfacets;
+
+/** Macro to simplify dealing with slices */ 
+#define shortcut_slice(n, _alpha)                                \
+  double alpha = (_alpha - n.x * x - n.y * y - n.z * z) / Delta; \
+  if (fabs(alpha) > 0.87)                                        \
+    continue;
+
 /** ## Functions to write light data */
 /** ### Write the VTU file header */
 void write_vtu_header(FILE *fp, long no_points, long no_cells) {
@@ -206,6 +237,18 @@ void write_points_heavy_data(FILE *fp, long no_points) {
     fwrite(&x, sizeof(double), 1, fp);
     fwrite(&y, sizeof(double), 1, fp);
     fwrite(&z, sizeof(double), 1, fp);
+  }
+}
+
+void write_points_heavy_data_masked(FILE *fp, long no_points, vertex scalar mask) {
+  long block_len = no_points * 3 * sizeof(double);
+  fwrite(&block_len, sizeof(long), 1, fp);
+  foreach_vertex(){
+    if (mask[] >= 0.5){
+      fwrite(&x, sizeof(double), 1, fp);
+      fwrite(&y, sizeof(double), 1, fp);
+      fwrite(&z, sizeof(double), 1, fp);
+    }
   }
 }
 

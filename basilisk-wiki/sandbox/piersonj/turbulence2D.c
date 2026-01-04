@@ -1,7 +1,7 @@
 /**
 # (Naive) Forced turbulence in a 2D-periodic box with non-coalescing droplets
 
-We investigate the dynamics of droplets in a two-dimensional periodic box. To induce turbulence, we employ a velocity linearly dependent forcing term, similar to the approach described in http://basilisk.fr/src/examples/isotropic.c. It should be noted that the intention is not to specifically generate two-dimensional isotropic turbulence with this forcing term, but rather to provide a crude way to make the droplets collide. To prevent numerical coalescence of droplets, we utilize the no-coalescence module. */
+We investigate the dynamics of droplets in a two-dimensional periodic box. To induce turbulence, we employ a velocity linearly dependent forcing term, similar to the approach described in https://basilisk.fr/src/examples/isotropic.c. It should be noted that the intention is not to specifically generate two-dimensional isotropic turbulence with this forcing term, but rather to provide a crude way to make the droplets collide. To prevent numerical coalescence of droplets, we utilize the no-coalescence module. */
 
 #include "grid/multigrid.h"
 #include "navier-stokes/centered.h"

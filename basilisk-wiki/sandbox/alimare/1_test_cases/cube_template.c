@@ -89,6 +89,7 @@ plot 'out_growth_grid8' w l lw 3 lc rgb "black" t ''
 #include "../level_set.h"
 #include "../LS_curvature.h"
 #include "../LS_advection.h"
+#include "../LS_speed.h"
 
 #define T_eq         0.
 #define TL_inf       -0.5
@@ -109,20 +110,20 @@ double H0;
 /**
 Setup of the physical parameters + level_set variables
 */
-scalar TL[], TS[], dist[];
-vector vpc[],vpcf[];
+//scalar TL[], TS[], dist[];
+//vector vpc[],vpcf[];
 
-scalar * tracers    = {TL};
-scalar * tracers2 = {TS};
+//scalar * tracers    = {TL};
+//scalar * tracers2 = {TS};
 
-scalar * level_set  = {dist};
-face vector muv[];
+//scalar * level_set  = {dist};
+//face vector muv[];
 mgstats mgT;
 scalar grad1[], grad2[];
 double DT2;
 
 
-double  latent_heat = 1.;
+//double  latent_heat = 1.;
 double  lambda[2]; // thermal capacity of each material
 #if Gibbs_Thomson // parameters for the Gibbs-Thomson's equation
 #ifdef EPSK
@@ -164,7 +165,7 @@ int itrecons;
 int nb_cell_NB;
 double  NB_width ;    // length of the NB
 
-scalar curve[];
+//scalar curve[];
 
 
 #define Pi 3.14159265358979323846

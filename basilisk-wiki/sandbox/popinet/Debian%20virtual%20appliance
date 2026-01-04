@@ -20,7 +20,7 @@ To try it:
 sudo apt-get install virtualbox
 ~~~
   
-* [Download](http://gerris.dalembert.upmc.fr/iso/gerris.ova) the virtual appliance file gerris.ova (1.7 GB)
+* [Download](https://gerris.dalembert.upmc.fr/iso/gerris.ova) the virtual appliance file gerris.ova (1.7 GB)
 * Start the VirtualBox graphical interface
 * Use the "File -> Import Appliance" menu. Select the gerris.ova file
   and follow the instructions
@@ -37,7 +37,7 @@ turn it on, you need to go into the BIOS before booting the machine.
 
 If your machine uses only a 32-bits processor and/or does not support
 hardware virtualization, you may need to use the 32-bits virtual
-appliance file [gerris_32bits.ova](http://gerris.dalembert.upmc.fr/iso/gerris_32bits.ova), instead of
+appliance file [gerris_32bits.ova](https://gerris.dalembert.upmc.fr/iso/gerris_32bits.ova), instead of
 the file above.
 
 # French (or non-US) keyboard

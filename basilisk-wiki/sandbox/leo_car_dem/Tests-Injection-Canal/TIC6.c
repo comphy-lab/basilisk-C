@@ -6,7 +6,7 @@ Comme premier essai, je tente de reproduire un modèle simple vu à l'universit�
 */
 
 /**
-Je commence par importer les différents packages nécessaires. Le modèle est en une dimension. Le terme source de frottements est celui de G. Kirstetter (http://basilisk.fr/sandbox/geoffroy/sourceterm/manning.h). Le solveur est celui du système de Saiut-Venant.
+Je commence par importer les différents packages nécessaires. Le modèle est en une dimension. Le terme source de frottements est celui de G. Kirstetter (/sandbox/geoffroy/sourceterm/manning.h). Le solveur est celui du système de Saiut-Venant.
 */
 
 #include <math.h>

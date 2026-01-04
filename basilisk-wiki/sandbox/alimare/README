@@ -92,7 +92,7 @@ beginning of the redistancing process. This is done in the
 * [Reinit_circle](1_test_cases/reinit_circle.c)
 * [Zalesak circle](1_test_cases/zalesak.c)
 * [Rider \& Kothe's](1_test_cases/reversed.c) snake (which is a variation of the
-  [Scardovelli \& Zaleski's](http://basilisk.fr/src/test/reversed.c) test case).
+  [Scardovelli \& Zaleski's](/src/test/reversed.c) test case).
   It tests the ability of the reinitialization function with an important
   smearing of an interface.
 

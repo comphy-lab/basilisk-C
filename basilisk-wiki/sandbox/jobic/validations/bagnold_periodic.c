@@ -241,13 +241,13 @@ We check that $(\partial u/ \partial y)$ is $\sqrt{2}D_2$
 
 ## Links
  
- * This rheology is implemented in [http://basilisk.fr/sandbox/M1EMN/Exemples/granular.h]() for collapses, silos etc.
+ * This rheology is implemented in [https://basilisk.fr/sandbox/M1EMN/Exemples/granular.h]() for collapses, silos etc.
 
  * see Bingham examples
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_segregation.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_segregation.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c]()
  
 ## Bibliography
  
@@ -259,7 +259,7 @@ We check that $(\partial u/ \partial y)$ is $\sqrt{2}D_2$
  * Pierre Jop, Yoël Forterre & Olivier Pouliquen
  "A constitutive law for dense granular flows", Vol 441 8 June 2006 doi:10.1038/nature04801
 
- * [related example in Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/poiseuille.html#bagnold)
+ * [related example in Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/poiseuille.html#bagnold)
 
  
  

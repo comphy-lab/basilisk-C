@@ -1,5 +1,5 @@
 /**
-This is a small example heavily based on [beach.c](http://basilisk.fr/src/test/beach.c), but in which one can specify the bathymetry, via the `interpolation_data.h` file, and the type of initial wave, via a number representing the choice below in this code.
+This is a small example heavily based on [beach.c](/src/test/beach.c), but in which one can specify the bathymetry, via the `interpolation_data.h` file, and the type of initial wave, via a number representing the choice below in this code.
 */
 
 

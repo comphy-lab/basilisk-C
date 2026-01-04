@@ -504,17 +504,19 @@ void init_circle (double xc, double yc, double ra, \
   scalar f, face vector fs, int itmax = 40) {
   coord dir = {0., 1.};
   foreach_face() {
-    double x1, y1, x2, y2, x3, y3, eps, s1, s2;
-    x1 = x - 0.5*Delta*dir.x;
-    y1 = y - 0.5*Delta*dir.y;
+    double x1 = x - 0.5*Delta*dir.x;
+    double y1 = y - 0.5*Delta*dir.y;
 
-    x2 = x + 0.5*Delta*dir.x;
-    y2 = y + 0.5*Delta*dir.y;
+    double x2 = x + 0.5*Delta*dir.x;
+    double y2 = y + 0.5*Delta*dir.y;
 
-    s1 = circle_sign(x1, y1, xc, yc, ra);
-    s2 = circle_sign(x2, y2, xc, yc, ra);
+    double s1 = circle_sign(x1, y1, xc, yc, ra);
+    double s2 = circle_sign(x2, y2, xc, yc, ra);
     if (s1*s2 < 0.) {
-      eps = 1.e-16*Delta;
+      double x3 = 0.5*(x1 + x2);
+      double y3 = 0.5*(y1 + y2);
+
+      double eps = 1.e-16*Delta;
       for (int it = 0; it <= itmax; it++) {
         x3 = 0.5*(x1 + x2);
         y3 = 0.5*(y1 + y2);

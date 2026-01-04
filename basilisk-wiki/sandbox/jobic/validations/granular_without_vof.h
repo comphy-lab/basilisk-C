@@ -41,8 +41,8 @@ the diameter of grains  $D=1./30$
  
 
 In this file, we code the tensorial version $\tau_{ij}$, the shear will be replaced by $\sqrt{2} \sqrt{D_{ij}D_{ji}}$ where   $D_{ij}$  is the shear strain rate tensor
- (see for analytical solutions [the basic Bagnold flow](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic.c)
- and  [Bagnold with cohesion](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c)
+ (see for analytical solutions [the basic Bagnold flow](/sandbox/M1EMN/Exemples/bagnold_periodic.c)
+ and  [Bagnold with cohesion](/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c)
 
 All those numerical values are to be changed in the main.
  

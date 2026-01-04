@@ -1,6 +1,6 @@
 /**
 	Single cylindrical particle between parallel plates.
-	stemming from [here](http://basilisk.fr/sandbox/fpicella/cylinder_between_plates/sedimentation_driver_moving.c)
+	stemming from [here](/sandbox/fpicella/cylinder_between_plates/sedimentation_driver_moving.c)
 */
 double RADIUS = 0.25; // cylinder radius
 double HEIGHT = 1.0; // channel height

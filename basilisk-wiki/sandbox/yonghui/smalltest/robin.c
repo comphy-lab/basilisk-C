@@ -1,6 +1,6 @@
 /**
 # Robin condition test 
-See how to use the patch from [Thomas](http://basilisk.fr/sandbox/tfullana/patch_robinBC).
+See how to use the patch from [Thomas](/sandbox/tfullana/patch_robinBC).
 
 
 My defintion of Robin condition is a little bit different

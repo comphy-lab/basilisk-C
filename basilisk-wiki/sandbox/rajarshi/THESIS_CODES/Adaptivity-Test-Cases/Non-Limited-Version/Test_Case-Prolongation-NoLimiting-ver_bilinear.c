@@ -7,7 +7,7 @@ sub-domain. The prolongated values are compared with analytical values for all t
 computational time required for each operator. We observe the increased computing cost of the Limiting-prolongation operator viz-a-viz the other two
 operators on the error vs computing time plots.
 
-A dis-continuous field will display an error convergence of order-three using the limiting version of the prolongation function, and the no-limiting version will give numerical oscillations near the region of dis-continuity as can be seen in the test case :- [PROLONGATION - DISCONTINUOUS FUNCTIONS](http://basilisk.fr/sandbox/rajarshi/THESIS_CODES/Adaptivity-Test-Cases/Limited-Version/Test_Case-Prolongation-Limiting-ver_bilinear.c)
+A dis-continuous field will display an error convergence of order-three using the limiting version of the prolongation function, and the no-limiting version will give numerical oscillations near the region of dis-continuity as can be seen in the test case :- [PROLONGATION - DISCONTINUOUS FUNCTIONS](/sandbox/rajarshi/THESIS_CODES/Adaptivity-Test-Cases/Limited-Version/Test_Case-Prolongation-Limiting-ver_bilinear.c)
 */
 
 #include "grid/tree.h"

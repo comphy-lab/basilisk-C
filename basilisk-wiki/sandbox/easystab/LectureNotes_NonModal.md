@@ -112,7 +112,7 @@ $$
 In this equation $x$ models the amplitude of an array of "streaks"  (associated to velocity component $u$) and $y$ models the amplitude of an array of vortices.
 
 The study of this equation is left as an [exercice](
-http://basilisk.fr/sandbox/easystab/LectureNotes_NonModal.md#exercice-1-transient-growth-in-a-nonnormal-linear-system.). One can show that :
+https://basilisk.fr/sandbox/easystab/LectureNotes_NonModal.md#exercice-1-transient-growth-in-a-nonnormal-linear-system.). One can show that :
 
 * Modal analysis shows that the system is linearly stable, with two eigenvalues given by $\lambda_1 = -1/R$, $\lambda_2 = -2/R$.
 * However, strong transient growth are possible ! 
@@ -288,4 +288,4 @@ Characterize the corresponding initial condition $X_0$ (called the optimal pertu
 
 4. Application : consider $\epsilon = 10^{-3}$ and an initial condition $||X_0|| = 10^{-6}$. Estimate the time scale $t_s$ leading to $||X_0|| \approx 1$ (i.e. the time scale at which nonlinearity is expected to dominate) consindering that the initial condition is $(a)$ the unstable eigenmode and ($b$) the optimal perturbation. 
 
- [Back to main page](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md)
+ [Back to main page](/sandbox/easystab/M2DET/Instabilities.md)

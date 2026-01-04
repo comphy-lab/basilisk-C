@@ -2,7 +2,7 @@ Tutorial Basilisk
 
 # Introduction (basic) Basilisk
 
-This tutorial is a very very basic introduction to [Basilisk](http://basilisk.fr). We propose a slow journey into Basilisk starting from the study of the diffusion equation, doing a comparison between a classical C code and the equivalent in Basilisk. 
+This tutorial is a very very basic introduction to [Basilisk](https://basilisk.fr). We propose a slow journey into Basilisk starting from the study of the diffusion equation, doing a comparison between a classical C code and the equivalent in Basilisk. 
 
 ## Example : solving a diffusion equation
 

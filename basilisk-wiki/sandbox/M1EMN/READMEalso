@@ -3,42 +3,42 @@
 
 
 
-This page is just a compilation of examples for the illustration of "Master"  courses of fluid mechanics. All the examples come from the [http://basilisk.fr/sandbox/](sandbox) pages and  [http://basilisk.fr/src/test/README](examples)pages of basilisk.
+This page is just a compilation of examples for the illustration of "Master"  courses of fluid mechanics. All the examples come from the [https://basilisk.fr/sandbox/](sandbox) pages and  [https://basilisk.fr/src/test/README](examples)pages of basilisk.
 
 
 
 ## Compressible Ideal flows
 
-* [http://basilisk.fr/src/test/explosion.c]()
-* [http://basilisk.fr/sandbox/fuster/Allmach3.0/shockwave.c]()
-* [http://basilisk.fr/sandbox/fuster/Allmach3.0/InclinedShockBCG.c]()
-* [http://basilisk.fr/sandbox/fuster/Allmach3.0/shockwaveadapt.c]()
-* [http://basilisk.fr/sandbox/fuster/Allmach3.0/stepAllMach.c]()
-* [http://basilisk.fr/sandbox/popinet/step.c]()
-* [http://basilisk.fr/sandbox/popinet/shockimplicit.c]()
-* [http://basilisk.fr/sandbox/popinet/shockimplicitschema2.c]()
+* [https://basilisk.fr/src/test/explosion.c]()
+* [https://basilisk.fr/sandbox/fuster/Allmach3.0/shockwave.c]()
+* [https://basilisk.fr/sandbox/fuster/Allmach3.0/InclinedShockBCG.c]()
+* [https://basilisk.fr/sandbox/fuster/Allmach3.0/shockwaveadapt.c]()
+* [https://basilisk.fr/sandbox/fuster/Allmach3.0/stepAllMach.c]()
+* [https://basilisk.fr/sandbox/popinet/step.c]()
+* [https://basilisk.fr/sandbox/popinet/shockimplicit.c]()
+* [https://basilisk.fr/sandbox/popinet/shockimplicitschema2.c]()
 
 
 ## Incompressible Navier--Stokes
 
-* [Lid-driven cavity at Re=1000](http://basilisk.fr/src/test/lid.c)
-* [Starting flow around a cylinder](http://basilisk.fr/src/test/starting.c)
-* [http://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting2x.c]()
+* [Lid-driven cavity at Re=1000](/src/test/lid.c)
+* [Starting flow around a cylinder](/src/test/starting.c)
+* [https://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting2x.c]()
  Sympa! C’est la manip de la cuillère dans le récipient 
 
-http://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting1x.c
+https://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting1x.c
 
 (je suis pas fan des iso, mais c’est un blocage perso esthétique), on voit bien la couche de cisaillement qui enveloppe l’aille et le tourbillon global
-http://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting2x.c
+https://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting2x.c
 
-* [http://basilisk.fr/sandbox/ecipriano/doc/centered]()
+* [https://basilisk.fr/sandbox/ecipriano/doc/centered]()
 
 
 
 
 ## Thermal 
 
-* [http://basilisk.fr/sandbox/ecipriano/run/stefanproblem.c]()
+* [https://basilisk.fr/sandbox/ecipriano/run/stefanproblem.c]()
 
 
 ## Embedded boundaries
@@ -70,7 +70,7 @@ http://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting2x.c
 * [Sessile drop](sessile.c)
 * [3D Sessile drop](sessile3D.c)
 
-* [http://basilisk.fr/sandbox/fuster/Allmach3.0/oscillation.c]()
+* [https://basilisk.fr/sandbox/fuster/Allmach3.0/oscillation.c]()
 
 
 
@@ -102,7 +102,7 @@ http://basilisk.fr/sandbox/ghigo/src/test-embed/naca2414_starting2x.c
 * [Couette flow with friction Boundary condition with NS](Exemples/couette_muw.c)
 
 ### Poiseuille
-* [http://basilisk.fr/sandbox/wmostert/poiseuille_inclined.c]()
+* [https://basilisk.fr/sandbox/wmostert/poiseuille_inclined.c]()
 * [Poiseuille axy flow  avec la méthode chinoise](NS/poiseuilleCM.c.page)
 * [Womersley in a axi](NS/wo2Dacc.c.page)
 
@@ -281,7 +281,7 @@ Model equation for surface growth
 ### Waves
 * [Airy swell, with NS](Exemples/houle.c)
 * [Airy swell, with potential](Exemples/airywave.c)
-* [http://basilisk.fr/sandbox/popinet/wave.c]()
+* [https://basilisk.fr/sandbox/popinet/wave.c]()
 
 
 
@@ -320,7 +320,7 @@ Model equation for surface growth
 * [Wind-driven lake](wind-driven-stvt.c)
 * [Lake flowing into itself](lake-tr.c) 
 
-* [http://basilisk.fr/sandbox/wind_pool.c]()
+* [https://basilisk.fr/sandbox/wind_pool.c]()
 
 
 
@@ -345,11 +345,11 @@ Model equation for surface growth
 * [Collapse d'un tas visqueux with Saint Venant](Exemples/viscous_collapse.c)
 * [Viscous Collapse without Saint Venant](Exemples/viscous_collapse_noSV.c)
 * [Collapse d'un tas visqueux sur une pente forte](Exemples/viscolsqrt.c)
-* [Cours/TP 1](http://basilisk.fr/sandbox/geoffroy/teaching/C1.c) : Introduction à Basilisk
-* [TP 2](http://basilisk.fr/sandbox/geoffroy/teaching/C2.c) : Un Tsunami dans la mer méditérannée (topographie à télecharger : [topo.kdt](http://basilisk.fr/sandbox/geoffroy/teaching/topo.kdt) )
-* [Cours/TP 3](http://basilisk.fr/sandbox/geoffroy/teaching/C3.c) : Solveurs de Riemann et Cas test
-* [Cours/TP 4](http://basilisk.fr/sandbox/geoffroy/teaching/C4.c) : Les coefficients de frictions et leurs implémentations
-* [Mini - projet](http://basilisk.fr/sandbox/geoffroy/teaching/karamea.c) : L'inondation de Karamea (à faire !)
+* [Cours/TP 1](/sandbox/geoffroy/teaching/C1.c) : Introduction à Basilisk
+* [TP 2](/sandbox/geoffroy/teaching/C2.c) : Un Tsunami dans la mer méditérannée (topographie à télecharger : [topo.kdt](/sandbox/geoffroy/teaching/topo.kdt) )
+* [Cours/TP 3](/sandbox/geoffroy/teaching/C3.c) : Solveurs de Riemann et Cas test
+* [Cours/TP 4](/sandbox/geoffroy/teaching/C4.c) : Les coefficients de frictions et leurs implémentations
+* [Mini - projet](/sandbox/geoffroy/teaching/karamea.c) : L'inondation de Karamea (à faire !)
 * [Marées en France](Exemples/maree_bretagne.c)
 
 ### Erosion
@@ -400,7 +400,7 @@ more layers
 ## Axi 1D flows
 
 * [1D arterial flow](artery1D.c)
-* [http://basilisk.fr/sandbox/liquid_jet/rayleigh_plateau_1D.c]()
+* [https://basilisk.fr/sandbox/liquid_jet/rayleigh_plateau_1D.c]()
 
 
 
@@ -419,7 +419,7 @@ more layers
 
 * [Bingham periodic 2D on a slope](Exemples/bingham_simple.c)
 * [Bingham axi 2D in a tube](Exemples/nonnewtube.c)
-* [http://basilisk.fr/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c]()
+* [https://basilisk.fr/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c]()
 * popinet/lid-bingham.c
 
 
@@ -447,7 +447,7 @@ Here granular flows with continuum description
 * [Continuum sand glass of grains real 2D](Exemples/granular_sandglass.c)
 * [Continuum sand glass of grains real 2D, with friction](Exemples/granular_sandglass_muw.c)
 * [Continuum sand glass of grains 2D axi](Exemples/siloaxisl.c)
-* [Continuum sand glass of grains full 3D](http://basilisk.fr/sandbox/yixian/Sandglass3D.c)
+* [Continuum sand glass of grains full 3D](/sandbox/yixian/Sandglass3D.c)
 
 
 

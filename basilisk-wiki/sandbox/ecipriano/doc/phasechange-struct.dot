@@ -1,0 +1,75 @@
+// Input file for Graphviz plot
+digraph G {
+  splines = true;
+  overlap = false;
+
+  // General graph settings
+  fontname="Helvetica,Arial,sans-serif";
+  node [fontname="Helvetica,Arial,sans-serif"];
+  edge [fontname="Helvetica,Arial,sans-serif"];
+  labelloc = "b";
+
+  subgraph cluster_0 {
+    node [shape=ellipse, color=black, style=filled, fillcolor=white];
+    a2 -> a1 -> a0
+    a0 [label = "navier-stokes/centered.h"];
+    a1 [label = "navier-stokes/low-mach.h"];
+    a2 [label = "navier-stokes/velocity-jump.h"];
+    label = "Navier-Stokes";
+    fontsize = 22;
+    fontcolor = blue;
+    style = filled;
+    color = "#e6f2ff";
+  }
+
+  subgraph cluster_1 {
+    node [shape=ellipse, color=black, style=filled, fillcolor=white];
+    b00 [label = "evaporation.h"];
+    b01 [label = "boiling.h"];
+    b10 [label = "multicomponent.h"];
+    b11 [label = "temperature-gradient.h"];
+    b2  [label = "phasechange.h"];
+    b3  [label = "phase.h"];
+    b00 -> b10 -> b2 -> b3;
+    b01 -> b11 -> b2;
+    label = "Phase Change";
+    fontsize = 22;
+    fontcolor = darkgreen;
+    style = filled;
+    color = "#e6ffe6";
+  }
+
+  subgraph cluster_2 {
+    node [shape=ellipse, color=black, style=filled, fillcolor=white];
+    label = "Thermodynamics and Combustion";
+    style = filled;
+    color = "#fff0d9";
+    fontsize = 22;
+    fontcolor = "#7f4e1e";
+
+    // Non-OpenSMOKE files
+    c0 [label = "variable-properties.h"];
+    c1 [label = "two-phase-varprop.h"];
+    c1 -> d1;
+    c0 -> d1;
+
+    // OpenSMOKE++ subsection
+    d0 [label="opensmoke/opensmoke.h", style=filled, fillcolor="#e5e5e5", color="#af1e1e"];
+    d1 [label="opensmoke/properties.h", style=filled, fillcolor="#e5e5e5", color="#af1e1e"];
+    d2 [label="opensmoke/reactors.h", style=filled, fillcolor="#e5e5e5", color="#af1e1e"];
+    d3 [label="opensmoke/chemistry.h", style=filled, fillcolor="#e5e5e5", color="#af1e1e"];
+
+    d3 -> d2 -> d0;
+    d1 -> d0;
+  }
+
+  main -> a2;
+  main -> a1;
+  main -> b00;
+  main -> b01;
+  main -> d1;
+  main -> d3;
+  main -> c1;
+  main [label = "simulation.c", fontsize = 22];
+}
+

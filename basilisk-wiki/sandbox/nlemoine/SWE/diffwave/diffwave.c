@@ -1,5 +1,5 @@
 /**
-[Return to my homepage](http://basilisk.fr/sandbox/nlemoine/README)
+[Return to my homepage](/sandbox/nlemoine/README)
 
 # Diffusive wave approximation to the Shallow Water Equations
 
@@ -70,9 +70,9 @@ $$\frac{\partial\eta}{\partial t} = +\boldsymbol{\nabla}\cdot\left(
 }\boldsymbol{\nabla}\eta
 \right)$$
 
-The problem is nonlinear since the diffusivity $D$ depends both on $\eta$ and on the norm of the gradient of $\eta$. However it can be easily implemented in Basilisk thanks to the [Poisson solver](basilisk.fr/src/diffusion.h), using an implicit scheme with a [staggered grid](http://basilisk.fr/Basilisk%20C#face-and-vertex-fields) diffusivity:
+The problem is nonlinear since the diffusivity $D$ depends both on $\eta$ and on the norm of the gradient of $\eta$. However it can be easily implemented in Basilisk thanks to the [Poisson solver](basilisk.fr/src/diffusion.h), using an implicit scheme with a [staggered grid](/Basilisk%20C#face-and-vertex-fields) diffusivity:
 
-![Centered, face and vertex staggering. The diffusivity field uses the second type.](http://basilisk.fr/src/figures/staggering.svg)
+![Centered, face and vertex staggering. The diffusivity field uses the second type.](/src/figures/staggering.svg)
 
 It is necessary to desingularize the norm of the gradient of $\eta$, which has exponent $-\frac{1}{2}$ in the diffusivity. We use:
 

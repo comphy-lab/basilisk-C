@@ -31,7 +31,7 @@ $$ Re = \frac{\rho_1 g^{1/2} d^{3/2}}{\mu_1}  = 3000, d = 1 $$
 
 int main() {
   Reynolds = 3000. [0];
-  rho1 = 3. [0];
+  rho1 = 3. [-3, 0, 1];
   rho2 = 1.;
   f.sigma = 0.;
   gra = 9.81 [1, -2];
@@ -89,8 +89,12 @@ event amplitude (i++) {
   stats pos_stats = statsf(pos);
   double ymax = pos_stats.max, ymin = pos_stats.min;
 
-  fprintf (fp_amp, "%g %g %g\n", t/TREF, ymax - MEANPOS, ymin - MEANPOS);
+  fprintf (fp_amp, "%.5e %.5e %.5e\n", t/TREF, ymax - MEANPOS, ymin - MEANPOS);
   fflush (fp_amp);
+
+  // reference file
+  fprintf (stderr, "%.5e %.5e %.5e\n", t/TREF, ymax - MEANPOS, ymin - MEANPOS);
+  fflush (stderr);
 }
 
 /** The vertical acceleration is added here. */
@@ -133,8 +137,8 @@ set grid
 set xlabel 'tau'
 set ylabel 'Amplitude'
 set key bottom left
-plot [0.:2.5][-2.:1.] 'rt_vof_dis.dat' u 1:2 w l lw 3 t "EBIT, upper", \
-  'rt_vof_dis.dat' u 1:3 w l lw 3 t "EBIT, lower"
+plot [0.:2.5][-2.:1.] 'rt_vof_dis.dat' u 1:2 w l lw 3 t "VOF, upper", \
+  'rt_vof_dis.dat' u 1:3 w l lw 3 t "VOF, lower"
 ~~~
 
 ~~~gnuplot Shapes of the interface at $\tau = 1$.

@@ -31,7 +31,7 @@ Illustrations :
 ## Local approaches to weakly nonparallel flows (~1990-2000)
 
 *NB : this paragraph is a short résumé of Lecture 9. A more complete exposition of this topic can be found [here]
-(http://basilisk.fr/sandbox/easystab/LectureNotes_SpatioTemporal.md)
+(/sandbox/easystab/LectureNotes_SpatioTemporal.md)
 
 In many cases, the flow is *weakly nonparallel*, and one can expect to characterize the instability mechanisms by studying the parallel flow $U(y)$ (or $U(r)$ in axisymmetric flows), with the framework of chapters 6, 7, 8.
 
@@ -56,10 +56,10 @@ $$
 k {\mathcal B} \hat{q} = {\mathcal A} \hat{q}
 $$
 
-An example of program solving this problem in the case of the tanh shear layer already considerred in Lecture 6 can be found  [here](http://basilisk.fr/sandbox/easystab/KH_spatial_inviscid.m).
+An example of program solving this problem in the case of the tanh shear layer already considerred in Lecture 6 can be found  [here](/sandbox/easystab/KH_spatial_inviscid.m).
 
 
-When trying to apply on the spatial stability approach (solving for $k$ as function of $\omega$) for a real flow (or considering a model equation such as the one considered [here](http://basilisk.fr/sandbox/easystab/SpatioTemporal_ModelEquations.m), one can get two very different situations :
+When trying to apply on the spatial stability approach (solving for $k$ as function of $\omega$) for a real flow (or considering a model equation such as the one considered [here](/sandbox/easystab/SpatioTemporal_ModelEquations.m), one can get two very different situations :
 
 ### Significance of the spatial stability approach for **convectively unstable flows**
 

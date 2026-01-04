@@ -1,13 +1,6 @@
 /**
 # Using 2D results to initialize a 3D simulation
 
-<center><img src="initial_conditions_2D.png" alt="drawing" width="400"/>
-<img src="initial_conditions_3D.png" alt="drawing" width="400"/>
-<figcaption>An example of the intial condition in 2D (left) 
-and the corresponding 3D interface (right). </figcaption>
-</center>
-<br/><br/>
-
 This function reads 2D simulation results from a binary file in a format
 compatible with the gnuplot binary matrix format in double precision, see
 [auxiliar_input.h](auxiliar_input.h). The 2D results are then used to initialize

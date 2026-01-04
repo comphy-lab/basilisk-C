@@ -88,7 +88,7 @@ event properties (i++)
 
     /**
 With the transformed scale invariant *Navier-Stokes* equations 
-for the [Keller \& Miksis problem](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c), 
+for the [Keller \& Miksis problem](/sandbox/cailler/keller_miksis/keller_fig2_conv.c), 
 the viscous term is associated with a non-dimensional pseudo-viscosity 
 exponentially decaying with the self-similar time $\tau$:
 

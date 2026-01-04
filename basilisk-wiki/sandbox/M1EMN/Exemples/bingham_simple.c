@@ -300,11 +300,11 @@ Paris Avril 2015
 
 ## Bibliography
 
-* [related example in Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/couette.html)
+* [related example in Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/couette.html)
 
-* [related example with augmeted Lagrangian](http://basilisk.fr/sandbox/popinet/poiseuille-periodic.c)
+* [related example with augmeted Lagrangian](/sandbox/popinet/poiseuille-periodic.c)
 
-* [Application to the 1D Collapse](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
+* [Application to the 1D Collapse](/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
  
 *  K. F. Liu and C. C. Mei
  "Approximate equations for the slow spreading of a thin sheet of Bingham plastic fluid"
@@ -320,7 +320,7 @@ Fluid Mech. (1989), vol. 207. p p . 505-529
  J. Non-Newtonian Fluid Mech. 139 (2006) 103–127
  
  
-* [see also for face implementation](http://basilisk.fr/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c) 
+* [see also for face implementation](/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c) 
  
  
 */

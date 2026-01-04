@@ -4,7 +4,7 @@
    https://doi.org/10.1002/2016JC011990
 
    Inspired from 
-   http://basilisk.fr/sandbox/popinet/movingcylinder.c
+   https://basilisk.fr/sandbox/popinet/movingcylinder.c
 
    Compile with    
    CC99='mpicc -std=c99' qcc -D_MPI=1 -D_NETCDF=1 -grid=multigrid3D -lm -lpnetcdf -O3 movingtopo.c -o movingtopo.e

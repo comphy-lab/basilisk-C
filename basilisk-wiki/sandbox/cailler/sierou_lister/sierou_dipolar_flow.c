@@ -20,7 +20,7 @@ $\theta_0^{Duchemin} = 145$° has been computed:
 
 They exhibit a capillary-inertial **self-similar behaviour** following the 
 scaling of [Keller \& Miksis, (1983)](#keller1983), where lengths scale as 
-$r_\sigma = (\sigma t^2 / \rho)^{1/3}$; see also [this `Basilisk` page](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c).
+$r_\sigma = (\sigma t^2 / \rho)^{1/3}$; see also [this `Basilisk` page](/sandbox/cailler/keller_miksis/keller_fig2_conv.c).
 
 According to [Sierou \& Lister, (2004)](#sierou2004), and under the assumption 
 of *potential flows*, collapsing conical cavities correspond to the ***time 
@@ -28,17 +28,17 @@ reversal*** of the capillary-inertial recoil of conical interfaces having a
 $\theta_0$ angle greater than $90$°. 
 Therefore, the authors have used this property to model *self-focusing 
 singularities*: instead of trying to start from the burst of the bubble like 
-in the [simulation of A. Berny](http://basilisk.fr/sandbox/aberny/bubble/bursting2D.c), 
+in the [simulation of A. Berny](/sandbox/aberny/bubble/bursting2D.c), 
 which requires a complex initialization, they simply start from the supposed 
 final state of a *cone*, and study its behaviour under the spontaneous capillary 
 flow developed in 3D--AXI, but also in conjunction with a far-field *dipolar 
-flow* explained in [this documentation](http://basilisk.fr/sandbox/cailler/sierou_lister/README).
+flow* explained in [this documentation](/sandbox/cailler/sierou_lister/README).
 
 **The goal of this `Basilisk` code** is to reproduce the results of the 
 *Fig. 16b* of [Sierou \& Lister, (2004)](#sierou2004), when the far-field 
 dipolar flow is *positive* and $\theta_0 = 120$°.
 For *negative* far-field dipolar flow intensities, 
-please see [this source code](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c).
+please see [this source code](/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c).
 
 ## Code
 
@@ -70,7 +70,7 @@ C = \widetilde{C}
 $$
 
 where $C$ is the volume fraction, and $\mu_d$ is the far-field *dipolar flow* 
-detailed on [*this page*](http://basilisk.fr/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h). 
+detailed on [*this page*](/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h). 
 The non-dimensionalization is done with the 
 **liquid** density and surface tension. Hence, the non-dimensionalized 
 *Navier--Stokes* equations solved with `Basilisk` read as:
@@ -128,7 +128,7 @@ N_{max} = 8 \,\,  \longleftrightarrow \,\,
 \widetilde{\Delta} = 3.9 \times 10^{-3}
 $$
 
-This is done to run the [figure output](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c#outputs) 
+This is done to run the [figure output](/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c#outputs) 
 as expected.
 */
 
@@ -310,7 +310,7 @@ $$
 /** 
 On the boundaries of the liquid phase $(C = 1)$, *Dirichlet* conditions are 
 imposed on the velocity field according to the formulae defined in 
-[`u_BC_dipolar_flow.h`](http://basilisk.fr/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h). 
+[`u_BC_dipolar_flow.h`](/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h). 
 The associated pressure is dealt with a *Neumann* condition to take into 
 account the far-field velocity whose normal components are not zero:
 
@@ -366,7 +366,7 @@ where $\mathbf{f}$ refers to the volume forces.
 If no *dipolar flow* is considered, imposing a zero-velocity on all borders 
 (excluding the axis of symmetry) gives very close results compared to the 
 slightly more complex considerations done 
-[*there*](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_sierou_all.c#boundary-conditions) 
+[*there*](/sandbox/cailler/self_sim_DNS/selfsim_sierou_all.c#boundary-conditions) 
 (direct comparisons with the results of *Sierou \& Lister* tend to confirm 
 this simple choice, albeit not rigorous):
 */
@@ -439,7 +439,7 @@ event init (t = 0){
 /** 
 The initial cone is the "ultimate" self-similar form: the initial condition is 
 the *exact* field for the cone; in other words, the velocity field defined 
-in [`u_BC_dipolar_flow.h`](http://basilisk.fr/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h) 
+in [`u_BC_dipolar_flow.h`](/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h) 
 is valid in the whole domain:
 */
 
@@ -710,7 +710,7 @@ $(\theta_0, \widetilde{\mu}_0)$.
 
 + Without dipolar flow $(\widetilde{\mu}_0 = 0)$, an obtuse cone of liquid
 $(\theta_0 > 90$°$)$ "moves forward" the gas cavity, whereas an acute liquid 
-cone $($[$\theta_0 < 90$°](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_sierou_all.c)$)$ 
+cone $($[$\theta_0 < 90$°](/sandbox/cailler/self_sim_DNS/selfsim_sierou_all.c)$)$ 
 *recoils*. Both phenomena are due to the overall movement of the *capillary flow*. 
 
 + A *dipolar flow* for $\widetilde{\mu}_0 > 0$ tends to recoil the cone and 

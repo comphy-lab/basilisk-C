@@ -464,7 +464,7 @@ void update_mpi (int step) {
 * [Particles, vof and tracer field in a vortex comparison](reversed.c)
 
 ## Usage   
-* [All pages using `particles.h`](http://basilisk.fr/_search?patterns=particles.h)
+* [All pages using `particles.h`](/_search?patterns=particles.h)
 * [Tag a portion of a fluid](splash.c)
 * [Settling of volcanic ash](ash.c)
 * [Flow in a thermosyphon](tube.c)

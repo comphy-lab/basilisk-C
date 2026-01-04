@@ -213,16 +213,16 @@ p[0:5][0:10] 'WT.txt' u 1:2 w lp
  
  Cas dispersif, tension de surface explicite
 
- [http://basilisk.fr/sandbox/M1EMN/Exemples/belangerdisp.c]()
+ [https://basilisk.fr/sandbox/M1EMN/Exemples/belangerdisp.c]()
  
  cas avec frottement turbulent 
 
 
- [http://basilisk.fr/sandbox/M1EMN/Exemples/belangerturb.c]()
+ [https://basilisk.fr/sandbox/M1EMN/Exemples/belangerturb.c]()
 
  Cas dispersif, mascaret à partir des équations de Boussinesq (implicite) avec frottement turbulent 
 
- [http://basilisk.fr/sandbox/M1EMN/Exemples/ressaut_mascaret.c]()
+ [https://basilisk.fr/sandbox/M1EMN/Exemples/ressaut_mascaret.c]()
 
 
  
@@ -230,7 +230,7 @@ p[0:5][0:10] 'WT.txt' u 1:2 w lp
 
 en multicouche laminaire....
 
- [http://basilisk.fr/sandbox/M1EMN/Exemples/higuera.c]()
+ [https://basilisk.fr/sandbox/M1EMN/Exemples/higuera.c]()
  
 # Bibliographie
  

@@ -25,7 +25,7 @@ A beautiful example which shows what is mesh adaptation is presented [here](./AM
 
 [$\partial$'Alembertiennes 2023](https://www.youtube.com/watch?v=jgJhhZVfxy4): A 2 minutes video about mesh adaptation and total numerical error minimization.
 
-[BGUM 2023](http://basilisk.fr/BGUM2023/prouvost.pdf)
+[BGUM 2023](/BGUM2023/prouvost.pdf)
 
 [my PhD defense](https://www.youtube.com/watch?v=9XA-GdbJP-A)
 
@@ -70,6 +70,19 @@ by
       // AMR 
       adapt_metric( {psi} );                     // user interface similar to adapt_wavelet()
 ~~~
+
+The optimal converge rate for a given field can be simply obtained using the theoretical prefactor constants 
+
+~~~literatec
+struct PreFactorData cd = compute_prefactors (2, {psi}, NULL );
+~~~~
+
+The theoretical error is simply obtained as
+
+~~~literatec
+double errtheory = cd.copt*pow(grid->tn,-(2./dimension)) )
+~~~~~
+
 
 [A simple example to show that the user-interface is easy to use](./AMR_examples/basic_example/bubble.c), and where we solve the laplace equation in axi-symmetric coordinates around a circular embedded boundary.
 

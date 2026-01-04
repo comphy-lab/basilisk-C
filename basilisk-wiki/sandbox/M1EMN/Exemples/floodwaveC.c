@@ -213,7 +213,7 @@ in gnuplot type
 ## Note
 
 the output is the standard one (terminal), we can save in a file and plot the generated file with `gnuplot`, see 
-[http://basilisk.fr/sandbox/M1EMN/BASIC/gnuplot_examples.c]()
+[https://basilisk.fr/sandbox/M1EMN/BASIC/gnuplot_examples.c]()
 
 
     FILE * fp = fopen ("out.txt", "w")
@@ -228,13 +228,13 @@ the output is the standard one (terminal), we can save in a file and plot the ge
  
 ## Links
  
- * [http://basilisk.fr/sandbox/M1EMN/BASIC/advecte1c.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/BASIC/advecte1c.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/BASIC/advecte1.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/BASIC/advecte1.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/floodwave.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/floodwave.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/BASIC/gnuplot_examples.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/BASIC/gnuplot_examples.c]()
  
 ## Bibliography
  

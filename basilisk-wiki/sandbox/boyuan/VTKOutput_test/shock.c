@@ -87,5 +87,5 @@ event outputVTKFiles (t += 0.025; t <= 0.3) {
 /**
 ## See also
 
-* [Same case with Gerris](http://gerris.dalembert.upmc.fr/gerris/examples/examples/shock.html)
+* [Same case with Gerris](https://gerris.dalembert.upmc.fr/gerris/examples/examples/shock.html)
 */

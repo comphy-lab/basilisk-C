@@ -5,16 +5,7 @@
 
 It is well known that mixing at a cumulus cloud's interface can cause a so-called subsiding shell. Nair et al. (2019) propose a scenario to study these physics in an idealized setting. We follow their setup for the flow configuration.
 
-
-<div class="figure">
-<video controls="" preload="metadata" width="900">
-<source src="https://surfdrive.surf.nl/files/index.php/s/xsUF3CMV9etQgmA/download
-" type="video/mp4">
-Your browser does not support the video tag. </video>
-<p class="caption">
-Volumetric rendering of the cloud (liquid water field) (via surfdrive)
-</p>
-</div>
+![Volumetric rendering of the liquid-water content of the air](https://antoonvanhooft.nl/media/subsiding.mp4)
 */
 
 #include "navier-stokes/centered.h"

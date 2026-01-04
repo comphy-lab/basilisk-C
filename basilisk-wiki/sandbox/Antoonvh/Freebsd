@@ -12,7 +12,7 @@ It is best to use `darcs` for this ...
 
 ~~~bash
 $ sudo pkg install hs-darcs
-$ darcs get --lazy http://basilisk.fr/basilisk
+$ darcs get --lazy https://basilisk.fr/basilisk
 ~~~
 
 ## Install `qcc`

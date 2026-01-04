@@ -2,11 +2,11 @@
 # A self-similar solver for the viscous collapse of a heap 
 
 This is an adaptation of the 
-[code developed by *P.-Y. Lagrée*](http://basilisk.fr/sandbox/M1EMN/Exemples/column_viscous.c) 
+[code developed by *P.-Y. Lagrée*](/sandbox/M1EMN/Exemples/column_viscous.c) 
 for exhibiting the self-similar behaviour of the collapse of 
 a viscous heap for a newtonian fluid.
 
-Here, we want to know if a [*self-similar solver*](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README) 
+Here, we want to know if a [*self-similar solver*](/sandbox/cailler/self_sim_DNS/README) 
 can be adaptated to this problem, as self-similar coordinates'scalings differ in 
 the two directions (see the problem transformed in self-similar coordinates 
 in the below `selfsim_centered_huppert.h` file). 
@@ -251,7 +251,7 @@ event timeseries (t += 0.1 ) {
  * 1D Bingham collapse
  * Multilayer Bingham collapse
  * granular collapse
- * http://basilisk.fr/sandbox/M1EMN/Exemples/column_SCC.c
+ * https://basilisk.fr/sandbox/M1EMN/Exemples/column_SCC.c
  
  
 ## Bibliography

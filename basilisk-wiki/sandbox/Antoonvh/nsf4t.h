@@ -395,6 +395,7 @@ void vorticityf3 (face vector u, vector omega) {
 * [Convergence of approximations with adaptive refinement](test_conv.c)
 * [4th order accurate projection on trees](tprojection.c)
 * [The advection scheme and non-smooth solutions](upat.c)
+* [Convergence of the advection scheme for smooth solutions](compact_upwind.c)
 * [Planar Poiseuille flow (exact)](poiseuille.c)
 * [The viscous decay of a flow profile (4th order)](decay.c)
 * [A viscous `top`-boundary layer (4th order)](visc_boun.c)

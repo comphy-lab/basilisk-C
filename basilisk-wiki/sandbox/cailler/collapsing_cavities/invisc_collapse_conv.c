@@ -19,7 +19,7 @@ singularity $\tilde{t}_0$.
 **Important note**
 
 All the notations employed, justification of the non-dimensionalization used and 
-other general considerations are detailed in the [`README`](http://basilisk.fr/sandbox/cailler/collapsing_cavities/README) 
+other general considerations are detailed in the [`README`](/sandbox/cailler/collapsing_cavities/README) 
 file of this sandbox's directory.
 </div>
 
@@ -30,10 +30,10 @@ file of this sandbox's directory.
 Our goal is simulating the convergence of a collapsing cavity towards a 
 *singular state* corresponding to a perfect cone. To prepare a numerical 
 configuration in which the interface is collapsing, we can exploit the conclusions 
-of this [documentation's paragraph](http://basilisk.fr/sandbox/cailler/collapsing_cavities/README#how-can-we-numerically-prepare-a-singular-state): 
+of this [documentation's paragraph](/sandbox/cailler/collapsing_cavities/README#how-can-we-numerically-prepare-a-singular-state): 
 
   1. starting from an obtuse liquid cone of angle $\theta_0 > 90$° initially at 
-  rest and placed in a [dipolar flow](http://basilisk.fr/sandbox/cailler/sierou_lister/README#dipolar-distribution-and-physical-meaning) 
+  rest and placed in a [dipolar flow](/sandbox/cailler/sierou_lister/README#dipolar-distribution-and-physical-meaning) 
   of strength $\widetilde{\mu}_0 > 0$ large enough to counteract the surface 
   tension driven recoil of the interface, the latter will *move backward* 
   compared to its initial state (*cf.* left side of the above figure);
@@ -53,7 +53,7 @@ of this [documentation's paragraph](http://basilisk.fr/sandbox/cailler/collapsin
 ### General Parameters
 
 As demonstrated in the 
-[`README`](http://basilisk.fr/sandbox/cailler/collapsing_cavities/README#inviscid-non-dimensionalization) 
+[`README`](/sandbox/cailler/collapsing_cavities/README#inviscid-non-dimensionalization) 
 documentation, the inviscid problem doesn't have any characteristic length scale, 
 so we can choose an arbitrary box size for our simulation. Let's take $L_0 = 10^4$:
 */
@@ -82,7 +82,7 @@ $N_{max} \in [7 \, ; 10] \Rightarrow \widetilde{\Delta}_{max} \in [9.8 \, ; 78.1
 Due to the `Basilisk` server limitations for running codes in the *sandbox*, we 
 limit the present code to the case where $N_{max} = 7$, and provide all the other 
 needed data in the
-[`invisc_data`](http://basilisk.fr/sandbox/cailler/collapsing_cavities/collapsing_data/invisc_data) 
+[`invisc_data`](/sandbox/cailler/collapsing_cavities/collapsing_data/invisc_data) 
 directory. **With a lower minimum level, the simulation cannot converge.**
 */
 
@@ -101,7 +101,7 @@ We also define a $\beta_0$ angle corresponding to the opposite angle of the apex
 /** 
 Since we are also interested in the formation of liquid jets, and following the 
 conclusions of the page
-[`sierou_neg_dipolar_flow.c`](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c#discussion), 
+[`sierou_neg_dipolar_flow.c`](/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c#discussion), 
 strong values for the dipolar flow field are needed. We consequently choose 
 $|\widetilde{\mu}_0| = 50$:
 */
@@ -175,7 +175,7 @@ scalar u_rs[]; // L2-norm of velocity `u`
 
 **The geometric considerations, initial and boundary conditions are the same than 
 those presented and *fully documented* in** 
-[**`sierou_dipolar_flow.c`**](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c#boundary-conditions), 
+[**`sierou_dipolar_flow.c`**](/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c#boundary-conditions), 
 except for the box size obviously. Therefore, we instantiate the following domain: 
 
 ![Initial setup of the simulation](img_collapsing/collapsing_BC.png){width="30%"}
@@ -536,7 +536,7 @@ double minimum (scalar a) {
   return mini;
 }
 
-// cf. http://basilisk.fr/sandbox/ecipriano/src/common-evaporation.h
+// cf. https://basilisk.fr/sandbox/ecipriano/src/common-evaporation.h
 double avg_neighbor (Point point, scalar Y, scalar f) {
   /* Compute the average value of a scalar field Y 
   in a 3x3 stencil around the current cell */

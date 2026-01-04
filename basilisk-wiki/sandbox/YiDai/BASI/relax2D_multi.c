@@ -1,5 +1,5 @@
 /**
-# Here we use basilisk multigrid [possion solver](http://basilisk.fr/src/poisson.h) to solve simple 2D steady heat equation
+# Here we use basilisk multigrid [possion solver](/src/poisson.h) to solve simple 2D steady heat equation
 
 */
 

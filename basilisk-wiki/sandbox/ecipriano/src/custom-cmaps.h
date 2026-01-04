@@ -4,7 +4,7 @@
 * *seismic*: blue-to-red diverging map extracted from [matplotlib](https://matplotlib.org/stable/tutorials/colors/colormaps.html), good
 for plotting vorticity field.
 * *black_body*: sequential black-to-yellow colormap, useful for
-the temperature field in combustion simulations (from [rt.c](http://basilisk.fr/sandbox/Antoonvh/rt.c))
+the temperature field in combustion simulations (from [rt.c](/sandbox/Antoonvh/rt.c))
 */
 
 void seismic (double cmap[NCMAP][3])

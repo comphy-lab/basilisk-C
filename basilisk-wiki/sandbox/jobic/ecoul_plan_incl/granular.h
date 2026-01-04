@@ -50,8 +50,8 @@ the diameter of grains  $D=1./30$
  
 
 In this file, we code the tensorial version $\tau_{ij}$, the shear will be replaced by $\sqrt{2} \sqrt{D_{ij}D_{ji}}$ where   $D_{ij}$  is the shear strain rate tensor
- (see for analytical solutions [the basic Bagnold flow](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic.c)
- and  [Bagnold with cohesion](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c)
+ (see for analytical solutions [the basic Bagnold flow](/sandbox/M1EMN/Exemples/bagnold_periodic.c)
+ and  [Bagnold with cohesion](/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c)
 
 All those numerical values are to be changed in the main.
  
@@ -185,7 +185,7 @@ event properties (i++) {
 
 ## alternate possibility
  
-  [http://basilisk.fr/sandbox/vatsal/GenaralizedNewtonian/LidDrivenBingham.c]()
+  [https://basilisk.fr/sandbox/vatsal/GenaralizedNewtonian/LidDrivenBingham.c]()
  
  
  event properties (i++) {
@@ -239,39 +239,39 @@ event properties (i++) {
  
 # Exemples of use
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column.c]()  granular collapse
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/granular_column.c]()  granular collapse
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column_cohesif.c]()  cohesive granular collapse
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/granular_column_cohesif.c]()  cohesive granular collapse
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass.c]() granular sandglass
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass.c]() granular sandglass
  
 
  
 # Exemples of implemetations not yet in `granular.h`, some en axi
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_segregation.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_segregation.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/bagnoldtube.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/bagnoldtube.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/forchheimer.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/forchheimer.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/siloaxi.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/siloaxi.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/siloaxisl_2.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/siloaxisl_2.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/siloaxiForchheimer.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/siloaxiForchheimer.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column_muw.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/granular_column_muw.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/granular_front.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/granular_front.c]()
  
- * [http://basilisk.fr/sandbox/zhenhai/LateralSandglassAngle40.c]()
+ * [https://basilisk.fr/sandbox/zhenhai/LateralSandglassAngle40.c]()
  
- * [http://basilisk.fr/sandbox/yixian/README]()
+ * [https://basilisk.fr/sandbox/yixian/README]()
  
  Confiné 04/2020
  

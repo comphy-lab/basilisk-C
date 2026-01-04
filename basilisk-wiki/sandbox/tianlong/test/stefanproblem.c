@@ -1,5 +1,5 @@
 /**
-The Stefan problem setup. This file is copied from [Edorado's sandbox](http://basilisk.fr/sandbox/ecipriano/README) and modified with EBIT.
+The Stefan problem setup. This file is copied from [Edorado's sandbox](/sandbox/ecipriano/README) and modified with EBIT.
 */
 #define SEMUPC 1
 #define IS_1D 1

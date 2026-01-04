@@ -59,8 +59,8 @@ in
  
  
  
- as in [Huppert  problem](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) or [Balmforth problem](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c). This is done
- for this Bagnold case [here](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_ondesimple_noSV.c)
+ as in [Huppert  problem](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) or [Balmforth problem](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c). This is done
+ for this Bagnold case [here](/sandbox/M1EMN/Exemples/bagnold_ondesimple_noSV.c)
  
 In this file we use the Multilayer Solver to see the influence of the inertia neglected in the 1D model.
 
@@ -305,7 +305,7 @@ Compare with and without
 
  Value of the final position ($x_{front}-2$) as function of cohesion.
  Plain line: comparison wit full 1D constant $\mu$ 
- [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_savagehutter.c]()
+ [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_savagehutter.c]()
  
    
 ~~~gnuplot
@@ -324,12 +324,12 @@ Compare with and without
 ## Links
 
 * see the related example in 1D  
-   [1D kinetic wave](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
-* [Balmforth problem](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c).
-* for a Bagnold case [here]((http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_ondesimple.c))
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_ML.c]() 2D viscous `multilayer.h`
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_NH.c]() 2D viscous with `hydro.h`
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]() 1D with `saintvenant.h`
+   [1D kinetic wave](/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
+* [Balmforth problem](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c).
+* for a Bagnold case [here]((/sandbox/M1EMN/Exemples/bagnold_ondesimple.c))
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_ML.c]() 2D viscous `multilayer.h`
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_NH.c]() 2D viscous with `hydro.h`
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]() 1D with `saintvenant.h`
    
    
 # Bibliography   

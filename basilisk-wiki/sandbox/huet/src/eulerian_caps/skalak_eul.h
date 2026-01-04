@@ -7,7 +7,7 @@ quantities defined in [elasticity.h](elasticity.h). The force are transferred
 to the fluid in the whole membrane region computed in [capsule.h](capsule.h).
 
 This implementation is greatly inspired from
-[log-conform.h](http://basilisk.fr/src/log-conform.h)
+[log-conform.h](/src/log-conform.h)
 */
 
 

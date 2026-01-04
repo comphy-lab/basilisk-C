@@ -53,15 +53,18 @@ int main() {
 }
 
 double u_x (double x, double y) {
-  return -cos(2.*pi*x)*sin(2.*pi*y)*exp(-2.*muv*sq(2.*pi)*t) + 1.;
+  double k = 2*pi;
+  return -cos(k*x)*sin(k*y)*exp(-2.*muv*sq(2.*pi)*t) + 1.;
 }
 
 double u_y (double x, double y) {
-  return  sin(2.*pi*x)*cos(2.*pi*y)*exp(-2.*muv*sq(2.*pi)*t) + 0.5;
+  double k = 2*pi;
+  return  sin(k*x)*cos(k*y)*exp(-2.*muv*sq(2.*pi)*t) + 0.5;
 }
 
 double s_a (double x, double y) {
-  return  cos(2.*pi*x)*cos(2.*pi*y)*exp(-2*muv*sq(2.*pi)*t);
+  double k = 2*pi;
+  return  cos(k*x)*cos(k*y)*exp(-2*muv*sq(2.*pi)*t);
 }
 
 event init (t = 0) {

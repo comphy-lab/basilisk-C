@@ -1,7 +1,7 @@
 /** 
 # Intro 
 
-This is a minimal example for implementing a 'fan' after geometry examples that can be found [here](http://basilisk.fr/sandbox/Antoonvh/puck.c). The mentioned function is updated to be applicable for general phi and theta. Also this script adds a velocity based on a stated fan power. All functions can be found at the end of this file.
+This is a minimal example for implementing a 'fan' after geometry examples that can be found [here](/sandbox/Antoonvh/puck.c). The mentioned function is updated to be applicable for general phi and theta. Also this script adds a velocity based on a stated fan power. All functions can be found at the end of this file.
 
 # Power to velocity forcing and expected exit velocity
 The implementation is based on a momentum forcing. An amount of work per time is done on the flow with a certain power, P. Using the work-energy theorem, which states that the work done by all acting forces on a particle is equal the change in kinetic energy, this can be expressed as $\Delta E_{kin}=P\Delta t$. This directly implies that,

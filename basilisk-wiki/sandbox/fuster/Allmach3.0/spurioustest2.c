@@ -167,7 +167,7 @@ plot [5:120]'< sort -n -k1,2 log' u (0.8*2**$1):($7/2.5) w lp t "Max" ps 2, \
 
 ## See also
 
-* [Effect of the Laplace number](http://basilisk.fr/sandbox/fuster/Allmach3.0/spurioustest.c)
-* [Same test with the incompressible version](http://basilisk.fr/src/test/spurious.c)
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/spurious.html)
+* [Effect of the Laplace number](/sandbox/fuster/Allmach3.0/spurioustest.c)
+* [Same test with the incompressible version](/src/test/spurious.c)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/spurious.html)
 */

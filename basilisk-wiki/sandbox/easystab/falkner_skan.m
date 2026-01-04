@@ -125,9 +125,9 @@ print('-dpng','-r80','falkner_skan.png');
 
 # Exercices/Contributions
 
-* Please validate this result with Pohlhausen profile. => [http://basilisk.fr/sandbox/easystab/stab2014/falkner_skan_validation]()
+* Please validate this result with Pohlhausen profile. => [https://basilisk.fr/sandbox/easystab/stab2014/falkner_skan_validation]()
 * Please add the Cooke transverse velocity profile for the boundary layer on a swept-wing
-* Please validate the behavior for large $\beta$ (which is the self similar flow in a convergent) => [http://basilisk.fr/sandbox/easystab/stab2014/falkner_skan_validation]()
+* Please validate the behavior for large $\beta$ (which is the self similar flow in a convergent) => [https://basilisk.fr/sandbox/easystab/stab2014/falkner_skan_validation]()
 
 
 # Links

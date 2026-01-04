@@ -12,7 +12,7 @@ is imposed. */
 scalar f[];
 scalar * interfaces = {f}, * tracers = NULL;
 
-#include "advection.h"
+#include "advection-ebit.h"
 #include "vof.h"
 #include <vofi.h>
 #pragma autolink -L$HOME/local/lib -lvofi
@@ -138,6 +138,9 @@ event calc_infty_norm (t = end) {
 
   // shape error and area error
   printf ("%d %e %e %e %e\n", N, area0, area, fabs(area0 - area)/area0, l_inf);
+
+  // reference file
+  output_facets (f, stderr);
 }
 
 /**
@@ -151,8 +154,8 @@ reset
 set size ratio -1
 plot [0.:1.][0.:1.]'vortex_vof_128_2_1.dat' w l lw 3 t "VOF, t = T/2", \
   'vortex_vof_128_2_2.dat' w l lw 3 t "VOF, t = T", \
-  '../vortex_ana_2_1.dat' w l t "Ref. t = T/2", \
-  '../vortex_ana_2_2.dat' w l t "Ref. t = T"
+  '../vortex_ana_2_1.dat' w l dt 2 t "Ref. t = T/2", \
+  '../vortex_ana_2_2.dat' w l dt 2 t "Ref. t = T"
 ~~~
 
 ~~~gnuplot Shapes of the interface with period $T = 8$ ($N = 128$).
@@ -160,8 +163,8 @@ reset
 set size ratio -1
 plot [0.:1.][0.:1.]'vortex_vof_128_8_1.dat' w l lw 3 t "VOF, t = T/2", \
   'vortex_vof_128_8_2.dat' w l lw 3 t "VOF, t = T", \
-  '../vortex_ana_8_4.dat' w l t "Ref. t = T/2", \
-  '../vortex_ana_8_8.dat' w l t "Ref. t = T"
+  '../vortex_ana_8_4.dat' w l dt 2 t "Ref. t = T/2", \
+  '../vortex_ana_8_8.dat' w l dt 2 t "Ref. t = T"
 ~~~
 
 ## See also

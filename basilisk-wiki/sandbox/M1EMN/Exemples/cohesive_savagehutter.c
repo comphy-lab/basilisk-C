@@ -36,11 +36,11 @@ The system is
  \frac{\partial }{\partial x}g\dfrac{h^{n2}}{2}
  = - g \frac{\partial }{\partial x} Z$$
 
-is solved with [http://basilisk.fr/src/saint-venant.h]().
+is solved with [https://basilisk.fr/src/saint-venant.h]().
  
 Second, friction gives
  $$ \frac{u^{n+1}-u^*}{\Delta t} =- \mu g (1+ \frac{\ell_c}{h}) \frac{u}{|u|}$$
-is solved like in [http://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]()
+is solved like in [https://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]()
  
  
  
@@ -339,15 +339,15 @@ Comparison with Balmforth & Kerswell 05 for the runout proposed by Kerswell 05
 /**
 ## Links
  
-* Ideal fluid dam break [Basilisk](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c)
+* Ideal fluid dam break [Basilisk](/sandbox/M1EMN/Exemples/damb.c)
  
-* Savage Hutter  [http://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]()
+* Savage Hutter  [https://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]()
  
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass_muw.c]() granular sand glass with friction
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass_muw.c]() granular sand glass with friction
  
 * a version in [python](https://colab.research.google.com/drive/19oLUumzwTzTiRxnF3VgHvp0j8OjE4MlD) of this file with no cohesion
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_ML.c]() the RNSP 
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_ML.c]() the RNSP 
  
  
 ## Bibliography

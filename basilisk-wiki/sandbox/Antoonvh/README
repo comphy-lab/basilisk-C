@@ -21,18 +21,22 @@ provide an overview of the projects under [/sandbox/Antoonvh/](). The topics her
 * [A section of a subsiding shell](subsiding-shell.c)
 * [The diurnal cycle of the atmosphere](lumpedrob.c)
 
-#### 3D Turbulence
-[<img style = float:right src="https://img.youtube.com/vi/Qxr7tsZUy1c/mqdefault.jpg" alt="drawing" width="240px"/>](two_rings.c)
+#### 3D Turbulence and Vortex Dynamics
+[<img style = float:right src="https://img.youtube.com/vi/Qxr7tsZUy1c/mqdefault.jpg" alt="drawing" width="300px"/>](two_rings.c)
 
 * [LES of a Vortex Cannon](smokey_puff.c)
 * [LES of Isotropic Turbulence in a Triply Periodic Box](isotropicLES.c)
 * [A Kelvin-Helmholtz instability in 3D](kh3d.c)
 * [The collision of two vortex rings](two_rings.c)
 * [Untying a vortex knot](trefoil4.c)
+* [Rising smoke plume](heating.c)
+* [Turbulent wake behind a sphere](my_sphere.c)
+* [A Crow instability](crow.c)
+* [An elliptic instability](elliptic.c)
 
 #### 2D Turbulence and Vortex Dynamics
 
-[<img style = float:right src="isoline/result2.png" alt="drawing" width="180px"/>](lamb-dipole.c)
+[<img style = float:right src="isoline/result2.png" alt="drawing" width="200px"/>](lamb-dipole.c)
 
 * [Hoek's Ring-Vortex Generator](hoek.c)
 * [The Collision of a Dipolar Vortex with a No-slip Wall](lamb-dipole.c)
@@ -45,7 +49,7 @@ provide an overview of the projects under [/sandbox/Antoonvh/](). The topics her
 
 #### Multiphase flows
 
-[<img style = float:right src="rest/_plot0.svg" alt="drawing" width="280px"/>](rest.c)
+[<img style = float:right src="rest/_plot0.svg" alt="drawing" width="350px"/>](rest.c)
 
 * [Four Droples in two binary Collisions](coalescence.c)
 * [Droplet splashes in a Pool](splash.c)
@@ -57,6 +61,8 @@ provide an overview of the projects under [/sandbox/Antoonvh/](). The topics her
 * [A bathtub vortex](bathtub.c)
 * [A plant's capillary](cap.c)
 * [A Droplet water slide](dws.c)
+* [Two impinging jets](impinging.c)
+* [Impinging jets at an angle](impinging2.c)
 
 #### Other
 [<img style = float:right src="tesla_valve/tesla.png" alt="drawing" width="290px"/>](tesla_valve.c)

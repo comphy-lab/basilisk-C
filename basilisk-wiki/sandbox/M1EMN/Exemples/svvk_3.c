@@ -2,7 +2,7 @@
 # 1D Shallow Water Saint Venant Von K&aacute;rm&aacute;n
 
  see
-["svvk"](http://basilisk.fr/sandbox/M1EMN/Exemples/svvk.c) for the explanation of the equations
+["svvk"](/sandbox/M1EMN/Exemples/svvk.c) for the explanation of the equations
 
 ### SVVK system
 The final SVVK (Saint-Venant Von K&aacute;rm&aacute;n) equations are
@@ -326,7 +326,7 @@ V.1 Noeux les Mines, 04 Juillet 15
 
 
 * see
-["svvk"](http://basilisk.fr/sandbox/M1EMN/Exemples/svvk.c) 
+["svvk"](/sandbox/M1EMN/Exemples/svvk.c) 
 
 * Schlichting, 1968 (with Gersten 00) ["Boundary Layer theory"](https://books.google.fr/books?id=8YugVtom1y4C&printsec=frontcover&dq=schlichting+boundary+layer+theory&hl=fr&sa=X&ei=gwOZVe_JPMmtU83jgIAE&ved=0CCEQ6AEwAA#v=onepage&q=schlichting%20boundary%20layer%20theory&f=false)
 

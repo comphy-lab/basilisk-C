@@ -1,9 +1,9 @@
 %{
 # Rayleigh-Benard instability
 
-*This document belongs to the [easystab](http://basilisk.fr/sandbox/easystab/README) project, please consult the main page of the project for explanations.*
+*This document belongs to the [easystab](/sandbox/easystab/README) project, please consult the main page of the project for explanations.*
 
-*The present program was specifically designed as a support for the course ["Introductions to hydrodynamical instabilities"](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md) for the "DET" Master's cursus in Toulouse. For the underlying theory please see [Lecture notes for chapter 5](http://basilisk.fr/sandbox/easystab/LectureNotes_RayleighTaylor.md) *
+*The present program was specifically designed as a support for the course ["Introductions to hydrodynamical instabilities"](/sandbox/easystab/M2DET/Instabilities.md) for the "DET" Master's cursus in Toulouse. For the underlying theory please see [Lecture notes for chapter 5](/sandbox/easystab/LectureNotes_RayleighTaylor.md) *
 
 *To use this program: click "raw page source" in the left column, copy-paste in the Matlab/Octave editor, and run.*
 
@@ -15,7 +15,7 @@ approach by comparing with analytical results which exist in this case.
 The present program considers the more physical case of no-slip conditions at the walls
 ("Rigid-Rigid boundaries").
 
-The theory is presented in [lecture 5](http://basilisk.fr/sandbox/easystab/LectureNotes_RayleighTaylor.md) 
+The theory is presented in [lecture 5](/sandbox/easystab/LectureNotes_RayleighTaylor.md) 
 of the M2 DET course. The  problem is set in generalised eigenvalue form 
 $\lambda B X = A X$. The construction of the matrices and resolution is done by [function RB(k,Ra,Pr)](#function-rb) defined at the end of this document.
 
@@ -256,7 +256,7 @@ Delta=dxx+dyy;
 ## System matrices
 
 
-As explained in  the [lecture notes](http://basilisk.fr/sandbox/easystab/LectureNotes_RayleighTaylor.md#case-of-a-horizontal-cell-of-large-dimension), 
+As explained in  the [lecture notes](/sandbox/easystab/LectureNotes_RayleighTaylor.md#case-of-a-horizontal-cell-of-large-dimension), 
 after nondimensionalization the system of equations can be written in a matrix form
 $$
 \lambda B q =A q

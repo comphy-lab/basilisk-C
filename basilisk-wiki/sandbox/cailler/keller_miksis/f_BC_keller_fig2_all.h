@@ -1,6 +1,6 @@
 /** 
 See the algorithm documentation
-[here](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/f_BC_vel_tan.h) 
+[here](/sandbox/cailler/test-cases/vel_tan/f_BC_vel_tan.h) 
 for updating ghost cell values.
 */
 

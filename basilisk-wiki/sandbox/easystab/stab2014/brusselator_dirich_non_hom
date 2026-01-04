@@ -1,6 +1,6 @@
 %{
 
-Here we apply nonhomogeneous Dirichlet conditions to the brusselator code : [bruxellator_jerome.m](http://basilisk.fr/sandbox/easystab/bruxellator_jerome.m). Moreover, we also add the marh in time part to visualise the time evolution of the phenomenon.
+Here we apply nonhomogeneous Dirichlet conditions to the brusselator code : [bruxellator_jerome.m](/sandbox/easystab/bruxellator_jerome.m). Moreover, we also add the marh in time part to visualise the time evolution of the phenomenon.
 
 U and V are the concentrations of two chemicals that varies with time and in the direction $x$. $\lambda$ is a chemical parameter we chose, which will have an impact on the stability of the system. Here is the nonlinear set of equations:
 $$
@@ -85,7 +85,7 @@ f=N+1:2*N;
 
 %{
 # Nonhomogeneous Dirichlet boundary conditions
-The original system has one variable and two time derivatives, so we should apply two boundary conditions. We will simply say that the position of the string at its both ends should be fixed: two attachment points. Here, we consider a nonhomogeneous Dirichlet condition applied on the first and last point of the state vector for the state position. (For homogeneous Dirichlet condition, see [bruxellator_jerome.m](http://basilisk.fr/sandbox/easystab/bruxellator_jerome.m))
+The original system has one variable and two time derivatives, so we should apply two boundary conditions. We will simply say that the position of the string at its both ends should be fixed: two attachment points. Here, we consider a nonhomogeneous Dirichlet condition applied on the first and last point of the state vector for the state position. (For homogeneous Dirichlet condition, see [bruxellator_jerome.m](/sandbox/easystab/bruxellator_jerome.m))
 For the nonhomogenous Dirichlet condition, we need to add a vector &b& to modify the boundary condition. Thus, our matrix system becomes:
 $$ 
 Eq_{t}= Aq+b

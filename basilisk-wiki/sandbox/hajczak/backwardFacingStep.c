@@ -158,7 +158,7 @@ event logfile (i++, t <= tmax)
   if (i > 1 && du < ev)
     return 1; /* stop */
 
-  /** Finding the bubbles positions. We scan $y=1.1$ and $y=2.9$ lines which is not very nice. Possible fix using   [embed_vorticity](http://basilisk.fr/src/embed.h#surface-force-and-vorticity) ?
+  /** Finding the bubbles positions. We scan $y=1.1$ and $y=2.9$ lines which is not very nice. Possible fix using   [embed_vorticity](/src/embed.h#surface-force-and-vorticity) ?
   */
   
   double X1 = 0.5;

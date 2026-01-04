@@ -21,8 +21,7 @@ with $\kappa$ the heat conductivity of the atmospheric
 medium. Finally, for a simple diurnal cycle with period $T$, $Q_n$
 is written as,
 
-$$Q_n = \mathrm{max} \left[ B_0\ 
-\mathrm{sin}\left( \frac{2\pi t}{T} \right),\ B_1 \right],$$
+$$Q_n = \mathrm{max} \left[ B_0 \sin\left( \frac{2\pi t}{T} \right),\ B_1 \right],$$
 
 with $B_0$ and $B_1$ buoyancy flux scales. Giving a [Robin boundary
 condtion](https://en.wikipedia.org/wiki/Robin_boundary_condition) for

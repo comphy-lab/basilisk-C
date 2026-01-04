@@ -137,5 +137,5 @@ plot [5:200][1e-4:1]'log' t "Basilisk" w lp, 2./x**2 t "Second order"
 
 ## See also
 
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/capwave.html#air-water)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/capwave.html#air-water)
 */

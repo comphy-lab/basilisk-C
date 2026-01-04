@@ -205,13 +205,13 @@ scalar divr[];
 /**
 solve Poisson equation 
 $$\nabla \cdot (\beta \nabla p  )= s$$ 
-with [http://basilisk.fr/src/poisson.h](http://basilisk.fr/src/poisson.h)
+with [https://basilisk.fr/src/poisson.h](/src/poisson.h)
 */
 
   mgp = poisson (p, source, beta);
 
 /** the velocity is then computed from the gradient (note the `face_gradient_x p=  ((p[i] - p[i-1])/Delta)`) see 
-[http://basilisk.fr/src/poisson.h](http://basilisk.fr/src/poisson.h)
+[https://basilisk.fr/src/poisson.h](/src/poisson.h)
 
 */
    foreach_face()
@@ -392,13 +392,13 @@ set size 1,.5
 
 # Links
  
- * see [http://basilisk.fr/src/hele-shaw.h](http://basilisk.fr/src/hele-shaw.h)
+ * see [https://basilisk.fr/src/hele-shaw.h](/src/hele-shaw.h)
  
- * see [http://basilisk.fr/sandbox/M1EMN/Exemples/darcyLambSneddon.c]()
+ * see [https://basilisk.fr/sandbox/M1EMN/Exemples/darcyLambSneddon.c]()
  
- * see [http://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuit2D.c]()
+ * see [https://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuit2D.c]()
  
- * see [http://basilisk.fr/sandbox/M1EMN/HYDGEO/toddbear59.c]()
+ * see [https://basilisk.fr/sandbox/M1EMN/HYDGEO/toddbear59.c]()
  
 # Bibliography
 

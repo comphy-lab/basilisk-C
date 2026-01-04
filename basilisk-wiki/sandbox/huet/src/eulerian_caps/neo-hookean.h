@@ -23,11 +23,11 @@ $$
 \mathbf{Ts} = \frac{G_s}{3} (\mathbf{G} - \frac{1}{J^3}\mathbf{P})
 $$
 Note that the elastic modulus $G_s$ will be multiplied to the stress tensor
-during the acceleration step in [elasticity.h](http://basilisk.fr/_edit/sandbox/huet/src/elasticity.h),
+during the acceleration step in [elasticity.h](/_edit/sandbox/huet/src/elasticity.h),
 and that the acceleration will be computed using the continuum surface force
 (CSF) formulation, for which we need to multiply the divergence of the stress
 tensor $\nabla_s \cdot \mathbf{Ts}$ by the norm of the gradient of the smoothed color
-function $|\nabla \phi|$ (in our case, the smoothed color function is defined in [capsule.h](http://basilisk.fr/_edit/sandbox/huet/src/capsule.h) and named *caps* $\equiv \phi$).
+function $|\nabla \phi|$ (in our case, the smoothed color function is defined in [capsule.h](/_edit/sandbox/huet/src/capsule.h) and named *caps* $\equiv \phi$).
 It was shown in [Ii et al.](ii2012full) that since
 $|\nabla \phi|$ is a smoothed 1-dimensional Dirac distribution, we have
 $|\nabla \phi| \nabla_s \cdot \mathbf{Ts} = \nabla_s \cdot (|\nabla \phi| \mathbf{Ts})$.

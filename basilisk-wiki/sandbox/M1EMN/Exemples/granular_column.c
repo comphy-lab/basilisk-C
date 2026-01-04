@@ -6,7 +6,7 @@ Geophysics, moutains...
  
 
 ## Equations
-We propose an implementation of the Jop Pouliquen Forterre µ(I) rheology. This is the counterpart in Basilisk  of the [gerris](http://gerris.dalembert.upmc.fr/gerris/examples/examples/column.html#htoc9) case.
+We propose an implementation of the Jop Pouliquen Forterre µ(I) rheology. This is the counterpart in Basilisk  of the [gerris](https://gerris.dalembert.upmc.fr/gerris/examples/examples/column.html#htoc9) case.
  
 It consists to solve for three aspect ratios the collapse of three columns. Each collapse is compared to the contact dynamics solution.
 
@@ -226,11 +226,11 @@ set output 'a.png'
  
 # Related examples
  
-* [The basic Bagnold flow](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic.c)
+* [The basic Bagnold flow](/sandbox/M1EMN/Exemples/bagnold_periodic.c)
  
-* [dry column](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column.c)
+* [dry column](/sandbox/M1EMN/Exemples/granular_column.c)
  
-* [silos](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass.c)
+* [silos](/sandbox/M1EMN/Exemples/granular_sandglass.c)
  
  
  

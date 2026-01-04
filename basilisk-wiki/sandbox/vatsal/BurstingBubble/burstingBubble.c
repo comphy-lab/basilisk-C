@@ -30,7 +30,7 @@ Id 1 is for the Viscoplastic liquid pool, and Id 2 is Newtonian gas.
 #include "navier-stokes/centered.h"
 #define FILTERED // Smear density and viscosity jumps
 /**
-To model Viscoplastic liquids, we use a modified version of [two-phase.h](http://basilisk.fr/src/two-phase.h). [two-phaseVP.h](two-phaseVP.h) contains these modifications.
+To model Viscoplastic liquids, we use a modified version of [two-phase.h](/src/two-phase.h). [two-phaseVP.h](two-phaseVP.h) contains these modifications.
 */
 #include "two-phaseAxiVP.h"
 /**
@@ -41,7 +41,7 @@ To model Viscoplastic liquids, we use a modified version of [two-phase.h](http:/
 #include "reduced.h"
 #include "distance.h"
 /**
-We use a modified adapt-wavelet algorithm available [(here)](http://basilisk.fr/sandbox/pairetti/bag_mode/adapt_wavelet_limited.h). It is written by *César Pairetti* (Thanks :)). We use to ensure that refinement is higher near the substrate.
+We use a modified adapt-wavelet algorithm available [(here)](/sandbox/pairetti/bag_mode/adapt_wavelet_limited.h). It is written by *César Pairetti* (Thanks :)). We use to ensure that refinement is higher near the substrate.
 */
 #include "pairetti/bag_mode/adapt_wavelet_limited.h"
 
@@ -179,7 +179,7 @@ event init (t = 0) {
 event adapt(i++){
   /**
   We adapt based on curvature, $\kappa$ and vorticity $\omega$. 
-  Adaptation based on $\kappa$ ensures a constant grid resolution across the interface. See [this](http://basilisk.fr/sandbox/Antoonvh/rc.c) for further reading. 
+  Adaptation based on $\kappa$ ensures a constant grid resolution across the interface. See [this](/sandbox/Antoonvh/rc.c) for further reading. 
 
   We also adapt based on vorticity in the liquid domain. I have noticed that this refinement helps resolve the fake-yield surface accurately (see the black regions in the videos below). 
   */

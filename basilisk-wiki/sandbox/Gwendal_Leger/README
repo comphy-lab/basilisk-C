@@ -13,7 +13,7 @@ I also thank [Guillaume Michel](http://www.dalembert.upmc.fr/home/michel/) for h
 
 * The first *real* code I made is called
 [beach_topo](Beach_topo_basilisk/beach_topo.c),
-and it is basically [beach.c](http://basilisk.fr/src/test/beach.c)
+and it is basically [beach.c](/src/test/beach.c)
 but with a custom bathymetry we can implement as we want.
 
 * Then I tried using wave theory derived from the dispersion relation $\omega=\sqrt{gk\tanh(kH)}$
@@ -31,7 +31,7 @@ respectively in the [waves1D.c](waves_1D/waves1D.c) and [waves1D_SV.c](waves_1D/
 
 * My third test, called [beach_waves](Beach_waves/beach_waves.c) is the sum of the two first works : waves dispersion above a custom bathymetry.
 
-* The [fourth work](http://basilisk.fr/sandbox/Gwendal_Leger/Port_waves/) corresponds to the most important work I've done during my internship:
+* The [fourth work](/sandbox/Gwendal_Leger/Port_waves/) corresponds to the most important work I've done during my internship:
 a 2D simulation of waves in the port of Boulogne-sur-mer.
 
-* Finally, I also studied the behaviour of different boundary conditions while propagating waves during a "long" run, in a setup similar to the one in [beach.c](http://basilisk.fr/src/test/beach.c). The comparison of the Dirichlet, radiation and "manual" radiation boundary conditions are presented with the code titled [Dirichlet_vs_Radiation](etude_dirichlet_radiation/Dirichlet_vs_Radiation.c).
+* Finally, I also studied the behaviour of different boundary conditions while propagating waves during a "long" run, in a setup similar to the one in [beach.c](/src/test/beach.c). The comparison of the Dirichlet, radiation and "manual" radiation boundary conditions are presented with the code titled [Dirichlet_vs_Radiation](etude_dirichlet_radiation/Dirichlet_vs_Radiation.c).

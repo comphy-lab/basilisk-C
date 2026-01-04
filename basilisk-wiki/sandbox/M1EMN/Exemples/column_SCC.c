@@ -66,7 +66,7 @@ application to wet concrete flow: collapse of columns (Abrahams cone test).
  
  
 
-check with [bingham simple](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_simple.c), it should be the same.
+check with [bingham simple](/sandbox/M1EMN/Exemples/bingham_simple.c), it should be the same.
  
  
  
@@ -672,7 +672,7 @@ level (click on image for animation)
  * Dufour and  Pijaudier-Cabotz "Numerical modelling of concrete flow: homogeneous approach"
  Int. J. Numer. Anal. Meth. Geomech., 2005; 29:395–416
  
- * [gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/couette.html).
+ * [gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/couette.html).
  
  
  * Y. Liu, N.J. Balmforth, S. Hormozi, D.R. Hewitt, [Two–dimensional viscoplastic dambreaks](https://www.math.ubc.ca/~njb/Research/leoslump.pdf), Journal of Non-Newtonian Fluid Mechanics, Volume 238, December 2016, Pages 65-79,

@@ -1,4 +1,4 @@
-/** A copy from **[WENO scheme in rajarshi's sandbox](http://basilisk.fr/sandbox/rajarshi/WENO_CODES/Saint_Venant_Test/)**, but added pointers for *Reconstruction_Left* and *Reconstruction_Right*.
+/** A copy from **[WENO scheme in rajarshi's sandbox](/sandbox/rajarshi/WENO_CODES/Saint_Venant_Test/)**, but added pointers for *Reconstruction_Left* and *Reconstruction_Right*.
 */
 
 /**

@@ -94,7 +94,7 @@ astats adapt_wavelet_leave_interface (scalar * slist,     // list of scalars
         }
         // arnbo: always set interface cells to the finest level
         for (scalar vf in vol_frac) {
-                if (vf[] > 0.0001 && vf[] < 0.9999 && level < maxlevel) {
+                if (vf[] > F_ERR && vf[] < 1.-F_ERR && level < maxlevel) {
                   cell.flags |= too_coarse;
                   cell.flags &= ~too_fine;
                 cell.flags &= ~just_fine;

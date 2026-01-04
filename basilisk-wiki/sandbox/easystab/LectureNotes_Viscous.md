@@ -115,7 +115,7 @@ For such flows:
 * The unstable eigenmodes (called Tollmien-Schlishting waves) display both a boundary-layer and a critical-layer singularity (as $Re \rightarrow \infty$).
 * The bifurcation at $Re_c$ is subcritical in most cases.
  
-Illustration : see programs [Poiseuille_temporal_viscous.m](http://basilisk.fr/sandbox/easystab/Poiseuille_temporal_viscous.m) (for computing a spectrum and plotting the eigenmodes) and [TS_PlanePoiseuille.m](/sandbox/easystab/david/TS_PlanePoiseuille.m) (for parametric study and drawing of the marginal curve in the $[k,Re]$ plane).
+Illustration : see programs [Poiseuille_temporal_viscous.m](/sandbox/easystab/Poiseuille_temporal_viscous.m) (for computing a spectrum and plotting the eigenmodes) and [TS_PlanePoiseuille.m](/sandbox/easystab/david/TS_PlanePoiseuille.m) (for parametric study and drawing of the marginal curve in the $[k,Re]$ plane).
 
 
 
@@ -144,5 +144,5 @@ $$
 
 Deduce that 2D instability always appears at lower $Re$ compared to 3D instability. 
 
-[Back to main page](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md)
+[Back to main page](/sandbox/easystab/M2DET/Instabilities.md)
 

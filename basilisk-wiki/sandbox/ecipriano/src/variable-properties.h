@@ -6,7 +6,12 @@ properties can be performed using this module, which defines
 structures and functions that help to setup such cases.
 */
 
-#define VARPROP
+#ifndef THERMODYNAMICS_H
+# define THERMODYNAMICS_H
+
+#define VARPROP 1
+
+#include "thermodynamics.h"
 
 /**
 ## Fields Allocations
@@ -18,10 +23,10 @@ used, there is no need to initialize a non-constant
 diffusivity of the chemical species, for example.
 */
 
-(const) scalar rho1v = zeroc, rho2v = zeroc;
-(const) scalar mu1v = zeroc, mu2v = zeroc;
-(const) scalar lambda1v = zeroc, lambda2v = zeroc;
-(const) scalar cp1v = zeroc, cp2v = zeroc;
+//(const) scalar rho1v = zeroc, rho2v = zeroc;
+//(const) scalar mu1v = zeroc, mu2v = zeroc;
+//(const) scalar lambda1v = zeroc, lambda2v = zeroc;
+//(const) scalar cp1v = zeroc, cp2v = zeroc;
 
 /**
 ## Thermodynamic State
@@ -49,61 +54,36 @@ typedef struct {
   double (* lambdav) (void *);
   double (* cpv) (void *);
   // Species properties
-  double (* pvap) (void *, int);
-  double (* dhev) (void *, int);
-  double (* diff) (void *, int);
-  double (* cps)  (void *, int);
-  double (* sigmas) (void *, int);
+  void (* dhev) (void *, double *);
+  void (* diff) (void *, double *);
+  void (* cps) (void *, double *);
+  void (* sigmas) (void *, double *);
+  // Expansion functions
+  double (* betaT) (const void *, void *);
+  void (* betaY) (const void *, void *, double *);
 } ThermoProps;
 
-/**
-## Overwrite Two-Phase Properties
+// Functions for simpler use of ThermoState
 
-We define macros used to overwrite the calculation of the variable density and
-viscosity fields in two-phase simulations using any method (VOF, LS, CLSVOF).
-*/
+ThermoState * new_thermo_state (size_t n) {
+  ThermoState * ts = malloc (sizeof (ThermoState));
+  ts->x = malloc (n*sizeof (double));
+  return ts;
+}
 
-#define aavg(f,v1,v2) (clamp(f,0.,1.)*(v1 - v2) + v2)
-#define havg(f,v1,v2) (1./(clamp(f,0,1)*(1./(v1) - 1./(v2)) + 1./(v2)))
+void free_thermo_state (ThermoState * ts) {
+  free (ts->x), ts->x = NULL;
+  free (ts), ts = NULL;
+}
 
-/**
-## Update One-Field Properties
-
-We overwrite the event `properties` to re-calculate the density and viscosity
-fields after the calculation in [two-phase.h](/src/two-phase-generic.h). */
-
-extern scalar f;
-extern face vector alphav;
-extern scalar rhov;
-#ifdef FILTERED
-extern scalar sf;
-#else
-# define sf f
-#endif
-
-event properties (i++) {
-  foreach_face() {
-    double ff = (sf[] + sf[-1])/2.;
-
-    double rho1vh = 0.5*(rho1v[] + rho1v[-1]);
-    double rho2vh = 0.5*(rho2v[] + rho2v[-1]);
-
-    alphav.x[] = fm.x[]/aavg (ff, rho1vh, rho2vh);
-
-    {
-      face vector muv = mu;
-      double mu1vh = 0.5*(mu1v[] + mu1v[-1]);
-      double mu2vh = 0.5*(mu2v[] + mu2v[-1]);
-
-      muv.x[] = fm.x[]*aavg (ff, mu1vh, mu2vh);
-    }
-  }
-
-  foreach() {
-    double rho1vh = rho1v[];
-    double rho2vh = rho2v[];
-
-    rhov[] = cm[]*aavg (sf[], rho1vh, rho2vh);
+void copy_thermo_state (ThermoState * dest, const ThermoState * orig,
+    size_t n)
+{
+  dest->T = orig->T;
+  dest->P = orig->P;
+  if (orig->x) {
+    for (size_t i = 0; i < n; i++)
+      dest->x[i] = orig->x[i];
   }
 }
 
@@ -118,20 +98,20 @@ simulations.
 ### *check_termostate()*: check that the thermodynamic state is
 reasonable. */
 
-int check_thermostate (ThermoState * ts, int NS) {
-  double sum = 0.;
-  for (int jj=0; jj<NS; jj++)
-    sum += ts->x[jj];
-
-  int T_ok = (ts->T > 180. && ts->T < 4000.) ? true : false;
-  int P_ok = (ts->P > 1e3 && ts->P < 1e7) ? true : false;
-  int X_ok = (sum > 1.-1.e-3 && sum < 1.+1.e-3) ? true : false;
-
-  return T_ok*P_ok*X_ok;
-}
+//int check_thermostate (ThermoState * ts, int NS) {
+//  double sum = 0.;
+//  for (int jj=0; jj<NS; jj++)
+//    sum += ts->x[jj];
+//
+//  int T_ok = (ts->T > 180. && ts->T < 4000.) ? true : false;
+//  int P_ok = (ts->P > 1e3 && ts->P < 1e7) ? true : false;
+//  int X_ok = (sum > 1.-1.e-3 && sum < 1.+1.e-3) ? true : false;
+//
+//  return T_ok*P_ok*X_ok;
+//}
 
 /**
-### *print_thermostate()*: print the thermodynamic state of the mixture.
+### *print_thermostate()*: print the thermodynamic state of the mixture
 */
 
 void print_thermostate (ThermoState * ts, int NS, FILE * fp = stdout) {
@@ -142,60 +122,179 @@ void print_thermostate (ThermoState * ts, int NS, FILE * fp = stdout) {
 }
 
 /**
-### *print_thermoprop()*: print the thermodynamic properties of the mixture.
+### *print_thermoprop()*: print the thermodynamic properties of the mixture
 */
 
-void print_thermoprop (ThermoProps * tp, ThermoState * ts, int NS, FILE * fp = stdout) {
-  if (tp->rhov)
-    fprintf (fp, "rhov = %g\n", tp->rhov (ts));
-  if (tp->muv)
-    fprintf (fp, "muv = %g\n", tp->muv (ts));
-  if (tp->lambdav)
-    fprintf (fp, "lambdav = %g\n", tp->lambdav (ts));
-  if (tp->cpv)
-    fprintf (fp, "cpv = %g\n", tp->cpv (ts));
-  if (tp->pvap) {
-    for (int jj=0; jj<NS; jj++)
-      fprintf (fp, "pvap[%d] = %g\n", jj, tp->pvap (ts, jj));
-  }
+void print_thermoprop (ThermoProps * tp, ThermoState * ts, int NS,
+    FILE * fp = stdout)
+{
+  if (tp->rhov) fprintf (fp, "density = %g\n", tp->rhov (ts));
+  if (tp->muv) fprintf (fp, "viscosity = %g\n", tp->muv (ts));
+  if (tp->lambdav) fprintf (fp, "lambda = %g\n", tp->lambdav (ts));
+  if (tp->cpv) fprintf (fp, "cp = %g\n", tp->cpv (ts));
+
+  double dhev[NS], diff[NS], cps[NS], sigmas[NS];
   if (tp->dhev) {
-    for (int jj=0; jj<NS; jj++)
-      fprintf (fp, "dhev[%d] = %g\n", jj, tp->dhev (ts, jj));
+    tp->dhev (ts, dhev);
+    for (int i = 0; i < NS; i++)
+      fprintf (fp, "dhev[%d] = %g\n", i, dhev[i]);
   }
   if (tp->diff) {
-    for (int jj=0; jj<NS; jj++)
-      fprintf (fp, "diff[%d] = %g\n", jj, tp->diff (ts, jj));
+    tp->diff (ts, diff);
+    for (int i = 0; i < NS; i++)
+      fprintf (fp, "diff[%d] = %g\n", i, diff[i]);
   }
   if (tp->cps) {
-    for (int jj=0; jj<NS; jj++)
-      fprintf (fp, "cps[%d] = %g\n", jj, tp->cps (ts, jj));
+    tp->cps (ts, cps);
+    for (int i = 0; i < NS; i++)
+      fprintf (fp, "cps[%d] = %g\n", i, cps[i]);
   }
   if (tp->sigmas) {
-    for (int jj=0; jj<NS; jj++)
-      fprintf (fp, "sigmas[%d] = %g\n", jj, tp->sigmas (ts, jj));
+    tp->sigmas (ts, sigmas);
+    for (int i = 0; i < NS; i++)
+      fprintf (fp, "sigmas[%d] = %g\n", i, sigmas[i]);
   }
+  fprintf (fp, "\n");
 }
 
 /**
 ### *gasprop_thermal_expansion()*: Thermal expansion coefficient of an ideal gas
 */
 
-double gasprop_thermal_expansion (ThermoState * ts) {
-  return ts->T > 0. ? 1./ts->T : 0.;
-}
+//double gasprop_thermal_expansion (ThermoProps * tp, ThermoState * ts) {
+//  return ts->T > 0. ? 1./ts->T : 0.;
+//}
+
+//double gasprop_thermal_expansion (void * p, void * s) {
+//  ThermoState * ts = (ThermoState *)s;
+//  return ts->T > 0. ? 1./ts->T : 0.;
+//}
+
+/**
+### *gasprop_species_expansion()*: Thermal expansion coefficient of an ideal gas
+*/
+
+//void gasprop_species_expansion (void * p, void * s, double * r) {
+//}
 
 /**
 ### *liqprop_thermal_expansion()*: Thermal expansion coefficient of a liquid
 */
 
-double liqprop_thermal_expansion (ThermoProps * tp, ThermoState * ts) {
-  double epsT = 1.e-3;
-  double Ttop = ts->T + epsT, Tbot = ts->T - epsT;
-  ThermoState tstop, tsbot;
-  tstop.T = Ttop, tstop.P = ts->P, tstop.x = ts->x;
-  tsbot.T = Tbot, tsbot.P = ts->P, tsbot.x = ts->x;
-  double rhotop = tp->rhov (&tstop), rhobot = tp->rhov (&tsbot);
-  double rhoval = tp->rhov (ts);
-  return (rhoval > 0.) ? -1./rhoval*(rhotop - rhobot)/(2.*epsT) : 0.;
+//double liqprop_thermal_expansion (ThermoProps * tp, ThermoState * ts) {
+//  double epsT = 1.e-3;
+//  double Ttop = ts->T + epsT, Tbot = ts->T - epsT;
+//  ThermoState tstop, tsbot;
+//  tstop.T = Ttop, tstop.P = ts->P, tstop.x = ts->x;
+//  tsbot.T = Tbot, tsbot.P = ts->P, tsbot.x = ts->x;
+//  double rhotop = tp->rhov (&tstop), rhobot = tp->rhov (&tsbot);
+//  double rhoval = tp->rhov (ts);
+//  return (rhoval > 0.) ? -1./rhoval*(rhotop - rhobot)/(2.*epsT) : 0.;
+//}
+
+//double liqprop_thermal_expansion (void * p, void * s) {
+//  ThermoProps * tp = (ThermoProps *)p;
+//  ThermoState * ts = (ThermoState *)s;
+//
+//  double epsT = 1.e-3;
+//  double Ttop = ts->T + epsT, Tbot = ts->T - epsT;
+//  ThermoState tstop, tsbot;
+//  tstop.T = Ttop, tstop.P = ts->P, tstop.x = ts->x;
+//  tsbot.T = Tbot, tsbot.P = ts->P, tsbot.x = ts->x;
+//  double rhotop = tp->rhov (&tstop), rhobot = tp->rhov (&tsbot);
+//  double rhoval = tp->rhov (ts);
+//  return (rhoval > 0.) ? -1./rhoval*(rhotop - rhobot)/(2.*epsT) : 0.;
+//}
+
+/**
+## *mass2molefrac()*: Compute mole fractions from mass fractions
+
+* *X*: vector filled with mole fractions
+* *W*: vector with the mass fractions
+* *MW*: vector with the molecular weights of each species
+* *NS*: total number of species (vectors length)
+*/
+
+void mass2molefrac (double * X, const double * W, const double * MW, const int NS)
+{
+  double MWmix = 0.;
+  for (int i=0; i<NS; i++) {
+    MWmix += W[i]/MW[i];
+  }
+  for (int i=0; i<NS; i++) {
+    X[i] = W[i]/MW[i]/(MWmix + 1.e-10);
+  }
 }
 
+/**
+## *mole2massfrac()*: Compute mass fractions from mole fractions
+
+* *W*: vector filled with mole fractions
+* *X*: vector with the mass fractions
+* *MW*: vector with the molecular weights of each species
+* *NS*: total number of species (vectors length)
+*/
+
+void mole2massfrac (double * W, const double * X, const double * MW, const int NS)
+{
+  double MWmix = 0.;
+  for (int i=0; i<NS; i++) {
+    MWmix += X[i]*MW[i];
+  }
+  for (int i=0; i<NS; i++) {
+    W[i] = X[i]*MW[i]/(MWmix + 1.e-10);
+  }
+}
+
+/**
+## *mass2mw()*: Compute mixture molecular weight from mass fractions
+
+* *W*: vector with the mass fractions
+* *MW*: vector with the molecular weights of each species
+* *NS*: total number of species (vectors length)
+*/
+
+double mass2mw (const double * W, const double * MW, const int NS)
+{
+  double MWmix = 0.;
+  for (int i=0; i<NS; i++) {
+    MWmix += W[i]/MW[i];
+  }
+  return 1./(MWmix + 1.e-10);
+}
+
+/**
+## *mole2mw()*: Compute mixture molecular weight from mole fractions
+
+* *X*: vector with the mass fractions
+* *MW*: vector with the molecular weights of each species
+* *NS*: total number of species (vectors length)
+*/
+
+double mole2mw (const double * X, const double * MW, const int NS)
+{
+  double MWmix = 0.;
+  for (int i=0; i<NS; i++) {
+    MWmix += X[i]*MW[i];
+  }
+  return MWmix;
+}
+
+/**
+## *correctfrac()*: Close to 1 a vector of mass or mole fractions
+
+* *X*: vector with mass or mole fractions
+* *NS* total number of species (vector length)
+*/
+
+void correctfrac (double * X, const int NS)
+{
+  double sum = 0.;
+  for (int i=0; i<NS; i++)
+    sum += (X[i] >= 0.) ? X[i] : 0.;
+  for (int i=0; i<NS; i++)
+    X[i] = (X[i] >= 0.) ? X[i]/(sum + 1.e-10) : 0.;
+}
+
+
+#endif

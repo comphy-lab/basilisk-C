@@ -4,11 +4,15 @@
 This implements a simple vertical remapping to "$\sigma$-coordinates"
 (equally-distributed by default).
 
-We use the [PPR Library](https://github.com/dengwirda/PPR) of Engwirda
+The remap function is inspired by the Fortran [PPR Library](https://github.com/dengwirda/PPR) of Engwirda
 and Kelley to perform the remapping. The default settings are using
 the Parabolic Piecewise Method without limiting. */
 
-#include "ppr/ppr.h"
+//#include "ppr/ppr.h"   //not needed anymore
+
+/**
+For now, it only implements the p3e method for the edge value and the ppm method for the polynomial reconstruction
+It can also be used with a dirichlet or neumann boundary condition but fon now only equal to zero*/
 
 // int edge_meth = p1e_method, cell_meth = plm_method, cell_lim = null_limit;
 int edge_meth = p3e_method, cell_meth = ppm_method, cell_lim = null_limit;
@@ -124,12 +128,113 @@ void vertical_remapping (scalar h, scalar * tracers)
   }
 }
 
+
+//limiter used by the remap function. It is a minmod limiter
+double minmodremap(double a, double b) {
+  if (a*b>0.) {
+    return fabs(a)<fabs(b)?a:b;
+  }
+  else {
+    return 0.;
+  }
+}
+
+void vertical_remapping_2 (scalar hprec, scalar hnew, scalar * tracers2,bool pressure)
+{
+  int nvar = list_len(tracers2), ndof = 1, npos = nl + 1 +0;
+  double erreurmax=0.;
+  double xmax=0.;
+  double hdiffmax=0.;
+  foreach() {
+
+#if HALF
+    double H0 = 0., H1 = 0., H;
+    foreach_layer() {
+      if (point.l < nl/2)
+	H0 += hnew[];
+      else
+	H1 += hnew[];
+    }
+    H = H0 + H1;
+#else
+    double H = 0.;
+    foreach_layer()
+      H += hnew[];
+#endif
+    
+    if (H > dry) {
+      double zpos[npos], znew[npos];
+      double fdat[nvar*nl+0*nvar], fnew[nvar*nl+0*nvar];
+      zpos[0] = 0.;
+      znew[0] = 0.;
+
+      foreach_layer() {
+	zpos[point.l+1+0] = zpos[point.l+0] + max(hprec[],dry);
+	int i = nvar*point.l+0*nvar;
+	for (scalar s in tracers2) {
+	  dimensional (fnew[i] = s[]);
+	  fdat[i++] = s[];
+	}
+
+	znew[point.l+1+0] = znew[point.l+0] + hnew[];
+      }
+
+    for (scalar s in tracers2) {
+        double zpos[npos], znew[npos];
+        double fdat[nl], fnew[nl];
+        zpos[0] = 0.;
+        znew[0] = 0.;
+    
+        foreach_layer() {
+	        zpos[point.l+1] = zpos[point.l] + max(hprec[],dry);
+	        int i = point.l;
+	        dimensional (fnew[i] = s[]);
+	        fdat[i++] = s[];
+            znew[point.l+1] = znew[point.l] + hnew[];
+	    }
+
+    double fb=0.;
+      double lambdab=lambda_b.x[];
+      double ft=0.;
+      double lambdat=HUGE;
+    nvar=1;
+    my_remap_perso (&npos, &npos, &nvar, &ndof, zpos, znew, fdat, fnew,
+		&edge_meth, &cell_meth, &cell_lim, &fb,&lambdab,&ft,&lambdat);
+
+    double compens=0.;
+    foreach_layer() {
+	    int i = point.l;
+        s[]=fnew[i]+compens;
+
+      }
+    }
+    foreach_layer() {
+        hprec[]=hnew[];
+    }
+    }
+    }
+}
+
 /**
 The remapping is applied at every timestep. */
 
 event remap (i++) {
-  if (nl > 1)
-    vertical_remapping (h, tracers);
+
+  scalar hpreremap=new scalar[nl];
+  foreach() {
+    double H = 0.;
+    foreach_layer() {
+      hpreremap[]=h[];
+      H += h[];
+    }
+    if (H > dry) {
+      foreach_layer() {
+	      h[] = H*beta[point.l];
+      }
+    }
+  }
+  vertical_remapping_2(hpreremap,h,tracers,true);
+  delete ({hpreremap});
 }
 
 /**
@@ -139,3 +244,8 @@ event cleanup (i = end)
 {
   free (beta), beta = NULL;
 }
+  
+  /**
+  To do :
+  - other boundary condition (not zero at the bottom or not a neumann at the top
+  - remap several field more efficiently

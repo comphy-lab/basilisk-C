@@ -129,9 +129,9 @@ $h$ is zero for $(xt^{-1/5}) > b =1.13286$
 ~~~
 
 # Links
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c]()
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]()
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c]()
 
 
 

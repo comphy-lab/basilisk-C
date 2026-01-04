@@ -14,7 +14,7 @@ $$
 \nabla\cdot\mathbf{u} = 0
 $$
 
-The scheme implemented here is close to the method implemented in [Basilisk](http://basilisk.fr/src/navier-stokes/centered.h) except for the projection of velocity field.
+The scheme implemented here is close to the method implemented in [Basilisk](/src/navier-stokes/centered.h) except for the projection of velocity field.
 
 We will use the generic time loop, a CFL-limited timestep, the
 Bell-Collela-Glaz advection scheme and the implicit viscosity

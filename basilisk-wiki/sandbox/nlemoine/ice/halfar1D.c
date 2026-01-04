@@ -1,5 +1,5 @@
 /**
-[Return to my homepage](http://basilisk.fr/sandbox/nlemoine/README)
+[Return to my homepage](/sandbox/nlemoine/README)
 
 # 1D test case for the Shallow Ice Approximation diffusive equation:
 
@@ -142,7 +142,7 @@ event stop (t = tfin);
 
 /**
 ## Time integration
-The SIA is a basically a diffusion equation, so we use the [Poisson solver](http://basilisk.fr/src/diffusion.h) for integration. Since this solver is time-implicit, there isn't any stability problem; however, since the diffusivity depends on the solution, setting a too large time step will cause spurious features to develop in the solution if the diffusivity field is not updated often enough. So we set the time step to a ''reasonable'' (up to 10) multiple of the explicit time step
+The SIA is a basically a diffusion equation, so we use the [Poisson solver](/src/diffusion.h) for integration. Since this solver is time-implicit, there isn't any stability problem; however, since the diffusivity depends on the solution, setting a too large time step will cause spurious features to develop in the solution if the diffusivity field is not updated often enough. So we set the time step to a ''reasonable'' (up to 10) multiple of the explicit time step
 $$\Delta t_\textrm{explicit} = \frac{1}{2}\frac{\Delta x^2}{D_\textrm{max}}$$
 */
 event integration (i++)

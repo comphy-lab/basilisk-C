@@ -36,7 +36,7 @@ Some pluviation $s \ne 0$ will be added as suggested in Larieu et all.
  \frac{\partial }{\partial x}g\dfrac{h^{n2}}{2}
  = - g \frac{\partial }{\partial x} Z$$
 
- is solved with [http://basilisk.fr/src/saint-venant.h]().
+ is solved with [https://basilisk.fr/src/saint-venant.h]().
  
  Second, ($h$ is simplified)
  $$ \frac{u^{n+1}-u^*}{\Delta t} =- \mu g \frac{u}{|u|}$$
@@ -257,9 +257,9 @@ who rescaled to have a canonical problem:
 /**
 ## Links
  
-* Ideal fluid dam break [Basilisk](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c)
+* Ideal fluid dam break [Basilisk](/sandbox/M1EMN/Exemples/damb.c)
  
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass_muw.c]() granular sand glass with friction
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass_muw.c]() granular sand glass with friction
  
 * a version in [python](https://colab.research.google.com/drive/19oLUumzwTzTiRxnF3VgHvp0j8OjE4MlD) of this file
  

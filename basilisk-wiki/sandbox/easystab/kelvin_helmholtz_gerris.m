@@ -2,7 +2,7 @@
 
 # Kelvin-Helmholtz : validation with Gerris
 
-This code computes the instability of the Kelvin-Helmholtz instability of a shear layer, just like [kelvin_helmholtz_hermite.m](), but here the idea is to generate the velocity field for a nonlinear simulation with [Gerris](http://gerris.dalembert.upmc.fr/main_page.html). 
+This code computes the instability of the Kelvin-Helmholtz instability of a shear layer, just like [kelvin_helmholtz_hermite.m](), but here the idea is to generate the velocity field for a nonlinear simulation with [Gerris](https://gerris.dalembert.upmc.fr/main_page.html). 
 
 The parameter file for Gerris is [kelvin_helmholtz.gfs](). We use a domain built out of two square boxes each of size *Lx*.
 
@@ -108,7 +108,7 @@ xlabel('x'); ylabel('y'); title('Velocity field of the initial condition');
 
 %{
 # Saving to disk
-There are several ways to save fields for gerris, here we chose the simplest one, the [cgd format (cartesian grid data)](http://gerris.dalembert.upmc.fr/gfsfunction.html#Cartesian_Grid_Data_.28CGD.29_files)
+There are several ways to save fields for gerris, here we chose the simplest one, the [cgd format (cartesian grid data)](https://gerris.dalembert.upmc.fr/gfsfunction.html#Cartesian_Grid_Data_.28CGD.29_files)
 %}
 
 % save to cartesian grid data format for gerris (.cgd)

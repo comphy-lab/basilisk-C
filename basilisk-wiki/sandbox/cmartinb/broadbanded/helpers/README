@@ -1,0 +1,21 @@
+# helpers
+
+Utilities used by `../broadbanded.c`:
+
+- [`centered.h`](centered.h)
+- [`colormap.h`](colormap.h)
+- [`distance2.h`](distance2.h)
+- [`frac-dist.h`](frac-dist.h)
+- [`LS_reinit.h`](LS_reinit.h)
+- [`maxruntime.h`](maxruntime.h)
+- [`my_funcs.h`](my_funcs.h)
+- [`output3d.h`](output3d.h)
+- [`perfs.h`](perfs.h)
+- [`profile6.h`](profile6.h)
+- [`weno2.h`](weno2.h)
+
+Use them with:
+
+~~~{.c}
+#include "helpers/centered.h"
+~~~ 

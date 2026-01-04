@@ -4,7 +4,7 @@
  
 From the paper: Huppert 82 "Flow and instability of a viscous current along a slope"
 
-the 1D theory is presented  [with shallow water](http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c), here we solve the full profiles
+the 1D theory is presented  [with shallow water](/sandbox/M1EMN/Exemples/viscolsqrt.c), here we solve the full profiles
 
 Here we solve it using the Multilayer Shallow Water (Saint Venant Multi Couches) strategy of Audusse Sainte-Marie  et al 2011. See De Vita 2020 for details, this example is presented there as a test case.
  
@@ -182,7 +182,7 @@ Montpellier 07/17
 
 ## Links
 
-* related example   [with shallow watzer](http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c)
+* related example   [with shallow watzer](/sandbox/M1EMN/Exemples/viscolsqrt.c)
 
 * see other multilayer examples
 

@@ -1,7 +1,7 @@
 /**
    This is the extension of the [traditional Coriolis
-   force](http://basilisk.fr/src/layered/coriolis.h) written by [A. Castillo
-   ](http://basilisk.fr/sandbox/acastillo/filaments/circulation/coriolis3d.h)
+   force](/src/layered/coriolis.h) written by [A. Castillo
+   ](/sandbox/acastillo/filaments/circulation/coriolis3d.h)
 
    g is the sum of pressure gradient and advection.
 

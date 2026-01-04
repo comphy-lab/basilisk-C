@@ -3,12 +3,12 @@
 
 ## Case 1 : Dirichlet conditions
 
-In this case we are studying the case of a half cylinder. We take the code of [Potential flow around a cylinder](http://basilisk.fr/sandbox/mgarnier/PotentialCylinder/cyclindre.c) and we just shift the domain of computation of the solution.
+In this case we are studying the case of a half cylinder. We take the code of [Potential flow around a cylinder](/sandbox/mgarnier/PotentialCylinder/cyclindre.c) and we just shift the domain of computation of the solution.
 */
 
 
 /**
-As a starting point, i used my code [Poisson equation on complex domains](http://basilisk.fr/src/test/neumann.c). 
+As a starting point, i used my code [Poisson equation on complex domains](/src/test/neumann.c). 
 
 */
 

@@ -1,7 +1,7 @@
 /* colormaps from https://www.kennethmoreland.com/color-advice/ 
    I believe they are uncopyrighted as trivial wrapper around public domain  data */
 
-/* Done by Fedor Zuev (see: http://basilisk.fr/sandbox/lqpkin/colormaps/)*/
+/* Done by Fedor Zuev (see: https://basilisk.fr/sandbox/lqpkin/colormaps/)*/
 
 void bent_cool_warm (double cmap[NCMAP][3])
 {

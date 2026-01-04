@@ -4,7 +4,7 @@
 Here is detailed how the algorithm of BCG is working, and how it is applied 
 to self-similar space.
 This code is specifically dedicated to the problem of 
-[Lamb-Oseen](http://basilisk.fr/sandbox/cailler/lamb_oseen/lamb.c).
+[Lamb-Oseen](/sandbox/cailler/lamb_oseen/lamb.c).
 */
 /** ## Self-similar analytical solutions of the *Lamb-Oseen* vortex */
 /**

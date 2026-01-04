@@ -1,7 +1,7 @@
 /**
 # Couette flow between two horizontal plates. 
 
-This test is heavily inspired by http://basilisk.fr/src/test/couette.c.
+This test is heavily inspired by https://basilisk.fr/src/test/couette.c.
 */
 
 #include "grid/multigrid.h"
@@ -47,7 +47,7 @@ event init (t = 0) {
 
 
   /**
-   # Embedded boundary conditions
+  # Embedded boundary conditions
 
   The top plate moves with a tangential velocity $u_x = 1$ and the bottom plate with a tangential velocity $u_x = -1$.
  */
@@ -59,9 +59,9 @@ event init (t = 0) {
 /**
 We look for a stationary solution. */
 
-event logfile (t += 0.01; i <= 1000) {
+event logfile (t += 0.01; i <= 100000) {
   double du = change (u.x, un);
-  if (i > 0 && du < 1e-6)
+  if (i > 0 && du < 1e-7)
     return 1; /* stop */
 }
 
@@ -86,37 +86,20 @@ event profile (t = end)
   norm n = normf (e);
   fprintf (stderr, "%d %.3g %.3g %.3g %d %d %d %d %d\n",
 	   N, n.avg, n.rms, n.max, i, mgp.i, mgp.nrelax, mgu.i, mgu.nrelax);
-  dump();
   
-  draw_vof ("cs", "fs", filled = -1, fc = {0, 0, 0});
-  squares ("u.x", spread = -1);
-  save ("ux.png");
-
-  draw_vof ("cs", "fs", filled = -1, fc = {0, 0, 0});
-  squares ("p", spread = -1);
-  save ("p.png");
-
-  draw_vof ("cs", "fs", filled = -1, fc = {1,1,1});
-  squares ("e", spread = -1);
-  save ("e.png");
-  
-  char file[80];
-  sprintf(file, "data_couette_%d", N);
-  FILE * fp = fopen(file, "w");
-  foreach() {
-    fprintf (fp, "%g %g %g %g %g\n",
-        y, u.x[], u.y[], p[], e[]);
+  if (N == 64){
+    char file[80];
+    sprintf(file, "data_couette_%d", N);
+    FILE * fp = fopen(file, "w");
+    foreach() {
+      fprintf (fp, "%g %g %g %g %g\n",
+          y, u.x[], u.y[], p[], e[]);
+    }
   }
 }
 
 /**
 ## Results
-
-![Horizontal velocity](couette_embed/ux.png)
-
-![Pressure field](couette_embed/p.png)
-
-![Error field](couette_embed/e.png)
 
 ~~~gnuplot Velocity profile (N = 64)
 L0 = 1.
@@ -132,6 +115,8 @@ plot [-plate_loc:plate_loc][-1:1]'data_couette_64' u 1:2 t 'numerics', couette(x
 ~~~
 
 Error goes down. Slow convergence rate maybe due to already good results even for low N (simplicity of the setup).
+
+The error is dependent on the $du$ condition set in the logfile event...
 
 ~~~gnuplot Error convergence
 unset arrow
@@ -154,4 +139,4 @@ set key top right
 plot '' u 1:4 pt 6 t 'max', exp(f(log(x))) t ftitle(a,b), \
      '' u 1:2 t 'avg', exp(f2(log(x))) t ftitle(a2,b2)
 ~~~
-
+*/

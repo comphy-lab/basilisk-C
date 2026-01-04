@@ -23,7 +23,7 @@ $$
 with at  $t=0$, a lake on the left $h(|x|<0,t=0)=1$ and zero water  at the righjt$h(|x|>0,t=0)=0$ for $x>0$.
 As the flow is not viscous, the convective term is important. The solution is the Ritter 1862 solution with simple waves.
  
-This is solved with [http://basilisk.fr/src/saint-venant.h]()
+This is solved with [https://basilisk.fr/src/saint-venant.h]()
 
 ## Code*/
 #include "grid/cartesian1D.h"
@@ -123,12 +123,12 @@ t=3
 ## Links
  
 * see the same
-  [with turbulent friction](http://basilisk.fr/sandbox/M1EMN/Exemples/damb_dressler.c)
+  [with turbulent friction](/sandbox/M1EMN/Exemples/damb_dressler.c)
 
-* see non viscous dam break with [standard C](http://basilisk.fr/sandbox/M1EMN/Exemples/svdb.c)
-and with [Basilisk](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c) (this file)
+* see non viscous dam break with [standard C](/sandbox/M1EMN/Exemples/svdb.c)
+and with [Basilisk](/sandbox/M1EMN/Exemples/damb.c) (this file)
  
-* see all the viscous collapse examples ([with laminar friction](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c))
+* see all the viscous collapse examples ([with laminar friction](/sandbox/M1EMN/Exemples/viscous_collapse.c))
  
  * a version in [python](https://colab.research.google.com/drive/1960Q9Cgu9anAv6wfB9MblsBFo0BvWdrO) of this file
 

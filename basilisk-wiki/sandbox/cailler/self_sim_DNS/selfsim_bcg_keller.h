@@ -41,9 +41,9 @@ void selfsim_tracer_fluxes (scalar f,
 
     /**
     HERE is where we need to be VERY careful! As explained 
-    [in the documentation](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README#a.-prediction-projection-steps) 
+    [in the documentation](/sandbox/cailler/self_sim_DNS/README#a.-prediction-projection-steps) 
     for building a self-similar solver for the scale invariant problem of 
-    [Keller \& Miksis (1983)](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c), 
+    [Keller \& Miksis (1983)](/sandbox/cailler/keller_miksis/keller_fig2_conv.c), 
     because the advection velocity IS NOT divergence 
     free, additional source terms appear compared to the reference paper! 
     Indeed, since $\textcolor{Orchid}{

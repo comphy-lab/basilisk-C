@@ -1,6 +1,6 @@
 /**
 ## Intro
-This function is an adaptation on the the standard basilisk output grid function that can be found [here](http://basilisk.fr/src/output.h#output_field-multiple-fields-interpolated-on-a-regular-grid-text-format).
+This function is an adaptation on the the standard basilisk output grid function that can be found [here](/src/output.h#output_field-multiple-fields-interpolated-on-a-regular-grid-text-format).
 
 ## The differences 
 * The main addition is an coord argument of the function. This will let you choose a slice in 3D. If you would want the (x, y, L0/2) slice this is acieved by giving (1, 1, 0.5) as the coord argument. The coordinates that are set to 1 are varied, the one that is set to c < 1 will be kept constant at value c*L0.

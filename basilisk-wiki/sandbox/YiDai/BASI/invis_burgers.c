@@ -4,7 +4,7 @@
 We solve 1D inviscid burgers equation:
 $$\partial_{t}U + U \partial_{x}U = 0$$
 
-using Bell-Collela-Glaz [bcg](http://basilisk.fr/src/bcg.h#advection) advection scheme. See viscid case [here](http://basilisk.fr/sandbox/YiDai/BASI/burgers.c)
+using Bell-Collela-Glaz [bcg](/src/bcg.h#advection) advection scheme. See viscid case [here](/sandbox/YiDai/BASI/burgers.c)
 */
 /**
 ~~~gnuplot

@@ -22,11 +22,11 @@ Linearisation at small $I_\alpha$,around $\tan \alpha-\mu_s$ small with  $\tan \
   that we substitute in
  $$\frac{\partial h}{\partial t} +  \frac{\partial Q}{\partial x}=0$$
  we solve it juste like we do for Huppert viscous collapse
- [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]() 
+ [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]() 
 and 
- [http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt_noSV.c]()
+ [https://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt_noSV.c]()
  Huppert's full sploutch (first and second problems) or Balmforth Bingham collapse
- [http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c]() cases. 
+ [https://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c]() cases. 
  
  
 Note that as $Z_b'<0$ and  $\mu_s>0$ we must have $-Z_b' - \mu_s >0$ to have a flow. 
@@ -109,7 +109,7 @@ initial heap, a  rectangle
 
 if we change this in `h[] =1*(fabs(x)<1.5) `we generate a front just  like 
 in 
-[http://basilisk.fr/sandbox/M1EMN/Exemples/front_poul_ed.c]()
+[https://basilisk.fr/sandbox/M1EMN/Exemples/front_poul_ed.c]()
 as the Pouliquen's front is the friction/ slope/ pressure gradient  equilibrium (negligible inertia), and mass conservation.
 
 
@@ -270,12 +270,12 @@ l'mov.gnu'
  
 # Links
 
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/floodwave.c]() cases.
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/floodwave.c]() cases.
 * [Bingham 1D collapse on a incline](bingham_collapse_noSV.c)
 * [Herschel-Bulkley 1D collapse on a incline](herschel-column-noSV.c)
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c]()
 * [Bingham RNSP collapse on a incline](bingham_collapse_ML.c)
-* [Viscous collapse of a incline](http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt_noSV.c)
+* [Viscous collapse of a incline](/sandbox/M1EMN/Exemples/viscolsqrt_noSV.c)
 
 
 # Bibliographie 

@@ -74,5 +74,5 @@ double compdischarge(struct linedis l){
 
 /**
 ## Link to the homepage
-* [Homepage](http://basilisk.fr/sandbox/B-flood/Readme)
+* [Homepage](/sandbox/B-flood/Readme)
 */

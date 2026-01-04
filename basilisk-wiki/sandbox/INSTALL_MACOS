@@ -25,7 +25,7 @@ As there is no `wget` use `curl` to
 get the file and to extract the archive where you want to install it (here your home)
 
 ~~~bash 
-curl http://basilisk.fr/basilisk/basilisk.tar.gz >> basilisk.tar.gz
+curl https://basilisk.fr/basilisk/basilisk.tar.gz >> basilisk.tar.gz
 tar xzf basilisk.tar.gz
 ~~~
 
@@ -190,7 +190,7 @@ This is a complex mac problem that may or may not be related to the next issue: 
 Download the basilisk sources using
 
 ~~~bash
-darcs clone http://basilisk.fr/basilisk
+darcs clone https://basilisk.fr/basilisk
 ~~~
 
 ## Command line and linux for dummies
@@ -236,7 +236,7 @@ cd $BASILISK/test
 make bump2D.tst
 ~~~
 
-You may want to check that you have no errors, and to see the graphics output that should be similar to [the bump2D1.c test case output](http://basilisk.fr/src/test/bump2D1.c#results). 
+You may want to check that you have no errors, and to see the graphics output that should be similar to [the bump2D1.c test case output](/src/test/bump2D1.c#results). 
 For that (and for many other things on mac) you shall need to install gnuplot. Unfortunately gnuplot's binary installation does not work on MacOS Big Sur, so you need to install it from source:
 
 ~~~bash
@@ -256,7 +256,7 @@ and then run
 open bump2D/plot.png
 ~~~
 
-You should see a nice plot as in the [the bump2D1.c test case output](http://basilisk.fr/src/test/bump2D1.c#results). 
+You should see a nice plot as in the [the bump2D1.c test case output](/src/test/bump2D1.c#results). 
 
   - Second try : an example with the interactive js view server. First you need to edit the Makefile in src/examples to comment out the -fopenmp directive in CFLAGS (because Macs do not support [OpenMP](https://en.wikipedia.org/wiki/OpenMP)). Either use a text editor (see above) or do
   
@@ -265,7 +265,7 @@ cd basilisk/src/examples
 sed -i '' s/-fopenmp/'# -fopenmp'/ Makefile 
 ~~~
 
-Then run the karman test and open the view server in your browser as described in [the jview documentation](http://basilisk.fr/src/jview/README)
+Then run the karman test and open the view server in your browser as described in [the jview documentation](/src/jview/README)
 
 ~~~bash
 cd $BASILISK/examples

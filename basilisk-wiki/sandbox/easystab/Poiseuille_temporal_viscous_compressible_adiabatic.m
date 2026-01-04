@@ -2,7 +2,7 @@
 # Stability of the plane Poiseuille flow in the COMPRESSIBLE CASE
 
 This code is adapted from
-[http://basilisk.fr/sandbox/easystab/Poiseuille_temporal_viscous.m](Poiseuille_temporal_viscous.m)
+[https://basilisk.fr/sandbox/easystab/Poiseuille_temporal_viscous.m](Poiseuille_temporal_viscous.m)
 from the Easystab project. We consider the stability properties in the COMPRESSIBLE case,
  considering adiabatic perturbations.
 

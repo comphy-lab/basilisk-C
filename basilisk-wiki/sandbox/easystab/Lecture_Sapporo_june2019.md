@@ -184,7 +184,7 @@ Remarks :
 
 ## the Easystab project
 
-Easystab ([http://basilisk.fr/sandbox/easystab/README]())  is "a door open for you to study the stability and bifurcation of physical systems using octave/matlab, mainly in the domain of fluid mechanics".
+Easystab ([https://basilisk.fr/sandbox/easystab/README]())  is "a door open for you to study the stability and bifurcation of physical systems using octave/matlab, mainly in the domain of fluid mechanics".
 
 - Initiated by Jérôme Hoepffer (UPMC, Paris)
 

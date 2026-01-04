@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
   h_ = 1; // Water depth
   k_ = 4; // Four waves per box
   origin (-L0/2., 0, -L0/2.);
-  // According to http://basilisk.fr/Basilisk%20C#boundary-conditions
+  // According to https://basilisk.fr/Basilisk%20C#boundary-conditions
   // for top, u.n = u.y, u.t = u.z, u.r = u.x
   u.r[top] = neumann(0);
   u.r[bottom] = neumann(0);

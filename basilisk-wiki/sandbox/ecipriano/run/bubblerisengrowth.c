@@ -31,87 +31,55 @@ situations are considered:
 */
 
 /**
-## Phase Change Setup
-
-We move the interface using the velocity *uf*, with the
-expansion term shifted toward the gas-phase. In this way
-*uf* is divergence-free at the interface. The double
-pressure velocity couping is used to obtain an extended
-velocity, used to transport the gas phase tracers. */
-
-#define INT_USE_UF
-#define CONSISTENTPHASE2
-#define SHIFT_TO_GAS
-#define INIT_TEMP
-#define SOLVE_LIQONLY
-
-/**
 ## Simulation Setup
 
-We use the centered solver with the divergence source term,
-and the extended velocity is obtained using the centered-doubled
-procedure. The evaporation model is used in combination
-with the temperature-gradient mechanism, which manages
-the solution of the temperature field. */
+We use the centered Navier--Stokes equations solver with volumetric source in
+the projection step. The phase change is directly included using the boiling
+module, which sets the best (default) configuration for boiling problems. Many
+features of the phase change (boiling) model can be modified directly in this
+file without changing the source code, using the phase change model object
+`pcm`. */
 
 #include "axi.h"
-#include "navier-stokes/centered-evaporation.h"
-#include "navier-stokes/centered-doubled.h"
+#include "navier-stokes/low-mach.h"
 #include "two-phase.h"
 #include "tension.h"
 #include "reduced.h"
-#include "evaporation.h"
-#include "temperature-gradient.h"
+#include "boiling.h"
 #include "view.h"
-
-/**
-We declare the variables required by the
-temperature-gradient model. */
-
-double lambda1, lambda2, cp1, cp2, dhev;
-double TL0, TG0, TIntVal, Tsat, Tbulk;
 
 /**
 ### Boundary conditions
 
-Outflow boundary conditions for velocity and pressure are
-imposed on the top, left, and right walls. The temperature
-on these boundaries is imposed to the bulk value. */
+Outflow boundary conditions for velocity and pressure are imposed on the top,
+left, and right walls. The temperature on these boundaries is imposed to the
+bulk value. */
 
 u.n[top] = neumann (0.);
 u.t[top] = neumann (0.);
 p[top] = dirichlet (0.);
-uext.n[top] = neumann (0.);
-uext.t[top] = neumann (0.);
-pext[top] = dirichlet (0.);
 
 u.n[left] = neumann (0.);
 u.t[left] = neumann (0.);
 p[left] = dirichlet (0.);
-uext.n[left] = neumann (0.);
-uext.t[left] = neumann (0.);
-pext[left] = dirichlet (0.);
 
 u.n[right] = neumann (0.);
 u.t[right] = neumann (0.);
 p[right] = dirichlet (0.);
-uext.n[right] = neumann (0.);
-uext.t[right] = neumann (0.);
-pext[right] = dirichlet (0.);
 
-TL[top] = dirichlet (Tbulk);
-TL[right] = neumann (0.);
-TL[left] = neumann (0.);
+double Tbulk, Tsat;
+T[top] = dirichlet (Tbulk);
+T[right] = neumann (0.);
+T[left] = neumann (0.);
 
 /**
 ### Problem Data
 
-We declare the maximum and minimum levels of refinement,
-the $\lambda$ parameter, the initial radius of the droplet,
-the growth constant, and additional post-processing
-variables. */
+We declare the maximum and minimum levels of refinemet,
+the initial bubble radius, the bubble center, the growth
+constant, and additional data for post-processing. */
 
-int maxlevel = 8, minlevel = 5, sim;
+int maxlevel = 9, minlevel = 5, sim;
 double R0 = 0.1e-3;
 double XC, YC;
 double betaGrowth = 3.32615013;
@@ -120,8 +88,7 @@ double effective_radius;
 /**
 ### Initial Temperature
 
-We set the initial temperature profile to the Scriven
-solution. */
+We set the initial temperature profile to the Scriven solution. */
 
 #include <gsl/gsl_integration.h>
 #pragma autolink -lgsl -lgslcblas
@@ -146,47 +113,56 @@ double tempsol (double r, double R) {
 }
 
 int main (void) {
-  /**
-  We set the material properties of the fluids. */
 
-  rho1 = 958.; rho2 = 0.59;
-  mu1 = 2.82e-4; mu2 = 1.23e-6;
+  /**
+  We set the material properties of the two fluids. In addition to the classic
+  Basilisk setup for density and viscosity, we need to define thermal
+  properties, such as the thermal conductivity $\lambda$, the heat capacity
+  $cp$, and the enthalpy of vaporization $\Delta h_{ev}$. */
+
+  rho1 = 958., rho2 = 0.59;
+  mu1 = 2.82e-4, mu2 = 1.23e-6;
   lambda1 = 0.6, lambda2 = 0.026;
   cp1 = 4216., cp2 = 2034.;
   dhev = 2.257e+6;
 
   /**
-  The initial bubble temperature and the interface
-  temperature are set to the saturation value. */
+  The initial bubble temperature and the interface temperature are set to the
+  saturation value. */
 
   Tbulk = 373.989, Tsat = 373., TIntVal = 373.;
   TL0 = Tbulk, TG0 = TIntVal;
 
   /**
-  We change the dimension of the domain,
-  the surface tension coefficient, and the coordinates
-  of the center of the bubble. */
+  We solve two different sets of Navier--Stokes equations according with the
+  double pressure velocity coupling approach. A similar problem, resolved with a
+  single velocity and with the conserving Navier--Stokes extension can be found
+  in [rising.h](rising.h). */
 
-  L0 = 2.4e-3;
+  nv = 2;
+
+  /**
+  We change the dimension of the domain, the surface tension coefficient, and
+  the coordinates of the center of the bubble. */
+
+  L0 = 2.4e-3 [*];
   XC = 0.15*L0, YC = 0.;
 
   /**
-  We reduce the tolerance of the Poisson equation solver,
-  and the maximum allowed time step. */
+  We reduce the tolerance of the Poisson equation solver. */
 
   TOLERANCE = 1.e-6;
-  DT = 1.e-5;
+  //DT = 1.e-5;
 
   /**
-  We add the gravity contribution using the
-  reduced approach, which applied the gravity
-  force just at the gas-liquid interface. */
+  We add the gravity contribution using the reduced approach, which applied the
+  gravity force just at the gas-liquid interface. */
 
   G.x = -9.81;
 
   /**
-  We define a list with the surface tension coefficients
-  used in the two different simulations. */
+  We define a list with the surface tension coefficients used in the two
+  different simulations. */
 
   double sigmas[2] = {0.001, 0.07};
 
@@ -206,30 +182,40 @@ event init (i = 0) {
   fraction (f, -circle(x,y,R0));
 
   /**
-  We initialize the temperature field. The liquid
-  phase temperature is set to the analytic value. */
+  We initialize the temperature field. The liquid phase temperature is set to
+  the analytic value. */
 
+  scalar TL = liq->T, TG = gas->T;
   foreach() {
     double r = sqrt( sq(x - XC) + sq(y - YC) );
-#ifdef INIT_TEMP
-      TL[] = f[]*tempsol (r, R0);
-#else
-    TL[] = f[]*TL0;
-#endif
+    TL[] = f[]*tempsol (r, R0);
     TG[] = (1. - f[])*TG0;
     T[]  = TL[] + TG[];
   }
+
+  /**
+  We set the boundary conditions for the liquid and gas phase temperature
+  fields, which are those that are actually resolved by the phase change model.
+  The one-field temperature `T` serves only for post-processing. */
+
+  copy_bcs ({TL,TG}, T);
+
+  /**
+  Using a flux limiter we avoid spurious oscillations stemming from the
+  discretization of the advection term. */
+
+  phase_set_gradient (liq, minmod2);
+  phase_set_gradient (gas, minmod2);
 }
 
 /**
-We refine the domain according to the interface and the
-temperature field. */
+We refine the domain according to the interface and the temperature field. */
 
 #if TREE
 event adapt (i++) {
-  double uemax = 1e-4;
+  double uemax = 1e-2;
   adapt_wavelet_leave_interface ({T,u.x,u.y}, {f},
-      (double[]){1e-4,uemax,uemax}, maxlevel, minlevel, 1);
+      (double[]){1e-2,uemax,uemax}, maxlevel, minlevel, 1);
 }
 #endif
 
@@ -242,8 +228,7 @@ The following lines of code are for post-processing purposes.
 /**
 ### Output Files
 
-We reconstruct the effective bubble radius and we write it
-on a file. */
+We reconstruct the effective bubble radius and we write it on a file. */
 
 event output (i++) {
   scalar fg[];
@@ -261,10 +246,23 @@ event output (i++) {
 }
 
 /**
+### Logger
+
+We output the total bubble volume in time (for testing). */
+
+event logger (t += 0.001) {
+  double bubblevol = 0.;
+  foreach(reduction(+:bubblevol))
+    bubblevol += (1. - f[])*dv();
+  fprintf (stderr, "%d %.3f %.3g\n", i, t, bubblevol);
+}
+
+
+/**
 ### Movie
 
-We write the animation with the evolution of the
-temperature field and the gas-liquid interface. */
+We write the animation with the evolution of the temperature field and the
+gas-liquid interface. */
 
 event movie (t += 0.0002; t <= 0.02) {
   clear();

@@ -1,5 +1,5 @@
 /**
-The *vof-3p.h* is basically same as [vof.h](http://basilisk.fr/src/vof.h) here,
+The *vof-3p.h* is basically same as [vof.h](/src/vof.h) here,
 the only difference is the fact that we are using the
 [fraction-3p.h](/sandbox/chizari/threephase/fractions-3p.h)
 instead of [fraction.h](/src/fraction.h) since the recustruction

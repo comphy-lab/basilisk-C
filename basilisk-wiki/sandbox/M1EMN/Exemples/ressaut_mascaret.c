@@ -338,8 +338,8 @@ p[-3:2]'out' u ($4):($5>10?$2:NaN) w lp #,''u ($4):(-iai($4*4)+.33)*3/2.*.1+.9
  
 ## Links
  
-* [http://basilisk.fr/sandbox/M1EMN/BASIC/disperse.c]()
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/belanger.c]()
+* [https://basilisk.fr/sandbox/M1EMN/BASIC/disperse.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/belanger.c]()
  
  
 # Bibliography

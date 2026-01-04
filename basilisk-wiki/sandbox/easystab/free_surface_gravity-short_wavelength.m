@@ -1,6 +1,6 @@
 %{
 # Gravity free surface waves
-  We show in [the general code](http://basilisk.fr/sandbox/easystab/free_surface_gravity.m#validation) that the wave velocity at the surface of the sea is: 
+  We show in [the general code](/sandbox/easystab/free_surface_gravity.m#validation) that the wave velocity at the surface of the sea is: 
   
 $$
 c=\sqrt(g \tanh(\alpha L)/{\alpha})

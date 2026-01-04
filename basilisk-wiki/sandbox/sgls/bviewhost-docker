@@ -18,6 +18,6 @@ then
    browser=$1
 fi
 
-url="http://basilisk.fr/three.js/editor/index.html?ws://localhost:710$port"
+url="https://basilisk.fr/three.js/editor/index.html?ws://localhost:710$port"
 
 open -a $browser $url

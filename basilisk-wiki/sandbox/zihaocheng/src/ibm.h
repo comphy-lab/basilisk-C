@@ -148,7 +148,7 @@ double p_phi (double x, double y, double z, double radius)
 
 /**
 ## Functions
-To visualize the particles (copy from [Arthur's sandbox](http://basilisk.fr/sandbox/ghigo/src/myembed-moving-bicolor.h)):
+To visualize the particles (copy from [Arthur's sandbox](/sandbox/ghigo/src/myembed-moving-bicolor.h)):
 */
 
 void p_shape(scalar c, face vector f, particle_struct *p)

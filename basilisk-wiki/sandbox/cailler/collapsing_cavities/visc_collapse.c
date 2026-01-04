@@ -2,7 +2,7 @@
 # Crossing a finite-time singularity through viscous collapse
 
 This file is an extension of the 
-[inviscid collapse of a cavity](http://basilisk.fr/sandbox/cailler/collapsing_cavities/invisc_collapse_conv.c) 
+[inviscid collapse of a cavity](/sandbox/cailler/collapsing_cavities/invisc_collapse_conv.c) 
 when taking into account **viscosity**. We hence want to simulate the collapse 
 of a conical cavity (such as a bursted bubble) to investigate the impact of 
 viscous effects close to the finite-time singularity. Our goal is to 
@@ -21,15 +21,15 @@ To understand most of the code below, it is recommended to have read the followi
 *sandbox*'s pages, as a lot of notations employed, physical explanations and 
 numerical strategies for setting parameters are already defined there:
 
-  1. First, take a look to the [`README`](http://basilisk.fr/sandbox/cailler/collapsing_cavities/README) 
+  1. First, take a look to the [`README`](/sandbox/cailler/collapsing_cavities/README) 
   file of this directory, as it details most of the notations used and the main 
   logic behind this code;
   2. **Boundary conditions** and **initialization** of this file are well documented 
-  in a far [simpler numerical experiment](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c#boundary-conditions) 
-  concerning the impact of [*dipolar flows*](http://basilisk.fr/sandbox/cailler/sierou_lister/README#dipolar-distribution-and-physical-meaning);
+  in a far [simpler numerical experiment](/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c#boundary-conditions) 
+  concerning the impact of [*dipolar flows*](/sandbox/cailler/sierou_lister/README#dipolar-distribution-and-physical-meaning);
   3. As said earlier, the current code is very similar to the 
-  [*inviscid* case](http://basilisk.fr/sandbox/cailler/collapsing_cavities/invisc_collapse_conv.c) 
-  where, for example, the [*mesh strategy*](http://basilisk.fr/sandbox/cailler/collapsing_cavities/invisc_collapse_conv.c#mesh-strategy) 
+  [*inviscid* case](/sandbox/cailler/collapsing_cavities/invisc_collapse_conv.c) 
+  where, for example, the [*mesh strategy*](/sandbox/cailler/collapsing_cavities/invisc_collapse_conv.c#mesh-strategy) 
   is explained.
 </div>
 
@@ -39,7 +39,7 @@ numerical strategies for setting parameters are already defined there:
 
 We want to describe the collapsing phase of a conical cavity for times 
 very close to the finite-time singularity, *i.e.*, when $t - t_0 \sim t_\mu$. 
-We use the [capillary-inertial non-dimensionalization](http://basilisk.fr/sandbox/cailler/collapsing_cavities/README#inviscid-non-dimensionalization) 
+We use the [capillary-inertial non-dimensionalization](/sandbox/cailler/collapsing_cavities/README#inviscid-non-dimensionalization) 
 by introducing the viscous length scale $L \equiv \ell_\mu$, along with the 
 following numerical parameters for air/water:
 
@@ -91,7 +91,7 @@ In practice, we are using the following parameters:
   $\Delta_{max} = L_0/2^{N_{max}} = 0,056 \, \ell_\mu$, so 
   $\lfloor \ell_\mu / \Delta_{max} \rfloor = 18$ which will be enough. 
 
-As set out in the [`README`](http://basilisk.fr/sandbox/cailler/collapsing_cavities/README) 
+As set out in the [`README`](/sandbox/cailler/collapsing_cavities/README) 
 file, the same parameters are used for inviscid simulations to compare the 
 results (with the obvious exception of dynamic viscosities set to zero then).
 */
@@ -178,7 +178,7 @@ the dipolar far-field flow:
 
 /** 
 **A huge difference with the inviscid case is to rely on the 
-[*double approximate projection method*](http://basilisk.fr/src/navier-stokes/double-projection.h).** 
+[*double approximate projection method*](/src/navier-stokes/double-projection.h).** 
 Indeed, previous tests have shown that without a better estimate of the pressure 
 field, *cusps* happened when approaching the conical singularity, slowing down 
 massively the run while it was safe to say it was not a physical phenomenon but 
@@ -212,7 +212,7 @@ scalar y_p_interf[];
 
 **The geometric considerations, initial and boundary conditions are the same than 
 those presented and *fully documented* in** 
-[**`sierou_dipolar_flow.c`**](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c#boundary-conditions), 
+[**`sierou_dipolar_flow.c`**](/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c#boundary-conditions), 
 except for the box size obviously. Therefore, we instantiate the following domain: 
 
 ![Initial setup of the simulation](img_collapsing/collapsing_BC.png){width="30%"}
@@ -425,8 +425,8 @@ event get_p_interf(i++){
 ### Mesh Strategy
 
 The strategy used for meshing the domain through time is explained 
-[*here*](http://basilisk.fr/sandbox/cailler/collapsing_cavities/invisc_collapse_conv.c#mesh-strategy). 
-See [*this movie*](http://basilisk.fr/sandbox/cailler/collapsing_cavities/invisc_collapse_conv.c#convergence-test-for-inviscid-collapsing-cavities) 
+[*here*](/sandbox/cailler/collapsing_cavities/invisc_collapse_conv.c#mesh-strategy). 
+See [*this movie*](/sandbox/cailler/collapsing_cavities/invisc_collapse_conv.c#convergence-test-for-inviscid-collapsing-cavities) 
 for having a visual idea of this strategy.
 */
 
@@ -603,7 +603,7 @@ double minimum (scalar a) {
   return mini;
 }
 
-// cf. http://basilisk.fr/sandbox/ecipriano/src/common-evaporation.h
+// cf. https://basilisk.fr/sandbox/ecipriano/src/common-evaporation.h
 double avg_neighbor (Point point, scalar Y, scalar f) {
   /* Compute the average value of a scalar field Y 
   in a 3x3 stencil around the current cell */
@@ -630,7 +630,7 @@ The following plots were all generated on a personal laptop for:
 
 
 All the data used can be found in 
-[*this directory*](http://basilisk.fr/sandbox/cailler/collapsing_cavities/collapsing_data/visc_data/).
+[*this directory*](/sandbox/cailler/collapsing_cavities/collapsing_data/visc_data/).
 
 </div>
 
@@ -1236,7 +1236,7 @@ plt.savefig('selfsim_shape_pre_sing_invisc+visc_s230.svg')
   #endif
 
   /** The following event is a clone of one of Aliénor Rivière's functions in
-  [`stagnation.h`](http://basilisk.fr/sandbox/ariviere/stagnation.h) and adapted 
+  [`stagnation.h`](/sandbox/ariviere/stagnation.h) and adapted 
   for storing values in parallel computations. 
   It is used for post-treating these data directly with *Python*:
   */

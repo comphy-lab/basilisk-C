@@ -276,5 +276,5 @@ plot 'log' u 1:2 notitle, 'log' u 1:3 w l t "v_r",\
 ## See also
 
 * [Same test with 
-   Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/electro.html)
+   Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/electro.html)
 */

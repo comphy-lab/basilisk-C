@@ -24,7 +24,7 @@ configuration.
 
 We define the following scalar and face vector, which will be the vessel of the
 imported geometry. It is imperative that they have these names for compatibility
-with [`embed.h`](http://basilisk.fr/src/embed.h).
+with [`embed.h`](/src/embed.h).
 */
 
 #if EMBEDDING // fixme: embedding the W09 is failing
@@ -38,10 +38,10 @@ face vector fs[];
 This function computes the solid fraction given a pointer to an STL file, a
 tolerance (maximum relative error on distance) and a maximum level. It is
 implemented and already tested in many examples, such as: [Distance field
-computation from a 3D model](http://basilisk.fr/src/examples/distance.c),
-[Two-phase flow around RV Tangaroa](http://basilisk.fr/src/examples/tangaroa.c),
+computation from a 3D model](/src/examples/distance.c),
+[Two-phase flow around RV Tangaroa](/src/examples/tangaroa.c),
 [Stokes flow through a complex 3D porous
-medium](http://basilisk.fr/src/examples/porous3D.c).
+medium](/src/examples/porous3D.c).
  */
 void fraction_from_stl (scalar cs, face vector fs, FILE * fp,
 			double eps, int maxlevel) {
@@ -270,7 +270,7 @@ Running with MPI-parallelism is a bit more complicated than usual since the
 `distance()` function is not parallelised yet. A reasonably simple workaround is
 to first generate a restart/dump file on the local machine, in a serial run, and
 then restore it in parallel as described
-[here](http://basilisk.fr/src/examples/tangaroa.c#running-in-parallel-on-irene).
+[here](/src/examples/tangaroa.c#running-in-parallel-on-irene).
  */
 
 event dump (t = 0) {

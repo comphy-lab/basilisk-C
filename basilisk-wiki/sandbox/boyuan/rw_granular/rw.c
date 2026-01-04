@@ -1,6 +1,6 @@
 /**
 
-**Inspired by [the sandbox example](http://basilisk.fr/sandbox/M1EMN/Exemples/front_poul_ed.c).**
+**Inspired by [the sandbox example](/sandbox/M1EMN/Exemples/front_poul_ed.c).**
 
 # Periodic and Non-periodic granular roll waves
 Reproduction of the case in Gray & Edwards (2014),  Forterre & Pouliquen (2003).

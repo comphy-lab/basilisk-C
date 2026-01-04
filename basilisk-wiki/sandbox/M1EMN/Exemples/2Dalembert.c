@@ -16,7 +16,7 @@ $g(x,y)=e^{-(x^2+y^2)}$ and no initial flow.
  
 ## Code
 
-Code is almost the tutorial `bump` ([http://basilisk.fr/Tutorial]())
+Code is almost the tutorial `bump` ([https://basilisk.fr/Tutorial]())
 
 */ 
 
@@ -135,7 +135,7 @@ p[-5:5][:]'cut.txt' u ($1-$6):(($2-1)*sqrt($1)/a) t'0','' u ($1-$6):(($3-1)*sqrt
 
 ## Links
 
-* [http://basilisk.fr/Tutorial]()
+* [https://basilisk.fr/Tutorial]()
 
 
 ## References

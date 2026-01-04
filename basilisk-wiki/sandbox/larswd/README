@@ -29,11 +29,11 @@ event output_field (t <= tmax; t += dt)
 ```
 **Download**:
 ```bash
-wget http://basilisk.fr/sandbox/larswd/output_vts.h?raw -O output_vts.h
+wget https://basilisk.fr/sandbox/larswd/output_vts.h?raw -O output_vts.h
 ```
 
 ## Multilayer particle tracker. 
-Based on the ```particle.h``` extension of Antoon van Hooft, which can be found [here](http://basilisk.fr/sandbox/Antoonvh/particle.h). The code and algorithms remain largely the same, but they are modified to ensure the particles are placed and tracked correctly in the vertical. This extension is only activated if the multilayer solver is imported, and if this is not the case should be identical to Antoon's ```particle.h```.
+Based on the ```particle.h``` extension of Antoon van Hooft, which can be found [here](/sandbox/Antoonvh/particle.h). The code and algorithms remain largely the same, but they are modified to ensure the particles are placed and tracked correctly in the vertical. This extension is only activated if the multilayer solver is imported, and if this is not the case should be identical to Antoon's ```particle.h```.
 
 Code: 
 [particle.h](particle.h).
@@ -54,8 +54,8 @@ means the multilayer particle tracker is used instead of the classic particle tr
 
 **Test cases and examples**
 
-- [brownian.c](brownian.c) illustrating gaussian drift with multilayer. Based on the test case of Antoon with the same name which can be found [here](http://basilisk.fr/sandbox/Antoonvh/brownian.c).
-- [brownian_classic.c](brownian_classic.c) The gaussian drift example of Antoon without multilayer. Code identical [to the original which can be found here.](http://basilisk.fr/sandbox/Antoonvh/brownian.c).
+- [brownian.c](brownian.c) illustrating gaussian drift with multilayer. Based on the test case of Antoon with the same name which can be found [here](/sandbox/Antoonvh/brownian.c).
+- [brownian_classic.c](brownian_classic.c) The gaussian drift example of Antoon without multilayer. Code identical [to the original which can be found here.](/sandbox/Antoonvh/brownian.c).
 
 - [tlengt.c](tlengt.c) a test case showing that the placement of particles is implemented correctly when using multilayer.
 
@@ -66,9 +66,9 @@ means the multilayer particle tracker is used instead of the classic particle tr
 
 **Download**
 ```bash
-wget http://basilisk.fr/sandbox/larswd/particle.h?raw -O particle.h
-wget http://basilisk.fr/sandbox/larswd/particle_classic.h?raw -O particle_classic.h
-wget http://basilisk.fr/sandbox/larswd/particle_multilayer.h?raw -O particle_multilayer.h
+wget https://basilisk.fr/sandbox/larswd/particle.h?raw -O particle.h
+wget https://basilisk.fr/sandbox/larswd/particle_classic.h?raw -O particle_classic.h
+wget https://basilisk.fr/sandbox/larswd/particle_multilayer.h?raw -O particle_multilayer.h
 ```
 
 ## Multilayer Tracer tracker
@@ -80,9 +80,9 @@ This module implements a fully-implicit solver of the [convection-diffusion equa
 
 **Download**
 ```bash
-wget http://basilisk.fr/sandbox/larswd/mltracer.h?raw -O mltracer.h
-wget http://basilisk.fr/sandbox/larswd/mltracer2D.h?raw -O mltracer2D.h
-wget http://basilisk.fr/sandbox/larswd/mltracer3D.h?raw -O mltracer3D.h
+wget https://basilisk.fr/sandbox/larswd/mltracer.h?raw -O mltracer.h
+wget https://basilisk.fr/sandbox/larswd/mltracer2D.h?raw -O mltracer2D.h
+wget https://basilisk.fr/sandbox/larswd/mltracer3D.h?raw -O mltracer3D.h
 ```
 
 **TODO**

@@ -1,42 +1,40 @@
 /**
 # Falling Droplet in Moving Reference Frame
 
-We want to simulate a falling droplet in a reference frame
-centered on the center of the droplet. In this situation,
-the droplet falls without leaving the domain and remaining
-fixed to the position of the initialization.
-The implementation is very naive, and it consists in a
-feedback control of the inlet velocity, which is used to
-compensate the gravitational acceleration. Better solutions
-and suggestions are welcome.
+We want to simulate a falling droplet in a reference frame centered on the
+center of the droplet. In this situation, the droplet falls without leaving the
+domain and remaining fixed to the position of the initialization.  The
+implementation is very naive, and it consists in a feedback control of the inlet
+velocity, which is used to compensate the gravitational acceleration. Better
+solutions and suggestions are welcome.
 
 ![Evolution of the droplet position and the vorticity field](fallingdropmrf/movie.mp4)(width="600" height="600")
 
-The droplet starts to fall from a zero initial velocity and
-to experience the sudden increase in the inlet velocity. Therefore,
-it takes some time to stabilize. Finally, it reaches a quite
-steady behavior, although it starts to slighly shift along the
-x axis.
+Using the integral (momentum conserving) surface tension method helps to avoid
+non-physical lateral displacements which can be observed when using
+[tension.h](/src/tension.h). This effect is due to a non-null sum of the surface
+tension contributions, which caracherizes the CSF method (not
+momentum-conserving).
 */
 
 #include "navier-stokes/centered.h"
-#include "two-phase.h"
-#include "tension.h"
+#include "two-phase-clsvof.h"
+#include "integral.h"
 #include "reduced.h"
 #include "view.h"
 
 /**
-We initialize the additionals fields required for this simulation:
-*fx* and *fy* are used to compute the centroid of the droplet;
-*omega* is the vorticity field. */
+We initialize the additionals fields required for this simulation: *fx* and *fy*
+are used to compute the centroid of the droplet; *omega* is the vorticity field.
+*/
 
 scalar fx[], fy[];
 scalar tr[];
 
 /**
-We use inlet boundary condition on the bottom of the domain,
-with a velocity that varies depending on the acceleration of
-the droplet, and outflow boundary conditions on the top. */
+We use inlet boundary condition on the bottom of the domain, with a velocity
+that varies depending on the acceleration of the droplet, and outflow boundary
+conditions on the top. */
 
 double uin;
 u.n[bottom] = dirichlet(uin);
@@ -48,10 +46,9 @@ u.t[top] = neumann(0);
 p[top] = dirichlet(0);
 
 /**
-We set the level of refinement, the total simulation
-time, the initial radius of the droplet, and we declare
-the variables to store the centroid of the droplet, and
-the velocity of that centroid. */
+We set the level of refinement, the total simulation time, the initial radius of
+the droplet, and we declare the variables to store the centroid of the droplet,
+and the velocity of that centroid. */
 
 int maxlevel, minlevel;
 double tEnd = 0.05;
@@ -69,12 +66,12 @@ int main (void)
   rho1 = 800.; rho2 = 5.;
   mu1 = 1.138e-3; mu2 = 1.78e-5;
 
-  f.sigma = 0.03;
+  (const) scalar sigmaf[] = 0.03;
+  d.sigmaf = sigmaf;
 
   /**
-  We define the problem geometry and we include the
-  gravitational acceleration using the [reduced.h](/src/reduced.h)
-  module. */
+  We define the problem geometry and we include the gravitational acceleration
+  using the [reduced.h](/src/reduced.h) module. */
 
   minlevel = 2;
   maxlevel = 8;
@@ -92,10 +89,11 @@ int main (void)
 
 event init (i = 0) {
   /**
-  We initialize the droplet and we compute the position
-  of its centroid. */
+  We initialize the droplet and we compute the position of its centroid. */
 
   fraction (f, circle (x, y, R0));
+  foreach()
+    d[] = circle (x, y, R0);
   foreach() {
     fx[] = f[]*x;
     fy[] = f[]*y;
@@ -105,11 +103,9 @@ event init (i = 0) {
 }
 
 /**
-In this event, the centroid position is computed,
-as well as the inlet velocity. The shifting
-of the position of the droplet centroid with
-respect to the target (initial) position is used
-to compute a velocity which is imposed with opposite
+In this event, the centroid position is computed, as well as the inlet velocity.
+The shifting of the position of the droplet centroid with respect to the target
+(initial) position is used to compute a velocity which is imposed with opposite
 sign at the bottom of the domain. */
 
 event bcs (i++) {
@@ -127,18 +123,16 @@ event bcs (i++) {
 }
 
 /**
-We refine the mesh according to the volume fraction and the
-velocity field. */
+We refine the mesh according to the volume fraction and the velocity field. */
 
 event adapt (i++) {
   adapt_wavelet ({f,u}, (double[]){1.e-3,1.e-3,1.e-3,1.e-3}, maxlevel, minlevel);
 }
 
 /**
-The following events are for post-processing purposes:
-print the inlet velocity value, compute the vorticity field,
-write a video with the evolution of the interface and the
-vorticity field. */
+The following events are for post-processing purposes: print the inlet velocity
+value, compute the vorticity field, write a video with the evolution of the
+interface and the vorticity field. */
 
 event outputfile (i++) {
   fprintf (stdout, "%f %f\n", t, uin);

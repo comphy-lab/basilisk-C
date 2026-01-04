@@ -73,5 +73,5 @@ plot 'swashes' u 1:4 t 'topography' w l, \
 
 ## See also
 
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/shock.html)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/shock.html)
 */

@@ -8,7 +8,7 @@ characteristic scale of the smallest droplets.
 We solve the two-phase Navier--Stokes equations with surface
 tension.
 
- Brinkman Penalization method ([BPM](http://basilisk.fr/sandbox/weugene/penalization.h)) is used to handle solids. To switch on BPM, BRINKMAN_PENALIZATION is defined,
+ Brinkman Penalization method ([BPM](/sandbox/weugene/penalization.h)) is used to handle solids. To switch on BPM, BRINKMAN_PENALIZATION is defined,
  to see/output debug fields (penalization term - dbp, total right-hand-side - total_rhs,
  tangential (along the solid surface) component of the velocity - utau (NEED CALCULATION of the normal to the solid surface n_sol),
  grad_utau_n(NEED n_sol)), DEBUG_BRINKMAN_PENALIZATION is defined.
@@ -251,5 +251,5 @@ It is seen that
 
 ## See also
 
-* [Similar example of the jet atomization](http://basilisk.fr/src/examples/atomisation.c)
+* [Similar example of the jet atomization](/src/examples/atomisation.c)
 */

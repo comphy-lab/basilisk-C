@@ -113,7 +113,7 @@ To sum up, the main idea for computing the correct volume fraction
   * a non-zero volume fraction `ffX` in the neighbourhood of the cell covered;
 
 then an intercept can be evaluated with the help of 
-[appropriated functions](http://basilisk.fr/src/geometry.h).
+[appropriated functions](/src/geometry.h).
 
 Thanks to this intercept, the normal, and the use of the coordinates 
 of `f[border]`'s cell regarding the position of `ffX`, we are finally able to 

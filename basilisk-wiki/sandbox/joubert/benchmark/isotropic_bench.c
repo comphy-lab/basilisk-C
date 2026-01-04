@@ -1,7 +1,7 @@
 /**
 # Forced isotropic turbulence in a triply-periodic box wtht view
 
-This is a copy paste of the [isotropic code](http://basilisk.fr/src/examples/isotropic.c)
+This is a copy paste of the [isotropic code](/src/examples/isotropic.c)
 used to check the cpu scalability of Basilisk on supercomputers
 using only 5 min of cp time. For weak scaling test in a cubic
 domain number of processors should be a power of 8 ($8^1$,$8^2$,etc)

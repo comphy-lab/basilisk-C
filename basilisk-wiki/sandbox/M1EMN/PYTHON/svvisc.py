@@ -2,7 +2,7 @@
 # Resolution des equations de Saint Venant instionnaires  visqueuses sur fond plat
 # Solution de la rupture de barrage
 # http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/code_C_saintvenant.pdf
-# http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c
+# https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c
 #
 #
 # trucs de python

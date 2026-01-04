@@ -8,7 +8,7 @@ Here is the link to my [website](http://www.normalesup.org/~ariviere/index.html)
 ## Codes
 **Bubble in turbulence**
 
-* [Single bubble in an homogeneous and isotropic turbulent flow](http://basilisk.fr/sandbox/wmostert/turbulent_bubble.c)
+* [Single bubble in an homogeneous and isotropic turbulent flow](/sandbox/wmostert/turbulent_bubble.c)
 
 **Model flows**
 
@@ -18,7 +18,7 @@ Here is the link to my [website](http://www.normalesup.org/~ariviere/index.html)
 ## Tools
 **Various interpolations**
 
-Based on the similar code by Antoon ([slicer](http://basilisk.fr/sandbox/Antoonvh/slicer.h)) to compute a 2D slice in a 3D simulation. All these interpolations work in 3D. 
+Based on the similar code by Antoon ([slicer](/sandbox/Antoonvh/slicer.h)) to compute a 2D slice in a 3D simulation. All these interpolations work in 3D. 
 
 * [Interpolation on a line](tools/liner-interp.h)
 * [Interpolation on a plane](tools/slicer-interp.h)

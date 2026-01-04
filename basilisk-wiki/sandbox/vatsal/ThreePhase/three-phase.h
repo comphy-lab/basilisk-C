@@ -4,7 +4,7 @@
 This file helps setup simulations for flows of three fluids separated by
 corresponding interfaces (i.e. immiscible fluids). It can typically be used in
 combination with a [Navier--Stokes solver](navier-stokes/centered.h)
-and [tension_three-phase.h](http://basilisk.fr/sandbox/vatsal/ThreePhase/tension_three-phase.h).
+and [tension_three-phase.h](/sandbox/vatsal/ThreePhase/tension_three-phase.h).
 
 The interface between the fluids is tracked with a Volume-Of-Fluid
 method. The method developed here is inspired by the discussions [here](https://groups.google.com/forum/#!topic/basilisk-fr/Sj_qNMXOfXE)
@@ -16,7 +16,7 @@ We use two different VOF tracers to track three fluids. The details of which is 
   <figcaption><p align="center">Figure 1. Schematic of the problem: Details of the VOF fields.</figcaption>
 </figure>
 So this method is similar to the one suggested by Jose. The difference is in the way we include the
-surface tension force (described in [tension_three-phase.h](http://basilisk.fr/sandbox/vatsal/ThreePhase/tension_three-phase.h)).<br/>
+surface tension force (described in [tension_three-phase.h](/sandbox/vatsal/ThreePhase/tension_three-phase.h)).<br/>
 The densities and dynamic viscosities for fluid 1, 2 and 3 are *rho1*,
 *mu1*, *rho2*, *mu2*, and *rho3*, *mu3* respectively. */
 

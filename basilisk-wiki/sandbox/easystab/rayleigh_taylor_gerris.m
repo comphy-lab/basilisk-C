@@ -258,7 +258,7 @@ print('-dpng','-r80','rayleigh_taylor_gerris_field.png');
 
 %{
 # Saving to disc
-There are several ways to save fields for gerris, here we chose the simplest one, the [cgd format (cartesian grid data)](http://gerris.dalembert.upmc.fr/gfsfunction.html#Cartesian_Grid_Data_.28CGD.29_files)
+There are several ways to save fields for gerris, here we chose the simplest one, the [cgd format (cartesian grid data)](https://gerris.dalembert.upmc.fr/gfsfunction.html#Cartesian_Grid_Data_.28CGD.29_files)
 %}
 
 % translate to have interface position at y=0 for gerris

@@ -1,5 +1,5 @@
 /**
-# Wave generation by fluidised flow. Three-phase Navier-Stokes with option for diffusion between two phases. This file implements a setup for a fixed input condition, 10 cm from the impact zone, where $h_f$ (impact height), $u_f$ (impact velocity) and $\theta$ can be defined by the user (UF, H0 AND THETA0). Please see [example script](http://basilisk.fr/sandbox/pdc_final/script).
+# Wave generation by fluidised flow. Three-phase Navier-Stokes with option for diffusion between two phases. This file implements a setup for a fixed input condition, 10 cm from the impact zone, where $h_f$ (impact height), $u_f$ (impact velocity) and $\theta$ can be defined by the user (UF, H0 AND THETA0). Please see [example script](/sandbox/pdc_final/script).
 
 This is the Navier-Stokes VOF case of the [Bougouin, 2020](#references) fluidized granular flow tsunami generation experiment.
 */
@@ -27,7 +27,7 @@ double mu3  = 0.1; //density of salt water at 20degrees
 
 #define MAXLEVEL 12
 
-/** Definition of the robin boundary, see [Antoon's robin.c](http://basilisk.fr/sandbox/Antoonvh/robin.c) for details. */
+/** Definition of the robin boundary, see [Antoon's robin.c](/sandbox/Antoonvh/robin.c) for details. */
 #define robin(a,b,c) ((dirichlet ((c)*Delta/(2*(b) + (a)*Delta))) + ((neumann (0))* ((2*(b) - (a)*Delta)/(2*(b) + (a)*Delta) + 1.)))
 
 #include "two-phase.h"

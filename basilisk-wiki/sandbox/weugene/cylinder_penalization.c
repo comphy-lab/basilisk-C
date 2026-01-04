@@ -1,7 +1,7 @@
 /**
 # Stokes flow past a periodic array of cylinders
 It was compared the numerical results with the solution given by the
-multipole expansion of [Sangani and Acrivos, 1982](#sangani1982). [This example](http://basilisk.fr/src/test/cylinders.c) is inspired me checking the module. There is a cylinder with radius r and periodic boundary conditions. Initial velocity at the whole domain is equal to 0. The external force $\mathbf{g}$ drives the fluid. 
+multipole expansion of [Sangani and Acrivos, 1982](#sangani1982). [This example](/src/test/cylinders.c) is inspired me checking the module. There is a cylinder with radius r and periodic boundary conditions. Initial velocity at the whole domain is equal to 0. The external force $\mathbf{g}$ drives the fluid. 
 
 ![Sangani and Acrivos problem](https://i.ibb.co/hF1tmXD/Sangani.png)
 

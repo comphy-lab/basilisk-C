@@ -7,7 +7,7 @@ In this section, the goal is to create a particular flow around a cylinder. The 
 
 Here we chose to resolve the Poisson equation for the stream function $\psi$. 
 
-Just like [Potential flow around a half cylinder](http://basilisk.fr/sandbox/mgarnier/PotentialCylinder/HalfCylinder.c), we just shift the origin to the right in order to obtain a half cylinder. Globaly, the code remains the same as my code for [Potential flow around a half cylinder](http://basilisk.fr/sandbox/mgarnier/PotentialCylinder/HalfCylinder.c). We only modify the boundary conditions. 
+Just like [Potential flow around a half cylinder](/sandbox/mgarnier/PotentialCylinder/HalfCylinder.c), we just shift the origin to the right in order to obtain a half cylinder. Globaly, the code remains the same as my code for [Potential flow around a half cylinder](/sandbox/mgarnier/PotentialCylinder/HalfCylinder.c). We only modify the boundary conditions. 
 */
 
 #include "embed.h"
@@ -183,7 +183,7 @@ foreach(){
 /**
 ##Equation on the potential function
 
-Another possibility is to resolve the Poisson equation on the potential function $\phi$. For this case, we need to modify the boundary conditions. I took the code of [Quasi 2D incompressible flow in a recorder window](http://basilisk.fr/sandbox/hajczak/recorderWindow.c) by  A.Hajczak. I replaced his geometry by mine. The goal is to compare the stream function obtained by resolving the Poisson on the stream function and the stream function obtained by resolving the Poisson equation on the potential. 
+Another possibility is to resolve the Poisson equation on the potential function $\phi$. For this case, we need to modify the boundary conditions. I took the code of [Quasi 2D incompressible flow in a recorder window](/sandbox/hajczak/recorderWindow.c) by  A.Hajczak. I replaced his geometry by mine. The goal is to compare the stream function obtained by resolving the Poisson on the stream function and the stream function obtained by resolving the Poisson equation on the potential. 
 
 */
     

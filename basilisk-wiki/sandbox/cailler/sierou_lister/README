@@ -14,7 +14,7 @@ the other one with an obtuse angle (*parent drop*).
 It appears ([Day *et al.*, 1998](#day1998); [Sierou \& Lister, 2004](#sierou2004)) 
 that the axisymmetric recoil of a **single** cone (*cf.* third picture above) is 
 a simplification of the *post-pinching* problem, but remains a more 
-complicated one compared to the [2D--recoil of a liquid wedge](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c) of [Keller \& Miksis, (1983)](#keller1983). 
+complicated one compared to the [2D--recoil of a liquid wedge](/sandbox/cailler/keller_miksis/keller_fig2_conv.c) of [Keller \& Miksis, (1983)](#keller1983). 
 Indeed, the conical geometry implies an **inhomogeneous** *azimuthal curvature* 
 whose *Laplace* pressure gradient is responsible for a **non-zero flow** 
 in the whole domain (what we can call an "*overall movement*"). 
@@ -280,7 +280,7 @@ $$
 
 Furthermore, $\phi^\pm$ is a regular solution to the *Laplace* equation. It can 
 then be written in spherical coordinates as a 
-[*Legendre polynomials*](http://basilisk.fr/sandbox/cailler/sierou_lister/elliptic.h) 
+[*Legendre polynomials*](/sandbox/cailler/sierou_lister/elliptic.h) 
 series, whose dominant term when $R \to + \infty$ is: 
 
 $$
@@ -294,7 +294,7 @@ $$
 
 In the general pinching problem, describing the two forming cones (one small, 
 one large, as drawn on 
-[*this figure*](http://basilisk.fr/sandbox/cailler/sierou_lister/README)) 
+[*this figure*](/sandbox/cailler/sierou_lister/README)) 
 leads to consider two opposite signed curvatures: in particular, for the 
 satellite droplet, its curvature is *positive*, so that:
 
@@ -719,7 +719,7 @@ $$
 \right.
 $$
 
-With the help of the [*recurrence relations*](http://basilisk.fr/sandbox/cailler/sierou_lister/elliptic.h#interesting-recurrence-relations) existing for the 
+With the help of the [*recurrence relations*](/sandbox/cailler/sierou_lister/elliptic.h#interesting-recurrence-relations) existing for the 
 *Legendre* polynomials, we can rewrite the previous solutions without 
 any derivatives:
 
@@ -744,7 +744,7 @@ $$
 $$
 
 Those are the formulae implemented in the file 
-[`u_BC_dipolar_flow.h`](http://basilisk.fr/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h). For higher orders, coefficients are determined by 
+[`u_BC_dipolar_flow.h`](/sandbox/cailler/sierou_lister/u_BC_dipolar_flow.h). For higher orders, coefficients are determined by 
 successively solving boundary conditions and classical potential theory equations. 
 
 

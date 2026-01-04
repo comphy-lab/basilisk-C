@@ -106,7 +106,7 @@ Your browser does not support the video tag. </video>
 
 ![Gradient sharpening in the Stable atmospheric boundary layer](https://media.springernature.com/full/springer-static/image/art%3A10.1007%2Fs10546-020-00516-x/MediaObjects/10546_2020_516_Fig1_HTML.png)
 
-![Scalar gradient and grid. ](http://basilisk.fr/sandbox/Antoonvh/gradient-sharpening/Re800-grid.mp4)
+![Scalar gradient and grid. ](/sandbox/Antoonvh/gradient-sharpening/Re800-grid.mp4)
  For details see this note: [Van Hooft (2020)](https://link.springer.com/article/10.1007%2Fs10546-020-00516-x)
 
 ## An Adaptive 4th order accurate solver the NS equations
@@ -119,7 +119,7 @@ Your browser does not support the video tag. </video>
 " type="video/mp4">
 Your browser does not support the video tag. </video>
 <p class="caption">
->4th-order adaptive solver result. For details see [here](http://basilisk.fr/sandbox/Antoonvh/trefoil4.c) (Manuscript in preparation)
+>4th-order adaptive solver result. For details see [here](/sandbox/Antoonvh/trefoil4.c) (Manuscript in preparation)
 </p>
 </div>
 

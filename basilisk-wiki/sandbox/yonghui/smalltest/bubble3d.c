@@ -2,7 +2,7 @@
 # Bubble rising 3D 
 (to get a precise results, it would caused a long simulation time, since we need MAX_LEVEL = 10+)
 it's a simple version edit from the exemples on basilisk, intend to compared the results with axi.h:
-[Bubble.c](http://basilisk.fr/src/examples/bubble.c) &
+[Bubble.c](/src/examples/bubble.c) &
 [rising.c](http://mail.basilisk.fr/src/test/rising.c)
 */
 #include "grid/octree.h"

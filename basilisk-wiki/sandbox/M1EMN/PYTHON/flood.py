@@ -2,7 +2,7 @@
 #
 # Resolution des equations d'inondation "flood wave"
 # http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/code_C_saintvenant.pdf
-# http://basilisk.fr/sandbox/M1EMN/Exemples/flood.c
+# https://basilisk.fr/sandbox/M1EMN/Exemples/flood.c
 #
 #  voir Whitham
 #

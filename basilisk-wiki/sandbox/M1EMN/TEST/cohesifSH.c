@@ -204,7 +204,7 @@ but when change-ing cohesion, the depth changes
 
 
 
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_savagehutter.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_savagehutter.c]()
 
-* [http://basilisk.fr/sandbox/M1EMN/TEST/cohesifKW.c]()
+* [https://basilisk.fr/sandbox/M1EMN/TEST/cohesifKW.c]()
 */

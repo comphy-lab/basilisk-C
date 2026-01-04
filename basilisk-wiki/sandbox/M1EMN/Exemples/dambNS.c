@@ -220,7 +220,7 @@ p[0:10][0:2]'out' t 'comp t=0,1,2,3 'w l, h(x,1)w l linec -1 not ,h(x,2)w l line
 
 # Links
  
-see the non viscous dam break with [Basilisk](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c)  
+see the non viscous dam break with [Basilisk](/sandbox/M1EMN/Exemples/damb.c)  
 
 # Bibliography
 

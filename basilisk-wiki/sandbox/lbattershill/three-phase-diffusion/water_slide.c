@@ -26,7 +26,7 @@ double mu3 = 0.1; //density of salt water at 20degrees
 
 
 
-/** Definition of the robin boundary, see [Antoon's robin.c](http://basilisk.fr/sandbox/Antoonvh/robin.c) for details. */
+/** Definition of the robin boundary, see [Antoon's robin.c](/sandbox/Antoonvh/robin.c) for details. */
 #define robin(a,b,c) ((dirichlet ((c)*Delta/(2*(b) + (a)*Delta))) + ((neumann (0))* ((2*(b) - (a)*Delta)/(2*(b) + (a)*Delta) + 1.)))
 
 

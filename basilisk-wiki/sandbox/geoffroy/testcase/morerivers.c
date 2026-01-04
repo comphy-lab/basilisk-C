@@ -60,7 +60,7 @@ event init (i = 0){
     */
 
     /**The scalar river[] is defined by default in the
-    [discharge.h](http://basilisk.fr/src/discharge.h) library. We use
+    [discharge.h](/src/discharge.h) library. We use
     it to store the location of each rivers. Its value is 1 for the
     river at north-east and south-west of the map and 2 for the rivers
     at north-west and south-east.*/
@@ -87,7 +87,7 @@ event init (i = 0){
 We use the adap_wavelet function to adapt the grid only on the wet
 cells. You can find a full explaination of this process in the
 [tsunami
-example](http://basilisk.fr/src/examples/tsunami.c#adaptation)*/
+example](/src/examples/tsunami.c#adaptation)*/
 
 void adapt_H() {
 #if QUADTREE
@@ -130,7 +130,7 @@ We impose different flow rates : $1 m^3.s^{-1}$ for the rivers in the
 north-east quarter, $1.5 m^3.s^{-1}$ for the ones at north-west, $2
 m^3.s^{-1}$ for the ones at south-west, and 0 at south-east. The
 process is more detailed in the [multi-river test
-case](http://basilisk.fr/src/test/multiriverinflow.c).*/
+case](/src/test/multiriverinflow.c).*/
 
 double eta1, eta2, eta3, eta4, eta5, eta6;
 

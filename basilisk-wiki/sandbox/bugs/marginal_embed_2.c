@@ -1,5 +1,5 @@
 /**
-This code demonstrates a bug where the no-slip condition is violated at the embedded boundary in pressure-driven viscous microchannel flow. It is similar to [Antoon van Hooft's code for scalar mixing in a tube flow](http://basilisk.fr/sandbox/Antoonvh/pois-front.c) where the key difference is here I numerically compute the flow field instead of prescribing the exact solution.
+This code demonstrates a bug where the no-slip condition is violated at the embedded boundary in pressure-driven viscous microchannel flow. It is similar to [Antoon van Hooft's code for scalar mixing in a tube flow](/sandbox/Antoonvh/pois-front.c) where the key difference is here I numerically compute the flow field instead of prescribing the exact solution.
 
 ![This plot shows the spatial distribution of the solute at the final simulated time step.](marginal_embed_2/c.png)
 

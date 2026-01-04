@@ -38,12 +38,12 @@
  $$\nu_{eq}=  \frac{(\tau_Y+ \mu(I)p  )/\rho}{|\frac{\partial u}{\partial y}|}$$
  
  
- the `layered/hydro.h` is changed in [http://basilisk.fr/sandbox/M1EMN/Exemples/hydroNN.h]()
+ the `layered/hydro.h` is changed in [https://basilisk.fr/sandbox/M1EMN/Exemples/hydroNN.h]()
  
  
 ## Link with 1D model
  
-  See discussion in [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapseML.c]()
+  See discussion in [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapseML.c]()
  
  
 
@@ -52,10 +52,10 @@
  
  The example is linked to the  collapse of a viscous fluid (Huppert 82 “The propagation of two-dimensional and axisymmetric viscous gravity currents over a rigid horizontal surface”), here we have a slope.
  The same RNSP equations are solved 
- [with Multilayer shallow water](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c)
+ [with Multilayer shallow water](/sandbox/M1EMN/Exemples/viscous_collapse_ML.c)
  (using the Multilayer Shallow Water (Saint Venant Multi Couches) strategy of Audusse Sainte-Marie  et al 2011. See De Vita 2020 for details).
  
- See discussion in [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapseML.c]()
+ See discussion in [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapseML.c]()
  
  
  
@@ -68,9 +68,9 @@
  [Popinet (2019)](/Bibliography#popinet2019)
   both resolutions of RNSP system.
   The  hydrostatic
- [http://basilisk.fr/src/layered/hydro.h]()
+ [https://basilisk.fr/src/layered/hydro.h]()
  it is possible to test the  non hydrostatic
- [http://basilisk.fr/src/layered/nh.h]().
+ [https://basilisk.fr/src/layered/nh.h]().
   "hydro.h" has been changed in "hydroNN.h" to include variable Non Newtonian viscosity.
   "difusion.h" has been changed in it and is now  "difusionNN.h".
  
@@ -239,7 +239,7 @@ Usual make file
  
 # Results
 
-Comparison with 1D Savage-Hutter  (coded in [http://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]()) at ime $t=1$
+Comparison with 1D Savage-Hutter  (coded in [https://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]()) at ime $t=1$
 
 ~~~gnuplot Comparison
  set xlabel "x"
@@ -264,9 +264,9 @@ p[:5][:1.2]'out' w p t'2D NH',\
  
 ## Links
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_ML.c]() 2D viscous `multilayer.h`
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_NH.c]() 2D viscous with `hydro.h`
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]() 1D with `saintvenant.h`
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_ML.c]() 2D viscous `multilayer.h`
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_muI_collapse_NH.c]() 2D viscous with `hydro.h`
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]() 1D with `saintvenant.h`
  
 ## Bibliography
  

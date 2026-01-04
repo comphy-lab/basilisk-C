@@ -4,7 +4,7 @@
 This test case is the analog of the [Bénard–von Kármán Vortex Street
 for the flow around a cylinder at $Re=160$](/src/examples/karman.c). A
 similar test case was also used in Gerris:
-[strouhal](http://gerris.dalembert.upmc.fr/gerris/tests/tests/strouhal.html).
+[strouhal](https://gerris.dalembert.upmc.fr/gerris/tests/tests/strouhal.html).
 
 We compute here the Strouhal number $St=\frac{f_0 d}{u}$, where $f_0$
 is the shedding frequency of the vortex street, for different Reynolds
@@ -426,7 +426,7 @@ We plot the Strouhal number $St$ as a function of the Reynolds number
 $Re$. We compare the results to Williamson's universal law
 [Williamson, 1988](#williamson1988) and to the results obtained with
 the software
-[Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/strouhal.html).
+[Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/strouhal.html).
 
 ~~~gnuplot Strouhal number $St$
 set key font ",8" top right spacing 0.6

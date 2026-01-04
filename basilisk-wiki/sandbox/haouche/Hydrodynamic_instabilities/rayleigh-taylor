@@ -1,0 +1,69 @@
+# Theory
+We consider here the Rayleigh–Taylor instability, which arises at the interface between two fluids of different densities when the heavier fluid is placed above the lighter one in a gravitational field. In this configuration, the system is mechanically unstable: even small perturbations of the interface can grow over time, leading to the formation of complex structures such as rising bubbles of light fluid and falling spikes of heavy fluid.
+
+In what follows, we analyze this instability step by step using the Navier–Stokes equations, in order to understand how the phenomenon can be observed, characterized, and modeled.
+
+##Governing equations
+We begin by recalling the incompressible Navier–Stokes equations. We assume the flow is incompressible and irrotational, and we solve the equations in both fluids. The domain is assumed to be infinite in both the upper and lower directions.
+$$\rho_i\big(\partial_t\mathbf{u}_i+\mathbf{u}_i\cdot\nabla\mathbf{u}_i\big)=-\nabla p_i+\mu_i\Delta\mathbf{u}_i+\rho_i\mathbf{g}$$
+$$\nabla\cdot\mathbf{u}_i=0$$
+$$\nabla \wedge \mathbf{u}_i=\mathbf{0} \Rightarrow \exist\phi_i \text{ such as }\mathbf{u}_i=\nabla \phi_i$$
+Here, $i=1,\,2$, denotes the fluid index: $i=1$ for the lower fluid and $i=2$ or the upper fluid. The incompressibility and irrotationality conditions imply that the velocity potential $\phi_i\big(x,\,y,\,t\big)$ satisfies the Laplace equation:
+$$\Delta\phi_i=0$$
+A general solution (in two dimensions) for such a potential flow can be written as:
+$$\phi_i\big(x,\,y,\,t\big)=b_i\big(t\big)e^{\pm ky}\cos\big(kx\big)$$
+where the sign in the exponential is chosen to ensure boundedness in the respective half-spaces.
+
+Finally, linearizing the Navier–Stokes equations in the limit of small disturbances and neglecting viscosity leads to the unsteady Bernoulli equation:
+$$\rho_i\partial_t\phi_i+p_i+\rho_igz=C^{te}$$
+The constant can be absorbed into the pressure or dropped when considering pressure differences across the interface. 
+
+##Kinematic Condition
+To determine the evolution of the interface, we apply the kinematic boundary condition at the fluid–fluid interface, denoted by $F\big(x,\,y,\,t\big) = y-\eta\big(x,\,t\big)$. The condition reads:
+$$D_t F|_\eta=0 \Leftrightarrow \partial_tF|_\eta + \nabla\cdot\big(F\mathbf{u}_i\big)|_\eta=0$$
+With $F\big(x,\,y,\,t\big)=y-\eta\big(x,\,t\big)$, the equation of the interface and $\eta(x,\,t\big)$, represents the interface displacement from equilibrium (initially flat at $y=0$) defined by:
+$$\eta\big(x,\,t\big)=a\big(t\big)\cos\big(kx\big)$$
+We linearize around the flat interface, assuming $a\big(t\big)$ is small. We use a Taylor series to linearize the kinematic condition to obtain:
+$$\partial_t\eta - \partial_y\phi_i|_{y=0}=0$$
+which yields:
+$$b_1\big(t\big)=\frac{\dot{a}\big(t\big)}{k}$$
+$$b_2\big(t\big)=-\frac{\dot{a}\big(t\big)}{k}$$
+Substituting back, we get:
+$$\phi_i\big(x,\,y,\,t\big)=\pm\frac{\dot{a}\big(t\big)}{k}e^{\pm ky}\cos\big(kx\big)$$
+
+##Dynamic Condition
+We now impose the dynamic boundary condition, i.e., continuity of normal stress across the interface. If we neglect surface tension, the pressure would be continuous $p_1=p_2$. However, here we include surface tension, so the pressure jump across the interface is given by:
+$$p_1-p_2=-\gamma \kappa$$
+where $\gamma$ s the surface tension coefficient and $\kappa$ is the interface curvature. Linearizing the curvature around the flat interface gives:
+$$\kappa \approx \partial_{xx}\eta = -k^2\eta \Rightarrow p_1-p_2=\gamma k^2\eta$$
+Using the Bernoulli equation in both fluids evaluated at $y=0$, we get:
+$$\rho_1\partial_t\phi_1+p_1+\rho_1g\eta=\rho_2\partial_t\phi_2+p_2+\rho_2g\eta$$
+Subtracting both sides gives:
+$$\rho_1\partial_t\phi_1-\rho_2\partial_t\phi_2+p_1-p_2+\rho_1g\eta-\rho_2g\eta=0$$
+Substituting the pressure jump:
+$$\rho_1\partial_t\phi_1-\rho_2\partial_t\phi_2+\gamma k^2\eta+\Delta\rho g\eta=0$$
+Now insert the expressions for $\phi_i$ at $y=0$:
+$$\frac{\ddot{a}\big(t\big)}{k}\big(\rho_1+\rho_2\big)+\big(\gamma k^2+\Delta\rho g \big)a\big(t\big)=0$$
+which leads to the governing equation:
+$$\ddot{a}\big(t\big)+\omega_0^2a\big(t\big)=0$$
+with the dispersion relation:
+$$\omega_0^2=\frac{gk(\rho_1-\rho_2)}{\rho_1+\rho_2}+\frac{\gamma k^3}{\rho_1+\rho_2}$$
+We recognize the Atwood number as: 
+$$At = \frac{\rho_1-\rho_2}{\rho_1+\rho_2}$$
+
+## Interpretation
+If we assume that the upper fluid $(2)$ is heavier than the lower fluid $(1)$, i.e. $\big(\rho_2>\rho_1\big)$, then from the dispersion relation:
+$$\omega_0^2=\frac{gk(\rho_1-\rho_2)}{\rho_1+\rho_2}+\frac{\gamma k^3}{\rho_1+\rho_2}$$
+we see that the system is unstable if $\omega_0^2<0$. This happens when:
+$$g(\rho_2-\rho_1)>\gamma k^2$$
+So, instability requires:
+$$k^2<\frac{g(\rho_2-\rho_1)}{\gamma}=\frac{1}{l_c^2} \Rightarrow k<\frac{1}{l_c}$$
+with $l_c$ is the capillary length defined by:
+$$l_c=\sqrt{\frac{\gamma}{g(\rho_2-\rho_1)}}$$
+In terms of the wavelength $\lambda=\frac{2\pi}{k}$, to observe Rayleigh–Taylor instability, the perturbation wavelength must satisfy:
+$$\lambda > 2\pi l_c$$
+The critical wavelength separating stable and unstable modes is therefore:
+$$\lambda_c=2\pi l_c \Leftrightarrow k_c=\frac{1}{l_c}$$
+In other words, only sufficiently long waves are unstable, while short waves are stabilized by surface tension. In this case, although $\rho_2>\rho_1$, a large surface tension can prevent the onset of the Rayleigh–Taylor instability. 
+
+Moreover, if $\rho_1>\rho_2$, (lighter fluid on top), the system remains stable regardless of surface tension(lighter fluid on top), the system is always stable, regardless of surface tension, and surface waves will be observed instead of growing perturbations.

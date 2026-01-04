@@ -6,9 +6,9 @@ Or collapse of a viscous fluid along a slope
 From the paper by Huppert 82  "Flow and instability of a viscous current along a slope"
 
 
-The 1D theory is presented  [with shallow water](http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c), here we solve the full profiles
+The 1D theory is presented  [with shallow water](/sandbox/M1EMN/Exemples/viscolsqrt.c), here we solve the full profiles
 
-We solve shallow water in 1D using [Multilayer horizontaly Euleur vertically Lagrange](http://basilisk.fr/src/layered/hydro.h) of Popinet 2020 with one layer only. 
+We solve shallow water in 1D using [Multilayer horizontaly Euleur vertically Lagrange](/src/layered/hydro.h) of Popinet 2020 with one layer only. 
 $$
  \left\{\begin{array}{l}
          \partial_t h+\partial_x (hu)=0\\
@@ -28,7 +28,7 @@ and there only is a balance between pslope and viscosity, this equation has a se
 //#include "grid/cartesian1D.h"
 //#include "saint-venant.h"
 /**
-This is NOT by solved with [http://basilisk.fr/src/saint-venant.h]() but by [http://basilisk.fr/src/layered/hydro.h]() */
+This is NOT by solved with [https://basilisk.fr/src/saint-venant.h]() but by [https://basilisk.fr/src/layered/hydro.h]() */
 #include "grid/multigrid1D.h"
 #include "layered/hydro.h"
 
@@ -42,7 +42,7 @@ double tmax;
 position of domain `X0`, length `L0`, no dimension `G=1`
 run with 1024*32 points to fix the tail of the falling heap (less is not enough!!!).
 In the dam break case it was OK was far more  few points  
-[http://basilisk.fr/sandbox/M1EMN/Exemples/damb_MLEL.c]() 
+[https://basilisk.fr/sandbox/M1EMN/Exemples/damb_MLEL.c]() 
 */
 
 int main() {
@@ -161,8 +161,8 @@ Ce glissement est dû à l'étape visqueuse
 
 
 # Links
-* same example   [with classical shallow water](http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c)
-* same example with [Multilayer Saint-Venant with mass exchange](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapsesqrt_ML.c)
+* same example   [with classical shallow water](/sandbox/M1EMN/Exemples/viscolsqrt.c)
+* same example with [Multilayer Saint-Venant with mass exchange](/sandbox/M1EMN/Exemples/viscous_collapsesqrt_ML.c)
 
  
  with Bingham

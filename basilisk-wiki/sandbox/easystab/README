@@ -1,4 +1,4 @@
-#EasyStab
+# EasyStab
 
 This document "easystab", is a door open for you to study the  stability and bifurcation of physical systems using octave/matlab, mainly in the domain of fluid mechanics. It may help you for instance to answer the questions:
 
@@ -13,7 +13,7 @@ To get a better idea of the technical choices and notations in Easystab, please 
 
 It was initiated by Jerome Hoepffner at Université Pierre et Marie Curie to help sharing his computational codes and know-how. It is thought to become a collaborative tool where you can profit and contribute. The project is developed for research, education and popularization purposes. As for education the project has served as the support for two classes:
 
-* ["Introduction to hydrodynamic instability" at Université Pierre et Marie Curie (M1, 2014-2015)](http://basilisk.fr/sandbox/easystab/stab2014/README) 
+* ["Introduction to hydrodynamic instability" at Université Pierre et Marie Curie (M1, 2014-2015)](/sandbox/easystab/stab2014/README) 
 * ["Hydrodynamic instabilities" at Université Paul Sabatier (M2 DET, 2017-2020)](/sandbox/easystab/M2DET/Instabilities.md)
 
 All of the codes are based on the idea of the "differentiation matrix", used as the building block to describe many linear and nonlinear equations. 
@@ -182,7 +182,7 @@ This is an ongoing work where the shape of the computational domain is also an u
 * [stab2014/BackwardsFacingStep.m]() The classical backard-facing step
 
 ## Gerris
-Connection with the nonlinear code [Gerris flow solver](http://gerris.dalembert.upmc.fr/main_page.html)
+Connection with the nonlinear code [Gerris flow solver](https://gerris.dalembert.upmc.fr/main_page.html)
 
 * [kelvin_helmholtz_gerris.m]() For the Kelvin-Helmholtz instability of the shear layer (as in [kelvin_helmholtz_hermite.m]()), using the unstable eigenmode as an initial condition in Gerris.
 * [rayleigh_taylor_gerris.m]() For the Rayleigh-Taylor instability of a heavy fluid above a lighter fluid (as in [rayleigh_taylor.m]()), using the unstable eigenmode as an initial condition in Gerris. Here the technical aspect is: how to save the free interface and accounting for the two flow domains.
@@ -221,7 +221,7 @@ To generate the figures you should then enter the "edit" mode and click the "run
 * Luis Bernardos
 * [David Fabre](david/README)
 * Nicolas Villenave 
-* [The students of the class "introduction to hydrodynamic instability 2014-2015" at Université Pierre et Marie Curie](http://basilisk.fr/sandbox/easystab/stab2014/README) 
+* [The students of the class "introduction to hydrodynamic instability 2014-2015" at Université Pierre et Marie Curie](/sandbox/easystab/stab2014/README) 
 
 # What's next?
 

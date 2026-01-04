@@ -165,5 +165,5 @@ splot 'out' u 1:2:4
 
 ## See also
 
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/lake.html#river)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/lake.html#river)
 */

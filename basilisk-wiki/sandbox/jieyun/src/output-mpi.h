@@ -2,7 +2,7 @@
 # Interface output with MPI
 
 This is a modified version of the output_facets function in
-[fractions.h](http://basilisk.fr/src/fractions.h#interface-output).
+[fractions.h](/src/fractions.h#interface-output).
 We can output facets to one single file during an MPI run, by performing the
 output processor by processor.
 

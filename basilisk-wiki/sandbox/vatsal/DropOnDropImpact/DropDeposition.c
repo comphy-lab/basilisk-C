@@ -3,9 +3,9 @@
 <figure>
 <p align="center">
   <img src="https://www.dropbox.com/s/4s20uxvgfbxj4xz/InitialConditionDropOnDropImpact.png?dl=1" width="25%">
-  <figcaption><p align="center">We want to reproduce the shape of this drop. The orange contour is from the numerical simulation, and the image is from experiments [here](http://basilisk.fr/sandbox/vatsal/DropOnDropImpact/dropOnDropImpact.c). Click [here](https://www.dropbox.com/s/4s20uxvgfbxj4xz/InitialConditionDropOnDropImpact.png?dl=0) if the above figure is not displayed properly on your browser.</figcaption>
+  <figcaption><p align="center">We want to reproduce the shape of this drop. The orange contour is from the numerical simulation, and the image is from experiments [here](/sandbox/vatsal/DropOnDropImpact/dropOnDropImpact.c). Click [here](https://www.dropbox.com/s/4s20uxvgfbxj4xz/InitialConditionDropOnDropImpact.png?dl=0) if the above figure is not displayed properly on your browser.</figcaption>
 </figure>
-For Bond numbers $> 0.1$, assuming the sessile drop to be spherical is inaccurate. One can also see this in the experimental image above. Another example is [(here)](http://basilisk.fr/sandbox/Antoonvh/rest.c). I wanted to be as close to the experiments as possible. Hence, the code
+For Bond numbers $> 0.1$, assuming the sessile drop to be spherical is inaccurate. One can also see this in the experimental image above. Another example is [(here)](/sandbox/Antoonvh/rest.c). I wanted to be as close to the experiments as possible. Hence, the code
 
 # Numerical Code
 */
@@ -16,7 +16,7 @@ For Bond numbers $> 0.1$, assuming the sessile drop to be spherical is inaccurat
 #include "tension.h"
 #include "reduced.h"
 /**
-We use a modified adapt-wavelet algorithm available [(here)](http://basilisk.fr/sandbox/pairetti/bag_mode/adapt_wavelet_limited.h). It is written by *César Pairetti* (Thanks :)). We use to ensure that refinement is higher near the substrate.
+We use a modified adapt-wavelet algorithm available [(here)](/sandbox/pairetti/bag_mode/adapt_wavelet_limited.h). It is written by *César Pairetti* (Thanks :)). We use to ensure that refinement is higher near the substrate.
 */
 #include "pairetti/bag_mode/adapt_wavelet_limited.h"
 
@@ -58,7 +58,7 @@ int main(){
   /**
   Bond number $Bo$: measure between Gravity and surface tension.
   $$ Bo = \frac{\rho_lgR^2}{\gamma} $$
-  We use [reduced.h](http://basilisk.fr/src/reduced.h) implementation for gravity.
+  We use [reduced.h](/src/reduced.h) implementation for gravity.
   */
   double Bond = 0.308;
   G.x = -Bond;
@@ -174,5 +174,5 @@ The post-processing codes and simulation data are available at: [PostProcess](ht
 
 # Usuage
 ## Example
-* [Drop on drop impact case](http://basilisk.fr/sandbox/vatsal/DropOnDropImpact/dropOnDropImpact.c)
+* [Drop on drop impact case](/sandbox/vatsal/DropOnDropImpact/dropOnDropImpact.c)
 */

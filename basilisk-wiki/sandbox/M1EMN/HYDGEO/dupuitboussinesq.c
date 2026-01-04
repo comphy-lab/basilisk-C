@@ -241,9 +241,9 @@ Self similar solution : solution of the height of the aquifere as a function of 
 # Links
  
  
- * see [http://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuit2D.c]()
+ * see [https://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuit2D.c]()
  
- * see [http://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuitboussinesq.c]()
+ * see [https://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuitboussinesq.c]()
  
 # Bibliography
 

@@ -4,7 +4,7 @@
 Using the Generalized Newtonian Fluid implementation presented in [Couette_NonNewtonian.c](/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c),
 Surface waves in a Viscoplastic medium are studied. The problem has been studied by
 [Prosperetti (1976)](https://doi.org/10.1063/1.861446) for Newtonian fluid. A more general version of the problem for
-The Newtonian fluid has been simulated using Basilisk (as a test case) [(here)](http://basilisk.fr/src/test/capwave.c).<br/>
+The Newtonian fluid has been simulated using Basilisk (as a test case) [(here)](/src/test/capwave.c).<br/>
 
 # Theory
 <figure>
@@ -186,7 +186,7 @@ event writingFiles (t += tsnap; t <= tmax) {
 }
 
 /**
-The calculation of amplitude of the surface wave is same as done [(here)](http://basilisk.fr/src/test/capwave.c).<br/>
+The calculation of amplitude of the surface wave is same as done [(here)](/src/test/capwave.c).<br/>
 By default tracers are defined at $t-\Delta t/2$. We use the *first*
 keyword to move VOF advection before the *amplitude* output i.e. at
 $t+\Delta/2$. This improves the results. */

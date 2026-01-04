@@ -6,7 +6,7 @@
 **Important note**
 
 All the modifications to the native libraries used here 
-are well explained in [this test case](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/).
+are well explained in [this test case](/sandbox/cailler/test-cases/vel_tan/).
 Do not refrain to take a look to better understand the "tricks" 
 used in this code for managing non-closed, moving interfaces.</div>
 
@@ -18,7 +18,7 @@ for a 2D liquid wedge recoil driven by surface tension are
 reproduced for all the initial wedge angles 
 tested by the authors: $\theta_0 = 27.5$°, $32.5$°, $45$°, $65$° and $80$°. 
 
-Please, refer to [this page](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c) 
+Please, refer to [this page](/sandbox/cailler/keller_miksis/keller_fig2_conv.c) 
 for a general presentation of the physical problem, and its related 
 numerical convergence study.
 
@@ -150,7 +150,7 @@ plt.savefig('keller_fig2_repro_N11_t0.01.svg')
 
 ### General Parameters
 
-From the [convergence study](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c), 
+From the [convergence study](/sandbox/cailler/keller_miksis/keller_fig2_conv.c), 
 its appears that, for a box of size unity in the 
 non-dimensionalized physical space, $\tilde{t}_{end} = 10^{-2}$ 
 corresponds to the time before the reflection of capillary 

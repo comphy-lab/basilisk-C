@@ -1,4 +1,4 @@
-/** Page containing all diagnostics functions and events of the Idealized case (diagnostics are identical to the Krabbendijke case). Note that the imported output_silces.h can be found [here](http://basilisk.fr/sandbox/vheusinkveld/myfunctions/output/sliceOf3D.h) */
+/** Page containing all diagnostics functions and events of the Idealized case (diagnostics are identical to the Krabbendijke case). Note that the imported output_silces.h can be found [here](/sandbox/vheusinkveld/myfunctions/output/sliceOf3D.h) */
 
 #include "utils.h"
 #if dimension == 3

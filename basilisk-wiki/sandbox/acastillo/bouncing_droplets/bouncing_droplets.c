@@ -7,7 +7,7 @@ droplet impacting a fluid bath*" by [Alventosa, Cimpeanu & Harris
 [two-phaseDOD.h](https://github.com/VatsalSy/Lifting-a-sessile-drop/blob/master/CaseI/two-phaseDOD.h)
 is replaced in favor of using [no-coalescence.h](src/no-coalescence.h).
 The original code posted by [R.
-Cimpeanu](http://basilisk.fr/sandbox/rcimpeanu/README) can be found in their
+Cimpeanu](/sandbox/rcimpeanu/README) can be found in their
 [github.](https://github.com/rcsc-group/BouncingDroplets/) 
 
 <center>

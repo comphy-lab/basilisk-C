@@ -2,9 +2,9 @@
 
 # Kelvin Helmholtz instability 
 
-This routine is heavily inspired from http://basilisk.fr/sandbox/Antoonvh/kh.c
+This routine is heavily inspired from https://basilisk.fr/sandbox/Antoonvh/kh.c
 and the boussinesq module from
-http://basilisk.fr/sandbox/acastillo/convection/convection_boussinesq.h
+https://basilisk.fr/sandbox/acastillo/convection/convection_boussinesq.h
 
 
 Compile with

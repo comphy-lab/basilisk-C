@@ -1,0 +1,205 @@
+description: |-
+  VERSION:  17_03
+  AUTHORS:  C1-C3   Burcat   
+  NOTE:     SPECIES RE-ARRANGED AS THE SAME ORDER IN MECH
+
+  VERSION:  17_05
+  Following species are updated from Burcat's Database:Kik
+   C6H5CHCH3	FLUORENE	C5H6	INDENYL	C14H19	C12H7	C12H9        
+   C6H5CH2C6H5	C10H7	CH3C6H4	C6H5C2H	C6H5O	C6H5C2H3	C10H7CH3
+   C10H7CHO	RXYLENE	C10H7CH2	XYLENE	C6H2	Toluene	C6H5OH
+   C14H10	C6H5C2H4C6H5	C4H2	C16H10	C5H5CH3	C7H7	BENZYNE
+   C6H5C2H2	C12H8	C6H5C2H5	C10H7O	BENZENE	C4H4	INDENE
+   C5H5	C10H6CH3	C6H5 	C10H8	FULVENE	BIPHENYL	C6H4C2H
+  Following species are updated from ATcT's Database:Ghobad
+   H	H2	O	O2	HE
+   OH	H2O	N2	HO2	HCO
+   H2O2	AR	CO	CO2
+
+generator: ck2yaml
+input-files: [gas.methanol-combustion.CKI, therm.dat, tran.dat]
+cantera-version: 3.1.0
+date: Tue, 28 Oct 2025 14:12:02 +0100
+
+units: {length: cm, time: s, quantity: mol, activation-energy: cal/mol}
+
+phases:
+- name: gas
+  thermo: ideal-gas
+  elements: [N, O, H, C]
+  species: [CH3OH, O2, CO2, CO, H2O, N2]
+  kinetics: gas
+  transport: mixture-averaged
+  state: {T: 300.0, P: 1 atm}
+- name: liq
+  thermo: ideal-gas
+  elements: [C, H, O]
+  species: [CH3OH(L)]
+  transport: mixture-averaged
+  state: {T: 300.0, P: 1 atm}
+
+species:
+- name: CH3OH
+  composition: {C: 1, H: 4, O: 1}
+  thermo:
+    model: NASA7
+    temperature-ranges: [300.0, 1000.0, 4000.0]
+    data:
+    - [5.65851051, -0.0162983419, 6.91938156e-05, -7.58372926e-08, 
+        2.8042755e-11, -2.56119736e+04, -0.897330508]
+    - [3.52726795, 0.0103178783, -3.62892944e-06, 5.77448016e-10, 
+        -3.42182632e-14, -2.60028834e+04, 5.16758693]
+  transport:
+    model: gas
+    geometry: nonlinear
+    well-depth: 481.8
+    diameter: 3.626
+    rotational-relaxation: 1.0
+- name: O2
+  composition: {O: 2}
+  thermo:
+    model: NASA7
+    temperature-ranges: [200.0, 1000.0, 6000.0]
+    data:
+    - [3.78498258, -3.02002233e-03, 9.92029171e-06, -9.77840434e-09, 
+        3.28877702e-12, -1064.13589, 3.64780709]
+    - [3.65980488, 6.59877372e-04, -1.44158172e-07, 2.14656037e-11, 
+        -1.36503784e-15, -1216.03048, 3.42074148]
+    note: |-
+      ATcT3E
+      O2                      O   2               G    300.00   4000.00 1000.00      1
+       .366096065E+01 .656365811E-03-.141149627E-06 .205797935E-10-.129913436E-14    2
+      -.121597718E+04 .341536279E+01 .378245636E+01-.299673416E-02 .984730201E-05    3
+      -.968129509E-08 .324372837E-11-.106394356E+04 .365767573E+01                   4
+       [Ghobad] O2 <g> ATcT ver. 1.122, DHf298 = 0.000 � 0.000 kJ/mol - fit MAR17
+  transport:
+    model: gas
+    geometry: linear
+    well-depth: 107.4
+    diameter: 3.458
+    polarizability: 1.6
+    rotational-relaxation: 3.8
+- name: CO2
+  composition: {C: 1, O: 2}
+  thermo:
+    model: NASA7
+    temperature-ranges: [200.0, 1000.0, 6000.0]
+    data:
+    - [2.20664321, 0.0100970086, -9.96338809e-06, 5.47155623e-09, 
+        -1.27733965e-12, -4.83529864e+04, 10.5261943]
+    - [4.6353747, 2.74559459e-03, -9.98282389e-07, 1.61013606e-10, 
+        -9.22018642e-15, -4.90203677e+04, -1.9288763]
+    note: |-
+      ATcT3E
+      CO2                     C   1O   2          G    300.00   4000.00 1000.00      1
+       .463651110E+01 .274145690E-02-.995897590E-06 .160386660E-09-.916198570E-14    2
+      -.490249040E+05-.193489550E+01 .235681300E+01 .898412990E-02-.712206320E-05    3
+       .245730080E-08-.142885480E-12-.483719710E+05 .990090350E+01                   4
+       [Ghobad] CO2 <g> ATcT ver. 1.122, DHf298 = -393.475 � 0.015 kJ/mol - fit MAR17
+  transport:
+    model: gas
+    geometry: linear
+    well-depth: 244.0
+    diameter: 3.763
+    polarizability: 2.65
+    rotational-relaxation: 2.1
+- name: CO
+  composition: {C: 1, O: 1}
+  thermo:
+    model: NASA7
+    temperature-ranges: [200.0, 1000.0, 6000.0]
+    data:
+    - [3.59508377, -7.21196937e-04, 1.28238234e-06, 6.52429293e-10, 
+        -8.21714806e-13, -1.43448968e+04, 3.44355598]
+    - [3.03397274, 1.37328118e-03, -4.96445087e-07, 8.10281447e-11, 
+        -4.85331749e-15, -1.42586044e+04, 6.10076092]
+    note: |-
+      ATcT3E
+      CO                      C   1O   1          G    300.00   4000.00 1000.00      1
+       .304848590E+01 .135172810E-02-.485794050E-06 .788536440E-10-.469807460E-14    2
+      -.142661170E+05 .601709770E+01 .357953350E+01-.610353690E-03 .101681430E-05    3
+       .907005860E-09-.904424490E-12-.143440860E+05 .350840930E+01                   4
+       [Ghobad] CO <g> ATcT ver. 1.122, DHf298 = -110.523 � 0.026 kJ/mol - fit MAR17
+  transport:
+    model: gas
+    geometry: linear
+    well-depth: 98.1
+    diameter: 3.65
+    polarizability: 1.95
+    rotational-relaxation: 1.8
+- name: H2O
+  composition: {H: 2, O: 1}
+  thermo:
+    model: NASA7
+    temperature-ranges: [200.0, 1000.0, 6000.0]
+    data:
+    - [4.20147551, -2.05583546e-03, 6.56547207e-06, -5.5290696e-09, 
+        1.78282605e-12, -3.02950066e+04, -0.860610906]
+    - [2.73117512, 2.95136995e-03, -8.35359785e-07, 1.26088593e-10, 
+        -8.40531676e-15, -2.99169082e+04, 6.55183]
+    note: |-
+      ATcT3E
+      H2O                     H   2O   1          G    300.00   4000.00 1000.00      1
+       .267703890E+01 .297318160E-02-.773768890E-06 .944335140E-10-.426899910E-14    2
+      -.298858940E+05 .688255000E+01 .419863520E+01-.203640170E-02 .652034160E-05    3
+      -.548792690E-08 .177196800E-11-.302937260E+05-.849009010E+00                   4
+       [Ghobad] H2O <g> ATcT ver. 1.122, DHf298 = -241.833 � 0.027 kJ/mol - fit MAR17
+  transport:
+    model: gas
+    geometry: nonlinear
+    well-depth: 572.4
+    diameter: 2.605
+    dipole: 1.844
+    rotational-relaxation: 4.0
+- name: N2
+  composition: {N: 2}
+  thermo:
+    model: NASA7
+    temperature-ranges: [200.0, 1000.0, 6000.0]
+    data:
+    - [3.53603521, -1.58270944e-04, -4.26984251e-07, 2.3754259e-09, 
+        -1.39708206e-12, -1047.49645, 2.94603724]
+    - [2.9380297, 1.4183803e-03, -5.03281045e-07, 8.07555464e-11, 
+        -4.76064275e-15, -917.18099, 5.95521985]
+    note: |-
+      ATcT3E
+      N2                      N   2               G    300.00   4000.00 1000.00      1
+       .295257637E+01 .139690040E-02-.492631603E-06 .786010195E-10-.460755204E-14    2
+      -.923948688E+03 .587188762E+01 .353100528E+01-.123660988E-03-.502999433E-06    3
+       .243530612E-08-.140881235E-11-.104697628E+04 .296747038E+01                   4
+       [Ghobad] N2 <g> ATcT ver. 1.122, DHf298 = 0.000 � 0.000 kJ/mol - fit MAR17
+  transport:
+    model: gas
+    geometry: linear
+    well-depth: 97.53
+    diameter: 3.621
+    polarizability: 1.76
+    rotational-relaxation: 4.0
+- name: CH3OH(L)
+  composition: {C: 1, H: 4, O: 1}
+  thermo:
+    model: NASA7
+    temperature-ranges: [300.0, 1000.0, 4000.0]
+    data:
+    - [5.65851051, -0.0162983419, 6.91938156e-05, -7.58372926e-08, 
+        2.8042755e-11, -2.56119736e+04, -0.897330508]
+    - [3.52726795, 0.0103178783, -3.62892944e-06, 5.77448016e-10, 
+        -3.42182632e-14, -2.60028834e+04, 5.16758693]
+  transport:
+    model: gas
+    geometry: nonlinear
+    well-depth: 481.8
+    diameter: 3.626
+    rotational-relaxation: 1.0
+
+reactions:
+- equation: CH3OH + O2 => CO + 2 H2O  # Reaction 1
+  rate-constant: {A: 3.7e+12, b: 0.0, Ea: 3.0e+04}
+  orders: {CH3OH: 0.25, O2: 1.5}
+- equation: CO + 0.5 O2 => CO2  # Reaction 2
+  rate-constant: {A: 3.9810717055349694e+14, b: 0.0, Ea: 4.0e+04}
+  orders: {CO: 1.0, H2O: 0.5, O2: 0.25}
+  nonreactant-orders: true
+- equation: CO2 => CO + 0.5 O2  # Reaction 3
+  rate-constant: {A: 5.0e+08, b: 0.0, Ea: 4.0e+04}
+  orders: {CO2: 1.0}

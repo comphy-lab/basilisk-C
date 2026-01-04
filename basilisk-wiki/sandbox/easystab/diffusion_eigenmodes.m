@@ -1,9 +1,9 @@
 %{
 
 
-*This document belongs to the [easystab](http://basilisk.fr/sandbox/easystab/README) project, check the main page of the project to understand the general philosophy of the project.*
+*This document belongs to the [easystab](/sandbox/easystab/README) project, check the main page of the project to understand the general philosophy of the project.*
 
-*The present program was specifically designed as a support for the course ["Introductions to hydrodynamical instabilities"](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md) for the "DET" Master's cursus in Toulouse. For the underlying theory please see [Lecture notes for chapter 3](http://basilisk.fr/sandbox/easystab/NumericalMethodsForEigenvalueProblems.md)*
+*The present program was specifically designed as a support for the course ["Introductions to hydrodynamical instabilities"](/sandbox/easystab/M2DET/Instabilities.md) for the "DET" Master's cursus in Toulouse. For the underlying theory please see [Lecture notes for chapter 3](/sandbox/easystab/NumericalMethodsForEigenvalueProblems.md)*
 
 *To use this program: click "raw page source" in the left column, copy-paste in the Matlab/Octave editor, and run.*
 

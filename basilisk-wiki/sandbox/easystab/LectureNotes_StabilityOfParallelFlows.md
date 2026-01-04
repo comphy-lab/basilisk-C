@@ -143,5 +143,5 @@ This chapter has moved [here](/sandbox/easystab/LectureNotes_NonModal.md)
   
   This chapter has moved  [here](/sandbox/easystab/LectureNotes_SpatioTemporal.md)
  
- [Back to main page](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md)
+ [Back to main page](/sandbox/easystab/M2DET/Instabilities.md)
 

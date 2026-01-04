@@ -21,122 +21,72 @@ The animation shows the growth of the bubble in time.
 */
 
 /**
-## Phase Change Setup
-
-If the *Velocity Potential* approach is used, we divide the mass
-balance by the density of the gas phase, and we avoid the Stefan flow
-shifting procedure. If *Velocity Extrapolation* is used, we divide
-the mass balance by the liquid phase density, and we shift the
-expansion term toward the gas phase. */
-
-#if JUMP
-# define BOILING_SETUP
-#else
-# define NOSHIFTING
-# define BYRHOGAS
-#endif
-
-/**
 ## Simulation Setup
 
-We use the centered Navier-Stokes equations solver with
-the evaporation source term in the projection step.
-The evporation model is combined with the fixed flux
-mechanism, that imposes a constant vaporization flowrate. */
+We use the centered Navier-Stokes equations solver with GFM for imposing the
+interface velocity jump. We add the phase change module with the fixed flux
+policy, which calculates the interfacial vaporization rate as a fixed value
+provided by the user.
+*/
 
-#if JUMP
-# include "navier-stokes/velocity-jump.h"
-#else
-# include "navier-stokes/centered-evaporation.h"
-# include "navier-stokes/velocity-potential.h"
-#endif
+#include "navier-stokes/velocity-jump.h"
 #include "two-phase.h"
 #include "tension.h"
-#include "evaporation.h"
+#include "phasechange.h"
 #include "fixedflux.h"
 #include "view.h"
-
 
 /**
 ### Boundary Conditions
 
-Outflow boundary conditions are imposed on every
-domain boundary since the bubble is initially placed
-at the center of the domain. We set the BCs also for
+Outflow boundary conditions are imposed on every domain boundary since the
+bubble is initially placed at the center of the domain. We set the BCs also for
 the velocity potential *ps*. */
 
-#ifdef JUMP
-u1.n[top] = neumann (0.);
-u1.t[top] = neumann (0.);
-u2.n[top] = neumann (0.);
-u2.t[top] = neumann (0.);
-p[top] = dirichlet (0.);
-ps[top] = dirichlet (0.);
-pg[top] = dirichlet (0.);
-
-u1.n[right] = neumann (0.);
-u1.t[right] = neumann (0.);
-u2.n[right] = neumann (0.);
-u2.t[right] = neumann (0.);
-p[right] = dirichlet (0.);
-ps[right] = dirichlet (0.);
-pg[right] = dirichlet (0.);
-
-u1.n[left] = neumann (0.);
-u1.t[left] = neumann (0.);
-u2.n[left] = neumann (0.);
-u2.t[left] = neumann (0.);
-p[left] = dirichlet (0.);
-ps[left] = dirichlet (0.);
-pg[left] = dirichlet (0.);
-
-u1.n[bottom] = neumann (0.);
-u1.t[bottom] = neumann (0.);
-u2.n[bottom] = neumann (0.);
-u2.t[bottom] = neumann (0.);
-p[bottom] = dirichlet (0.);
-ps[bottom] = dirichlet (0.);
-pg[bottom] = dirichlet (0.);
-#else
 u.n[top] = neumann (0.);
 u.t[top] = neumann (0.);
 p[top] = dirichlet (0.);
-ps[top] = dirichlet (0.);
 
 u.n[right] = neumann (0.);
 u.t[right] = neumann (0.);
 p[right] = dirichlet (0.);
-ps[right] = dirichlet (0.);
 
 u.n[left] = neumann (0.);
 u.t[left] = neumann (0.);
 p[left] = dirichlet (0.);
-ps[left] = dirichlet (0.);
 
 u.n[bottom] = neumann (0.);
 u.t[bottom] = neumann (0.);
 p[bottom] = dirichlet (0.);
-ps[bottom] = dirichlet (0.);
-#endif
 
 /**
 ### Model Data
 
-We set the initial radius of the bubble,
-the value of the vaporization rate, and
+We set the initial radius of the bubble, the value of the vaporization rate, and
 the maximum level of refinement. */
 
 int maxlevel = 7;
-double D0 = 0.002, mEvapVal = -0.1;
-double effective_radius0;
+double D0 = 0.002, effective_radius0;
 
 
 int main (void) {
+
   /**
-  We set the density and viscosity values. */
+  We set the density and viscosity values and the total evaporation rate per
+  unit of surface. */
 
   rho1 = 1000., rho2 = 1.;
   mu1 = 0.001, mu2 = 1.78e-5;
+  mEvapVal = -0.1;
+
+  /**
+  We need to use two different velocity fields, and we tune some parameters
+  for the isothermal and iso mass fractions model. */
+
+  nv = 2;
+  pcm.isothermal = true;
+  pcm.boiling = true;
+  pcm.byrhogas = false;
 
   /**
   We set the surface tension coefficient. */
@@ -144,8 +94,7 @@ int main (void) {
   f.sigma = 0.07;
 
   /**
-  We change the dimension of the domain and
-  we shift the origin. */
+  We change the dimension of the domain and we shift the origin. */
 
   L0 = 0.008;
   origin (-0.5*L0, -0.5*L0);
@@ -153,15 +102,17 @@ int main (void) {
   /**
   We setup the grid and run the simulation. */
 
-  init_grid (1 << maxlevel);
-  run();
+  for (maxlevel = 6; maxlevel <= 8; maxlevel++) {
+    init_grid (1 << maxlevel);
+    run();
+  }
 }
 
 #define circle(x,y,R)(sq(R) - sq(x) - sq(y))
 
 /**
-We initialize the volume fraction field, and from that
-field we compute the numerical initial radius. */
+We initialize the volume fraction field, and from that field we compute the
+numerical initial radius. */
 
 event init (i = 0) {
   fraction (f, -circle(x,y,0.5*D0));
@@ -173,8 +124,7 @@ event init (i = 0) {
 }
 
 /**
-We adapt the grid according to the velocity and the
-volume fraction fields. */
+We adapt the grid according to the velocity and the volume fraction fields. */
 
 #if TREE
 event adapt (i++) {
@@ -192,8 +142,7 @@ The following lines of code are for post-processing purposes.
 /**
 ### Exact Solution
 
-We write a function that computes the analytic
-solution for the bubble radius.
+We write a function that computes the analytic solution for the bubble radius.
 */
 
 double exact (double t) {
@@ -203,8 +152,8 @@ double exact (double t) {
 /**
 ### Output Files
 
-We write the bubble radius from the numerical simulation,
-the exact radius and the relative error. */
+We write the bubble radius from the numerical simulation, the exact radius and
+the relative error. */
 
 event output_data (i++) {
   char name[80];
@@ -221,24 +170,34 @@ event output_data (i++) {
 }
 
 /**
+### Logger
+
+We output the total bubble volume in time (for testing). */
+
+event logger (t += 0.001) {
+  double bubblevol = 0.;
+  foreach(reduction(+:bubblevol))
+    bubblevol += (1. - f[])*dv();
+  fprintf (stderr, "%d %.3f %.3g\n", i, t, bubblevol);
+}
+
+/**
 ### Velocity Profile
 
-We write on a file the velocity profile at a specific
-time step. */
+We write on a file the velocity profile at a specific time step. */
 
 event profiles (t = 0.005,last) {
   char name[80];
   sprintf (name, "Profiles-%d", maxlevel);
-
   FILE * fp = fopen (name, "w");
-  for (double x = 0.; x < 0.5*L0; x += 0.05*L0/(1 << maxlevel)) {
-    double val_uf = interpolate (uf.x,  x, 0.);
-#if JUMP
-    double val_us = 0.;
-#else
-    double val_us = interpolate (ufs.x, x, 0.);
-#endif
-    fprintf (fp, "%g %g %g\n", x, val_uf, val_us);
+
+  coord p;
+  coord box[2] = {{0,0}, {0.5*L0,0}};
+  coord n = {100, 1};
+  foreach_region (p, box, n) {
+    fprintf (fp, "%g %g %g\n", x,
+        interpolate (ur.x, x, 0),
+        interpolate (uf.x, x, 0));
   }
   fprintf (fp, "\n\n");
   fflush (fp);
@@ -248,13 +207,14 @@ event profiles (t = 0.005,last) {
 /**
 ### Movie
 
-We write the animation with the evolution of the
-volume fraction field and the gas-liquid interface. */
+We write the animation with the evolution of the volume fraction field and the
+gas-liquid interface. */
 
 event movie (t += 0.0001; t <= 0.01) {
   clear();
   draw_vof ("f", lw = 1.5);
-  squares ("f", min = 0., max = 1., linear = true);
+  squares ("f", min = 0., max = 1., linear = false);
+  vectors ("ur", scale = 0.0004, level = 5, lc={1.,1.,1.});
   save ("movie.mp4");
 }
 
@@ -263,7 +223,8 @@ event movie (t += 0.0001; t <= 0.01) {
 
 We compare the velocity profile with the theretical
 solution and with the results obtained by [Tanguy et al., 2014](#tanguy2014benchmarks)
-(Fig. 5 (b), (c)).
+(Fig. 5 (b), (c)). The AMR leads to a very discontinuous line. Try to run the
+same test using a multigrid to improve the smoothness.
 
 ~~~gnuplot Radial velocity profile
 reset
@@ -276,8 +237,9 @@ set grid
 plot "../data/tanguy-fixedbubblevelocity-theoretical.csv" u 1:2 w p pt 6 t "Theoretical", \
      "../data/tanguy-fixedbubblevelocity-b.csv" u 1:2 w p pt 6 t "Tanguy et al., 2014 b", \
      "../data/tanguy-fixedbubblevelocity-c.csv" u 1:2 w p pt 6 t "Tanguy et al., 2014 c", \
-     "Profiles-7" u 1:2 w l lw 1.2 t "Field Velocity (potential)", \
-     "../fixedbubblevelocity-jump/Profiles-7" u 1:2 w l lw 1.2 t "Velociy Jump Approach"
+     "Profiles-6" u 1:2 w l lw 1.2 t "LEVEL 6", \
+     "Profiles-7" u 1:2 w l lw 1.2 t "LEVEL 7", \
+     "Profiles-8" u 1:2 w l lw 1.2 t "LEVEL 8"
 
 ~~~
 
@@ -289,9 +251,43 @@ set key top left
 set size square
 set grid
 
-plot "OutputData-7" u 1:2 w l lw 2 t "LEVEL 7 potential", \
-     "../fixedbubblevelocity-jump/OutputData-7" u 1:2 w l lw 2 t "LEVEL 7 velocity jump", \
+plot "OutputData-6" u 1:2 w l lw 2 t "LEVEL 6", \
+     "OutputData-7" u 1:2 w l lw 2 t "LEVEL 7", \
+     "OutputData-8" u 1:2 w l lw 2 t "LEVEL 8", \
      "OutputData-7" every 20 u 1:3 w p pt 8 ps 1.5 t "Analytical"
+~~~
+
+~~~gnuplot Relative Errors
+reset
+
+stats "OutputData-6" using 4 nooutput name "LEVEL6"
+stats "OutputData-7" using 4 nooutput name "LEVEL7"
+stats "OutputData-8" using 4 nooutput name "LEVEL8"
+
+set print "Errors.csv"
+
+print sprintf ("%d %.12f", 2**6, LEVEL6_mean)
+print sprintf ("%d %.12f", 2**7, LEVEL7_mean)
+print sprintf ("%d %.12f", 2**8, LEVEL8_mean)
+
+unset print
+
+reset
+set xlabel "N"
+set ylabel "Relative Error"
+
+set logscale x 2
+set logscale y
+
+set xr[32:512]
+set size square
+set grid
+
+f(x) = q*x**(-m)
+fit f(x) "Errors.csv" via q,m
+
+plot "Errors.csv" w p pt 8 ps 2 title "Results", \
+  f(x) w l lw 2 title sprintf("order = %.3f", m)
 ~~~
 
 ## References

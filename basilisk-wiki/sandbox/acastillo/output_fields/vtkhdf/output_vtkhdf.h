@@ -105,7 +105,7 @@ scalar * slist = {a,b};
 vector * vlist = {c,d};
 output_vtkhdf(slist, vlist, "domain.vtkhdf");
 ```
-see, also [example](test_output_vtkhdf.c).
+
 
 */
 
@@ -175,7 +175,7 @@ trace void output_vtkhdf(scalar *slist, vector *vlist, char *name = "domain.vtkh
   int version_data[2] = {2, 1};
   create_attribute(group_id, "Version", version_data, dims);
   create_attribute_type(group_id, "Type", "UnstructuredGrid", 16);
-  create_attribute_type(group_id, "Description", "Simulation perfomed using Basilisk (http://basilisk.fr/)", 57);
+  create_attribute_type(group_id, "Description", "Simulation perfomed using Basilisk (/)", 57);
   
   // Write "NumberOfConnectivityIds", "NumberOfPoints", "NumberOfCells"
   dims[0] = npe();
@@ -353,7 +353,7 @@ trace void output_vtkhdf_slice(scalar *slist, vector *vlist, char *name, coord n
   int version_data[2] = {2, 1};
   create_attribute(group_id, "Version", version_data, dims);
   create_attribute_type(group_id, "Type", "UnstructuredGrid", 16);
-  create_attribute_type(group_id, "Description", "Simulation perfomed using Basilisk (http://basilisk.fr/)", 57);
+  create_attribute_type(group_id, "Description", "Simulation perfomed using Basilisk (/)", 57);
   
   // Write "NumberOfConnectivityIds", "NumberOfPoints", "NumberOfCells"
   dims[0] = npe();

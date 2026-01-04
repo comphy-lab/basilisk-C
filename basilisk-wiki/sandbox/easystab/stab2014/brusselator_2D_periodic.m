@@ -1,7 +1,7 @@
 %{
 # Reaction-diffusion equations
 
-We adapt a C code, [brusselator.c](http://basilisk.fr/src/examples/brusselator.c), solving coupled reaction-diffusion equations, for 2 conpounds $U$ and $V$ :
+We adapt a C code, [brusselator.c](/src/examples/brusselator.c), solving coupled reaction-diffusion equations, for 2 conpounds $U$ and $V$ :
 $$
 \partial_t U = \nabla^2 U + k(ka - (kb + 1)U + U^2 V)
 $$
@@ -19,7 +19,7 @@ clear all; clf
 As the calculations are long, and the convergence depending on parameters,
 we recommend to keep a spatial step of 0.5 and time step around 0.1
 
-We keep the same fluid parameters as in [brusselator.c](http://basilisk.fr/src/examples/brusselator.c)
+We keep the same fluid parameters as in [brusselator.c](/src/examples/brusselator.c)
 We only play on the value of µ.
 %}
 % parameters
@@ -177,7 +177,7 @@ end
 %{
 # Results and validation
 
-As in [brusselator.c](http://basilisk.fr/src/examples/brusselator.c), we
+As in [brusselator.c](/src/examples/brusselator.c), we
 get some critical values of µ, for which the final concentration in U
 shows patterns :
 

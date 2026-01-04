@@ -70,7 +70,7 @@ event init (i = 0) {
 
 
 /**
-## [Diffusion](http://basilisk.fr/src/diffusion.h)
+## [Diffusion](/src/diffusion.h)
 */
 // Diffusion
 event integration (i++) {

@@ -1,1 +1,6 @@
-# Models
+# Basilisk libraries
+
+
+* [A library to handle namelists](libs/extra.h)
+* [Read and write netcdf libraries](libs/netcdf_bas.h)
+* [Read and write netcdf libraries in parallel](libs/pnetcdf_bas.h)

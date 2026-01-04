@@ -1,0 +1,33 @@
+# My Sandbox
+Welcome to my sandbox! This page showcases the projects developed in my workspace at [/sandbox/gaquino/]().
+
+Currently, my work focuses on two main research topics using Basilisk:
+
+The interaction between vortex rings and particle(s).
+
+The simulation of stratified exchange flows.
+
+-*Guilherme Siqueira de Aquino*- 
+
+## Physical Systems 
+#### Vortex Ring and Particle(s)
+###### Interaction regimes of a vortex ring and an inertial particle
+Study of the dynamics of a single inertial particle interacting with a vortex ring, modeled using a point-like one-way coupling approach.
+
+
+
+
+###### Vortex Ring and Multi Particles
+
+
+#### Stratified Exchange Flows
+Numerical simulations of stratified inclined duct flows, employing a width-averaged approach using the parametrization of side-wall effects derived from three-dimensional semi-analytical solutions. 
+
+## Contact
+If you have comments or questions about the code provided here, feel free to reach out via email:
+guilherme.siqueiradeaquino[at]imft[dot]fr
+
+
+
+
+

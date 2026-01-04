@@ -1,4 +1,4 @@
-/** Inspired by **[WENO scheme in rajarshi's sandbox](http://basilisk.fr/sandbox/rajarshi/WENO_CODES/Saint_Venant_Test/)**
+/** Inspired by **[WENO scheme in rajarshi's sandbox](/sandbox/rajarshi/WENO_CODES/Saint_Venant_Test/)**
 */
 
 /** Note that wrong included files would lead to weird results*/

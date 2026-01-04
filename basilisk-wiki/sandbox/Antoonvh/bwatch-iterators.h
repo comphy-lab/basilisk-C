@@ -32,7 +32,8 @@ void set_apoint (coord * apoint, coord hori, coord vert, int ii, int jj) {
   foreach_dimension() {
     apoint->x = cam.poi.x
       + cam.fov*((ii + 0.5)/cam.nx - 0.5)*hori.x
-      + cam.fov*((jj + 0.5)/cam.nx - 0.5)*vert.x;  
+      // Vertical scalar is a fraction (ny/nx) of the field of view
+      + cam.fov*((float)cam.ny/(float)cam.nx)*((jj + 0.5)/cam.ny - 0.5)*vert.x;  
   }
 }
 
@@ -114,7 +115,7 @@ void find_nearby_distances (scalar s) {
     coord cc = {x, y, z};
     double dist = 3*Delta*sign (s[] - 0.5);
     foreach_neighbor (1) {
-      if (s[] > 1e-6 && s[] < 1. - 1e-6) {
+      if (s[] > 1e-3 && s[] < 1. - 1e-3) {
 	coord n = mycs (point, s);
 	double alpha = plane_alpha (s[], n);
 	coord v[12];

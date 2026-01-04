@@ -23,15 +23,15 @@ uf.n[right]  = 0.;
 uf.n[top]    = 0.;
 uf.n[bottom] = 0.;
 
-int level = 8;
+int level = 7;
 double se = 0;
 int ne = 0;
 const double PLANE = (2. + 1.e-4) [1];
 const double DY = 0.01 [1];
-FILE * fp;
+FILE *fp, *fp_err;
 
 int main() {
-  rho1 = 1. [0];
+  rho1 = 1. [-3, 0, 1];
   rho2 = 1.;
   mu1 = 0.0182571749236;
   mu2 = 0.0182571749236;
@@ -42,10 +42,15 @@ int main() {
   TOLERANCE = 1e-6 [*];
   size (4 [1]);
 
-  for (level = 5; level <= 8; level++) {
+  fp_err = fopen("error.dat", "w");
+
+  for (level = 5; level <= 7; level++) {
     init_grid (1 << level);
     run();
   }
+
+  fflush(fp_err);
+  fclose(fp_err);
 }
 
 
@@ -93,10 +98,15 @@ event amplitude (t += 3.04290519077e-3; t <= 2.2426211256) {
   
   se += sq(maxi - prosperetti[ne][1]);
   ne++;
+
+  if (level == 7) {
+    fprintf (stderr, "%g %g\n", t*11.1366559937, maxi);
+    fflush (stderr);
+  }
 }
 
 event error (t = end) {
-  fprintf (stderr, "%g %g\n", N/L0, sqrt(se/ne)/0.01);
+  fprintf (fp_err, "%g %g\n", N/L0, sqrt(se/ne)/0.01);
   fclose (fp);
 }
 
@@ -107,7 +117,7 @@ event error (t = end) {
 set xlabel 'tau'
 set ylabel 'Relative amplitude'
 plot '../prosperetti.h' u 2:4 w l t "Prosperetti", \
-     'wave_ebit_256.dat' every 10 w p t "EBIT"
+     'wave_ebit_128.dat' every 10 w p t "EBIT"
 ~~~
 
 ~~~gnuplot Convergence of the RMS error as a function of resolution (number of grid points per wavelength)
@@ -117,10 +127,10 @@ set logscale y
 set logscale x 2
 set grid
 plot [5:200][1e-4:1]\
-     'log' t "EBIT" w lp, 2./x**2 t "Second order"
+     'error.dat' t "EBIT" w lp, 2./x**2 t "Second order"
 ~~~
 
 ## See also
 
-* [Same test with the VOF method in Basilisk](http://basilisk.fr/src/test/capwave.c)
+* [Same test with the VOF method in Basilisk](/src/test/capwave.c)
 */

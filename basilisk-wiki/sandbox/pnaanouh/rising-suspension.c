@@ -2,7 +2,7 @@
 # Simulation of a rising suspension of drops 
 
 */ 
-/** Necessary header files. no-coalescence.h can be found [here](http://basilisk.fr/sandbox/popinet/no-coalescence.h)*/
+/** Necessary header files. no-coalescence.h can be found [here](/sandbox/popinet/no-coalescence.h)*/
 #include "grid/multigrid.h"
 #include "navier-stokes/centered.h"
 #include "two-phase.h"
@@ -10,7 +10,7 @@
 #include "no-coalescence.h"
 #include "view.h"
 #include "output.h"
-/** cgposition_opt.h  is used to calculate the global parameters for each drop requires [this patch by Antoon van Hooft](http://basilisk.fr/sandbox/Antoonvh/reductions?raw) for array reduction with MPI */
+/** cgposition_opt.h  is used to calculate the global parameters for each drop requires [this patch by Antoon van Hooft](/sandbox/Antoonvh/reductions?raw) for array reduction with MPI */
 #include "cgposition_opt.h"
 
 /** We define the characteristic parameters of the flow where Bo is the Bond/Eötvös number, Ga is the Galileo number equivalent to $\sqrt{Ar}$ the Archimedes number, rhor and rmu are respectively the density and viscosity ratios between the continuous and dispersed phases, and PHI is the volume fraction  */

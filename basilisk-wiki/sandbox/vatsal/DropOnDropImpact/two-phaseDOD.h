@@ -2,7 +2,7 @@
 # Two-phase interfacial flows
 
 This file helps setup simulations for [drop-on-drop impacts](dropOnDrop.c). It is typically used in
-combination with a [Navier--Stokes solver](navier-stokes/centered.h). We have modified the conventional [two-phase.h](http://basilisk.fr/src/two-phase.h).
+combination with a [Navier--Stokes solver](navier-stokes/centered.h). We have modified the conventional [two-phase.h](/src/two-phase.h).
 
 The interface between the fluids is tracked with a Volume-Of-Fluid
 method. The volume fraction in drop 1 is $f1=1$ and $f2=0$. In drop

@@ -25,7 +25,7 @@ Run on workstation       : make clean mousse.tst
 
 /**
 # Example file
-It's inspired from the example [Here](http://basilisk.fr/src/examples/porous3D.c)
+It's inspired from the example [Here](/src/examples/porous3D.c)
 */
 
 #include <libgen.h> /* for basename func */

@@ -84,7 +84,7 @@ event pressure (i++, last)
 {
 /** 
 solve $\nabla \cdot (\beta \nabla p  )= s$ 
-with [http://basilisk.fr/src/poisson.h](http://basilisk.fr/src/poisson.h)
+with [https://basilisk.fr/src/poisson.h](/src/poisson.h)
 */
   mgp = poisson (p, source, beta);
 }
@@ -172,7 +172,7 @@ set key bottom
 
 * Lamb Hydrodynamics 1932 
 
-* see [http://basilisk.fr/src/hele-shaw.h](http://basilisk.fr/src/hele-shaw.h)
+* see [https://basilisk.fr/src/hele-shaw.h](/src/hele-shaw.h)
 
 * see [./darcysilo.c]() to see what happens if we put walls
 

@@ -1,9 +1,9 @@
 %{
 #Displaying the two first eigenmodes of the free surface gravity wave
 
-Here is a contribution to the free_surface_gravity_particles code : [free_surface_gravity_particles.m](http://basilisk.fr/sandbox/easystab/free_surface_gravity_particles.m)
+Here is a contribution to the free_surface_gravity_particles code : [free_surface_gravity_particles.m](/sandbox/easystab/free_surface_gravity_particles.m)
 
-In this code we check that the first and second eigenmodes of this system correspond to waves propagating in opposite directions. Indeed looking to the theory [theory of the eigen values of the surface waves --> look at the *Validation* part](http://basilisk.fr/sandbox/easystab/free_surface_gravity.m) we have the eigenvalue $s$ :
+In this code we check that the first and second eigenmodes of this system correspond to waves propagating in opposite directions. Indeed looking to the theory [theory of the eigen values of the surface waves --> look at the *Validation* part](/sandbox/easystab/free_surface_gravity.m) we have the eigenvalue $s$ :
 $$
 s^2=-\alpha g \tanh(\alpha L)
 $$

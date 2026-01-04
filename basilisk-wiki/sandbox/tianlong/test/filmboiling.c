@@ -1,5 +1,5 @@
 /**
-The film boiling setup. This file is copied from [Edorado's sandbox](http://basilisk.fr/sandbox/ecipriano/README) and modified.
+The film boiling setup. This file is copied from [Edorado's sandbox](/sandbox/ecipriano/README) and modified.
 */
 #define SEMUPC 1
 #define ADV_SCHEME 2

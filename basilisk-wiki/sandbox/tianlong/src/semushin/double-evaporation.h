@@ -1,5 +1,5 @@
 /**
-The original centered-evaporation.h, [copied from Edoardo's sandbox](http://basilisk.fr/sandbox/ecipriano/README), is modified from the previous one fluid method-based solver to a ghost fluid method-based solver. In this file, two velocities for each phase are employed. For a given phase, velocities located in the other phase are meaningless. We set them to the correct value to impose the correct jump conditions. By setting the ghost velocities accordingly, for each phase's velocity, the discontinuity is removed, thus improving numerical stability.
+The original centered-evaporation.h, [copied from Edoardo's sandbox](/sandbox/ecipriano/README), is modified from the previous one fluid method-based solver to a ghost fluid method-based solver. In this file, two velocities for each phase are employed. For a given phase, velocities located in the other phase are meaningless. We set them to the correct value to impose the correct jump conditions. By setting the ghost velocities accordingly, for each phase's velocity, the discontinuity is removed, thus improving numerical stability.
 
 # Incompressible Navier--Stokes solver (centered formulation)
 

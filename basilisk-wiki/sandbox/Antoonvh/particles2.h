@@ -454,7 +454,7 @@ void update_mpi (int step) {
 * [A quantative test for the RK3 scheme](tprk3.c)
 
 ## Usage   
-* [All pages using `particles.h`](http://basilisk.fr/_search?patterns=particles.h)
+* [All pages using `particles.h`](/_search?patterns=particles.h)
 * [Tag a portion of a fluid](splash.c)
 * [Settling of volcanic ash](ash.c)
 * [Flow in a thermosyphon](tube.c)

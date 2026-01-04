@@ -18,7 +18,7 @@ Now we include :
 #include "view.h"
 /**
 
-Tag.h is use for counting the number of cell which is smaller than an initial tag value (more information [here](http://basilisk.dalembert.upmc.fr/src/tag.h)). Then [view.h](http://basilisk.dalembert.upmc.fr/src/bview#interactive-basilisk-view) is a Interactive basilisk view interface.
+Tag.h is use for counting the number of cell which is smaller than an initial tag value (more information [here](/src/tag.h)). Then [view.h](/src/bview#interactive-basilisk-view) is a Interactive basilisk view interface.
 
 
 ## Model equations
@@ -46,7 +46,7 @@ The domain depends on the number of processors affected in order to be able to r
 We have an aspect ratio of one processor at y and 4 at x. 
 DT variable is the maximum time step to help run the code. 
 
-TOLERANCE corresponds to the minimum value to be reached for residues ([poisson.h](http://basilisk.dalembert.upmc.fr/src/poisson.h)).
+TOLERANCE corresponds to the minimum value to be reached for residues ([poisson.h](/src/poisson.h)).
 
 We set Ra=1e5, Pr=1. and B=2.
 
@@ -106,13 +106,13 @@ event init (t=0) {
 
 ## Outputs
 
-Scalar div corresponds to the field of divergence. Stats s0 allows to evaluate statistical quantities on this field ([utils.h](http://basilisk.dalembert.upmc.fr/src/utils.h)).
+Scalar div corresponds to the field of divergence. Stats s0 allows to evaluate statistical quantities on this field ([utils.h](/src/utils.h)).
 
 s0.sum/s0.volume is the average value of the divergence, s0.max is the maximum value of this field.
 
 It is important to check these quantities because the method chosen by Basilisk roughly forces the null divergence.
 statsf(div) function returns the minimum, maximum, volume sum, standard deviation and volume for field div.
-The mgT is the statistics on the [Poisson.h](http://basilisk.dalembert.upmc.fr/src/poisson.h) solver for the diffusion step which is in the [convection_boussinesq_buoyancy.h](http://basilisk.dalembert.upmc.fr/sandbox/Vierron/convection_boussinesq_buoyancy.h).
+The mgT is the statistics on the [Poisson.h](/src/poisson.h) solver for the diffusion step which is in the [convection_boussinesq_buoyancy.h](/sandbox/Vierron/convection_boussinesq_buoyancy.h).
 
 Creation of video file mp4 of the temperature field.
 
@@ -135,7 +135,7 @@ event logfile (t += 1.0; t <= EndTime) {
   output_ppm (T, file="temperature.mp4", n = 1024, box = {{-0.5,-0.5},{-0.5 + L0, 0.5}});
 /**
 
-Variable initialization nusselt and nusselt calculation ([global_nusselt.h](http://basilisk.dalembert.upmc.fr/sandbox/Vierron/global_nusselt.h)).
+Variable initialization nusselt and nusselt calculation ([global_nusselt.h](/sandbox/Vierron/global_nusselt.h)).
 
 Creation of the data file in order to store my variables at each time step (t += 1.0; t <= EndTime).
 
@@ -175,7 +175,7 @@ Creation of video file mp4 of the stratification and the temperature field.
 
 /**
 
-Calculation of average temperature profile ([Antoonvh Sandbox](http://basilisk.dalembert.upmc.fr/sandbox/Antoonvh/))
+Calculation of average temperature profile ([Antoonvh Sandbox](/sandbox/Antoonvh/))
 saving numerical data temperature field in Temperature file.
 Saving of the simulation data set at t = EndTime (dump).
 */
@@ -190,7 +190,7 @@ event tempfile(t=EndTime){
 #endif
 /**
 
-Counting droplets [atomisation.c](http://basilisk.dalembert.upmc.fr/src/examples/atomisation.c#counting-droplets).
+Counting droplets [atomisation.c](/src/examples/atomisation.c#counting-droplets).
 */
 event droplets(t+=1.)
 {

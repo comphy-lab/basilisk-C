@@ -208,10 +208,10 @@ the upper and lower layers
  
 # Links
 
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]()
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/damb_dressler.c]() 
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_savagehutter.c]()
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/front_poul_ed.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/damb_dressler.c]() 
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/cohesive_savagehutter.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/front_poul_ed.c]()
 
  with Bingham
  * [Bingham 1D collapse on a incline](bingham_collapse_noSV.c)

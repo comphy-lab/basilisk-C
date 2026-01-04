@@ -1,6 +1,6 @@
 /**
 # Two-phase interfacial flows
-This is a modified version of [two-phase.h](http://basilisk.fr/src/two-phase.h). It contains the implementation of
+This is a modified version of [two-phase.h](/src/two-phase.h). It contains the implementation of
 Viscoplastic Fluid (Bingham Fluid).<br/>
 This file helps setup simulations for flows of two fluids separated by
 an interface (i.e. immiscible fluids). It is typically used in
@@ -126,7 +126,7 @@ event properties (i++) {
   The fluid flows always, it is not a solid, but a very viscous fluid.
   $$ \mu = \text{min}\left(\mu_{eq}, \mu_{max}\right) $$
 
-  Reproduced from: [P.-Y. Lagrée's Sandbox](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_simple.c). Here, we use a face implementation of the regularisation method, described [here](http://basilisk.fr/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c).
+  Reproduced from: [P.-Y. Lagrée's Sandbox](/sandbox/M1EMN/Exemples/bingham_simple.c). Here, we use a face implementation of the regularisation method, described [here](/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c).
   */
 
   foreach_face(x) {

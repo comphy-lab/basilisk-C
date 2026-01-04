@@ -12,12 +12,20 @@ The number of threads varies over time as can be seen form the decomposition
 
 ![Thread ID distribution](vary_threads/tids.mp4)
 
-
-
+~~~gnuplot
+set xlabel 'Time [-]'
+set yr [1:10]
+set ylabel 'Threads'
+set size square
+set key off
+plot 'out' u 1:2 w l lw 2
+~~~
  */
 #include "navier-stokes/centered.h"
 
 u.t[top] = dirichlet (0);
+
+int MAX_NUM, cells_per_thread = 500;
 
 int main() {
   periodic (left);
@@ -34,9 +42,6 @@ event init (t = 0) {
   foreach() 
     u.y[] = exp(-sq(y) - sq(x));
 }
-
-
-int MAX_NUM, cells_per_thread = 500;
 
 event change_thread_num (i++) {
   if (!MAX_NUM)

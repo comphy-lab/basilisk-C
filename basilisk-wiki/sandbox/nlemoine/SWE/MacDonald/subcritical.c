@@ -1,5 +1,5 @@
 /**
-[Return to my homepage](http://basilisk.fr/sandbox/nlemoine/README)
+[Return to my homepage](/sandbox/nlemoine/README)
 
 # MacDonald test problem #3 -- stationary, periodic subcritical flow  (MacDonald *et al.*, 1997)
 

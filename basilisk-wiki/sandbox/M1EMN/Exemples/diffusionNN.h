@@ -1,7 +1,7 @@
 /**
  
  This is `diffusionNN.h`   Non-Newtonian diffusion.
- This is exactly [http://basilisk.fr/src/layered/diffusion.h](), but we change the
+ This is exactly [https://basilisk.fr/src/layered/diffusion.h](), but we change the
  definition of viscosity which was a given constant by a table of values.
  $\nu$ changed in $(\nu_{l}+\nu_{l+1})/2$ or
  in $(\nu_{l}+\nu_{l-1})/2$ thereafter.

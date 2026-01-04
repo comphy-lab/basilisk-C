@@ -1,6 +1,6 @@
 /** We want to reproduce the geometry from the Zalesak's test case. We use the
 [Constructive Geometry Paradigm](https://en.wikipedia.org/wiki/Constructive_solid_geometry). For a more general
-example see the sandbox of [A. Berny](http://basilisk.fr/sandbox/aberny/csgBool.c)
+example see the sandbox of [A. Berny](/sandbox/aberny/csgBool.c)
 
 #Constructing the Zalesak's geometry
 

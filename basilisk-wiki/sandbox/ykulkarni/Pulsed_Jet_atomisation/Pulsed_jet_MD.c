@@ -1,5 +1,5 @@
 /**
-This is the standard example case of the Pulsed Jet atomisation http://basilisk.fr/src/examples/atomisation.c with the Manifold Death method applied to eliminate the numerical sheet rupture. This method gives us the statistical convergence of the drop size distribution which is not seen ptherwise in the default atomisatopn.c example case. 
+This is the standard example case of the Pulsed Jet atomisation https://basilisk.fr/src/examples/atomisation.c with the Manifold Death method applied to eliminate the numerical sheet rupture. This method gives us the statistical convergence of the drop size distribution which is not seen ptherwise in the default atomisatopn.c example case. 
 
 # Atomisation of a pulsed liquid jet
  */

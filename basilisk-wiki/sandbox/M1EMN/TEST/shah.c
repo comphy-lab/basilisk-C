@@ -350,8 +350,8 @@ sqrt(x/(.05)) t'Anal._{upper}' w l, sqrt(x) t'Anal._{lower}' w l
 
 ## Links
 
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]()
-* [http://basilisk.fr/sandbox/M1EMN/TEST/shah_flux.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]()
+* [https://basilisk.fr/sandbox/M1EMN/TEST/shah_flux.c]()
 
 
 

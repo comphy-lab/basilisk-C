@@ -1,4 +1,4 @@
-**(This document belongs to the lecture notes for the [M2-DET](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md) course, D. Fabre, nov. 2018-dec. 2023)**
+**(This document belongs to the lecture notes for the [M2-DET](/sandbox/easystab/M2DET/Instabilities.md) course, D. Fabre, nov. 2018-dec. 2023)**
 
 
 
@@ -22,7 +22,7 @@ The instability mechanism can be understood with a Bernoulli argument
  
 Consider the simplest case $\bar{U} = U_1$ (for $y<0$) and $\bar{U} = U_2$ (for $y<0$). See Exercice 6.0.
 
-In this case the linear stability problem can be solved analytically. The solution is detailed [here](http://basilisk.fr/sandbox/easystab/Correction_Exercices.md#exercice-6.0)
+In this case the linear stability problem can be solved analytically. The solution is detailed [here](/sandbox/easystab/Correction_Exercices.md#exercice-6.0)
 
 This results in the *Dispersion relation* :
 $$
@@ -126,7 +126,7 @@ $$(\bar{U} - c) (\partial_y^2 - k^2) \hat \psi - \partial_y^2 \bar{U} \hat \psi 
 
 <span style="color:green">
 Along with suitable boundary conditions (either $\hat\psi \rightarrow 0$ as $|y| \rightarrow \infty$ for an unbounded domain, or $\hat{v}=-i k \hat\psi = 0$ at $y=a,b$ for a bounded domain), the Rayleigh equation is a continuous eigenvalue problem for the eigenvalue $c$ (or equivalently $\omega$). However, this equation does not belong to the class of problems for which theorems predicting the existence of solutions exist (such as Sturm-Liouville problems).
-See [this document](http://basilisk.fr/sandbox/easystab/LinearSystems.md#linear-partial-difference-problems) for more details on these mathematical aspects.
+See [this document](/sandbox/easystab/LinearSystems.md#linear-partial-difference-problems) for more details on these mathematical aspects.
 
 
 <span style="color:green">
@@ -175,7 +175,7 @@ $$ \hat{U}(y) = U_m + \Delta U \tanh( y/\delta)$$
 
 Note that in the framework of temporal stability theory we can set $U_m=0$ without loss of generality because of Gallilean invariance. 
 
-Numerical resolution of the Rayleigh equayion for this profile is done by the program [http://basilisk.fr/sandbox/easystab/KH_temporal_inviscid.m](KH_temporal_inviscid.m).
+Numerical resolution of the Rayleigh equayion for this profile is done by the program [https://basilisk.fr/sandbox/easystab/KH_temporal_inviscid.m](KH_temporal_inviscid.m).
 
 This program shows that :
 
@@ -194,12 +194,12 @@ $$
 c = \frac{U_1+U_2}{2} \pm i \frac{U_1-U_2}{2}
 $$
 
-[Solution](http://basilisk.fr/sandbox/easystab/Correction_Exercices.md#exercice-6.0) 
+[Solution](/sandbox/easystab/Correction_Exercices.md#exercice-6.0) 
  
 
 ## **Exercice 1:** Stability of a 2D swirling flow
 
-[Solution](http://basilisk.fr/sandbox/easystab/Correction_Exercices.md#exercice-6.1) 
+[Solution](/sandbox/easystab/Correction_Exercices.md#exercice-6.1) 
 
 (cf. Drazin & Reid, section 3.15.3 & exercice 3.2)
 
@@ -285,5 +285,5 @@ Show that this dispersion relation generalizes the cases previously considered.
 
 Discuss the stability conditions as function of the parameters (see Charru, p. 132)
 
- [Back to main page](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md)
+ [Back to main page](/sandbox/easystab/M2DET/Instabilities.md)
 

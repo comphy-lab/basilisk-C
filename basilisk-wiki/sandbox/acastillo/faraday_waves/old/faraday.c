@@ -205,7 +205,7 @@ which can be solved using existing Basilisk code.
 
 We use a combination of the two-phase incompressible solver with embedded
 boundaries and (a small) variation of the
-[contact-embed.h](http://basilisk.fr/sandbox/tavares/contact-embed.h).
+[contact-embed.h](/sandbox/tavares/contact-embed.h).
 Additional details can be found in [Tavares et al. (2024)](@tavares2024).
 
 */

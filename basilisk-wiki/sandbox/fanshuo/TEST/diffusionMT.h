@@ -1,6 +1,6 @@
 /**
 # Vertical diffusion (modified version taking into account variable viscosity $\mu(I)$ i.e non newtonian diffusion)
- This is similar to [http://basilisk.fr/src/layered/diffusion.h](), but the
+ This is similar to [https://basilisk.fr/src/layered/diffusion.h](), but the
  definition of viscosity initially constant $D$ is changed in $(D_{l}+D_{l+1})/2$ or
  in $(D_{l}+D_{l-1})/2$ thereafter.
   

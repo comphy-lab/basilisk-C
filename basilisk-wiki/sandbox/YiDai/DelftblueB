@@ -23,12 +23,12 @@ export PATH=$PATH:/home/netid/local/bin
 ### Basilisk
 
 ~~~sh
-wget http://basilisk.fr/basilisk/basilisk.tar.gz
+wget https://basilisk.fr/basilisk/basilisk.tar.gz
 tar xzf basilisk.tar.gz
 ~~~
 
 ### OpenGL & OSMesa (for view.h)
-The [instuction](http://basilisk.fr/src/gl/INSTALL#installing-osmesaglu-from-source) here works, but you need to set the [PATH](https://groups.google.com/g/basilisk-fr/c/hVveH54fjdI/m/IJm8umHIEQAJ), which is already in your bashrc
+The [instuction](/src/gl/INSTALL#installing-osmesaglu-from-source) here works, but you need to set the [PATH](https://groups.google.com/g/basilisk-fr/c/hVveH54fjdI/m/IJm8umHIEQAJ), which is already in your bashrc
 
 ~~~sh
 export LD_LIBRARY_PATH=/home/netid/local/lib:$LD_LIBRARY_PATH

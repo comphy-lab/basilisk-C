@@ -100,11 +100,11 @@ p[][-.1:1.5]'vals.txt' u 1:($2+$4+$5*c) i 0 t't=0' w l linec 3,\
 
 # Links
 
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/slope.c]()
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/slope_inc.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/slope.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/slope_inc.c]()
 
 plus fort: 
 
-* [http://basilisk.fr/src/examples/shoal.c]()
+* [https://basilisk.fr/src/examples/shoal.c]()
 
 */

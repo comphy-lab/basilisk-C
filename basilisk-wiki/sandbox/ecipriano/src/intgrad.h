@@ -120,8 +120,8 @@ double concentration_gradient (Point point, scalar s, scalar cs, face vector fs,
 * *tr*: scalar fields whose gradients must be computed
 * *fL*: liquid phase volume fraction (*f*)
 * *fG*: gas phase volume fraction (*1 - f*)
-* *fsL*: face fraction for *fL*, computed using [fracface.h](fracface.h)
-* *fsG*: face fraction for *fG*, computed using [fracface.h](fracface.h)
+* *fsL*: face fraction for *fL*
+* *fsG*: face fraction for *fG*
 * *inverse*: true if tracer is in gas phase, false otherwise
 * *trint*: interface value
 * *success*: deprecated (fixme)

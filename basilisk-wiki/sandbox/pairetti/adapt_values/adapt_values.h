@@ -5,7 +5,7 @@ This function is a slight modification of the original *adapt_wavelet*,
 meant to refine cells where the value of an indicator function is higher
 than the target emax.
 
-It can be used to, for example, create a [variable emax](http://basilisk.fr/sandbox/pairetti/adapt_values/karman.c) refinement,
+It can be used to, for example, create a [variable emax](/sandbox/pairetti/adapt_values/karman.c) refinement,
 using a weighted wavelet as indicator.
 */
 

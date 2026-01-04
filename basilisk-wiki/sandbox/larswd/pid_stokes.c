@@ -1,5 +1,5 @@
 /** 
-This test is a simple implementation of [pid.h](pid.h) on the [1D breaking stokes wave](http://basilisk.fr/src/test/stokes.c) example of Popinet with PID dampening
+This test is a simple implementation of [pid.h](pid.h) on the [1D breaking stokes wave](/src/test/stokes.c) example of Popinet with PID dampening
 */
  
 #include "grid/multigrid1D.h"

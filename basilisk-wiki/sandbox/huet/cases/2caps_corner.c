@@ -247,7 +247,7 @@ to manually call for the functions which::
   ```initialize_membranes_stencils```.
   * and generates the shape functions and strain-free coefficients for the
   finite-element solver.
-http://basilisk.fr/sandbox/huet/cases/lagrangian_caps/caps_corner.c
+https://basilisk.fr/sandbox/huet/cases/lagrangian_caps/caps_corner.c
 We also shift the capsule to its desired initial position, and we manually
 generate the IBM stencils and deactivate irrelevant warnings
 about the vicinity of the membrane not being at the finest Eulerian resolution

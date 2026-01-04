@@ -153,10 +153,10 @@ return c.q_culvert;
  
 # Links
  
- [Ideal source/well on Basilisk](http://basilisk.fr/sandbox/M1EMN/Exemples/puits.c)
+ [Ideal source/well on Basilisk](/sandbox/M1EMN/Exemples/puits.c)
  
- see non viscous dam break with [standard C](http://basilisk.fr/sandbox/M1EMN/Exemples/svdb.c) 
-and with [Basilisk](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c)
+ see non viscous dam break with [standard C](/sandbox/M1EMN/Exemples/svdb.c) 
+and with [Basilisk](/sandbox/M1EMN/Exemples/damb.c)
 
 # Bibliographie
 

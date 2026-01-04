@@ -269,7 +269,7 @@ The velocity changes due to the surece term (thermal flux)
 # Links
   
 * [advecte1.c]() explains the notions of advection, testing the flux, coded with Basilisk 
-* [http://basilisk.fr/sandbox/Antoonvh/integrator2.h]() and [http://basilisk.fr/sandbox/Antoonvh/ti2.c]() solve 
+* [https://basilisk.fr/sandbox/Antoonvh/integrator2.h]() and [https://basilisk.fr/sandbox/Antoonvh/ti2.c]() solve 
 $\frac{\partial^2 u'}{\partial x^2} = \frac{\partial }{\partial x} q_w$
  
 

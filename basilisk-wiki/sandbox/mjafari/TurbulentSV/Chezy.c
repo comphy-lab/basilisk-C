@@ -1,7 +1,7 @@
 /**
 ##Problem
 
-In this section, we solve the collapse of a heap over a slope using a Saint-Venant solver. Previously, we addressed this problem using the flood-wave approximation and a simplified code that neglected inertia effects (see [Chezy](http://basilisk.fr/sandbox/mjafari/TurbulentC/Chezy.c)). This approach assumed the flow was dominated by gravity and friction, omitting inertial and pressure variation terms for simplicity. 
+In this section, we solve the collapse of a heap over a slope using a Saint-Venant solver. Previously, we addressed this problem using the flood-wave approximation and a simplified code that neglected inertia effects (see [Chezy](/sandbox/mjafari/TurbulentC/Chezy.c)). This approach assumed the flow was dominated by gravity and friction, omitting inertial and pressure variation terms for simplicity. 
 
 
 ###Governing Equation

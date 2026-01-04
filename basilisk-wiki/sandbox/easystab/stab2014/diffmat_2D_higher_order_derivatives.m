@@ -1,6 +1,6 @@
 %{
 # 2D differentiation matrices
-Here we are going to study the 2D differential matrices for higher orders. We are going to go further with the code already developped for lower derivatives levels: [diffmat_2D.m](http://basilisk.fr/sandbox/easystab/diffmat_2D.m), [diffmat_2d_crossed_derivatives.m](http://basilisk.fr/sandbox/easystab/diffmat_2d_crossed_derivatives.m)
+Here we are going to study the 2D differential matrices for higher orders. We are going to go further with the code already developped for lower derivatives levels: [diffmat_2D.m](/sandbox/easystab/diffmat_2D.m), [diffmat_2d_crossed_derivatives.m](/sandbox/easystab/diffmat_2d_crossed_derivatives.m)
 
 The first step is to define the nuber of grid points and to generate the derivative matrices. We also define a test fuction.
 %}

@@ -392,7 +392,7 @@ R_f +  \Delta t    })(1-f)$$
     sourceDarcy=div;            
  /**
 solve $\nabla \cdot (\beta \nabla p_{darcy} )= S_{darcy}$ 
-with [Poisson solver](http://basilisk.fr/src/poisson.h)
+with [Poisson solver](/src/poisson.h)
  */   
     mgpDarcy = poisson (pDarcy, sourceDarcy, beta);
   

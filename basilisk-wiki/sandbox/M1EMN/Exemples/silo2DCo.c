@@ -4,10 +4,10 @@
  
 ## Problem
 
- This is the problem of flow in a silo as the code [granular_sandglass](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass.c).
-  Now the grains are cohesive, with cohesion as in [dry cohesive column](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column_cohesif.c)
+ This is the problem of flow in a silo as the code [granular_sandglass](/sandbox/M1EMN/Exemples/granular_sandglass.c).
+  Now the grains are cohesive, with cohesion as in [dry cohesive column](/sandbox/M1EMN/Exemples/granular_column_cohesif.c)
  
-This is the same cohesive problem as [http://basilisk.fr/sandbox/M1EMN/Exemples/siloaxiCo.c]()
+This is the same cohesive problem as [https://basilisk.fr/sandbox/M1EMN/Exemples/siloaxiCo.c]()
 but in 2D, not in axi.
  
  
@@ -334,13 +334,13 @@ sp'field-3.txt' u 1:2:(($3>.9)&&($3<100) ? sqrt($7*$7+$6*$6) :0) not
  
 ## Links
  
- * [dry column](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column.c)
+ * [dry column](/sandbox/M1EMN/Exemples/granular_column.c)
  
- * [dry cohesive column](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column_cohesif.c)
+ * [dry cohesive column](/sandbox/M1EMN/Exemples/granular_column_cohesif.c)
  
- * [silos](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass.c)
+ * [silos](/sandbox/M1EMN/Exemples/granular_sandglass.c)
  
- * axi cohesive problem as [http://basilisk.fr/sandbox/M1EMN/Exemples/siloaxiCo.c]()
+ * axi cohesive problem as [https://basilisk.fr/sandbox/M1EMN/Exemples/siloaxiCo.c]()
 
  
 ## Bibliography

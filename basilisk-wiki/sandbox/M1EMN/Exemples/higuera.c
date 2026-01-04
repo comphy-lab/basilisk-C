@@ -187,11 +187,11 @@ H= .0
 
 ## Links
 
-  * [http://basilisk.fr/src/test/higuera.c]() with Basilisk (final source case)
+  * [https://basilisk.fr/src/test/higuera.c]() with Basilisk (final source case)
   
-  * [http://basilisk.fr/sandbox/M1EMN/Exemples/svdbvismult_hydrojump.c]() std C, no Basilisk
+  * [https://basilisk.fr/sandbox/M1EMN/Exemples/svdbvismult_hydrojump.c]() std C, no Basilisk
 
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/higuera_vs_SWradial.c]() axi case
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/higuera_vs_SWradial.c]() axi case
 
 
 ## Bibliography

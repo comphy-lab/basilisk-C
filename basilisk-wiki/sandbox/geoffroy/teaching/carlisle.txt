@@ -26,7 +26,7 @@ projet.
 
 La topographie vous sera fournie au format raster. N'oubliez pas de la
 préparer grâce à xyz2kdt (vous trouverez un exemple ici :
-http://gerris.dalembert.upmc.fr/karamea_flood_tutorial.html) et
+https://gerris.dalembert.upmc.fr/karamea_flood_tutorial.html) et
 d'inclure l'objet kdt.o lors de la compilation
 (~/basilisk/src/kdt/kdt.o). Ouvrez le raster à l'aide de "more" pour
 connaitre sa taille, son X0 et son Y0.

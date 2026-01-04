@@ -155,7 +155,7 @@ $$
 \lambda E X = A X
 $$ 
 
-The spatial discretisation is done using the tools provided by the [easystab](http://basilisk.fr/sandbox/easystab/README) project
+The spatial discretisation is done using the tools provided by the [easystab](/sandbox/easystab/README) project
 ( see for instance the programs [diffmat.m]() and [diffmat_dif1D]() as a starting point to understand the way to use this set of programs.)
 
 Here we use the function [dif1D]() to construct the following objects :

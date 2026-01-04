@@ -6,7 +6,7 @@ film above a lighter one. This situation arises for example at the lower interfa
 vertical tube filled with a liquid heavier than the sourrounding one.
 Depending on the distance between the pipe walls, the interface may be stable or unstable.
 
-This problem is very similar to the one presented in [pendant_drop_volume.m](http://basilisk.fr/sandbox/easystab/pendant_drop_volume.m).
+This problem is very similar to the one presented in [pendant_drop_volume.m](/sandbox/easystab/pendant_drop_volume.m).
 For this reason, only the differences are highlited and the reader is
 referred to the outer code for more details. (The same subsections are used to facilitate the comparison).
 %}

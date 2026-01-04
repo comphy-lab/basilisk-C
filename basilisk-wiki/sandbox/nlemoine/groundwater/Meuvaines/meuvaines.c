@@ -1,5 +1,5 @@
 /**
-[Return to my homepage](http://basilisk.fr/sandbox/nlemoine/README)
+[Return to my homepage](/sandbox/nlemoine/README)
 
 # Hydrodynamic modeling of the Meuvaines / Ver-sur-Mer coastal wetland (Calvados, France)
 

@@ -27,22 +27,14 @@ event vof (i++) {
   interfaces = NULL;
 }
 
-// make sure that CFL <= 0.5 when NTS == 2
+// make sure that CFL <= 0.5 when nts == 2
 extern vector * u_ebit;
 
 // For high-order time integration schemes.
 vector up[], urk1[], urk2[];
 double coef_ts[3] = {1., 1., 1.};
 
-#ifndef EBIT_ORDER
-#define EBIT_ORDER 1
-#endif
-
-#if EBIT_ORDER == 2
-  #define NTS 2
-#else
-  #define NTS 1
-#endif
+int ebit_order = 1, nts = 1;
 
 face vector s[], snew[], s_tmp[], with_marker[], ss_tmp[];
 
@@ -59,6 +51,11 @@ event defaults (i = 0) {
     urk1.x.nodump = true;
     urk2.x.nodump = true;
   }
+
+  if (ebit_order == 2)
+    nts = 2;
+  else
+    nts = 1;
 }
 
 /**
@@ -327,7 +324,7 @@ foreach_dimension()
   }
 
 
-void output_facets_ebit (char *file) {
+void output_facets_ebit (char *file = "", FILE *fp = NULL) {
   char name[strlen(file) + 2];
   strcpy (name, file);
   update_dict_x();
@@ -340,9 +337,15 @@ void output_facets_ebit (char *file) {
   if (pid() != 0)
     MPI_Recv (&sign_mpi, 1, MPI_INT, pid() - 1, 0, MPI_COMM_WORLD, &status);
   #endif
-  if (pid() == 0)
-    fclose (fopen (name, "w"));
-  fp1 = fopen (name, "a");
+
+  if (strlen(name) != 0) {
+    if (pid() == 0)
+      fclose (fopen (name, "w"));
+
+    fp1 = fopen (name, "a");
+  }
+  else
+    fp1 = fp;
 
   foreach(serial, noauto) {
     int conf = (int) config_dict[];
@@ -365,7 +368,10 @@ void output_facets_ebit (char *file) {
   }
 
   fflush (fp1);
-  fclose (fp1);
+
+  if (strlen(name) != 0)
+    fclose (fp1);
+
   #if _MPI
   if (pid() + 1 < npe())
     MPI_Send (&sign_mpi, 1, MPI_INT, pid() + 1, 0, MPI_COMM_WORLD);
@@ -373,6 +379,7 @@ void output_facets_ebit (char *file) {
 }
 
 
+#if _MYOUTPUT
 static void output_intf (int i) {
   char out[100], out_test[100], out_color[100];
   const char testName[50] = TEST;
@@ -385,6 +392,7 @@ static void output_intf (int i) {
   output_color_vertex (file = out_color, cv = color_pha, cv_center = color_pha_cen);
   output_mesh (out_test);
 }
+#endif
 
 /**
 ## Marker initialization
@@ -543,18 +551,18 @@ void semu2vof() {
   update_dict_x();
 
   foreach() {
-    int cv1, cv2, cv3, cv4, cv, conf;
-    double ss;
-    conf = (int) (config_dict[]);
+    int conf = (int) (config_dict[]);
 
     if (conf == 0) {
       f[] = cm_ebit[] > 0. ? color_pha[] : 0.;
     }
     else {// interfacial cell, cv is used for identifying the reference phase
-      cv1 = (int) (color_pha[]);
-      cv2 = (int) (color_pha[1]);
-      cv3 = (int) (color_pha[1,1]);
-      cv4 = (int) (color_pha[0,1]);
+      int cv1 = (int) (color_pha[]);
+      int cv2 = (int) (color_pha[1]);
+      int cv3 = (int) (color_pha[1,1]);
+      int cv4 = (int) (color_pha[0,1]);
+      int cv = cv1;
+      double ss = 0.;
 
       if (conf == 1) {
         ss = (s.y[] + s.y[0,1])/2.;
@@ -687,7 +695,7 @@ foreach_dimension()
       double um = 0., u1, u2, u3, u4, xx, yy, sy;
       if ((int) with_marker.y[] > 0) {
         sy = s.y[];
-        for (int its = 0; its < NTS; its++) {
+        for (int its = 0; its < nts; its++) {
           #ifdef BILINEAR
           if (sy >= 0.5) {
             u1 = u.x[0,-1];
@@ -715,7 +723,7 @@ foreach_dimension()
           #endif
           sy += um*dt/Delta;
         }
-        um /= NTS;
+        um /= nts;
 
         ss_tmp.y[] = s.y[] + um*dt/Delta;
         snew.y[] = s.y[] + um*dt/Delta;
@@ -738,7 +746,7 @@ foreach_dimension()
       if ((int) with_marker.x[] > 0) {
         double um = 0., u1, u2, u3, u4, xx, yy;
         xx = 0.5;
-        for (int its = 0; its < NTS; its++) {
+        for (int its = 0; its < nts; its++) {
           #ifdef BILINEAR
           if (s.x[] >= 0.5) {
             u1 = u.x[-1];
@@ -766,7 +774,7 @@ foreach_dimension()
 
           xx += um*dt/Delta;
         }
-        um /= NTS;
+        um /= nts;
 
         ss_tmp.x[] =  um*dt/Delta;
       }
@@ -980,7 +988,7 @@ foreach_dimension()
         int ii = 0;
         ii += with_marker.x[] + with_marker.x[1] + with_marker.y[] + with_marker.y[0,1];
         if (ii % 2 != 0) {
-          printf ("Illega number of markers (%d) within cell.\n", ii);
+          printf ("Illegal number of markers (%d) within cell.\n", ii);
           printf ("PID: %d idim: %d, x:%g, y:%g, ii:%g, jj:%g\n", pid(), idim, x, y, x/Delta, y/Delta);
           printf ("s|x[0,0]:%g, |x[1,0]:%g, |y[0,0]:%g, |y[0,1]:%g|\n\n", \
             s.x[], s.x[1], s.y[], s.y[0,1]);
@@ -993,12 +1001,19 @@ foreach_dimension()
     foreach_face() {
       int nm = (int) with_marker.x[];
       if (nm > 1 || nm < 0) {
-        printf ("Illega number of markers (%d) on cell edge.\n", nm);
+        printf ("Illegal number of markers (%d) on cell edge.\n", nm);
         printf ("idim: %d, x:%g, y:%g, ii:%g, jj:%g\n", idim, x, y, x/Delta, y/Delta);
       }
     }
   }
 
+/**
+## Unsplit scheme
+*/
+// test for new advection scheme
+#ifdef UNSPLIT
+#include "ebit-unsplit.h"
+#endif
 
 /**
 ## Multi-dimensional EBIT marker advection */
@@ -1053,7 +1068,7 @@ void ebit_advection (vector u, int i) {
   semu2vof();
 
   // debug_log(i);
-  #ifdef OUT_GNUPLOT
+  #if _MYOUTPUT && defined(OUT_GNUPLOT)
   if (i % DIT == 0)
     output_intf (i);
   #endif
@@ -1092,7 +1107,7 @@ event adapt (i++) {
   #if EMBED
   boundary_ebit_embed (u);
   #endif
-  #ifdef OUT_GNUPLOT
+  #if _MYOUTPUT && defined(OUT_GNUPLOT)
   // output interface again after AMR
   if (i % DIT == 0)
     output_intf (i);

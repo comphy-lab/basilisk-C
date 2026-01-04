@@ -5,9 +5,9 @@ Reproduction in the self-similar domain of the [Keller \& Miksis, (1983)](#kelle
 wedge recoil driven by surface tension, for all the following initial wedge angles:
 $\theta_0 = 27.5$°, $32.5$°, $45$°, $65$° and $80$°. 
 
-* The *Keller \& Miksis* problem is exposed [here](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c);
-* The self-similar solver is explained [there](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README);
-* This page is simply an extension of the [convergence study](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_keller_conv.c) 
+* The *Keller \& Miksis* problem is exposed [here](/sandbox/cailler/keller_miksis/keller_fig2_conv.c);
+* The self-similar solver is explained [there](/sandbox/cailler/self_sim_DNS/README);
+* This page is simply an extension of the [convergence study](/sandbox/cailler/self_sim_DNS/selfsim_keller_conv.c) 
 presented for the special case of $\theta_0 = 45$°, and where additional details 
 are given upon the parameters used.
 
@@ -150,7 +150,7 @@ computations, we suggest to go up to $N_{max} = 9$ for $\theta_0 = 27.5$° and
 $32.5$°, with a running time divided by 2 ($\tau_{end} = 5$ in that case). 
 The results are slightly improved, though it is not satisfying compared to 
 the results one could obtain by using $N_{max} = 10$ to match with the [simulations 
-done in the physical domain](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_all.c#reproduction-of-the-keller-miksis-results).
+done in the physical domain](/sandbox/cailler/keller_miksis/keller_fig2_all.c#reproduction-of-the-keller-miksis-results).
 */
 
 
@@ -189,7 +189,7 @@ double t_end[] = {5., 5., 10., 10., 10.};
 
 /** 
 For a clear depiction of the BCs, see 
-[this representation](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_all.c#boundary-conditions).
+[this representation](/sandbox/cailler/keller_miksis/keller_fig2_all.c#boundary-conditions).
 */
 
   /* Normal vectors of the interface and related intercepts BC */

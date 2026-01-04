@@ -6,7 +6,7 @@ at the lower end of a vertical pipe, assumed plane. With the use of a
 continuation procedure, the bifurcation diagram for increasing volume 
 of the droplet is also comptued.
 
-Similarly as in the problem of the shape of the [meniscus.m](http://basilisk.fr/sandbox/easystab/meniscus.m), 
+Similarly as in the problem of the shape of the [meniscus.m](/sandbox/easystab/meniscus.m), 
 the gravity induces a hydrostatic pressure distribution and the surface 
 tension imposes a pressure jump at the interface because of its 
 curvature. Furthermore, a pressure corresponds to the volume of the droplet.
@@ -136,7 +136,7 @@ while ~quitcon
         # Newton loop
 
         Now we are in the Newtoon loop to find the shape of the droplet with a specific volume (still unknow). See
-        [meniscus.m](http://basilisk.fr/sandbox/easystab/meniscus.m) for
+        [meniscus.m](/sandbox/easystab/meniscus.m) for
         more details.
         The main difference is that here the function $f$ of which the root
         has to be found is is a vector quantity whose components are the 
@@ -187,7 +187,7 @@ while ~quitcon
         are the discretized Jacobian matrices of the different components
         w.r.t. the variables. They are found by perturbing all variables in the
         considered equation with small parameters and neglecting the nonlinear 
-        terms, in the same way as what described in [meniscus.m](http://basilisk.fr/sandbox/easystab/meniscus.m).
+        terms, in the same way as what described in [meniscus.m](/sandbox/easystab/meniscus.m).
         %}
 
         % analytical jacobian

@@ -2,7 +2,7 @@
 #AMR with up/down-sampling
 
 
-Attempt to recreate figures made by Antoon [here](http://basilisk.fr/sandbox/Antoonvh/the_adaptive_wavelet_algorithm)
+Attempt to recreate figures made by Antoon [here](/sandbox/Antoonvh/the_adaptive_wavelet_algorithm)
 
 Seems succesful.
 

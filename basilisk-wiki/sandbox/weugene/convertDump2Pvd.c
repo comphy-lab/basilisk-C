@@ -3,7 +3,7 @@
 As it is known Basilisk can save data in dump format and in pvtu-vtu or pvd-pvtu-vtu files. Saving in dump files (binary foramt) is more reasonable due to its relatively small size in comparison with Paraview format(mixed binary and ASCII format). Primarily thanks to its pure binary format and saving all the data which can be subsequently postprocessed.
 
 ##In short about pvd file.
-*.pvd file is an extension of Øystein Lande's module "output_vtu_foreach.h" which can be found in [his sandbox](http://basilisk.fr/sandbox/oystelan/), where a bunch of pvtu (header file, outputted by master processor) and vtu (outputted by each processor) files are outputted.
+*.pvd file is an extension of Øystein Lande's module "output_vtu_foreach.h" which can be found in [his sandbox](/sandbox/oystelan/), where a bunch of pvtu (header file, outputted by master processor) and vtu (outputted by each processor) files are outputted.
 In my version, I am saving time of outputing in one pvd file (header files refers to all outputted pvtu files and save corresponding time).
 
     test.pvd
@@ -15,7 +15,7 @@ In my version, I am saving time of outputing in one pvd file (header files refer
     res/test_0001_n001.vtu
 
 
-You can find my version of modification in my sandbox [here](http://basilisk.fr/sandbox/weugene/)
+You can find my version of modification in my sandbox [here](/sandbox/weugene/)
 
 
 The present code helps to 

@@ -3,14 +3,9 @@
 
 Two Gaussian vortex rings in a triply-periodic domain.
 
-<div class="figure">
-<video controls="" preload="metadata" width="900">
-<source src="https://surfdrive.surf.nl/files/index.php/s/HGUFYkO3gcHxCiK/download" type="video/mp4">
-Your browser does not support the video tag. </video>
-<p class="caption">
-Volumetric rendering of the negative $\lambda_2$ field (via surfdrive)
-</p>
-</div>
+![Volumetric visualization of the evolution of the $\lambda_2$ vortex-dection criterion. Run with `ue = 5e-4` and Re = 2500. The computation + rendering takes about 3.5 hours on 6 AMD cores. About 50% of this time is spend on the rendering routine](https://www.antoonvanhooft.nl/media/l2b.mp4)
+
+![Same case, now run with `ue = 1e-4`. The computation + rendering takes about 20 hours on 6 AMD cores](https://www.antoonvanhooft.nl/media/l2b2.mp4)
 */
 #include "grid/octree.h"
 #include "nsf4t.h"

@@ -292,13 +292,13 @@ We check that $(\partial u/ \partial y)$ is $\sqrt{2}D_2$
 ## Related examples, links
  
 
- * [The basic Bagnold flow](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic.c)
+ * [The basic Bagnold flow](/sandbox/M1EMN/Exemples/bagnold_periodic.c)
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic_cohesif.c]()
  
- * [related example in Basilisk for pure Bagnold](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic.c)
+ * [related example in Basilisk for pure Bagnold](/sandbox/M1EMN/Exemples/bagnold_periodic.c)
  
- * [related example in Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/poiseuille.html#bagnold)
+ * [related example in Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/poiseuille.html#bagnold)
  
  
  

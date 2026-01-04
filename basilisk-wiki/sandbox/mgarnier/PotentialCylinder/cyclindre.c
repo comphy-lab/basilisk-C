@@ -12,7 +12,7 @@
 
 
 /**
-As a starting point, i used the code [Poisson equation on complex domains](http://basilisk.fr/src/test/neumann.c). 
+As a starting point, i used the code [Poisson equation on complex domains](/src/test/neumann.c). 
 
 
 First of all, we know the exact solution of this problem. The solution is written in the following form : 

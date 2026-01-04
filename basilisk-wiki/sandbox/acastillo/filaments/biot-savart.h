@@ -135,7 +135,7 @@ $$
 #include "PointTriangle.h"
 void local_induced_velocity_segment(int n, coord *A, coord *B, coord *C, double *a, 
   coord *velocity, coord *tangent, coord *normal, coord *binormal, 
-  double *curvature, double *dS, double Gamma=1.0) {
+  double *curvature, double *dS, double Gamma=6.28318530718) {
   for (int i = 0; i < n; i++) {
     // Compute the curvature of the arc of circle passing through points A, B
     // and C
@@ -199,20 +199,20 @@ void rightCircularShift(coord arr[], int size) {
 /** 
 ### *local_induced_velocity*: evaluates the local auto induced velocity of a filament
 */
-void local_induced_velocity(struct vortex_filament filament) {
-  int nseg = filament.nseg;
+void local_induced_velocity(struct vortex_filament* filament, double Gamma=6.28318530718) {
+  int nseg = filament->nseg;
 
   coord A[nseg], B[nseg], C[nseg];
-  memcpy(A, filament.C, nseg * sizeof(coord));
+  memcpy(A, filament->C, nseg * sizeof(coord));
   rightCircularShift(A, nseg);
 
-  memcpy(B, filament.C, nseg * sizeof(coord));
+  memcpy(B, filament->C, nseg * sizeof(coord));
 
-  memcpy(C, filament.C, nseg * sizeof(coord));
+  memcpy(C, filament->C, nseg * sizeof(coord));
   leftCircularShift(C, nseg);
 
-  local_induced_velocity_segment(nseg, A, B, C, filament.a, filament.Ulocal, 
-    filament.Tvec, filament.Nvec, filament.Bvec, filament.kappa, filament.s);
+  local_induced_velocity_segment(nseg, A, B, C, filament->a, filament->Ulocal, 
+    filament->Tvec, filament->Nvec, filament->Bvec, filament->kappa, filament->s, Gamma=Gamma);
 }
 
 /**
@@ -259,14 +259,14 @@ are (close to) zero. Instead, the contributions from local auto-induction are
 obtained from the cut-off approach.
 */
 
-coord nonlocal_induced_velocity(coord target, struct vortex_filament source, double Gamma=1.0) {
+coord nonlocal_induced_velocity(coord target, struct vortex_filament* source, double Gamma=6.28318530718) {
   
   const double tol = 1e-8;
-  int nseg = source.nseg;
+  int nseg = source->nseg;
   
   coord A[nseg], B[nseg];
-  memcpy(A, source.C, nseg * sizeof(coord)); // a copy of C
-  memcpy(B, source.C, nseg * sizeof(coord));
+  memcpy(A, source->C, nseg * sizeof(coord)); // a copy of C
+  memcpy(B, source->C, nseg * sizeof(coord));
   leftCircularShift(B, nseg);
   
   coord velocity = {0.,0.,0.};

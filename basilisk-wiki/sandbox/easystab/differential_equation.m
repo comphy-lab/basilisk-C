@@ -75,7 +75,7 @@ In [variable_coef.m]() we solve in 1D a differential equation with variable coef
     * Please check the solution and convergence of the system a*Df+b*DDf=c, where a,b stands for scalars and c a vector --> [differential_equation_secondorder.m]()
     * Please check the convergence with the number of gridpoints --> [convergence_of_the_solution.m]()
     * Please use Chebychev differentiation matrix [chebdif.m]() and compare with the finite
-    differences -> [differential_equation_chebychev.m](http://basilisk.fr/sandbox/easystab/stab2014/differential_equation_chebychev.m)
+    differences -> [differential_equation_chebychev.m](/sandbox/easystab/stab2014/differential_equation_chebychev.m)
     * Please use a non-constant coefficient i your differential equation
     $a(x)f_{xx}=0$ (first find the way to code that using differentiation
     matrices)

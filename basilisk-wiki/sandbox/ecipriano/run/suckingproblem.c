@@ -40,70 +40,46 @@ the continuity equation points toward the liquid phase. Therefore,
 this test case considers the additional transport of temperature from
 the Stefan flow in liquid phase.
 
-![Evolution of the gas layer thickness](suckingproblem/movie.mp4)(width="400" height="400")
+![Evolution of the gas layer thickness](suckingproblem/movie.mp4)(width="100%")
 */
-
-/**
-## Phase Change Setup
-
-We move the interface using the velocity *uf*, with the
-expansion term shifted toward the gas-phase. In this way
-*uf* is divergence-free at the interface. The double
-pressure velocity couping is used to obtain an extended
-velocity, used to transport the gas phase tracers. */
-
-#define INT_USE_UF
-#define CONSISTENTPHASE2
-#define SHIFT_TO_GAS
-#define INIT_TEMP
 
 /**
 ## Simulation Setup
 
-We use the centered solver with the divergence source term,
-and the extended velocity is obtained using the centered-doubled
-procedure. The evaporation model is used in combination
-with the temperature-gradient mechanism, which manages
-the solution of the temperature field. */
+We use the centered Navier–Stokes equations solver with volumetric source in the
+projection step. The phase change is directly included using the boiling module,
+which sets the best (default) configuration for boiling problems. Many features
+of the phase change (boiling) model can be modified directly in this file
+without changing the source code, using the phase change model object `pcm`.
+*/
 
-#include "navier-stokes/centered-evaporation.h"
-#include "navier-stokes/centered-doubled.h"
+#include "navier-stokes/low-mach.h"
 #include "two-phase.h"
 #include "tension.h"
-#include "evaporation.h"
-#include "temperature-gradient.h"
+#include "boiling.h"
 #include "view.h"
-
-/**
-We declare the variables required by the
-temperature-gradient model. */
-
-double lambda1, lambda2, cp1, cp2, dhev;
-double TL0, TG0, TIntVal, Tsat, Tbulk;
 
 /**
 ### Boundary conditions
 
-Outflow boundary conditions for velocity and pressure are imposed on
-the right wall, while the temperature is set to the bulk value on
-the wall in contact with the liquid phase, and to the saturation
-value on the wall adjacent to the gaseous layer. */
+Outflow boundary conditions for velocity and pressure are imposed on the right
+wall, while the temperature is set to the bulk value on the wall in contact with
+the liquid phase, and to the saturation value on the wall adjacent to the
+gaseous layer. */
 
 u.n[right] = neumann (0.);
 u.t[right] = neumann (0.);
 p[right] = dirichlet (0.);
-uext.n[right] = neumann (0.);
-uext.t[right] = neumann (0.);
-pext[right] = dirichlet (0.);
 
-TL[right] = dirichlet (Tbulk);
-TG[left] = dirichlet (Tsat);
+double Tsat, Tbulk;
+T[right] = dirichlet (Tbulk);
+T[left] = dirichlet (Tsat);
 
 /**
 ### Problem Data
 
-We declare the maximum and minimum levels of refinement,
-the $\lambda$ parameter, the initial thickness of the vapor layer. */
+We declare the maximum and minimum levels of refinement, the growth constant,
+the initial thickness of the vapor layer. */
 
 int maxlevel, minlevel = 1;
 double tshift, betaGrowth, effective_height0;
@@ -111,9 +87,9 @@ double tshift, betaGrowth, effective_height0;
 /**
 ### Growth Constant and Analytical Temperature
 
-We use gsl, and the [fsolve.h](/sandbox/ecipriano/src/fsolve.h)
-module, to find the value of the growth constant, which is then
-used to compute the analytical temperature profile:
+We use gsl, and the [fsolve.h](/sandbox/ecipriano/src/fsolve.h) module, to find
+the value of the growth constant, which is then used to compute the analytical
+temperature profile:
 
 $$
   T(x,t) = T_{bulk} -
@@ -125,8 +101,7 @@ $$
 $$
 */
 
-#define USE_GSL
-#include "fsolve-gsl.h"
+#include "fsolve.h"
 
 /**
 We define the function to zero for the growth constant. */
@@ -160,8 +135,12 @@ double tempexact (double x, double beta, double t) {
 }
 
 int main (void) {
+
   /**
-  We set the material properties of the fluids. */
+  We set the material properties of the two fluids. In addition to the classic
+  Basilisk setup for density and viscosity, we need to define thermal
+  properties, such as the thermal conductivity $\lambda$, the heat capacity
+  $cp$, and the enthalpy of vaporization $\Delta h_{ev}$. */
 
   rho1 = 958.4, rho2 = 0.597;
   mu1 = 2.80e-4, mu2 = 1.26e-5;
@@ -170,17 +149,21 @@ int main (void) {
   dhev = 2.26e+6;
 
   /**
-  We set the bulk and the saturation temperature values. The
-  interface must remain at saturation temperature, while the values
-  `TL0` an `TG0` are used to set the initial and boundary conditions.
-  */
+  We set the bulk and the saturation temperature values. The interface must
+  remain at saturation temperature, while the values `TL0` an `TG0` are used to
+  set the initial and boundary conditions. */
 
   Tbulk = 378.15, Tsat = 373.15, TIntVal = Tsat;
   TL0 = Tbulk, TG0 = TIntVal;
 
   /**
-  We change the dimension of the domain, and the surface tension
-  coefficient. */
+  We solve two different sets of Navier--Stokes equations according with the
+  double pressure velocity coupling approach. */
+
+  nv = 2;
+
+  /**
+  We change the dimension of the domain, and the surface tension coefficient. */
 
   L0 = 10.e-3;
   f.sigma = 0.0059;
@@ -224,25 +207,31 @@ event init (i = 0) {
   tshift = rho2*cp2/lambda2*sq (effective_height0/2./betaGrowth);
 
   /**
-  We initialize the temperature field, setting the liquid phase
-  temperature to the analytical value. We also set an initial value
-  for the velocity field to speed up convergence of the Poisson
-  equation at the first iteration. */
+  We initialize the temperature field, setting the liquid phase temperature to
+  the analytical value. We also set an initial value for the velocity field to
+  speed up convergence of the Poisson equation at the first iteration. */
 
+  scalar TL = liq->T, TG = gas->T;
   foreach() {
     TL[] = f[]*tempexact (x, betaGrowth, t+tshift);
     TG[] = (1. - f[])*Tsat;
     T[]  = TL[] + TG[];
 
-    u.x[] = 11.e-3*f[];
-    //u.x[] = 0.;
-    u.y[] = 0.;
+    for (vector u in ulist)
+      u.x[] = 11.e-3*f[];
   }
+
+  /**
+  We set the boundary conditions for the liquid and gas phase temperature
+  fields, which are those that are actually resolved by the phase change model.
+  The one-field temperature T serves only for post-processing. */
+
+  copy_bcs ({TL,TG}, T);
 }
 
 /**
-We refine the domain according to the interface, velocity, and the
-temperature field. */
+We refine the domain according to the interface, velocity, and the temperature
+field. */
 
 #if TREE
 event adapt (i++) {
@@ -294,6 +283,18 @@ event output (t += 0.01) {
 
   fprintf (fp, "%g %g %g %g %g\n", t + tshift, effective_height, exact (t+tshift), relerr, uavg);
   fflush (fp);
+}
+
+/**
+### Logger
+
+We output the total gas volume in time (for testing). */
+
+event logger (t += 0.1) {
+  double gasvol = 0.;
+  foreach(reduction(+:gasvol))
+    gasvol += (1. - f[])*dv();
+  fprintf (stderr, "%d %.1f %.3g\n", i, t, gasvol);
 }
 
 /**

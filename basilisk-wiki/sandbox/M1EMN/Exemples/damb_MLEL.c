@@ -11,7 +11,7 @@ What happens if the dam which retains a lake is suddenly removed? That is the da
  
  
 The classical Shallow Water (Saint-Venant) Equations in 1D with no friction are written in the spirit of 
-the [Multilayer horizontaly Euleur vertically Lagrange](http://basilisk.fr/src/layered/hydro.h) of Popinet 2020 with one layer only. 
+the [Multilayer horizontaly Euleur vertically Lagrange](/src/layered/hydro.h) of Popinet 2020 with one layer only. 
 $$
  \left\{\begin{array}{l}
          \partial_t h+\partial_x (hu)=0\\
@@ -28,7 +28,7 @@ As the flow is not viscous, the convective term is important. The solution is th
 //#include "grid/cartesian1D.h"
 //#include "saint-venant.h"
 /**
-This is NOT by solved with [http://basilisk.fr/src/saint-venant.h]() but by [http://basilisk.fr/src/layered/hydro.h]() */
+This is NOT by solved with [https://basilisk.fr/src/saint-venant.h]() but by [https://basilisk.fr/src/layered/hydro.h]() */
 #include "grid/multigrid1D.h"
 #include "layered/hydro.h"
 
@@ -135,12 +135,12 @@ t=3
 ## Links
  
 * see the same
-  [with turbulent friction](http://basilisk.fr/sandbox/M1EMN/Exemples/damb_dressler.c)
+  [with turbulent friction](/sandbox/M1EMN/Exemples/damb_dressler.c)
 
-* see non viscous dam break with [standard C](http://basilisk.fr/sandbox/M1EMN/Exemples/svdb.c)
-and with [Basilisk](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c)  
+* see non viscous dam break with [standard C](/sandbox/M1EMN/Exemples/svdb.c)
+and with [Basilisk](/sandbox/M1EMN/Exemples/damb.c)  
  
-* see all the viscous collapse examples ([with laminar friction](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c))
+* see all the viscous collapse examples ([with laminar friction](/sandbox/M1EMN/Exemples/viscous_collapse.c))
  
  * a version in [python](https://colab.research.google.com/drive/1960Q9Cgu9anAv6wfB9MblsBFo0BvWdrO) of this file
 

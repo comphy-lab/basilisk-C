@@ -4,7 +4,7 @@
 VOF advection doesn't cope well with rotations. Here we test a correction on the
 advection.
 
-[Same example with Gerris](http://http://gerris.dalembert.upmc.fr/gerris/tests/tests/rotate.html)
+[Same example with Gerris](http://https://gerris.dalembert.upmc.fr/gerris/tests/tests/rotate.html)
 
 ~~~gnuplot error plot central cell
 set logscale y

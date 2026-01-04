@@ -126,8 +126,8 @@ condition somewhere...
 
 This points was actually already investigated in
 
-- http://basilisk.fr/sandbox/Antoonvh/afluidatrest.c
-- http://basilisk.fr/sandbox/Antoonvh/thermo.h
+- https://basilisk.fr/sandbox/Antoonvh/afluidatrest.c
+- https://basilisk.fr/sandbox/Antoonvh/thermo.h
 
 This behavior is due to a bad convergence of the poisson solver. We need to
 decrease the tolerance and the timestep for the first iterations.

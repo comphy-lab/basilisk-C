@@ -16,17 +16,14 @@ be included (0 by default).
 #ifndef MAPREGION_H
 #define MAPREGION_H
 
-#ifndef F_ERR
-# define F_ERR 1.e-10
-#endif
-
 void mapregion (
   scalar H,             // heaviside function
   scalar f,             // vof field (f = 1 if liquid)
   int nl = 0,           // number of additional layers (default 0, optional 1 or 2)
   int inverse = 0,      // the vof field if = 1 if gas (default false)
   int narrow = 0,       // map just a narrow band around the interface (default false)
-  int nointerface = 0   // if false heaviside set to zero at the interface
+  int nointerface = 0,  // if false heaviside set to zero at the interface
+  double tol = 1e-10    // tolerance which defines the interfacial cells
 )
 {
   scalar fc[];
@@ -35,13 +32,13 @@ void mapregion (
 
   foreach() {
     if (narrow)
-      H[] = (fc[] > F_ERR && fc[] < 1.-F_ERR) ? 1. : 0.;
+      H[] = (fc[] > tol && fc[] < 1.-tol) ? 1. : 0.;
     else
-      H[] = (fc[] < 1.-F_ERR) ? 1. : 0.;
-    if (fc[] > 1.-F_ERR && nl > 0) {
+      H[] = (fc[] < 1.-tol) ? 1. : 0.;
+    if (fc[] > 1.-tol && nl > 0) {
       bool lightup = false;
       foreach_neighbor(nl) {
-        if (fc[] > F_ERR && fc[] < 1.-F_ERR) {
+        if (fc[] > tol && fc[] < 1.-tol) {
           lightup = true;
           break;
         }
@@ -49,7 +46,7 @@ void mapregion (
       H[] = lightup ? 1. : 0.;
     }
     if (nointerface)
-      H[] = (fc[] > F_ERR && fc[] < 1.-F_ERR) ? 0. : H[];
+      H[] = (fc[] > tol && fc[] < 1.-tol) ? 0. : H[];
   }
 }
 

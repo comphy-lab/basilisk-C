@@ -37,7 +37,7 @@ using an [embedded boundary](/src/embed.h). */
 #if GA // 
 #define Ga   ((double) (GA))
 #else // Ga = 178
-#define Ga   (178) // Particle Reynolds number Re = ud/nu
+#define Ga   (178.) // Particle Reynolds number Re = ud/nu
 #endif // GA
 
 #define uref (sqrt (fabs ((density) - 1.)*(d)*(grav))) // Characteristic speed
@@ -83,11 +83,11 @@ face vector muv[];
 We define the mesh adaptation parameters and vary the maximum level of
 refinement. */
 
-#define lmin (9) // Min mesh refinement level (l=9 is 2pt/d)
+#define lmin (5) // Min mesh refinement level (l=9 is 2pt/d)
 #if LMAX // 11, 12, 13, 14
-#define lmax ((int) (LMAX))
+#define lmax ((int) (7))
 #else // 12
-#define lmax (12) // Max mesh refinement level (l=12 is 16pt/d)
+#define lmax (7) // Max mesh refinement level (l=12 is 16pt/d)
 #endif // LMAX
 #if CMAX
 #define cmax ((((double) (CMAX))*1.e-3)*(uref))

@@ -6,9 +6,9 @@ on the visualization. The physical scenario borrows from [the
 atomizing jet example](/src/examples/atomization.c), but concerns two
 opposing jets.
 
-![`Output_ppm()` is neat for slices, but cant do "3D"](impinging/f.mp4)
+![`Output_ppm()` is neat for slices, but cant do "3D" shading effects](impinging/f.mp4)
 
-![With Bview, a 3D frame can be rendered each iteration with little overhead](impinging/mov.mp4)
+![With Bview, a 3D snapshot can be rendered each iteration with little overhead](impinging/mov.mp4)
 
 ![Bwatch can visualize refractive objects](impinging/bw.mp4)
  */
@@ -23,15 +23,20 @@ opposing jets.
 
 #define radius 1./12.
 #define length 0.025
-#define Re 580
-#define SIGMA 3e-5
+#define Re 400
+#define SIGMA 3e-4
 
-double uemax = 0.2;
-double femax = 0.02;
-int maxlevel = 6;
+double uemax = 0.1;
+double femax = 0.01;
+int maxlevel = 8;
+
+/** Jet injection with a Poissuille-flow profile prevents early atomization
+ */
+#define RAD (sqrt(sq(y) + sq(z)))
+#define UR (-(RAD - radius)*(RAD + radius)/sq(radius)*min(2., 10.*t))
 
 scalar f0[];
-u.n[left]  = dirichlet(f0[]);
+u.n[left]  = dirichlet(f0[]*UR);
 u.t[left]  = dirichlet(0);
 #if dimension > 2
 u.r[left]  = dirichlet(0);
@@ -39,7 +44,7 @@ u.r[left]  = dirichlet(0);
 p[left]    = neumann(0);
 f[left]    = f0[];
 
-u.n[right]  = dirichlet(-f0[-1]);
+u.n[right]  = dirichlet(-f0[-1]*UR);
 u.t[right]  = dirichlet(0);
 #if dimension > 2
 u.r[right]  = dirichlet(0);
@@ -63,6 +68,7 @@ int main () {
 }
 
 event init (t = 0) {
+  refine (1.1*radius > RAD && level < maxlevel);
   fraction (f0, sq(radius) - sq(y) - sq(z));
 #if TREE
   f0.refine = f0.prolongation = fraction_refine;
@@ -79,29 +85,14 @@ event init (t = 0) {
 	  "-resize 500x500! reactor.png");
 }
 
-/**
-   The resolution is increased on the fly. 
-*/
-
-double ti = 1;
-
-event adaptadapt (t = 3; t += ti) {
-  if ( t < 3.76) {
-    maxlevel++;
-    uemax /= 2;
-    femax /= 2;
-    ti /= 2;
-  }
-}
-
 event adapt (i++) {
-  adapt_wavelet ({f,u}, (double[]){femax, uemax, uemax, uemax}, maxlevel);
+  adapt_wavelet ({f, u}, (double[]){femax, uemax, uemax, uemax}, maxlevel, 5);
 }
 /**
 # Movie makers
  */
 
-event mov (t += 0.05) {
+event mov (t += 0.025) {
   output_ppm (f, file = "f.mp4", n = 500);
 }
 
@@ -112,20 +103,25 @@ event bviewer (i++) {
   save ("mov.mp4");
 }
 
-event bwatch_images (t += 0.05) {
-  static FILE * fp = popen ("ppm2mp4 -r 8 bw.mp4", "w");
-  if (t > 1)
-    remove_droplets (f);
-  watch (fov = 2.5, poi = {1.5, 0, 0}, O = {5, 2, 5});
+event droplet_cleanup_project (t += 0.01) {
+  // Remove fov crap ...
+  remove_droplets (f, minsize = 4);
+  // ... and remove atomized features
+  remove_droplets (f, minsize = -10);
+}
+
+event bwatch_images (t += 0.01) {
+  static FILE * fp = popen ("ppm2mp4 bw.mp4", "w");
+  watch (fov = 2.5, poi = {1.75, 0.25, 0}, O = {6, 3, 5},
+	 nx = 600, ny = 500);
   image ("reactor.png", res = 400, alpha = Z0 + L0/10.);
-  sphere (R = 30, mat = {dull = true});
-  equiplane (f, vof = true, mat = {ind = 1.2});
-  volume (f, sc = 0.1, mval = 0.5, col = {0, 95, 104});
+  sphere (R = 30, mat = {.dull = true});
+  equiplane (f, vof = true, mat = {.ind = 1.2});
+  volume (f, sc = 0.2, mval = 0.5, col = {0, 95, 104});
   store (fp);
   plain();
 }
 
-event stop (t = 4.) {
+event stop (t = 2.5) {
   return 1;
 }
-  

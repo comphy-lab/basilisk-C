@@ -140,7 +140,7 @@ event printdata(t = {0, 0.2, 0.5, 1, 1.5, 2})
 event end(t = 2){}
 
 /**
-oh interesting, Godunov method is able to preserve the shock wave structure. Check out a [differnet initial condition](http://basilisk.fr/sandbox/YiDai/BASI/invis_burgers_DS2.c) here
+oh interesting, Godunov method is able to preserve the shock wave structure. Check out a [differnet initial condition](/sandbox/YiDai/BASI/invis_burgers_DS2.c) here
 ~~~gnuplot
 reset
 file1="BG_LF"

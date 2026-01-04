@@ -5,7 +5,7 @@ Implemented from [Mahady, Afkhami, Kondic, Phys. Fluids 28, 062002
 (2016)](http://doi.org/10.1063/1.4949522). 
 
 Several things need to be improved: adaptivity, more robust height estimation 
-(as done by [VariablePosition](http://gerris.dalembert.upmc.fr/gfsvariableposition.html)).
+(as done by [VariablePosition](https://gerris.dalembert.upmc.fr/gfsvariableposition.html)).
 */
 
 #include "grid/multigrid.h"

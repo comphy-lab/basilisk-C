@@ -9,7 +9,7 @@ non-inertial flow conditions. This work is the fruit of the second part of my
 PhD and is described in detail in part II of my 
 [PhD thesis](https://open.library.ubc.ca/soa/cIRcle/collections/ubctheses/24/items/1.0432797).
 
-**Please note that I am no longer working on this project**. [Guodong Gai](https://www.researchgate.net/profile/Guodong-Gai-2) is now actively improving this solver: he has already corrected several minor bugs and is working towards a more efficient parallelism. As such, while the code on this sandbox is up to date with the results we published (none of which were affected by the minor bugs), if you would like to use this solver you may want to take a look at [Guodong's sandbox](http://basilisk.fr/sandbox/gai/README).
+**Please note that I am no longer working on this project**. [Guodong Gai](https://www.researchgate.net/profile/Guodong-Gai-2) is now actively improving this solver: he has already corrected several minor bugs and is working towards a more efficient parallelism. As such, while the code on this sandbox is up to date with the results we published (none of which were affected by the minor bugs), if you would like to use this solver you may want to take a look at [Guodong's sandbox](/sandbox/gai/README).
 
 ![Initially spherical capsule flowing through a constricted channel](https://damienhuet.github.io/images/basilisk_sandbox_files/constricted_channel/channel.mp4)(width="80%")
 

@@ -1,5 +1,5 @@
 /**
-[Return to my homepage](http://basilisk.fr/sandbox/nlemoine/README)
+[Return to my homepage](/sandbox/nlemoine/README)
 
 # System of coupled reaction-diffusion equations
 
@@ -16,7 +16,7 @@ $$
 \sum_{j=1}^n\theta_{ij}\ \partial_t f_j \quad=\quad \sum_{j=1}^n\nabla\cdot(D_{ij}\nabla f_j) \quad+\quad \sum_{j=1}^n\beta_{ij} f_j \quad+\quad r_i\quad, \qquad i=1...n 
 $$
 
-Just as in the case of [simple diffusion](http://basilisk.fr/src/diffusion.h) we use a time-implicit backward Euler discretisation:
+Just as in the case of [simple diffusion](/src/diffusion.h) we use a time-implicit backward Euler discretisation:
 
 $$
 \sum_{j=1}^{n}\theta_{ij}\frac{f_j^{n+1} - f_j^{n}}{dt} \quad=\quad \sum_{j=1}^n\nabla\cdot(D_{ij}\nabla f_j^{n+1}) \quad+\quad \sum_{j=1}^n\beta_{ij} f_j^{n+1} \quad+\quad r_i\qquad\qquad i=1...n

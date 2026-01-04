@@ -34,13 +34,9 @@ The pointer must be set by the user, to a specific antoine
 function depending on the chemical species under investigation.
 */
 
-#ifdef USE_ANTOINE
-
 attribute {
   double (* antoine) (double, double);
 }
-
-#endif
 
 /**
 For consistency, the temperature and pressure values provided to
@@ -94,6 +90,19 @@ double antoine_dodecane (double T, double P) {
 
 double antoine_hexadecane (double T, double P) {
   double A = 4.17312, B = 1845.672, C = -117.054;
+  return pow (10., A - B/(T + C)) / (P*1.e-5);
+}
+
+/**
+### *antoine_methanol(T,P)*: Antoine equation for methanol.
+*/
+
+double antoine_methanol (double T, double P) {
+  double A, B, C;
+  if (T > 354)
+    A = 5.15853, B = 1569.613, C = -34.846;
+  else
+    A = 5.20409, B = 1581.341, C = -33.50;
   return pow (10., A - B/(T + C)) / (P*1.e-5);
 }
 

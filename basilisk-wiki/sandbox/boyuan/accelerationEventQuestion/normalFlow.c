@@ -1,6 +1,6 @@
 /**
 ## Case set-up
-  **The question proposed [here](http://basilisk.fr/sandbox/boyuan/accelerationEventQuestion/normalFlow.c#numerical-results) has had known reasons.** This may due to a possible bug in Basilisk. A careful investigation of the source code of [ns-centered](http://basilisk.fr/src/navier-stokes/centered.h) and [iforce](http://basilisk.fr/src/iforce.h) suggests that the acceleration term defined before in the centered NS solver is re-assigned to zero in the iforce subroutine. This is totally unreasonable and could lead to unexpected results. An effort to try to use body-force gravity term and surface tension is shown [here in my GitHub page](https://github.com/MGYBY/Basilisk_practice/tree/main/power-law/vof/normalFlow).
+  **The question proposed [here](/sandbox/boyuan/accelerationEventQuestion/normalFlow.c#numerical-results) has had known reasons.** This may due to a possible bug in Basilisk. A careful investigation of the source code of [ns-centered](/src/navier-stokes/centered.h) and [iforce](/src/iforce.h) suggests that the acceleration term defined before in the centered NS solver is re-assigned to zero in the iforce subroutine. This is totally unreasonable and could lead to unexpected results. An effort to try to use body-force gravity term and surface tension is shown [here in my GitHub page](https://github.com/MGYBY/Basilisk_practice/tree/main/power-law/vof/normalFlow).
 
   Steady-uniform flow down an incline.
   

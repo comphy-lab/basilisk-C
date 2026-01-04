@@ -34,7 +34,7 @@ with
 <center>![Initial perturbation of the interface with: (Left) the Fourier power spectrum
 of the perturbation amplitude, (Middle) the phase of the Fourier modes (middle) and
 (Right) the perturbation amplitude in the physical space.
-Taken from [Thévenin et al (2024)](#thevenin2024)
+Taken from [Thévenin et al (2025)](#thevenin2025)
 ](Thevenin.png)</center>
 
 <center><img src="Thevenin2.png" alt="drawing" width="400"/>
@@ -315,11 +315,14 @@ void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int N
   doi = {10.1063/1.1688328},
 }
 
-@article{thevenin2024,
-  title={The memory of Rayleigh-Taylor turbulence},
-  author={Th{\'e}venin, S{\'e}bastien and Gr{\'e}a, B-J and Kluth, Gilles and Nadiga, Balu},
-  journal={arXiv preprint arXiv:2403.17832},
-  year={2024}
+@article{thevenin2025,
+  title={Leveraging initial conditions memory for modelling Rayleigh--Taylor turbulence},
+  author={Th{\'e}venin, S{\'e}bastien and Gr{\'e}a, Beno{\^\i}t-Joseph and Kluth, Gilles and Nadiga, Balasubramanya T},
+  journal={Journal of Fluid Mechanics},
+  volume={1009},
+  pages={A17},
+  year={2025},
+  publisher={Cambridge University Press}
 }
 
 

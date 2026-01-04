@@ -214,8 +214,8 @@ p[-10:0][0: ]'out' u (5.5+$1-$8/500*40):($8>=tt?$2:NaN) t'total h'w l
 
 ## Links
 
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]()
-* [http://basilisk.fr/sandbox/M1EMN/TEST/shah.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]()
+* [https://basilisk.fr/sandbox/M1EMN/TEST/shah.c]()
 
 
 

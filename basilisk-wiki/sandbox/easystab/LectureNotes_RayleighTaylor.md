@@ -263,7 +263,7 @@ We finally drop the tildes to get the final result.
 Considering no-slip conditions at the top and bottom plates (i.e. $\hat{u} = \hat{v} = 0$ for $y=0$ and $y=H$), the problem cannot be solved analytically. On the other hand, the problem is easily solved numerically by using discretization in the $y$-direction, leading directly to a matrical problem with the form $\lambda B \hat{X} = A \hat{X}$ where $\hat{X}$ is the discretized version of 
 $\hat{u}(y);\hat{v}(y);\hat{p}(y);\hat{\theta}(y)]$.
 
-See [associated program.](http://basilisk.fr/sandbox/easystab/RayleighBenard.m)
+See [associated program.](/sandbox/easystab/RayleighBenard.m)
 
 The main conclusions are :
 
@@ -279,7 +279,7 @@ This means that above $Ra_c$, convection rolls are amplified, the most amplified
 ### analytical solution in case of slip boundary conditions 
 
 The case of "slip" boundary conditions consists of replacing the boundary conditions by
-$\hat{v} = 0 ; \partial_y \hat{u} =0$ at $y=0$ and $y=H$. This case is not physically justified, but allows to solve the problem in analytical way, and hence was favoured in the earliest studies. See Chandrasekhar or Drazin & Reid for details. This case is treated in [exercice 5.1](http://basilisk.fr/sandbox/easystab/LectureNotes_RayleighTaylor.md#exercice-5.1-rayleigh-benard-convection-with-free-free-boundaries.).
+$\hat{v} = 0 ; \partial_y \hat{u} =0$ at $y=0$ and $y=H$. This case is not physically justified, but allows to solve the problem in analytical way, and hence was favoured in the earliest studies. See Chandrasekhar or Drazin & Reid for details. This case is treated in [exercice 5.1](/sandbox/easystab/LectureNotes_RayleighTaylor.md#exercice-5.1-rayleigh-benard-convection-with-free-free-boundaries.).
 
 
 The resolution leads to the same conclusions as in the previous case, but the value of $Ra_c$ has an exact expression : $Ra_c= 27 \pi^4/4 \approx 657.5$. The  associated wavenumber is $k = \pi/\sqrt{2}$ which corresponds to a dimensional wavelength $\Lambda = \sqrt{2} H$, somewhat shorter than with no-slip conditions.
@@ -354,7 +354,7 @@ Considering the model, one can make the following remarks:
 
 ## Dynamics of the Lorenz system.
 
-Dynamics of the Lorenz system is best understood by playing with [the program](http://basilisk.fr/sandbox/easystab/lorenz_convection.m). On can also predict the first bifurcations by calculus (see exercice 5.2)
+Dynamics of the Lorenz system is best understood by playing with [the program](/sandbox/easystab/lorenz_convection.m). On can also predict the first bifurcations by calculus (see exercice 5.2)
 
 - The first system undergoes a *supercritical Pitchform bifurcation* for $r = r_{c,1} = 1$. Below this value, the only equilibrium solution is the trivial state $X=Y=Z=0$ which is stable. Above this value, this state becomes instable and new stable equilibrium solutions appear representing steady convection rolls.
 

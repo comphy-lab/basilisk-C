@@ -5,8 +5,8 @@
 A bubble has just burst at the ocean free surface, then, collapses: 
 the conical formed cavity develops a self-similar evolution leading to a 
 *finite-time singularity* coming from the balance between inertia and capillary 
-forces. As already shown in [`keller_miksis`](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c) 
-and [`sierou_lister`](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c) 
+forces. As already shown in [`keller_miksis`](/sandbox/cailler/keller_miksis/keller_fig2_conv.c) 
+and [`sierou_lister`](/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c) 
 projects, this collapse evolves according to the power law $(t_0 - t)^{2/3}$, 
 where $t_0$ is the time of singularity (divergence of velocity and pressure 
 fields). 
@@ -148,10 +148,10 @@ In that case, how could we understand the origin of this physical mechanism?
 
 ## Time reversals of recoiling cones
 
-In another project ([`sierou_lister`](http://basilisk.fr/sandbox/cailler/sierou_lister/)), 
+In another project ([`sierou_lister`](/sandbox/cailler/sierou_lister/)), 
 the self-similar recoil of a 3D--AXI cone submitted to strong negative
-[*dipolar flows*](http://basilisk.fr/sandbox/cailler/sierou_lister/README) 
-highlighted the development of [*jet structures*](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c#discussion). 
+[*dipolar flows*](/sandbox/cailler/sierou_lister/README) 
+highlighted the development of [*jet structures*](/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c#discussion). 
 This important result was an extension of the paper of [Sierou \& Lister, (2004)](#sierou2004) 
 and will be widely used in our simulations. 
 But another fundamental aspect of *Sierou \& Lister*'s work still not exploited 
@@ -170,7 +170,7 @@ is the following crucial remark:
 
 Actually, for an irrotational, inviscid and incompressible flow, the following 
 dynamic and kinematic boundary conditions in self-similar form are found to be, 
-according to [*this note*](http://basilisk.fr/sandbox/cailler/sierou_lister/README#far-field-self-similar-asymptotic-expansions) (see notations there):
+according to [*this note*](/sandbox/cailler/sierou_lister/README#far-field-self-similar-asymptotic-expansions) (see notations there):
 
 $$
 - \dfrac{1}{3}{\overline{\phi}^-} 
@@ -232,7 +232,7 @@ time reversal of a collapsing cavity (at least for the inviscid case).
 ## New physical interpretation for dipolar flows
 
 From the numerical studies upon a recoiling liquid cone submitted to a far-field 
-dipolar flow (see [`sierou_dipolar_flow.c`](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c) and [`sierou_neg_dipolar_flow.c`](http://basilisk.fr/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c)), we have seen that (for $\theta_0 > 90$°):
+dipolar flow (see [`sierou_dipolar_flow.c`](/sandbox/cailler/sierou_lister/sierou_dipolar_flow.c) and [`sierou_neg_dipolar_flow.c`](/sandbox/cailler/sierou_lister/sierou_neg_dipolar_flow.c)), we have seen that (for $\theta_0 > 90$°):
 
   * for $\widetilde{\mu}_0 > 0$, beyond a given threshold $\widetilde{\mu}_0^*$ 
   depending on the initial cone angle, the dipolar flow overcomes the capillary 

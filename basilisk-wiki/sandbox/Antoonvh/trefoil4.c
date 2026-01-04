@@ -2,28 +2,11 @@
 # Andres Castillo's Trefoil example...
 
 ...Using a 4th order solver and bwatch. See [Andres'
-page](../acastillo/filaments/trefoil.c) for my inspiration.
+page](../acastillo/filaments/old_but_interesting/trefoil.c) for my inspiration.
 
-<div class="figure">
-<video controls="" preload="metadata" width="900">
-<source src="https://surfdrive.surf.nl/files/index.php/s/vAfPbpVqwy3dfrn/download
-" type="video/mp4">
-Your browser does not support the video tag. </video>
-<p class="caption">
-Volumetric rendering of the negative $\lambda_2$ field (via surfdrive)
-</p>
-</div>
-
-<div class="figure">
-<video controls="" preload="metadata" width="900">
-<source src="https://surfdrive.surf.nl/files/index.php/s/gVqk1Aw0yIPaCpg/download
-" type="video/mp4">
-Your browser does not support the video tag. </video>
-<p class="caption">
-Another volumetric rendering of the negative $\lambda_2$ field (via surfdrive)
-</p>
-</div>
+![The knot unties itself](trefoil4/tref.mp4)
 */
+#define RKORDER 3
 #include "grid/octree.h"
 #include "nsf4t.h"
 scalar * tracers = NULL;

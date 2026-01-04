@@ -6,7 +6,7 @@ Some functions that make life without halo-ghosts possible
 ## Centered-gradient computation
 
 `my_gradients()` mimics `gradients()`, and functions like
-[`centered_gradient()`](http://basilisk.fr/src/navier-stokes/centered.h#approximate-projection)
+[`centered_gradient()`](/src/navier-stokes/centered.h#approximate-projection)
  */
 void my_gradients (scalar * sl, vector * gl) {
   assert (list_len(sl) == vectors_len(gl));

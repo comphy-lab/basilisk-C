@@ -4,7 +4,7 @@
 This simple case is based on the [von Karman vortex street example](/src/examples/karman.c)
 using the solid representation from the [moving cylinder case](/sandbox/popinet/moving_cylinder.c).
 
-The aim of this tutorial is showing the [adapt_values function](http://basilisk.fr/sandbox/pairetti/adapt_values/adapt_values.h),
+The aim of this tutorial is showing the [adapt_values function](/sandbox/pairetti/adapt_values/adapt_values.h),
 and how to use it in order to produce a *variable emax* simulation.
 
 We first define the problem parameters and refinement settings.

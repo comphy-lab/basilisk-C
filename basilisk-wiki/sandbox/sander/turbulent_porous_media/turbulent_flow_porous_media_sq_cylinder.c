@@ -190,7 +190,7 @@ event ending(t=60)
  * s.nc: Anzahl der vergröberten Zellen
  * s.nf: Anzahl der verfeinerten Zellen
  * 
- * Codebaustein aus http://basilisk.fr/sandbox/Antoonvh/bootstrapbubble.c
+ * Codebaustein aus https://basilisk.fr/sandbox/Antoonvh/bootstrapbubble.c
  *   scalar ff[];
  *   foreach()
  *   	ff[] = filtergeom[];

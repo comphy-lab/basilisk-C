@@ -73,7 +73,7 @@ How print the boundary values
 
 ## Bugs
 
-To report bugs go to the [basilisk bugs page](http://basilisk.fr/sandbox/bugs/README).
+To report bugs go to the [basilisk bugs page](/sandbox/bugs/README).
 
 
 # C
@@ -140,7 +140,7 @@ event acceleration (i++) {
 }
 ~~~
 
-#I
+
 ## Initialization
 
 ### Face vector
@@ -157,7 +157,7 @@ foreach_face(y)
   u.y[] = x;
 ~~~
 
-Note that the coordinates x and y correspond to the center of the face.
+Note that the coordinates x and y correspond to the center of the face. 
 
 ### Volume fraction
 
@@ -254,7 +254,7 @@ if (pid() == 0)
   fprintf(fp, "Hallo, this is pid() %d", pid());
 ~~~
 
-This requires to properly reduce the various versions of a diagnostic variable using e.g. [a reduction clausule](http://basilisk.fr/Basilisk%20C#parallel-programming) or [a more general reduction operation](http://mpitutorial.com/tutorials/mpi-reduce-and-allreduce/), such that the writing thread has access to the relevant data.
+This requires to properly reduce the various versions of a diagnostic variable using e.g. [a reduction clausule](/Basilisk%20C#parallel-programming) or [a more general reduction operation](http://mpitutorial.com/tutorials/mpi-reduce-and-allreduce/), such that the writing thread has access to the relevant data.
 
 * Let each thread write it's own file.
 
@@ -310,5 +310,5 @@ c.sigma = 1.;
 
 Basilisk is used to teach general computational fluid mechanics, see
 
-- 1st year Master “Environmental Fluid Mechanics” (P-Y Lagrée) [M1EFM](http://basilisk.fr/sandbox/M1EMN/README)
-- ARE course on Saint Venant Equations (G Kirstetter) [StVenant](http://basilisk.fr/sandbox/geoffroy/README)
+- 1st year Master “Environmental Fluid Mechanics” (P-Y Lagrée) [M1EFM](/sandbox/M1EMN/README)
+- ARE course on Saint Venant Equations (G Kirstetter) [StVenant](/sandbox/geoffroy/README)

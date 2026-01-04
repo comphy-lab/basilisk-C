@@ -5,11 +5,11 @@ Extreme test case */
 
 #define BICUBIC 1
 #define BGHOSTS 2
-#include "popinet/distance_point_ellipse.h"
+#include "distance_point_ellipse.h"
 
 #include "embed.h"
-#include "alimare/alex_functions.h"
-#include "alimare/LS_reinit.h"
+#include "../alex_functions.h"
+#include "redistance.h"
 #include "view.h"
 
 double perturb (double x, double y, double eps, coord center)
@@ -49,7 +49,9 @@ int main()
   draw_isolines (dist, -1., 1., 10, 1);
   save ("dist_init.png");
 
-  LS_reinit (dist, it_max = 200);
+  //LS_reinit (dist, it_max = 200);
+  scalar resf[];
+  int niter = redistance(dist, 500, 0.5, 3, 1e-6, HUGE, resf);
   squares ("dist", map = cool_warm, min = -1, max = 1);
   draw_isolines (dist, -1., 1., 10, 1);
   save ("dist_first_reinit.png");

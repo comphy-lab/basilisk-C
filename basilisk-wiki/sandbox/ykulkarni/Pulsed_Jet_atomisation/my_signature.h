@@ -1,5 +1,5 @@
 /** This is taken from the sandbox of lchirco.
-http://basilisk.fr/sandbox/lchirco/signature.h
+https://basilisk.fr/sandbox/lchirco/signature.h
 
 This is used in my pulsed jet example. Note that here we have changed SQUARES to 1, so that we punch cubes. 
 */

@@ -23,7 +23,7 @@ ATTENTION: This is not a complete code, you may need to manually adjust many val
 
 /**
 ##Importing the geometry 
-see details in [distance.c](http://basilisk.fr/src/examples/distance.c)*/
+see details in [distance.c](/src/examples/distance.c)*/
 void fraction_from_stl (scalar f, FILE * fp, int maxlevel)
 {
   coord * p = input_stl (fp);

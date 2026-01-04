@@ -12,10 +12,10 @@ see as well [http://m2.basilisk.dalembert.upmc.fr/sandbox/PYL/README]()
 
 ## Installation  
 
-[http://basilisk.fr/src/INSTALL]()
+[https://basilisk.fr/src/INSTALL]()
 
 
-[http://basilisk.fr/sandbox/M1EMN/HELP/README]()
+[https://basilisk.fr/sandbox/M1EMN/HELP/README]()
 
 
 ## Simple example to present finite volumes
@@ -85,11 +85,11 @@ Model equation for surface growth
 
 ## for Master 1, "TP" by Geoffroy
 
-* [Cours/TP 1](http://basilisk.fr/sandbox/geoffroy/teaching/C1.c) : Introduction à Basilisk
-* [TP 2](http://basilisk.fr/sandbox/geoffroy/teaching/C2.c) : Un Tsunami dans la mer méditérannée (topographie à télecharger : [topo.kdt](http://basilisk.fr/sandbox/geoffroy/teaching/topo.kdt) )
-* [Cours/TP 3](http://basilisk.fr/sandbox/geoffroy/teaching/C3.c) : Solveurs de Riemann et Cas test
-* [Cours/TP 4](http://basilisk.fr/sandbox/geoffroy/teaching/C4.c) : Les coefficients de frictions et leurs implémentations
-* [Mini - projet](http://basilisk.fr/sandbox/geoffroy/teaching/karamea.c) : L'inondation de Karamea (à faire !)
+* [Cours/TP 1](/sandbox/geoffroy/teaching/C1.c) : Introduction à Basilisk
+* [TP 2](/sandbox/geoffroy/teaching/C2.c) : Un Tsunami dans la mer méditérannée (topographie à télecharger : [topo.kdt](/sandbox/geoffroy/teaching/topo.kdt) )
+* [Cours/TP 3](/sandbox/geoffroy/teaching/C3.c) : Solveurs de Riemann et Cas test
+* [Cours/TP 4](/sandbox/geoffroy/teaching/C4.c) : Les coefficients de frictions et leurs implémentations
+* [Mini - projet](/sandbox/geoffroy/teaching/karamea.c) : L'inondation de Karamea (à faire !)
 
 ## Multilayer / RNSP
 Some examples of multilayer and  RNS/P solutions 
@@ -151,6 +151,6 @@ Here granular flows with continuum description
 * [Continuum sand glass of grains real 2D](Exemples/granular_sandglass.c)
 * [Continuum sand glass of grains real 2D, with friction](Exemples/granular_sandglass_muw.c)
 * [Continuum sand glass of grains 2D axi](Exemples/siloaxisl.c)
-* [Continuum sand glass of grains full 3D](http://basilisk.fr/sandbox/yixian/Sandglass3D.c)
+* [Continuum sand glass of grains full 3D](/sandbox/yixian/Sandglass3D.c)
 
 

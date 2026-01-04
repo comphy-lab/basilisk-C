@@ -8,12 +8,12 @@
  It spread due to gravity, and it is slowed down due to no Newtonian viscosity.
  This is for example the case of ice on Antarctic, where for ice rheology the Glen's law is applied $\dot\gamma = \tau^3$
  
-  See  related Newtonian examples  with [only mass equation and lubrication](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) which is of course the sploutch problem.
+  See  related Newtonian examples  with [only mass equation and lubrication](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) which is of course the sploutch problem.
  
 ![animation of the collapse](glen_collapse_NH/animate.gif)
  
  
- The 1D kinetic wave case with realistic values for ice is [here](http://basilisk.fr/sandbox/nlemoine/halfar1D.c) and is refered as Halfar's solution.
+ The 1D kinetic wave case with realistic values for ice is [here](/sandbox/nlemoine/halfar1D.c) and is refered as Halfar's solution.
  
  
  
@@ -37,7 +37,7 @@
  We define an equivalent viscosity
  $$\tau_{xy}=  \rho \nu_{eq} \dfrac{\partial u}{\partial z}
  \text{ with } \nu_{eq}=  \nu \left( \dfrac{\partial u}{\partial z}\right)^{n-1})$$
- the `layered/hydro.h` is changed in [http://basilisk.fr/sandbox/M1EMN/Exemples/hydroNN.h]()
+ the `layered/hydro.h` is changed in [https://basilisk.fr/sandbox/M1EMN/Exemples/hydroNN.h]()
 
 ## Link with 1D model
  
@@ -50,7 +50,7 @@
  were the pressure is hydrostatic $p=\rho g (h-y)$, and with the power law  rheology. This gives then $Q=\int_0^h udy$
  $$Q=  \frac{n\;h^{\frac{n+1}{n}} }{(n+1)(2n+1)}\Bigg(\frac{\rho g}{\mu}(-\frac{\partial h}{\partial x})\Bigg)^{\frac{1}{n}}\; (n + 1 )h
 $$
- that we put in the mass conservation. In the case of Herschel Bulkley fluids, we have a threshold stress and hence we obtain the [1D kinetic wave](http://basilisk.fr/sandbox/M1EMN/Exemples/herschel-column-noSV.c) from the paper of Balmforth (in case of Herschel Bulkley fluids).
+ that we put in the mass conservation. In the case of Herschel Bulkley fluids, we have a threshold stress and hence we obtain the [1D kinetic wave](/sandbox/M1EMN/Exemples/herschel-column-noSV.c) from the paper of Balmforth (in case of Herschel Bulkley fluids).
  
  
  
@@ -61,10 +61,10 @@ $$
 ## Link with the Sploutch
  
  The example is linked to the Sploutch :  collapse of a viscous fluid (Huppert 82 “The propagation of two-dimensional and axisymmetric viscous gravity currents over a rigid horizontal surface”), here we have a slope.
- It is done with only mass equation and lubrication [here](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and
- with shallow water [there](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c).
+ It is done with only mass equation and lubrication [here](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and
+ with shallow water [there](/sandbox/M1EMN/Exemples/viscous_collapse.c).
  The same RNSP equations are solved 
- [with Multilayer shallow water](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c)
+ [with Multilayer shallow water](/sandbox/M1EMN/Exemples/viscous_collapse_ML.c)
  (using the Multilayer Shallow Water (Saint Venant Multi Couches) strategy of Audusse Sainte-Marie  et al 2011. See De Vita 2020 for details). 
  
  
@@ -74,12 +74,12 @@ $$
 
  
   The  hydrostatic
- [http://basilisk.fr/src/layered/hydro.h]()
+ [https://basilisk.fr/src/layered/hydro.h]()
  "hydro.h" has been changed in "hydroNN.h" to include variable viscosity.
  "difusion.h" has been chenged in it and is now "difusionNN.h" (Non-Newtonian).
  
  it is possible to test the  non hydrostatic
- [http://basilisk.fr/src/layered/nh.h](), it should be done next.
+ [https://basilisk.fr/src/layered/nh.h](), it should be done next.
 
  
  
@@ -272,9 +272,9 @@ Plot of the solution at different times
  
 ## Links
  
-* [http://basilisk.fr/sandbox/nlemoine/halfar1D.c]() Nicolas's Sandbox
+* [https://basilisk.fr/sandbox/nlemoine/halfar1D.c]() Nicolas's Sandbox
  
-* [http://basilisk.fr/sandbox/M1EMN/Exemples/herschel-column-noSV.c]()
+* [https://basilisk.fr/sandbox/M1EMN/Exemples/herschel-column-noSV.c]()
 
  
  

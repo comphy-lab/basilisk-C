@@ -11,16 +11,16 @@ This is the  collapse of a viscous fluid (double viscous dam break),
  from the paper: Huppert 82 “The propagation of two-dimensional and axisymmetric viscous gravity currents over a rigid horizontal surface”
  
 ## Equations
- it was  done with [only mass equation and lubrication ](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and
- [with shallow water](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c) and
- [with Multilayer shallow water](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c)
+ it was  done with [only mass equation and lubrication ](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and
+ [with shallow water](/sandbox/M1EMN/Exemples/viscous_collapse.c) and
+ [with Multilayer shallow water](/sandbox/M1EMN/Exemples/viscous_collapse_ML.c)
 (using the Multilayer Shallow Water (Saint Venant Multi Couches See De Vita 2020 for details)
  and now compare with
  [Popinet (2019)](/Bibliography#popinet2019)
- hydrostatic  [http://basilisk.fr/src/layered/hydro.h]()
+ hydrostatic  [https://basilisk.fr/src/layered/hydro.h]()
   and 
  the non hydrostatic
- [http://basilisk.fr/src/layered/layered/nh.h"]() models.
+ [https://basilisk.fr/src/layered/layered/nh.h"]() models.
 
  
  
@@ -187,8 +187,8 @@ The non hydrostatic code creates oscillation...
 confine 03/20
  
 ## Links
- related examples [only mass equation and lubrication ](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and
- [with shallow water](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c)
+ related examples [only mass equation and lubrication ](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and
+ [with shallow water](/sandbox/M1EMN/Exemples/viscous_collapse.c)
  see as well Navier Stokes solution.
  
 

@@ -1,7 +1,7 @@
 /**
 # Interface Gradients
 
-This file is copied from [Edorado's sandbox](http://basilisk.fr/sandbox/ecipriano/README). All credit to him!
+This file is copied from [Edorado's sandbox](/sandbox/ecipriano/README). All credit to him!
 
 The calculation of the interface gradients can be performed
 using the method developed in [embed.h](/src/embed.h). This

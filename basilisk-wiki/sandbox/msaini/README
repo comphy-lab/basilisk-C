@@ -20,9 +20,9 @@ wall](Marangoni/marangoniwall.c)
 * [Potential flow solution around a bubble collapsing near wall](tests/embedpotential.c)
 * [Bubble collapse for different contact angle where simulations are started from potential flow solution](tests/collapsewall.c)
 * [Sessile bubble test with all-Mach solver](tests/sessilecomp.c)
-* [Collapse of low pressure bubble under ambient pressure](http://basilisk.fr/sandbox/msaini/tests/collapse.c)
-* [Oscillating bubble under influence of change in pressure](http://basilisk.fr/sandbox/msaini/tests/oscillations.c)
-* [Laser induced bubbles nead solid boundary](http://basilisk.fr/sandbox/msaini/tests/nearwall.c)
+* [Collapse of low pressure bubble under ambient pressure](/sandbox/msaini/tests/collapse.c)
+* [Oscillating bubble under influence of change in pressure](/sandbox/msaini/tests/oscillations.c)
+* [Laser induced bubbles nead solid boundary](/sandbox/msaini/tests/nearwall.c)
 
 ### Miscellaneous
 * [Rising bubble](Marangoni/risingHF.c)

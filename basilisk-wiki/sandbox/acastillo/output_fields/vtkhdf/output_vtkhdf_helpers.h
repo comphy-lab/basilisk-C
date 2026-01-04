@@ -18,6 +18,23 @@ void count_points_and_cells(int *num_points_glob, int *num_cells_glob, int *num_
   MPI_Allreduce(num_cells,  num_cells_glob,  1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 }
 
+void count_points_and_cells_box(int *num_points_glob, int *num_cells_glob, int *num_points, int *num_cells, scalar cell_mask, vertex scalar vertex_needed) {
+  foreach_vertex(serial, noauto){
+    if (vertex_needed[] > 0.5){
+      (*num_points)++;
+    }
+  }
+
+  foreach (serial, noauto){
+    if (cell_mask[] > 0.5){
+      (*num_cells)++;
+    }
+  }
+
+  MPI_Allreduce(num_points, num_points_glob, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+  MPI_Allreduce(num_cells,  num_cells_glob,  1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+}
+
 void count_points_and_cells_slice(int *num_points_glob, int *num_cells_glob, int *num_points, int *num_cells, scalar per_mask, coord n = {0, 0, 1}, double _alpha = 0) {
   foreach_vertex(serial, noauto){
     shortcut_slice(n, _alpha);
@@ -108,6 +125,17 @@ void initialize_marker(vertex scalar marker, hsize_t *offset, hsize_t accumulate
   marker.dirty = true;
 }
 
+void initialize_marker_box(vertex scalar marker, vertex scalar vertex_needed, hsize_t *offset, hsize_t accumulate = 1) {
+  int num_points = 0;
+  foreach_vertex(serial, noauto){
+    marker[] = 0.;
+    if (vertex_needed[] > 0.5) {
+      marker[] = num_points + offset[0]*accumulate;
+      num_points++;
+    }
+  }  
+}
+
 void initialize_marker_slice(vertex scalar marker, hsize_t *offset, coord n = {0, 0, 1}, double _alpha = 0, hsize_t accumulate = 1) {
   int num_points = 0;
   foreach_vertex(serial, noauto){
@@ -155,6 +183,38 @@ void populate_points_dset(double **points_dset, int num_points, int *offset_poin
     #else 
       (*points_dset)[ii + 2] = z;
     #endif
+  }
+}
+
+void populate_points_dset_box(vertex scalar mask, vertex scalar marker, double **points_dset, int num_points, int *offset_points, hsize_t *count, hsize_t *offset) {
+  // Each process defines dataset in memory and writes to an hyperslab
+  count[0] = num_points;
+  count[1] = 3;
+  offset[0] = 0;
+  offset[1] = 0;
+  if (pid() != 0){
+    for (int i = 1; i <= pid(); ++i){
+      offset[0] += offset_points[i - 1];
+    }
+  }
+
+  // Allocate memory for points_dset
+  *points_dset = (double *)malloc(count[0] * count[1] * sizeof(double));
+
+  // Iterate over each vertex
+  foreach_vertex(serial, noauto){
+    if (mask[] >= 0.5){
+      int ii = marker[] * 3;
+
+      // Store coordinates
+      (*points_dset)[ii + 0] = x;
+      (*points_dset)[ii + 1] = y;
+      #if dimension == 2
+        (*points_dset)[ii + 2] = 0.;
+      #else 
+        (*points_dset)[ii + 2] = z;
+      #endif
+    }
   }
 }
 
@@ -225,18 +285,11 @@ void populate_scalar_dset(scalar s, double *scalar_dset, int num_cells, int *off
     }
   }
 
+  int ii = 0;
   foreach (serial, noauto){
     if (per_mask[]){
-      #if !TREE
-        #if dimension == 2
-          int _k = (point.i - 2) * ((1 << point.level)) + (point.j - 2);
-        #else
-          int _k = (point.i - 2) * sq((1 << point.level)) + (point.j - 2) * ((1 << point.level)) + (point.k - 2);
-        #endif
-      #endif
-
-      // Store values
-      scalar_dset[_k] = s[];
+      scalar_dset[ii] = s[];
+      ii++;
     }
   }
 }
@@ -255,16 +308,16 @@ void populate_scalar_dset_slice(scalar s, double *scalar_dset, int num_cells, in
     }
   }
 
-  num_cells = 0;
+  int ii = 0;
   foreach (serial, noauto){
     if (per_mask[]){
       if (n.x == 1)
-        scalar_dset[num_cells] = 0.5 * (val(s) + val(s, 1, 0, 0));
+        scalar_dset[ii] = 0.5 * (val(s) + val(s, 1, 0, 0));
       else if (n.y == 1)
-        scalar_dset[num_cells] = 0.5 * (val(s) + val(s, 0, 1, 0));
+        scalar_dset[ii] = 0.5 * (val(s) + val(s, 0, 1, 0));
       else
-        scalar_dset[num_cells] = 0.5 * (val(s) + val(s, 0, 0, 1));
-      num_cells++;
+        scalar_dset[ii] = 0.5 * (val(s) + val(s, 0, 0, 1));
+      ii++;
     }
   }
 }
@@ -282,27 +335,21 @@ void populate_vector_dset(vector v, double *vector_dset, int num_cells, int *off
     }
   }
 
+  int ii = 0;
   foreach (serial, noauto){
     if (per_mask[]){
-      #if !TREE
-        #if dimension == 2
-          int _k = (point.i - 2) * ((1 << point.level)) + (point.j - 2);
-        #else
-          int _k = (point.i - 2) * sq((1 << point.level)) + (point.j - 2) * ((1 << point.level)) + (point.k - 2);
-        #endif
-      #endif
-
       // Calculate starting index
-      int ii = _k * 3;
+      int ij = ii * 3;
 
       // Store each component
-      vector_dset[ii + 0] = v.x[];
-      vector_dset[ii + 1] = v.y[];
+      vector_dset[ij + 0] = v.x[];
+      vector_dset[ij + 1] = v.y[];
       #if dimension == 2
-        vector_dset[ii + 2] = 0.;
+        vector_dset[ij + 2] = 0.;
       #else
-        vector_dset[ii + 2] = v.z[];
+        vector_dset[ij + 2] = v.z[];
       #endif
+      ii++;
     }
   }
 }
@@ -321,26 +368,26 @@ void populate_vector_dset_slice(vector v, double *vector_dset, int num_cells, in
     }
   }
 
-  num_cells = 0;
+  int ii = 0;
   foreach (serial, noauto){
     if (per_mask[]){
-      int ii = num_cells * 3;
+      int ij = ii * 3;
       if (n.x == 1){
-        vector_dset[ii + 0] = 0.5 * (val(v.x) + val(v.x, 1, 0, 0));
-        vector_dset[ii + 1] = 0.5 * (val(v.y) + val(v.y, 1, 0, 0));
-        vector_dset[ii + 2] = 0.5 * (val(v.z) + val(v.z, 1, 0, 0));
+        vector_dset[ij + 0] = 0.5 * (val(v.x) + val(v.x, 1, 0, 0));
+        vector_dset[ij + 1] = 0.5 * (val(v.y) + val(v.y, 1, 0, 0));
+        vector_dset[ij + 2] = 0.5 * (val(v.z) + val(v.z, 1, 0, 0));
       }
       else if (n.y == 1){
-        vector_dset[ii + 0] = 0.5 * (val(v.x) + val(v.x, 0, 1, 0));
-        vector_dset[ii + 1] = 0.5 * (val(v.y) + val(v.y, 0, 1, 0));
-        vector_dset[ii + 2] = 0.5 * (val(v.z) + val(v.z, 0, 1, 0));
+        vector_dset[ij + 0] = 0.5 * (val(v.x) + val(v.x, 0, 1, 0));
+        vector_dset[ij + 1] = 0.5 * (val(v.y) + val(v.y, 0, 1, 0));
+        vector_dset[ij + 2] = 0.5 * (val(v.z) + val(v.z, 0, 1, 0));
       }
       else{
-        vector_dset[ii + 0] = 0.5 * (val(v.x) + val(v.x, 0, 0, 1));
-        vector_dset[ii + 1] = 0.5 * (val(v.y) + val(v.y, 0, 0, 1));
-        vector_dset[ii + 2] = 0.5 * (val(v.z) + val(v.z, 0, 0, 1));
+        vector_dset[ij + 0] = 0.5 * (val(v.x) + val(v.x, 0, 0, 1));
+        vector_dset[ij + 1] = 0.5 * (val(v.y) + val(v.y, 0, 0, 1));
+        vector_dset[ij + 2] = 0.5 * (val(v.z) + val(v.z, 0, 0, 1));
       }
-      num_cells++;
+      ii++;
     }
   }
 }
@@ -385,35 +432,26 @@ void populate_topo_dset(long **topo_dset, int num_cells, int *offset_cells, hsiz
   *topo_dset = (long *)malloc(count[0] * count[1] * sizeof(long));
 
   // Iterate over each cell
+  int ii = 0;
   foreach (serial, noauto){
     if (per_mask[]){
-      // _k exist by default on quad/octrees, but not on multigrid
-      #if !TREE
-        #if dimension == 2
-          // Calculate index for 2D
-          int _k = (point.i - 2) * ((1 << point.level)) + (point.j - 2);
-        #else
-          // Calculate index for 3D
-          int _k = (point.i - 2) * sq((1 << point.level)) + (point.j - 2) * ((1 << point.level)) + (point.k - 2);
-        #endif
-      #endif
-
       // Calculate starting index for topo_dset
-      int ii = _k * count[1];
+      int ij = ii * count[1];
 
       // Assign marker values to topo_dset
-      (*topo_dset)[ii + 0] = (long)marker[];
-      (*topo_dset)[ii + 1] = (long)marker[1, 0];
-      (*topo_dset)[ii + 2] = (long)marker[1, 1];
-      (*topo_dset)[ii + 3] = (long)marker[0, 1];
+      (*topo_dset)[ij + 0] = (long)marker[];
+      (*topo_dset)[ij + 1] = (long)marker[1, 0];
+      (*topo_dset)[ij + 2] = (long)marker[1, 1];
+      (*topo_dset)[ij + 3] = (long)marker[0, 1];
 
       #if dimension == 3
         // Additional assignments for 3D
-        (*topo_dset)[ii + 4] = (long)marker[0, 0, 1];
-        (*topo_dset)[ii + 5] = (long)marker[1, 0, 1];
-        (*topo_dset)[ii + 6] = (long)marker[1, 1, 1];
-        (*topo_dset)[ii + 7] = (long)marker[0, 1, 1];
+        (*topo_dset)[ij + 4] = (long)marker[0, 0, 1];
+        (*topo_dset)[ij + 5] = (long)marker[1, 0, 1];
+        (*topo_dset)[ij + 6] = (long)marker[1, 1, 1];
+        (*topo_dset)[ij + 7] = (long)marker[0, 1, 1];
       #endif
+      ii++;
     }
   }
   count[0] = num_cells*pow(2, dimension);
@@ -438,33 +476,33 @@ void populate_topo_dset_slice(long **topo_dset, int num_cells, int *offset_cells
   *topo_dset = (long *)malloc(count[0] * count[1] * sizeof(long));
 
   // Iterate over each cell
-  num_cells = 0;
+  int ii = 0;
   foreach (serial, noauto){
     if (per_mask[]){
       // Calculate index
-      int ii = num_cells * count[1];
+      int ij = ii * count[1];
       if (n.x == 1){
-        (*topo_dset)[ii + 0] = (long)marker[1, 0, 0];
-        (*topo_dset)[ii + 1] = (long)marker[1, 1, 0];
-        (*topo_dset)[ii + 2] = (long)marker[1, 1, 1];
-        (*topo_dset)[ii + 3] = (long)marker[1, 0, 1];
+        (*topo_dset)[ij + 0] = (long)marker[1, 0, 0];
+        (*topo_dset)[ij + 1] = (long)marker[1, 1, 0];
+        (*topo_dset)[ij + 2] = (long)marker[1, 1, 1];
+        (*topo_dset)[ij + 3] = (long)marker[1, 0, 1];
       }
       else if (n.y == 1){
-        (*topo_dset)[ii + 0] = (long)marker[0, 1, 0];
-        (*topo_dset)[ii + 1] = (long)marker[1, 1, 0];
-        (*topo_dset)[ii + 2] = (long)marker[1, 1, 1];
-        (*topo_dset)[ii + 3] = (long)marker[0, 1, 1];
+        (*topo_dset)[ij + 0] = (long)marker[0, 1, 0];
+        (*topo_dset)[ij + 1] = (long)marker[1, 1, 0];
+        (*topo_dset)[ij + 2] = (long)marker[1, 1, 1];
+        (*topo_dset)[ij + 3] = (long)marker[0, 1, 1];
       }
       else{
-        (*topo_dset)[ii + 0] = (long)marker[0, 0, 1];
-        (*topo_dset)[ii + 1] = (long)marker[1, 0, 1];
-        (*topo_dset)[ii + 2] = (long)marker[1, 1, 1];
-        (*topo_dset)[ii + 3] = (long)marker[0, 1, 1];
+        (*topo_dset)[ij + 0] = (long)marker[0, 0, 1];
+        (*topo_dset)[ij + 1] = (long)marker[1, 0, 1];
+        (*topo_dset)[ij + 2] = (long)marker[1, 1, 1];
+        (*topo_dset)[ij + 3] = (long)marker[0, 1, 1];
       }
-      num_cells++;
+      ii++;
     }
   }
-  count[0] = num_cells*pow(2, dimension - 1);
+  count[0] = ii*pow(2, dimension - 1);
   count[1] = 1;
 }
 
@@ -799,7 +837,111 @@ void create_chunked_dataset(hid_t file_id, hsize_t *count, hsize_t *offset, cons
   H5Pclose(acc_tpl1);
 }
 
+/** ### create_contiguous_dataset(): Creates a contiguous dataset in an HDF5 file
+  
+ The arguments are:
 
+ *   **file_id**: HDF5 file identifier
+ *   **count**: Size of dataset to create
+ *   **offset**: Starting position for dataset creation
+ *   **dataset_name**: Name of dataset to create
+ *   **num_cells**: Total number of cells in dataset
+ *   **num_cells_loc**: Number of cells to create in this call
+ *   **num_dims**: Number of dimensions in dataset
+ *   **topo_dset**: Pointer to data to write to dataset
+ *   **datatype**: Data type of data to write to dataset
+ */
+void create_contiguous_dataset(hid_t file_id, hsize_t *count, hsize_t *offset, const char *dataset_name,
+                               int num_cells, int num_cells_loc, int num_dims, const void *topo_dset,
+                               hid_t datatype)
+{
+  hid_t dataspace_id, dataset_id, memspace_id, acc_tpl1;
+  hsize_t dims2[2];
+  herr_t status;
+
+  // Define dimensions
+  dims2[0] = num_cells;
+  dims2[1] = num_dims;
+
+  // Create the dataspace
+  dataspace_id = H5Screate_simple(2, dims2, NULL);
+  if (dataspace_id < 0) {
+    fprintf(stderr, "Error creating dataspace\n");
+    return;
+  }
+
+  // Create the dataset
+  dataset_id = H5Dcreate2(file_id, dataset_name, datatype, dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+  if (dataset_id < 0) {
+    fprintf(stderr, "Error creating dataset\n");
+    H5Sclose(dataspace_id);
+    return;
+  }
+  H5Sclose(dataspace_id);
+
+  // Define memory space for the dataset
+  count[0] = num_cells_loc;
+  count[1] = dims2[1];
+  memspace_id = H5Screate_simple(2, count, NULL);
+  if (memspace_id < 0) {
+    fprintf(stderr, "Error creating memory space\n");
+    H5Dclose(dataset_id);
+    return;
+  }
+
+  // Select hyperslab in the dataset
+  dataspace_id = H5Dget_space(dataset_id);
+  if (dataspace_id < 0) {
+    fprintf(stderr, "Error getting dataspace\n");
+    H5Dclose(dataset_id);
+    H5Sclose(memspace_id);
+    return;
+  }
+  status = H5Sselect_hyperslab(dataspace_id, H5S_SELECT_SET, offset, NULL, count, NULL);
+  if (status < 0) {
+    fprintf(stderr, "Error selecting hyperslab\n");
+    H5Dclose(dataset_id);
+    H5Sclose(dataspace_id);
+    H5Sclose(memspace_id);
+    return;
+  }
+
+  // Create property list for collective dataset write
+  acc_tpl1 = H5Pcreate(H5P_DATASET_XFER);
+  if (acc_tpl1 < 0) {
+    fprintf(stderr, "Error creating property list for collective dataset write\n");
+    H5Dclose(dataset_id);
+    H5Sclose(dataspace_id);
+    H5Sclose(memspace_id);
+    return;
+  }
+  status = H5Pset_dxpl_mpio(acc_tpl1, H5FD_MPIO_COLLECTIVE);
+  if (status < 0) {
+    fprintf(stderr, "Error setting collective dataset write property\n");
+    H5Dclose(dataset_id);
+    H5Sclose(dataspace_id);
+    H5Sclose(memspace_id);
+    H5Pclose(acc_tpl1);
+    return;
+  }
+
+  // Write data to the dataset
+  status = H5Dwrite(dataset_id, datatype, memspace_id, dataspace_id, acc_tpl1, topo_dset);
+  if (status < 0) {
+    fprintf(stderr, "Error writing data to dataset\n");
+    H5Dclose(dataset_id);
+    H5Sclose(dataspace_id);
+    H5Sclose(memspace_id);
+    H5Pclose(acc_tpl1);
+    return;
+  }
+
+  // Close all HDF5 objects to release resources
+  H5Dclose(dataset_id);
+  H5Sclose(dataspace_id);
+  H5Sclose(memspace_id);
+  H5Pclose(acc_tpl1);
+}
 
 
 

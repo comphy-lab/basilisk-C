@@ -56,7 +56,7 @@ void save_data_for_gnuplot_real(double *data, int NX, const char *filename){
 ### *init_1D_complex()*: initializes the perturbation in Fourier space
 */
 
-void init_1D_complex(double *data, int N, double kmin, double kmax, double eta0_target=1){
+void init_1D_complex(double *data, size_t N, double kmin, double kmax, double eta0_target=1){
   double *kx = malloc(N * sizeof(double));
   double cst = eta0_target / sqrt((2./kmin)-(2./kmax));
 
@@ -67,7 +67,8 @@ void init_1D_complex(double *data, int N, double kmin, double kmax, double eta0_
   for (int i = N / 2 + 1; i < N; ++i)
     kx[i] = 2 * pi * (i - N) / L0;
 
-  // Initialize spectrum in the specified range with magnitude 1/k and random phase
+  // Initialize spectrum in the specified range with magnitude 1/k and random
+  // phase
   double dkx = kx[1]-kx[0];
   double eta0 = 0.;
   memset(data, 0, 2 * N * sizeof(double));

@@ -90,7 +90,7 @@ I did the installation using wget, on 2018-oct-10. By the way, how can I get a s
 
 UPDATE:
 
-If I copy this file http://basilisk.fr/src/navier-stokes/stream.i to my local directory, the error is different.
+If I copy this file https://basilisk.fr/src/navier-stokes/stream.i to my local directory, the error is different.
 <pre>
 swig -I/home/dd22/basilisk/src -python  stream.i
 No module name specified using %module or -module.

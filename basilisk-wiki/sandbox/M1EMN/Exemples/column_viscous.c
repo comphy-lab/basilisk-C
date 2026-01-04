@@ -478,7 +478,7 @@ level (click on image for animation)
  * 1D Bingham collapse
  * Multilayer Bingham collapse
  * granular collapse
- * http://basilisk.fr/sandbox/M1EMN/Exemples/column_SCC.c
+ * https://basilisk.fr/sandbox/M1EMN/Exemples/column_SCC.c
  
  
 # Bibliography

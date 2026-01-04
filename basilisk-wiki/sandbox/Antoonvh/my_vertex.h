@@ -10,7 +10,8 @@ of cell centers. Furtheromore, for 5-point-stencil schemes, not all
 
 Iterate leafs and vertices on levels
  */
-@def foreach_vert()
+
+macro foreach_vert() {
   update_cache();
   foreach_cache(tree->leaves) {
     x -= Delta/2.;
@@ -20,9 +21,10 @@ Iterate leafs and vertices on levels
 #if dimension >= 3
     z -= Delta/2.;
 #endif
-@
-@define end_foreach_vert() } end_foreach_cache()
-
+    {...}
+  }
+}
+  
 @def foreach_vert_level(l) {
   if (l <= depth()) {
     update_cache();

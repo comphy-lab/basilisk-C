@@ -1,7 +1,7 @@
 /**
 # **Wave**
 ## Set up for the code 
-* Download [bash.sh](http://basilisk.fr/sandbox/aaykin/wave_code/bash.sh) and wave_3D.c
+* Download [bash.sh](/sandbox/aaykin/wave_code/bash.sh) and wave_3D.c
 * Run:. */
 
 /**

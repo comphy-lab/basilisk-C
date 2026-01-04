@@ -347,7 +347,7 @@ Si on veut une représntation 3D (h,x) avec le temps t vers l'arrière
 ~~~ 
 
 for use of `gnuplot` see
-[http://basilisk.fr/sandbox/M1EMN/BASIC/gnuplot_examples.c]()
+[https://basilisk.fr/sandbox/M1EMN/BASIC/gnuplot_examples.c]()
 
 # Go further
 
@@ -396,7 +396,7 @@ p[-5:5]'solxhQt.OUT' u ($1/$4**.2):($4>10?$2*$4**.2:0) w l
 ~~~
 
 iv) You can put turbulent friction  (this is the Dressler Problem See  Chanson page 357 and see
-  [dam break Dressler](http://basilisk.fr/sandbox/M1EMN/Exemples/damb_dressler.c) )
+  [dam break Dressler](/sandbox/M1EMN/Exemples/damb_dressler.c) )
 
    turbulent  friction  
   $$
@@ -410,7 +410,7 @@ for(i=1;i<nx+1;i++) { if(h[i]>0.) un[i]= un[i]/(1+0.5*dt*fabs(u[i])/h[i]); }
 
 v) You can put granular  friction...
 
-ex [http://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]()
+ex [https://basilisk.fr/sandbox/M1EMN/Exemples/savagestaron.c]()
 
 etc.
 
@@ -448,7 +448,7 @@ It is changed to have no penetration at the walls: a zero velocity at the final 
 
 the same example of dam break with Basilisk
 
- * [dam break](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c)
+ * [dam break](/sandbox/M1EMN/Exemples/damb.c)
  
  * the same in [python...](https://colab.research.google.com/drive/1960Q9Cgu9anAv6wfB9MblsBFo0BvWdrO)
 

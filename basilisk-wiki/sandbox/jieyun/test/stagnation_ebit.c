@@ -99,6 +99,9 @@ event interface_out (i++, last) {
 
     sprintf (name, "stagnation_%d_%d.dat", N, ii);
     output_facets_ebit (name);
+
+    // reference file
+    output_facets_ebit ("", stderr);
   }
 }
 

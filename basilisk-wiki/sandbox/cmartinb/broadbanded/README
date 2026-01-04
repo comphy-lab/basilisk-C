@@ -1,0 +1,32 @@
+# DNS — Broadband Wave Field Initialization
+
+This folder contains Direct Numerical Simulations (DNS) initialized with a **broadbanded gravity–capillary wave field**. The goal is to start from a realistic spectrum (e.g., JONSWAP) and study wind–wave–current interactions.
+
+## Contents
+- [`broadbanded.c`](broadbanded.c) — main Basilisk case.
+- [`spectrum.h`](spectrum.h) — spectrum utils.
+- [`helpers/`](helpers/) — utilities:
+  - [`centered.h`](helpers/centered.h)
+  - [`colormap.h`](helpers/colormap.h)
+  - [`distance2.h`](helpers/distance2.h)
+  - [`frac-dist.h`](helpers/frac-dist.h)
+  - [`LS_reinit.h`](helpers/LS_reinit.h)
+  - [`maxruntime.h`](helpers/maxruntime.h)
+  - [`my_funcs.h`](helpers/my_funcs.h)
+  - [`output3d.h`](helpers/output3d.h)
+  - [`perfs.h`](helpers/perfs.h)
+  - [`profile6.h`](helpers/profile6.h)
+  - [`weno2.h`](helpers/weno2.h)
+
+## Running the simulation
+
+This workflow runs DNS initialized with a broadband gravity–capillary wave field in three stages.
+
+### 1) Generate the initial wave spectrum
+Use any 2-D spectrum \(F(k_x,k_y)\) and axes \(k_x, k_y\) (e.g., a Python notebook under `gen_spec/` that writes files into `spectra_generated/`).
+
+### 2) Run the precursor (turbulent inflow over a stationary surface)
+Run the precursor until statistics are steady. You should obtain a restart file, e.g. `restart_re720_kpHS0p04_L10_R2_bo0200.bin`.
+
+### 3) Run the fully-coupled DNS (waves + turbulence)
+This stage needs **both** the spectrum from Step 1 and the precursor output from Step 2.

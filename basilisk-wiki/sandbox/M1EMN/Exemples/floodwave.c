@@ -19,13 +19,13 @@ The flood wave or kinetic wave, see  Whitham p 82,  Fowler  p 76,  or Chanson, i
 This is the turbulent case, in the laminar one
  $Q= -gZ_b' h^3/(3 \nu)$ and mass equation is
 $$\frac{\partial h} {\partial t} +   \frac{\partial }{\partial x}((\frac{-gZ_b'}{3\nu}) h_{\;}^3)   =0,$$
-See example from [viscous collapse on a slope (Huppert's problem)](http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c).
+See example from [viscous collapse on a slope (Huppert's problem)](/sandbox/M1EMN/Exemples/viscolsqrt.c).
  
  
 Then, for the turbulent case, without dimension we have to solve:
 $$\frac{\partial}{\partial \bar t} \bar h  + \frac{\partial}{\partial \bar x}(\bar h^{3/2})= 0 $$
  
-the method is similar to [advection](http://basilisk.fr/sandbox/M1EMN/BASIC/advecte1.c) which explains the notions of advection, testing the flux, coded with Basilisk.
+the method is similar to [advection](/sandbox/M1EMN/BASIC/advecte1.c) which explains the notions of advection, testing the flux, coded with Basilisk.
  The flux is here $\bar Q=\bar h^{3/2}$, and we solve:
 $$ \frac{\partial}{\partial \bar t} \bar h  + \frac{\partial}{\partial \bar x} \bar Q = 0
  \text{ solved as } \frac{\partial}{\partial \bar t} \bar h  + \bar c \frac{\partial}{\partial \bar x} \bar h = 0 \text{ with }  \bar c = \partial \bar Q/\partial \bar h$$
@@ -183,11 +183,11 @@ show that solution is $H=4 \eta^2/9$ and $h=t^{-2/3}H$ and $\eta=x/t^{2/3}$
 
 ## Links
  
- * [http://basilisk.fr/sandbox/M1EMN/BASIC/advecte1.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/BASIC/advecte1.c]()
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c]().
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c]().
  
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/floodwaveC.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/floodwaveC.c]()
  
 ## Bibliography
  

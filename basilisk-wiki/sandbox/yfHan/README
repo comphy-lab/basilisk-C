@@ -1,0 +1,13 @@
+# yfHan’s Sandbox
+
+This page summarizes the codes of 2D dynamic wetting that I implemented on Basilisk.  
+For an overview, please refer to the index below.
+
+
+
+##（2D dynamic wetting cases）
+- [dynamic wetting for a droplet](/sandbox/yfHan/droplet/)
+- [dynamic wetting for a bubble](/sandbox/yfHan/bubble/)
+
+## (Publication)
+- [Numerical simulation of oversaturation-driven bubble growth on solid surfaces with dynamic wetting](https://doi.org/10.1016/j.ijmultiphaseflow.2025.105343)  

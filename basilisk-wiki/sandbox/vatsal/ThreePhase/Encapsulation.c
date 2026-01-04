@@ -96,7 +96,7 @@ event init(t = 0)
     Initialization for the volume fractions. We solve the Youngs-Laplace equations
     to get the initial condition. The method is similar to the one used by Duchemin (2001)
     and Wong et al. (2017). The method is widely used to get initial conditions in case of
-    [bursting bubbles](http://basilisk.fr/sandbox/aberny/bubble/bubble.c). We have extended the method to calculate
+    [bursting bubbles](/sandbox/aberny/bubble/bubble.c). We have extended the method to calculate
     the shape of liquid drop/bubble at a fluid-fluid interface. I have not had the time to clean the code yet. So
     here, I just include the two data files which have the coordinates needed for initialization of the two VOF tracers.
     */

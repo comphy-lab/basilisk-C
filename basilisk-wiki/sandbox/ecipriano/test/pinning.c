@@ -257,7 +257,7 @@ and the one obtained from the numerical simulation.
 reset
 set yrange[20:100]
 set xrange[0:0.06]
-set xlabel "Gravity"
+set xlabel "Surface tension (sigma)"
 set ylabel "Contact Angle [deg]"
 set grid
 
@@ -271,7 +271,7 @@ plot f(x) w l lw 2 t "Theoretical", \
 reset
 set yrange[0:100]
 set xrange[0:0.06]
-set xlabel "Gravity"
+set xlabel "Surface tension (sigma)"
 set ylabel "Contact Angle [deg]"
 set grid
 
@@ -291,6 +291,7 @@ set xrange[0:2]
 set xlabel "time [s]"
 set ylabel "Maximum velocity norm [m/s]"
 set grid
+set logscale y
 
 plot "out" i 0  w l t "sigma = 0.006", \
      "out" i 4  w l t "sigma = 0.022", \
@@ -299,11 +300,7 @@ plot "out" i 0  w l t "sigma = 0.006", \
 ~~~
 
 ~~~gnuplot Relaxation of the maximum velocity AXI case
-reset
 set xrange[0:2]
-set xlabel "time [s]"
-set ylabel "Maximum velocity norm [m/s]"
-set grid
 
 plot "../pinning-axi/out" i 0  w l t "sigma = 0.016", \
      "../pinning-axi/out" i 4  w l t "sigma = 0.032", \

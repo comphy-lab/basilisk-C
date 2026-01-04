@@ -129,7 +129,7 @@ It makes sense to set the error threshhold to be $1/$`NCMAP`, as we
 have identified this as an accaptable colour error for our
 eyes. Fortunately we can conviniently implement the above algorithm
 using [wavelet
-thresholding](http://basilisk.fr/sandbox/Antoonvh/The_adaptive_wavelet_algirthm).
+thresholding](/sandbox/Antoonvh/The_adaptive_wavelet_algirthm).
 We use the following code to implement it and render an $512 \times
 512$ image.
 */

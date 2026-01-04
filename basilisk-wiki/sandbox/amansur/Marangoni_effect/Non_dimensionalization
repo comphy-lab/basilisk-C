@@ -97,7 +97,7 @@ Finally :
 
 # Basilisk numerical resolution of the momentum equation of Navier-Stokes
 
-We solve only one equation for two fluids. This is possible thanks to the [VOF](http://basilisk.fr/src/vof.h) (Volume of fluid) method.
+We solve only one equation for two fluids. This is possible thanks to the [VOF](/src/vof.h) (Volume of fluid) method.
 
 ## Mass density and dynamical vicosity
 

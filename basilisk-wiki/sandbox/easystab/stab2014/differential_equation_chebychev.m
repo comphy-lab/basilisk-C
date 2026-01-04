@@ -2,7 +2,7 @@
 
 # Solving a linear differential equation with Chebychev differentiation matrix
 
-This code is built upon [diffmat.m](http://basilisk.fr/sandbox/easystab/diffmat.m) and [differential_equation.m](http://basilisk.fr/sandbox/easystab/differential_equation.m) where the differentiation matrices
+This code is built upon [diffmat.m](/sandbox/easystab/diffmat.m) and [differential_equation.m](/sandbox/easystab/differential_equation.m) where the differentiation matrices
 are built. Here we solve a linear non-homogeneous differential 
 equation in 1D with non-homogeneous boundary conditions with the finite differences way and with the function based on Chebychev.
     
@@ -36,7 +36,7 @@ We show here how to use the differentiation matrix to code the differential equa
     DD(end,end-2:end)=[1, -2, 1]/h^2;
 
 %{
-In this part, we use the chebdif() function (that we can find here [chebdif.m](http://basilisk.fr/sandbox/easystab/chebdif.m)) to calculate the first and seconde derivative of the function.
+In this part, we use the chebdif() function (that we can find here [chebdif.m](/sandbox/easystab/chebdif.m)) to calculate the first and seconde derivative of the function.
 %}
     
     %% differentiation matrices

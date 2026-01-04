@@ -56,6 +56,20 @@ $$
 $$
 which is the classical Gibbs-Thomson equation.
 */
+/*double fac1(coord n, double eps4){
+  if(eps4==0.)return 1.;
+  double sum = 0;
+
+  foreach_dimension()
+    sum += eps4*powf(n.x,4.); // taken from doi.org/10.1016/j.jcrysgro.2010.11.013
+                              // simple fourfold anisotropy.
+#if dimension ==2
+    double theta = atan2(n.y, n.x);
+  return 1.-15.*eps4*cos(4.*theta);
+#else // DIMENSION == 3 && ANISO != 0
+  return (1.-3.*eps4+4*eps4*sum);
+#endif
+}*/
 
 double Temp_GT(Point point, double epsK, double epsV, vector vpc,
   scalar curve, face vector fs, scalar cs, double eps4){

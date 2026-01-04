@@ -1,9 +1,5 @@
 /**
-<center>
-<img style = float:top center src="http://basilisk.fr/sandbox/Antoonvh/lim_nickels.jpg" alt="drawing" width=50%
-<caption><p align="center">The experiment of [Lim and Nickels (1992)](https://www.nature.com/articles/357225a0). </caption>
-</center>
-
+![The experiment of [Lim and Nickels (1992)](https://www.nature.com/articles/357225a0)](https://www.antoonvanhooft.nl/media/lim.mp4)
 
 # The collision of two vortex rings. 
 
@@ -173,9 +169,9 @@ Visualization of the $\lambda_2$ iso-surface reveals detail:
 
 See also via [vimeo](https://vimeo.com/284767041).
 
-<img src="http://basilisk.fr/sandbox/Antoonvh/rendering.png" alt="drawing" width=70%/>
+<img src="/sandbox/Antoonvh/rendering.png" alt="drawing" width=70%/>
 
 There is also this visualization from another run with tracers:
 
-<img src="http://basilisk.fr/sandbox/Antoonvh/sed_compare.jpg" alt="drawing" width=70%/>
+<img src="/sandbox/Antoonvh/sed_compare.jpg" alt="drawing" width=70%/>
 */

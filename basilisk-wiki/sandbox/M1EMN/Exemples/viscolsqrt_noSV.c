@@ -292,8 +292,8 @@ sqrt(x)*(x<xf),sqrt(x-1)*(x<xf+1)
  
 
 # Links
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c]()
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c]()
  
  
 # Bibliography

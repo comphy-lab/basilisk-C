@@ -518,7 +518,7 @@ set output 'f.png'
 
 ## Links
   
-  * [http://basilisk.fr/src/test/higuera.c]() with Basilisk
+  * [https://basilisk.fr/src/test/higuera.c]() with Basilisk
   
 ## Bibliography
 

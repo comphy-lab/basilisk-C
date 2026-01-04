@@ -1,12 +1,12 @@
 /**
-# Self-similar centered Navier--Stokes solver ([1st Stokes problem](http://basilisk.fr/sandbox/cailler/stokes_first_pb/first_stokes_pb.c))
+# Self-similar centered Navier--Stokes solver ([1st Stokes problem](/sandbox/cailler/stokes_first_pb/first_stokes_pb.c))
 
 <div class="message">
 <div id="msg_logo"><img src="/img/warning.png"></div>
 **Important note**
 
 To clearly understand this file, please refer to 
-[this dedicated documentation](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README). 
+[this dedicated documentation](/sandbox/cailler/self_sim_DNS/README). 
 In particular, all the notations employed are defined there.
 </div>
 
@@ -402,7 +402,7 @@ $\boldsymbol{\nabla}\cdot(\mathbf{\overline{\Lambda}}\otimes\mathbf{\overline{u}
 we need to define the face velocity field $\mathbf{\overline{u}}_f$ 
 at time $\tau+\Delta \tau/2$. 
 We use a **modified** version of the Bell-Colella-Glaz 
-[advection scheme](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_bcg_keller.h) 
+[advection scheme](/sandbox/cailler/self_sim_DNS/selfsim_bcg_keller.h) 
 that is adapted for the advection velocity \mathbf{\overline{\Lambda}}:
 
 $$

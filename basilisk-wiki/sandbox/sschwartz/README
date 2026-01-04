@@ -12,7 +12,7 @@ My name is Spencer Schwartz, and this is my Basilisk sandbox. I am a Master's st
 
 ##### Test Cases
 
-* [Flow over a 2D cylinder](IRBM/ibm-cylinder.c)
+* [Flow over a 2D cylinder](IRBM/examples/ibmcylinder.c)
 * [Flow over a 3D sphere](IRBM/ibm-sphere.c)
 * [Flow over a 2D oscillating cylinder](IRBM/ibm-cylinder-osc.c)
 

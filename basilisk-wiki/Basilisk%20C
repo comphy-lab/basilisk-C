@@ -543,6 +543,18 @@ foreach()
   a[0,0,10] = 1.;
 ~~~
 
+Note that the layer index is always relative to the current layer. For example:
+
+~~~literatec
+foreach()
+  foreach_layer() {
+    // This accesses the layer immediately above, except for the top layer
+    a[0,0,1] ...
+    // This accesses the layer immediately below, except for the bottom layer
+    a[0,0,-1] ...
+  }
+~~~
+
 ## Field attributes
 
 Scalar field can have associated "attributes" which behave very much 

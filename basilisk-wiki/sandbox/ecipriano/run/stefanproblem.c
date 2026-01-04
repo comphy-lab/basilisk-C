@@ -28,69 +28,46 @@ which establishes the interface velocity jump.
 */
 
 /**
-## Phase Change Setup
-
-We move the interface using the velocity *uf*, with the
-expansion term shifted toward the gas-phase. In this way
-*uf* is divergence-free at the interface. The double
-pressure velocity couping is used to obtain an extended
-velocity, used to transport the gas phase tracers. */
-
-#define INT_USE_UF
-#define CONSISTENTPHASE2
-#define SHIFT_TO_GAS
-
-/**
 ## Simulation Setup
 
-We use the centered solver with the divergence source term,
-and the extended velocity is obtained using the centered-doubled
-procedure. The evaporation model is used in combination
-with the temperature-gradient mechanism, which manages
-the solution of the temperature field.
+We use the centered Navier--Stokes equations solver with volumetric source in
+the projection step. The phase change is directly included using the boiling
+module, which sets the best (default) configuration for boiling problems. Many
+features of the phase change (boiling) model can be modified directly in this
+file without changing the source code, using the phase change model object
+`pcm`.
 */
 
-#include "navier-stokes/centered-evaporation.h"
-#include "navier-stokes/centered-doubled.h"
+#include "navier-stokes/low-mach.h"
 #include "two-phase.h"
 #include "tension.h"
-#include "evaporation.h"
-#include "temperature-gradient.h"
+#include "boiling.h"
 #include "view.h"
-
-/**
-We declare the variables required by the
-temperature-gradient model. */
-
-double lambda1, lambda2, cp1, cp2, dhev;
-double TL0, TG0, TIntVal, Tsat, Twall;
 
 /**
 ### Boundary conditions
 
-Outflow boundary conditions for velocity and pressure are
-imposed on the left wall, while the temperature on the
-superheated wall is set to the superheated value.
+Outflow boundary conditions for velocity and pressure are imposed on the left
+wall, while the temperature on the superheated wall is set to the superheated
+value.
 */
 
 u.n[left] = neumann (0);
 u.t[left] = neumann (0);
 p[left] = dirichlet (0);
-uext.n[left] = neumann (0);
-uext.t[left] = neumann (0);
-pext[left] = dirichlet (0);
 
-TG[left]  = dirichlet (Tsat);
-TG[right] = dirichlet (Twall);
-TL[left]  = dirichlet (Tsat);
-TL[right] = dirichlet (Twall);
+double Tsat, Twall;
+T[left]  = dirichlet (Tsat);
+T[right] = dirichlet (Twall);
+T[left]  = dirichlet (Tsat);
+T[right] = dirichlet (Twall);
 
 /**
 ### Problem Data
 
-We declare the maximum and minimum levels of refinement,
-the $\lambda$ parameter, and the initial thickness of
-the vapor layer.
+We declare the maximum and minimum levels of refinement, the $\lambda$
+parameter, and the initial thickness of the vapor layer. Additional data are for
+post-processing purposes.
 */
 
 int maxlevel, minlevel = 3;
@@ -98,11 +75,12 @@ double lambdaval = 0.06779249298045148;
 double  delta0 = 322.5e-6;
 double tshift, teff;
 
-
 int main (void) {
   /**
-  We set the material properties of the
-  fluids. */
+  We set the material properties of the two fluids. In addition to the classic
+  Basilisk setup for density and viscosity, we need to define thermal
+  properties, such as the thermal conductivity $\lambda$, the heat capacity
+  $cp$, and the enthalpy of vaporization $\Delta h_{ev}$. */
 
   rho1 = 958., rho2 = 0.6;
   mu1 = 2.82e-4, mu2 = 1.23e-5;
@@ -111,22 +89,26 @@ int main (void) {
   dhev = 2.256e6,
 
   /**
-  The initial temperature and the interface
-  temperature are set to the same value. */
+  The initial temperature and the interface temperature are set to the same
+  value (the saturation temperature). */
 
   Tsat = 373., Twall = 383.;
   TL0 = Tsat, TG0 = Tsat; TIntVal = Tsat;
 
   /**
-  We change the dimension of the domain
-  and the surface tension coefficient. */
+  We solve two different sets of Navier--Stokes equations according with the
+  double pressure velocity coupling approach. */
 
-  L0 = 10e-3;
+  nv = 2;
+
+  /**
+  We change the dimension of the domain and the surface tension coefficient. */
+
+  L0 = 10e-3 [*];
   f.sigma = 0.059;
 
   /**
-  We run the simulation for different maximum
-  levels of refinement. */
+  We run the simulation at different levels of refinement. */
 
   for (maxlevel = 5; maxlevel <= 6; maxlevel++) {
     init_grid (1 << maxlevel);
@@ -141,6 +123,10 @@ in the gas and in liquid phase. */
 event init (i = 0) {
   fraction (f, -(x - 0.0096775));
 
+  /**
+  Initial conditions for the liquid and gas phase temperature. */
+
+  scalar TL = liq->T, TG = gas->T;
   foreach() {
     TL[] = f[]*TL0;
     TG[] = (1. - f[])*TG0;
@@ -150,21 +136,27 @@ event init (i = 0) {
   /**
   At simulation time equal to zero, the thickness of the
   vapor layer is not zero. Therefore, we compute a time
-  *shifting factor* (just for post-processing purposes). */
+  *shifting factor* (for post-processing). */
 
   double effective_height;
   effective_height = (sq(L0) - statsf(f).sum)/L0;
   tshift = sq(effective_height/2./lambdaval)*rho2*cp2/lambda2;
+
+  /**
+  We set the boundary conditions for the liquid and gas phase temperature
+  fields, which are those that are actually resolved by the phase change model.
+  The one-field temperature `T` serves only for post-processing. */
+
+  copy_bcs ({TG,TL}, T);
 }
 
 /**
-We refine the interface and the region where the
-temperature field changes. */
+We refine the interface and the region where the temperature field changes. */
 
 #if TREE
 event adapt (i++) {
   adapt_wavelet_leave_interface ({T}, {f},
-      (double[]){1.e-3}, maxlevel, minlevel, 1);
+      (double[]){1e-3}, maxlevel, minlevel, 1);
 }
 #endif
 
@@ -177,8 +169,8 @@ The following lines of code are for post-processing purposes.
 /**
 ### Exact Solution
 
-We write a function that computes the exact solution to the
-thickness of the vapor layer, and the analytic temperature profile.
+We write a function that computes the exact solution to the thickness of the
+vapor layer, and the analytic temperature profile.
 */
 
 double exact (double time) {
@@ -193,8 +185,7 @@ double tempsol (double time, double x) {
 /**
 ### Output Files
 
-We write the thickness of the vapor layer and the analytic
-solution on a file.
+We write the thickness of the vapor layer and the analytic solution on a file.
 */
 
 event output (t += 0.1) {
@@ -214,10 +205,18 @@ event output (t += 0.1) {
 }
 
 /**
+### Logger
+
+We output the total liquid volume in time (for testing). */
+
+event logger (i += 100) {
+  fprintf (stderr, "%d %.3f %g\n", i, t, statsf (f).sum);
+}
+
+/**
 ### Temperature Profile
 
-We write on a file the temperature profile at the
-final time step. */
+We write on a file the temperature profile at the final time step. */
 
 event profiles (t = end) {
   char name[80];
@@ -236,8 +235,8 @@ event profiles (t = end) {
 /**
 ### Movie
 
-We write the animation with the evolution of the
-temperature field and the gas-liquid interface.
+We write the animation with the evolution of the temperature field and the
+gas-liquid interface.
 */
 
 event movie (t += 0.1; t <= 10) {
@@ -247,7 +246,10 @@ event movie (t += 0.1; t <= 10) {
     box();
     draw_vof ("f", lw = 1.5);
     squares ("T", min = Tsat, max = Twall, linear = true);
-    vectors ("u", scale = 1.e-1, lc = {1.,1.,1.});
+    if (nv > 1)
+      vectors ("u1", scale = 1.e-1, lc = {1.,1.,1.});
+    else
+      vectors ("u", scale = 1.e-1, lc = {1.,1.,1.});
     save ("movie.mp4");
   }
 }

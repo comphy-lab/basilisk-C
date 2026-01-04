@@ -1,7 +1,7 @@
 /**
 ![At sunrise thermal plumes start to grow. Alternatively, they reside
  during sunset. Image via
- [smule.com](https://www.smule.com/song/sunrise-sunset-karaoke-lyrics/416371609_154725/arrangement)](https://c-sf.smule.com/sf/s24/arr/b2/e6/1e8f0de1-67c7-4b10-bd17-e4560c7c6202.jpg)
+ [smule.com](https://www.smule.com/song/sunrise-sunset-karaoke-lyrics/416371609_154725/arrangement)](https://c-cdnet.cdn.smule.com/rs-s24/arr/b2/e6/1e8f0de1-67c7-4b10-bd17-e4560c7c6202.jpg)
 
 # The Growth and Decay of Atmospherc Convective Turbulence.
 
@@ -9,12 +9,6 @@ Here we follow Van Heerwaarden and Mellado (2016) and model the growth
 and subsequent decay of convective turbulence in the atmosphere. This
 is very similar as was done in Van Hooft et al. (2018). However, there
 have been some advancements in the set-up methodology.
-
-<center>
-<video controls>
-  <source src="https://surfdrive.surf.nl/files/index.php/s/Hqma5zKlTvsb2B7/download" type="video/mp4">
-  <caption><p align="center">From dropbox</caption>
-</video></center>
 
 */
 //#include "grid/octree.h" // <- Uncomment for 3D
@@ -218,7 +212,7 @@ plot 'timeseries' u 1:6 w l lw 3
 
 It appears that the decay of 2D turbulence differs quite a bit from it's 3D
 counterpart, see also [this
-example](http://basilisk.fr/examples/turbulence.c).
+example](/examples/turbulence.c).
 
 # References
 

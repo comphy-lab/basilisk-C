@@ -1,6 +1,6 @@
 /**
 # An womersley flow  With output resistance (STILL HAVE CONVERGENCE PB SO HERE IS A "FAKE" VERSION) 
-Details in [2DRR.c](http://basilisk.fr/sandbox/yonghui/biomeca/2drr.c ) 
+Details in [2DRR.c](/sandbox/yonghui/biomeca/2drr.c ) 
 */
 
 //#include "axi.h"

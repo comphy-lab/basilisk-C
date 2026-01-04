@@ -1,5 +1,5 @@
 /**
-The problme is in [src/ast/Makefile](http://basilisk.fr/src/ast/Makefile#22)
+The problme is in [src/ast/Makefile](/src/ast/Makefile#22)
 
 */
 grammar: grammar.c

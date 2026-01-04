@@ -80,7 +80,7 @@ event streamfunction (i++, last)
 {
 /** 
 solve $$\nabla \cdot (\beta \nabla \psi  )= s$$ 
-with [http://basilisk.fr/src/poisson.h](http://basilisk.fr/src/poisson.h)
+with [https://basilisk.fr/src/poisson.h](/src/poisson.h)
 */
   mgp = poisson (psi, source, beta);
 }
@@ -165,7 +165,7 @@ set ylabel "psi(0,y)"
  # Links
  
  
- http://basilisk.fr/src/test/neumann.c
+ https://basilisk.fr/src/test/neumann.c
  
  
  

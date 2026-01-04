@@ -1,7 +1,7 @@
 /**
 # Incompressible Navier--Stokes solver (centered formulation)
 
-A slight modification has been made in order to create a new even - *pp_vof*, that stand for "post-processing vof" - that will be overloaded in [capsule.h](capsule.h) to compute a smoothing of the color function. The rest of this file is identical to the original file [centered.h](http://basilisk.fr/src/navier-stokes/centered.h).
+A slight modification has been made in order to create a new even - *pp_vof*, that stand for "post-processing vof" - that will be overloaded in [capsule.h](capsule.h) to compute a smoothing of the color function. The rest of this file is identical to the original file [centered.h](/src/navier-stokes/centered.h).
 
 We wish to approximate numerically the incompressible,
 variable-density Navier--Stokes equations

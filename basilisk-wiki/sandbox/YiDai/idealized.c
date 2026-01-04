@@ -2,7 +2,7 @@
 # The idealized case of ventilator operation in the orchard
 */
 /**
-this code mostly is adapted from [Vincent](http://basilisk.fr/sandbox/vheusinkveld/idealized.h) work. The [fan](http://basilisk.fr/sandbox/YiDai/fan.h) function is changed. Other functions are intact. 
+this code mostly is adapted from [Vincent](/sandbox/vheusinkveld/idealized.h) work. The [fan](/sandbox/YiDai/fan.h) function is changed. Other functions are intact. 
 */
 
 

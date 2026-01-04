@@ -9,7 +9,7 @@
 #define NOSLIP_TOP (1)
 #include "nsf4t.h"
 int initlevel = 9;
-double ue = 1e-4;
+double ue = 1e-5;
 scalar * tracers = NULL;
 
 int main() {

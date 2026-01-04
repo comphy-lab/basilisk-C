@@ -11,14 +11,14 @@ reach the right border.
 Hence, we need to tell to `Basilisk` how the volume fractions in the ghost cells 
 are updated, in order to be consistent with the advection of the cavity 
 interface, by applying the algorithm detailed 
-[here](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/f_BC_vel_tan.h) 
+[here](/sandbox/cailler/test-cases/vel_tan/f_BC_vel_tan.h) 
 
 Going a step further, we demonstrate the *kinematic* ***invariance*** 
 of such an inviscid simulation, by simply applying at a given event a 
 velocity reversal.
 
 This test case is then a generalization of the [simple test of a 2D oblique 
-interface placed in a tangent flow](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/vel_tan_corrected.c) 
+interface placed in a tangent flow](/sandbox/cailler/test-cases/vel_tan/vel_tan_corrected.c) 
 to non-uniform 3D-AXI flows with random contact angles 
 (the most general case possible).
 
@@ -68,7 +68,7 @@ interface) and $\alpha$ (related intercept) their direction and
 value due to the presence of fluxes on top and left boundaries. 
 Indeed, they are set by default to *symmetry conditions*, 
 inducing errors when complex inflows/outflows exist, as demonstrated in the 
-[advection of an oblique interface in a tangent flow](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/vel_tan_no_correction.c). 
+[advection of an oblique interface in a tangent flow](/sandbox/cailler/test-cases/vel_tan/vel_tan_no_correction.c). 
 
 For a bubble in expansion, the normal (directed from the liquid 
 phase towards the gas one) reads in axisymmetric coordinates:
@@ -167,7 +167,7 @@ pf[right] = neumann (0.);
 /**
 For the *kinematic reversal* testing the kinematic **invariance**, 
 please refer to the BCs defined at the section 
-[*Kinematic Invariance*](http://basilisk.fr/sandbox/cailler/test-cases/rd_CA_bubble/rd_CA_bubble.c#kinematic-invariance).
+[*Kinematic Invariance*](/sandbox/cailler/test-cases/rd_CA_bubble/rd_CA_bubble.c#kinematic-invariance).
 
 ### Generic Events
 */

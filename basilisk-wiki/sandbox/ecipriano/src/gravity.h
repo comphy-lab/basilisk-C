@@ -76,9 +76,12 @@ event acceleration (i++)
 #endif
 
   scalar rhovar[];
-  for (scalar f in {interfaces})
-    foreach()
-      rhovar[] = rho1v[]*f[] + rho2v[]*(1. - f[]);
+  foreach()
+#if TWO_PHASE_VARPROP
+    rhovar[] = aavg (f[], rho1v[], rho2v[]);
+#else
+    rhovar[] = rho (f[]);
+#endif
 
 #if TREE
   rhovar.prolongation = p.prolongation;

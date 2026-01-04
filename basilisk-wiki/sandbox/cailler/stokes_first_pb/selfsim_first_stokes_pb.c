@@ -4,15 +4,15 @@
 We want to converge spontaneously towards the self-similar solution of the
 [Stokes first problem](https://en.wikipedia.org/wiki/Rayleigh_problem), 
 with a dedicated 2D-incompressible centered *Navier--Stokes* solver, 
-to compare with [the results obtained in the physical space](http://basilisk.fr/sandbox/cailler/stokes_first_pb/first_stokes_pb.c) 
+to compare with [the results obtained in the physical space](/sandbox/cailler/stokes_first_pb/first_stokes_pb.c) 
 (see this link for a complete presentation of the problem).
 
 <div class="message">
 <div id="msg_logo"><img src="/img/warning.png"></div>
 **The self-similar solver has been explained extensively on other problems:**
 
-  + ***[here](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README)*** (theory);
-  + ***[or here](http://basilisk.fr/sandbox/cailler/lamb_oseen/selfsim_lamb_conv.c)*** 
+  + ***[here](/sandbox/cailler/self_sim_DNS/README)*** (theory);
+  + ***[or here](/sandbox/cailler/lamb_oseen/selfsim_lamb_conv.c)*** 
   (summary).
 </div>
 

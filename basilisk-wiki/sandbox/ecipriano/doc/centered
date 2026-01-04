@@ -218,7 +218,7 @@ $$
 
 ## 2. Viscosity
 
-During the viscous step, we want to resolve the diffuision part of the momentum
+During the viscous step, we want to resolve the diffusion part of the momentum
 equation:
 
 $$
@@ -370,7 +370,7 @@ It is often necessary, when writing papers, to include a description of the
 time splitting procedure implemented in the centered solver. The single steps
 explained at the previous sections can be summed up, and the notation can be
 simplified giving a more compact set of equations, which is still
-representativre for the algorithm.
+representative for the algorithm.
 
 ### Including Cell to Face Operations
 

@@ -1,5 +1,5 @@
 /**
-#Effondrement d'un tas de sable dans une gouttière
+# Effondrement d'un tas de sable dans une gouttière
 
 Résolution des équations de Saint Venant 2D avec un frottement constant de Coulomb, un tas initial disposé sur une pente incurvée en forme de gouttière est relâché au temps t=0, il s'effondre et finit par s'arrêter sur le sol plat.
 
@@ -8,7 +8,7 @@ Grâce à:
 */
 #include "saint-venant.h"
 /** 
-on résout le problème de fluide parfait (sans la friction µ qui sera traîtée plus loin)$$
+on résout le problème de fluide parfait (sans la friction $\mu$ qui sera traîtée plus loin)$$
  \left\{\begin{array}{l}
          \frac{\partial }{\partial t}  h \; +\; \frac{\partial }{\partial x} Q_x
 \;+\; \frac{\partial }{\partial y} Q_y=0\\

@@ -1,7 +1,32 @@
-
 /**
-   Read input parameters
- */
+# Parameter Management Library
+
+This library provides utilities for reading and managing input parameters from
+configuration files, creating output directories, and backing up files. It's
+designed to work with Basilisk simulations and supports various parameter types
+including integers, doubles, and arrays.
+
+
+The configuration file should contain one parameter per line in the format:
+
+~~~bash
+key = value
+~~~
+
+'value' can be an int, double or array. Comments are allowed with # character
+
+Example:
+
+~~~bash
+# parameter list
+
+iterations = 1000
+timestep = 0.01   # with comments
+coefficients = [1.0,2.5,3.7]
+~~~
+
+## Global Variables and Data Structures
+*/
 
 char dpath[80]; // name of output dir
 char file_param[80] = "params.in"; // name param file
@@ -10,6 +35,14 @@ char file_param[80] = "params.in"; // name param file
 // for mkdir
 #include <sys/stat.h>
 #include <sys/types.h>
+
+
+/**
+## String Utilities
+
+- trim_whitespace: removes leading whitespace characters from a string in-place.
+- str2array: Parses a string containing comma-separated values enclosed in brackets and converts them to a double array.
+*/
 
 void trim_whitespace(char* s) {
   const char* d = s;
@@ -165,3 +198,8 @@ void backup_file(char FileSource[])
     fclose(stream_W);
   }
 }
+/**
+## Test
+* [Skeleton file for params handling](../tests/test_params.c)
+
+*/

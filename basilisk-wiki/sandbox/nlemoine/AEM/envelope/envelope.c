@@ -1,12 +1,12 @@
 /**
-[Return to my homepage](http://basilisk.fr/sandbox/nlemoine/README)
+[Return to my homepage](/sandbox/nlemoine/README)
 
 
 # Basilisk interface for computing the *Basal Envelope Surface of Talwegs* using the Analytical Element Method
 
 This is the source code for the study published in [Le Moine, 2023](https://doi.org/10.5802/crgeos.164).
 
-This code mixes Basilisk C code with a [FORTRAN library](./libaem.h) for computing [slit complex potential](./slit.f) and [areal sink potential](./areal.f), and finally [linear least-square LAPACK subroutines](./lsq_lapack.f). In order to run the code, you will need to [install Basilisk](http://basilisk.fr/src/INSTALL), get the content of the [envelope](./) directory, and then run:
+This code mixes Basilisk C code with a [FORTRAN library](./libaem.h) for computing [slit complex potential](./slit.f) and [areal sink potential](./areal.f), and finally [linear least-square LAPACK subroutines](./lsq_lapack.f). In order to run the code, you will need to [install Basilisk](/src/INSTALL), get the content of the [envelope](./) directory, and then run:
 
 make envelope.tst
 

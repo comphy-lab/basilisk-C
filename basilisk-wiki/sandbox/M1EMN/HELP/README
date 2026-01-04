@@ -7,13 +7,13 @@ quelques commandes utiles
 ## Installation  
 
 On Linux
-[http://basilisk.fr/src/INSTALL]()
+[https://basilisk.fr/src/INSTALL]()
 
 On Mac
-[http://basilisk.fr/sandbox/INSTALL_MACOS]()
+[https://basilisk.fr/sandbox/INSTALL_MACOS]()
 
 On Raspberry 
-[http://basilisk.fr/sandbox/M1EMN/PI4/README]()
+[https://basilisk.fr/sandbox/M1EMN/PI4/README]()
 
 ...
 
@@ -25,7 +25,7 @@ On Raspberry
 voir
 
 ~~~bash
-http://basilisk.fr/src/INSTALL
+https://basilisk.fr/src/INSTALL
 ~~~
 
 récupérer le wiki

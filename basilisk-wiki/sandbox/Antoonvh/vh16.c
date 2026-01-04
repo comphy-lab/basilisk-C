@@ -207,7 +207,7 @@ plot 'timeseries' u 1:6 w l lw 3
 
 It appears the decay of 2D turbulence differs quite a bit from its 3D
 counterpart, see also [this
-example](http://basilisk.fr/examples/turbulence.c).
+example](/examples/turbulence.c).
 
 
 ## References

@@ -48,9 +48,9 @@ int main(){
 }
 
 /**
-This is actually similar to generic basilisk [relexation function](http://basilisk.fr/src/poisson.h#relax), which use weighted Jacobi relaxation and doesn't store a new field (simple reuse)
+This is actually similar to generic basilisk [relexation function](/src/poisson.h#relax), which use weighted Jacobi relaxation and doesn't store a new field (simple reuse)
 
-This is applied in [here](http://basilisk.fr/sandbox/YiDai/BASI/relax_basi.c)
+This is applied in [here](/sandbox/YiDai/BASI/relax_basi.c)
 
 ~~~gnuplot
 reset

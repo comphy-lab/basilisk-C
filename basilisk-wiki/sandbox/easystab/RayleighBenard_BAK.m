@@ -216,7 +216,7 @@ Delta=dxx+dyy;
 ## System matrices
 
 
-As explained in  the [lecture notes](http://basilisk.fr/sandbox/easystab/LectureNotes_RayleighTaylor.md#case-of-a-horizontal-cell-of-large-dimension), the system of equations can be written in a matrix form
+As explained in  the [lecture notes](/sandbox/easystab/LectureNotes_RayleighTaylor.md#case-of-a-horizontal-cell-of-large-dimension), the system of equations can be written in a matrix form
 $$
 Eq_t=Aq
 $$

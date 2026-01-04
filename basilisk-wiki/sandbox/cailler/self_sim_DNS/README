@@ -31,25 +31,25 @@ header-includes: |
 This documentation is an in-depth explanation of almost all 
 the modifications made in the below files, compared to their 
 default counterparts, to perform **self-similar DNS** of the 
-[Keller \& Miksis problem](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c); that is to say simulations directly done 
+[Keller \& Miksis problem](/sandbox/cailler/keller_miksis/keller_fig2_conv.c); that is to say simulations directly done 
 in the associated scale invariant  when running the 
-[`selfsim_keller_conv.c`](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_keller_conv.c) or [`selfsim_keller_all.c`](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_keller_all.c) files, thanks to the following libraries:
+[`selfsim_keller_conv.c`](/sandbox/cailler/self_sim_DNS/selfsim_keller_conv.c) or [`selfsim_keller_all.c`](/sandbox/cailler/self_sim_DNS/selfsim_keller_all.c) files, thanks to the following libraries:
 
-  * [selfsim_centered_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h);
-  * [selfsim_bcg_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h);
-  * [selfsim_two-phase-generic_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_two-phase-generic_keller.h);
-  * [selfsim_vof_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_vof_keller.h).
+  * [selfsim_centered_keller.h](/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h);
+  * [selfsim_bcg_keller.h](/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h);
+  * [selfsim_two-phase-generic_keller.h](/sandbox/cailler/self_sim_DNS/selfsim_two-phase-generic_keller.h);
+  * [selfsim_vof_keller.h](/sandbox/cailler/self_sim_DNS/selfsim_vof_keller.h).
 
 If you are not interested in the theoretical developments, you can skip 
 the first part and go directly to the *Modifications* subsections, where 
 the main modified lines are indicated (but do not hesitate to take a look 
-at least in [selfsim_centered_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h) for the treament of boundaries and 
+at least in [selfsim_centered_keller.h](/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h) for the treament of boundaries and 
 instantiations of additional vector fields). 
 </div>
 
 #  Preamble
 
-It has been seen in the [following problem](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c) that the surface tension driven recoil 
+It has been seen in the [following problem](/sandbox/cailler/keller_miksis/keller_fig2_conv.c) that the surface tension driven recoil 
 of a liquid wedge is a **self-similar** phenomenon leading to the introduction 
 of self-similar coordinates:
 
@@ -113,7 +113,7 @@ a big step forward compared to the classical methods found in the litterature.
 
 ## Change of variables & Notations
 
-From the [previous study](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c) of the *Keller \& Miksis* problem, the following 
+From the [previous study](/sandbox/cailler/keller_miksis/keller_fig2_conv.c) of the *Keller \& Miksis* problem, the following 
 *self-similar functions* can be readily found:
 
 $$
@@ -236,7 +236,7 @@ discretization schemes associated with such changes.
 **Important note**
 
 From now on, we adopt the notation conventions used by *Eduardo Cipriano* 
-from his [top-notch documentation on the `navier-stokes/centered.h`](http://basilisk.fr/sandbox/ecipriano/doc/centered) solver.</div>
+from his [top-notch documentation on the `navier-stokes/centered.h`](/sandbox/ecipriano/doc/centered) solver.</div>
 
 
 Since $\boldsymbol{\nabla} \cdot \mathbf{\overline{\Lambda}} 
@@ -894,7 +894,7 @@ extern face vector lambdaf;
 # Generalization & Conclusion
 
 We derived a self-similar DNS solver in the specific case of 
-the [Keller \& Miksis problem](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c), but obviously the needed modifications exposed here can be 
+the [Keller \& Miksis problem](/sandbox/cailler/keller_miksis/keller_fig2_conv.c), but obviously the needed modifications exposed here can be 
 generalized for all *self-similar problems of the **first kind***. 
 
 Indeed, suppose that you have a scale invariant problem defined by a self-similar 
@@ -988,7 +988,7 @@ $$
 $$
 
 Finally, it suffices to follow the exactly same modifications presented in 
-the [second section](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README#numerical-modifications-for-a-self-similar-solver-a-recipe) 
+the [second section](/sandbox/cailler/self_sim_DNS/README#numerical-modifications-for-a-self-similar-solver-a-recipe) 
 of this page with the derived general coefficients that 
 suit your scale invariant problem.
 
@@ -1034,7 +1034,7 @@ suit your scale invariant problem.
   volume = {190},
   number = {2},
   pages = {572-600},
-  url = {http://gerris.dalembert.upmc.fr/gerris.pdf}
+  url = {https://gerris.dalembert.upmc.fr/gerris.pdf}
 }
 
 @book{eggers2015,

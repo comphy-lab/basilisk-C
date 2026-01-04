@@ -1,7 +1,7 @@
 /**
 # Vortex Ejection from a mode 3 instability with dlmfd (distributed Lagrange multipliers/Fictitious domain method)
 
-This page is the fictitious-domain version of [Antoon's simulation with embeded geometry](http://basilisk.fr/sandbox/Antoonvh/kizner2.c). It is copy/pasted here and adapted for the fictitious domain method.
+This page is the fictitious-domain version of [Antoon's simulation with embeded geometry](/sandbox/Antoonvh/kizner2.c). It is copy/pasted here and adapted for the fictitious domain method.
 According to [Kizner et
 al. (2013)](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/instabilities-of-the-flow-around-a-cylinder-and-emission-of-vortex-dipoles/2327C2CFA76059D27461A2BC6A09F146),
 a flow around a no-slip cylinder with radius $R$ maybe unstable and eject three

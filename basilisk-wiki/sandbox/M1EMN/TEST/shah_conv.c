@@ -1,7 +1,7 @@
 /**
 # Avalanche of two newtonian fluids of different density and viscosity in 1D
 
-To address the issue of shock formation in transport equations, we propose an improved approach as a preferable alternative to the one used in [one dimensional two layer avalanche](http://basilisk.fr/_edit/sandbox/M1EMN/TEST/shah_flux.c). Instead of initially introducing artificial viscosity, our idea involves adding a correction term to the advective part of the flux. 
+To address the issue of shock formation in transport equations, we propose an improved approach as a preferable alternative to the one used in [one dimensional two layer avalanche](/_edit/sandbox/M1EMN/TEST/shah_flux.c). Instead of initially introducing artificial viscosity, our idea involves adding a correction term to the advective part of the flux. 
 
 $$ \frac{\partial}{\partial \bar t} \bar h_u  + \frac{\partial}{\partial \bar x} \bar Q_u = 0$$
 $$ \frac{\partial}{\partial \bar t} \bar h_l  + \frac{\partial}{\partial \bar x} \bar Q_l = 0$$
@@ -292,7 +292,7 @@ p[290:293][0:1 ]'hfinal-n500' u 1:2 w l,\
 
  
 # Links
- * [http://basilisk.fr/sandbox/M1EMN/TEST/shah.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/TEST/shah.c]()
  
  
  

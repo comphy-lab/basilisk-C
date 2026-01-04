@@ -3,18 +3,18 @@
 
 ## Development of AMR methods
 
-Within the PhD of Lucas Prouvost and in collaboration with Anca Belme, we have been working on a metric based AMR method that we have implemented in Basilisk. Check [his PhD manuscript](https://theses.hal.science/tel-03966961) and [PhD defense](https://www.youtube.com/watch?v=9XA-GdbJP-A). You can find the codes and some results in [Lucas' sandbox](http://basilisk.fr/sandbox/prouvost/README).
+Within the PhD of Lucas Prouvost and in collaboration with Anca Belme, we have been working on a metric based AMR method that we have implemented in Basilisk. Check [his PhD manuscript](https://theses.hal.science/tel-03966961) and [PhD defense](https://www.youtube.com/watch?v=9XA-GdbJP-A). You can find the codes and some results in [Lucas' sandbox](/sandbox/prouvost/README).
 
 ## Tests and examples for the All-Mach formulation
 
 List of tests and examples of the all-Mach compressible solver [Fuster and Popinet (JCP, 2018)](https://hal.sorbonne-universite.fr/hal-01845218).
 
-The code is now part of the stable release, so you can check the test cases included in the last version of Basilisk [here](http://basilisk.fr/src/test/README#compressible-two-phase-flows)
+The code is now part of the stable release, so you can check the test cases included in the last version of Basilisk [here](/src/test/README#compressible-two-phase-flows)
 
 Below some old links that could be useful
 
 ###Related works
-* The work from the PhD of Mandeep Saini which includes a [JFM paper](https://doi.org/10.1017/jfm.2022.705) and [his thesis](https://theses.hal.science/tel-03935878/). You can check [his sandbox](http://basilisk.fr/_edit/sandbox/msaini/README) for more information.
+* The work from the PhD of Mandeep Saini which includes a [JFM paper](https://doi.org/10.1017/jfm.2022.705) and [his thesis](https://theses.hal.science/tel-03935878/). You can check [his sandbox](/_edit/sandbox/msaini/README) for more information.
 * Effects of surface tension on the Richtmyer-Meshkov instability in fully compressible and inviscid fluids. [Tang et al PRF, 2021](https://journals.aps.org/prfluids/abstract/10.1103/PhysRevFluids.6.113901)
 * Optimal subharmonic emission of stable bubble oscillations in a tube [Fan et al, PRE, 2020](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.102.013105)
 

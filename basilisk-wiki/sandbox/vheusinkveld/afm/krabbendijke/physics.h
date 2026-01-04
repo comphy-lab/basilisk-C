@@ -1,5 +1,5 @@
 /** 
-This page contains al physics accosciated functions of the Krabbendijke case. Note that the buoyancy implementation is similar to [here](http://basilisk.fr/sandbox/Antoonvh/vhm16.c) and the lumped soil model is documented [here](http://basilisk.fr/sandbox/Antoonvh/lumpedsoil.c). Note that for the imported [SGS.h](http://basilisk.fr/sandbox/Antoonvh/SGS.h) page, the diffusion event is turned off since this is implemented here. 
+This page contains al physics accosciated functions of the Krabbendijke case. Note that the buoyancy implementation is similar to [here](/sandbox/Antoonvh/vhm16.c) and the lumped soil model is documented [here](/sandbox/Antoonvh/lumpedsoil.c). Note that for the imported [SGS.h](/sandbox/Antoonvh/SGS.h) page, the diffusion event is turned off since this is implemented here. 
 
 What is done: 
 Profiles are set. Boundary conditions and profiles are initialized. The vreman subgrid closure is used. Gravity acceleration is added via buoyancy. A lumped soil model is used, tendency towards a soil temperature. 

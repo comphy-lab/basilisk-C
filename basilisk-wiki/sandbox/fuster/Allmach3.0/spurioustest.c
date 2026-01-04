@@ -136,7 +136,7 @@ plot [0:10] 'La-120-5' u ($1*sqrt(120*3*1.4*(1. + 2./DIAMETER))/(pi*DIAMETER)):2
 
 ## See also
 
-* [Convergence study of the same test](http://basilisk.fr/sandbox/fuster/Allmach3.0/spurioustest2.c)
-* [Same test with the incompressible version](http://basilisk.fr/src/test/spurious.c)
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/spurious.html)
+* [Convergence study of the same test](/sandbox/fuster/Allmach3.0/spurioustest2.c)
+* [Same test with the incompressible version](/src/test/spurious.c)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/spurious.html)
 */

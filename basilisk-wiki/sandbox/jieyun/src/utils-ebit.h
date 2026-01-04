@@ -142,12 +142,10 @@ macro foreach_edge_y(char flags = 0, Reduce reductions = None) {
 macro foreach_edge_z(char flags = 0, Reduce reductions = None) {
   foreach_vertex(flags, reductions) {
     coord _a = {x - X0, y - Y0, z - Z0};
-    if (_a.y + 0.5*Delta < L0)
+    if (_a.z + 0.5*Delta < L0)
       {...}
   }
 }
-#endif
-
 
 /** Table for finding out the marker pair connected by the interface
  first index: dictionary index
@@ -164,6 +162,7 @@ static int dict_to_markers[9][4] = {
   {3, 2, 1, 0},
   {1, 0, 3, 2}
 };
+#endif
 
 /** Table for finding out all connected markers within a face (cell in 2D) 
  first index: dictionary index
@@ -181,6 +180,7 @@ static int dict_to_edge[9][4] = {
   {0, 1, 2, 3}
 };
 
+#if dimension == 3
 static int edge_shift[12][3] = {
   {0, 0, 0},   /* 0 */
   {0, 1, 0}, /* 1 */
@@ -222,6 +222,7 @@ static int face_to_face[6][4][5] = {
   {{0, 0, 0, 0, 1}, {0, 0, 0, 2, 0}, {1, 0, 0, 1, 1}, {0, 1, 0, 3, 0}}, /* z- plane, 0-4 edges */
   {{0, 0, 0, 0, 3}, {0, 0, 0, 2, 2}, {1, 0, 0, 1, 3}, {0, 1, 0, 3, 2}}  /* z+ plane, 0-4 edges */
 };
+#endif
 
 /** Used for vertex vector */
 void boundary_edge (vector v_e, vector v_buf) {
@@ -555,16 +556,15 @@ void output_mesh (char *file) {
 
   // output the mesh for test
   foreach(serial) {
-    double x1, y1, z1;
   #if dimension == 3
     for (int k = -1; k < 2; k += 2)
   #endif
     for (int j = -1; j < 2; j += 2)
       for (int i = -1; i < 2; i += 2) {
-        x1 = x + 0.5*i*Delta;
-        y1 = y + 0.5*j*Delta;
+        double x1 = x + 0.5*i*Delta;
+        double y1 = y + 0.5*j*Delta;
       #if dimension == 3
-        z1 = z + 0.5*k*Delta;
+        double z1 = z + 0.5*k*Delta;
         fprintf (fp1, "%g %g %g\n", x1, y1, z1);
       #else
         fprintf (fp1, "%g %g\n", x1, y1);
@@ -592,12 +592,10 @@ void output_polygon_ebit_mpi (scalar f1, scalar f2, face vector s1, face vector 
   strcpy (name, file);
 
   FILE *fp;
-
-  int sign_mpi[2];
-
   face vector st;
 
   #if _MPI
+  int sign_mpi[2];
   MPI_Status status;
   if (pid() != 0)
     MPI_Recv (&sign_mpi, 2, MPI_INT, pid() - 1, 0, MPI_COMM_WORLD, &status);

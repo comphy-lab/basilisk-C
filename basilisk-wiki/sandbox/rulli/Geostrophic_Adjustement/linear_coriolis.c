@@ -22,13 +22,13 @@ plot "h0.dat" using 1:2 with lines title 'Initial surface height', \
 Because of the Coriolis force, the solution is not y-invariant anymore. Plotting the surface height along x is not possible anymore and this is why we obtain this graphic.  
 Furthermore, we are not interested in the 2D equation but only in the 1D (y-invariant). Thus we should compute a 1D simulation.  
   
-Hera arise the issue : It seems that hydro.h needs the [grid/multigrid.h](http://basilisk.fr/src/grid/multigrid.h) library which is not compatible with only one dimension. As matter of fact, [grid/cartesian1D.h](http://basilisk.fr/src/grid/cartesian1D.h)  is needed to compute 1D simulation but this library is not compatible with [layered/hyrdo.h](http://basilisk.fr/src/layered/hydro.h).
-We could use the [saint-venant.h](http://basilisk.fr/src/saint-venant.h) library but it does not implement the Coriolis force.
+Hera arise the issue : It seems that hydro.h needs the [grid/multigrid.h](/src/grid/multigrid.h) library which is not compatible with only one dimension. As matter of fact, [grid/cartesian1D.h](/src/grid/cartesian1D.h)  is needed to compute 1D simulation but this library is not compatible with [layered/hyrdo.h](/src/layered/hydro.h).
+We could use the [saint-venant.h](/src/saint-venant.h) library but it does not implement the Coriolis force.
 
 ### Boundary conditions
 
 In order to get the steady state as soon as possible, we avoid reflection on the right boundary by using 
-an [open boundary condition](http://basilisk.fr/src/layered/hydro.h#radiation-boundary-conditions) while keeping a 
+an [open boundary condition](/src/layered/hydro.h#radiation-boundary-conditions) while keeping a 
 dirichlet boundary condition on the left side to prevent the height to decrease.
 
 ## Basilisk Code

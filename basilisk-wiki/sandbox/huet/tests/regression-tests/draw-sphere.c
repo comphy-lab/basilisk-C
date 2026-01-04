@@ -40,5 +40,5 @@ event init (i = 0) {
 
 ![Generated image](draw-sphere/sphere.png)
 
-![Target image](http://basilisk.fr/sandbox/huet/tests/regression-tests/draw-sphere/sphere-target.png)
+![Target image](/sandbox/huet/tests/regression-tests/draw-sphere/sphere-target.png)
 */

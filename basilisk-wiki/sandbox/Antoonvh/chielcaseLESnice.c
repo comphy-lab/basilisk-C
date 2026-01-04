@@ -1,6 +1,6 @@
 /**
 # Convective turbulence  
-This case is an example how to apply the Eddyviscosity function [Vreman.h](http://basilisk.fr/sandbox/Antoonvh/vreman.h). that is located under "basilisk/src/SGS/ on my machine"
+This case is an example how to apply the Eddyviscosity function [Vreman.h](/sandbox/Antoonvh/vreman.h). that is located under "basilisk/src/SGS/ on my machine"
  The example case discrribes free convection into a liniarly stratified fluid with a fixed  bottom temperature
 
 ## step 1

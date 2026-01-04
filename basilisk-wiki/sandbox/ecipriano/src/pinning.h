@@ -51,6 +51,8 @@ struct Pinning pinning = {
 vector h[];
 h.t[bottom] = x > pinning.ac ? contact_line (pinning.ap) : neumann (0.);
 
+bool pinning_warnings = false;
+
 /**
 We must associate the height function field with the VOF tracer, so
 that it is used by the relevant functions (curvature calculation in
@@ -61,7 +63,7 @@ extern scalar f;
 event defaults (i = 0) {
   f.height = h;
 #ifdef AXI
-  if (Y0 == 0.) {
+  if (Y0 == 0. && pinning_warnings) {
     fprintf (ferr,
         "WARNING: Setting the contact line on the axis of symmetry, shift the origin along y\n");
     fflush (ferr);

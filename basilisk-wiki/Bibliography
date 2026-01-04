@@ -5,9 +5,237 @@ toc: no
 A non-exhaustive list of papers about/using Basilisk. Please add your
 own papers if they use Basilisk. See also [src/references.bib]().
 
+### 2026
+
+~~~bib
+@article{Ganan2026,
+title = {The dominant role of jetting in micron- and sub-micron sea spray produced
+by bubble bursting: A revised model and comparison with measurements},
+journal = {Applied Ocean Research},
+volume = {166},
+pages = {104891},
+year = {2026},
+issn = {0141-1187},
+doi = {https://doi.org/10.1016/j.apor.2025.104891},
+url = {https://www.sciencedirect.com/science/article/pii/S0141118725004766},
+author = {A.M. Gañan-Calvo and M.A. Herrada and J.M. Lopez-Herrera},
+keywords = {Sea spray aerosols, Bubble bursting, Jetting Marine aerosols,
+Climate modeling, Droplet size distribution}}
+
+@article{liu2026,
+title = {Direct numerical simulation of side-by-side rising bubble coalescence behavior based on a Weber number criterion},
+journal = {International Journal of Multiphase Flow},
+volume = {194},
+pages = {105470},
+year = {2026},
+issn = {0301-9322},
+doi = {https://doi.org/10.1016/j.ijmultiphaseflow.2025.105470},
+url = {https://www.sciencedirect.com/science/article/pii/S0301932225003453},
+author = {Liu Liu and Yixin Huang and Yixiang Liao and Heyang Zhang and Hongjie Yan},
+keywords = {Bubble coalescence and rebound, Direct numerical simulation, Film drainage, Vortex interaction, Weber number criterion}}
+
+@article{vleeschhouwers2026,
+title = {Liquid supersaturation in evaporating vertical falling films — A direct numerical simulation study},
+journal = {International Journal of Heat and Mass Transfer},
+volume = {255},
+pages = {127760},
+year = {2026},
+issn = {0017-9310},
+doi = {https://doi.org/10.1016/j.ijheatmasstransfer.2025.127760},
+url = {https://www.sciencedirect.com/science/article/pii/S0017931025010956},
+author = {D. Vleeschhouwers and N. Hidman and A. Åkesjö and H. Ström and S. Sasic},
+keywords = {Two-phase DNS, Falling films, Evaporation, Supersaturation, VOF}
+}
+~~~
+
 ### 2025
 
 ~~~bib
+@hal{molefe2025, hal-05314880}
+
+@article{guan2025,
+  title = {The way bubbles gallop},
+  author = {Guan, Jian H. and Tamim, Saiful I. and Magoon, Connor W. and Stone, Howard A. and S\'aenz, Pedro J.},
+  journal = {Phys. Rev. Fluids},
+  volume = {10},
+  issue = {11},
+  pages = {110507},
+  numpages = {5},
+  year = {2025},
+  month = {November},
+  publisher = {American Physical Society},
+  doi = {10.1103/fbdh-fnzv},
+  url = {https://link.aps.org/doi/10.1103/fbdh-fnzv}
+}
+
+@article{deAquino2025, 
+  title={Interaction regimes of a vortex ring and an inertial particle},
+  volume={1024}, 
+  DOI={10.1017/jfm.2025.10909}, 
+  journal={Journal of Fluid Mechanics}, 
+  author={de Aquino, Guilherme Siqueira and Viroulet,
+  Sylvain and Sasso, Nicolas and Albagnac, Julie},
+  year={2025},
+  month = {December},
+  pages={A55},
+  url = {https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/interaction-regimes-of-a-vortex-ring-and-an-inertial-particle/30ED9E220F7CBF4D3F0BC3AEF32C3B54}
+}
+
+@article{demirkir2025,
+  title = {To jump or not to jump: Adhesion and viscous dissipation dictate the detachment of coalescing wall-attached bubbles},
+  author = {Demirk{\i}r, {\c{C}}ayan and Yang, Rui and Bashkatov, Aleksandr and Sanjay, Vatsal and Lohse, Detlef and Krug, Dominik},
+  journal = {Phys. Rev. Fluids},
+  volume = {10},
+  issue = {12},
+  pages = {123602},
+  numpages = {15},
+  year = {2025},
+  month = {Dec},
+  publisher = {American Physical Society},
+  doi = {10.1103/nq3w-57gg},
+  url = {https://link.aps.org/doi/10.1103/nq3w-57gg}
+}
+
+@article{bashkatov2025,
+  title={Electrolyte droplet spraying in H2 bubbles during water electrolysis under normal and microgravity conditions},
+  author={Bashkatov, Aleksandr and B{\"u}rkle, Florian and Demirk{\i}r, {\c{C}}ayan and Ding, Wei and Sanjay, Vatsal and Babich, Alexander and Yang, Xuegeng and Mutschke, Gerd and Czarske, J{\"u}rgen and Lohse, Detlef and others},
+  journal={Nature communications},
+  volume={16},
+  number={1},
+  pages={4580},
+  year={2025},
+  publisher={Nature Publishing Group UK London},
+  doi = {10.1038/s41467-025-59762-7},
+  url = {https://www.nature.com/articles/s41467-025-59762-7}
+}
+
+@hal{burghelea2025, hal-05291259}
+
+@hal{grea2025, hal-05313942}
+
+@article{lemarechal2025,
+  title={Hydrothermal plume near-field dynamics from LES and observations},
+  author={Lemar{\'e}chal, Cyprien and Roullet, Guillaume and Gula, Jonathan},
+  journal={Journal of Geophysical Research: Oceans},
+  volume={130},
+  number={10},
+  pages={e2024JC022277},
+  year={2025},
+  month = {October},
+  publisher={Wiley Online Library},
+  doi = {https://doi.org/10.1029/2024JC022277},
+  url = {https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2024JC022277},
+  pdf = {https://hal.science/hal-05322703v1/document},
+  keywords = {large-eddy simulation (LES), hydrothermal buoyant plume, entrainment, hydrothermal vent, black smoker, forced and lazy plumes},
+}
+
+@article{boniou2025, 
+title={Collision statistics of finite-size monodisperse droplets in homogeneous isotropic turbulence}, 
+volume={1020}, 
+DOI={10.1017/jfm.2025.10642}, 
+journal={Journal of Fluid Mechanics}, 
+author={Boniou, Victor and Jay, Stephane and Vinay, Guillaume and Pierson, Jean-Lou}, 
+year={2025}, 
+pages={A18},
+month={October}}
+
+@article{long2025,
+title={Direct numerical simulation of nucleate boiling with a resolved microlayer and conjugate heat transfer},
+volume={1020}, DOI={10.1017/jfm.2025.10542}, journal={Journal of Fluid Mechanics},
+author={Long, Tian and Pan, Jieyun and Cipriano, Edoardo and Bucci, Matteo and Zaleski, Stéphane},
+year={2025},
+pages={A30},
+month={October}}
+
+@article{wang2025b,
+title={Splashing regimes of high-speed drop impact},
+volume={1019},
+DOI={10.1017/jfm.2025.10543},
+journal={Journal of Fluid Mechanics},
+author={Wang, Hui and Liu, Shuo and Bayeul-Lainé, Annie-Claude and Murphy, David and Katz, Joseph and Coutier-Delgosha, Olivier},
+year={2025},
+pages={A16}
+}
+
+@article{vrionis2025,
+title = {An efficient and highly scalable solver for modelling thin film flows in heterogeneous environments},
+journal = {Theoretical and Computational Fluid Dynamics},
+volume = {39},
+pages = {37},
+year = {2025},
+doi = {https://doi.org/10.1007/s00162-025-00757-x},
+author = {Panayiotis Yiannis Vrionis and Andreas D. Demou and George Karapetsas and Demetrios T. Papageorgiou and Nikos Savva }
+}
+
+@hal{saini2025, hal-05240635 }
+
+@article{boswell2025,
+title = {Energetics analysis of solitary waves using a multi-layer model},
+journal = {Coastal Engineering},
+pages = {104868},
+year = {2025},
+issn = {0378-3839},
+doi = {https://doi.org/10.1016/j.coastaleng.2025.104868},
+url = {https://www.sciencedirect.com/science/article/pii/S0378383925001735},
+author = {Hunter Boswell and Frank D. Han and Guirong Yan and Wouter Mostert},
+keywords = {Shallow-water, Wave breaking energetics, Multi-layer method}
+}
+
+@article{alessio2025,
+  title = {Fisher-KPP model with chemotaxis over fractal terrains},
+  author = {Alessio, Benjamin M. and Gupta, Ankur},
+  journal = {Phys. Rev. E},
+  volume = {112},
+  issue = {2},
+  pages = {024213},
+  numpages = {9},
+  year = {2025},
+  month = {Aug},
+  publisher = {American Physical Society},
+  doi = {10.1103/83rk-frxb},
+  url = {https://link.aps.org/doi/10.1103/83rk-frxb}
+}
+
+@article{shi2025b, 
+title={Flow past a fixed spherical droplet: breaking of axisymmetry by an internal flow bifurcation}, 
+volume={1018}, 
+DOI={10.1017/jfm.2025.10565}, 
+journal={Journal of Fluid Mechanics}, 
+author={Shi, Pengyu and Climent, Éric and Legendre, Dominique}, 
+year={2025}, 
+pages={A53}
+} 
+
+@article{shi2025a, 
+title={Lateral migration and bouncing of a deformable bubble rising near a vertical wall. Part 2. Highly inertial regimes}, 
+volume={1013}, 
+DOI={10.1017/jfm.2025.10167}, 
+journal={Journal of Fluid Mechanics}, 
+author={Shi, Pengyu and Zhang, Jie and Magnaudet, Jacques}, 
+year={2025}, 
+pages={A19}
+} 
+
+@hal{wu2025, hal-05108994}
+
+@article{li2025,
+  title = {Viscoelasticity reduces the droplet size in mucosalivary film fragmentation during intense respiratory events},
+  author = {Li, Mogeng and Saade, Youssef and Zaleski, St\'ephane and Sen, Uddalok and Kant, Pallav and Lohse, Detlef},
+  journal = {Phys. Rev. Fluids},
+  volume = {10},
+  issue = {8},
+  pages = {084001},
+  numpages = {20},
+  year = {2025},
+  month = {Aug},
+  publisher = {American Physical Society},
+  doi = {10.1103/zlgy-36dk},
+  url = {https://link.aps.org/doi/10.1103/zlgy-36dk},
+  eprint = {2502.05105}
+}
+
+@hal{scapin2025, hal-05105692}
+
 @hal{kulkarni2025, hal-05104157}
 
 @hal{cipriano2025, hal-04962085}
@@ -296,6 +524,19 @@ pages={A6}
   school={TU Delft},
   url={https://doi.org/10.4233/uuid:7000b291-671c-4ab3-86fa-beeff39bf5df}
 }
+
+@article{Corpart2025,
+  title={Approach to similarity in the pinch-off of a viscous liquid thread},
+  author={Marie Corpart and Miguel Ángel Herrada and Antoine Deblais and Daniel Bonn},
+  journal={Journal of Fluid Mechanics},
+  volume={1019},
+  pages={A15},
+  year={2025},
+  publisher={Cambridge University Press},
+  doi={10.1017/jfm.2025.10582}
+}
+
+
 ~~~
 
 ### 2024
@@ -1736,7 +1977,7 @@ publisher={Cambridge University Press},
 author={Sanjay, Vatsal and Lohse, Detlef and Jalaal, Maziyar}, 
 year={2021}, 
 pages={A2},
-url={http://basilisk.fr/sandbox/vatsal/BurstingBubble/burstingBubble.c},
+url={/sandbox/vatsal/BurstingBubble/burstingBubble.c},
 pdf={https://www.cambridge.org/core/services/aop-cambridge-core/content/view/4D5743C8FAC06837D898A42DA715B5E7/S0022112021004894a.pdf/bursting-bubble-in-a-viscoplastic-medium.pdf}
 }
 

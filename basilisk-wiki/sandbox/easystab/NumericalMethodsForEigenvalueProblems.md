@@ -3,9 +3,9 @@
 
 **D. Fabre, IMFT (Toulouse, France) **
 
-This document belongs to the lecture notes for the [M2-DET](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md) course, D. Fabre, nov. 2018-dec. 2023 : Lecture 3.
+This document belongs to the lecture notes for the [M2-DET](/sandbox/easystab/M2DET/Instabilities.md) course, D. Fabre, nov. 2018-dec. 2023 : Lecture 3.
 
-(This document is adapted from the lecture given at Sapporo university in june 2019 available [here](http://basilisk.fr/sandbox/easystab/Lecture_Sapporo_june2019.md) )
+(This document is adapted from the lecture given at Sapporo university in june 2019 available [here](/sandbox/easystab/Lecture_Sapporo_june2019.md) )
 
 # Linear dynamical systems and linear PDE problems
 
@@ -82,7 +82,7 @@ The case where $B$ is non-invertible generally arises when considering a system 
 
 More explanations can be found in the companion document [LinearSystems.md](). 
 See in particular 
-[this example](http://basilisk.fr/sandbox/easystab/LinearSystems.md#an-example) to understand the significance of infinite eigenvalues.
+[this example](/sandbox/easystab/LinearSystems.md#an-example) to understand the significance of infinite eigenvalues.
 
 ## Numerical resolution of eigenvalue (and generalized eigenvalue) problems
 
@@ -211,7 +211,7 @@ $$
 \lambda {\mathcal B} \hat{F} = {\mathcal B} \hat{F}
 $$
 
-A simple example is the 1D heat equation in bounded domain, see [Exercice 2](http://basilisk.fr/sandbox/easystab/NumericalMethodsForEigenvalueProblems.md#d-heat-equation). 
+A simple example is the 1D heat equation in bounded domain, see [Exercice 2](/sandbox/easystab/NumericalMethodsForEigenvalueProblems.md#d-heat-equation). 
 
 
 
@@ -228,7 +228,7 @@ See document [LinearSystems.md]() for more on this point.
 These are weak solutions of the problem, in the sense that they do not belong to the functional space ${\mathcal H}$  (they are either discontinous, non-square-integrable, or don't verify the boundary conditions). 
 These solutions are not acceptable solutions of the problem when considered alone but a continuous sum of such solutions is acceptable.
 
-A simple example is studied in [Exercice 4](http://basilisk.fr/sandbox/easystab/NumericalMethodsForEigenvalueProblems.md#an-example-involving-a-continuous-spectrum-transport-equation-in-an-infinite-domain). 
+A simple example is studied in [Exercice 4](/sandbox/easystab/NumericalMethodsForEigenvalueProblems.md#an-example-involving-a-continuous-spectrum-transport-equation-in-an-infinite-domain). 
 
 - In general, the solution of a linear PDE problem can be expressed as
 
@@ -318,7 +318,7 @@ Remarks :
 
 ## the Easystab project
 
-Easystab ([http://basilisk.fr/sandbox/easystab/README]())  is "a door open for you to study the stability and bifurcation of physical systems using octave/matlab, mainly in the domain of fluid mechanics".
+Easystab ([https://basilisk.fr/sandbox/easystab/README]())  is "a door open for you to study the stability and bifurcation of physical systems using octave/matlab, mainly in the domain of fluid mechanics".
 
 - Initiated by Jérôme Hoepffer (UPMC, Paris)
 
@@ -379,7 +379,7 @@ B = \left[ \begin{array}{ccc}
 \end{array} \right]
 $$
 
-It is advised to work these exercices in three ways : $(i)$ by writing down a characteristic polynomial, $(ii)$ by reducing the order of the system by incorporating the constraints (as in [this example](http://basilisk.fr/sandbox/easystab/LinearSystems.md#an-example) ) and $(iii)$ With a computer, using **eig** and/or **eigs** under Matlab/Octave/Python as in [this program](http://basilisk.fr/sandbox/easystab/demo_eig.py)
+It is advised to work these exercices in three ways : $(i)$ by writing down a characteristic polynomial, $(ii)$ by reducing the order of the system by incorporating the constraints (as in [this example](/sandbox/easystab/LinearSystems.md#an-example) ) and $(iii)$ With a computer, using **eig** and/or **eigs** under Matlab/Octave/Python as in [this program](/sandbox/easystab/demo_eig.py)
 
 For case $(c)$ use $\rho_1 = 1/2,\rho_2 = 1, g = 1, \gamma = 1, k = 1/2$.
 

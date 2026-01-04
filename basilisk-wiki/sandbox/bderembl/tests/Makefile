@@ -12,3 +12,5 @@ wavelet_vertex.tst: CFLAGS += -grid=multigrid1D
 wavelet_vertex_2d.tst: CFLAGS += -grid=multigrid
 
 boussinesq.tst: CFLAGS += -grid=multigrid
+
+test_params.tst: CFLAGS += -grid=multigrid

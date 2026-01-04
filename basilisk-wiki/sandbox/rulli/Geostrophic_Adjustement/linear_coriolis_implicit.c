@@ -3,7 +3,7 @@
 # Linearised shallow water equations with coriolis
 
 This code is solving linear shallow water equation with coriolis as in the f-plane for a step as initial condition for the height $\eta$.
-The height is computed using an implicit solver implemented in [layered/implicit.h](http://basilisk.fr/src/layered/implicit.h).
+The height is computed using an implicit solver implemented in [layered/implicit.h](/src/layered/implicit.h).
 
 
 ~~~gnuplot Comparision between intial and final (steady state) height
@@ -21,7 +21,7 @@ plot "h0.dat" using 1:2 with lines title 'Initial surface height', \
 ### Boundary conditions
 
 In order to get the steady state as soon as possible, we avoid reflection on the right boundary by using 
-an [open boundary condition](http://basilisk.fr/src/layered/hydro.h#radiation-boundary-conditions) while keeping a 
+an [open boundary condition](/src/layered/hydro.h#radiation-boundary-conditions) while keeping a 
 dirichlet boundary condition on the left side to prevent the height to decrease.
 
 ## Basilisk Code

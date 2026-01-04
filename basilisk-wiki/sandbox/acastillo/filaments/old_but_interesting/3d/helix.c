@@ -34,7 +34,7 @@ void vorticity3d(vector u, vector omega){
 # Simulated Navier-Stokes helical vortex
 
 The evolution of a helical vortex is simulated as in
-[Antoon's sandbox](http://basilisk.fr/sandbox/Antoonvh/helical.c). The goal
+[Antoon's sandbox](/sandbox/Antoonvh/helical.c). The goal
 of the physical space initialisation is to map an analytically defined trefoil
 vortex onto an Eulerian (static) numerical mesh. The helical trajectory
 discussed in here is defined by:

@@ -1,5 +1,5 @@
 /**
-[Return to my homepage](http://basilisk.fr/sandbox/nlemoine/README)
+[Return to my homepage](/sandbox/nlemoine/README)
 
 # Toolbox for handling discharge inflows in a 2D domain without masks (MPI compatible)
 
@@ -213,7 +213,7 @@ int Deallocate_Inlet(struct Inlet * _inlet)
 /**
 ## Discharge functions
 
-The functions provided in this section are essentially a copy of the functions available in [discharge.h](http://basilisk.fr/src/discharge.h): we seek the value $\eta_b$ of the water surface elevation upstream of the inlet section, which yields the desired inflow discharge through the inlet section. The only difference is in the *bflux* function: because we do not have a true boundary condition on $z_b$ (typically Neumann), we have to perform the hydrostatic reconstruction of interface elevation for each boundary face composing the inlet section, just as in the Saint-Venant solver.
+The functions provided in this section are essentially a copy of the functions available in [discharge.h](/src/discharge.h): we seek the value $\eta_b$ of the water surface elevation upstream of the inlet section, which yields the desired inflow discharge through the inlet section. The only difference is in the *bflux* function: because we do not have a true boundary condition on $z_b$ (typically Neumann), we have to perform the hydrostatic reconstruction of interface elevation for each boundary face composing the inlet section, just as in the Saint-Venant solver.
 */
 
 struct Eta_b {
@@ -255,7 +255,7 @@ static double bflux (struct Eta_b p, double eta_b)
    */   
       double corr_eta = tilt.x*(xout-xcent)+tilt.y*(yout-ycent);
 
-/** Left / right states reconstruction (see [here](http://basilisk.fr/src/saint-venant.h#computing-fluxes) for details): */
+/** Left / right states reconstruction (see [here](/src/saint-venant.h#computing-fluxes) for details): */
 
       double dx = p.ptr_inlet->BFaces[k].Delta ;
       

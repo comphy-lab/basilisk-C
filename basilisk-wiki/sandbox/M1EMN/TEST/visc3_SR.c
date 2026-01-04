@@ -168,8 +168,8 @@ p '../visc3_SR/log' u 1:($4==1?($2) :NaN) t'SR  1' w lp,\
 # Links
 
 
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c]()
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapsesqrt_ML.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapsesqrt_ML.c]()
 
  with Bingham
  

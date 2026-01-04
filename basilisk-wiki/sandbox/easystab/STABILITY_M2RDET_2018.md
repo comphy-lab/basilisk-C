@@ -7,5 +7,5 @@
 
 this page is out of date.
 
-Please follow [This kink](http://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md).
+Please follow [This kink](/sandbox/easystab/M2DET/Instabilities.md).
 

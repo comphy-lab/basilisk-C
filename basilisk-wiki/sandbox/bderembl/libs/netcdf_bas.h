@@ -39,9 +39,9 @@ variables
 #include <stdio.h>
 #include <string.h>
 #include <netcdf.h>
+#pragma autolink -lnetcdf
 
 
-#define NDIMS 4
 #define Y_NAME "y"
 #define X_NAME "x"
 #define REC_NAME "time"
@@ -97,7 +97,6 @@ void create_nc(scalar * list_out, char* file_out)
    /* LOCAL IDs for the netCDF file, dimensions, and variables. */
    int x_dimid, y_dimid, lvl_dimid, rec_dimid;
    int lvl_varid, y_varid, x_varid;
-   int dimids[NDIMS];
    
    /* Create the file. */
    if ((nc_err = nc_create(nc_file, NC_CLOBBER, &ncid)))
@@ -107,8 +106,8 @@ void create_nc(scalar * list_out, char* file_out)
     * unlimited length - it can grow as needed. In this example it is
     * the time dimension.*/
 #if _MPI
-   int npx = mpi_dims[0];
-   int npy = mpi_dims[1];
+   int npx = Dimensions.x;
+   int npy = Dimensions.y;
 #else
    int npx = 1;
    int npy = 1;
@@ -149,17 +148,38 @@ void create_nc(scalar * list_out, char* file_out)
       the netCDF variables. Both of the netCDF variables we are
       creating share the same four dimensions. In C, the
       unlimited dimension must come first on the list of dimids. */
-   dimids[0] = rec_dimid;
-   dimids[1] = lvl_dimid;
-   dimids[2] = y_dimid;
-   dimids[3] = x_dimid;
 
    /* Define the netCDF variables */
    int nvarout = 0;
    for (scalar s in nc_scalar_list){
+        int nl_loc = _attribute[s.i].block;
+
+        if (nl_loc == 1){ // store 1-layer variables without layer dimension
+          int dimids[3];
+          int NDIMS = 3;
+          dimids[0] = rec_dimid;
+          dimids[1] = y_dimid;
+          dimids[2] = x_dimid;
+          
+          if ((nc_err = nc_def_var(ncid, s.name, NC_FLOAT, NDIMS,
+                                   dimids, &nc_varid[nvarout])))
+         ERR(nc_err);
+
+        } else {
+
+        int dimids[4];
+        int NDIMS = 4;
+        dimids[0] = rec_dimid;
+        dimids[1] = lvl_dimid;
+        dimids[2] = y_dimid;
+        dimids[3] = x_dimid;
+
        if ((nc_err = nc_def_var(ncid, s.name, NC_FLOAT, NDIMS,
                                 dimids, &nc_varid[nvarout])))
          ERR(nc_err);
+
+        }
+
        nvarout += 1;
    }
    
@@ -214,8 +234,8 @@ We use write_nc to dump a snapshot in the netcdf file at time t.
 void write_nc() {
 
 #if _MPI
-   int npx = mpi_dims[0];
-   int npy = mpi_dims[1];
+   int npx = Dimensions.x;
+   int npy = Dimensions.y;
 #else
    int npx = 1;
    int npy = 1;
@@ -251,25 +271,6 @@ void write_nc() {
   float * field = (float *)malloc(Ny*Nx*nl*sizeof(float));
 
   
-  /* The start and count arrays will tell the netCDF library where to
-     write our data. */
-  size_t start[NDIMS], count[NDIMS];
-  
-  
-  /* These settings tell netcdf to write one timestep of data. (The
-     setting of start[0] inside the loop below tells netCDF which
-     timestep to write.) */
-  start[0] = nc_rec; //time
-  start[1] = 0;     //level
-  start[2] = 0;      //y
-  start[3] = 0;      //x
-  
-  count[0] = 1;
-  count[1] = nl;
-  count[2] = Ny;
-  count[3] = Nx;
-
-  
   int nv = -1;
   /* char * str1; */
   for (scalar s in nc_scalar_list){
@@ -295,18 +296,47 @@ void write_nc() {
     
     if (pid() == 0) { // master
 #if _MPI
-        MPI_Reduce (MPI_IN_PLACE, &field[0], Ny*Nx*nl, MPI_FLOAT, MPI_MIN, 0,MPI_COMM_WORLD);
+      MPI_Reduce (MPI_IN_PLACE, &field[0], Ny*Nx*nl, MPI_FLOAT, MPI_MIN, 0,MPI_COMM_WORLD);
 #endif
   
-
-     if ((nc_err = nc_put_vara_float(ncid, nc_varid[nv], start, count,
-        			      &field[0])))
-         ERR(nc_err);
-
-  }
+      int nl_loc = _attribute[s.i].block;
+      /* The start and count arrays will tell the netCDF library where to
+         write our data. */
+      if (nl_loc == 1){ // skip layer dimension
+        size_t start[3], count[3];
+        start[0] = nc_rec; //time
+        start[1] = 0;      //y
+        start[2] = 0;      //x
+        
+        count[0] = 1;
+        count[1] = Ny;
+        count[2] = Nx;
+        
+        if ((nc_err = nc_put_vara_float(ncid, nc_varid[nv], start, count,
+                                        &field[0])))
+          ERR(nc_err);
+        
+      } else { // with layer
+        size_t start[4], count[4];
+        
+        start[0] = nc_rec; //time
+        start[1] = 0;     //level
+        start[2] = 0;      //y
+        start[3] = 0;      //x
+        
+        count[0] = 1;
+        count[1] = nl;
+        count[2] = Ny;
+        count[3] = Nx;
+        
+        if ((nc_err = nc_put_vara_float(ncid, nc_varid[nv], start, count,
+                                        &field[0])))
+          ERR(nc_err);
+      }
+    }
 #if _MPI
-  else // slave
-  MPI_Reduce (&field[0], NULL, Ny*Nx*nl, MPI_FLOAT, MPI_MIN, 0,MPI_COMM_WORLD);
+    else // slave
+      MPI_Reduce (&field[0], NULL, Ny*Nx*nl, MPI_FLOAT, MPI_MIN, 0,MPI_COMM_WORLD);
 #endif
   }
 //  matrix_free (field);
@@ -334,8 +364,8 @@ void read_nc(scalar * list_in, char* file_in, bool read_time = false)
   int *dimids = NULL;
 
 #if _MPI
-  int npx = mpi_dims[0];
-  int npy = mpi_dims[1];
+  int npx = Dimensions.x;
+  int npy = Dimensions.y;
 #else
   int npx = 1;
   int npy = 1;
@@ -376,57 +406,58 @@ void read_nc(scalar * list_in, char* file_in, bool read_time = false)
       if (strcmp(varname,s.name) == 0) {
         fprintf(stdout,"Reading variable  %s!\n", s.name);
 
-        // There is an issue with this strategy, because, there may be variables
-        // with one layer... TO BE FIXED
+        if (var_ndims == 3){ // no layer
 
-        /* int nl_loc = _attribute[s.i].block; */
+          size_t start[3], count[3];
+          start[0] = 0; //time
+          start[1] = 0;
+          start[2] = 0;
 
-        /* if (nl_loc == 1){ // no layer */
+          count[0] = 1;
+          count[1] = Ny;
+          count[2] = Nx;
+          if ((nc_err = nc_get_vara_float(ncfile, i, start, count,
+                                          &field[0])))
+            ERR(nc_err);
 
-        /*   size_t start[3], count[3]; */
-        /*   start[0] = 0; //time */
-        /*   start[1] = 0; */
-        /*   start[2] = 0; */
+          foreach(noauto)
+            s[] = field[Nx*_J + _I];
 
-        /*   count[0] = 1; */
-        /*   count[1] = Ny; */
-        /*   count[2] = Nx; */
-        /*   if ((nc_err = nc_get_vara_float(ncfile, i, start, count, */
-        /*                                   &field[0]))) */
-        /*     ERR(nc_err); */
+        } else { // layer
 
-        /*   foreach(noauto) */
-        /*     s[] = field[Nx*_J + _I]; */
-
-        /* } else { // layer */
-
-        size_t start[4], count[4];
-        start[0] = 0; //time
-        start[1] = 0;
-        start[2] = 0;
-        start[3] = 0;
+          size_t start[4], count[4];
+          start[0] = 0; //time
+          start[1] = 0;
+          start[2] = 0;
+          start[3] = 0;
         
-        count[0] = 1;
-        count[1] = nl;
-        count[2] = Ny;
-        count[3] = Nx;
-        if ((nc_err = nc_get_vara_float(ncfile, i, start, count,
-                                        &field[0])))
-          ERR(nc_err);
+          count[0] = 1;
+          count[1] = nl;
+          count[2] = Ny;
+          count[3] = Nx;
+          if ((nc_err = nc_get_vara_float(ncfile, i, start, count,
+                                          &field[0])))
+            ERR(nc_err);
         
-        foreach_layer()
-          foreach (noauto) // why noauto???
-            s[] = field[Ny*Nx*_layer + Nx*_J + _I]; 
-        /* } // end if layer */
-
+          // I  recreate a foreach_layer in case LAYER = 0
+          for (_layer = 0; _layer < nl; _layer++){
+            foreach(noauto){
+              s[] = field[Ny*Nx*_layer + Nx*_J + _I];
+            }
+          }
+          _layer = 0;
+        } // end if var_ndims == 3
       } // end if strcmp
-    } // en loop nvars
+    } // end loop nvars
   }// end scalar loop
 
   free (field);
 
   if ((nc_err = nc_close(ncfile)))
     ERR(nc_err);
+
+  boundary(list_in);
+
 }
 
 event cleanup (t = end)

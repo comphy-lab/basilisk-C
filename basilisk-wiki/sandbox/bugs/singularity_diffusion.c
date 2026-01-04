@@ -1,7 +1,7 @@
 /**
 # Dry cells lead to singularities with vertical diffusion
 
-Currently, there are no checks checking if ```h[]``` is nonzero in the [vertical diffusion module](http://basilisk.fr/src/layered/diffusion.h). Hence, dry cells inevitably cause singularities if viscosity is set to be anything but zero. 
+Currently, there are no checks checking if ```h[]``` is nonzero in the [vertical diffusion module](/src/layered/diffusion.h). Hence, dry cells inevitably cause singularities if viscosity is set to be anything but zero. 
 */
 
 #include "grid/multigrid.h"

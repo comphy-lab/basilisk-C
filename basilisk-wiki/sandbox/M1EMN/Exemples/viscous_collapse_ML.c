@@ -3,8 +3,8 @@
 
 or collapse of a viscous fluid (double viscous dam break)
 From the paper: Huppert 82 “The propagation of two-dimensional and axisymmetric viscous gravity currents over a rigid horizontal surface”
-it is done with [only mass equation and lubrication ](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and 
-  [with shallow watzer](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c)
+it is done with [only mass equation and lubrication ](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and 
+  [with shallow watzer](/sandbox/M1EMN/Exemples/viscous_collapse.c)
  
 Here we solve it using the Multilayer Shallow Water (Saint Venant Multi Couches) strategy of Audusse Sainte-Marie  et al 2011. See De Vita 2020 for details, this example is presented there as a test case.
  
@@ -102,8 +102,8 @@ the selfsimilar collapse over the selfsimilar solution:
 Montpellier 07/17
 
 ## Links
-related examples [only mass equation and lubrication ](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and 
-  [with shallow watzer](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c)
+related examples [only mass equation and lubrication ](/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c) and 
+  [with shallow watzer](/sandbox/M1EMN/Exemples/viscous_collapse.c)
 see as well Navier Stokes solution.
 
 

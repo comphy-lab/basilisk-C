@@ -1,7 +1,7 @@
 /**
-This work is an adaptation of my [first](http://basilisk.fr/sandbox/Gwendal_Leger/wave_topo/beach_topo.c) 
-and [second](http://basilisk.fr/sandbox/Gwendal_Leger/waves_1D/waves_1D.c) examples to two dimensions,
-based on [shoal-ml.c](http://basilisk.fr/src/examples/shoal-ml.c) and [beach.c](http://basilisk.fr/src/test/beach.c),
+This work is an adaptation of my [first](/sandbox/Gwendal_Leger/wave_topo/beach_topo.c) 
+and [second](/sandbox/Gwendal_Leger/waves_1D/waves_1D.c) examples to two dimensions,
+based on [shoal-ml.c](/src/examples/shoal-ml.c) and [beach.c](/src/test/beach.c),
 using the wave theory based on the relation dispersion derived from Euler's equation, $\omega=\sqrt{gk\tanh(kH)}$.\
 The case studied here is the port of Boulogne-sur-mer, located in northern France.
 */
@@ -205,7 +205,7 @@ event compute_vertical_scalars (i++) {
 
 
 /**
-This is the friction event from [beach.c](http://basilisk.fr/src/test/beach.c), adapted to a 2D case.
+This is the friction event from [beach.c](/src/test/beach.c), adapted to a 2D case.
 */
 #if 1
 event friction (i++) {

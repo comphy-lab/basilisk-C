@@ -162,9 +162,9 @@ p[-2:4][0:2] 'out' u 1:(($5==.5)||($5==1)||($5==1.5)? $2 :NaN)w p, hd(x,.5),hd(x
 #Links
  
 see the same
-  [with friction](http://basilisk.fr/sandbox/M1EMN/Exemples/damb_dressler.c)
- and  see non viscous dam break with [standard C](http://basilisk.fr/sandbox/M1EMN/Exemples/svb.c) 
-and with [Basilisk](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c)
+  [with friction](/sandbox/M1EMN/Exemples/damb_dressler.c)
+ and  see non viscous dam break with [standard C](/sandbox/M1EMN/Exemples/svb.c) 
+and with [Basilisk](/sandbox/M1EMN/Exemples/damb.c)
  
  
 #Bibliographie

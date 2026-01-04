@@ -231,9 +231,9 @@ p'xprof' t'u comp',''u 1:5 t' exact' w l
 
 * R. Darby Viscoelastic fluids, Dekker ed. (1976) p 223-225, p 194 
 
-* [Application to the 1D Collapse](http://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
+* [Application to the 1D Collapse](/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
  
-* [Application to the 2D Collapse](http://basilisk.fr/sandbox/M1EMN/Exemples/column_SCC.c)
+* [Application to the 2D Collapse](/sandbox/M1EMN/Exemples/column_SCC.c)
  
  *  K. F. Liu and C. C. Mei
  "Approximate equations for the slow spreading of a thin sheet of Bingham plastic fluid"
@@ -248,7 +248,7 @@ Fluid Mech. (1989), vol. 207. p p . 505-529
  Viscoplastic flow over an inclined surface
  J. Non-Newtonian Fluid Mech. 139 (2006) 103–127
  
-* [see also for face implementation](http://basilisk.fr/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c) 
+* [see also for face implementation](/sandbox/vatsal/GenaralizedNewtonian/Couette_NonNewtonian.c) 
 
 */
 

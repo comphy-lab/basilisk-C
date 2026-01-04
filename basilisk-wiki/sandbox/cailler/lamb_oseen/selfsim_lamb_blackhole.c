@@ -22,10 +22,10 @@ it hinders the vorticity layer spread in the fluid domain.
 ## Motivations
 
 This is a numerical experiment extending drastically the results of the 
-[first test of convergence](http://basilisk.fr/sandbox/cailler/lamb_oseen/selfsim_lamb_conv.c) 
+[first test of convergence](/sandbox/cailler/lamb_oseen/selfsim_lamb_conv.c) 
 of the self-similar solver dedicated to the *Lamb--Oseen* vortex. 
 Starting from a **random** initial velocity field associated to a 
-[*white noise*](http://basilisk.fr/src/common.h), the question at stake is: 
+[*white noise*](/src/common.h), the question at stake is: 
 do we inexorably converge towards a *steady state*? If so, is this the exact 
 same self-similar solution than the one analytically predicted? 
 We are hence interested in the long-time behaviour of the self-similar solver. 
@@ -33,7 +33,7 @@ We are hence interested in the long-time behaviour of the self-similar solver.
 Aside from the initial condition, the problem's nature is the same as before, 
 therefore, we do not change any other parameter (grid size, boundary conditions, 
 *Reynolds* number...), so **please** refer to the 
-[previous test case](http://basilisk.fr/sandbox/cailler/lamb_oseen/selfsim_lamb_conv.c) 
+[previous test case](/sandbox/cailler/lamb_oseen/selfsim_lamb_conv.c) 
 for any details upon the choices made and other technical/theoretical aspects.
 */
 
@@ -73,7 +73,7 @@ $$
 However, the cases $N_{max} = 9$ and $10$ are done remotely, as it would exceed the 
 `Basilisk` server capacities due to the total running time of the simulation needed. 
 Related results can be found in 
-[`lamb_data`](http://basilisk.fr/sandbox/cailler/lamb_oseen/lamb_data/). 
+[`lamb_data`](/sandbox/cailler/lamb_oseen/lamb_data/). 
 */
 
 int k; // counter
@@ -349,7 +349,7 @@ event vel_p_maps (t = {1, 2, 5, 10, 20, 50, 100})
 /** 
 Finally, we verify the convergence order of the numerical scheme used in the 
 self-similar solver, to ensure that we are recovering the conclusions of the 
-[first test case](http://basilisk.fr/sandbox/cailler/lamb_oseen/selfsim_lamb_conv.c). 
+[first test case](/sandbox/cailler/lamb_oseen/selfsim_lamb_conv.c). 
 We measure for various numbers of grid elements (between $64$ and $1024$) the 
 Euclidian and Uniform norms of the differences between our numerical results 
 and the analytical solution:

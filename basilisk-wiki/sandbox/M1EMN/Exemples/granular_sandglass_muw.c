@@ -293,9 +293,9 @@ p [:10][:100] 'outWQW' u ($1/$3):($2/($3**(1.5))) t'calc'   w lp, .76*x**1.5*sqr
 /**
 # Related examples
  
-* [The granular column](http://basilisk.fr/_showraw/sandbox/M1EMN/Exemples/granular_column.c)
+* [The granular column](/_showraw/sandbox/M1EMN/Exemples/granular_column.c)
 
-* [Silo with aperture at the bottom](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass.c)
+* [Silo with aperture at the bottom](/sandbox/M1EMN/Exemples/granular_sandglass.c)
  
 #Bibliography
 

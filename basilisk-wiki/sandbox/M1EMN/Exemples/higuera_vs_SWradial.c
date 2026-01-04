@@ -181,9 +181,9 @@ p [0:][-.1:3] 0 not w l linec -1,1.813*(x<.15? x:NaN) not linec -1 axes x1y1,(H*
 
 ## Links
   
-  * [http://basilisk.fr/sandbox/M1EMN/Exemples/higuera.c]() same in 2D
+  * [https://basilisk.fr/sandbox/M1EMN/Exemples/higuera.c]() same in 2D
 
-  * [http://basilisk.fr/src/examples/swasi.c]() reverse jump (injection at the external radius)
+  * [https://basilisk.fr/src/examples/swasi.c]() reverse jump (injection at the external radius)
    
 
 ## Bibliography

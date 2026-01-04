@@ -5,7 +5,7 @@
   %{
 # Two ways of derivation
   Source : [two ways of derivation.m](sandbox/easystab/two ways of derivation)
-  I use two ways to derive cos(x),one is [chebdif.m](http://basilisk.fr/sandbox/easystab/chebdif.m),the other is [finite difference](http://basilisk.fr/sandbox/easystab/differential_equation.m),and i find the same result. 
+  I use two ways to derive cos(x),one is [chebdif.m](/sandbox/easystab/chebdif.m),the other is [finite difference](/sandbox/easystab/differential_equation.m),and i find the same result. 
 
  ![method difference infinite](/diff.jpg)
 
@@ -18,14 +18,14 @@
   
  %{
 # Derivation in 3D
-I use [diffmat_3D](http://basilisk.fr/sandbox/easystab/diffmat_3D.m) to test an exponential function in [diffmat_3D_test_functions.m](http://basilisk.fr/sandbox/easystab/diffmat_3D_test_functions.m)
+I use [diffmat_3D](/sandbox/easystab/diffmat_3D.m) to test an exponential function in [diffmat_3D_test_functions.m](/sandbox/easystab/diffmat_3D_test_functions.m)
   
   ![test function](/3d.jpg)
  %} 
  
  %{
 # I use the derivation 3D to solve equation of poisson 
-I use derivation 3d to solve problem [poisson](http://basilisk.fr/sandbox/easystab/poisson3D.m) in [poissom.m](http://basilisk.fr/sandbox/easystab/stab2014/poisson.m)
+I use derivation 3d to solve problem [poisson](/sandbox/easystab/poisson3D.m) in [poissom.m](/sandbox/easystab/stab2014/poisson.m)
 ![poisson](/poisson.jpg)
 
 

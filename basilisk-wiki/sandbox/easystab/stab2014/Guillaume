@@ -8,7 +8,7 @@ I used the [the vibrating string](../vibrating_string.m) code and modified it to
 
 ## 2D brusselator with periodic conditions
 
-I adapted [brusselator.c](http://basilisk.fr/src/examples/brusselator.c) to create a simple matlab solver for [brusselator 2D with periodic conditions](brusselator_2D_periodic.m)
+I adapted [brusselator.c](/src/examples/brusselator.c) to create a simple matlab solver for [brusselator 2D with periodic conditions](brusselator_2D_periodic.m)
 
 ![](brusselator2d_periodic.png)
 

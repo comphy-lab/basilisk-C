@@ -15,7 +15,7 @@ where $\theta = \arctan(r/z)$ and using the $L_1-$norm convention.
 ![Update of the ghost cells'volume fraction on the **left** border](img_rd_CA_bubble/fig_f_BC_matcha.png)(height=500 width=500) 
 
 See the algorithm documentation
-[here](http://basilisk.fr/sandbox/cailler/test-cases/vel_tan/f_BC_vel_tan.h) 
+[here](/sandbox/cailler/test-cases/vel_tan/f_BC_vel_tan.h) 
 for updating ghost cell values.
 */
 

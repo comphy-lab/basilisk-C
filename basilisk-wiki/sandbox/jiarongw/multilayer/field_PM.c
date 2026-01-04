@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
 /**
 ## Initialization
 New method: read in the power spectrum and initialize the wave field. 
-In addition we use the already written remapping function that defines a sigma vertical coordinate. See [breaking.c](http://basilisk.fr/src/examples/breaking.c) for details. 
+In addition we use the already written remapping function that defines a sigma vertical coordinate. See [breaking.c](/src/examples/breaking.c) for details. 
 
 TO-DO: test different remapping method and $\theta_H$ (default 0.51).
 

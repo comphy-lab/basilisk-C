@@ -155,5 +155,5 @@ plot exp (f1(log(x))) t ftitle(a1,b1), \
 
 ## See also
 
-* [Same test with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/parabola.html)
+* [Same test with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/parabola.html)
 */

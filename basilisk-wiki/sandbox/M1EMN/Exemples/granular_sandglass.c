@@ -390,19 +390,19 @@ sp'field-3.txt' u 1:2:($3>.9 ? sqrt($7*$7+$6*$6) :0) not
  
 ## Links
  
- * [granular include](http://basilisk.fr/sandbox/M1EMN/Exemples/granular.h)
+ * [granular include](/sandbox/M1EMN/Exemples/granular.h)
  
- * [The basic Bagnold flow](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic.c)
+ * [The basic Bagnold flow](/sandbox/M1EMN/Exemples/bagnold_periodic.c)
  
- * [dry column](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column.c)
+ * [dry column](/sandbox/M1EMN/Exemples/granular_column.c)
  
- * [dry cohesive column](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_column_cohesif.c)
+ * [dry cohesive column](/sandbox/M1EMN/Exemples/granular_column_cohesif.c)
  
- * [silos](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass.c)
+ * [silos](/sandbox/M1EMN/Exemples/granular_sandglass.c)
  
- * [silos](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass.c)
+ * [silos](/sandbox/M1EMN/Exemples/granular_sandglass.c)
  
- * [Hele Shaw silos with friction](http://basilisk.fr/sandbox/M1EMN/Exemples/granular_sandglass_muw.c)
+ * [Hele Shaw silos with friction](/sandbox/M1EMN/Exemples/granular_sandglass_muw.c)
  
 ## Bibliography
  

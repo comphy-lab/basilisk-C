@@ -1,5 +1,5 @@
 /**
-This file is copied from [Edorado's sandbox](http://basilisk.fr/sandbox/ecipriano/README). All credit to him!
+This file is copied from [Edorado's sandbox](/sandbox/ecipriano/README). All credit to him!
 */
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_multiroots.h>

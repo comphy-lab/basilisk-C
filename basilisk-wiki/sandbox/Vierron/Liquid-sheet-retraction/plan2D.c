@@ -109,7 +109,7 @@ event init (t = 0) {
 
 /**
 ## Mesh adaptation
-We use an adaptive mesh ([Adaptation Algorithm](http://basilisk.fr/sandbox/Antoonvh/the_adaptive_wavelet_algorithm)) with a maximum level of refinement of MAXLEVEL We adapt the mesh with respect to the interface and the velocity (u.x ; u.y).*/
+We use an adaptive mesh ([Adaptation Algorithm](/sandbox/Antoonvh/the_adaptive_wavelet_algorithm)) with a maximum level of refinement of MAXLEVEL We adapt the mesh with respect to the interface and the velocity (u.x ; u.y).*/
 
 event adapt (i++) {
 	double uemax = 0.05;
@@ -162,7 +162,7 @@ event extractPosition (i++) {
 	}
 }
 /**
-We output the evolution of the fraction field with the vorticity using [view.h](http://basilisk.dalembert.upmc.fr/src/view.h) and the [draw.h command](http://basilisk.dalembert.upmc.fr/src/draw.h).
+We output the evolution of the fraction field with the vorticity using [view.h](/src/view.h) and the [draw.h command](/src/draw.h).
 [How to find view arguments](https://groups.google.com/forum/#!searchin/basilisk-fr/view$20parameters|sort:date/basilisk-fr/Z8goUFJPivA/c5N9ALcpBAAJ)*/
 event interface (i++) {
 	clear();

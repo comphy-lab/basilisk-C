@@ -1,5 +1,11 @@
 A collection of all the "Pictures of the Month" which have appeared on the [Front Page](/Front%20Page) over the years.
 
+![Hydrothermal plume in the near field obtained from LES showing coherent structures with the λ₂ method (Jeong Hussain, 1995) and temperature anomaly coloring ([Lemaréchal et al. 2025](Bibliography#lemarechal2025)).](movies/CS_hydrothermal_plume.mp4){width="100%"}
+
+![Typical sequence of splashing events for a water drop impacting a deep water pool (Fig. 2 from [Wang et al. 2025](Bibliography#wang2025b))](pictures/splashing.jpg){width="100%"}
+
+![[Global Tides](src/examples/global-tides.c)](src/examples/global-tides/M2.png){width="100%"}
+
 <center>
 <table>
 <tr>
@@ -130,7 +136,7 @@ tag. </video> <p class="caption">[Collision of two vortex rings](/sandbox/Antoon
 
 <div class="figure">
 <video controls="" preload="metadata" width="600px">
-<source src="https://surfdrive.surf.nl/files/index.php/s/N79po3rbsweYyxi/download" type="video/mp4">
+<source src="https://antoonvanhooft.nl/media/mov20003D.mp4" type="video/mp4">
 Your browser does not support the video tag.
 </video>
 <p class="caption">
@@ -163,4 +169,4 @@ Your browser does not support the video tag.
 
 ![<a href="/src/test/inclined-shock.c">Double Mach reflection of a Mach 10 shock from a wall</a> by <a href="/sandbox/fuster/README">Daniel Fuster</a>](/src/test/inclined-shock/rho.mp4)
 
-![<a href="/sandbox/Antoonvh/gradient-sharpening.c">Gradient sharpening by a dipolar vortex</a> by <a href="http://basilisk.fr/sandbox/Antoonvh/README">Antoon van Hooft</a>](/sandbox/Antoonvh/gradient-sharpening/Re800-overview.mp4)(width=100%)
+![<a href="/sandbox/Antoonvh/gradient-sharpening.c">Gradient sharpening by a dipolar vortex</a> by <a href="/sandbox/Antoonvh/README">Antoon van Hooft</a>](/sandbox/Antoonvh/gradient-sharpening/Re800-overview.mp4)(width=100%)

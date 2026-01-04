@@ -9,40 +9,6 @@ macros to deal with the reconstruction of the VOF interface
 
 */
 
-
-#include "geometry.h"
-#include "fractions.h"
-
-#if dimension == 1
-coord mycs(Point point, scalar c)
-{
-  coord n = {1.};
-  return n;
-}
-#elif dimension == 2
-#include "myc2d.h"
-#define mfacets int m = facets(n, alpha, v);
-#else // dimension == 3
-#include "myc.h"
-#define mfacets int m = facets(n, alpha, v, 1.);
-#endif
-
-/** Macro to simplify facets calculation */ 
-#define shortcut_facets               \
-  coord n;                            \
-  n = mycs(point, c);                 \
-  double alpha = plane_alpha(c[], n); \
-  coord v[12];                        \
-  mfacets;
-
-/** Macro to simplify dealing with slices */ 
-#define shortcut_slice(n, _alpha)                                \
-  double alpha = (_alpha - n.x * x - n.y * y - n.z * z) / Delta; \
-  if (fabs(alpha) > 0.87)                                        \
-    continue;
-
-/** and some useful functions */
-
 #include "output_vtu_helpers.h"
 
 /**
@@ -89,9 +55,6 @@ vector * vlist = {c,d};
 char *subname = "domain";
 output_vtu(slist, vlist, subname);
 ```
-
-see, also [example](test_output0_vtu.c).
-
 
 */
 
@@ -432,7 +395,7 @@ unstructured grid with the following structure:
 </center>
 
 This extends the routines in
-[`output_surfaces.h`](http://basilisk.fr/sandbox/oystelan/output_surfaces.h). by
+[`output_surfaces.h`](/sandbox/oystelan/output_surfaces.h). by
 Oystein Lande in two points: one, this is extended to write a single .vtu file
 when using MPI; and two, heavy data is stored in raw binary format.
 

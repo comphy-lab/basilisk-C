@@ -1,6 +1,6 @@
 /**
 ## 2D planar vorticity near a bubble
-We use the velocity/fraction field form [code](http://basilisk.fr/sandbox/yonghui/vortex/2dvortwrite.c), and run the simulation in a 2D case.
+We use the velocity/fraction field form [code](/sandbox/yonghui/vortex/2dvortwrite.c), and run the simulation in a 2D case.
 It's equivalent to a planar simulation with $k=0$
 */
 #include "navier-stokes/centered.h"
@@ -65,7 +65,7 @@ We read the file contains the output fields
 
   /**
 We read the fraction field (bubble shape) and the vorticity field from the file.
-Copied from [vortex](http://basilisk.fr/src/test/vortex.c)
+Copied from [vortex](/src/test/vortex.c)
 {
 We need to convert the initial vorticity field into the velocity field. 
 To do so we first declare the streamfunction $\psi$ and vorticity $\omega$ fields. }

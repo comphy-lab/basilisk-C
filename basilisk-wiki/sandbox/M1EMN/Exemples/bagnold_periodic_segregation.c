@@ -372,7 +372,7 @@ Gentilly Avril 2015
  
 ## Related examples
  
-* [The basic Bagnold flow](http://basilisk.fr/sandbox/M1EMN/Exemples/bagnold_periodic.c)
+* [The basic Bagnold flow](/sandbox/M1EMN/Exemples/bagnold_periodic.c)
  
 ## Bibliography
   

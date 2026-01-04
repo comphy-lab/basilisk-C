@@ -1,7 +1,7 @@
 /**
 # Useful functions that uses *tag.h*. 
 
-This code is a copy from [lopez](http://basilisk.fr/sandbox/lopez/droplet_stat.h), all credit to
+This code is a copy from [lopez](/sandbox/lopez/droplet_stat.h), all credit to
 him */
 
 static double remove_droplets_vol (scalar c, int nr, bool droplet) {

@@ -201,16 +201,16 @@ p [-1:][:.05]'log'  u 1:($3==8?$2:NaN)t 'num t=8' w l,\
 ## Links
 
 * see classical Dam-Break on horizontal bottom (no slope)
-  [Ritter solution](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c) 
+  [Ritter solution](/sandbox/M1EMN/Exemples/damb.c) 
   
-* see non viscous dam break with [standard C](http://basilisk.fr/sandbox/M1EMN/Exemples/svdb.c)
-and with [Basilisk](http://basilisk.fr/sandbox/M1EMN/Exemples/damb.c) (this file)
+* see non viscous dam break with [standard C](/sandbox/M1EMN/Exemples/svdb.c)
+and with [Basilisk](/sandbox/M1EMN/Exemples/damb.c) (this file)
                     
 * see Dam-Break on horizontal bottom (no slope)
-  [with turbulent friction](http://basilisk.fr/sandbox/M1EMN/Exemples/damb_dressler.c)
+  [with turbulent friction](/sandbox/M1EMN/Exemples/damb_dressler.c)
   this is another Dressler solution
  
-* see all the viscous collapse examples ([with laminar friction](http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c))
+* see all the viscous collapse examples ([with laminar friction](/sandbox/M1EMN/Exemples/viscous_collapse.c))
 
 ## Bibliography
 

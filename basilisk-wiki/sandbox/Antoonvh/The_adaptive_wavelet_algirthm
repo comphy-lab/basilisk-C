@@ -3,7 +3,7 @@
 
 Basilisk can employ anisotropic meshes using tree-based grids. If you
 are not familiar with this grid structure, [this
-link](http://basilisk.fr/sandbox/Antoonvh/The_Tree-Grid_Structure_in_Basilisk)
+link](/sandbox/Antoonvh/The_Tree-Grid_Structure_in_Basilisk)
 might be helpfull. The tree structure facilitates a convienient basis
 for refinement and coarsening, such that the mesh resolution can vary
 over the course of the simulation based on the evolution of the
@@ -25,7 +25,7 @@ link.
 ## Syntax
 
 The function `adapt_wavelet` is defined in
-[grid/tree-common.h](http://basilisk.fr/src/grid/tree-common.h#151). In
+[grid/tree-common.h](/src/grid/tree-common.h#151). In
 short, the adaptive wavelet algorithm is based arround the estimation
 of numerical errors in the representation of spatially-discretized
 fields. The `adapt_wavelet()` function requires the user to define a
@@ -209,7 +209,7 @@ In Basilisk various different downsampling operations are used. In the
 code this is referred to as the $restriction$ operation. It is defined
 as an attribute of a given scalar field. By default basilisk uses the
 following definition when initializing a new scalar field $s$ (see
-[here](http://basilisk.fr/src/grid/multigrid-common.h#199)):
+[here](/src/grid/multigrid-common.h#199)):
 
 ~~~literatec
 s.restriction = restriction_average;
@@ -217,7 +217,7 @@ s.restriction = restriction_average;
 
 The upsampling operation is referred to as $prolongation$. By default,
 for a scalar field, this is defined as (see
-[here](http://basilisk.fr/src/grid/multigrid-common.h#198)):
+[here](/src/grid/multigrid-common.h#198)):
 
 ~~~literatec
 s.prolongation = refine_bilinear;
@@ -226,7 +226,7 @@ s.prolongation = refine_bilinear;
 One may change these attributes if the argumentation for the chosen
 restriction and prolongation formulation does not apply for your
 solver formulation. This is for example the case for a volume of fluid
-(fraction) field $c$ (see [here](http://basilisk.fr/src/vof.h)).
+(fraction) field $c$ (see [here](/src/vof.h)).
 
 ~~~literatec
 c.prolongation = fraction_refine;
@@ -234,9 +234,9 @@ c.prolongation = fraction_refine;
 
 Many attributes for prolongation and restriction are defined in the
 [common multigrid header
-file](http://basilisk.fr/src/grid/multigrid-common.h), but you are
+file](/src/grid/multigrid-common.h), but you are
 free to employ your own definitions,
-e.g. [here](http://basilisk.fr/sandbox/Antoonvh/mandelbrot3.c).
+e.g. [here](/sandbox/Antoonvh/mandelbrot3.c).
 
 ###So where are the wavelets?
 
@@ -352,7 +352,7 @@ grid also have a $refine$ and $coarsen$ attributes to facilitate
 distiction between the methods used for $prolongation$ and
 $restriction$. The default for scalar fields is (as found [in the
 common tree-grid header
-file](http://basilisk.fr/src/grid/tree-common.h#397)):
+file](/src/grid/tree-common.h#397)):
 
 ~~~literatec
 ...
@@ -376,7 +376,7 @@ notable examples:
 The `adapt_wavelet()` function in combination with:
 
 - [A location-dependent refinement criterion suggestion](https://groups.google.com/forum/#!searchin/basilisk-fr/wavelet%7Csort:relevance/basilisk-fr/EMg6USbSVq0/R79XWddDBAAJ)
-- [A location-dependent maximum resolution](http://basilisk.fr/sandbox/pairetti/bag_mode/adapt_wavelet_limited.h), by Ceasar Pairetti. 
-- [An assessed-field-dependent maximum resolution](http://basilisk.fr/sandbox/Antoonvh/testadapt2.c)
+- [A location-dependent maximum resolution](/sandbox/pairetti/bag_mode/adapt_wavelet_limited.h), by Ceasar Pairetti. 
+- [An assessed-field-dependent maximum resolution](/sandbox/Antoonvh/testadapt2.c)
 
 */

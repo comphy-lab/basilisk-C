@@ -4,13 +4,13 @@
 
 ## Files 
 
- * [http://basilisk.fr/sandbox/M1EMN/HYDGEO/toddbear59.c]() Darcy flow in a fully saturated porous media due to a river
+ * [https://basilisk.fr/sandbox/M1EMN/HYDGEO/toddbear59.c]() Darcy flow in a fully saturated porous media due to a river
  
- * [http://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuit2D.c]() Aquifere 2D flow between two rivers 
+ * [https://basilisk.fr/sandbox/M1EMN/HYDGEO/dupuit2D.c]() Aquifere 2D flow between two rivers 
  
- * [http://basilisk.fr/sandbox/M1EMN/HYDGEO/richards.c]() Richards Imbibition 1D problem
+ * [https://basilisk.fr/sandbox/M1EMN/HYDGEO/richards.c]() Richards Imbibition 1D problem
 
- * [http://basilisk.fr/sandbox/M1EMN/HYDGEO/vauclin.c]() flow in a partialy saturated porous media due to rain and formation of an aquifere
+ * [https://basilisk.fr/sandbox/M1EMN/HYDGEO/vauclin.c]() flow in a partialy saturated porous media due to rain and formation of an aquifere
  
  
  

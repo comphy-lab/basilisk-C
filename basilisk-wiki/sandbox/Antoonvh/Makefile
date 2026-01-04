@@ -44,9 +44,11 @@ dcomp.tst: CC=mpicc -D_MPI=5
 
 test6-mpi.tst: CC=mpicc -D_MPI=3
 
-vary_threads: CFLAGS += fopenmp
+vary_threads.tst: CFLAGS += -fopenmp
 
 omega.tst: slave-omgpsi.o
+
+trefoil4.tst: CFLAGS += -fopenmp
 
 slave-omgpsi.o: slave-omgpsi.c Makefile
 	qcc -O2 -fno-common -c slave-omgpsi.c
@@ -60,3 +62,7 @@ multiscale-gpu.tst: CFLAGS += -grid=gpu/multigrid
 fpm.tst: CFLAGS += -llapack -lblas -lgfortran -LAntoonvh/lapack/lapack-3.10.0
 
 color_cube.tst: CFLAGS += -fopenmp
+
+heating.tst: CFLAGS += -fopenmp
+
+impinging2.tst: CFLAGS += -fopenmp

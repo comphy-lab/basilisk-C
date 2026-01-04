@@ -1,7 +1,7 @@
 /**
 # Miscalleneous functions
 
-modified http://basilisk.fr/sandbox/alimare/alex_functions.h to include tricubic interpolation
+modified https://basilisk.fr/sandbox/alimare/alex_functions.h to include tricubic interpolation
 
 ## Norm calculation
 
@@ -364,7 +364,7 @@ $$
 f(x,y) = X B^{-1} F \left(B^{-1}\right)^T Y^T = \mathcal{X} F \mathcal{Y}
 $$
 
-A simple test case can be seen [here](http://basilisk.fr/sandbox/alimare/1_test_cases/test_bicubic.c).
+A simple test case can be seen [here](/sandbox/alimare/1_test_cases/test_bicubic.c).
 */
 
 double bicubic(Point point , scalar s, int Arr[], coord p, int offset){

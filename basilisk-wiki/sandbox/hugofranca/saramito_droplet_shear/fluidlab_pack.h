@@ -819,7 +819,7 @@ void PrintMeshVTK(struct StructPrintMesh spm)
 }
 
 /** 
-  I blatantly copied this function from here: [draw.h](http://basilisk.fr/src/draw.h) */
+  I blatantly copied this function from here: [draw.h](/src/draw.h) */
 static bool cfilter (Point point, scalar c, double cmin)
 {
   double cmin1 = 4.*cmin;

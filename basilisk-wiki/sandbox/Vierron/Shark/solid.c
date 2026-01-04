@@ -144,5 +144,5 @@ event movie(t+= 0.01; t<=tEnd){
 /**
 # Movie
 ![Shark.](solid/test.mp4)
-([Shark movie](http://basilisk.dalembert.upmc.fr/sandbox/Vierron/Shark/solid/test.mp4))
+([Shark movie](/sandbox/Vierron/Shark/solid/test.mp4))
 */

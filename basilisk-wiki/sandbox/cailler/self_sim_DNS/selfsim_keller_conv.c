@@ -48,7 +48,7 @@ $\theta_0 \text{ [rad] } = 0.2, 0.4, 0.6, 0.8, 1.0, 1.2.$
 
 ## Methodology (Recap)
 
-Thanks to the [2D results of Keller \& Miksis in the physical space](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c), 
+Thanks to the [2D results of Keller \& Miksis in the physical space](/sandbox/cailler/keller_miksis/keller_fig2_conv.c), 
 we know the self-similar space-extension of the profiles. 
 Therefore, a $12 \times 12$ box is sufficient for both avoiding border effects 
 and allowing the wedge tip to reach its steady $\xi$--position.
@@ -62,12 +62,12 @@ storing the initial state, and a better management of normals at borders).
 <div class="message">
 <div id="msg_logo"><img src="/img/warning.png"></div>
 **For detailed explanations upon the self-similar solver: 
-*[go to this page](http://basilisk.fr/sandbox/cailler/self_sim_DNS/README)!***
+*[go to this page](/sandbox/cailler/self_sim_DNS/README)!***
 </div>
 
 In short, the self-similar solver is composed of the following additions:
 
-  + in the file [`selfsim_centered_keller.h`](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h):
+  + in the file [`selfsim_centered_keller.h`](/sandbox/cailler/self_sim_DNS/selfsim_centered_keller.h):
 
     - new variables: `vector xi[]` | `face vectors uf_temp[], lambdaf[]`;
     - boundary conditions modified for the pressure for symmetry conditions;
@@ -107,7 +107,7 @@ In short, the self-similar solver is composed of the following additions:
       2. `lambdaf[]` face vector is re-built as `uf[]` is projected to 
       determine the $n+1$ state;
 
-  + in the file [selfsim_bcg_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_bcg_keller.h):
+  + in the file [selfsim_bcg_keller.h](/sandbox/cailler/self_sim_DNS/selfsim_bcg_keller.h):
     - supplementary source terms have to be taken into account, as the original 
       BCG algorithm assumes divergence-free advection velocity 
       [and so $\boldsymbol{\nabla} \cdot \left(\mathbf{u} \otimes \mathbf{u} \right) 
@@ -127,7 +127,7 @@ In short, the self-similar solver is composed of the following additions:
       double f2 = f[i] + ( (src[] + src[-1]) + (2.*Nd/3.)*(f[] + f[-1]) )*dt/4. + s*(1. - s*un)*g.x[i]*Delta/2.;
 ```
 
-  + in the file [selfsim_two-phase-generic_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_two-phase-generic_keller.h):
+  + in the file [selfsim_two-phase-generic_keller.h](/sandbox/cailler/self_sim_DNS/selfsim_two-phase-generic_keller.h):
     - viscosity has to "vanish" exponentially in time with a modified 
       non-dimensional viscosity:
       
@@ -136,7 +136,7 @@ In short, the self-similar solver is composed of the following additions:
                 *fm.x[]*mu(ff)*exp(-t/3.);
 ```
 
-  + in the file [selfsim_vof_keller.h](http://basilisk.fr/sandbox/cailler/self_sim_DNS/selfsim_vof_keller.h): 
+  + in the file [selfsim_vof_keller.h](/sandbox/cailler/self_sim_DNS/selfsim_vof_keller.h): 
   use $\mathbf{\overline{\Lambda}}$ now as an external face vector.
       
 
@@ -444,7 +444,7 @@ plt.savefig('selfsim_keller_xi-pos_conv.svg')
 As shown on the above figure, there is a **quick convergence** for the shape 
 of the interface, as soon as $\tau = 4$, by comparing the interface position 
 on the axis with the results collected from [Keller \& Miksis, (1983)](#keller1983) 
-and [our previous results in the physical space](http://basilisk.fr/sandbox/cailler/keller_miksis/keller_fig2_conv.c#outputs).
+and [our previous results in the physical space](/sandbox/cailler/keller_miksis/keller_fig2_conv.c#outputs).
 
 
 We then plot various shape interfaces up to $\tau = 50 \Leftrightarrow 

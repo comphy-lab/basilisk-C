@@ -3,7 +3,7 @@
 
 If not specified in the file or in the Terminal command line, the compiler will by default set a 2D simulation, to get a 3D simulation, please add the changes needed and type for the command line in the Terminal 
 $$> \text{~ CFLAGS='-grid=octree' make migration.tst}$$
-(*c.f.* [3D simulation](http://basilisk.fr/sandbox/amansur/Rising/3D)).
+(*c.f.* [3D simulation](/sandbox/amansur/Rising/3D)).
 */
   
 /**
@@ -22,7 +22,7 @@ We solve the incompressible, variable-density, Navier-Stokes equations with inte
 *Macro definitions allow constant values to be declared for use throughout your code.  
 Macro definitions are not variables and cannot be changed by your program code like variables. You generally use this syntax when creating constants that represent numbers, strings or expressions.*
 
-- The equation is non-dimensionalized (*c.f.* [Non_dimensionalization](http://basilisk.fr/sandbox/amansur/Marangoni_effect/Non_dimensionalization)) with the radius of the droplet.  
+- The equation is non-dimensionalized (*c.f.* [Non_dimensionalization](/sandbox/amansur/Marangoni_effect/Non_dimensionalization)) with the radius of the droplet.  
 
 - We define a viscosity and density for both of the fluids **mu** and **rho**.  
 
@@ -47,10 +47,10 @@ Macro definitions are not variables and cannot be changed by your program code l
 /**
 ## Definition of fields
 
-The interface between the two-phases will be tracked with the [volume fraction](http://basilisk.fr/src/fractions.h#volume-fractions) field *c*.  
+The interface between the two-phases will be tracked with the [volume fraction](/src/fractions.h#volume-fractions) field *c*.  
 We allocate the fields for the variable density and viscosity (*alphav, rhov* and *muv* respectively).  
 
-Notice that *alphav* is a [face vector](http://basilisk.fr/Basilisk%20C#face-and-vertex-fields) which is the flux of 1/*rhov*.
+Notice that *alphav* is a [face vector](/Basilisk%20C#face-and-vertex-fields) which is the flux of 1/*rhov*.
 */
 
 scalar c[];
@@ -93,7 +93,7 @@ need to know here is that *1 << LEVEL* is identical to $2^{LEVEL}$. If
 we want to change the resolution of the simulation, all we need to do
 now is change the single value at the top of the file.
 
-The **run()** function launch the simulation by executing the event with a time step defined in the [tension.h](http://basilisk.fr/src/tension.h#stability-condition) file (oscillation period of the smallest capillary wave).
+The **run()** function launch the simulation by executing the event with a time step defined in the [tension.h](/src/tension.h#stability-condition) file (oscillation period of the smallest capillary wave).
 */
 
 
@@ -115,7 +115,7 @@ int main()
 /**
 ## Interface definition
 
-First we define the interface with a level-set method. Then we use the [fractions()](http://basilisk.fr/src/fractions.h#computing-volume-fractions-from-a-levelset-function) function, which computes a volume fractions field out of a levelset function.
+First we define the interface with a level-set method. Then we use the [fractions()](/src/fractions.h#computing-volume-fractions-from-a-levelset-function) function, which computes a volume fractions field out of a levelset function.
 
 Here, we define a cercle (in 2D) of radius R.
 */
@@ -149,10 +149,10 @@ event sigma_field (i++) {
 /**
 ## Properties
 
-The density and viscosity are defined using the [VOF method](http://basilisk.fr/src/vof.h).
+The density and viscosity are defined using the [VOF method](/src/vof.h).
 
 **cm** is the value of the volume fraction at the x face.  
-*Note that a face is defined by convention as separating a cell from its **left** neighbour (see the [Face and vertex fields section](http://basilisk.fr/Basilisk%20C#face-and-vertex-fields)).*
+*Note that a face is defined by convention as separating a cell from its **left** neighbour (see the [Face and vertex fields section](/Basilisk%20C#face-and-vertex-fields)).*
 */
 
 #define rho(c) (rho1*c + (1. - (c))*rho2)
@@ -183,7 +183,7 @@ event vof (i++, first);
 ## Outputs
 
 The bubble's velocity is the sommation of the velocity field in the bubble. The volume fraction *c* being defined as 1 inside the bubble and 0 outside, the velocity field of the bubble is therefore c[ ]*u.x[ ].  
-The function [statsf](http://basilisk.fr/src/utils.h#134) makes the volumic sommation of a field.  
+The function [statsf](/src/utils.h#134) makes the volumic sommation of a field.  
 We then get the mean velocity of the bubble, that we store in a file named *v_bubble.dat*.  
 
 To observe the evolution of the bubble, we also output the pictures of the volume fraction.

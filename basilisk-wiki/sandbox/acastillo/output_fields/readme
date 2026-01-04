@@ -1,0 +1,133 @@
+# Output Fields
+
+This module provides routines for field output and specialized quantity
+computations for post-processing simulation results.
+
+## Quantity Computation Routines
+
+### `reference_height()`
+**Location:** [`available_potential.h`](available_potential.h)
+
+**Description:**
+Routines useful to evaluate the reference height required for the available
+potential energy in stratified flows. 
+
+**Example:**
+Examples are available in
+[`test_available_potential.c`](tests_quantities/test_available_potential.c)
+and [`heating.c`](tests_quantities/heating.c).
+
+---
+
+### `profile_foreach_region()`
+**Location:** [`profiles_foreach_region.h`](profiles_foreach_region.h) 
+
+**Description:**
+Extracts profiles from specified regions of the computational domain. Adapted
+from [Antoon's profile
+utilities](/sandbox/Antoonvh/profile5c.h).
+
+**Example:**
+Examples are available in
+[`test_profiles_foreach_region.c`](tests_quantities/test_profiles_foreach_region.c).
+
+---
+
+## File Format Output Routines
+
+### `output_vtu()` and `output_vtu_box()`
+**Location:** [`vtu/output_vtu.h`](vtu/output_vtu.h) and
+[`vtu/output_vtu_box.h`](vtu/output_vtu_box.h)
+
+**Description:**
+Compatible with the [VTK XML unstructured grid
+format](http://www.vtk.org/wp-content/uploads/2015/04/file-formats.pdf) which
+can be read using ParaView. These functions write scalar and vector fields in
+binary format for efficiency. The unstructured grid format is required for
+quadtree and octree meshes. In MPI mode, each process writes its own file,
+linked together using `.pvtu` master files.
+
+**Key Features:**
+
+- Binary data output for performance
+- MPI support with `.pvtu` master files  
+- Box region selection with `output_vtu_box()`
+
+**Examples:**
+Examples are available in the [`tests_outputs/`](tests_outputs/) directory:
+
+- [`test_output_vtu.c`](tests_outputs/test_output_vtu.c) - Basic VTU output
+- [`test_output_vtu_box.c`](tests_outputs/test_output_vtu_box.c) - Region-specific output
+
+---
+
+### `output_xdmf()` 
+**Location:** [`xdmf/output_xdmf.h`](xdmf/output_xdmf.h)
+
+**Description:**
+Compatible with the [XDMF Model and
+Format](http://www.xdmf.org/index.php/XDMF_Model_and_Format) which can be read
+using ParaView or Visit. Data is split into *Light* data (XML metadata) and
+*Heavy* data (HDF5 binary). This used parallel I/O and is compatible with
+multiple visualization tools including ParaView, Visit, Matlab, and Tecplot.
+
+**Installation Requirements:**
+
+~~~bash
+# Serial HDF5
+sudo apt install libhdf5-dev hdf5-tools
+export HDF5_INCDIR=/usr/include/hdf5/serial
+export HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
+
+# Parallel HDF5  
+sudo apt install libhdf5-mpi-dev hdf5-tools
+export HDF5_INCDIR=/usr/include/hdf5/openmpi
+export HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/openmpi
+~~~
+
+which have to be linked, for instance by adding 
+
+~~~bash
+CFLAGS+= -disable-dimensions
+HDFLIBS=-I$(HDF5_INCDIR) -L$(HDF5_LIBDIR) -lhdf5 -lhdf5_hl
+LIBS+=-I$(BASILISK) $(HDFLIBS) 
+~~~
+
+to your `Makefile`.
+
+**HDF5 Setup for Basilisk:**
+
+Currently, HDF5 can't pass through `qcc` without adding  
+
+~~~bash
+echo "@include <hdf5.h>" > $BASILISK/ast/std/hdf5.h
+echo "@include <hdf5_hl.h>" > $BASILISK/ast/std/hdf5_hl.h
+echo "typedef hid_t, hsize_t, herr_t, H5L_info_t;" >> $BASILISK/ast/defaults.h
+~~~
+
+and disabling dimensional analysis. This is more an HDF5 problem than a Basilisk
+problem, but it's still worth using. 
+
+**Examples:**
+Examples are available in [`tests_outputs/test_output_xmf*.c`](tests_outputs/).
+
+---
+
+### `output_vtkhdf()` and `output_vtkhdf_box()`
+
+**Location:** [`vtkhdf/output_vtkhdf.h`](vtkhdf/output_vtkhdf.h) and
+[`vtkhdf/output_vtkhdf_box.h`](vtkhdf/output_vtkhdf_box.h)
+
+**Description:**
+Compatible with the modern [VTK-HDF
+format](https://docs.vtk.org/en/latest/design_documents/VTKFileFormats.html#vtkhdf-file-format)
+which can be read using ParaView or Visit. This format provides robust parallel
+capabilities. VTK-HDF files use a structured HDF5 layout with `VTKHDF` groups
+containing datasets for points, connectivity, and field data.
+
+**Examples:**
+Examples are available in [`tests_outputs/test_output_vtkhdf*.c`](tests_outputs/).
+
+---
+
+**Note:** Routines in the [`deprecated/`](deprecated/) folder may be outdated and are provided for compatibility purposes only.

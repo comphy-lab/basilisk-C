@@ -1,7 +1,7 @@
 /** 
 # Disclamer
 We consider a copy of 
-[Multilayer hydrostatic](http://basilisk.fr/src/layered/hydro.h)
+[Multilayer hydrostatic](/src/layered/hydro.h)
 The bottom boundary condition had been changed for a neumann BC
 
 

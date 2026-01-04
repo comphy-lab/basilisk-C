@@ -57,9 +57,12 @@ event mov(i++) {
   remove_particles (nine, y > pi/1.99);
   foreach_particle_in(nine)
     printf ("%g %g\n", x, y);
+  fflush(stdout);
 }
 
-event stop (t = 2*pi);
+event stop (t = 8) {
+  return 1;
+}
 
 /**
 ## Reference

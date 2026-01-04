@@ -6,7 +6,7 @@ rate from a mass or energy balance, instead, it uses a constant
 value *mEvapVal* defined by the user.
 */
 
-extern double mEvapVal;
+double mEvapVal = 0.;
 
 /**
 ## Fields

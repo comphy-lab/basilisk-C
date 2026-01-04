@@ -1,5 +1,5 @@
 /**
-This code demonstrates viscous Stokes flow in a microchannel with an advective-diffusive tracer. The flow field in numerically computed for using the navier-stokes centered solver, rather than imposing an analytical expression.
+This code demonstrates viscous Stokes flow in a microchannel with an advective-diffusive tracer. The flow field is numerically computed for using the navier-stokes centered solver.
 
 ![This plot shows the x-direction velocity in the microchannel.](microchannel_viscous_flow_with_solute/ufx.png)
 

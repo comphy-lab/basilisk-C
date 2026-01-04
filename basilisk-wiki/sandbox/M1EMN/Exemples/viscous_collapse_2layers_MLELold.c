@@ -172,7 +172,7 @@ event animatedplot (t+=10) {
 
 #if 0
 // inspired by 
-// http://basilisk.fr/src/test/overflow.c
+// https://basilisk.fr/src/test/overflow.c
 // do more beautifull animations
 void setup (FILE * fp)
 {
@@ -303,11 +303,11 @@ p[-0.5:1.5][] 'log' u ($1/$4**(1./3)):($4>=tt?(($3)*$4**(1./3)) : NaN) t'Comp._{
  
  
 # Links
- * [http://basilisk.fr/sandbox/M1EMN/TEST/shah_flux.c]()
- * [http://basilisk.fr/sandbox/M1EMN/TEST/shah.c]()
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c]()
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]()
- * [http://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/TEST/shah_flux.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/TEST/shah.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_noSV.c]()
+ * [https://basilisk.fr/sandbox/M1EMN/Exemples/viscous_collapse_ML.c]()
 
  with Bingham
  * [Bingham 1D collapse on a incline](bingham_collapse_noSV.c)

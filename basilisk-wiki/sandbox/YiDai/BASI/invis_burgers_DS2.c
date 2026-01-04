@@ -1,6 +1,6 @@
 /**
 # solve inviscid burgers equation 
-Here presenting a different initial condition, check out the method description [here](http://basilisk.fr/sandbox/YiDai/BASI/invis_burgers_DS.c)
+Here presenting a different initial condition, check out the method description [here](/sandbox/YiDai/BASI/invis_burgers_DS.c)
 
 */
 

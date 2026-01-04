@@ -1,6 +1,6 @@
 %{
 # 1. Poisson problem in 2D: New validation case
-[Here](http://basilisk.fr/sandbox/easystab/poisson_2D_othervalidation.m) we solve a Poisson problem in 2D with another forcing term to validate the [first case](http://basilisk.fr/sandbox/easystab/poisson2D.m).
+[Here](/sandbox/easystab/poisson_2D_othervalidation.m) we solve a Poisson problem in 2D with another forcing term to validate the [first case](/sandbox/easystab/poisson2D.m).
 
 ### How to use the code with your own forcing term
 When you have your forcing term, you will look for your new analytical solution.
@@ -52,7 +52,7 @@ When it's done, you just have to modify:
 
 ###3.1 General solution
 
-We showed in [the general code](http://basilisk.fr/sandbox/easystab/free_surface_gravity.m#validation) that the wave velocity at the surface of the sea is: 
+We showed in [the general code](/sandbox/easystab/free_surface_gravity.m#validation) that the wave velocity at the surface of the sea is: 
 
 $$
 c=\sqrt{\frac{g \tanh(\alpha L)}{\alpha}}
@@ -61,7 +61,7 @@ $$
 
 ### 3.2 Short wavelengths
 
-[Short wavelengths solution](http://basilisk.fr/sandbox/easystab/free_surface_gravity-short_wavelength.m)
+[Short wavelengths solution](/sandbox/easystab/free_surface_gravity-short_wavelength.m)
 
 
 If we have a short wavelength comparared to the fluid depth, then we have:

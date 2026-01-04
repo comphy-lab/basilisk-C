@@ -410,5 +410,5 @@ plot '< sort -k 1,1n log | awk "!/#/{print }" | awk -f ../data/order.awk' u 1:5 
 }
 ~~~
 
-* [Same case with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/wannier.html): Note that the solution is much less acurate (first-order convergence only).
+* [Same case with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/wannier.html): Note that the solution is much less acurate (first-order convergence only).
 */

@@ -12,7 +12,7 @@ Pseudo tensor and vector
 
 These structures are similar to basilisk tensors and vectors, but they do not store all the fields, they are only used locally in foreach() loops. Useful to use less memory.
 
-*N.B.* : these structures are originally defined in [log-conform](http://basilisk.fr/src/log-conform.h), but with events which occurs every iteration. So include the log-conform library would result in creating and calculating a lot of variables for nothing.
+*N.B.* : these structures are originally defined in [log-conform](/src/log-conform.h), but with events which occurs every iteration. So include the log-conform library would result in creating and calculating a lot of variables for nothing.
 
 */
 
@@ -51,14 +51,14 @@ Eigeenvalues and vectors of symmetric matrix
 ============================================
 
    They are computed in basilisk in 
-   [src/lambda2.h](http://basilisk.fr/src/lambda2.h), in order to compute the
+   [src/lambda2.h](/src/lambda2.h), in order to compute the
    [lambda2](https://en.wikipedia.org/wiki/Lambda2_method) criterion on vortex.
 
    However, write #include "lambda2.h" does not work. This is due to the function 
    lambda2 defined in the file, which uses the .z component of a vector : that 
    makes that the code can't compile in 2D due to a function we don't use... **So, 
    for now, the functions eigsrt and eigenvalues are just copied from 
-   [src/lambda2.h](http://basilisk.fr/src/lambda2.h)**, and put here.
+   [src/lambda2.h](/src/lambda2.h)**, and put here.
    (copy 20/01/2020).
 
    **begin of copy**

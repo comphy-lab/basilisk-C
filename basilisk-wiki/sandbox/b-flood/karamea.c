@@ -4,7 +4,7 @@
 This page is a step-by-step description of how to setup, run and
 visualise a flood simulation with basilisk. This is the basilisk
 equivalent of [this tutorial on
-Gerris](http://gerris.dalembert.upmc.fr/karamea_flood_tutorial.html).
+Gerris](https://gerris.dalembert.upmc.fr/karamea_flood_tutorial.html).
 We will simulate the lower reaches of the Karamea river, including
 part of the sea on the western boundary.
 
@@ -13,19 +13,19 @@ part of the sea on the western boundary.
 For this tutorial, we need three input files :
 
 * A Digital Terrain Model of the area:
- [topo.asc](http://gerris.dalembert.upmc.fr/karamea/topo.asc)
+ [topo.asc](https://gerris.dalembert.upmc.fr/karamea/topo.asc)
 
 * A flow-rate file
  defining the evolution in time of the river flow at the eastern
- boundary: [flow.asc](http://gerris.dalembert.upmc.fr/karamea/flow.asc)
+ boundary: [flow.asc](https://gerris.dalembert.upmc.fr/karamea/flow.asc)
 
 * A tide file defining the sea level at the western boundary:
- [tide.asc](http://gerris.dalembert.upmc.fr/karamea/tide.asc)
+ [tide.asc](https://gerris.dalembert.upmc.fr/karamea/tide.asc)
 
 Download and put them in the same repository than your C file. You
 need to convert the topo.asc file in a topography file that can be
 read by basilisk. [The whole process is explained
-here.](http://gerris.dalembert.upmc.fr/karamea_flood_tutorial.html#Creating_the_topography)
+here.](https://gerris.dalembert.upmc.fr/karamea_flood_tutorial.html#Creating_the_topography)
    
 ## Solver Setup
 

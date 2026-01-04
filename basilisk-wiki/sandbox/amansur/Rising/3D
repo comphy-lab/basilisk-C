@@ -1,7 +1,7 @@
 /**
 # 3D simulation
 
-It is almost the same code as in [2D](http://basilisk.fr/sandbox/amansur/Rising/2D), but the compiling command in the Terminal changes to :
+It is almost the same code as in [2D](/sandbox/amansur/Rising/2D), but the compiling command in the Terminal changes to :
 */
 
 > CFLAGS='-grid=octree' make rising.tst

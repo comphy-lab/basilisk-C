@@ -43,7 +43,7 @@ event init (i = 0){
     zb[] = 0.05*pow(x,4) - x*x + 2. + 0.2*(y + Y0);
     
     /** The scalar river[] is now defined by default in the
-      [discharge.h library](http://basilisk.fr/src/discharge.c) .We
+      [discharge.h library](/src/discharge.c) .We
       use it to store the location of each river. Its value is 1 on
       the river 1 (west side) and 2 on the river 2 (east side).*/
     

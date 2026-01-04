@@ -77,7 +77,7 @@ double flux(double z, double S, double C, double n)
     return pow((S/C), (1./ 2.))*pow(fabs(z),n);
 }
 /**
- the velocity $\bar c = \partial \bar Q/\partial \bar h$ is then calculated in order to enhance the stability of the numerical scheme, using a corrective approach. (see [advection](http://basilisk.fr/sandbox/M1EMN/BASIC/advecte1.c))
+ the velocity $\bar c = \partial \bar Q/\partial \bar h$ is then calculated in order to enhance the stability of the numerical scheme, using a corrective approach. (see [advection](/sandbox/M1EMN/BASIC/advecte1.c))
 */
 double celerity(double z, double S, double C, double n)
 {

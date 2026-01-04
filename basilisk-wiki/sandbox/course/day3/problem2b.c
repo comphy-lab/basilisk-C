@@ -1,7 +1,7 @@
 /**
 # Advection of a well resolved smooth function 
 
-This is just the same example as [before](http://basilisk.fr/sandbox/course/day3/problem2a.c) 
+This is just the same example as [before](/sandbox/course/day3/problem2a.c) 
 but with enough points to resolve properly the erf function.
 
 We wish to compare the performance of various ways to compute the flux 
@@ -153,4 +153,4 @@ set ylabel 'f-f_{exact}'
 p "centered.dat" u 1:(abs($2-$3)) t 'centered' w l, "upwind.dat" u 1:(abs($2-$3)) t 'upwind 1st' w l, "upwind_2nd.dat" u 1:(abs($2-$3)) t 'upwind 2nd' w l
 ~~~ 
 
-Unlike the case [before](http://basilisk.fr/sandbox/course/day3/problem2a.c), now any of the methods show overshooting. Indeed the second order methods reduce the error as they converge 'faster' than the 1st order method. */
+Unlike the case [before](/sandbox/course/day3/problem2a.c), now any of the methods show overshooting. Indeed the second order methods reduce the error as they converge 'faster' than the 1st order method. */

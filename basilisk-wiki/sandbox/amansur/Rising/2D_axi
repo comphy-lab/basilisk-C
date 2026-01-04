@@ -35,7 +35,7 @@ Each flux should be 2 $\pi$ r $\Delta$ either on the *x* or *y* axis. Here again
 
 - fm.x[$~$] = fm.y[$~$] = y
 
-[Metric in axi](http://basilisk.fr/src/axi.h)
+[Metric in axi](/src/axi.h)
 */
 
 

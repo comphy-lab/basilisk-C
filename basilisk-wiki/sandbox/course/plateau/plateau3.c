@@ -61,5 +61,5 @@ plot [0.001:]'log' u (t0-$1):4 w l, x**(-1/3.)/7.
 
 ## See also
 
-* [Same example with Gerris](http://gerris.dalembert.upmc.fr/gerris/tests/tests/plateau.html)
+* [Same example with Gerris](https://gerris.dalembert.upmc.fr/gerris/tests/tests/plateau.html)
 */
