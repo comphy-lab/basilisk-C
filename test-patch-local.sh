@@ -1,7 +1,6 @@
 #!/bin/zsh
-# tested on MacOS only. Let us know if you find issues running with Linux by opening an issue. 
-# modify using https://basilisk.fr/src/INSTALL 
-# ensures that we are always using the latest version of basilisk
+# Local patch testing script - applies patches from local patches/ directory
+# Use this to test patches before pushing to GitHub
 
 # Check for flags
 HARD_RESET=false
@@ -17,6 +16,10 @@ for arg in "$@"; do
             ;;
     esac
 done
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PATCHES_DIR="$SCRIPT_DIR/patches"
 
 # Function to check prerequisites
 check_prerequisites() {
@@ -110,55 +113,53 @@ check_prerequisites() {
     fi
 }
 
+# Function to apply patches from local patches/ directory
+apply_local_patches() {
+    local target_dir="$1"
+    local apply_local_bview="$2"
+
+    if [[ ! -d "$PATCHES_DIR" ]]; then
+        echo "\033[0;31mError: Patches directory not found: $PATCHES_DIR\033[0m"
+        return 1
+    fi
+
+    printf "\033[0;36mApplying patches from local directory: $PATCHES_DIR\033[0m\n"
+
+    # Get list of patch files sorted by name (YYYY-MM-DD format ensures chronological order)
+    local patch_files=($(ls "$PATCHES_DIR"/*.patch 2>/dev/null | sort))
+
+    if [[ ${#patch_files[@]} -eq 0 ]]; then
+        printf "\033[0;33mWarning: No patches found in $PATCHES_DIR\033[0m\n"
+        return 0
+    fi
+
+    for patch_file in "${patch_files[@]}"; do
+        local patch_name=$(basename "$patch_file")
+
+        # Skip local-bview patch unless --local-bview flag was provided
+        if [[ "$patch_name" == *"local-bview"* ]] && [[ "$apply_local_bview" != "true" ]]; then
+            echo "  Skipping $patch_name (use --local-bview to apply)"
+            continue
+        fi
+
+        echo "  Applying $patch_name..."
+        if (cd "$target_dir" && patch -p1 < "$patch_file"); then
+            printf "  \033[0;32m✓ Successfully applied $patch_name\033[0m\n"
+        else
+            printf "  \033[0;31m✗ Failed to apply $patch_name\033[0m\n"
+            printf "  \033[0;33mCheck $target_dir/src/*.rej for details\033[0m\n"
+        fi
+    done
+    echo ""
+}
+
 # Function to install basilisk
 install_basilisk() {
     darcs clone https://basilisk.fr/basilisk
     cd basilisk
 
-    # Apply comphy-lab patches (macOS only)
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "Downloading and applying comphy-lab patches..."
-
-        # Create temp directory for patches
-        mkdir -p .patches_temp
-
-        # GitHub URLs for patches
-        PATCHES_URL="https://api.github.com/repos/comphy-lab/basilisk-C/contents/patches"
-        RAW_BASE_URL="https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/patches"
-
-        # Get list of patch files (sorted by name which gives chronological order due to YYYY-MM-DD format)
-        PATCH_FILES=$(curl -s "$PATCHES_URL" | grep -o '"name": "[^"]*\.patch"' | sed 's/"name": "//;s/"//' | sort)
-
-        if [[ -z "$PATCH_FILES" ]]; then
-            echo "\033[0;33mWarning: No patches found or unable to fetch patch list\033[0m"
-        else
-            # Download and apply each patch
-            echo "$PATCH_FILES" | while read -r patch_file; do
-                if [[ -n "$patch_file" ]]; then
-                    # Skip local-bview patch unless --local-bview flag was provided
-                    if [[ "$patch_file" == *"local-bview"* ]] && [[ "$LOCAL_BVIEW" != "true" ]]; then
-                        echo "  Skipping $patch_file (use --local-bview to apply)"
-                        continue
-                    fi
-                    echo "  Downloading $patch_file..."
-                    if curl -s -f "$RAW_BASE_URL/$patch_file" -o ".patches_temp/$patch_file"; then
-                        echo "  Applying $patch_file..."
-                        if patch -p1 < ".patches_temp/$patch_file"; then
-                            echo "  \033[0;32m✓ Successfully applied $patch_file\033[0m"
-                        else
-                            echo "  \033[0;31m✗ Failed to apply $patch_file\033[0m"
-                        fi
-                    else
-                        echo "  \033[0;31m✗ Failed to download $patch_file\033[0m"
-                    fi
-                fi
-            done
-        fi
-
-        # Clean up
-        rm -rf .patches_temp
-        echo ""
-    fi
+    # Apply patches from local patches/ directory
+    apply_local_patches "$(pwd)" "$LOCAL_BVIEW"
 
     cd src
 

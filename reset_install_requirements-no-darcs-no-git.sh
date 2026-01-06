@@ -3,11 +3,20 @@
 # Based on https://basilisk.fr/src/INSTALL
 # Ensures that we are always using the latest version of basilisk from basilisk.fr
 
-# Check if --hard flag is passed
+# Check for flags
 HARD_RESET=false
-if [[ "$1" == "--hard" ]]; then
-    HARD_RESET=true
-fi
+LOCAL_BVIEW=false
+
+for arg in "$@"; do
+    case "$arg" in
+        --hard)
+            HARD_RESET=true
+            ;;
+        --local-bview)
+            LOCAL_BVIEW=true
+            ;;
+    esac
+done
 
 # Function to check prerequisites
 check_prerequisites() {
@@ -96,6 +105,7 @@ check_prerequisites() {
 # Function to apply comphy-lab patches (macOS only)
 apply_patches() {
     local target_dir="$1"
+    local apply_local_bview="${2:-false}"
 
     if [[ "$OSTYPE" != "darwin"* ]]; then
         # Patches are macOS-specific, skip on other platforms
@@ -121,6 +131,11 @@ apply_patches() {
         # Download and apply each patch
         echo "$PATCH_FILES" | while read -r patch_file; do
             if [[ -n "$patch_file" ]]; then
+                # Skip local-bview patch unless --local-bview flag was provided
+                if [[ "$patch_file" == *"local-bview"* ]] && [[ "$apply_local_bview" != "true" ]]; then
+                    echo "  Skipping $patch_file (use --local-bview to apply)"
+                    continue
+                fi
                 echo "  Downloading $patch_file..."
                 if curl -s -f "$RAW_BASE_URL/$patch_file" -o "$target_dir/.patches_temp/$patch_file"; then
                     echo "  Applying $patch_file..."
@@ -163,7 +178,7 @@ install_basilisk() {
     rm basilisk.tar.gz
 
     # Apply comphy-lab patches (macOS only)
-    apply_patches "basilisk"
+    apply_patches "basilisk" "$LOCAL_BVIEW"
 
     cd basilisk/src || { printf "\033[0;31mError: Failed to change directory to basilisk/src\033[0m\n" >&2; exit 1; }
 
@@ -200,7 +215,7 @@ fi
 
 # Setup environment variables
 echo "export BASILISK=$PWD" >> ../../.project_config
-echo "export PATH=\$PATH:\$BASILISK" >> ../../.project_config
+echo "export PATH=\$BASILISK:\$PATH" >> ../../.project_config
 
 source ../../.project_config
 
