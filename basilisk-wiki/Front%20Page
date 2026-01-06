@@ -41,6 +41,15 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{zhong2025,
+author = {Zhong, Wenyuan and Song, Zhiwei and Qin, Yongkang and Chao, Youchuang and Ding, Zijing},
+title = {Interface Dynamics of Droplet Impact onto a Viscoelastic Liquid Pool},
+journal = {Langmuir},
+year = {2025},
+month = {December},
+doi = {10.1021/acs.langmuir.5c03167}
+}
+
 @hal{eshima2025, hal-05419560}
 
 @article{xu2025,
@@ -59,17 +68,4 @@ See also the [POM Gallery]().
 }
 
 @hal{fullana2025, hal-05417162}
-
-@article{deAquino2025, 
-  title={Interaction regimes of a vortex ring and an inertial particle},
-  volume={1024}, 
-  DOI={10.1017/jfm.2025.10909}, 
-  journal={Journal of Fluid Mechanics}, 
-  author={de Aquino, Guilherme Siqueira and Viroulet,
-  Sylvain and Sasso, Nicolas and Albagnac, Julie},
-  year={2025},
-  month = {December},
-  pages={A55},
-  url = {https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/interaction-regimes-of-a-vortex-ring-and-an-inertial-particle/30ED9E220F7CBF4D3F0BC3AEF32C3B54}
-}
 ~~~
