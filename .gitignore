@@ -1,3 +1,5 @@
 **/*.project_config
 **/basilisk
 **/.DS_Store
+restart
+display.html
