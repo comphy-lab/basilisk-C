@@ -140,7 +140,7 @@ apply_patches() {
         while read -r patch_file; do
             if [[ -n "$patch_file" ]]; then
                 # Skip local-bview patch unless --local-bview flag was provided
-                if [[ "$patch_file" == *"local-bview"* ]] && [[ "$apply_local_bview" != "true" ]]; then
+                if [[ "$patch_file" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
                     echo "  Skipping $patch_file (use --local-bview to apply)"
                     continue
                 fi
@@ -257,6 +257,7 @@ if [[ ! -d "$BASILISK_SRC_DIR" ]]; then
     exit 1
 fi
 printf "export BASILISK=%s\n" "$BASILISK_SRC_DIR" > "$PROJECT_CONFIG"
+# Prepend BASILISK to PATH so Basilisk tools (qcc, etc.) take precedence
 printf "export PATH=\\$BASILISK:\\$PATH\n" >> "$PROJECT_CONFIG"
 
 source "$PROJECT_CONFIG"

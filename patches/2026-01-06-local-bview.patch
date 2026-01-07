@@ -1,6 +1,6 @@
 diff -rN -u old-basilisk/src/bview.c new-basilisk/src/bview.c
---- old-basilisk/src/bview.c	2026-01-06 22:52:34
-+++ new-basilisk/src/bview.c	2026-01-06 22:52:55
+--- old-basilisk/src/bview.c	2026-01-07 08:36:18
++++ new-basilisk/src/bview.c	2026-01-07 08:36:31
 @@ -2,7 +2,7 @@
  # Basilisk View "dump files" server
  
@@ -19,7 +19,7 @@ diff -rN -u old-basilisk/src/bview.c new-basilisk/src/bview.c
  
  The `-d` or `-debug` option can be used to follow the server
  activity. */
-@@ -20,22 +20,76 @@
+@@ -20,22 +20,75 @@
  #define DISPLAY_NO_CONTROLS
  #include "display.h"
  
@@ -74,8 +74,7 @@ diff -rN -u old-basilisk/src/bview.c new-basilisk/src/bview.c
 +        fprintf (stderr, "%s: invalid port in '%s'\n", progname, arg);
 +        usage (progname);
 +      }
-+      if (port > 0)
-+        local_port = port;
++      local_port = port;
 +    }
      else
        file = arg;
@@ -100,8 +99,8 @@ diff -rN -u old-basilisk/src/bview.c new-basilisk/src/bview.c
    fputc ('\n', stderr);
    display_url (stderr);
 diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
---- old-basilisk/src/display.h	2026-01-06 22:52:34
-+++ new-basilisk/src/display.h	2026-01-06 22:53:35
+--- old-basilisk/src/display.h	2026-01-07 08:36:18
++++ new-basilisk/src/display.h	2026-01-07 08:37:11
 @@ -69,6 +69,9 @@
  # define DISPLAY_JS "http://basilisk.ida.upmc.fr/three.js/editor/index.html"
  #endif
