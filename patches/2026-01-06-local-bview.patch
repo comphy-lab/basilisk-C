@@ -1,0 +1,147 @@
+diff -rN -u old-basilisk/src/bview.c new-basilisk/src/bview.c
+--- old-basilisk/src/bview.c	2026-01-07 09:03:52
++++ new-basilisk/src/bview.c	2026-01-07 09:04:18
+@@ -2,7 +2,7 @@
+ # Basilisk View "dump files" server
+ 
+ This can be used to interactively display [dump files](output.h#dump)
+-using the [javascript interface](jview/README). 
++using the [javascript interface](jview/README).
+ 
+ Typical usage is:
+ 
+@@ -11,7 +11,7 @@
+ ~~~
+ 
+ (note that the appropriate 2D/3D version must be chosen). The
+-connection URL for the client will then be displayed. 
++connection URL for the client will then be displayed.
+ 
+ The `-d` or `-debug` option can be used to follow the server
+ activity. */
+@@ -20,22 +20,75 @@
+ #define DISPLAY_NO_CONTROLS
+ #include "display.h"
+ 
++/**
++ * Print usage information and exit.
++ */
++static void usage (const char * progname)
++{
++  fprintf (stderr,
++	   "Usage: %s [OPTIONS] [DUMP_FILE]\n\n"
++	   "Options:\n"
++	   "  -d, -debug       Enable debug output\n"
++	   "  --local          Use localhost:8000 for the JavaScript client HTTP server\n"
++	   "  --local=PORT     Use localhost:PORT for the JavaScript client (does not affect websocket)\n\n"
++	   "If DUMP_FILE is not specified, defaults to 'dump'.\n",
++	   progname);
++  exit (1);
++}
++
++/**
++ * Parse --local or --local=PORT argument.
++ * Returns the port number (default 8000) or -1 if invalid.
++ */
++static int parse_local_arg (const char * arg)
++{
++  if (!strcmp (arg, "--local"))
++    return 8000;
++  if (strncmp (arg, "--local=", 8) == 0) {
++    char * endptr;
++    long port = strtol (arg + 8, &endptr, 10);
++    if (*endptr != '\0' || port < 1 || port > 65535)
++      return -1;
++    return (int) port;
++  }
++  return 0;
++}
++
+ int main (int argc, char * argv[])
+ {
+-  char * file = "dump"; argc--; argv++;
++  char * file = "dump";
++  int local_port = 0;
++  const char * progname = argv[0];
++
++  argc--; argv++;
+   for (char * arg = *argv; argc; argc--, arg = *++argv) {
+     if (!strcmp (arg, "-debug") || !strcmp (arg, "-d"))
+       Display.debug = true;
++    else if (strncmp (arg, "--local", 7) == 0) {
++      int port = parse_local_arg (arg);
++      if (port < 0) {
++        fprintf (stderr, "%s: invalid port in '%s'\n", progname, arg);
++        usage (progname);
++      }
++      local_port = port;
++    }
+     else
+       file = arg;
+   }
+-  
++
+   if (!restore (file = file, list = all)) {
+-    fprintf (stderr, "%s: could not restore from '%s'\n", argv[0], file);
++    fprintf (stderr, "%s: could not restore from '%s'\n", progname, file);
+     exit (1);
+   }
+   restriction (all);
+   fields_stats();
++
++  if (local_port > 0) {
++    static char local_url[128];
++    snprintf (local_url, sizeof(local_url),
++              "http://localhost:%d/three.js/editor/index.html", local_port);
++    display_set_js_base (local_url);
++  }
+ 
+   fputc ('\n', stderr);
+   display_url (stderr);
+diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
+--- old-basilisk/src/display.h	2026-01-07 09:03:52
++++ new-basilisk/src/display.h	2026-01-07 09:04:56
+@@ -69,6 +69,9 @@
+ # define DISPLAY_JS "http://basilisk.ida.upmc.fr/three.js/editor/index.html"
+ #endif
+ 
++// Runtime override for the JavaScript client base URL
++static const char *display_js_base = NULL;
++
+ #ifndef DISPLAY_HOST
+ # define DISPLAY_HOST "localhost"
+ #endif
+@@ -702,8 +705,32 @@
+     fprintf (stderr,
+ 	     "src/display.h:%d: warning: gethostbyname(\"%s\") returned NULL\n",
+ 	     LINENO, hostname);
+-  fprintf (fp, DISPLAY_JS "?ws://%s:%d", h ? h->h_name : "127.0.0.1",
++  const char * js_base = display_js_base ? display_js_base : DISPLAY_JS;
++  fprintf (fp, "%s?ws://%s:%d", js_base, h ? h->h_name : "127.0.0.1",
+ 	   Display.port);
++}
++
++/**
++ * Set a custom JavaScript client base URL at runtime.
++ * This overrides the default DISPLAY_JS macro value.
++ * Also rewrites display.html if the display system is already initialized.
++ */
++static inline void display_set_js_base (const char * base)
++{
++  display_js_base = base;
++  if (pid() == 0 && Display.port > 0) {
++    FILE * fp = fopen ("display.html", "w");
++    if (fp) {
++      fputs ("<head><meta http-equiv=\"refresh\" content=\"0;URL=", fp);
++      display_url (fp);
++      fputs ("\"></head>\n", fp);
++      fclose (fp);
++    } else {
++      fprintf (stderr,
++               "warning: could not open \"display.html\" for writing; "
++               "display.html was not updated\n");
++    }
++  }
+ }
+ 
+ int display_usage = 20; // use 20% of runtime, maximum

@@ -3,11 +3,27 @@
 # Based on https://basilisk.fr/src/INSTALL
 # Ensures that we are always using the latest version of basilisk from basilisk.fr
 
-# Check if --hard flag is passed
+# Check for flags
 HARD_RESET=false
-if [[ "$1" == "--hard" ]]; then
-    HARD_RESET=true
-fi
+LOCAL_BVIEW=false
+
+for arg in "$@"; do
+    case "$arg" in
+        --hard)
+            HARD_RESET=true
+            ;;
+        --local-bview)
+            LOCAL_BVIEW=true
+            ;;
+    esac
+done
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$SCRIPT_DIR"
+PROJECT_CONFIG="$REPO_ROOT/.project_config"
+BASILISK_DIR="$REPO_ROOT/basilisk"
+BASILISK_SRC_DIR="$BASILISK_DIR/src"
 
 # Function to check prerequisites
 check_prerequisites() {
@@ -96,6 +112,8 @@ check_prerequisites() {
 # Function to apply comphy-lab patches (macOS only)
 apply_patches() {
     local target_dir="$1"
+    local apply_local_bview="${2:-false}"
+    local patch_failed=false
 
     if [[ "$OSTYPE" != "darwin"* ]]; then
         # Patches are macOS-specific, skip on other platforms
@@ -119,30 +137,46 @@ apply_patches() {
         printf "\033[0;33mWarning: No patches found or unable to fetch patch list\033[0m\n"
     else
         # Download and apply each patch
-        echo "$PATCH_FILES" | while read -r patch_file; do
+        while read -r patch_file; do
             if [[ -n "$patch_file" ]]; then
-                echo "  Downloading $patch_file..."
-                if curl -s -f "$RAW_BASE_URL/$patch_file" -o "$target_dir/.patches_temp/$patch_file"; then
-                    echo "  Applying $patch_file..."
-                    if (cd "$target_dir" && patch -p1 < ".patches_temp/$patch_file"); then
-                        printf "  \033[0;32m✓ Successfully applied $patch_file\033[0m\n"
-                    else
-                        printf "  \033[0;31m✗ Failed to apply $patch_file\033[0m\n"
-                    fi
-                else
-                    printf "  \033[0;31m✗ Failed to download $patch_file\033[0m\n"
+                # Skip local-bview patch unless --local-bview flag was provided
+                if [[ "$patch_file" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
+                    echo "  Skipping $patch_file (use --local-bview to apply)"
+                    continue
                 fi
-            fi
-        done
+                echo "  Downloading $patch_file..."
+                    if curl -s -f "$RAW_BASE_URL/$patch_file" -o "$target_dir/.patches_temp/$patch_file"; then
+                        echo "  Applying $patch_file..."
+                        if (cd "$target_dir" && patch -p1 < ".patches_temp/$patch_file"); then
+                            printf "  \033[0;32m✓ Successfully applied $patch_file\033[0m\n"
+                        else
+                            printf "  \033[0;31m✗ Failed to apply $patch_file\033[0m\n"
+                            patch_failed=true
+                        fi
+                    else
+                        printf "  \033[0;31m✗ Failed to download $patch_file\033[0m\n"
+                        patch_failed=true
+                    fi
+                fi
+        done <<< "$PATCH_FILES"
     fi
 
     # Clean up
     rm -rf "$target_dir/.patches_temp"
     echo ""
+
+    if [[ "$patch_failed" == true ]]; then
+        return 1
+    fi
+    return 0
 }
 
 # Function to install basilisk using wget
 install_basilisk() {
+    if ! cd "$REPO_ROOT"; then
+        printf "\033[0;31mError: Failed to change directory to $REPO_ROOT\033[0m\n" >&2
+        exit 1
+    fi
     printf "\033[0;36mDownloading basilisk using wget...\033[0m\n"
     wget https://basilisk.fr/basilisk/basilisk.tar.gz
 
@@ -163,9 +197,15 @@ install_basilisk() {
     rm basilisk.tar.gz
 
     # Apply comphy-lab patches (macOS only)
-    apply_patches "basilisk"
+    if ! apply_patches "$BASILISK_DIR" "$LOCAL_BVIEW"; then
+        printf "\033[0;31mError: Failed to apply comphy-lab patches in $BASILISK_DIR\033[0m\n" >&2
+        exit 1
+    fi
 
-    cd basilisk/src || { printf "\033[0;31mError: Failed to change directory to basilisk/src\033[0m\n" >&2; exit 1; }
+    if ! cd "$BASILISK_SRC_DIR"; then
+        printf "\033[0;31mError: Failed to change directory to $BASILISK_SRC_DIR\033[0m\n" >&2
+        exit 1
+    fi
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
         printf "\033[0;36mUsing macOS configuration...\033[0m\n"
@@ -176,33 +216,51 @@ install_basilisk() {
     fi
 
     printf "\033[0;36mBuilding basilisk (first pass with -k to continue on errors)...\033[0m\n"
-    make -k
+    if ! make -k; then
+        printf "\033[0;31mError: make -k failed in $BASILISK_SRC_DIR\033[0m\n" >&2
+        exit 1
+    fi
 
     printf "\033[0;36mBuilding basilisk (final build)...\033[0m\n"
-    make
+    if ! make; then
+        printf "\033[0;31mError: make failed in $BASILISK_SRC_DIR\033[0m\n" >&2
+        exit 1
+    fi
 }
 
 # Check prerequisites first
 check_prerequisites
 
 # Remove project config always
-rm -rf .project_config
+rm -rf "$PROJECT_CONFIG"
 
 # Check if basilisk needs to be installed
-if [[ "$HARD_RESET" == true ]] || [[ ! -d "basilisk" ]]; then
+if [[ "$HARD_RESET" == true ]] || [[ ! -d "$BASILISK_DIR" ]]; then
     printf "\033[0;36mInstalling basilisk...\033[0m\n"
-    rm -rf basilisk
+    rm -rf "$BASILISK_DIR"
     install_basilisk
 else
     printf "\033[0;36mUsing existing basilisk installation...\033[0m\n"
-    cd basilisk/src || { printf "\033[0;31mError: Failed to change directory to basilisk/src\033[0m\n" >&2; exit 1; }
+    if [[ ! -d "$BASILISK_SRC_DIR" ]]; then
+        printf "\033[0;31mError: Missing $BASILISK_SRC_DIR. Run with --hard to reinstall.\033[0m\n" >&2
+        exit 1
+    fi
+    if ! cd "$BASILISK_SRC_DIR"; then
+        printf "\033[0;31mError: Failed to change directory to $BASILISK_SRC_DIR\033[0m\n" >&2
+        exit 1
+    fi
 fi
 
 # Setup environment variables
-echo "export BASILISK=$PWD" >> ../../.project_config
-echo "export PATH=\$PATH:\$BASILISK" >> ../../.project_config
+if [[ ! -d "$BASILISK_SRC_DIR" ]]; then
+    printf "\033[0;31mError: Expected $BASILISK_SRC_DIR to exist before writing .project_config\033[0m\n" >&2
+    exit 1
+fi
+printf "export BASILISK=%s\n" "$BASILISK_SRC_DIR" > "$PROJECT_CONFIG"
+# Prepend BASILISK to PATH so Basilisk tools (qcc, etc.) take precedence
+printf "export PATH=\\$BASILISK:\\$PATH\n" >> "$PROJECT_CONFIG"
 
-source ../../.project_config
+source "$PROJECT_CONFIG"
 
 # Check if qcc is working properly
 echo ""
