@@ -218,6 +218,15 @@ scalar new_scalar (const char * name)
 {
   return init_scalar (alloc_block_scalar (name, "", 1), NULL);
 }
+  
+scalar new_block_vertex_scalar (const char * name, int block)
+{
+  scalar s = alloc_block_scalar (name, "", block), sb;
+  int n = 0;
+  for (sb.i = s.i, n = 0; n < block; n++, sb.i++)
+    init_vertex_scalar (sb, NULL);
+  return s;
+}
 
 scalar new_vertex_scalar (const char * name)
 {

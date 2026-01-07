@@ -598,7 +598,7 @@ static void box_boundary_level (const Boundary * b, scalar * scalars, int l)
 	if (!is_constant(s) && s.block > 0) {
 	  if (is_vertex_scalar (s))
 	    s.boundary[d] = s.boundary_homogeneous[d] = NULL;
-	  else if (s.face) {
+	  else if (s.face && s.v.x.i >= 0) {
 	    vector v = s.v;
 	    v.x.boundary[d] = v.x.boundary_homogeneous[d] = NULL;
 	  }

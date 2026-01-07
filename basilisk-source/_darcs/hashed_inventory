@@ -1,4 +1,4 @@
-pristine:60222a551a80e005b3b2615e00f4d61c7b5d2cf01960e37713597cd4176fc053
+pristine:151444f5dcb9460ea36b2f7d2329eaaf46a44850bd352450fc416818abba207f
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -455,3 +455,13 @@ Stephane Popinet <popinet@basilisk.fr>**20251216155651
  Ignore-this: 26322eed7de2e1e01090a6e37b5859065b2aceaac4604a0d1aaf13d623593dfccc83f556ba87cb36
 ] 
 hash: 0000000683-d1c3ed1255a929c891cbe51e52d56d5b366c27ea2516fe18c495a951d7db1c7c
+[Fixed multigrid BCs for single-component face fields
+Stephane Popinet <popinet@basilisk.fr>**20251118144911
+ Ignore-this: f05f4c8c5acd7a2296461cebac22025
+] 
+hash: 0000000250-9465a82572095b2d0b025731a529ff417894f08f65aa4953e23bfbe66c38c045
+[Layered vertex scalars and boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20260106124924
+ Ignore-this: dc3cd54ef4201fda39ed782719260621
+] 
+hash: 0000006655-c8466e075b1bee8fc8cebe14d770906099d84607fab3bdab4932bf2a180eb2e2

@@ -12,31 +12,42 @@ BC points and $\omega[1,1]$ to be an interior point.
 In the examples below, we set all interior points to 1 and boundary
 points to zero. */
 
+#define LAYERS 1
 #include "grid/multigrid.h"
 
-vertex scalar omega[];
-face vector f[];
+vertex scalar omega;
+face vector f;
 
 int main()
 {
+  nl = 3;
   N = 4;
   init_grid (N);
+
+  omega = new vertex scalar[nl];
+  f = new face vector[nl];
 
   omega[left] = 0.;
   omega[right] = 0.;
   omega[top] = 0.;
   omega[bottom] = 0.;
 
+  foreach_vertex() {
+    int l = 1;
+    foreach_layer()
+      omega[] = l++;
+  }
+
   f.n[left] = 0.;
   f.n[right] = 0.;
   f.n[top] = 0.;
   f.n[bottom] = 0.;
-
-  foreach_vertex()
-    omega[] = 1.0;
-
-  foreach_face()
-    f.x[] = 1.;
+  
+  foreach_face() {
+    int l = 1;
+    foreach_layer()
+      f.x[] = l++;
+  }
 
   /**
   <div class="warning">
@@ -47,10 +58,14 @@ int main()
   boundary ({omega});
   
   foreach_vertex()
-    fprintf (qerr, "v %g\t%g\t%g\n", x, y, omega[]);
+    foreach_layer()
+      fprintf (qerr, "v %g\t%g\t%g\n", x, y, omega[]);
 
   foreach_face()
-    fprintf (qerr, "f %g\t%g\t%g\n", x, y, f.x[]);
+    foreach_layer()
+      fprintf (qerr, "f %g\t%g\t%g\n", x, y, f.x[]);
+
+  delete ({omega, f});
 }
 
 /**
