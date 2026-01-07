@@ -1,7 +1,7 @@
 /**
 # Elliptic instability
 
-A dipolar vortex whoose streamlines are elliptical can be subject to the so-called 3-dimensional "elliptic instability". It is demonstrated here with the Lamb-Chaplygin dipole model.
+A dipolar vortex whose streamlines are elliptical can be subject to the so-called 3-dimensional "elliptic instability". It is demonstrated here with the Lamb-Chaplygin dipole model.
 
 ![Volumetric rendering of the $\lambda_2$ field. Side views are rendered from dumps in post processing](https://www.antoonvanhooft.nl/media/elliptical.mp4)(width=800px)
 

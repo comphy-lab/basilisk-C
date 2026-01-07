@@ -8,7 +8,7 @@ own papers if they use Basilisk. See also [src/references.bib]().
 ### 2026
 
 ~~~bib
-@article{Ganan2026,
+@article{ganan2026,
 title = {The dominant role of jetting in micron- and sub-micron sea spray produced
 by bubble bursting: A revised model and comparison with measurements},
 journal = {Applied Ocean Research},
@@ -51,6 +51,8 @@ keywords = {Two-phase DNS, Falling films, Evaporation, Supersaturation, VOF}
 ### 2025
 
 ~~~bib
+@hal{fullana2025, hal-05417162}
+
 @hal{molefe2025, hal-05314880}
 
 @article{guan2025,
@@ -525,7 +527,7 @@ pages={A6}
   url={https://doi.org/10.4233/uuid:7000b291-671c-4ab3-86fa-beeff39bf5df}
 }
 
-@article{Corpart2025,
+@article{corpart2025,
   title={Approach to similarity in the pinch-off of a viscous liquid thread},
   author={Marie Corpart and Miguel Ángel Herrada and Antoine Deblais and Daniel Bonn},
   journal={Journal of Fluid Mechanics},
@@ -535,8 +537,6 @@ pages={A6}
   publisher={Cambridge University Press},
   doi={10.1017/jfm.2025.10582}
 }
-
-
 ~~~
 
 ### 2024

@@ -41,6 +41,15 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{patel2026, 
+title={Direct numerical simulations of non-coalescing floating bubbles: geometry and self-organisation}, 
+volume={1026}, 
+DOI={10.1017/jfm.2025.11003}, 
+journal={Journal of Fluid Mechanics}, 
+author={Patel, Kuntal and Zhu, Xiaojue}, 
+year={2026}, 
+pages={A19}}
+
 @article{zhong2025,
 author = {Zhong, Wenyuan and Song, Zhiwei and Qin, Yongkang and Chao, Youchuang and Ding, Zijing},
 title = {Interface Dynamics of Droplet Impact onto a Viscoelastic Liquid Pool},
@@ -66,6 +75,4 @@ doi = {10.1021/acs.langmuir.5c03167}
   doi = {10.1103/slpv-jhlh},
   url = {https://link.aps.org/doi/10.1103/slpv-jhlh}
 }
-
-@hal{fullana2025, hal-05417162}
 ~~~
