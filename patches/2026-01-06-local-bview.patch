@@ -1,6 +1,6 @@
 diff -rN -u old-basilisk/src/bview.c new-basilisk/src/bview.c
---- old-basilisk/src/bview.c	2026-01-07 08:36:18
-+++ new-basilisk/src/bview.c	2026-01-07 08:36:31
+--- old-basilisk/src/bview.c	2026-01-07 09:03:52
++++ new-basilisk/src/bview.c	2026-01-07 09:04:18
 @@ -2,7 +2,7 @@
  # Basilisk View "dump files" server
  
@@ -32,8 +32,8 @@ diff -rN -u old-basilisk/src/bview.c new-basilisk/src/bview.c
 +	   "Usage: %s [OPTIONS] [DUMP_FILE]\n\n"
 +	   "Options:\n"
 +	   "  -d, -debug       Enable debug output\n"
-+	   "  --local          Use localhost:8000 for the JavaScript client\n"
-+	   "  --local=PORT     Use localhost:PORT (PORT must be 1-65535)\n\n"
++	   "  --local          Use localhost:8000 for the JavaScript client HTTP server\n"
++	   "  --local=PORT     Use localhost:PORT for the JavaScript client (does not affect websocket)\n\n"
 +	   "If DUMP_FILE is not specified, defaults to 'dump'.\n",
 +	   progname);
 +  exit (1);
@@ -99,8 +99,8 @@ diff -rN -u old-basilisk/src/bview.c new-basilisk/src/bview.c
    fputc ('\n', stderr);
    display_url (stderr);
 diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
---- old-basilisk/src/display.h	2026-01-07 08:36:18
-+++ new-basilisk/src/display.h	2026-01-07 08:37:11
+--- old-basilisk/src/display.h	2026-01-07 09:03:52
++++ new-basilisk/src/display.h	2026-01-07 09:04:56
 @@ -69,6 +69,9 @@
  # define DISPLAY_JS "http://basilisk.ida.upmc.fr/three.js/editor/index.html"
  #endif
@@ -111,7 +111,7 @@ diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
  #ifndef DISPLAY_HOST
  # define DISPLAY_HOST "localhost"
  #endif
-@@ -702,8 +705,28 @@
+@@ -702,8 +705,32 @@
      fprintf (stderr,
  	     "src/display.h:%d: warning: gethostbyname(\"%s\") returned NULL\n",
  	     LINENO, hostname);
@@ -126,7 +126,7 @@ diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
 + * This overrides the default DISPLAY_JS macro value.
 + * Also rewrites display.html if the display system is already initialized.
 + */
-+void display_set_js_base (const char * base)
++static inline void display_set_js_base (const char * base)
 +{
 +  display_js_base = base;
 +  if (pid() == 0 && Display.port > 0) {
@@ -136,6 +136,10 @@ diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
 +      display_url (fp);
 +      fputs ("\"></head>\n", fp);
 +      fclose (fp);
++    } else {
++      fprintf (stderr,
++               "warning: could not open \"display.html\" for writing; "
++               "display.html was not updated\n");
 +    }
 +  }
  }
