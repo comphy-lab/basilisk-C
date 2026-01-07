@@ -185,3 +185,33 @@ When reporting issues with Basilisk-C, please use our issue templates:
 4. **Generic Issues**: For other types of issues that don't fit the above categories
 
 These templates help us gather all the necessary information to diagnose and fix issues quickly. When creating a new issue, you'll be prompted to choose the appropriate template.
+
+## Using bview with a Local Client
+
+By default, `bview` uses the remote JavaScript client hosted at basilisk.fr for 3D visualization. For offline development or faster loading, you can use a local client instead.
+
+### Setup
+
+1. Clone and serve the local client:
+   ```shell
+   git clone https://github.com/comphy-lab/bview-local-client.git
+   cd bview-local-client
+   # Start a local HTTP server (e.g., using Python)
+   python3 -m http.server 8000
+   ```
+
+2. Run bview with the `--local` flag:
+   ```shell
+   bview2D --local dump      # Uses localhost:8000
+   bview3D --local=3000 dump # Uses localhost:3000
+   ```
+
+### How It Works
+
+The visualization URL has two parts:
+- **HTTP server**: Serves the JavaScript 3D client (static files)
+- **WebSocket**: Connects back to your local bview process
+
+The `--local` flag only changes where the JS client is served from—the WebSocket always connects to your local bview process regardless.
+
+For more details, see the [bview-local-client repository](https://github.com/comphy-lab/bview-local-client).
