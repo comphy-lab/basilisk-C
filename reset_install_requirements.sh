@@ -61,7 +61,7 @@ Options:
   --help, -h      Show this help message
   --hard          Force reinstall (removes existing basilisk directory)
   --local-bview   Apply the local-bview patch for localhost JavaScript client
-  --mode=N        Select installation mode non-interactively (1-4)
+  --mode=N        Select installation mode non-interactively (1-3)
 
 Installation Modes:
   1) default       - Use darcs to clone basilisk, fetch patches from GitHub
@@ -76,15 +76,13 @@ Installation Modes:
                      Best for: Quick setup without darcs
                      Requires: git, curl, gawk, make, gcc
 
-  4) darcs-local   - Use darcs to clone basilisk, apply local patches
-                     Best for: Testing patches before pushing to GitHub
-                     Requires: darcs, make, gcc
-
 Examples:
   ./reset_install_requirements.sh                    # Interactive mode selection
   ./reset_install_requirements.sh --mode=1           # Use default mode
   ./reset_install_requirements.sh --mode=2 --hard    # Reinstall using wget
-  ./reset_install_requirements.sh --mode=4 --local-bview  # Test with local patches
+  ./reset_install_requirements.sh --mode=1 --local-bview  # Include local-bview patch
+
+Note: For testing local patches before pushing to GitHub, use test-patch-local.sh instead.
 
 For more information, visit: https://github.com/comphy-lab/basilisk-C
 EOF
@@ -179,7 +177,7 @@ check_prerequisites() {
 
     # Mode-specific prerequisites
     case "$mode" in
-        1|4)  # darcs modes
+        1)    # darcs mode
             check_tool "darcs" || missing_tools+=("darcs")
             ;;
         2)    # wget mode
@@ -224,9 +222,8 @@ select_mode() {
     echo "  1) default       - darcs clone + GitHub patches (recommended)"
     echo "  2) remote-fr     - wget tarball + GitHub patches (no darcs needed)"
     echo "  3) remote-comphy - git clone from comphy-lab fork (no darcs needed)"
-    echo "  4) darcs-local   - darcs clone + local patches (for testing)"
     echo ""
-    printf "Select mode [1-4, default=1]: "
+    printf "Select mode [1-3, default=1]: "
     read -r selection
 
     # Default to mode 1 if empty
@@ -236,7 +233,7 @@ select_mode() {
 
     # Validate selection
     case "$selection" in
-        1|2|3|4)
+        1|2|3)
             MODE="$selection"
             ;;
         *)
@@ -303,54 +300,6 @@ apply_patches_github() {
 
     # Clean up
     rm -rf "$target_dir/.patches_temp"
-    echo ""
-
-    if [[ "$patch_failed" == true ]]; then
-        return 1
-    fi
-    return 0
-}
-
-apply_patches_local() {
-    local target_dir="$1"
-    local apply_local_bview="${2:-false}"
-    local patch_failed=false
-
-    if [[ ! -d "$PATCHES_DIR" ]]; then
-        print_red "Error: Patches directory not found: $PATCHES_DIR"
-        return 1
-    fi
-
-    print_cyan "Applying patches from local directory: $PATCHES_DIR"
-
-    # Get list of patch files sorted by name (YYYY-MM-DD format ensures chronological order)
-    local patch_files
-    patch_files=($(ls "$PATCHES_DIR"/*.patch 2>/dev/null | sort))
-
-    if [[ ${#patch_files[@]} -eq 0 ]]; then
-        print_yellow "Warning: No patches found in $PATCHES_DIR"
-        return 0
-    fi
-
-    for patch_file in "${patch_files[@]}"; do
-        local patch_name
-        patch_name=$(basename "$patch_file")
-
-        # Skip local-bview patch unless --local-bview flag was provided
-        if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-            echo "  Skipping $patch_name (use --local-bview to apply)"
-            continue
-        fi
-
-        echo "  Applying $patch_name..."
-        if (cd "$target_dir" && patch -p1 < "$patch_file"); then
-            print_green "  ✓ Successfully applied $patch_name"
-        else
-            print_red "  ✗ Failed to apply $patch_name"
-            print_yellow "  Check $target_dir/src/*.rej for details"
-            patch_failed=true
-        fi
-    done
     echo ""
 
     if [[ "$patch_failed" == true ]]; then
@@ -521,10 +470,10 @@ fi
 
 # Validate mode
 case "$MODE" in
-    1|2|3|4)
+    1|2|3)
         ;;
     *)
-        print_red "Invalid mode: $MODE (must be 1-4)"
+        print_red "Invalid mode: $MODE (must be 1-3)"
         exit 1
         ;;
 esac
@@ -559,13 +508,6 @@ if [[ "$HARD_RESET" == true ]] || [[ ! -d "$BASILISK_DIR" ]]; then
             install_basilisk_git
             if ! apply_patches_github "$BASILISK_DIR" "$LOCAL_BVIEW"; then
                 print_red "Error: Failed to apply patches"
-                exit 1
-            fi
-            ;;
-        4)  # darcs-local: darcs + local patches
-            install_basilisk_darcs
-            if ! apply_patches_local "$BASILISK_DIR" "$LOCAL_BVIEW"; then
-                print_red "Error: Failed to apply local patches"
                 exit 1
             fi
             ;;
