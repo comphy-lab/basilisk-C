@@ -18,6 +18,13 @@ for arg in "$@"; do
     esac
 done
 
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$SCRIPT_DIR"
+PROJECT_CONFIG="$REPO_ROOT/.project_config"
+BASILISK_DIR="$REPO_ROOT/basilisk"
+BASILISK_SRC_DIR="$BASILISK_DIR/src"
+
 # Function to check prerequisites
 check_prerequisites() {
     local missing_tools=()
@@ -112,12 +119,19 @@ check_prerequisites() {
 
 # Function to install basilisk
 install_basilisk() {
-    darcs clone https://basilisk.fr/basilisk
-    cd basilisk
+    if ! darcs clone https://basilisk.fr/basilisk "$BASILISK_DIR"; then
+        echo "\033[0;31mError: Failed to clone basilisk into $BASILISK_DIR\033[0m"
+        exit 1
+    fi
+    if ! cd "$BASILISK_DIR"; then
+        echo "\033[0;31mError: Failed to change directory to $BASILISK_DIR\033[0m"
+        exit 1
+    fi
 
     # Apply comphy-lab patches (macOS only)
     if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Downloading and applying comphy-lab patches..."
+        local patch_failed=false
 
         # Create temp directory for patches
         mkdir -p .patches_temp
@@ -133,7 +147,7 @@ install_basilisk() {
             echo "\033[0;33mWarning: No patches found or unable to fetch patch list\033[0m"
         else
             # Download and apply each patch
-            echo "$PATCH_FILES" | while read -r patch_file; do
+            while read -r patch_file; do
                 if [[ -n "$patch_file" ]]; then
                     # Skip local-bview patch unless --local-bview flag was provided
                     if [[ "$patch_file" == *"local-bview"* ]] && [[ "$LOCAL_BVIEW" != "true" ]]; then
@@ -147,20 +161,30 @@ install_basilisk() {
                             echo "  \033[0;32m✓ Successfully applied $patch_file\033[0m"
                         else
                             echo "  \033[0;31m✗ Failed to apply $patch_file\033[0m"
+                            patch_failed=true
                         fi
                     else
                         echo "  \033[0;31m✗ Failed to download $patch_file\033[0m"
+                        patch_failed=true
                     fi
                 fi
-            done
+            done <<< "$PATCH_FILES"
         fi
 
         # Clean up
         rm -rf .patches_temp
         echo ""
+
+        if [[ "$patch_failed" == true ]]; then
+            echo "\033[0;31mError: Failed to apply comphy-lab patches in $BASILISK_DIR\033[0m"
+            exit 1
+        fi
     fi
 
-    cd src
+    if ! cd "$BASILISK_SRC_DIR"; then
+        echo "\033[0;31mError: Failed to change directory to $BASILISK_SRC_DIR\033[0m"
+        exit 1
+    fi
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Using MacOS"
@@ -169,34 +193,51 @@ install_basilisk() {
         echo "Using Linux"
         ln -s config.gcc config
     fi
-    make -k
-    make
+    if ! make -k; then
+        echo "\033[0;31mError: make -k failed in $BASILISK_SRC_DIR\033[0m"
+        exit 1
+    fi
+    if ! make; then
+        echo "\033[0;31mError: make failed in $BASILISK_SRC_DIR\033[0m"
+        exit 1
+    fi
 }
 
 # Check prerequisites first
 check_prerequisites
 
 # Remove project config always
-rm -rf .project_config
+rm -rf "$PROJECT_CONFIG"
 
 # Check if basilisk needs to be installed
-if [[ "$HARD_RESET" == true ]] || [[ ! -d "basilisk" ]]; then
+if [[ "$HARD_RESET" == true ]] || [[ ! -d "$BASILISK_DIR" ]]; then
     echo "Installing basilisk..."
-    rm -rf basilisk
+    rm -rf "$BASILISK_DIR"
     install_basilisk
 else
     echo "Using existing basilisk installation..."
-    cd basilisk/src
+    if [[ ! -d "$BASILISK_SRC_DIR" ]]; then
+        echo "\033[0;31mError: Missing $BASILISK_SRC_DIR. Run with --hard to reinstall.\033[0m"
+        exit 1
+    fi
+    if ! cd "$BASILISK_SRC_DIR"; then
+        echo "\033[0;31mError: Failed to change directory to $BASILISK_SRC_DIR\033[0m"
+        exit 1
+    fi
 fi
 
 # Setup environment variables
-echo "export BASILISK=$PWD" >> ../../.project_config
-echo "export PATH=\$BASILISK:\$PATH" >> ../../.project_config
+if [[ ! -d "$BASILISK_SRC_DIR" ]]; then
+    echo "\033[0;31mError: Expected $BASILISK_SRC_DIR to exist before writing .project_config\033[0m"
+    exit 1
+fi
+printf "export BASILISK=%s\n" "$BASILISK_SRC_DIR" > "$PROJECT_CONFIG"
+printf "export PATH=\\$BASILISK:\\$PATH\n" >> "$PROJECT_CONFIG"
 
-source ../../.project_config
+source "$PROJECT_CONFIG"
 
 # Check if qcc is working properly
-echo "\nChecking qcc installation..."
+printf '\nChecking qcc installation...\n'
 if ! qcc --version > /dev/null 2>&1; then
     echo "\033[0;31mError: qcc is not working properly.\033[0m"
     echo "Please ensure you have Xcode Command Line Tools installed."

@@ -19,7 +19,11 @@ done
 
 # Get the directory where this script is located
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$SCRIPT_DIR"
 PATCHES_DIR="$SCRIPT_DIR/patches"
+PROJECT_CONFIG="$REPO_ROOT/.project_config"
+BASILISK_DIR="$REPO_ROOT/basilisk"
+BASILISK_SRC_DIR="$BASILISK_DIR/src"
 
 # Function to check prerequisites
 check_prerequisites() {
@@ -117,6 +121,7 @@ check_prerequisites() {
 apply_local_patches() {
     local target_dir="$1"
     local apply_local_bview="$2"
+    local patch_failed=false
 
     if [[ ! -d "$PATCHES_DIR" ]]; then
         echo "\033[0;31mError: Patches directory not found: $PATCHES_DIR\033[0m"
@@ -148,20 +153,38 @@ apply_local_patches() {
         else
             printf "  \033[0;31m✗ Failed to apply $patch_name\033[0m\n"
             printf "  \033[0;33mCheck $target_dir/src/*.rej for details\033[0m\n"
+            patch_failed=true
         fi
     done
     echo ""
+
+    if [[ "$patch_failed" == true ]]; then
+        return 1
+    fi
+    return 0
 }
 
 # Function to install basilisk
 install_basilisk() {
-    darcs clone https://basilisk.fr/basilisk
-    cd basilisk
+    if ! darcs clone https://basilisk.fr/basilisk "$BASILISK_DIR"; then
+        echo "\033[0;31mError: Failed to clone basilisk into $BASILISK_DIR\033[0m"
+        exit 1
+    fi
+    if ! cd "$BASILISK_DIR"; then
+        echo "\033[0;31mError: Failed to change directory to $BASILISK_DIR\033[0m"
+        exit 1
+    fi
 
     # Apply patches from local patches/ directory
-    apply_local_patches "$(pwd)" "$LOCAL_BVIEW"
+    if ! apply_local_patches "$BASILISK_DIR" "$LOCAL_BVIEW"; then
+        echo "\033[0;31mError: Failed to apply local patches in $BASILISK_DIR\033[0m"
+        exit 1
+    fi
 
-    cd src
+    if ! cd "$BASILISK_SRC_DIR"; then
+        echo "\033[0;31mError: Failed to change directory to $BASILISK_SRC_DIR\033[0m"
+        exit 1
+    fi
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
         echo "Using MacOS"
@@ -170,34 +193,51 @@ install_basilisk() {
         echo "Using Linux"
         ln -s config.gcc config
     fi
-    make -k
-    make
+    if ! make -k; then
+        echo "\033[0;31mError: make -k failed in $BASILISK_SRC_DIR\033[0m"
+        exit 1
+    fi
+    if ! make; then
+        echo "\033[0;31mError: make failed in $BASILISK_SRC_DIR\033[0m"
+        exit 1
+    fi
 }
 
 # Check prerequisites first
 check_prerequisites
 
 # Remove project config always
-rm -rf .project_config
+rm -rf "$PROJECT_CONFIG"
 
 # Check if basilisk needs to be installed
-if [[ "$HARD_RESET" == true ]] || [[ ! -d "basilisk" ]]; then
+if [[ "$HARD_RESET" == true ]] || [[ ! -d "$BASILISK_DIR" ]]; then
     echo "Installing basilisk..."
-    rm -rf basilisk
+    rm -rf "$BASILISK_DIR"
     install_basilisk
 else
     echo "Using existing basilisk installation..."
-    cd basilisk/src
+    if [[ ! -d "$BASILISK_SRC_DIR" ]]; then
+        echo "\033[0;31mError: Missing $BASILISK_SRC_DIR. Run with --hard to reinstall.\033[0m"
+        exit 1
+    fi
+    if ! cd "$BASILISK_SRC_DIR"; then
+        echo "\033[0;31mError: Failed to change directory to $BASILISK_SRC_DIR\033[0m"
+        exit 1
+    fi
 fi
 
 # Setup environment variables
-echo "export BASILISK=$PWD" >> ../../.project_config
-echo "export PATH=\$BASILISK:\$PATH" >> ../../.project_config
+if [[ ! -d "$BASILISK_SRC_DIR" ]]; then
+    echo "\033[0;31mError: Expected $BASILISK_SRC_DIR to exist before writing .project_config\033[0m"
+    exit 1
+fi
+printf "export BASILISK=%s\n" "$BASILISK_SRC_DIR" > "$PROJECT_CONFIG"
+printf "export PATH=\\$BASILISK:\\$PATH\n" >> "$PROJECT_CONFIG"
 
-source ../../.project_config
+source "$PROJECT_CONFIG"
 
 # Check if qcc is working properly
-echo "\nChecking qcc installation..."
+printf '\nChecking qcc installation...\n'
 if ! qcc --version > /dev/null 2>&1; then
     echo "\033[0;31mError: qcc is not working properly.\033[0m"
     echo "Please ensure you have Xcode Command Line Tools installed."
