@@ -62,6 +62,7 @@ A comprehensive list of numerical simulations in this sandbox, organized by the 
 * [Expansion of a rising bubble](run/rising.c)
 * [Bubble rising at different surface tension](run/bubblerisengrowth.c)
 * [Growth of a vapor bubble on a solid surface with contact angle](run/bubblecontact.c)
+* [Nucleate boiling with conjugate heat transfer](run/nucleate.c)
 * [Film boiling](run/filmboiling.c)
 
 ### Evaporation

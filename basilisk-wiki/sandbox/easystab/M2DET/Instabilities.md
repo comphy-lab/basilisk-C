@@ -232,13 +232,17 @@ $$
 
 ### Material for the course:
 
--  (**NEW**) [Lecture notes on Rayleigh-Taylor instability](/sandbox/easystab/LectureNotes_RayleighTaylor.md)
+-   [Lecture notes on Rayleigh-Taylor instability](/sandbox/easystab/LectureNotes_RayleighTaylor.md)
 
-- Commented program [/sandbox/easystab/RayleighBenard.m]() performing the resolution of the linear eigenvalue problem for convection in a horizontal cell.
+- (**NEW**) Commented program [RayleighBenard.py](/sandbox/easystab/easyPYstab/RayleighBenard.py) performing the resolution of the linear eigenvalue problem for convection in a horizontal cell.
 
-- Commented program [/sandbox/easystab/lorenz_convection.m]() displaying the solution of the Lorenz system, with reconstruction of the convection pattern.
+- (**NEW**) Commented program [Lorenz_Convection.py](/sandbox/easystab/easyPYstab/Lorenz_Convection.py) displaying the solution of the Lorenz system, including reconstruction of the convection pattern and study of two initially close trajectories.
 
-- Commented program [/sandbox/easystab/lorenz.m]()  displaying the divergence of two initially close trajectories (characteristic of a chaotic behaviour).
+- (Matlab) Commented program [/sandbox/easystab/RayleighBenard.m]() performing the resolution of the linear eigenvalue problem for convection in a horizontal cell.
+
+- (Matlab) Commented program [/sandbox/easystab/lorenz_convection.m]() displaying the solution of the Lorenz system, with reconstruction of the convection pattern.
+
+- (Matlab) Commented program [/sandbox/easystab/lorenz.m]()  displaying the divergence of two initially close trajectories (characteristic of a chaotic behaviour).
 
 
 ### Personal work:

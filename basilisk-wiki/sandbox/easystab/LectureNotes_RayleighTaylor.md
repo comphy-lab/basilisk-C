@@ -3,7 +3,7 @@
 
 (Lecture notes for the M2R-DET course, D. Fabre, nov. 2018-janv. 2022)
 
-This documents gives mathematical support for chapter 5 of the M2-DET course "introduction to hydrodynamical instabilities".
+This documents gives mathematical support for chapter 5 of the M2-DET course [Introduction to hydrodynamical instabilities](https://basilisk.fr/sandbox/easystab/M2DET/Instabilities.md).
 
 # Introduction
 
@@ -263,7 +263,7 @@ We finally drop the tildes to get the final result.
 Considering no-slip conditions at the top and bottom plates (i.e. $\hat{u} = \hat{v} = 0$ for $y=0$ and $y=H$), the problem cannot be solved analytically. On the other hand, the problem is easily solved numerically by using discretization in the $y$-direction, leading directly to a matrical problem with the form $\lambda B \hat{X} = A \hat{X}$ where $\hat{X}$ is the discretized version of 
 $\hat{u}(y);\hat{v}(y);\hat{p}(y);\hat{\theta}(y)]$.
 
-See [associated program.](/sandbox/easystab/RayleighBenard.m)
+See associated program [RayleighBenard.py](https://basilisk.fr/sandbox/easystab/easyPYstab/RayleighBenard.py).
 
 The main conclusions are :
 
@@ -354,7 +354,7 @@ Considering the model, one can make the following remarks:
 
 ## Dynamics of the Lorenz system.
 
-Dynamics of the Lorenz system is best understood by playing with [the program](/sandbox/easystab/lorenz_convection.m). On can also predict the first bifurcations by calculus (see exercice 5.2)
+Dynamics of the Lorenz system is best understood by playing with the program[Lorenz_Convection.py](/sandbox/easystab/easyPYstab/Lorenz_Convection.py). On can also predict the first bifurcations by calculus (see exercice 5.2)
 
 - The first system undergoes a *supercritical Pitchform bifurcation* for $r = r_{c,1} = 1$. Below this value, the only equilibrium solution is the trivial state $X=Y=Z=0$ which is stable. Above this value, this state becomes instable and new stable equilibrium solutions appear representing steady convection rolls.
 

@@ -1,4 +1,4 @@
-pristine:837088a50209c8f4657c2140578a43eaf198521e18e013c46e5329fb1395b828
+pristine:a08c17713a894788a1b5a5fcd0a636e8f1db60ff8302976b36f05b861d26fa5c
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -2806,3 +2806,83 @@ FanshuoMA <mafanshuo12@gmail.com>**20260106151336
  Ignore-this: 510fdb6a302e385c31ac90c0a714b019b6f354867f6b1c24450f80f8a6a73b83b7a9c252fd1d003
 ] 
 hash: 0000000207-d838ef2906a0a80818c5b8126093dc0e70a5fa4b03f842f65c3b085c68451c9b
+[Fixed links
+Stephane Popinet <popinet@basilisk.fr>**20260107095509
+ Ignore-this: 6fd67492f5d42d36b18908d52a8b5faaf03abb67c5cd4b1ba6d9b3d8d945523690f4f646328206cf
+] 
+hash: 0000000553-a71e1c2a944d463448cd571ca0c3fb677e012d025f05747b5bfa2bd455f0df64
+[Fixed links
+Stephane Popinet <popinet@basilisk.fr>**20260107100302
+ Ignore-this: e88f8e07fd06eacd309c86395e98dd3108f909929602bb1437a2b0b97080b907df4ea90acf6224a5
+] 
+hash: 0000000623-1223a3ea399fb42ee5787612000e9ea41caf46888bb5214bf216a4ecb433d53c
+[A simple conjugate heat transfer model
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260107205442
+ Ignore-this: 7215e600fbfdc365844c91f2c5b8db4b2be4f8afdbd2df78e6361b1e4815b92ccdc14ff59a931652
+] 
+hash: 0000007064-c59b7d140fc624337dbd92f9d3bcd504c8bbab8ade8e027b6cd1bb60f2980048
+[Yet another colormap
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260107223722
+ Ignore-this: c13ebf9c5ae04b2cb52a438dde21091f253887d390019f037022ee1575fbfe339e2d73f65a1f732b
+] 
+hash: 0000001755-c4dc76be583b506347ea8da9da270e9f37d0f4fc1b41d04a30f50885c92a0e06
+[Added first draft of nucleate boiling with conjugate heat transfer
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260107224609
+ Ignore-this: 1fbb32dddd6c606315a18103a440b607153541821215f49aff840342ab8c8311fdfa46c34f14c3fb
+] 
+hash: 0000018293-2d80a2c09a6d0fca089b008de78c0d9623c84bfdaf71825151a861fb53f63f50
+[add this program
+erbafdavid <david.fabre@imft.fr>**20260107230720
+ Ignore-this: 2cd07a5bf680eaea57e23a628cbd011651de50c1f5f9cbd343f7f5d7f6638ada33d826879dec2259
+] 
+hash: 0000007789-c4fa35162bc4fb6993ce7a23acd5fc81e60441956af80c8129379c4e58864ceb
+[add this program
+erbafdavid <david.fabre@imft.fr>**20260107231313
+ Ignore-this: db86d4896ee5117c1fb0d635c2a6d2816a1d84d32aec67b2362baa0200f57cc3774460b8066e0e69
+] 
+hash: 0000011457-5b20ed894fb6b91efea26c69c4c765d8c36398436ad47b2f73371083dfb144c7
+[add this program
+erbafdavid <david.fabre@imft.fr>**20260107231343
+ Ignore-this: e14380d51ce149cf33067a6bfaa21b39680fcfb77b074541afa41118825a763aefc0fcc832ecefb2
+] 
+hash: 0000000222-9f82eb55a2bed2bc334f959dd6ba281dc7c226cb52588dcd3f4d6e10a3ad7a27
+[Fixed references
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260107225157
+ Ignore-this: aa2c4be1ca93cb32ba14bbae98d1540c365681a645a533552fb7774af2d84283a5adea4cfbc0a4fe
+] 
+hash: 0000000277-cc368c06c02b8c787d1cca45a51cf7e1f4e7c458c100c4c8df9fe769a10f9368
+[Links and typos
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260107231412
+ Ignore-this: 14fab02e05233b652aee12c21b2a9b2e
+] 
+hash: 0000000785-a3d7ae966e9119ef925d73bd1fed03fa6f3e39792fbe1d8d710c9f899f8234ba
+[Added nucleate
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260107231544
+ Ignore-this: fdd00383719c2376293f6dfbb4845ed6
+] 
+hash: 0000000241-dbbde77149b4cf5eeda3beaacdf6e0b82d6c574d4dd95bf1554c358249001632
+[link to Python programs
+erbafdavid <david.fabre@imft.fr>**20260107232309
+ Ignore-this: 9e532a03aff8a4724366a0fa6eafdac6349b187f1e05137a76a5584291917b5ec7eb2c94364987df
+] 
+hash: 0000001857-5ba018407f296d03f7283c03e8403f1348d4f5257b6fb26898b172051ae937bb
+[fix
+erbafdavid <david.fabre@imft.fr>**20260107232505
+ Ignore-this: a7adca5560514b4e3ed4770330eab565d3aae4e6b741927d8b768d27c4f4f3ad38f966d1437e4c0f
+] 
+hash: 0000001093-462a52e45b74895c244c06e8a6a1749d2d339a9ccbc05c54c9cbfb58adba774c
+[link python programs
+erbafdavid <david.fabre@imft.fr>**20260107232733
+ Ignore-this: dba3df58b72d64e1a28d6deac3d228dad36d2e673dc2147bf40bca0fae19bf5d71bc42fe3a780b02
+] 
+hash: 0000000880-1309089a80a7b2da0199694f189f9e5f655f4141a71d39e12dba2d959e32f63a
+[link
+erbafdavid <david.fabre@imft.fr>**20260107234345
+ Ignore-this: 8fa51a8f762a2eb644bbcdb9f0932813f0f388d53b3ae281f9192918c937a75f3e31cf041a7acde7
+] 
+hash: 0000000521-5e7a889cb6e998b380f1254d61f2d8c12ea4c57f75ba2acf43873edc97fe423e
+[fix
+erbafdavid <david.fabre@imft.fr>**20260107234404
+ Ignore-this: a187351ba17f7858a37bad01988910ce22753e6a1e9ad03d1a1d31cad7eb7ebebe9647edc37a3948
+] 
+hash: 0000000581-76002e03afe8b81d202c1a3e36f662119cae0771bb89c332f98cd4d24a6f0326

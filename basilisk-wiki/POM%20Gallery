@@ -97,7 +97,7 @@ FC-770 droplet onto a silicon oil pool. From [Fudge et al, 2023](Bibliography#fu
 </p>
 </div>
 
-![[Self-similar solution for the Shallow Ice Approximation](/sandbox/nlemoine/halfar1D.c) by [Nicolas Lemoine](/sandbox/nlemoine/README)](/sandbox/nlemoine/halfar1D/_plot0.svg)
+![[Self-similar solution for the Shallow Ice Approximation](/sandbox/nlemoine/ice/halfar1D.c) by [Nicolas Lemoine](/sandbox/nlemoine/README)](/sandbox/nlemoine/ice/halfar1D/_plot0.svg)
 
 <div class="figure">
 <video controls="" preload="metadata" width="900">
@@ -123,7 +123,7 @@ Your browser does not support the video tag. </video>
 
 ![[Bwatch ray tracing](/sandbox/Antoonvh/minbwatch.c) by [Antoon van Hooft](/sandbox/Antoonvh/README)](/sandbox/Antoonvh/minbwatch/min.png){width=80%}
 
-![[Flow past a rapidly pitching airfoil](/sandbox/ghigo/src/test-embed/pitching-naca0015.c) by [Arthur Ghigo](/sandbox/ghigo/README)](/sandbox/ghigo/src/test-embed/pitching-naca0015/vorticity.mp4)
+![[Flow past a rapidly pitching airfoil](/sandbox/ghigo/src/test-navier-stokes/naca0015-pitching.c) by [Arthur Ghigo](/sandbox/ghigo/README)](/sandbox/ghigo/src/test-navier-stokes/naca0015-pitching/omega-zoom-angle-44.png){width=100%}
 
 <div class="figure"> <video controls="" preload="metadata"
 width="80%"> <source
