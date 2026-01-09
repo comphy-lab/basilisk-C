@@ -29,8 +29,9 @@ void save_data_for_gnuplot_complex(double *data, int NX, const char *filename){
   }
 
   for (int i = 0; i < NX; i++){
+    double kx = (i <= NX / 2) ? (2. * pi * i / L0) : (2. * pi * (i - NX) / L0);
     double magnitude = sqrt(sq(REAL(data, i)) + sq(IMAG(data, i)));
-    fprintf(file, "%d %f %f %f\n", i, REAL(data,i), IMAG(data,i), magnitude);
+    fprintf(file, "%d %g %f %f %f\n", i, kx, REAL(data,i), IMAG(data,i), magnitude);
   }
   fclose(file);
 }
@@ -58,7 +59,8 @@ void save_data_for_gnuplot_real(double *data, int NX, const char *filename){
 
 void init_1D_complex(double *data, size_t N, double kmin, double kmax, double eta0_target=1){
   double *kx = malloc(N * sizeof(double));
-  double cst = eta0_target / sqrt((2./kmin)-(2./kmax));
+  double cst;
+  cst = eta0_target;
 
   // Calculate wavenumbers
   for (int i = 0; i <= N / 2; ++i)
@@ -68,21 +70,54 @@ void init_1D_complex(double *data, size_t N, double kmin, double kmax, double et
     kx[i] = 2 * pi * (i - N) / L0;
 
   // Initialize spectrum in the specified range with magnitude 1/k and random
-  // phase
+  // phase. To ensure the inverse FFT produces real values, we enforce
+  // Hermitian symmetry: F[N-k] = conj(F[k])
   double dkx = kx[1]-kx[0];
-  double eta0 = 0.;
+  double eta0_spectral = 0.;  // Spectral energy for Parseval check
   memset(data, 0, 2 * N * sizeof(double));
-  for (int i = 0; i < N; ++i){
-    double k = sqrt(sq(kx[i]));
-    if ((k >= kmin) && (k < kmax)){
-      double magnitude = cst / k;
+  
+  // Zero frequency is always zero. 
+  // Handle positive frequencies (i = 1 to N/2)
+  for (int i = 1; i <= N / 2; ++i){
+    double k = fabs(kx[i]);
+    if ((k >= kmin) && (k <= kmax)){
+      double magnitude = cst / sqrt(k);
       double phase = noise() * pi;
       REAL(data, i) = magnitude * cos(phase);
       IMAG(data, i) = magnitude * sin(phase);
-      eta0 += sq(magnitude)*dkx;
+      
+      // For Parseval with GSL's unnormalized backward FFT:
+      // Var_real = (1/N) Σ|f[n]|² = Σ|F[k]|² (summing over all k including negatives)
+      // Since we set both F[k] and F[-k], we count the contribution once here
+      if (i < N / 2) {  
+        // Regular modes: both +k and -k contribute, so count 2×|F[k]|²
+        eta0_spectral += 2.0 * sq(magnitude);
+      } else {  
+        // Nyquist frequency appears once
+        eta0_spectral += sq(magnitude);
+      }
+      
+      // Set the negative frequency to be the complex conjugate
+      if (i < N / 2) {  
+        // Don't duplicate Nyquist frequency
+        int neg_i = N - i;
+        REAL(data, neg_i) = REAL(data, i);   // Real part stays the same
+        IMAG(data, neg_i) = -IMAG(data, i);  // Imaginary part is negated
+      }
     }    
   }
-  fprintf(stdout, "real eta0 is %g \n", sqrt(eta0));
+  fprintf(stdout, "Spectral RMS (Parseval): %g \n", sqrt(eta0_spectral));
+  
+  // Post-normalization: scale to achieve exact target RMS
+  if (eta0_spectral > 0) {
+    double scale = eta0_target / sqrt(eta0_spectral);
+    for (int i = 0; i < N; ++i) {
+      REAL(data, i) *= scale;
+      IMAG(data, i) *= scale;
+    }
+    eta0_spectral *= sq(scale);  // Update spectral energy after rescaling
+    fprintf(stdout, "Rescaled by factor %g to achieve target RMS = %g\n", scale, eta0_target);
+  }
 
   free(kx);
 }
@@ -151,6 +186,25 @@ void initial_condition_dimonte_fft(vertex scalar phi, double amplitude=1, int NX
     for (int i = 0; i < NX; i++){
       ydata[i] = REAL(data,i);
     }
+    
+    // Verify Parseval's theorem: compute RMS in real space
+    double mean_real = 0.;
+    for (int i = 0; i < NX; i++){
+      mean_real += ydata[i];
+    }
+    mean_real /= NX;
+    
+    double variance_real = 0.;
+    for (int i = 0; i < NX; i++){
+      variance_real += sq(ydata[i] - mean_real);
+    }
+    variance_real /= NX;
+    double eta0_real = sqrt(variance_real);
+    
+    fprintf(stdout, "Real space RMS (after IFFT): %g\n", eta0_real);
+    fprintf(stdout, "Parseval check: spectral vs real space energy ratio = %g\n", 
+            eta0_real / amplitude);
+    
     save_data_for_gnuplot_real(ydata, NX, "final_deformation2.dat");
   }
 
@@ -170,7 +224,6 @@ void initial_condition_dimonte_fft(vertex scalar phi, double amplitude=1, int NX
   normalize the perturbation using the standard deviation and multiply it by
   some amplitude. 
   */
-
   
   foreach_vertex()
     phi[] = gsl_interp_eval(interp, xdata, ydata, x, acc) - y;

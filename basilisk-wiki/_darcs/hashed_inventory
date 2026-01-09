@@ -1,4 +1,4 @@
-pristine:a08c17713a894788a1b5a5fcd0a636e8f1db60ff8302976b36f05b861d26fa5c
+pristine:89e316162c056863cbe705228f824cb680faca156945106362f04790a270769c
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -2886,3 +2886,38 @@ erbafdavid <david.fabre@imft.fr>**20260107234404
  Ignore-this: a187351ba17f7858a37bad01988910ce22753e6a1e9ad03d1a1d31cad7eb7ebebe9647edc37a3948
 ] 
 hash: 0000000581-76002e03afe8b81d202c1a3e36f662119cae0771bb89c332f98cd4d24a6f0326
+[Some fixes
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260108102322
+ Ignore-this: f8fb3be2be94a5e1b79f7e3346b4dca3
+] 
+hash: 0000001559-9df4cc0e78f758399be5b9391b9dfe1cc440e3f6900b40cf30e10c66f9611c82
+[rain from wall
+dfuster <dfuster@gmail.com>**20260108103721
+ Ignore-this: 143c6e64969ad507b65a726c66efa1ebd91754b3d735873e9847a91ea87b9d1a98af21b9127c0501
+] 
+hash: 0000003041-6e346162e9a65cfa0a67ea21044108e83a7fcd262fc85259c9a1b1f8a786cf82
+[Normalization is applied consistently
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260108110602
+ Ignore-this: 9049654317a8d5ba5cff1f037fb59d45d6ee69b9b11a7af24a0e1bed36015f25be65030f22e70b2b
+] 
+hash: 0000003920-a719e47713a403642f08cc4f9ec867cfd253d8540b2347ac7297b0821c0c11dc
+[Normalization is now consistent
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260108113225
+ Ignore-this: dd9d473f8886d55cd1a70c77dc13ef8c2afda87b2eb61ecf8d4a1307f65a5a55dc5eb707a6978f0a
+] 
+hash: 0000007536-e3403e60bf39f15aa30f6269471c73fc52550bb387c82bbde87a912ecca99a01
+[Added torres data
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260108125204
+ Ignore-this: 81d41554158f0eac0a20bf5e326e9719e7b2842377f935f3ad1ea54b351441c27fefe1c3341d2114
+] 
+hash: 0000003027-dfc17547867a993c59b8ceeb2b64d86fb3a6afc7b03b7b213c4e3553a0c8c2d7
+[Added plot to nucleate boiling case
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260108125928
+ Ignore-this: 8e746556824b2b60dfafccf15a71601c967b8c06157dd915558caa28e0cc1f9b0fd9ae3be61cf130
+] 
+hash: 0000000631-5032282b1e465efa781987dd198dec002df67d6623698f4ffa55bb804d405975
+[new example attached to wall
+dfuster <dfuster@gmail.com>**20260108133647
+ Ignore-this: e774819bbc91f8438c7373a568c85487256f6da1b8c0ade6f33e14d115862f02dd89a811952796f8
+] 
+hash: 0000002342-cf0cea64d36c02fc5a065ec7d5b02559305e23836378ee4a21e74143eb533c3b

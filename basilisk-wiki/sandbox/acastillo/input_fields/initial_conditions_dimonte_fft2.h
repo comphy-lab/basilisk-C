@@ -1,7 +1,7 @@
 /**
 # Initializing an interface using a given spectrum
 
-Consider  $\eta(x, y)$ being a zero mean, periodic initial perturbation at the
+Consider $\eta(x, y)$ being a zero mean, periodic initial perturbation at the
 interface between two fluids. This perturbation is further characterized by the
 horizontal discrete Fourier modes $\hat{\eta}$ of wavevector $\vec{k} = (k_x,
 k_y)^T \in \mathbb{Z}^2$ and modulus $k = \vert\vert k \vert\vert$ such that
@@ -63,7 +63,7 @@ routines from GSL.
 ### *save_data_for_gnuplot_complex()*: saves a (complex) 2D array as a .dat file
 */
 
-void save_data_for_gnuplot_complex(double *data, int NX, const char *filename){
+void save_data_for_gnuplot_complex(double *data, int NX, int NY, const char *filename){
   FILE *file = fopen(filename, "w");
   if (file == NULL){
     fprintf(stderr, "Error opening file %s\n", filename);
@@ -71,10 +71,12 @@ void save_data_for_gnuplot_complex(double *data, int NX, const char *filename){
   }
 
   for (int i = 0; i < NX; i++){
-    for (int j = 0; j < NX; j++){
-      int index = i * NX + j;
+    double kx = (i <= NX / 2) ? (2. * pi * i / L0) : (2. * pi * (i - NX) / L0);
+    for (int j = 0; j < NY; j++){
+      double ky = (j <= NY / 2) ? (2. * pi * j / L0) : (2. * pi * (j - NY) / L0);
+      int index = i * NY + j;
       double magnitude = sqrt(sq(REAL(data, index)) + sq(IMAG(data, index)));
-      fprintf(file, "%d %d %f %f %f\n", i, j, REAL(data,index), IMAG(data,index), magnitude);
+      fprintf(file, "%d %d %g %g %f %f %f\n", i, j, kx, ky, REAL(data,index), IMAG(data,index), magnitude);
     }
     fprintf(file, "\n"); 
   }
@@ -84,7 +86,7 @@ void save_data_for_gnuplot_complex(double *data, int NX, const char *filename){
 /** 
 ### *save_data_for_gnuplot_real()*: saves a 2D array as a .dat file
 */
-void save_data_for_gnuplot_real(double *data, int NX, const char *filename){
+void save_data_for_gnuplot_real(double *data, int NX, int NY, const char *filename){
   FILE *file = fopen(filename, "w");
   if (file == NULL){
     fprintf(stderr, "Error opening file %s\n", filename);
@@ -92,8 +94,8 @@ void save_data_for_gnuplot_real(double *data, int NX, const char *filename){
   }
 
   for (int i = 0; i < NX; i++){
-    for (int j = 0; j < NX; j++){
-      int index = i * NX + j;
+    for (int j = 0; j < NY; j++){
+      int index = i * NY + j;
       fprintf(file, "%d %d %f \n", i, j, data[index]);
     }
     fprintf(file, "\n"); 
@@ -109,7 +111,7 @@ void save_data_for_gnuplot_real(double *data, int NX, const char *filename){
 void init_2D_complex(double *data, int n0, int n1, double kmin, double kmax, double eta0_target=1){
   double *kx = malloc(n0 * sizeof(double));
   double *ky = malloc(n1 * sizeof(double));
-  double cst = eta0_target / sqrt((2*pi*log(kmax/kmin)));
+  double cst = eta0_target;
 
   /** Calculate horizontal wavenumbers*/  
   for (int i = 0; i <= n0 / 2; ++i)
@@ -124,25 +126,77 @@ void init_2D_complex(double *data, int n0, int n1, double kmin, double kmax, dou
   for (int i = n1 / 2 + 1; i < n1; ++i)
     ky[i] = 2 * pi * (i - n1) / L0;
 
-  /** Initialize spectrum in the annular region with magnitude $cst/k$ and random phase */ 
-  double dkx = kx[1]-kx[0];
-  double dky = ky[1]-ky[0];
-  double eta0 = 0.;
+  /** Initialize spectrum in the annular region with magnitude $cst/k$ and random phase.
+  To ensure the inverse FFT produces real values, we enforce Hermitian symmetry:
+  $F[N-i, N-j] = conj(F[i,j])$
+  */ 
   memset(data, 0, 2 * n0 * n1 * sizeof(double));
+  
+  // Loop over all modes in the upper half-plane and set Hermitian symmetry
   for (int i = 0; i < n0; ++i){
     for (int j = 0; j < n1; ++j){
       double k = sqrt(sq(kx[i]) + sq(ky[j]));
-      if ((k >= kmin) && (k < kmax)){
-        double magnitude = cst / k;
-        double phase = noise() * pi;
-        REAL(data, i*n1+j) = magnitude * cos(phase);
-        IMAG(data, i*n1+j) = magnitude * sin(phase);
-        eta0 += sq(magnitude)*dkx*dky;
+      
+      if ((k >= kmin) && (k <= kmax)){
+        // Check if this is a mode we should generate (avoid duplicates due to symmetry)
+        bool is_positive_half = (i < n0/2) || (i == n0/2 && j <= n1/2);
+        bool is_dc = (i == 0 && j == 0);
+        bool is_nyquist_x = (n0 % 2 == 0 && i == n0/2);
+        bool is_nyquist_y = (n1 % 2 == 0 && j == n1/2);
+        bool must_be_real = is_dc || (is_nyquist_x && is_nyquist_y);
+        
+        if (is_positive_half) {
+          double magnitude = cst / sqrt(k);
+          
+          if (must_be_real) {
+            // DC and Nyquist corners must be real
+            REAL(data, i*n1+j) = magnitude * (noise() > 0.5 ? 1.0 : -1.0);
+            IMAG(data, i*n1+j) = 0.0;
+          } else {
+            // General case: random phase
+            double phase = noise() * pi;
+            REAL(data, i*n1+j) = magnitude * cos(phase);
+            IMAG(data, i*n1+j) = magnitude * sin(phase);
+            
+            // Set Hermitian conjugate if not on the boundary
+            if (i != 0 || j != 0) {
+              int conj_i = (i == 0) ? 0 : n0 - i;
+              int conj_j = (j == 0) ? 0 : n1 - j;
+              if (conj_i != i || conj_j != j) {  
+                // Avoid setting the same point twice
+                REAL(data, conj_i*n1+conj_j) = REAL(data, i*n1+j);
+                IMAG(data, conj_i*n1+conj_j) = -IMAG(data, i*n1+j);
+              }
+            }
+          }
+        }
       }
     }
   }
 
-  fprintf(stdout, "real eta0 is %g \n", sqrt(eta0));
+  // Compute spectral RMS using Parseval's theorem
+  // For GSL's unnormalized backward FFT: Var_real = (1/(n0*n1)) Σ|f[n]|² = Σ|F[k]|²
+  double eta0_spectral = 0.;  
+  for (int i = 0; i < n0; ++i){
+    for (int j = 0; j < n1; ++j){
+      int index = i * n1 + j;
+      double mag_sq = sq(REAL(data, index)) + sq(IMAG(data, index));
+      eta0_spectral += mag_sq;  
+    }
+  }
+
+  fprintf(stdout, "Spectral RMS (Parseval): %g \n", sqrt(eta0_spectral));
+  
+  // Post-normalization: scale to achieve exact target RMS
+  if (eta0_spectral > 0) {
+    double scale = eta0_target / sqrt(eta0_spectral);
+    for (int i = 0; i < n0 * n1; ++i) {
+      REAL(data, i) *= scale;
+      IMAG(data, i) *= scale;
+    }
+    eta0_spectral *= sq(scale);  // Update spectral energy after rescaling
+    fprintf(stdout, "Rescaled by factor %g to achieve target RMS = %g\n", scale, eta0_target);
+  }
 
   free(kx);
   free(ky);
@@ -153,19 +207,19 @@ void init_2D_complex(double *data, int n0, int n1, double kmin, double kmax, dou
 */
 void fft2D(double *data, int n0, int n1){  
   
-  // FFT along rows 
+  // Inverse FFT along rows 
   for (int i = 0; i < n0; ++i){
-    gsl_fft_complex_radix2_forward(data + 2 * i * n1, 1, n1);
+    gsl_fft_complex_radix2_backward(data + 2 * i * n1, 1, n1);
   }
 
-  // FFT along columns
+  // Inverse FFT along columns
   double *column = malloc(2 * n0 * sizeof(double));
   for (int j = 0; j < n1; ++j){
     for (int i = 0; i < n0; ++i){
       REAL(column,i) = REAL(data, i*n1 + j);
       IMAG(column,i) = IMAG(data, i*n1 + j);
     }
-    gsl_fft_complex_radix2_forward(column, 1, n0);
+    gsl_fft_complex_radix2_backward(column, 1, n0);
     for (int i = 0; i < n0; ++i)
     {
       REAL(data, i*n1 + j) = REAL(column,i);
@@ -241,20 +295,39 @@ void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int N
   if (pid() == 0){
     // Initialize the spectrum
     init_2D_complex(data, NX, NY, kmin, kmax, eta0_target=amplitude);
-    save_data_for_gnuplot_complex(data, NX, "initial_spectra.dat");
+    save_data_for_gnuplot_complex(data, NX, NY, "initial_spectra.dat");
 
     // Perform the FFT2D 
-    fft2D(data, NX, NX);
-    save_data_for_gnuplot_complex(data, NX, "final_deformation.dat");
+    fft2D(data, NX, NY);
+    save_data_for_gnuplot_complex(data, NX, NY, "final_deformation.dat");
 
     // Save the results into a 2D array
     for (int i = 0; i < NX; i++){
       for (int j = 0; j < NY; j++){
         int index = i * NX + j;
-        zdata[index] = data[2 * index];
+        zdata[index] = REAL(data,index);
       }
     }
-    save_data_for_gnuplot_real(zdata, NX, "final_deformation2.dat");
+    
+    // Verify Parseval's theorem: compute RMS in real space
+    double mean_real = 0.;
+    for (int i = 0; i < NX * NY; i++){
+      mean_real += zdata[i];
+    }
+    mean_real /= (NX * NY);
+    
+    double variance_real = 0.;
+    for (int i = 0; i < NX * NY; i++){
+      variance_real += sq(zdata[i] - mean_real);
+    }
+    variance_real /= (NX * NY);
+    double eta0_real = sqrt(variance_real);
+    
+    fprintf(stdout, "Real space RMS (after IFFT): %g\n", eta0_real);
+    fprintf(stdout, "Parseval check: spectral vs real space energy ratio = %g\n", 
+            eta0_real / amplitude);
+    
+    save_data_for_gnuplot_real(zdata, NX, NY, "final_deformation2.dat");
   }
 
   // and broadcasted to the other processes if MPI

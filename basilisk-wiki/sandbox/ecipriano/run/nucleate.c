@@ -2,18 +2,17 @@
 # Nucleate Boiling with Conjugate Heat Transfer
 
 Simulation setup for nucleate boiling with conjugate heat transfer. This
-setup is very similar to [bubblcecontact.c](../run/bubblcecontact.c) but
+setup is very similar to [bubblcecontact.c](../run/bubblecontact.c) but
 including the solution of the energy equation within the solid heater and the
 energy transfer at the fluid--solid interface.
 
-This setup aims to be the same described by [Torres et al., 2024](#torres2024)
-which consists of the expansion of a FC-72 bubble expanding over a solid surface
-in microgravity conditions. Experiments for this configuration were performed
-in the context of the [RUBI project](https://www.eoportal.org/satellite-missions/iss-rubi)
-which allowed boiling experiments to be carried out on the International Space
-Station. The absence of gravity allows the bubble growth process to be observed
-without the influence of buoyancy-driven flows which would promote fast
-detachment of the bubble from the solid surface.
+This setup aims to replicate the conditions described by [Torres et al.,
+2024](#torres2024) focusing on the expansion of an FC-72 bubble in microgravity.
+The experiments for this configuration were conducted as a part of the [RUBI project](https://www.eoportal.org/satellite-missions/iss-rubi),
+which enabled boiling experiments aboard the International Space Station. The
+absence of gravity in this environment allows the bubble to expand without the
+influence of buoyancy-driven flows, which would typically cause the bubble to
+detach from the solid surface quickly.
 
 ![Nucleate boiling experiment in microgravity conditions, showing a bubble growing in contact line regime over a solid surface, surrounded by several thermocouples.](https://www.eoportal.org/api/cms/documents/d/eoportal/rubi_auto4-jpeg){width="70%"}
 
@@ -237,6 +236,24 @@ event movie (t += 0.05; t <= 8) {
 }
 
 /**
+## Results
+
+~~~gnuplot Evolution of the equivalent diameter in time
+set xr[0:3]
+set yr[0:8]
+
+set xlabel "time [s]"
+set ylabel "d_{eq} [mm]"
+
+set grid
+set size square
+set key left top
+
+plot "<grep 'level 7' log" u ($3-5):($5*1e3) w l t "Basilisk", \
+     "../data/torres2024/rubi-exp.csv" w p t "Experiments", \
+     "../data/torres2024/rubi-nmr.csv" w p t "Torres-NMR"
+~~~
+
 ## References
 
 ~~~bib
