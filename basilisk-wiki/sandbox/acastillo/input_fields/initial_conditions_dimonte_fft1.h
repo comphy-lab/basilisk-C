@@ -72,7 +72,6 @@ void init_1D_complex(double *data, size_t N, double kmin, double kmax, double et
   // Initialize spectrum in the specified range with magnitude 1/k and random
   // phase. To ensure the inverse FFT produces real values, we enforce
   // Hermitian symmetry: F[N-k] = conj(F[k])
-  double dkx = kx[1]-kx[0];
   double eta0_spectral = 0.;  // Spectral energy for Parseval check
   memset(data, 0, 2 * N * sizeof(double));
   
@@ -160,7 +159,7 @@ initial_condition_dimonte_fft(phi, 0.5, 128, 0.1, 10.0);
 see, also [example](test_init_fft4.c).
 
 */
-void initial_condition_dimonte_fft(vertex scalar phi, double amplitude=1, int NX=N, double kmin=1, double kmax=1){
+void initial_condition_dimonte_fft(vertex scalar phi, double amplitude=1, int NX=N, double kmin=1, double kmax=1, bool isvertex=1){
   
   // We declare the arrays and initialize the physical space
   double *data = malloc(2 * NX * sizeof(double));
@@ -225,9 +224,14 @@ void initial_condition_dimonte_fft(vertex scalar phi, double amplitude=1, int NX
   some amplitude. 
   */
   
-  foreach_vertex()
-    phi[] = gsl_interp_eval(interp, xdata, ydata, x, acc) - y;
-  
+  if (isvertex){
+    foreach_vertex()
+      phi[] = gsl_interp_eval(interp, xdata, ydata, x, acc) - y;
+  }
+  else {
+    foreach()
+      phi[] = gsl_interp_eval(interp, xdata, ydata, x, acc) - y;
+  }  
 
   // Release interpolation objects
   gsl_interp_free(interp);

@@ -114,17 +114,18 @@ void init_2D_complex(double *data, int n0, int n1, double kmin, double kmax, dou
   double cst = eta0_target;
 
   /** Calculate horizontal wavenumbers*/  
+  double dk_grid = 2.0 * pi / L0;  // Grid spacing in k-space
   for (int i = 0; i <= n0 / 2; ++i)
-    kx[i] = 2 * pi * i / L0;
+    kx[i] = dk_grid * i;
 
   for (int i = n0 / 2 + 1; i < n0; ++i)
-    kx[i] = 2 * pi * (i - n0) / L0;
+    kx[i] = dk_grid * (i - n0);
 
   for (int i = 0; i <= n1 / 2; ++i)
-    ky[i] = 2 * pi * i / L0;
+    ky[i] = dk_grid * i;
 
   for (int i = n1 / 2 + 1; i < n1; ++i)
-    ky[i] = 2 * pi * (i - n1) / L0;
+    ky[i] = dk_grid * (i - n1);
 
   /** Initialize spectrum in the annular region with magnitude $cst/k$ and random phase.
   To ensure the inverse FFT produces real values, we enforce Hermitian symmetry:
@@ -273,7 +274,7 @@ see, also [example 1](test_init_fft.c), [example 2](test_init_fft2.c) and
 
 
 */
-void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int NX=N, int NY=N, double kmin=1, double kmax=1, bool isvof=0){
+void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int NX=N, int NY=N, double kmin=1, double kmax=1, bool isvof=0, bool isvertex=1){
   
   // We declare the arrays and initialize the physical space
   double *data = malloc(2 * NX * NY * sizeof(double));
@@ -349,8 +350,12 @@ void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int N
   field or use it to generate a VOF surface (`isvof=1`)
   */
   if (isvof) {
-    foreach_vertex()
-      phi[] = gsl_interp2d_eval(interp, xdata, ydata, zdata, x, y, x_acc, y_acc) - z;
+    if (isvertex)
+      foreach_vertex()
+        phi[] = gsl_interp2d_eval(interp, xdata, ydata, zdata, x, y, x_acc, y_acc) - z;
+    else
+      foreach()
+        phi[] = gsl_interp2d_eval(interp, xdata, ydata, zdata, x, y, x_acc, y_acc) - z;
   }
   else {
     foreach(){
