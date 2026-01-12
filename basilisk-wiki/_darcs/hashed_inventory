@@ -1,4 +1,4 @@
-pristine:5872fa029a2773cb8abeff97bee93465b7f3fd5c5780cdc86582be9fd9d6e00f
+pristine:39e101daae9708ecb09b179d81b8e14a96ba9bde49bbc12ba587d122106cbb57
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -2926,3 +2926,18 @@ Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**2026010909022
  Ignore-this: 9f7d59ed4abbc9b2f7af5885a27176ffaf3e428164a7f0a8948b1264c37d9b69e2a7eac4be24f7f1
 ] 
 hash: 0000002509-766d82389ef3315019e1606be7f334a7df636b3ca541ee0c1378229145a158ba
+[Add dissipation to globals
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260111174146
+ Ignore-this: 6440959f7801c5081b4efbce615d9357f7e8c8dd7a9588f391fa324f97ac446d6b82e8d8475222f4
+] 
+hash: 0000002030-5d5321f34c83e441bd8baa70781cf3f6b0c510fa923b3219e666b84565de1fb5
+[Updated example
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260111183430
+ Ignore-this: 1679e8dbe7f2812b8362537648b6385c9a87132d25e7e1e466c2995fb9b87c1aaaf524dea5c2a89a
+] 
+hash: 0000005788-7324543a0a2655b0c65f8e9a587a5eb87bfb4b594fb54e348db858c9a44b91ed
+[Updated example
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260111195835
+ Ignore-this: 3bedd31bb154b7e98a08e37e374d6c9ee28e64b136a9ccc7b32a96e422788bc0c6bedd9020838622
+] 
+hash: 0000009918-e4f4316a6ca7a0f982e48020b8641bd72b07a7e8fc3afaf0ebc3b58b22b43895

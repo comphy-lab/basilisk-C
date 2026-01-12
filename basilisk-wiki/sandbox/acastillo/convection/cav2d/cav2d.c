@@ -1,8 +1,11 @@
 /**
 # Differentially heated cavity in 2D
 
-For this example we solve the Boussinesq equations. We fix $\text{Ra}=10^3$ and
-$\text{Pr}=0.71$ which leads to a steady-state solution. We use a $256^2$ grid.
+For this example we solve the [Boussinesq
+equations](https://basilisk.fr/sandbox/acastillo/convection/convection_boussinesq.h).
+
+In this example, we fix $\text{Ra}=10^3$ and $\text{Pr}=0.71$ which leads to a steady-state
+solution. 
 
 ~~~pythonplot Streamfunction and temperature fields at the steady state
 import numpy as np
@@ -80,23 +83,24 @@ ax2.scatter(data[:,0], psimax, marker='s');
 ax2.set_xscale('log', base=2)
 ax2.set_xlabel('$N$')
 ax2.set_ylabel(r'$|\psi|_{\text{max}}$')
-
+plt.tight_layout()
 plt.savefig('convergence.svg')
 ~~~
 
 */
 
-#define MINLEVEL 6
+#define MINLEVEL 5
 #define MAXLEVEL 8
 #define RAYLEIGH 1e3
 #define PRANDTL 0.71
 #define MAXTIME 100.
-#include "convection_boussinesq.h"
+#include "grid/multigrid.h"
+#include "acastillo/convection/convection_boussinesq.h"
+#include "acastillo/convection/global_nusselt.h"
 
 scalar omega[];
 scalar psi[];
 
-double tend= MAXTIME;
 int main() {
 
   // Geometric Parameters
@@ -109,12 +113,22 @@ int main() {
 
   // Numerical Parameters  
   DT = 0.05;  
-  TOLERANCE = 1e-3;
+  TOLERANCE = 1e-4;
   NITERMIN = 4;
 
   FILE * fp = fopen("cav2d.asc", "w");
-  fprintf (fp, "[1]Ra [2]Pr [3]N [4]nuleft [5]nuright [6]nuvol"
-      " [7]umin [8]umax [9]vmin [10]vmax [11]psimin [12]psimax \n");
+  fprintf (fp, "[1]Ra ");
+  fprintf (fp, "[2]Pr ");
+  fprintf (fp, "[3]N ");
+  fprintf (fp, "[4]nuleft ");
+  fprintf (fp, "[5]nuright ");
+  fprintf (fp, "[6]nuvol ");
+  fprintf (fp, "[7]umin ");
+  fprintf (fp, "[8]umax ");
+  fprintf (fp, "[9]vmin ");
+  fprintf (fp, "[10]vmax ");
+  fprintf (fp, "[11]psimin ");
+  fprintf (fp, "[12]psimax \n");
   fclose (fp);
 
   for (int l = (MINLEVEL); l <= (MAXLEVEL); l++) {
@@ -172,17 +186,120 @@ event init_un (i = 0)
 
 We store the residuals from the Poisson solvers
 
+~~~pythonplot 0D Quantities
+import numpy as np
+import matplotlib.pyplot as plt
+
+filename1 = 'log'
+
+data = np.genfromtxt(filename1, usecols=[0,2,6,12,18], invalid_raise=False)
+data = data[~np.isnan(data).any(axis=1)]
+
+series_id = data[:,0]
+t = data[:,1]
+residual_p = data[:,2]
+residual_u = data[:,3]
+residual_T = data[:,4]
+
+fig, axes = plt.subplots(1,3, figsize=(4*3, 3))
+ax = axes.ravel()
+
+# Plot each series individually with different colors
+markers = ['.', 'o', 's', '^', 'v', 'D', 'p', '*']
+for i, sid in enumerate(np.unique(series_id)):
+  mask = (series_id == sid) & (t > 1.0)
+  marker = markers[i]
+  ax[0].semilogy(t[mask], residual_p[mask], marker, label=f'N={sid:g}', alpha=0.7)
+  ax[1].semilogy(t[mask], residual_u[mask], marker, label=f'N={sid:g}', alpha=0.7)
+  ax[2].semilogy(t[mask], residual_T[mask], marker, label=f'N={sid:g}', alpha=0.7)
+
+xlabels = ['Pressure', 'Velocity', 'Temperature']
+for i in range(3):
+  ax[i].set_xlabel('Time')
+  ax[i].set_ylabel('Residual '+xlabels[i])
+ax[0].legend()
+
+plt.tight_layout()
+plt.savefig('plot_residuals.svg', dpi=150)
+~~~
+
+It is also possible to plot the performance metrics from the out file.
+
+~~~pythonplot Performance metrics from out file
+import numpy as np
+import matplotlib.pyplot as plt
+import re
+
+filename2 = 'out'
+
+# Parse the out file
+N_values = []
+real_time = []
+mpi_max_pct = []
+
+with open(filename2, 'r') as f:
+  lines = f.readlines()
+  i = 0
+  while i < len(lines):
+      line = lines[i].strip()
+      if line.endswith('var'):
+        match = re.search(r'([\d.]+)\s+real', line)
+        if match:
+          real_time.append(float(match.group(1)))          
+
+          # Check next line for MPI data
+          if i + 1 < len(lines):
+              mpi_line = lines[i + 1].strip()
+              mpi_match = re.search(r'max\s+[\d.]+\s+\(([\d.]+)%\)', mpi_line)
+              if mpi_match:
+                mpi_max_pct.append(float(mpi_match.group(1)))
+      i += 1
+
+MINLEVEL = 5
+N_values = [2**(MINLEVEL + i) for i in range(len(real_time))]
+
+# Convert to numpy arrays
+N_values = np.array(N_values)
+real_time = np.array(real_time)
+mpi_max_pct = np.array(mpi_max_pct)
+
+# Create plots
+fig, axes = plt.subplots(1, 2, figsize=(4*2, 3))
+ax = axes.ravel()
+ax[0].loglog(N_values, real_time, 'o-', markersize=8)
+ax[0].set_xlabel('Grid size N')
+ax[0].set_ylabel('Real time (s)')
+ax[0].set_xscale('log', base=2)
+
+ax[1].semilogx(N_values, mpi_max_pct, '^-', markersize=8)
+ax[1].set_xlabel('Grid size N')
+ax[1].set_ylabel('MPI max (%)')
+ax[1].set_xscale('log', base=2)
+
+plt.tight_layout()
+plt.savefig('plot_performance.svg', dpi=150)
+~~~
+
 */
 
-event logfile(t+=5.0; t <= tend){
-  fprintf(stderr, " residuals: %.5f \t %g %d %d \t %g %d %d \t %g %d %d \n", t, 
-    mgp.resa, mgp.i, mgp.nrelax, 
-    mgu.resa, mgu.i, mgu.nrelax, 
-    mgT.resa, mgT.i, mgT.nrelax);
+void mg_print (mgstats mg)
+{
+  if (mg.i > 0 && mg.resa > 0.)
+    fprintf (stderr, " \t - \t %d %g %g %g %d ", mg.i, mg.resb, mg.resa,
+	    mg.resb > 0 ? exp (log (mg.resb/mg.resa)/mg.i) : 0.,
+	    mg.nrelax);
 }
 
+event log (i++) {
+  fprintf (stderr, " %d %d %g ", N, i, t);
+  mg_print (mgp);
+  mg_print (mgu);
+  mg_print (mgT);
+  fprintf (stderr, "\n");
+  fflush (stderr);
+}
 /**
-We are going to  define two auxiliary functions: 
+We are going to define two auxiliary functions: 
  
 - Compute the stream-function $\psi(x,y)$ by solving a poisson problem for the
   vorticity.
@@ -198,7 +315,6 @@ void streamfunction (vector u, scalar psi) {
 - Compute (and save) the heat-fluxes and peak velocities
 */
 
-#include "global_nusselt.h"
 void compute_and_store_fluxes (vector u, scalar T){
   
   streamfunction (u, psi);
@@ -245,12 +361,12 @@ void save_fields (scalar T, vector u, int nf){
 
 /**
 
-Quantities are stored at the end of the simulation (`t=tend`) or when a
+Quantities are stored at the end of the simulation (`t=MAXTIME`) or when a
 steady-state is reached.
 
 */
 
-event is_steady (t += 1.0; t <= tend) {
+event is_steady (t += 1.0; t <= MAXTIME) {
   double deltau = change (u.x, un);
   if (deltau < 1e-6 && t > 10.0){
     compute_and_store_fluxes (u, T);
