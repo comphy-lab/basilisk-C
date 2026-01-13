@@ -88,7 +88,16 @@ bview3D --local=3000 dump
 **Platform:** All (affects MPI builds)
 **Files modified:** `src/output.h`
 
-Fixes uninitialized `header.n` values in the tree dump functionality. Previously, the grid dimensions were only set inside the `#if MULTIGRID_MPI` block, leaving them uninitialized for non-MPI builds or causing incorrect behavior.
+Fixes uninitialized `header.n` values in the MPI dump functionality. The MPI version of `dump()` only set grid dimensions inside `#if MULTIGRID_MPI`, while `restore()` reads `header.n` unconditionally.
+
+**Dump/Restore Compatibility (before patch):**
+
+| Dump | Restore | Status | Reason |
+|------|---------|--------|--------|
+| Serial | Serial | ✓ Works | Serial dump always sets `header.n` |
+| MPI | MPI | ✓ Works | Both use `MULTIGRID_MPI` path |
+| Serial | MPI | ✓ Works | Serial dump provides correct `header.n` |
+| MPI | Serial | ✗ **Fails** | MPI dump may leave `header.n` uninitialized; serial restore reads garbage |
 
 **What it fixes:**
 ```c
@@ -108,8 +117,8 @@ Fixes uninitialized `header.n` values in the tree dump functionality. Previously
 ```
 
 **Symptoms without patch:**
-- Incorrect or garbage values in dump file headers
-- Potential issues when restoring dump files
+- Garbage grid dimensions when restoring MPI-generated dumps in serial mode
+- `dimensions()` called with uninitialized values, causing incorrect grid setup
 
 ---
 
