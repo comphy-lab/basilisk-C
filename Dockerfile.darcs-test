@@ -10,9 +10,17 @@ FROM debian:bookworm
 # Prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Darcs from Debian repos
+# Install Darcs and build tooling (used for local install tests)
 RUN apt-get update \
-    && apt-get install -y darcs ca-certificates \
+    && apt-get install -y \
+        darcs \
+        ca-certificates \
+        build-essential \
+        patch \
+        gawk \
+        curl \
+        tar \
+        wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Verify installation

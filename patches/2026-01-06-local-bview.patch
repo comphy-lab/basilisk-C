@@ -1,11 +1,15 @@
 # Patch: local-bview
 # Author: Vatsal Sanjay <vatsal.sanjay@comphy-lab.org>
 # Date: 2026-01-06
-# Description: Add --local flag to bview for offline visualization
+# Description: Optional convenience: bview --local prints localhost client URL
 #
-# By default, bview uses the remote JavaScript client hosted at basilisk.fr.
-# This patch adds support for using a locally-hosted client instead, enabling
-# offline visualization and faster loading during development.
+# By default, bview prints a URL which uses the remote JavaScript client
+# (served from basilisk.ida.upmc.fr). You can still use a local client without
+# this patch by replacing the base URL and keeping the '?ws://...' query.
+#
+# This patch adds an optional runtime override (display_set_js_base) and a
+# --local/--local=PORT flag so the printed URL (and display.html redirect)
+# points at http://localhost:PORT/three.js/editor/index.html.
 #
 # New options:
 #   --local        Use localhost:8000 for the JavaScript client
@@ -13,6 +17,9 @@
 #
 # The WebSocket connection always connects back to the local bview process
 # regardless of where the JS client is served from.
+#
+# Note: comphy-lab GitHub Release tarballs intentionally exclude this patch.
+#       Enable via installer flag: --local-bview
 #
 # Related: https://github.com/comphy-lab/bview-local-client
 # Platform: All

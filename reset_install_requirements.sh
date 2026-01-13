@@ -11,5 +11,5 @@ if [[ -f "$NEW_SCRIPT" ]]; then
     exec "$NEW_SCRIPT" "$@"
 else
     # Remote execution (curl | bash) - fetch the new script
-    exec bash <(curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk.sh) "$@"
+    curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk.sh | bash -s -- "$@"
 fi

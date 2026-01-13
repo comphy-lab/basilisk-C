@@ -61,18 +61,20 @@ error: implicit declaration of function 'madvise'
 **Files modified:** `src/bview.c`, `src/display.h`
 **Related:** [bview-local-client](https://github.com/comphy-lab/bview-local-client)
 
-Adds support for using a locally-hosted JavaScript client with bview instead of the remote client at basilisk.fr. This enables offline visualization and faster loading times during development.
+Optional, aesthetic/convenience patch: adds `bview --local` / `bview --local=PORT` so the URL printed by `bview` (and the `display.html` redirect) points at a locally-served JavaScript client (e.g., `bview-local-client`).
+
+You can use `bview-local-client` **without** this patch by manually swapping the base URL host and keeping the `?ws://...` query string printed by `bview`.
 
 **What it adds:**
 - `--local` flag: Uses `localhost:8000` for the JavaScript client
 - `--local=PORT` flag: Uses `localhost:PORT` for custom port configurations
 - `display_set_js_base()` function for runtime URL override
-- Proper usage help with `-h` flag
+- Port validation + a usage message on invalid `--local` arguments
 
 **Usage:**
 ```shell
 # Start local client server first
-cd bview-local-client && python3 -m http.server 8000
+cd bview-local-client && ./deploy.sh
 
 # Then run bview with --local
 bview2D --local dump
@@ -80,6 +82,9 @@ bview3D --local=3000 dump
 ```
 
 **Note:** The `--local` flag only changes where the JavaScript client is served from. The WebSocket connection always connects back to your local bview process.
+`--local` hardcodes `localhost`; for viewing from another machine, use the manual URL approach and replace the base URL host with the correct IP/hostname.
+
+**Packaging note:** Our GitHub Release tarballs intentionally exclude this patch. To enable it during installation, pass `--local-bview` to the installer (including ref-locked installs with `--ref=...`).
 
 ---
 
