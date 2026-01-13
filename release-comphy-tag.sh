@@ -165,7 +165,13 @@ build_tarball() {
   print_cyan "Applying patches for $platform..."
   apply_patches_in_dir "$stage_dir/basilisk" "$stage_dir/patches"
 
-  tar -C "$stage_dir" -czf "$out_path" basilisk patches
+  # Use --no-xattrs and --no-mac-metadata on macOS to avoid extended attribute
+  # warnings when extracting on Linux (bsdtar-specific options)
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    tar -C "$stage_dir" --no-xattrs --no-mac-metadata -czf "$out_path" basilisk patches
+  else
+    tar -C "$stage_dir" -czf "$out_path" basilisk patches
+  fi
   print_green "Created: $out_path"
 
   rm -rf "$stage_dir"
