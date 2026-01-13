@@ -645,22 +645,13 @@ install_basilisk_ref_locked() {
         exit 1
     fi
 
-    local patches_dest=""
+    # Always use .comphy-patches for ref-locked installs (don't pollute repo root)
+    local patches_dest="$BASILISK_DIR/.comphy-patches"
     if [[ -d "$temp_dir/patches" ]]; then
-        if [[ ! -d "$PATCHES_DIR" ]]; then
-            if ! mv "$temp_dir/patches" "$PATCHES_DIR"; then
-                print_red "Error: Failed to move patches into $PATCHES_DIR"
-                rm -rf "$temp_dir"
-                exit 1
-            fi
-            patches_dest="$PATCHES_DIR"
-        else
-            patches_dest="$BASILISK_DIR/.comphy-patches"
-            if ! mv "$temp_dir/patches" "$patches_dest"; then
-                print_red "Error: Failed to move patches into $patches_dest"
-                rm -rf "$temp_dir"
-                exit 1
-            fi
+        if ! mv "$temp_dir/patches" "$patches_dest"; then
+            print_red "Error: Failed to move patches into $patches_dest"
+            rm -rf "$temp_dir"
+            exit 1
         fi
     else
         print_red "Error: Tarball is missing expected patches/ directory"
