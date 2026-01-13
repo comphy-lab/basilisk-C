@@ -105,7 +105,7 @@ event amplitude (i++) {
   fflush (fp_amp);
 
   // reference file
-  fprintf (stderr, "%.5e %.5e %.5e\n", t/TREF, ymax - MEANPOS, ymin - MEANPOS);
+  fprintf (stderr, "%.4e %.4e %.4e\n", t/TREF, ymax - MEANPOS, ymin - MEANPOS);
   fflush (stderr);
 }
 

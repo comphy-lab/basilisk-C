@@ -1,4 +1,4 @@
-pristine:39e101daae9708ecb09b179d81b8e14a96ba9bde49bbc12ba587d122106cbb57
+pristine:91a0980ec6ec418d533019793b4c8418ee1c80c34619ec64f3771a536012a022
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -2941,3 +2941,38 @@ Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**2026011119583
  Ignore-this: 3bedd31bb154b7e98a08e37e374d6c9ee28e64b136a9ccc7b32a96e422788bc0c6bedd9020838622
 ] 
 hash: 0000009918-e4f4316a6ca7a0f982e48020b8641bd72b07a7e8fc3afaf0ebc3b58b22b43895
+[Fix the ref in Tianyang's sandbox
+Jieyun Pan**20260112141744
+ Ignore-this: 318155712878c890f350c4f92a8a3d2b
+] 
+hash: 0000000575-c484785476c4daff7b036ea05fa86ab4267ec58bf0929f328592a46e2cd107ac
+[Minimize simulation time when studying convergence
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260112142326
+ Ignore-this: 4ffa4f89cae228e9a8b85bb8303626c80866a05dc0dfa18e7d0d43461be0e2ead2f500bc9457d618
+] 
+hash: 0000000271-6fa825d990af1063ba4c5972999cd2359dc839d490187ca5da1671eedacb208a
+[Added switch to a GFM formulation
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260112142518
+ Ignore-this: 5888be5684b7bbd0cba2d008b6d4ef6db84c1dc1d637d41fb29cf0385561125fdf971332fd5ff221
+] 
+hash: 0000000503-2a3752638e6ad6be1fb60c775c6c3ab1a629401edbec58250ec9949ae9cd01e4
+[Fix my ref.
+Jieyun Pan**20260112144449
+ Ignore-this: 19a444254f80846c29b4c212f05e48e8
+] 
+hash: 0000413368-172be8b2fa543252cdeea5d76ed80718dcf2da1fe0b264f70bce3e32da6e6a34
+[More general joule effect formulation
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260112155850
+ Ignore-this: ccd9e11d2224e5c1a30a954f63c22351252c3951d1098c358ca564877c5a3611c923e075d1547fa0
+] 
+hash: 0000002727-f9c7e5db9b6a403575c03fa826d983f6219428eeca10bae24113260440d09061
+[Creating new directory 'afkhami'
+afkhami <shahriar.afkhami@njit.edu>**20260112204909
+ Ignore-this: d1edfef2f59eab33018a15a2fd40f55ad1c4ce32f80e3f15f1e25776701a766a2530410342e315d0
+] 
+hash: 0000000591-5d82be87a870efa0fae0093444a72463ee8be2fdfe5ca1302757bb70b9d5ad09
+[creating new directory afkhami
+afkhami <shahriar.afkhami@njit.edu>**20260112205333
+ Ignore-this: a15f2939ca16683ea1b7c8b6d031d20d8dfa18a3db23b67fa8aea26a5102d8d827725166252202a1
+] 
+hash: 0000000370-8070c2f2cfa6f5d4fb8c47eee4f98bfccf864362b04e325520610172eb239dc7

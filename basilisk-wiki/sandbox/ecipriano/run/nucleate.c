@@ -26,7 +26,11 @@ be further investigated.
 */
 
 #include "axi.h"
-#include "navier-stokes/low-mach.h"
+#if JUMP
+# include "navier-stokes/velocity-jump.h"
+#else
+# include "navier-stokes/low-mach.h"
+#endif
 #include "contact.h"
 #include "two-phase.h"
 #include "tension.h"
@@ -69,19 +73,33 @@ just create a very small bubble at a specific time instant. */
 int maxlevel = 7;
 double R0 = 0.25e-3;
 
+/**
+We define a function that adds sources to the solid temperature equation. */
+
+void joule_effect (scalar i, scalar e) {
+  foreach_boundary (left)
+    e[] += 1e+4/Delta*cm[];
+  boundary ({i,e});
+}
+
 int main (void) {
 
   /**
   We set properties of the technical fluid FC-72, in liquid (1) and in gas (2)
-  phase. The solid (3) is sapphire. The solid heats up the fluid system through
-  Joule effect, whose thermal power is set and included in the solution of the
-  solid temperature equation. */
+  phase. The solid (3) is sapphire. */
 
   rho1 = 1653.9, rho2 = 7.02, rho3 = 4890.;
   mu1 = 5.49e-4, mu2 = 1.228e-5;
   cp1 = 1069.2, cp2 = 2034., cp3 = 410.;
   lambda1 = 5.44e-2, lambda2 = 0.024, lambda3 = 10.9;
-  dhev = 89.77e+3, qjoule = 1e4;
+  dhev = 89.77e+3;
+
+  /**
+  The solid heats up the fluid system through
+  Joule effect, whose thermal power is set and included in the solution of the
+  solid temperature equation. */
+
+  energy_sources = joule_effect;
 
   /**
   The interface is set to the saturation temperature (considering P = 500 mbar),
@@ -102,8 +120,12 @@ int main (void) {
 
   f.height = h;
 
+#if JUMP
+  nv = 2;
+#else
   nv = 1;
   pcm.consistent = true;
+#endif
 
   DT = 0.01;
   size (8e-3);
@@ -122,6 +144,7 @@ event init (i = 0) {
   solid (cw, fw, -(x - X0) + 5e-3 + 1e-5);
   foreach()
     f[] = 1.;
+  f.sigma = 0.;
 
   /**
   The boundary conditions for temperature are set here because the phase model

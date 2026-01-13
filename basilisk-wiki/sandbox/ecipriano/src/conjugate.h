@@ -50,12 +50,11 @@ event init (i = 0) {
 }
 ~~~
 
-## Limitations
+## Improvements
 
-1. This module was tested in cases where the solid boundary is a prolongation of
-the domain along the x coordinate. If the solid is a prolongation along y, then
-the AXI metrics must be mirrored in this file when solving the heat equation of
-the solid. */
+1. Consider using a better adaptation method for `TS`.
+1. Improve handling of Dirichlet boundary condition on the solid (embedded)
+boundary which is not in contact with a domain boundary. */
 
 /**
 ## Variables
@@ -89,8 +88,8 @@ double rho3 = 1., cp3 = 1., lambda3 = 1., qjoule = 0., TS0 = 300.;
 ### Heat transfer resistance
 
 We introduce the values of heat transfer resistance (from Hertz-Knudsen theory) and
-the accommodation coeffcient. The former is a function of the material properties,
-while the latter is a case-dependent factor. */
+the accommodation coefficient. The former is a function of the material
+properties, while the latter is a case-dependent factor. */
 
 double RInt = 0., acc = 1.;
 
@@ -168,7 +167,8 @@ event vof (i++) {
       fsg.x[] = fsl.x[];
 
     foreach_interfacial_plic (cw, F_ERR) {
-      double intgrad = ebmgrad (point, TS, fl, fg, fsl, fsg, false, 400., false);
+      double bc = conjugate_dirichlet;
+      double intgrad = ebmgrad (point, TS, fl, fg, fsl, fsg, false, bc, false);
       QSexp[] += lambda3*intgrad*dirac;
     }
   }
@@ -184,7 +184,15 @@ $$
 \nabla\cdot\left(\lambda_s\nabla T_s\right) + \dot{Q}_s
 $$
 
-considering metric factors and heat source/sink terms. */
+considering metric factors and heat source/sink terms. Explicit (`e`) and
+implicit (`i`) source terms to the solid diffusion equation can be added
+exploiting the function pointer `energy_sources` defined below. */
+
+void no_sources (scalar i, scalar e) {
+  return;
+}
+
+void (* energy_sources) (scalar i, scalar e) = no_sources;
 
 event tracer_diffusion (i++) {
   face_fraction (cw, fw);
@@ -213,9 +221,7 @@ event tracer_diffusion (i++) {
   foreach_face()
     D.x[] = fmm.x[]*lambda3;
 
-  foreach_boundary (left)
-    QSexp[] += qjoule/Delta*cm[];
-  boundary ({QSexp});
+  energy_sources (zeroc, QSexp);
 
   diffusion (TS, dt, D = D, theta = theta, r = QSexp);
 }
