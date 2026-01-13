@@ -307,6 +307,26 @@ read_lock_ref() {
     echo "$lock_ref"
 }
 
+read_lock_os() {
+    local lock_file="$1"
+    local lock_os=""
+
+    if [[ ! -f "$lock_file" ]]; then
+        echo ""
+        return 0
+    fi
+
+    while IFS= read -r line; do
+        case "$line" in
+            os=*)
+                lock_os="${line#os=}"
+                ;;
+        esac
+    done < "$lock_file"
+
+    echo "$lock_os"
+}
+
 write_lock_stamp() {
     local lock_file="$1"
     local ref="$2"
@@ -335,6 +355,7 @@ write_lock_stamp() {
 
     {
         printf "ref=%s\n" "$ref"
+        printf "os=%s\n" "$([[ "$OSTYPE" == "darwin"* ]] && echo "darwin" || echo "linux")"
         printf "created_utc=%s\n" "$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)"
         printf "local_bview=%s\n" "$apply_local_bview"
         printf "patches_applied=%s\n" "${applied_patches[*]}"
@@ -862,6 +883,9 @@ else
     print_cyan "Using existing basilisk installation..."
     if [[ "$MODE" == "4" ]]; then
         local_lock_ref="$(read_lock_ref "$BASILISK_DIR/.comphy-lock")"
+        local_lock_os="$(read_lock_os "$BASILISK_DIR/.comphy-lock")"
+        current_os="$([[ "$OSTYPE" == "darwin"* ]] && echo "darwin" || echo "linux")"
+
         if [[ -z "$local_lock_ref" ]]; then
             print_red "Error: Existing $BASILISK_DIR is not ref-locked (missing .comphy-lock)."
             print_red "Run with --hard (or remove $BASILISK_DIR) to install ref-locked."
@@ -871,6 +895,15 @@ else
             print_red "Error: Existing $BASILISK_DIR is locked to ref '$local_lock_ref' but you requested '$REF'."
             print_red "Run with --hard to reinstall the requested ref."
             exit 1
+        fi
+
+        # Auto-reinstall on OS mismatch
+        if [[ -n "$local_lock_os" ]] && [[ "$local_lock_os" != "$current_os" ]]; then
+            print_yellow "OS mismatch detected: installation was built on '$local_lock_os', current OS is '$current_os'."
+            print_cyan "Auto-reinstalling for current OS..."
+            rm -rf "$BASILISK_DIR"
+            install_basilisk_ref_locked "$REF" "$BASILISK_DIR/.comphy-lock"
+            build_basilisk
         fi
     fi
     if [[ ! -d "$BASILISK_SRC_DIR" ]]; then

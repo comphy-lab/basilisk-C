@@ -160,6 +160,26 @@ read_lock_ref() {
   echo "$lock_ref"
 }
 
+read_lock_os() {
+  local lock_file="$1"
+  local lock_os=""
+
+  if [[ ! -f "$lock_file" ]]; then
+    echo ""
+    return 0
+  fi
+
+  while IFS= read -r line; do
+    case "$line" in
+      os=*)
+        lock_os="${line#os=}"
+        ;;
+    esac
+  done < "$lock_file"
+
+  echo "$lock_os"
+}
+
 apply_patches_from_dir() {
   local target_dir="$1"
   local patches_dir="$2"
@@ -239,6 +259,7 @@ write_lock_stamp() {
 
   {
     printf "ref=%s\n" "$ref"
+    printf "os=%s\n" "$([[ "$OSTYPE" == "darwin"* ]] && echo "darwin" || echo "linux")"
     printf "created_utc=%s\n" "$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)"
     printf "local_bview=%s\n" "$apply_local_bview"
     printf "patches_applied=%s\n" "${applied_patches[*]}"
@@ -373,6 +394,17 @@ LOCK_FILE="$BASILISK_DIR/.comphy-lock"
 check_prerequisites
 
 rm -rf "$PROJECT_CONFIG"
+
+# Check for OS mismatch and auto-reinstall if needed
+if [[ -d "$BASILISK_DIR" ]] && [[ -f "$LOCK_FILE" ]] && [[ "$HARD_RESET" == false ]]; then
+  local_lock_os="$(read_lock_os "$LOCK_FILE")"
+  current_os="$([[ "$OSTYPE" == "darwin"* ]] && echo "darwin" || echo "linux")"
+  if [[ -n "$local_lock_os" ]] && [[ "$local_lock_os" != "$current_os" ]]; then
+    print_yellow "OS mismatch detected: installation was built on '$local_lock_os', current OS is '$current_os'."
+    print_cyan "Auto-reinstalling for current OS..."
+    HARD_RESET=true
+  fi
+fi
 
 if [[ "$HARD_RESET" == true ]] || [[ ! -d "$BASILISK_DIR" ]]; then
   print_cyan "Installing basilisk (ref-locked)..."
