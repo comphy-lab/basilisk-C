@@ -22,6 +22,7 @@ TAG=""
 DRY_RUN=false
 SKIP_TESTS=false
 FORCE=false
+TEST_ONLY=false
 
 usage() {
   cat <<'EOF'
@@ -31,6 +32,7 @@ Options:
   --tag=TAG        Release tag name (default: vYYYY-MM-DD in UTC)
   --skip-tests     Skip install tests
   --dry-run        Print actions without pushing/tagging/releasing
+  --test-only      Run install tests only (no commits, tags, or releases)
   --force          Delete/recreate local tag if it exists (still fails if remote tag exists)
   --help, -h       Show this help message
 
@@ -55,6 +57,9 @@ for arg in "$@"; do
       ;;
     --force)
       FORCE=true
+      ;;
+    --test-only)
+      TEST_ONLY=true
       ;;
     --help|-h)
       usage
@@ -209,7 +214,9 @@ require_tool git
 require_tool darcs
 require_tool tar
 require_tool patch
-require_tool gh
+if [[ "$TEST_ONLY" == false ]]; then
+  require_tool gh
+fi
 
 if [[ "$SKIP_TESTS" == false ]]; then
   require_tool make
@@ -221,44 +228,47 @@ if [[ "$SKIP_TESTS" == false ]]; then
   fi
 fi
 
-if ! gh auth status >/dev/null 2>&1; then
-  print_red "Error: gh is not authenticated. Run: gh auth login"
-  exit 1
-fi
-
-if [[ -n "$(git status --porcelain)" ]]; then
-  print_red "Error: Working tree not clean. Commit/stash changes before releasing."
-  git status --porcelain
-  exit 1
-fi
-
-branch="$(git rev-parse --abbrev-ref HEAD)"
-if [[ "$branch" != "main" ]]; then
-  print_red "Error: Must be on 'main' branch to release (current: $branch)"
-  exit 1
-fi
-
-if ! git remote get-url origin >/dev/null 2>&1; then
-  print_red "Error: Missing 'origin' git remote"
-  exit 1
-fi
-
-print_cyan "Fetching origin..."
-git fetch origin --tags
-git pull --ff-only origin main
-
-if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
-  print_red "Error: Tag already exists on origin: $TAG"
-  exit 1
-fi
-
-if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
-  if [[ "$FORCE" == true ]]; then
-    print_cyan "Deleting existing local tag: $TAG"
-    git tag -d "$TAG"
-  else
-    print_red "Error: Tag already exists locally: $TAG"
+# Release-specific validations (skipped in test-only mode)
+if [[ "$TEST_ONLY" == false ]]; then
+  if ! gh auth status >/dev/null 2>&1; then
+    print_red "Error: gh is not authenticated. Run: gh auth login"
     exit 1
+  fi
+
+  if [[ -n "$(git status --porcelain)" ]]; then
+    print_red "Error: Working tree not clean. Commit/stash changes before releasing."
+    git status --porcelain
+    exit 1
+  fi
+
+  branch="$(git rev-parse --abbrev-ref HEAD)"
+  if [[ "$branch" != "main" ]]; then
+    print_red "Error: Must be on 'main' branch to release (current: $branch)"
+    exit 1
+  fi
+
+  if ! git remote get-url origin >/dev/null 2>&1; then
+    print_red "Error: Missing 'origin' git remote"
+    exit 1
+  fi
+
+  print_cyan "Fetching origin..."
+  git fetch origin --tags
+  git pull --ff-only origin main
+
+  if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null 2>&1; then
+    print_red "Error: Tag already exists on origin: $TAG"
+    exit 1
+  fi
+
+  if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+    if [[ "$FORCE" == true ]]; then
+      print_cyan "Deleting existing local tag: $TAG"
+      git tag -d "$TAG"
+    else
+      print_red "Error: Tag already exists locally: $TAG"
+      exit 1
+    fi
   fi
 fi
 
@@ -287,10 +297,17 @@ if [[ ! -d "$REPO_ROOT/basilisk-source/_darcs" ]]; then
 fi
 (cd "$REPO_ROOT/basilisk-source" && darcs pull --all)
 
-if [[ -n "$(git status --porcelain basilisk-source)" ]]; then
-  print_cyan "Committing basilisk-source changes..."
-  git add basilisk-source
-  git commit -m "Update basilisk-source from Darcs ($TAG)"
+# In test-only mode, don't commit - just note if there are changes
+if [[ "$TEST_ONLY" == true ]]; then
+  if [[ -n "$(git status --porcelain basilisk-source)" ]]; then
+    print_cyan "Note: basilisk-source has uncommitted changes from darcs (not committing in test-only mode)"
+  fi
+else
+  if [[ -n "$(git status --porcelain basilisk-source)" ]]; then
+    print_cyan "Committing basilisk-source changes..."
+    git add basilisk-source
+    git commit -m "Update basilisk-source from Darcs ($TAG)"
+  fi
 fi
 
 if [[ "$SKIP_TESTS" == false ]]; then
@@ -300,6 +317,11 @@ if [[ "$SKIP_TESTS" == false ]]; then
   if [[ "$OSTYPE" == "darwin"* ]]; then
     run_linux_install_test_in_docker
   fi
+fi
+
+if [[ "$TEST_ONLY" == true ]]; then
+  print_green "✅ All install tests passed!"
+  exit 0
 fi
 
 artifacts_dir="$(mktemp -d 2>/dev/null || mktemp -d -t basilisk-artifacts)"
