@@ -1,0 +1,14 @@
+diff -rN -u old-basilisk/src/output.h new-basilisk/src/output.h
+--- old-basilisk/src/output.h	2026-01-13 00:42:35
++++ new-basilisk/src/output.h	2026-01-13 00:42:45
+@@ -1166,9 +1166,9 @@
+   struct DumpHeader header = { t, list_len(slist), iter, depth(), npe(),
+ 			       dump_version };
+ 
+-#if MULTIGRID_MPI
+   foreach_dimension()
+     header.n.x = Dimensions.x;
++#if MULTIGRID_MPI
+   MPI_Barrier (MPI_COMM_WORLD);
+ #endif
+ 
