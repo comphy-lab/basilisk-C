@@ -262,6 +262,24 @@ if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
   fi
 fi
 
+if [[ "$DRY_RUN" == true ]]; then
+  print_cyan "===== DRY RUN MODE ====="
+  print_cyan "Would perform the following actions:"
+  echo "  - Sync basilisk-source from upstream darcs"
+  echo "  - Commit any basilisk-source changes"
+  if [[ "$SKIP_TESTS" == false ]]; then
+    echo "  - Run host install tests"
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+      echo "  - Run Linux install tests in Docker"
+    fi
+  fi
+  echo "  - Build basilisk-mac.tar.gz and basilisk-linux.tar.gz"
+  echo "  - Create tag: $TAG"
+  echo "  - Push to origin"
+  echo "  - Create GitHub Release with assets"
+  exit 0
+fi
+
 print_cyan "Syncing basilisk-source from upstream darcs..."
 if [[ ! -d "$REPO_ROOT/basilisk-source/_darcs" ]]; then
   print_red "Error: Missing darcs repo at basilisk-source/_darcs"
@@ -312,13 +330,6 @@ Install (ref-locked):
 - \`./reset_install_basilisk.sh --mode=4 --ref=$TAG --hard\`
 - \`./reset_install_basilisk-ref-locked.sh --ref=$TAG --hard\`
 EOF
-
-if [[ "$DRY_RUN" == true ]]; then
-  print_cyan "Dry run: would create tag, push, and publish GitHub release:"
-  echo "  tag: $TAG"
-  echo "  assets: $mac_tar $linux_tar $mac_tar.sha256 $linux_tar.sha256"
-  exit 0
-fi
 
 print_cyan "Creating annotated tag: $TAG"
 git tag -a "$TAG" -m "comphy-lab Basilisk release $TAG"
