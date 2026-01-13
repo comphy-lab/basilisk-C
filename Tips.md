@@ -245,7 +245,7 @@ These templates help us gather all the necessary information to diagnose and fix
 
 ## Using bview with a Local Client
 
-By default, `bview` uses the remote JavaScript client hosted at basilisk.fr for 3D visualization. For offline development or faster loading, you can use a local client instead.
+By default, `bview2D`/`bview3D` prints a URL which uses the remote JavaScript client (served from `basilisk.ida.upmc.fr`). For offline use or faster loading, you can serve the client locally using [bview-local-client](https://github.com/comphy-lab/bview-local-client).
 
 ### Setup
 
@@ -253,15 +253,37 @@ By default, `bview` uses the remote JavaScript client hosted at basilisk.fr for 
    ```shell
    git clone https://github.com/comphy-lab/bview-local-client.git
    cd bview-local-client
-   # Start a local HTTP server (e.g., using Python)
-   python3 -m http.server 8000
+   ./deploy.sh  # serves http://localhost:8000/three.js/editor/index.html
    ```
 
-2. Run bview with the `--local` flag:
+### Option A: No Basilisk patch (manual URL)
+
+This works with upstream Basilisk as-is: run `bview` normally, then use the local client URL and keep the `?ws://...` part from the printed output.
+
+```shell
+bview2D dump
+# Example output:
+#   http://basilisk.ida.upmc.fr/three.js/editor/index.html?ws://your-hostname:7101
+
+# Open the local client and append the websocket query:
+#   http://localhost:8000/three.js/editor/index.html?ws://your-hostname:7101
+```
+
+### Option B: Optional convenience patch (prints localhost URL)
+
+`patches/2026-01-06-local-bview.patch` is an optional, aesthetic/convenience patch: it only changes the JavaScript client base URL that `bview` prints (and what `display.html` redirects to). It does **not** change the websocket connection (which always connects back to your local `bview` process).
+
+To enable it, install Basilisk with `--local-bview` (not applied by default), then run `bview` with the `--local` flag:
    ```shell
+   # installer examples
+   ./reset_install_basilisk.sh --mode=1 --local-bview --hard
+   ./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --local-bview --hard
+
+   # usage
    bview2D --local dump      # Uses localhost:8000
    bview3D --local=3000 dump # Uses localhost:3000
    ```
+   **Note:** `--local` hardcodes `localhost`. If you want to open the visualization from another machine, use Option A and replace the base URL with the correct IP/hostname.
 
 ### How It Works
 
@@ -269,6 +291,8 @@ The visualization URL has two parts:
 - **HTTP server**: Serves the JavaScript 3D client (static files)
 - **WebSocket**: Connects back to your local bview process
 
-The `--local` flag only changes where the JS client is served from—the WebSocket always connects to your local bview process regardless.
+The local-bview patch only changes where the JS client is served from—the websocket always connects to your local bview process regardless.
+
+**Note:** Our GitHub Release tarballs (`basilisk-mac.tar.gz` / `basilisk-linux.tar.gz`) intentionally exclude `2026-01-06-local-bview.patch`. If you want `bview --local` with a ref-locked install, pass `--local-bview` so the installer downloads and applies the patch for that same `--ref`.
 
 For more details, see the [bview-local-client repository](https://github.com/comphy-lab/bview-local-client).

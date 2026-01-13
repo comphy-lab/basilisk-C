@@ -43,7 +43,7 @@ Basilisk C is a powerful open-source computational fluid dynamics (CFD) framewor
 - **Interactive Visualization**: Real-time 3D visualization using WebGL
 - **Memory Management**: Built-in memory tracing and profiling tools
 - **Extensible Architecture**: Modular design allowing easy addition of new physical models
-- **Local Visualization Server**: Support for offline 3D visualization using a [local bview client](https://github.com/comphy-lab/bview-local-client)
+- **Local Visualization Server**: Offline 3D visualization using a [local bview client](https://github.com/comphy-lab/bview-local-client) (manual URL works without patches; optional `--local-bview` installer flag enables `bview --local` convenience output — see `Tips.md`)
 
 ### Getting Started
 

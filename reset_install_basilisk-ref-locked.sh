@@ -52,15 +52,19 @@ Usage:
 Options:
   --help, -h      Show this help message
   --hard          Force reinstall (removes existing basilisk directory)
-  --local-bview   Apply the local-bview patch for localhost JavaScript client
+  --local-bview   Apply optional local-bview convenience patch (enables `bview --local` URL output for bview-local-client)
   --ref=REF       Required. GitHub Release tag in comphy-lab/basilisk-C
 
 Examples:
   ./reset_install_basilisk-ref-locked.sh --ref=v2026-01-13 --hard
+  ./reset_install_basilisk-ref-locked.sh --ref=v2026-01-13 --local-bview --hard
 
 Remote:
   curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=v2026-01-13 --hard
   curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | zsh  -s -- --ref=v2026-01-13 --hard
+
+Notes:
+  - GitHub Release tarballs intentionally exclude the local-bview patch; `--local-bview` downloads and applies it for the same `--ref`.
 EOF
 }
 

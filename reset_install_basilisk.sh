@@ -64,7 +64,7 @@ Usage: ./reset_install_basilisk.sh [OPTIONS]
 Options:
   --help, -h      Show this help message
   --hard          Force reinstall (removes existing basilisk directory)
-  --local-bview   Apply the local-bview patch for localhost JavaScript client
+  --local-bview   Apply optional local-bview convenience patch (enables `bview --local` URL output for bview-local-client)
   --mode=N        Select installation mode non-interactively (1-4)
   --ref=REF       Pinned tag (release) for mode 4 only
 
@@ -91,6 +91,11 @@ Examples:
   ./reset_install_basilisk.sh --mode=2 --hard    # Reinstall using wget
   ./reset_install_basilisk.sh --mode=1 --local-bview  # Include local-bview patch
   ./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --hard  # Ref-locked install (from release assets)
+  ./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --local-bview --hard  # Ref-locked + local-bview patch
+
+Notes:
+  - The local-bview patch is optional and not applied by default.
+  - GitHub Release tarballs intentionally exclude it; `--local-bview` downloads and applies the patch for the same `--ref`.
 
 For more information, visit: https://github.com/comphy-lab/basilisk-C
 EOF
