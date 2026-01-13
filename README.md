@@ -6,6 +6,25 @@
 
 <br>
 
+## Quick Start (Ref-Locked Installation)
+
+Download the installer:
+```bash
+curl -sLO https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk.sh && chmod +x reset_install_basilisk.sh
+```
+
+First-time install (creates `basilisk/` directory):
+```bash
+./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --hard
+```
+
+Subsequent runs (reuses existing `basilisk/` if same ref):
+```bash
+./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13
+```
+
+> **Note**: Replace `v2026-01-13` with the [latest release tag](https://github.com/comphy-lab/basilisk-C/releases).
+
 ## About This Fork
 
 This repository contains our fork of the Basilisk C codebase ([basilisk.fr](http://basilisk.fr)). We maintain this fork to track and document comphy-lab related bugs and issues. This is a development fork that will be frequently synced with the main Basilisk repository.
