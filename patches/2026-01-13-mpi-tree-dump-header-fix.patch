@@ -1,14 +1,30 @@
+# Patch: mpi-tree-dump-header-fix
+# Author: Vatsal Sanjay <vatsal.sanjay@comphy-lab.org>
+# Date: 2026-01-13
+# Description: Fix uninitialized header.n in tree dump for non-MPI builds
+#
+# The DumpHeader struct's `n` field (grid dimensions) was only being
+# initialized inside the #if MULTIGRID_MPI block, leaving it uninitialized
+# for non-MPI builds. This patch moves the dimension assignment outside
+# the conditional block so header.n is always properly set.
+#
+# Before: header.n only set when MULTIGRID_MPI is defined
+# After:  header.n set unconditionally, MPI_Barrier remains conditional
+#
+# Platform: All (affects MPI and non-MPI builds)
+# Files: src/output.h
+#
 diff -rN -u old-basilisk/src/output.h new-basilisk/src/output.h
 --- old-basilisk/src/output.h	2026-01-13 00:42:35
 +++ new-basilisk/src/output.h	2026-01-13 00:42:45
 @@ -1166,9 +1166,9 @@
    struct DumpHeader header = { t, list_len(slist), iter, depth(), npe(),
  			       dump_version };
- 
+
 -#if MULTIGRID_MPI
    foreach_dimension()
      header.n.x = Dimensions.x;
 +#if MULTIGRID_MPI
    MPI_Barrier (MPI_COMM_WORLD);
  #endif
- 
+

@@ -157,23 +157,39 @@ make -k
 make
 ```
 
-### About the Patch
+## Patches
 
-The `2025-11-03-macos-mman-compatibility.patch` fixes compilation issues on macOS by:
-- Defining missing memory mapping constants (`MAP_ANON`, `MAP_ANONYMOUS`)
-- Defining missing memory advice constants (`POSIX_MADV_DONTNEED`, `MADV_DONTNEED`)
-- Explicitly declaring the `madvise()` function
+Our fork maintains a set of patches in the `patches/` directory that fix issues or add features not yet available in upstream Basilisk. These patches are automatically applied by the installation scripts. For detailed information about each patch, see [`patches/README.md`](patches/README.md).
 
-**Credit**: Thanks to Peter Croxford for identifying this issue.
+### Available Patches
+
+| Patch | Platform | Description |
+|-------|----------|-------------|
+| `2025-11-03-macos-mman-compatibility.patch` | macOS | Fixes memory mapping compilation errors |
+| `2026-01-06-local-bview.patch` | All | Adds `--local` flag to bview for offline visualization |
+| `2026-01-13-mpi-tree-dump-header-fix.patch` | All | Fixes uninitialized header in MPI tree dump |
+
+### Applying Patches Manually
+
+If you need to apply patches manually to an existing Basilisk installation:
+
+```shell
+cd /path/to/basilisk
+curl -O https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/patches/PATCH_NAME.patch
+patch -p1 < PATCH_NAME.patch
+cd src && make clean && make
+```
 
 ## Repository Structure
 
-Our fork is organized with two main Darcs repositories:
+Our fork is organized as follows:
 
-- **basilisk-source/**: Contains the source code for Basilisk C
-- **basilisk-wiki/**: Contains the documentation and wiki content
+- **basilisk-source/**: Contains the source code for Basilisk C (synced from Darcs)
+- **basilisk-wiki/**: Contains the documentation and wiki content (synced from Darcs)
+- **patches/**: comphy-lab patches for bug fixes and enhancements
+- **bugs/**: Test cases and minimal reproductions for tracking issues
 
-Each directory is synchronized daily with the corresponding Darcs repository from basilisk.fr.
+The `basilisk-source/` and `basilisk-wiki/` directories are synchronized daily with the corresponding Darcs repositories from basilisk.fr.
 
 ## Reporting Issues
 

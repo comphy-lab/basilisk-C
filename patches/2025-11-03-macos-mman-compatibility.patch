@@ -1,3 +1,16 @@
+# Patch: macos-mman-compatibility
+# Author: comphy-lab (issue identified by Peter Croxford)
+# Date: 2025-11-03
+# Description: Fix macOS compilation errors for memory mapping functions
+#
+# The macOS SDK doesn't expose certain POSIX memory mapping constants and
+# function declarations that Basilisk expects. This patch adds the missing
+# definitions for MAP_ANON, MAP_ANONYMOUS, POSIX_MADV_DONTNEED, MADV_DONTNEED,
+# and explicitly declares the madvise() function.
+#
+# Platform: macOS only (guarded by #ifdef __APPLE__)
+# Files: src/ast/std/sys/mman.h
+#
 diff -rN -u old-basilisk/src/ast/std/sys/mman.h new-basilisk/src/ast/std/sys/mman.h
 --- old-basilisk/src/ast/std/sys/mman.h	2025-11-03 14:33:31
 +++ new-basilisk/src/ast/std/sys/mman.h	2025-11-03 14:33:31

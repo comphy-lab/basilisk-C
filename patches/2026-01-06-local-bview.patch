@@ -1,6 +1,26 @@
+# Patch: local-bview
+# Author: Vatsal Sanjay <vatsal.sanjay@comphy-lab.org>
+# Date: 2026-01-06
+# Description: Add --local flag to bview for offline visualization
+#
+# By default, bview uses the remote JavaScript client hosted at basilisk.fr.
+# This patch adds support for using a locally-hosted client instead, enabling
+# offline visualization and faster loading during development.
+#
+# New options:
+#   --local        Use localhost:8000 for the JavaScript client
+#   --local=PORT   Use localhost:PORT for custom port configurations
+#
+# The WebSocket connection always connects back to the local bview process
+# regardless of where the JS client is served from.
+#
+# Related: https://github.com/comphy-lab/bview-local-client
+# Platform: All
+# Files: src/bview.c, src/display.h
+#
 diff -rN -u old-basilisk/src/bview.c new-basilisk/src/bview.c
---- old-basilisk/src/bview.c	2026-01-07 09:03:52
-+++ new-basilisk/src/bview.c	2026-01-07 09:04:18
+--- old-basilisk/src/bview.c	2026-01-13 01:38:22
++++ new-basilisk/src/bview.c	2026-01-13 01:39:04
 @@ -2,7 +2,7 @@
  # Basilisk View "dump files" server
  
@@ -99,8 +119,8 @@ diff -rN -u old-basilisk/src/bview.c new-basilisk/src/bview.c
    fputc ('\n', stderr);
    display_url (stderr);
 diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
---- old-basilisk/src/display.h	2026-01-07 09:03:52
-+++ new-basilisk/src/display.h	2026-01-07 09:04:56
+--- old-basilisk/src/display.h	2026-01-13 01:38:22
++++ new-basilisk/src/display.h	2026-01-13 01:39:41
 @@ -69,6 +69,9 @@
  # define DISPLAY_JS "http://basilisk.ida.upmc.fr/three.js/editor/index.html"
  #endif
