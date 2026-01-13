@@ -299,15 +299,48 @@ if [[ ! -d "$BASILISK_SRC_DIR" ]]; then
     printf "\033[0;31mError: Expected $BASILISK_SRC_DIR to exist before writing .project_config\033[0m\n" >&2
     exit 1
 fi
-printf "export BASILISK=%s\n" "$BASILISK_SRC_DIR" > "$PROJECT_CONFIG"
-# Prepend BASILISK to PATH so Basilisk tools (qcc, etc.) take precedence
-printf "export PATH=\$BASILISK:\$PATH\n" >> "$PROJECT_CONFIG"
+{
+    printf 'export BASILISK="%s"\n' "$BASILISK_SRC_DIR"
+    cat <<'EOF'
+
+if [ ! -d "$BASILISK" ]; then
+  echo "Error: BASILISK directory not found: $BASILISK" >&2
+  return 1 2>/dev/null || exit 1
+fi
+
+# Ensure the repo-installed Basilisk takes precedence, without duplicating PATH
+_PATH=":$PATH:"
+_PATH="${_PATH//:$BASILISK:/:}"
+_PATH="${_PATH#:}"
+_PATH="${_PATH%:}"
+export PATH="$BASILISK${_PATH:+:$_PATH}"
+unset _PATH
+
+# Refresh command lookup cache (best-effort)
+hash -r 2>/dev/null || true
+rehash 2>/dev/null || true
+EOF
+} > "$PROJECT_CONFIG"
 
 source "$PROJECT_CONFIG"
 
 # Check if qcc is working properly
 echo ""
 printf "\033[0;36mChecking qcc installation...\033[0m\n"
+qcc_path="$(command -v qcc 2>/dev/null || true)"
+if [[ -z "$qcc_path" ]]; then
+    printf "\033[0;31mError: qcc not found on PATH after sourcing .project_config\033[0m\n" >&2
+    exit 1
+fi
+if [[ "$qcc_path" != /* ]]; then
+    printf "\033[0;31mError: qcc resolves to a non-path ('$qcc_path'). This is likely an alias/function.\033[0m\n" >&2
+    exit 1
+fi
+if [[ "$qcc_path" != "$BASILISK/"* ]]; then
+    printf "\033[0;31mError: qcc resolves to '$qcc_path' but expected it under '$BASILISK/'.\033[0m\n" >&2
+    printf "\033[0;31mThis usually means a global Basilisk install is taking precedence.\033[0m\n" >&2
+    exit 1
+fi
 if ! qcc --version > /dev/null 2>&1; then
     printf "\033[0;31mError: qcc is not working properly.\033[0m\n"
     if [[ "$OSTYPE" == "darwin"* ]]; then

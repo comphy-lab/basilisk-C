@@ -83,7 +83,7 @@ The workflow file is located at `.github/workflows/sync-darcs-repositories.yml`.
 
 ## Installing Basilisk
 
-We provide three installation scripts depending on your system and available tools:
+We provide four installation scripts depending on your system and available tools:
 
 ### Option 1: Using Darcs (macOS with Homebrew)
 
@@ -125,6 +125,45 @@ This script:
 
 **Requirements**: `wget`, `tar`, `make`, `gcc`, `gawk`
 
+### Option 4: Ref-Locked Install (Reproducible, HPC-friendly)
+
+Use this when you want to lock Basilisk + patches to a GitHub **Release tag** in `comphy-lab/basilisk-C`.
+
+```shell
+./reset_install_basilisk-ref-locked.sh --ref=v2026-01-13 --hard
+```
+
+Equivalent (using the unified installer):
+
+```shell
+./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --hard
+```
+
+This script:
+1. Downloads the OS-specific tarball attached to the Release tag (`basilisk-mac.tar.gz` or `basilisk-linux.tar.gz`)
+2. Builds Basilisk and writes a lock stamp to `basilisk/.comphy-lock`
+
+**Requirements**: `curl`, `tar`, `make`, `gcc`, `gawk` (plus `patch` only if using `--local-bview`)
+
+### Creating a Ref-Locked Release (Maintainers)
+
+This repo includes `release-comphy-tag.sh` to create a reproducible, ref-locked Release tag and publish OS-specific, pre-patched Basilisk source tarballs.
+
+```shell
+./release-comphy-tag.sh
+# or
+./release-comphy-tag.sh --tag=v2026-01-13
+```
+
+This script:
+1. Pulls the latest upstream Basilisk snapshot into `basilisk-source/` using `darcs`
+2. Runs install tests (`reset_install_basilisk.sh --mode=1 --hard`):
+   - macOS: tests macOS natively + Linux in Docker (`darcs-test` image)
+   - Linux: tests Linux natively
+3. Builds and uploads GitHub Release assets:
+   - `basilisk-mac.tar.gz` (+ `.sha256`): upstream snapshot + macOS + common patches (**local-bview not applied**)
+   - `basilisk-linux.tar.gz` (+ `.sha256`): upstream snapshot + common patches (**local-bview not applied**, macOS patches excluded)
+
 ### Clean Reinstall
 
 For any script, use the `--hard` flag to remove existing installation and start fresh:
@@ -135,6 +174,8 @@ For any script, use the `--hard` flag to remove existing installation and start 
 ./reset_install_basilisk-no-darcs.sh --hard
 # or
 ./reset_install_basilisk-no-darcs-no-git.sh --hard
+# or (ref-locked)
+./reset_install_basilisk-ref-locked.sh --ref=v2026-01-13 --hard
 ```
 
 ### Manual Installation
