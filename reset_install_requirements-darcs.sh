@@ -24,6 +24,7 @@ REPO_ROOT="$SCRIPT_DIR"
 PROJECT_CONFIG="$REPO_ROOT/.project_config"
 BASILISK_DIR="$REPO_ROOT/basilisk"
 BASILISK_SRC_DIR="$BASILISK_DIR/src"
+PATCHES_DIR="$REPO_ROOT/patches"
 
 # Function to check prerequisites
 check_prerequisites() {
@@ -128,10 +129,49 @@ install_basilisk() {
         exit 1
     fi
 
-    # Apply comphy-lab patches (macOS only)
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        echo "Downloading and applying comphy-lab patches..."
-        local patch_failed=false
+    # Apply comphy-lab patches
+    # Checks for local patches/ directory first, falls back to GitHub if not available
+    echo "\033[0;36mApplying comphy-lab patches...\033[0m"
+    local patch_failed=false
+
+    if [[ -d "$PATCHES_DIR" ]]; then
+        # Use local patches (useful for HPC/offline environments)
+        echo "\033[0;36mUsing local patches from: $PATCHES_DIR\033[0m"
+
+        # Get list of patch files sorted by name (YYYY-MM-DD format ensures chronological order)
+        local patch_files
+        patch_files=($(ls "$PATCHES_DIR"/*.patch 2>/dev/null | sort))
+
+        if [[ ${#patch_files[@]} -eq 0 ]]; then
+            echo "\033[0;33mWarning: No patches found in $PATCHES_DIR\033[0m"
+        else
+            for patch_file in "${patch_files[@]}"; do
+                local patch_name=$(basename "$patch_file")
+
+                # Skip local-bview patch unless --local-bview flag was provided
+                if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$LOCAL_BVIEW" != "true" ]]; then
+                    echo "  Skipping $patch_name (use --local-bview to apply)"
+                    continue
+                fi
+                # Skip macOS-specific patches on non-macOS systems
+                if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+                    echo "  Skipping $patch_name (macOS-specific patch)"
+                    continue
+                fi
+
+                echo "  Applying $patch_name..."
+                if patch -p1 < "$patch_file"; then
+                    echo "  \033[0;32m✓ Successfully applied $patch_name\033[0m"
+                else
+                    echo "  \033[0;31m✗ Failed to apply $patch_name\033[0m"
+                    patch_failed=true
+                fi
+            done
+        fi
+    else
+        # Fall back to downloading patches from GitHub (requires internet)
+        echo "\033[0;36mNo local patches/ directory found, downloading from GitHub...\033[0m"
+        echo "\033[0;33mNote: Internet connection required. For offline use, include patches/ directory.\033[0m"
 
         # Create temp directory for patches
         mkdir -p .patches_temp
@@ -144,7 +184,7 @@ install_basilisk() {
         PATCH_FILES=$(curl -s "$PATCHES_URL" | grep -o '"name": "[^"]*\.patch"' | sed 's/"name": "//;s/"//' | sort)
 
         if [[ -z "$PATCH_FILES" ]]; then
-            echo "\033[0;33mWarning: No patches found or unable to fetch patch list\033[0m"
+            echo "\033[0;33mWarning: No patches found or unable to fetch patch list (check internet connection)\033[0m"
         else
             # Download and apply each patch
             while read -r patch_file; do
@@ -152,6 +192,11 @@ install_basilisk() {
                     # Skip local-bview patch unless --local-bview flag was provided
                     if [[ "$patch_file" == *"-local-bview.patch" ]] && [[ "$LOCAL_BVIEW" != "true" ]]; then
                         echo "  Skipping $patch_file (use --local-bview to apply)"
+                        continue
+                    fi
+                    # Skip macOS-specific patches on non-macOS systems
+                    if [[ "$patch_file" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+                        echo "  Skipping $patch_file (macOS-specific patch)"
                         continue
                     fi
                     echo "  Downloading $patch_file..."
@@ -173,12 +218,13 @@ install_basilisk() {
 
         # Clean up
         rm -rf .patches_temp
-        echo ""
+    fi
 
-        if [[ "$patch_failed" == true ]]; then
-            echo "\033[0;31mError: Failed to apply comphy-lab patches in $BASILISK_DIR\033[0m"
-            exit 1
-        fi
+    echo ""
+
+    if [[ "$patch_failed" == true ]]; then
+        echo "\033[0;31mError: Failed to apply comphy-lab patches in $BASILISK_DIR\033[0m"
+        exit 1
     fi
 
     if ! cd "$BASILISK_SRC_DIR"; then

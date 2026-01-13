@@ -24,6 +24,7 @@ REPO_ROOT="$SCRIPT_DIR"
 PROJECT_CONFIG="$REPO_ROOT/.project_config"
 BASILISK_DIR="$REPO_ROOT/basilisk"
 BASILISK_SRC_DIR="$BASILISK_DIR/src"
+PATCHES_DIR="$REPO_ROOT/patches"
 
 # Function to check prerequisites
 check_prerequisites() {
@@ -109,42 +110,82 @@ check_prerequisites() {
     fi
 }
 
-# Function to apply comphy-lab patches (macOS only)
+# Function to apply comphy-lab patches
+# Checks for local patches/ directory first, falls back to GitHub if not available
 apply_patches() {
     local target_dir="$1"
     local apply_local_bview="${2:-false}"
     local patch_failed=false
 
-    if [[ "$OSTYPE" != "darwin"* ]]; then
-        # Patches are macOS-specific, skip on other platforms
-        return 0
-    fi
-
     printf "\033[0;36mApplying comphy-lab patches...\033[0m\n"
 
-    # Create temp directory for patches
-    mkdir -p "$target_dir/.patches_temp"
+    # Check for local patches directory first (useful for HPC/offline environments)
+    if [[ -d "$PATCHES_DIR" ]]; then
+        printf "\033[0;36mUsing local patches from: $PATCHES_DIR\033[0m\n"
 
-    # GitHub URLs for patches
-    local PATCHES_URL="https://api.github.com/repos/comphy-lab/basilisk-C/contents/patches"
-    local RAW_BASE_URL="https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/patches"
+        # Get list of patch files sorted by name (YYYY-MM-DD format ensures chronological order)
+        local patch_files
+        patch_files=($(ls "$PATCHES_DIR"/*.patch 2>/dev/null | sort))
 
-    # Get list of patch files (sorted by name for chronological order due to YYYY-MM-DD format)
-    local PATCH_FILES
-    PATCH_FILES=$(curl -s "$PATCHES_URL" | grep -o '"name": "[^"]*\.patch"' | sed 's/"name": "//;s/"//' | sort)
+        if [[ ${#patch_files[@]} -eq 0 ]]; then
+            printf "\033[0;33mWarning: No patches found in $PATCHES_DIR\033[0m\n"
+        else
+            for patch_file in "${patch_files[@]}"; do
+                local patch_name=$(basename "$patch_file")
 
-    if [[ -z "$PATCH_FILES" ]]; then
-        printf "\033[0;33mWarning: No patches found or unable to fetch patch list\033[0m\n"
-    else
-        # Download and apply each patch
-        while read -r patch_file; do
-            if [[ -n "$patch_file" ]]; then
                 # Skip local-bview patch unless --local-bview flag was provided
-                if [[ "$patch_file" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-                    echo "  Skipping $patch_file (use --local-bview to apply)"
+                if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
+                    echo "  Skipping $patch_name (use --local-bview to apply)"
                     continue
                 fi
-                echo "  Downloading $patch_file..."
+                # Skip macOS-specific patches on non-macOS systems
+                if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+                    echo "  Skipping $patch_name (macOS-specific patch)"
+                    continue
+                fi
+
+                echo "  Applying $patch_name..."
+                if (cd "$target_dir" && patch -p1 < "$patch_file"); then
+                    printf "  \033[0;32m✓ Successfully applied $patch_name\033[0m\n"
+                else
+                    printf "  \033[0;31m✗ Failed to apply $patch_name\033[0m\n"
+                    patch_failed=true
+                fi
+            done
+        fi
+    else
+        # Fall back to downloading patches from GitHub (requires internet)
+        printf "\033[0;36mNo local patches/ directory found, downloading from GitHub...\033[0m\n"
+        printf "\033[0;33mNote: Internet connection required. For offline use, include patches/ directory.\033[0m\n"
+
+        # Create temp directory for patches
+        mkdir -p "$target_dir/.patches_temp"
+
+        # GitHub URLs for patches
+        local PATCHES_URL="https://api.github.com/repos/comphy-lab/basilisk-C/contents/patches"
+        local RAW_BASE_URL="https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/patches"
+
+        # Get list of patch files (sorted by name for chronological order due to YYYY-MM-DD format)
+        local PATCH_FILES
+        PATCH_FILES=$(curl -s "$PATCHES_URL" | grep -o '"name": "[^"]*\.patch"' | sed 's/"name": "//;s/"//' | sort)
+
+        if [[ -z "$PATCH_FILES" ]]; then
+            printf "\033[0;33mWarning: No patches found or unable to fetch patch list (check internet connection)\033[0m\n"
+        else
+            # Download and apply each patch
+            while read -r patch_file; do
+                if [[ -n "$patch_file" ]]; then
+                    # Skip local-bview patch unless --local-bview flag was provided
+                    if [[ "$patch_file" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
+                        echo "  Skipping $patch_file (use --local-bview to apply)"
+                        continue
+                    fi
+                    # Skip macOS-specific patches on non-macOS systems
+                    if [[ "$patch_file" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+                        echo "  Skipping $patch_file (macOS-specific patch)"
+                        continue
+                    fi
+                    echo "  Downloading $patch_file..."
                     if curl -s -f "$RAW_BASE_URL/$patch_file" -o "$target_dir/.patches_temp/$patch_file"; then
                         echo "  Applying $patch_file..."
                         if (cd "$target_dir" && patch -p1 < ".patches_temp/$patch_file"); then
@@ -158,11 +199,13 @@ apply_patches() {
                         patch_failed=true
                     fi
                 fi
-        done <<< "$PATCH_FILES"
+            done <<< "$PATCH_FILES"
+        fi
+
+        # Clean up
+        rm -rf "$target_dir/.patches_temp"
     fi
 
-    # Clean up
-    rm -rf "$target_dir/.patches_temp"
     echo ""
 
     if [[ "$patch_failed" == true ]]; then

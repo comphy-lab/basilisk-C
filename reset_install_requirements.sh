@@ -251,55 +251,97 @@ select_mode() {
 # Patch application functions
 # ============================================================================
 
+# Checks for local patches/ directory first, falls back to GitHub if not available
 apply_patches_github() {
     local target_dir="$1"
     local apply_local_bview="${2:-false}"
     local patch_failed=false
 
-    if [[ "$OSTYPE" != "darwin"* ]]; then
-        # Patches are macOS-specific, skip on other platforms
-        return 0
-    fi
+    print_cyan "Applying comphy-lab patches..."
 
-    print_cyan "Applying comphy-lab patches from GitHub..."
+    # Check for local patches directory first (useful for HPC/offline environments)
+    if [[ -d "$PATCHES_DIR" ]]; then
+        print_cyan "Using local patches from: $PATCHES_DIR"
 
-    # Create temp directory for patches
-    mkdir -p "$target_dir/.patches_temp"
+        # Get list of patch files sorted by name (YYYY-MM-DD format ensures chronological order)
+        local patch_files
+        patch_files=($(ls "$PATCHES_DIR"/*.patch 2>/dev/null | sort))
 
-    # Get list of patch files (sorted by name for chronological order due to YYYY-MM-DD format)
-    local PATCH_FILES
-    PATCH_FILES=$(curl -s "$PATCHES_API_URL" | grep -o '"name": "[^"]*\.patch"' | sed 's/"name": "//;s/"//' | sort)
+        if [[ ${#patch_files[@]} -eq 0 ]]; then
+            print_yellow "Warning: No patches found in $PATCHES_DIR"
+        else
+            for patch_file in "${patch_files[@]}"; do
+                local patch_name=$(basename "$patch_file")
 
-    if [[ -z "$PATCH_FILES" ]]; then
-        print_yellow "Warning: No patches found or unable to fetch patch list"
-    else
-        # Download and apply each patch
-        while read -r patch_file; do
-            if [[ -n "$patch_file" ]]; then
                 # Skip local-bview patch unless --local-bview flag was provided
-                if [[ "$patch_file" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-                    echo "  Skipping $patch_file (use --local-bview to apply)"
+                if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
+                    echo "  Skipping $patch_name (use --local-bview to apply)"
                     continue
                 fi
-                echo "  Downloading $patch_file..."
-                if curl -s -f "$PATCHES_RAW_URL/$patch_file" -o "$target_dir/.patches_temp/$patch_file"; then
-                    echo "  Applying $patch_file..."
-                    if (cd "$target_dir" && patch -p1 < ".patches_temp/$patch_file"); then
-                        print_green "  ✓ Successfully applied $patch_file"
-                    else
-                        print_red "  ✗ Failed to apply $patch_file"
-                        patch_failed=true
-                    fi
+                # Skip macOS-specific patches on non-macOS systems
+                if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+                    echo "  Skipping $patch_name (macOS-specific patch)"
+                    continue
+                fi
+
+                echo "  Applying $patch_name..."
+                if (cd "$target_dir" && patch -p1 < "$patch_file"); then
+                    print_green "  ✓ Successfully applied $patch_name"
                 else
-                    print_red "  ✗ Failed to download $patch_file"
+                    print_red "  ✗ Failed to apply $patch_name"
                     patch_failed=true
                 fi
-            fi
-        done <<< "$PATCH_FILES"
+            done
+        fi
+    else
+        # Fall back to downloading patches from GitHub (requires internet)
+        print_cyan "No local patches/ directory found, downloading from GitHub..."
+        print_yellow "Note: Internet connection required. For offline use, include patches/ directory."
+
+        # Create temp directory for patches
+        mkdir -p "$target_dir/.patches_temp"
+
+        # Get list of patch files (sorted by name for chronological order due to YYYY-MM-DD format)
+        local PATCH_FILES
+        PATCH_FILES=$(curl -s "$PATCHES_API_URL" | grep -o '"name": "[^"]*\.patch"' | sed 's/"name": "//;s/"//' | sort)
+
+        if [[ -z "$PATCH_FILES" ]]; then
+            print_yellow "Warning: No patches found or unable to fetch patch list (check internet connection)"
+        else
+            # Download and apply each patch
+            while read -r patch_file; do
+                if [[ -n "$patch_file" ]]; then
+                    # Skip local-bview patch unless --local-bview flag was provided
+                    if [[ "$patch_file" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
+                        echo "  Skipping $patch_file (use --local-bview to apply)"
+                        continue
+                    fi
+                    # Skip macOS-specific patches on non-macOS systems
+                    if [[ "$patch_file" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+                        echo "  Skipping $patch_file (macOS-specific patch)"
+                        continue
+                    fi
+                    echo "  Downloading $patch_file..."
+                    if curl -s -f "$PATCHES_RAW_URL/$patch_file" -o "$target_dir/.patches_temp/$patch_file"; then
+                        echo "  Applying $patch_file..."
+                        if (cd "$target_dir" && patch -p1 < ".patches_temp/$patch_file"); then
+                            print_green "  ✓ Successfully applied $patch_file"
+                        else
+                            print_red "  ✗ Failed to apply $patch_file"
+                            patch_failed=true
+                        fi
+                    else
+                        print_red "  ✗ Failed to download $patch_file"
+                        patch_failed=true
+                    fi
+                fi
+            done <<< "$PATCH_FILES"
+        fi
+
+        # Clean up
+        rm -rf "$target_dir/.patches_temp"
     fi
 
-    # Clean up
-    rm -rf "$target_dir/.patches_temp"
     echo ""
 
     if [[ "$patch_failed" == true ]]; then
