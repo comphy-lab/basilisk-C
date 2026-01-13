@@ -88,7 +88,7 @@ We provide three installation scripts depending on your system and available too
 ### Option 1: Using Darcs (macOS with Homebrew)
 
 ```shell
-./reset_install_requirements.sh
+./reset_install_basilisk.sh
 ```
 
 This script:
@@ -102,7 +102,7 @@ This script:
 ### Option 2: Using Git (Recommended for most users)
 
 ```shell
-./reset_install_requirements-no-darcs.sh
+./reset_install_basilisk-no-darcs.sh
 ```
 
 This script:
@@ -115,7 +115,7 @@ This script:
 ### Option 3: Using wget/tar (No version control needed)
 
 ```shell
-./reset_install_requirements-no-darcs-no-git.sh
+./reset_install_basilisk-no-darcs-no-git.sh
 ```
 
 This script:
@@ -130,11 +130,11 @@ This script:
 For any script, use the `--hard` flag to remove existing installation and start fresh:
 
 ```shell
-./reset_install_requirements.sh --hard
+./reset_install_basilisk.sh --hard
 # or
-./reset_install_requirements-no-darcs.sh --hard
+./reset_install_basilisk-no-darcs.sh --hard
 # or
-./reset_install_requirements-no-darcs-no-git.sh --hard
+./reset_install_basilisk-no-darcs-no-git.sh --hard
 ```
 
 ### Manual Installation
