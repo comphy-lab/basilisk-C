@@ -262,8 +262,8 @@ write_lock_stamp() {
     printf "os=%s\n" "$([[ "$OSTYPE" == "darwin"* ]] && echo "darwin" || echo "linux")"
     printf "created_utc=%s\n" "$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)"
     printf "local_bview=%s\n" "$apply_local_bview"
-    printf "patches_applied=%s\n" "${applied_patches[*]}"
-    printf "patches_skipped=%s\n" "${skipped_patches[*]}"
+    printf "patches_applied=%s\n" "${applied_patches[*]:-}"
+    printf "patches_skipped=%s\n" "${skipped_patches[*]:-}"
   } > "$lock_file"
 }
 
