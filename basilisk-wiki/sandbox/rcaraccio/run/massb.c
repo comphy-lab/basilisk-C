@@ -412,7 +412,6 @@ set terminal svg size 450, 450
 #set terminal epslatex size 3.6, 3.6 color colortext
 set output "massb-shrink-map.svg"
 set pm3d map interpolate 3,3
-load "/root/gnuplot-palettes/jet.pal"
 
 set multiplot
 
@@ -443,7 +442,6 @@ set terminal svg size 450, 450
 #set terminal epslatex size 3.6, 3.6 color colortext
 set output "massb-swelling-map.svg"
 set pm3d map interpolate 0,0
-load "/root/gnuplot-palettes/jet.pal"
 
 set multiplot
 
@@ -473,8 +471,6 @@ set terminal svg size 450, 450
 #set terminal epslatex size 3.6, 3.6 color colortext
 set output "massb-smooth-map.svg"
 set pm3d map interpolate 3,3
-#load "/root/gnuplot-palettes/ylgn.pal"
-load "/root/gnuplot-palettes/jet.pal"
 
 set multiplot
 
@@ -505,8 +501,6 @@ set terminal svg size 450, 450
 #set terminal epslatex size 3.6, 3.6 color colortext
 set output "massb-init-map.svg"
 set pm3d map interpolate 0,0
-#load "/root/gnuplot-palettes/ylgn.pal"
-load "/root/gnuplot-palettes/jet.pal"
 
 set multiplot
 

@@ -29,6 +29,7 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
+* [Multigrid solver seems to cause MPI errors with axi.h](axi_mg_text.c)
 * [Limited timer resolution can cause a crash](too_fast.c)
 * [No-slip condition violated for viscous Stokes flow with embedded boundary](marginal_embed_2.c)
 * [Vertex scalar: refinement of the vertex scalar on the block boundary for MPI run is not correct](my_adapt_bug.c)

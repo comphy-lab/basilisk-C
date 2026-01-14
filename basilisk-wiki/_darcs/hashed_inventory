@@ -1,4 +1,4 @@
-pristine:91a0980ec6ec418d533019793b4c8418ee1c80c34619ec64f3771a536012a022
+pristine:8290ed08749864eeaf7be68e92a17ccc363d034a7764c77b4a54f52e08065128
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -2976,3 +2976,78 @@ afkhami <shahriar.afkhami@njit.edu>**20260112205333
  Ignore-this: a15f2939ca16683ea1b7c8b6d031d20d8dfa18a3db23b67fa8aea26a5102d8d827725166252202a1
 ] 
 hash: 0000000370-8070c2f2cfa6f5d4fb8c47eee4f98bfccf864362b04e325520610172eb239dc7
+[added test.c
+afkhami <shahriar.afkhami@njit.edu>**20260113012357
+ Ignore-this: 1b84558b5dafdc90a4cb7c3af825f7aef7542094b8de5b17ca7ccb766e9c4e31088dc51c35e7f119
+] 
+hash: 0000000234-abce90d94678949741c677c2ce99a6ca3790200ecf27fc91d1827bee2d8df8be
+[Added a bug related to multigrid + axi.h
+boniouv <victor.boniou@ifpen.fr>**20260113100922
+ Ignore-this: 79bfba1561f381af44ee84a454660f080aafc99e9d4da05003438e414f309a0c56c98b1f65b338da
+] 
+hash: 0000000291-b4e86260efb48156bb8c614d4bc4898f85b8da2ad262ef2fb21a3dc9bcf9f14e
+[Added the script related to the bug report about multigrid + axi.h
+boniouv <victor.boniou@ifpen.fr>**20260113101105
+ Ignore-this: 99e1e3cd27ba57b7e3729ebfe5424180b5c7ce52cf1f530b1eb7ab79fd2d2dd8244f423b9e03b998
+] 
+hash: 0000001119-0dc73100d0e2f56451c50fd44daf9455b8784f276a9054cbaebb6e1e1a883a4f
+[Fixed discrepancy in porous-channel test case
+rcaraccio <riccardo.caraccio@polimi.it>**20260113102414
+ Ignore-this: 35f2f333bcb5d85c127c691382f0e88bd10f360bb665cb933eb97c1a2944d0534fcf9ab9e57ba176
+] 
+hash: 0000005905-4625473d207a7d9b801ca927f696e560b078ac2b389e4e9d9c436711a655d85e
+[Added Gai et al
+Stephane Popinet <popinet@basilisk.fr>**20260113105020
+ Ignore-this: 104798a00e1cea4cb9572d0fb06d3af937e76b9eefac9296809492f234a66529d60020febf982f0c
+] 
+hash: 0000001037-bfe1c4738de2338532061ec8fd87276f18b4b5f4c8636f8abb1ad8a3b2ddc824
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20260113105443
+ Ignore-this: 2a404d6b30c471f24ad10dc8c0e3a23abaeb9e9af104d5cdaed3dc715f9f155044e9ae9171f3f44d
+] 
+hash: 0000000684-1bafc371d598a9c6319839a0dd40a6fa202fb3760623a57f82df71e2eed17849
+[Mailto link
+ecipriano <edoardo.cip@gmail.com>**20260113154132
+ Ignore-this: b197fede17071873a45de72219fcd5b2b1914125317a7a976e36b59a9aeca1fed449a4c04e8db26f
+] 
+hash: 0000000397-721cfc2d3bb6728ea52e8d9858c1f4b95b75f6a74a9e3b5d961874b17f18eb6f
+[Account for effective viscosity in constant properties
+rcaraccio <riccardo.caraccio@polimi.it>**20260113154234
+ Ignore-this: 435b2571e4f27350947727ab1f8ad4b697213510c4d3a45b8e40d036e5e8ab4d0fdd66876b753ceb
+] 
+hash: 0000001740-4b5f35b1d381faa6db15df080184fe53e32363eb4067ab4891086aea789546f7
+[Option to use the actual fluid pressure rather than the effective one
+rcaraccio <riccardo.caraccio@polimi.it>**20260113154409
+ Ignore-this: 19891b9c40566301daa58b1ec3bd23f14decbe1a2d0586c148c56533c458224812b6c9e1ade5c558
+] 
+hash: 0000000974-af0b02a27a985eeceffe36c3afb764c65cf10986ab81acf584b51defb7b1fcd6
+[Account for effective viscosity in constant properties
+rcaraccio <riccardo.caraccio@polimi.it>**20260113154519
+ Ignore-this: b07b047948d69aca2aaea513dce56b4a3bd0ef37578a77f10ab94f370df1f12b6788cff43ca97e4e
+] 
+hash: 0000000695-d2da52cf7a6a5d188276e625d4d61fb88234272173c7fb2b2176e42d8a2e23ba
+[added Vof to Levelset header
+rcaraccio <riccardo.caraccio@polimi.it>**20260113155804
+ Ignore-this: ee73db16a62b390c5666e6908da52a07029473f4ec449582e4368e8e41b4f3118ad02734f2bcf78a
+] 
+hash: 0000000609-0700cb11f5b0fd811a84b2f82263650a30f3afe034c8a897b1c4782e1c3bb3bc
+[added velocity potential header
+rcaraccio <riccardo.caraccio@polimi.it>**20260113160014
+ Ignore-this: 95730232b3dadda174a99ab95d370b92137bc7164da6e52bd26a3b0fc328b1d3e523ad2f0872027a
+] 
+hash: 0000002766-281232a66d86b2f14051a75d5785c98b7a3787df4107c24c32c86b1216bc6c1b
+[added header with utils functions
+rcaraccio <riccardo.caraccio@polimi.it>**20260113160250
+ Ignore-this: 61a90168d5341fb9b9a3124aca41b0f7bca06e52f1c89b8b84ea912ecd6263dedee63e4a5aa8e669
+] 
+hash: 0000010955-6262d33276f7b177f161997fea85bc18bb9fd1a2bedf2468d3ce8c53090a3bb5
+[fixed plot
+rcaraccio <riccardo.caraccio@polimi.it>**20260113165400
+ Ignore-this: 5050b186c16ac16760e7af0cdf8432eb26814b029d46606be4895e689b02c6afea3247587840763e
+] 
+hash: 0000000391-665c2d6c49495cf41ef63f4d4d7511719bf4a0ccd9cb041773f3c282a47481cf
+[removed used of unknown color pallets from plot script
+rcaraccio <riccardo.caraccio@polimi.it>**20260113165555
+ Ignore-this: d1e6ebbbb4735931b8909916e18f0e0c64678dced9451589338cde3473fc02fbd99a9730e99e890d
+] 
+hash: 0000000610-95c900f7c2cfb5e90e98b8d73b4b74a599d4a20234aadfe68efe5f28ed2e58ce

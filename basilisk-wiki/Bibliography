@@ -51,6 +51,21 @@ keywords = {Two-phase DNS, Falling films, Evaporation, Supersaturation, VOF}
 ### 2025
 
 ~~~bib
+@article{xu2025b,
+  title = {Theoretical and numerical studies on azimuthal modes transition of viscoelastic swirling liquid jets},
+  author = {Xu, Yiqian and Mu, Kai and Qiao, Ran and Zhao, Chengxi and Si, Ting},
+  journal = {Phys. Rev. Fluids},
+  volume = {10},
+  issue = {12},
+  pages = {124002},
+  numpages = {34},
+  year = {2025},
+  month = {December},
+  publisher = {American Physical Society},
+  doi = {10.1103/slpv-jhlh},
+  url = {https://link.aps.org/doi/10.1103/slpv-jhlh}
+}
+
 @hal{fullana2025, hal-05417162}
 
 @hal{molefe2025, hal-05314880}

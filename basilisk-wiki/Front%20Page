@@ -41,6 +41,15 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{gai2026, 
+title={Capturing the motion of a pair of elastic capsules in a shear flow: emergent nonlinear hydrodynamic ordering}, 
+volume={1026}, 
+DOI={10.1017/jfm.2025.11054}, 
+journal={Journal of Fluid Mechanics}, 
+author={Gai, Guodong and Plouraboué, Franck and Wachs, Anthony}, 
+year={2026}, 
+pages={A50}}
+
 @article{patel2026, 
 title={Direct numerical simulations of non-coalescing floating bubbles: geometry and self-organisation}, 
 volume={1026}, 
@@ -60,19 +69,4 @@ doi = {10.1021/acs.langmuir.5c03167}
 }
 
 @hal{eshima2025, hal-05419560}
-
-@article{xu2025,
-  title = {Theoretical and numerical studies on azimuthal modes transition of viscoelastic swirling liquid jets},
-  author = {Xu, Yiqian and Mu, Kai and Qiao, Ran and Zhao, Chengxi and Si, Ting},
-  journal = {Phys. Rev. Fluids},
-  volume = {10},
-  issue = {12},
-  pages = {124002},
-  numpages = {34},
-  year = {2025},
-  month = {Dec},
-  publisher = {American Physical Society},
-  doi = {10.1103/slpv-jhlh},
-  url = {https://link.aps.org/doi/10.1103/slpv-jhlh}
-}
 ~~~

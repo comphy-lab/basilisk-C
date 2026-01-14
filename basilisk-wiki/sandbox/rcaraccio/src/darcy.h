@@ -6,11 +6,11 @@ They allow to account for the resistance to flow due to the presence of a porous
 In this step, we want to solve the following equation:
 $$
 \frac{\partial \mathbf{u}}{\partial t} = - \frac{1}{\rho_g}
-\left[ \frac{\mu_g \epsilon_g \mathbf{v}_g}{\mathbf{Da}} + 
+\left[ \frac{\mu_g \epsilon_g \mathbf{u}_g}{\mathbf{K}} + 
 \rho_g\frac{1.75}{\sqrt{150\epsilon_g^3}} \frac{\epsilon_g
-|\mathbf{v}_g|\mathbf{v}_g}{\sqrt{\mathbf{Da}}} \right]
+|\mathbf{u}_g|\mathbf{u}_g}{\sqrt{\mathbf{K}}} \right]
 $$
-Note that the permeability tensor **Da** can reach very small values.
+Note that the permeability tensor **K** (Da in the code) can reach very small values.
 Therefore, an implicit treatment of the Darcy and Forchheimer
 terms must and is here implemented.
 
@@ -54,21 +54,21 @@ event viscous_term (i++) {
   foreach() {
     if (f[] > F_ERR) {
       double e = porosity[]/f[];
-      double F = 1.75/sqrt (150*pow (e, 3));
-      double Umag = sqrt (sq(u.x[]) + sq(u.y[]));
+      double F = 1.75/sqrt (150.*pow (e, 3));
+      double Umag = norm(u);
 
       double muGh, rhoGh;
       #ifdef VARPROP
       muGh = muGv_S[];
       rhoGh = rhoGv_S[];
       #else
-      muGh = muG;
+      muGh = muG/e; // effective viscosity
       rhoGh = rhoG;
       #endif
 
       foreach_dimension() {
-        double A = (1./rhoGh)*(muGh*e/Da.x);   // Darcy term
-        double B = F*e/sqrt(Da.x)*Umag;        // Forchheimer term
+        double A = muGh*e/(Da.x*rhoGh);     // Darcy term
+        double B = F*Umag*e/sqrt(Da.x);     // Forchheimer term
         u.x[] *= exp(-(A + B)*dt*f[]);
       }
     }
@@ -94,19 +94,20 @@ less efficient due to the explicit nature of the terms.
 //   }
 // }
 
-// event acceleration (i++) {
+// event acceleration (i++){
 //   face vector av = a;
 //   foreach_face() {
 //     double ff = face_value(f, 0);
 //     if (ff > F_ERR) {
 //       double ef = face_value(porosity, 0);
 //       double F  = 1.75/pow (150*pow (ef, 3), 0.5);
+//       double Umag = norm (uf);
 
 //       // Darcy contribution, weighted by the face fraction of the interface
 //       av.x[] -= alpha.x[]/(fm.x[] + SEPS)* (muG*ef/Da.x) *uf.x[] *ff; 
 
 //       // Forcheimer contribution
-//       av.x[] -= alpha.x[]/(fm.x[] + SEPS)* (F*ef*rhoG/pow(Da.x,0.5)) *fabs(uf.x[])*uf.x[] *ff;
+//       av.x[] -= alpha.x[]/(fm.x[] + SEPS)* (F*ef*rhoG/pow(Da.x,0.5)) *Umag  *uf.x[] *ff;
 //     }
 //   }
 // }

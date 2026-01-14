@@ -25,7 +25,7 @@ extern scalar porosity;
 /**
 # Thermal conductivity boundary conditions
 Given that we also want to account for different thermal conductivities
-in different directions, `lambda1v` and `lambda2v` are defined as vectors.
+in different directions, lambda1v and lambda2v are defined as vectors.
 This set of boundary conditions are needed to ensure the correct calculation
 of the heat flux at the boundaries.
 */
@@ -65,11 +65,15 @@ This function updates the physical properties used in the Navier-Stokes equation
 to have constant gas properties throughout the domain.
 */
 void update_properties_constant (void) {
+  scalar mu_centered[];
+  foreach()
+    mu_centered[] = muG/(porosity[]*f[] + (1. - f[]));
+
   foreach_face() {
     alphav.x[] = fm.x[]/rhoG;
     {
       face vector muv = mu;
-      muv.x[] = muG*fm.x[];
+      muv.x[] = face_value(mu_centered, 0)*fm.x[];
     }
   }
 
