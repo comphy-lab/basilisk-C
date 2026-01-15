@@ -1109,7 +1109,13 @@ using 3 or even 4 points!
 @define dirichlet_vert_bottom4(a) (level > 0 ? layer_nr_y == 1 ? (4.*(a) - 6.*val(_s,0,1,0) + 4.*val(_s,0,2,0) - val(_s,0,3,0))   : (10.*(a) - 20.*val(_s,0,1,0) + 15.*val(_s,0,2,0) - 4*val(_s,0,3,0)) : 0)
 @define dirichlet_vert_top4(a)    (level > 0 ? layer_nr_y == 1 ? (a) : (4.*(a) - 6.*val(_s,0,0,0) + 4.*val(_s,0,-1,0) - val(_s,0,-2,0)) : 0)
 
-#if dimension == 2
+# if dimension == 1
+double Gauss6 (double x, double Delta, double (* myfun)(double x)) {
+  double w1 = 4./9., w2 = 5./18.;
+  double yw = sqrt(3./5.)/2.*Delta;
+  return w1*myfun (x) + w2*(myfun (x - yw) + myfun (x + yw));
+}
+#elif dimension == 2
 double Gauss6_x (double x, double y, double Delta, double (* myfun)(double x, double y)) {
   double w1 = 4./9., w2 = 5./18.;
   double yw = sqrt(3./5.)/2.*Delta;
