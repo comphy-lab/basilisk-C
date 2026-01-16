@@ -1,0 +1,32 @@
+/**
+# Yuanpeng Zhang’s Basilisk sandbox
+
+This sandbox provides minimal reproducible test cases for my improved phase-field model
+for ice--water phase-change problems.
+
+## Talks and presentations
+
+- [BGUM 2025: Simulation of melting/icing problems with the phase-field method](https://basilisk.fr/BGUM2025)  [(Slides) ](https://basilisk.fr/BGUM2025/zhang.pdf)
+
+## Improved phase-field test cases for ice--water phase transition
+
+### 1D Stefan problems
+- [One-dimensional Stefan solidification](stefan_1d_solidification.c)
+
+### 2D Stefan problems
+- [Two-dimensional Stefan problem](stefan_2d.c)
+
+### Ice--water coexistence and circular ice tests
+- [Ice--water coexistence](ice_water_coexistence.c)
+- [Growth of an ice circle](ice_circle_growth.c)
+- [Melting of an ice circle](ice_circle_melting.c)
+
+### Complex geometry melting
+- [Melting icicle (complex geometry)](icicle_melting.c)
+
+## Contact
+
+Email: zhangyuanpeng@mail.ustc.edu.cn
+
+
+*/

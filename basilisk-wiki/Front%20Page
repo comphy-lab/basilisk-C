@@ -41,6 +41,21 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{mou2026,
+  title = {Singular jets and entrapments from compound drop impact},
+  author = {Mou, Zeyang and Zheng, Zheng and Jian, Zhen and Antonini, Carlo and Josserand, Christophe and Thoraval, Marie-Jean},
+  journal = {Phys. Rev. Fluids},
+  volume = {11},
+  issue = {1},
+  pages = {013602},
+  numpages = {16},
+  year = {2026},
+  month = {January},
+  publisher = {American Physical Society},
+  doi = {10.1103/sdqh-kfcq},
+  url = {https://link.aps.org/doi/10.1103/sdqh-kfcq}
+}
+
 @article{gai2026, 
 title={Capturing the motion of a pair of elastic capsules in a shear flow: emergent nonlinear hydrodynamic ordering}, 
 volume={1026}, 
@@ -67,6 +82,4 @@ year = {2025},
 month = {December},
 doi = {10.1021/acs.langmuir.5c03167}
 }
-
-@hal{eshima2025, hal-05419560}
 ~~~

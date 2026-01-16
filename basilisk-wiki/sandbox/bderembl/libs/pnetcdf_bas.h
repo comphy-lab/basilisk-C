@@ -179,7 +179,7 @@ void create_nc(scalar * list_out, char* file_out){
 
         int nl_loc = _attribute[s.i].block;
 
-        if (nl_loc == 1){ // store 1-layer variables without layer dimension
+        if (nl_loc == 1 && dimension < 3){ // store 1-layer variables without layer dimension
           int dimids[3];
           int NDIMS = 3;
           dimids[0] = rec_dimid;
