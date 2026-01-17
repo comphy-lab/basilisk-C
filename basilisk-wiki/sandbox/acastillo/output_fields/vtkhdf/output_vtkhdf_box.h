@@ -40,8 +40,14 @@ An explanation can be found [here](https://groups.google.com/g/basilisk-fr/c/CM2
 */
 
 
-#pragma autolink -lhdf5
-#include <hdf5.h>
+// Check if HDF5 is available by testing if the header can be included
+#if __has_include(<hdf5.h>)
+  #define HAVE_HDF5 1
+  #pragma autolink -lhdf5
+  #include <hdf5.h>
+#else
+  #warning "HDF5 library not found. VTKHDF output functions will be disabled."
+#endif
 
 /** 
 ## preamble: define some useful macros
@@ -112,6 +118,7 @@ output_vtkhdf_box(slist, vlist, "domain.vtkhdf", box);
 */
 
 trace void output_vtkhdf_box(scalar *slist, vector *vlist, char *name = "domain.vtkhdf", coord box[2], int compression_level = 9){
+#ifdef HAVE_HDF5
   hid_t acc_tpl1;    // File access template
   hid_t file_id;     // HDF5 file ID
   hid_t group_id;    // HDF5 group ID
@@ -191,6 +198,7 @@ trace void output_vtkhdf_box(scalar *slist, vector *vlist, char *name = "domain.
   initialize_marker_box(marker, vertex_needed, offset, 0);
   
   // Setup file access template with parallel I/O access
+#if _MPI
   acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio(acc_tpl1, MPI_COMM_WORLD, MPI_INFO_NULL);
 
@@ -199,6 +207,10 @@ trace void output_vtkhdf_box(scalar *slist, vector *vlist, char *name = "domain.
 
   // Release file-access template
   H5Pclose(acc_tpl1);
+#else
+  // Create a new HDF5 file without parallel I/O
+  file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+#endif
   
   // Create group 
   group_id = H5Gcreate(file_id, "VTKHDF", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
@@ -271,6 +283,14 @@ trace void output_vtkhdf_box(scalar *slist, vector *vlist, char *name = "domain.
 
   // Close HDF5 resources
   H5Fclose(file_id);
+#else
+  // HDF5 not available - print warning and return
+  static int warning_printed = 0;
+  if (!warning_printed && pid() == 0) {
+    fprintf(stderr, "Warning: output_vtkhdf_box() called but HDF5 is not available. Output skipped.\n");
+    warning_printed = 1;
+  }
+#endif
 }
 
 /** ## postamble: delete macros */

@@ -13,6 +13,12 @@ double dg = 0.4 [1];
 double rho = 1.0;
 double tauc = 0.0 ;
 
+/* For turbulent viscous */
+double kappa = 0.4;
+double taille_sable = 0.01;
+double ll = 0.0;
+
+
 double slope = 0.25;
 
 
@@ -63,6 +69,20 @@ double coeffFrotte(Point point, scalar s, scalar h, int layer){
 
 }
 
+double Nuturbulent(Point point, scalar s, scalar h, int layer){
+
+  double nu_eq = 0.0;
+  double _y = 0.0;
+
+    for (int l = 0; l < layer; l++) {
+		_y+=h[0,0,l];
+	}
+	_y = _y + 0.5*h[0,0,layer];
+
+	ll = kappa*(_y+taille_sable)*sqrt(1-(_y));
+	nu_eq = shear(point,s,h,layer,layer)*ll*ll;
+  return nu_eq;
+}
 
 double Nueq(Point point, scalar s, scalar h, int layer){
 
@@ -71,6 +91,9 @@ double Nueq(Point point, scalar s, scalar h, int layer){
   	ans =  coeffFrotte(point,s,h,layer)*pressionHydro(point,h,layer)/shear(point,s,h,layer,layer);
 #elif BINGHAM
   	ans = mu + tauy/shear(point,s,h,layer,layer);
+  
+#elif TURBULENT
+        ans = Nuturbulent(point,  s, h, layer);
 #else 
   	ans = D;
 #endif

@@ -14,8 +14,13 @@ void count_points_and_cells(int *num_points_glob, int *num_cells_glob, int *num_
     }
   }
 
+#if _MPI
   MPI_Allreduce(num_points, num_points_glob, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
   MPI_Allreduce(num_cells,  num_cells_glob,  1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+#else
+  *num_points_glob = *num_points;
+  *num_cells_glob = *num_cells;
+#endif
 }
 
 void count_points_and_cells_box(int *num_points_glob, int *num_cells_glob, int *num_points, int *num_cells, scalar cell_mask, vertex scalar vertex_needed) {
@@ -31,8 +36,13 @@ void count_points_and_cells_box(int *num_points_glob, int *num_cells_glob, int *
     }
   }
 
+#if _MPI
   MPI_Allreduce(num_points, num_points_glob, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
   MPI_Allreduce(num_cells,  num_cells_glob,  1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+#else
+  *num_points_glob = *num_points;
+  *num_cells_glob = *num_cells;
+#endif
 }
 
 void count_points_and_cells_slice(int *num_points_glob, int *num_cells_glob, int *num_points, int *num_cells, scalar per_mask, coord n = {0, 0, 1}, double _alpha = 0) {
@@ -47,11 +57,17 @@ void count_points_and_cells_slice(int *num_points_glob, int *num_cells_glob, int
     }
   }
 
+#if _MPI
   MPI_Allreduce(num_points, num_points_glob, 1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
   MPI_Allreduce(num_cells,  num_cells_glob,  1, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+#else
+  *num_points_glob = *num_points;
+  *num_cells_glob = *num_cells;
+#endif
 }
 
 /** ### Calculate offsets for points and cells in each subdomain */ 
+#ifdef HAVE_HDF5
 void calculate_offsets(int *offset_points, int *offset_cells, int num_points, int num_cells, hsize_t *offset) {
   // Arrays to store the number of points and cells in each subdomain
   int list_points[npe()];
@@ -67,9 +83,17 @@ void calculate_offsets(int *offset_points, int *offset_cells, int num_points, in
   list_points[pid()] = num_points;
   list_cells[pid()] = num_cells;
 
+#if _MPI
   // Perform an all-reduce operation to gather the number of points and cells from all subdomains
   MPI_Allreduce(list_points, offset_points, npe(), MPI_INT, MPI_SUM, MPI_COMM_WORLD);
   MPI_Allreduce(list_cells, offset_cells, npe(), MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+#else
+  // Without MPI, just copy the local values
+  for (int i = 0; i < npe(); ++i){
+    offset_points[i] = list_points[i];
+    offset_cells[i] = list_cells[i];
+  }
+#endif
 
   // Calculate the offset for the points in the current subdomain
   offset[0] = 0;
@@ -93,8 +117,15 @@ void calculate_offsets2(int *offset_points, int num_points, hsize_t *offset) {
   // Set the number of points and cells for the current subdomain
   list_points[pid()] = num_points;
   
+#if _MPI
   // Perform an all-reduce operation to gather the number of points and cells from all subdomains
   MPI_Allreduce(list_points, offset_points, npe(), MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+#else
+  // Without MPI, just copy the local values
+  for (int i = 0; i < npe(); ++i){
+    offset_points[i] = list_points[i];
+  }
+#endif
   
   // Calculate the offset for the points in the current subdomain
   offset[0] = 0;
@@ -145,6 +176,7 @@ void initialize_marker_slice(vertex scalar marker, hsize_t *offset, coord n = {0
     num_points++;
   }
 }
+
 
 /** ### Populate points_dset based on markers and dimensions */ 
 void populate_points_dset(double **points_dset, int num_points, int *offset_points, hsize_t *count, hsize_t *offset) {
@@ -942,6 +974,7 @@ void create_contiguous_dataset(hid_t file_id, hsize_t *count, hsize_t *offset, c
   H5Sclose(memspace_id);
   H5Pclose(acc_tpl1);
 }
+#endif // HAVE_HDF5
 
 
 

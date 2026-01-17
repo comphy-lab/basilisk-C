@@ -3,6 +3,11 @@
 
 No stratification
 
+
+USAGE
+
+make
+
 */
 
 
@@ -19,25 +24,22 @@ DEFAULT PARAMETERS
 */
 char file_out[20] = "out.nc";         // file name of output
 // -> Initial conditions
-double P = 0.2 [1, -1];     // energy level (estimated so that kpHs is reasonable)
+double P = 0.02 [1, -1];     // energy level (estimated so that kpHs is reasonable)
 int coeff_kpL0 = 10 [];     // kpL0 = coeff_kpL0 * pi
 int N_mode = 32 [];         // Number of modes in wavenumber space
 int N_power = 5 [];         // directional spreading coeff
-int F_shape = 0 [];         // shape of the initial spectrum
+int F_shape = 1 [];         // shape of the initial spectrum
 // -> Domain definition
-int N_grid = 5 [];       // 2^N_grid : number of x and y gridpoints
+int N_grid = 6 [];       // 2^N_grid : number of x and y gridpoints
 double L = 200.0 [1];       // domain size
-int N_layer = 2 [];         // number of layers
+int N_layer = 10 [];         // number of layers
 double kp = PI*10/200.0 [-1];// peak wave number
-double h0 = 1.0 [1];        // depth of water
+double h0 = 40.0 [1];        // depth of water
 // -> Runtime parameters
 int restart = 0;            // 1: restart, 0: no restart
-double tend = 2.0;          // end time of simulation
+double tend = 10.0;          // end time of simulation
 // -> saving outputs
-double dtout = 2.0;        // dt for output in netcdf
-int pad = 4;                // number of 0-padding for ouput files
-int nout = 1;               // number of the outfile
-char fileout[100];          // name of outfile
+double dtout = 1.0;        // dt for output in netcdf
 // -> physical properties
 double nu0 = 0.;            // Viscosity for vertical diffusion
 int RANDOM = 2;             // For random number generator
@@ -46,7 +48,7 @@ double thetaH = 0.5;        // theta_h for dumping fast barotropic modes
 
 // diag
 double *u_profile;
-double dt_mean = 0.4;
+double dt_mean = 1.0;
 double U=0.0;
 int l;
 static FILE * fp;
@@ -77,6 +79,7 @@ int main(int argc, char *argv[])
   l=nl-1;
   fprintf(stderr, "u%d ini = %f\n",l, U);
   fp  = fopen("u_profile.dat","w"); // reset file
+  fp  = fopen("u_sfx.dat","w"); // reset file
   fclose(fp);
 
   run();
@@ -119,7 +122,15 @@ event init(i =  0) {
   
   // step 4: save initial conditions
   create_nc({zb, h, u, w, eta}, file_out);
-
+  
+  // Free memory
+  free(spectrum.kmod);
+  free(spectrum.kx);
+  free(spectrum.ky);  
+  free(spectrum.F_kmod);
+  free(spectrum.F_kxky);
+  free(spectrum.phase);
+  free(spectrum.omega);
   fprintf (stderr,"Done initialization!\n");
 }
 
@@ -128,7 +139,7 @@ event init(i =  0) {
 event compute_horizontal_avg (i++; t<=tend+1e-10){
   // fprintf(stderr, "dt %f\n",dt);
   
-  #if 1
+  //#if 0
   foreach(reduction(+:u_profile[:nl])){
     foreach_layer(){
       // if (point.l==29) {
@@ -139,21 +150,20 @@ event compute_horizontal_avg (i++; t<=tend+1e-10){
 
     }
   }
-  #else
-  fprintf(stderr, "u%d pre avg = %f\n",l, U);
+  //#else
+  fprintf(stderr, "   u_sfx pre avg = %f\n", U);
     foreach(reduction(+:U)){
       U += u.x[0,0,l] / (N*N) * dt / dt_mean;
     }
-  fprintf(stderr, "   t=%f u%d= %f\n",t, l, U);
-  #endif
+  fprintf(stderr, "   t=%f u_sfx= %f\n",t, U);
+  //#endif
   //fprintf(stderr, "t %f, i %d, value %f\n", t, i,  u_profile[nl-2]);
 
 }
 
 // WRITING U_PROFILE
-event write_diag(t=0., t+=dt_mean){
-  // Todo: make this compatible with mpi, check pid of cpu.
-    #if 1
+event write_diag(t=0., t+=dt_mean, t<=tend+1e-10){
+    //#if 0
     if (pid()==0) {
       fp  = fopen("u_profile.dat","a");
       if (fp == NULL){
@@ -169,11 +179,11 @@ event write_diag(t=0., t+=dt_mean){
     for (int i=0; i<nl; ++i) {
       u_profile[i] = 0.0;
     }
-    #else
+    //#else
     if (pid()==0) {
-      fp  = fopen("u_profile.dat","a");
+      fp  = fopen("u_sfx.dat","a");
       if (fp == NULL){
-        fprintf(stderr, "Error opening file u_profile.dat");
+        fprintf(stderr, "Error opening file u_sfx.dat");
         return 2;
       }
       fprintf (fp, "%f %d %g\n", t, l, U);
@@ -181,10 +191,9 @@ event write_diag(t=0., t+=dt_mean){
       //fprintf(fp,"\n");
       fclose(fp);
     }
-    fprintf(stderr, "writing   t=%f u%d= %f\n",t, l, U);
+    fprintf(stderr, "writing   t=%f u_sfx= %f\n",t, U);
     U=0.0;
-
-    #endif
+    //#endif
 }
 
 
@@ -197,4 +206,30 @@ event output(t = 0.; t<= tend+1e-10; t+=dtout){
 event cleanup(t=end){
   free(u_profile);
 }
+
+/**
+## Results
+
+~~~gnuplot The profile of layer averaged u.x in time
+set pm3d map
+set view map
+set xlabel "Time (s)"
+set ylabel "Layer"
+set cblabel "Value"
+set yrange [0:9]
+set size square
+splot "u_profile.dat" using 1:2:3 with pm3d
+~~~
+
+~~~gnuplot The first layer average of u.x in time
+reset
+set xlabel "Time (s)"
+set ylabel "U_{sfx} (m/s)"
+set size square
+set yrange [-0.25:0.25]
+plot "u_sfx.dat" using 1:3 w l t 'serial', \
+     "../ml_openmp/u_sfx.dat" u 1:3 w l t 'openmp'
+~~~
+**/
+
 

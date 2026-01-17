@@ -76,13 +76,13 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
 
   T_Spectrum spectrum;
   spectrum.N_mode = N_mode;
-  spectrum.kmod = (double *)malloc(N_kmod * sizeof(double));
-  spectrum.kx = (double *)malloc(N_mode * sizeof(double));
-  spectrum.ky = (double *)malloc((N_mode + 1) * sizeof(double));  
-  spectrum.F_kmod = (double *)malloc(N_kmod * sizeof(double));
-  spectrum.F_kxky = (double *)malloc(N_mode * (N_mode + 1) * sizeof(double));
-  spectrum.phase = (double *)malloc(N_mode * (N_mode + 1) * sizeof(double));
-  spectrum.omega = (double *)malloc(N_mode * (N_mode + 1) * sizeof(double));
+  spectrum.kmod = (double *)calloc(N_kmod, sizeof(double));
+  spectrum.kx = (double *)calloc(N_mode, sizeof(double));
+  spectrum.ky = (double *)calloc(N_mode + 1, sizeof(double));  
+  spectrum.F_kmod = (double *)calloc(N_kmod, sizeof(double));
+  spectrum.F_kxky = (double *)calloc(N_mode * (N_mode + 1), sizeof(double));
+  spectrum.phase = (double *)calloc(N_mode * (N_mode + 1), sizeof(double));
+  spectrum.omega = (double *)calloc(N_mode * (N_mode + 1), sizeof(double));
 
 
   for (int i = 0; i < N_kmod; ++i) {

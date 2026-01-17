@@ -1,0 +1,851 @@
+/**
+
+\newcommand{\reynolds}{{\color{orange}\mathsf{Re}}}
+\newcommand{\froude}{{\color{red}\mathsf{Fr}}}
+\newcommand{\weber}{{\color{green}\mathsf{We}}}
+\newcommand{\atwood}{{\color{blue}\mathsf{At}}}
+\newcommand{\viscosity}{{\color{purple}\Upsilon}}
+\newcommand{\width}{{\color{purple}\mathsf{W}}}
+\newcommand{\height}{{\color{purple}\mathsf{H}}}
+\newcommand{\depth}{{\color{purple}\mathsf{D}}}
+\newcommand{\amplitude}{{\color{cyan}\mathsf{S}}}
+
+# «Frozen waves» at the interface between non-miscible fluids with strong density contrast
+
+![An example of frozen waves with parameters corresponding to [Gréa et al. 2025](#grea:2025)](main/animate.mp4)
+
+## Preamble
+
+### Problem parameters
+
+We consider two **non-miscible** fluids with densities $\rho_1$ and $\rho_2$
+($\rho_1 > \rho_2$) and viscosities $\mu_1$ and $\mu_2$. The interface
+$\eta(x,y,z,t)$ between the two fluids is characterized by a surface tension
+coefficient $\sigma$, assumed constant. Additionally, we consider gravity $g$
+and apply a **periodic oscillating motion** with amplitude $a$ and frequency
+$\omega$ in the horizontal direction. For a recipient of size $W\times H\times
+D$, the system is characterised by five fluid parameters ($\rho_1$, $\rho_2$,
+$\mu_1$, $\mu_2$, $\sigma$) and three forcing parameters ($a$, $\omega$, $g$).
+If we consider the forcing displacement, the forcing frequency and the capillary
+length as characteristic lengths of the problem
+$$
+\displaystyle
+[\text{L}] = a, \quad 
+[\text{T}] = \frac{1}{\omega}, \quad 
+l_c = \sqrt{\frac{\sigma}{(\rho_1 - \rho_2) g}}
+$$
+we identify the following eight dimensionless groups:
+
+| Parameter       | Symbol       | Definition               |
+|-----------------|--------------|--------------------------|
+| Aspect ratios   | $\width$     | $\displaystyle \frac{W}{a}$ |
+|                 | $\height$    | $\displaystyle \frac{H}{a}$ |
+|                 | $\depth$     | $\displaystyle \frac{D}{a}$ |
+| Reynolds number | $\reynolds$  | $\displaystyle \frac{\rho_1 a^2\omega}{\mu_1}$ |
+| Froude number   | $\froude$    | $\displaystyle \frac{a\omega^2}{g}$ |
+| Weber number    | $\weber$     | $\displaystyle \frac{(\rho_1-\rho_2) a^3 \omega^2}{\sigma}$ |
+| Atwood number   | $\atwood$    | $\displaystyle \frac{\rho_1 - \rho_2}{\rho_1 + \rho_2}$ |
+| Viscosity ratio | $\viscosity$ | $\displaystyle \frac{\nu_1}{\nu_2}$ |
+
+To complete the problem description, we specify the contact angle and the
+initial conditions. Here, we consider a static contact angle of $\theta =
+90^\circ$. The interface $\eta(x,y,z,t)$ is initially flat. We may also impose
+an initial perturbation in the form of a constant amplitude and random phase
+annular spectrum, following the approach of [Dimonte et al.
+(2004)](#dimonte:2004) and [Thévenin et al. (2025)](#thevenin:2025).
+
+### Governing equations
+
+We use the [two-phase](src/two-phase.h) incompressible Navier--Stokes equations.
+The volume fraction $\phi(\mathbf{x},t)$ is used to transform the two-phase
+problem into a one-fluid formulation. If we consider the same characteristic
+lengths $[\text{L}]$ and $[\text{T}]$ as before, the equations read
+$$
+\begin{aligned}
+  \nabla \cdot \mathbf{u} &= 0 
+  \\
+  \partial_{t} \mathbf{u} + \nabla \cdot (\mathbf{u}\otimes\mathbf{u}) &= 
+  \frac{1}{\rho^*} \left[
+    -\nabla p + \nabla\cdot(2\mu^*\mathbf{D})+\sigma^*\mathbf{f}_\sigma
+  \right]
+  - a^* \mathbf{e}_z
+  + \sin(t)\mathbf{e}_x 
+  \\
+  \partial_{t} \phi + \nabla \cdot (\phi \mathbf{u}) &= 0
+\end{aligned}
+$$
+
+where 
+
+- $\mathbf{D} = (\nabla\mathbf{u}+(\nabla^*\mathbf{u})^T)/2$ is the deformation
+  tensor,
+- $\mathbf{f}_\sigma = \kappa \delta_s \mathbf{n}$ is the surface tension force,
+  with 
+  - $\kappa$ being the local interface curvature, 
+  - $\delta_s$ being the Dirac function associated with the interface and 
+  - $\mathbf{n}$ being the unit normal vector,
+- $\sigma^*$ is the (dimensionless) surface tension coefficient,
+$$
+\displaystyle
+\sigma^* = 
+\frac{\sigma [T]^2}{\rho_0[L]^3} = 
+2{\color{cyan}\weber}^{-1}
+$$
+- $a^*$ is the (dimensionless) acceleration due to gravity.
+$$
+a^* = \frac{g[T]^2}{[L]} = {\color{blue}\froude}^{-1}
+$$
+
+The equations are coupled via the (dimensionless) density and viscosity fields
+$$
+\begin{aligned}
+  \rho^*(\mathbf{x},t) &= (1+\atwood)\phi(\mathbf{x},t) 
+  + (1-\atwood)(1-\phi(\mathbf{x},t))
+  \\
+  \mu^*(\mathbf{x},t) &= 
+    \reynolds^{-1}(1+\atwood)\phi(\mathbf{x},t) 
+  + \reynolds^{-1}\viscosity(1-\atwood)(1-\phi(\mathbf{x},t))
+\end{aligned}
+$$
+
+Additionally, the computational domain is of size $\width \times \height \times
+\depth$. 
+
+## Implementation using Basilisk
+
+### Include solver blocks
+
+We use a combination of the two-phase incompressible solver with no-slip
+boundaries.
+
+*/
+
+// Uncomment the following lines to use different solver options
+//#define FILTERED 1      // Uncomment to smudge the interface
+//#define REDUCED 1       // Uncomment to use the reduced gravity approach
+//#define CLSVOF 1        // Uncomment to use CLSVOF
+
+#include "grid/multigrid.h"
+#include "navier-stokes/centered.h"
+// Two-phase flow configuration
+#if CLSVOF
+  // CLSVOF (Coupled Level Set and Volume of Fluid) method
+  #include "two-phase-clsvof.h"
+  #include "integral.h"
+  #include "curvature.h"
+#else
+  // Standard VOF method
+  #include "two-phase.h"
+  #include "tension.h"
+#endif  
+// Momentum conserving advection scheme
+#include "navier-stokes/conserving.h"  
+// Reduced gravity approach (optional)
+#ifdef REDUCED
+  #include "reduced.h"
+#endif
+#include "maxruntime.h"
+#include "sim_parameters.h"
+
+/**
+### Set parameters in the main loop
+
+Parameters are now read from a JSON configuration file using the `sim_parameters.h` module.
+The global `params` struct holds all simulation parameters.
+*/
+
+SimParams params;
+
+#define BACKUPFREQ 100.0                // Backup frequency (in time units)
+#define SNAPFREQ 100.0                  // Snapshot frequency (in time units)
+#define PROFFREQ (3.14159265359)        // Profiles frequency (in time units)
+#define ANIMFREQ (3.14159265359)        // Animation frequency (in time units)
+#define SERIESFREQ (3.14159265359)      // Time series frequency (in time units)
+
+#if !CLSVOF
+  vector h[];
+#endif
+
+int main() {
+
+  /** - Read parameters from JSON file (or use defaults) */
+  read_sim_params("main.json", &params);
+  if (pid() == 0)
+    print_sim_params(&params);
+
+  /** - Set the domain size */
+  L0 = params.width;
+#if dimension == 2
+  dimensions (nx = params.aspectratio_x, ny = params.aspectratio_y);
+  X0 = -params.width/2.;
+  Y0 = -params.height/2.;
+#else
+  dimensions (nx = params.aspectratio_x, ny = params.aspectratio_y, nz = params.aspectratio_z);
+  X0 = -params.width/2.;
+  Y0 = -params.height/2.;
+  Z0 = -params.depth/2.;
+#endif
+  N = (1 << params.level);
+  init_grid (N);
+
+  /** - Assign the fluid properties */
+  rho1 = (1. + params.atwood);
+  rho2 = (1. - params.atwood);
+  mu1 = rho1 / params.reynolds;
+  mu2 = rho2 * params.viscosity / params.reynolds;
+#if CLSVOF
+  const scalar sigma[] = 2. / params.weber;
+  d.sigmaf = sigma;
+#else
+  f.sigma = 2. / params.weber;  
+  f.height = h;
+#endif  
+
+  /** - Set the gravitational acceleration */
+#if REDUCED
+  #if dimension == 2  
+    G.y = -1./params.froude;
+  #else
+    G.z = -1./params.froude;
+  #endif
+#endif
+
+  /** - Set numeric parameters */
+  _maxruntime = params.walltime;  // Maximum runtime in seconds
+  p.nodump = false; // Includes pressure in the dump file
+  CFL = params.cfl;
+  DT = params.dt;
+  TOLERANCE = params.tolerance;
+  NITERMIN = params.nitermin;
+  run();
+}
+
+/** We add the external acceleration 
+
+To prevent sloshing, we ramp the acceleration using a sigmoid function.
+
+$$
+\displaystyle
+r(t) = \frac{1}{1 + \exp(-k(t - t_\text{start}))}
+$$
+where $t_\text{start}$ is the time at which the ramp starts and $k$ is the slope
+of the ramp.
+
+*/
+
+double sigmoid(double t1, double k){
+  return 1.0 / (1.0 + exp(-k * (t - t1)));
+}
+
+double ramp; 
+event acceleration (i++) {
+  // We set the parameters for the ramp
+  double time_start = params.ramp_start;
+  double time_slope = params.ramp_slope;
+  ramp = sigmoid(time_start, time_slope);
+  
+  // Then, we add the acceleration
+  face vector av = a;
+  foreach_face(x)
+    av.x[] += ramp * sin(t);
+  
+  // And finally, we add the gravity (if not using the reduced gravity approach)
+  #if !REDUCED
+    #if dimension == 2
+      foreach_face(y)
+        av.y[] -= 1./params.froude;
+    #else
+      foreach_face(z)
+        av.z[] -= 1./params.froude;
+    #endif
+  #endif
+}
+
+/** We also tweak the CFL condition to take into account the acceleration */
+#include "acceleration_cfl.h"
+event set_dtmax (i++,last) {
+  dtmax = timestep_force (u, DT, ramp);
+}
+
+/**
+### Set the initial conditions
+
+We use the initial conditions from [Dimonte (2004)](#dimonte:2004) as
+implemented in my sandbox. Note that the amplitude $\amplitude$ we use here is a
+target value, and the actual amplitude of the initial conditions is computed in
+`initial_condition_dimonte_fft` and `initial_condition_dimonte_fft2`. In
+practice, the r.m.s. of the initial perturbation is 
+$$
+\displaystyle
+\amplitude = \frac{\eta_0}{a} = \frac{1}{A} \iint (\eta(x,y)-\overline{\eta})^2 \, dx \, dy
+$$ 
+which is generally small.
+*/
+
+#include "view.h"
+#include "acastillo/output_fields/vtu/output_vtu.h"
+#include "acastillo/output_fields/vtkhdf/output_vtkhdf.h"
+void setup_snapshot(char* filename, bool video = false){
+  char png_filename[256];
+  char hdf_filename[256];
+  if (video)
+    sprintf(png_filename, "%s.mp4", filename);
+  else {
+    sprintf(png_filename, "%s.png", filename); 
+    sprintf(hdf_filename, "%s.hdf", filename);
+  }
+  
+#if dimension == 2
+  view( width=1024, height=1024);
+  box();
+  draw_vof("f", filled = -1, fc = {0,0,0} );
+#else
+  view( camera = "iso");
+  draw_vof("f", color = "z" );
+#endif
+  save(png_filename);
+
+  if (!video){
+    scalar kappa[];
+    #if CLSVOF
+      foreach()
+        kappa[] = distance_curvature (point, d);
+    #else
+      curvature (f, kappa);
+    #endif
+    output_facets_vtu(f, kappa, filename);
+    output_vtkhdf({f,p}, {u}, hdf_filename);
+  }
+}
+
+#if dimension == 2
+  #include "acastillo/input_fields/initial_conditions_dimonte_fft1.h"
+#else
+  #include "acastillo/input_fields/initial_conditions_dimonte_fft2.h"
+#endif
+
+event init(i = 0){
+  
+  if (!restore(file = "./restart")){
+  
+    #if CLSVOF      
+      #if dimension == 2
+        initial_condition_dimonte_fft(d, amplitude=params.amplitude, NX=N, kmin=params.kmin, kmax=params.kmax, isvertex=0);
+      #else
+        initial_condition_dimonte_fft2(d, amplitude=params.amplitude, NX=N, NY=N, kmin=params.kmin, kmax=params.kmax, isvof=1, isvertex=0);
+      #endif
+
+    #else
+
+      vertex scalar phi[];
+      #if dimension == 2
+        initial_condition_dimonte_fft(phi, amplitude=params.amplitude, NX=N, kmin=params.kmin, kmax=params.kmax);
+      #else
+        initial_condition_dimonte_fft2(phi, amplitude=params.amplitude, NX=N, NY=N, kmin=params.kmin, kmax=params.kmax, isvof=1);
+      #endif
+      fractions(phi, f);
+
+    #endif
+    
+  }
+
+  /** Then, we visualize the initial conditions */ 
+#if CLSVOF
+  vertex scalar phi[];
+  foreach_vertex()
+    #if dimension == 2  
+      phi[] = (d[] + d[-1] + d[0,-1] + d[-1,-1])/4.;
+    #else
+      phi[] = (d[] + d[-1] + d[0,-1] + d[-1,-1] + d[0,0,-1] + d[-1,0,-1] + d[0,-1,-1] + d[-1,-1,-1])/8.;
+    #endif
+  fractions (phi, f);
+#endif
+  setup_snapshot("init");
+}
+
+/**
+
+## Outputs
+
+### Convergence of the multigrid solver
+
+A log to track the convergence of the multigrid solvers.
+
+~~~pythonplot 0D Quantities
+import numpy as np
+import matplotlib.pyplot as plt
+
+filename1 = 'out'
+
+data = np.genfromtxt(filename1, usecols=[1,5,11], skip_header=6)
+t = data[:,0]
+residual_p = data[:,1]
+residual_u = data[:,2]
+
+fig, axes = plt.subplots(1,2, figsize=(4*2, 3))
+ax = axes.ravel()
+ax[0].semilogy(t, residual_p)
+ax[1].semilogy(t, residual_u)
+ax[0].set_xlabel('Time')
+ax[0].set_ylabel('Residual pressure')
+ax[1].set_xlabel('Time')
+ax[1].set_ylabel('Residual velocity')
+  
+plt.tight_layout()
+plt.savefig('plot_residuals.svg', dpi=150)
+~~~
+
+*/
+
+void mg_print (mgstats mg)
+{
+  if (mg.i > 0 && mg.resa > 0.)
+    fprintf (stdout, " \t - \t %d %g %g %g %d ", mg.i, mg.resb, mg.resa,
+	    mg.resb > 0 ? exp (log (mg.resb/mg.resa)/mg.i) : 0.,
+	    mg.nrelax);
+}
+
+event log (i++; t <= params.endtime) {
+  fprintf (stdout, " %d %g ", i, t);
+  mg_print (mgp);
+  mg_print (mgu);
+  fprintf (stdout, "\n");
+  fflush (stdout);
+}
+
+event finalize(t = end)
+  dump("backup");
+
+event backups(t += BACKUPFREQ)
+  dump("backup");
+
+/**
+### Saving videos and snapshots for visualization
+
+*/
+
+event animate (t += ANIMFREQ){  
+  setup_snapshot("animate", true);
+}
+
+event snapshot (t += SNAPFREQ){    
+  char name[80];
+  sprintf(name, "snapshot_t%g", t);
+  setup_snapshot(name);
+}
+
+/**
+### 1D Profiles
+
+Let us introduce the horizontal average operator 
+$$
+\displaystyle
+\overline{Q}(z,t) = \frac{1}{A} \iint_{-\infty}^{\infty} Q(\mathbf{x},t) ~dx~dy
+$$
+and its corresponding Reynolds decomposition as:
+$$
+\displaystyle
+Q(\mathbf{x},t) = \overline{Q}(z,t) + q(\mathbf{x},t)
+$$
+
+We may also consider the weighted average of the horizontal profiles
+$$
+\displaystyle
+\widetilde{Q}(z,t) = \frac{\overline{\rho(\mathbf{x},t) Q(\mathbf{x},t)}}{\overline{\rho(\mathbf{x},t)}}
+$$
+and its corresponding Favre decomposition as:
+$$
+\displaystyle
+Q(\mathbf{x},t) = \widetilde{Q}(z,t) - q'(z,t)
+$$
+
+We compute both kinds of vertical profiles for:
+
+- the primitive variables, $\phi, u_x, u_y, \cdots$
+- second order terms, $\phi^2, \phi(1-\phi), \mathbf{u}^2, \phi u_z, \cdots$
+- dissipative terms, $\nabla\mathbf{u}:\nabla\mathbf{u}, \cdots$
+
+For instance, an example of the Reynolds averaged profiles can be seen below: 
+
+~~~pythonplot Vertical profiles
+import numpy as np
+import matplotlib.pyplot as plt
+
+def count_rows_until_empty(filename):
+  count = 0
+  with open(filename, 'r') as f:
+    for line in f:
+      if line.strip() == '':  # Empty line (or only whitespace)
+        break
+      count += 1
+  return count
+
+filename1 = 'profiles_f1.asc'
+filename2 = 'profiles_K1.asc'
+filename3 = 'profiles_Eps1.asc'
+filename4 = 'profiles_ff1.asc'
+filename5 = 'profiles_Y1.asc'
+filename6 = 'profiles_F1.asc'
+
+first_row = np.genfromtxt(filename2, max_rows=1, skip_header=1)
+num_columns = len(first_row)
+n = count_rows_until_empty(filename1) - 1
+
+if num_columns == 2:
+  data = np.genfromtxt(filename1, skip_header=1, usecols=[0,1,2,3,4])
+  y = data[:,0].reshape(-1,n).T
+  fmean = data[:,1].reshape(-1,n).T
+  mmean = data[:,2].reshape(-1,n).T
+  umean = data[:,3].reshape(-1,n).T
+  vmean = data[:,4].reshape(-1,n).T
+  L = fmean*(1-fmean)
+
+  data = np.genfromtxt(filename2, skip_header=1, usecols=[1])
+  K = data[:].reshape(-1,n).T
+
+  data = np.genfromtxt(filename3, skip_header=1, usecols=[1])
+  Eps = data[:].reshape(-1,n).T
+
+  data = np.genfromtxt(filename4, skip_header=1, usecols=[1])
+  ffmean = data[:].reshape(-1,n).T
+
+  data = np.genfromtxt(filename5, skip_header=1, usecols=[1])
+  Ymean = data[:].reshape(-1,n).T
+
+  data = np.genfromtxt(filename6, skip_header=1, usecols=[1])
+  Fmean = data[:].reshape(-1,n).T 
+  
+  fig, axes = plt.subplots(3,3, figsize=(2*3, 3*3))
+  ax = axes.ravel()
+  nmin = 0
+  nmax = 20
+  nskip = 2
+  ax[0].plot(fmean[:,nmin:nmax:nskip], y[:,nmin:nmax:nskip])
+  ax[1].plot(umean[:,nmin:nmax:nskip], y[:,nmin:nmax:nskip])  
+  ax[2].plot(vmean[:,nmin:nmax:nskip], y[:,nmin:nmax:nskip])  
+  ax[3].plot(ffmean[:,nmin:nmax:nskip], y[:,nmin:nmax:nskip])
+  ax[4].plot(K[:,nmin:nmax:nskip], y[:,nmin:nmax:nskip])
+  ax[5].plot(Fmean[:,nmin:nmax:nskip], y[:,nmin:nmax:nskip])
+  ax[6].plot(L[:,nmin:nmax:nskip], y[:,nmin:nmax:nskip])  
+  ax[7].plot(Ymean[:,nmin:nmax:nskip], y[:,nmin:nmax:nskip])  
+  ax[8].plot(Eps[:,nmin:nmax:nskip], y[:,nmin:nmax:nskip])  
+  
+  xlabels = [r'$\overline{\phi}$', r'$\overline{u_x}$', r'$\overline{u_y}$', 
+  r'$\overline{\phi^2}$', r'$\overline{\mathbf{u}^2}$', r'$\overline{\phi u_y}$',
+  r'$\overline{\phi}(1-\overline{\phi})$', r'$\overline{\phi(1-\phi)}$',
+  r'$\overline{\nabla\mathbf{u}:\nabla\mathbf{u}}$']
+
+  for i in range(9):
+    ax[i].set_ylim([np.min(y),np.max(y)])
+    ax[i].set_xlabel(xlabels[i])
+    ax[i].set_ylabel(r'$y$')  
+  
+plt.tight_layout()
+plt.savefig('plot_profiles.svg', dpi=150)
+plt.close()
+~~~
+
+The vertical profiles may also be used to compute relevant 0D quantities, such as : 
+
+- the mixing length width 
+$$
+\displaystyle
+L(t) = 6\int_{-\infty}^{\infty} \overline{\phi}(z,t)(1-\overline{\phi}(z,t))~dz
+$$
+- the 0D turbulent kinetic energy and its dissipation rate
+$$
+\displaystyle
+\mathcal{K}(t) = \frac{1}{L}\int_{-\infty}^{\infty} \frac{1}{2}\overline{\mathbf{u}^2(z,t)}~dz
+$$
+$$
+\displaystyle
+\mathcal{E}(t) = \frac{1}{L}\int_{-\infty}^{\infty} \nu\overline{\nabla\mathbf{u}:\nabla\mathbf{u}}~dz
+$$
+- fluctuations of the volume fraction 
+$$
+\displaystyle
+\mathcal{K}_{\phi\phi}(t) = \frac{1}{L}\int_{-\infty}^{\infty} \overline{\phi(\mathbf{x},t)\phi(\mathbf{x},t)}~dz
+$$
+- the vertical flux of the volume fraction
+$$
+\displaystyle
+\mathcal{F}(t) = \frac{1}{L}\int_{-\infty}^{\infty} \overline{\phi(\mathbf{x},t)u_z(\mathbf{x},t)}~dz
+$$
+
+For instance, an example of the 0D quantities (based on the Reynolds averaged profiles) can be seen below: 
+
+~~~pythonplot 0D Quantities
+import numpy as np
+import matplotlib.pyplot as plt
+
+def count_rows_until_empty(filename):
+  count = 0
+  with open(filename, 'r') as f:
+    for line in f:
+      if line.strip() == '':  # Empty line (or only whitespace)
+        break
+      count += 1
+  return count
+
+filename1 = 'profiles_f1.asc'
+filename2 = 'profiles_K1.asc'
+filename3 = 'profiles_Eps1.asc'
+filename4 = 'profiles_ff1.asc'
+filename5 = 'profiles_Y1.asc'
+filename6 = 'profiles_F1.asc'
+
+first_row = np.genfromtxt(filename2, max_rows=1, skip_header=1)
+num_columns = len(first_row)
+n = count_rows_until_empty(filename1) - 1
+
+profreq = np.pi
+
+if num_columns == 2:
+  data = np.genfromtxt(filename1, skip_header=1, usecols=[0,1,2,3])
+  
+  y = data[:,0].reshape(-1,n).T
+  fmean = data[:,1].reshape(-1,n).T  
+
+  L = 6*np.trapezoid(fmean*(1-fmean), y, axis=0)
+  t = np.arange(len(L))*profreq
+
+  data = np.genfromtxt(filename2, skip_header=1, usecols=[1])
+  UUmean = data[:].reshape(-1,n).T
+  K = 0.5*np.trapezoid(UUmean, y, axis=0)/L
+
+  data = np.genfromtxt(filename3, skip_header=1, usecols=[1])
+  gradUgradUmean = data[:].reshape(-1,n).T
+  Epsilon = np.trapezoid(gradUgradUmean, y, axis=0)/L
+
+  data = np.genfromtxt(filename4, skip_header=1, usecols=[1])
+  ffmean = data[:].reshape(-1,n).T
+  Kcc = np.trapezoid(ffmean, y, axis=0)/L
+
+  data = np.genfromtxt(filename5, skip_header=1, usecols=[1])
+  Ymean = data[:].reshape(-1,n).T
+  Theta = np.trapezoid(Ymean, y, axis=0)/np.trapezoid(fmean*(1-fmean), y, axis=0)
+
+  data = np.genfromtxt(filename6, skip_header=1, usecols=[1])
+  Fmean = data[:].reshape(-1,n).T 
+  F = np.trapezoid(Fmean, y, axis=0)/L
+
+  fig, axes = plt.subplots(2,3, figsize=(4*3, 3*2))
+  ax = axes.ravel()
+  
+  ax[0].plot(t, L)  
+  ax[1].plot(t, K)  
+  ax[2].plot(t, Epsilon)
+  ax[3].plot(t, Kcc)
+  ax[4].plot(t, Theta)
+  ax[5].plot(t, F)    
+
+  ylabels = [r'$L$', r'$\mathcal{K}$', r'$\mathcal{E}$', r'$\mathcal{K}_{cc}$', r'$\Theta$', r'$\mathcal{F}$']
+  for i in range(6):
+    ax[i].set_xlabel(r'$t$')
+    ax[i].set_xlim(np.min(t), np.max(t))
+    ax[i].set_ylabel(ylabels[i])
+    ax[i].ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+  
+plt.tight_layout()
+plt.savefig('plot_0D.svg', dpi=150)
+~~~
+
+*/
+
+// Macro to simplify repeated profile_foreach_region calls
+#include "acastillo/output_fields/profiles_foreach_region.h"
+#define SAVE_PROFILE(...) \
+  profile_foreach_region(__VA_ARGS__, xmin = -L0/4., xmax = L0/4., hmin = hmin, hmax = hmax)
+
+// Function to compute the strain rate for the dissipative term
+static inline double strain_rate_sq (Point point, vector u) {
+  double dudx = (u.x[1]     - u.x[-1]    )/(2.*Delta);
+  double dvdx = (u.y[1]     - u.y[-1]    )/(2.*Delta);
+  double dudy = (u.x[0,1]   - u.x[0,-1]  )/(2.*Delta);    
+  double dvdy = (u.y[0,1]   - u.y[0,-1]  )/(2.*Delta);
+  double Sxx = dudx;
+  double Sxy = 0.5*(dudy + dvdx);
+  double Syx = Sxy;
+  double Syy = dvdy;
+  double S2 = sq(Sxx) + sq(Sxy) + sq(Syx) + sq(Syy);
+  #if dimension == 3
+    double dwdx = (u.z[1]     - u.z[-1]    )/(2.*Delta);
+    double dwdy = (u.z[0,1]   - u.z[0,-1]  )/(2.*Delta);
+    double dudz = (u.x[0,0,1] - u.x[0,0,-1])/(2.*Delta);
+    double dvdz = (u.y[0,0,1] - u.y[0,0,-1])/(2.*Delta);
+    double dwdz = (u.z[0,0,1] - u.z[0,0,-1])/(2.*Delta);
+    double Szz = dwdz;
+    double Sxz = 0.5*(dwdx + dudz);
+    double Syz = 0.5*(dwdy + dvdz);
+    double Szx = Sxz;
+    double Szy = Syz;
+    S2 += sq(Szz) + sq(Sxz) + sq(Syz) + sq(Szx) + sq(Szy);
+  #endif
+  return S2;
+}
+
+event save_profiles (t += PROFFREQ){  
+  double del = L0 / (1 << params.level);
+  double hmin = -params.height/2. + del;
+  double hmax = params.height/2. - del;
+
+    // Volume fraction, mass fraction and velocity
+  scalar temp[];
+  foreach(){
+    temp[] = rho1*f[]/(f[]*(rho1 - rho2) + rho2);
+  }
+
+  scalar * list = {f, temp, u};
+  SAVE_PROFILE(list, filename="profiles_f1.asc");
+  SAVE_PROFILE(list, rhov, filename="profiles_f2.asc");
+
+  // Kinetic energy
+  foreach(){
+    temp[] = 0.;
+    foreach_dimension(){
+      temp[] += sq(u.x[]);
+    }
+  }
+  list = (scalar *){temp};
+  SAVE_PROFILE(list, filename="profiles_K1.asc");
+  SAVE_PROFILE(list, rhov, filename="profiles_K2.asc");
+
+  // Vertical flux
+  foreach(){
+    #if dimension == 2
+      temp[] = f[]*u.y[];
+    #else
+      temp[] = f[]*u.z[];
+    #endif
+  }
+  list = (scalar *){temp};
+  SAVE_PROFILE(list, filename="profiles_F1.asc");
+  SAVE_PROFILE(list, rhov, filename="profiles_F2.asc");
+
+  // Scalar dissipation
+  foreach(){
+    temp[] = sq(f[]);
+  }
+  list = (scalar *){temp};
+  SAVE_PROFILE(list, filename="profiles_ff1.asc");
+  SAVE_PROFILE(list, rhov, filename="profiles_ff2.asc");
+
+  // Young parameter
+  foreach(){
+    temp[] = f[]*(1-f[]);
+  }
+  list = (scalar *){temp};
+  SAVE_PROFILE(list, filename="profiles_Y1.asc");
+  SAVE_PROFILE(list, rhov, filename="profiles_Y2.asc");
+
+  // Viscous dissipation
+  foreach(){
+    temp[] = strain_rate_sq(point, u);
+  }
+  list = (scalar *){temp};
+  SAVE_PROFILE(list, filename="profiles_Eps1.asc");
+  SAVE_PROFILE(list, rhov, filename="profiles_Eps2.asc");
+}
+#undef SAVE_PROFILE
+
+/**
+### Global Quantities
+
+~~~pythonplot Ramp function and global quantities
+import numpy as np
+import matplotlib.pyplot as plt
+
+filename1 = 'globals.asc'
+
+first_row = np.genfromtxt(filename1, max_rows=1, skip_header=1)
+num_columns = len(first_row)
+
+if num_columns == 6:
+  data = np.genfromtxt(filename1, usecols=[0,1,2,4,5])
+else:
+  data = np.genfromtxt(filename1, usecols=[0,1,2,5,6])
+
+t = data[:,0]
+r = data[:,1]
+ekin = data[:,2]
+epot = data[:,3]
+epot -= epot[0]
+epsilon = data[:,4]
+
+fig, axes = plt.subplots(2, 2, figsize=(8, 6))
+ax = axes.ravel()
+
+ax[0].plot(t, r)
+ax[1].plot(t, ekin)
+ax[2].plot(t, epot)
+ax[3].plot(t, epsilon)
+
+ylabels = [r'$r(t)$', r'$E_{kin}(t)$', r'$E_{pot}(t)$', r'$\epsilon(t)$']
+for i in range(4):
+  ax[i].set_xlabel(r'$t$')
+  ax[i].set_ylabel(ylabels[i])
+  ax[i].set_xlim(np.min(t), np.max(t))
+  ax[i].ticklabel_format(style='sci', axis='y', scilimits=(0,0))
+  
+plt.tight_layout()
+plt.savefig('plot_globals.svg', dpi=150)
+~~~
+
+
+*/
+
+event time_series(t += SERIESFREQ){  
+  double ekin = 0., epot[dimension] = {0.}, epsilon = 0.;  
+  foreach(reduction(+:ekin) reduction(+:epot[:dimension]) reduction(+:epsilon)){    
+    epot[0] += dv() * rhov[] * x;
+    epot[1] += dv() * rhov[] * y;
+    #if dimension == 3
+      epot[2] += dv() * rhov[] * z;
+    #endif
+    foreach_dimension()
+      ekin += dv() * 0.5 * rhov[] * sq(u.x[]);    
+    epsilon += dv() * 2 * (mu(f[])/rhov[]) * strain_rate_sq(point, u);
+  }
+
+  if (pid()==0){
+    FILE * fp = fopen("globals.asc", "a");
+    fprintf (fp, "%.9g ", t); 
+    fprintf (fp, "%.9g ", ramp); 
+    fprintf (fp, "%.9g ", ekin);
+    fprintf (fp, "%.9g ", epot[0]);
+    fprintf (fp, "%.9g ", epot[1]);
+    #if dimension == 3
+      fprintf (fp, "%.9g ", epot[2]);
+    #endif
+    fprintf (fp, "%.9g \n", epsilon);   
+    fclose (fp);
+  } 
+}
+
+/**
+## References
+
+~~~bib
+
+@hal{thevenin:2024, tel-05351551}
+
+@article{thevenin:2025,
+  author    = {Thévenin, Sébastien and Gréa, Benoît-Joseph and Kluth, Gilles and Nadiga, Balasubramanya T.},
+  journal   = {J. Fluid Mech.},
+  title     = {Leveraging initial conditions memory for modelling Rayleigh–Taylor turbulence},
+  year      = {2025},
+  doi       = {10.1017/jfm.2025.209},
+}
+
+@article{dimonte:2004,
+  author    = {Dimonte, Guy},
+  journal   = {Phys. Rev. E},
+  title     = {Dependence of turbulent Rayleigh-Taylor instability on initial perturbations},
+  year      = {2004},
+  doi       = {10.1103/physreve.69.056305},
+}
+
+@hal{grea:2025, hal-05313942}
+
+~~~
+*/

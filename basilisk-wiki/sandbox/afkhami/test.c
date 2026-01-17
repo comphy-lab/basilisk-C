@@ -1,10 +1,52 @@
 /**
-Poiseuille flow with embedded boundaries. */
+Layered Poiseuille flow with embedded boundaries. 
+
+- Liquid 1 is located at the bottom between *y=-H/2* and *y=-H$_2$/2*, and
+- Liquid 2 is located at the top of Liquid 1 between *y=-H$_2$/2* and *y=H$_2$/2*, and
+- Liquid 3 is located at the top between *y=H$_2$/2* and *y=H/2*.
+
+
+$\rho_1, \rho_2, \rho_3$, and
+$\mu_1, \mu_2, \mu_3$ are the densities and viscosities of each fluid.
+*/
 
 #include "grid/multigrid.h"
 #include "embed.h"
 #include "navier-stokes/centered.h"
 #include "view.h"
+
+/**
+Dynamic viscosity:
+*/
+
+#define MU1 1.0
+#define MU2 1.0
+#define MU3 1.0
+
+#define FILTERED
+
+/**
+Interface between fluids is defined using Volume-of-Fluid, defined as
+the interfaces 12 and 23. We define Y$_2$ as the vertical position of the center of the middle layer, and H$_2$ as its thickness.
+*/
+
+#include "vof.h"
+scalar f12[], f23[], ff12[], ff23[];
+scalar * interfaces = {f12,f23};
+#define Y2 0.0
+#define H2 0.1
+
+/**
+The properties of the fluid ($\tilde{\rho},\tilde{\mu},\dots$) are evaluated as functions of the volume fraction of each fluid.
+
+  $$ \tilde{\rho} = (1-f_{12})(1-f_{23})\tilde{\rho}_1 + f_{12}~(1-f_{23})~\tilde{\rho}_2 + f_{12}~f_{23}~\tilde{\rho}_3 $$
+  $$ \tilde{\mu} = (1-f_{12})(1-f_{23})\tilde{\mu}_1 + f_{12}~(1-f_{23})~\tilde{\mu}_2 + f_{12}~f_{23}~\tilde{\mu}_3 $$
+  $$ \vdots $$
+*/
+
+#define FLUID(f12,f23,x1,x2,x3) (((1.-(clamp(f12,0,1)))*(1.-(clamp(f23,0,1)))*x1) + ((clamp(f12,0,1))*(1.-(clamp(f23,0,1)))*x2) + ((clamp(f12,0,1))*(clamp(f23,0,1))*x3))
+
+#define MUTILDE(f12,f23) 	FLUID(f12,f23,MU1,MU2,MU3)
 
 u.n[left] = neumann(0.);
 u.n[right] = neumann(0.);
@@ -18,10 +60,12 @@ int main()
 {
 
   size (1. [0]);
+  DT = 0.001 [0];
   
   origin (0., -L0/2.);
 
   stokes = true;
+  
   
   TOLERANCE = 1e-6;
   
@@ -33,10 +77,26 @@ scalar un[];
 
 event init (t = 0) {
 
+  scalar phi12[];
+  foreach_vertex()
+    phi12[] = y - (Y2 - H2/2.);
+  fractions (phi12, f12);
+
+  scalar phi23[];
+  foreach_vertex()
+    phi23[] = y - (Y2 + H2/2.);
+  fractions (phi23, f23);
+  
+  boundary ({f12,f23});
+
+  mu = new face vector;
+  
   /**
-  The viscosity is unity. */
+  The viscosity is unity. 
+  Space and time should be dimensionless to be able to use the ‘mu = fm’ trick.
+  */
    
-  mu = fm;
+  //mu = fm;
   
   /**
   The geometry of the embedded boundary is defined as two plates located at $y = \pm (L0 + 2\Delta)/8$. */
@@ -62,6 +122,35 @@ event init (t = 0) {
   
   foreach()
     un[] = u.y[];
+}
+
+event properties (i++) {
+
+  face vector muv = mu;
+  
+#ifdef FILTERED //2D
+  foreach() {
+    ff12[] = (4.*f12[] + 
+	      2.*(f12[0,1] + f12[0,-1] + f12[1,0] + f12[-1,0]) +
+	      f12[-1,-1] + f12[1,-1] + f12[1,1] + f12[-1,1])/16.;
+    ff23[] = (4.*f23[] + 
+	      2.*(f23[0,1] + f23[0,-1] + f23[1,0] + f23[-1,0]) +
+	      f23[-1,-1] + f23[1,-1] + f23[1,1] + f23[-1,1])/16.;
+  }  
+  boundary ({ff12,ff23});
+#endif
+
+  foreach_face() {
+#ifdef FILTERED
+    double f12m = (ff12[] + ff12[-1])/2.;
+    double f23m = (ff23[] + ff23[-1])/2.;
+#else
+    double f12m = (f12[] + f12[-1])/2.;
+    double f23m = (f23[] + f23[-1])/2.;
+#endif   
+    //if (MU1 || MU2 || MU3)
+    muv.x[] = fm.x[]*MUTILDE(f12m,f23m); //fm field contains the product of the metric and solid factors.
+  }
 }
 
 /**
@@ -128,9 +217,11 @@ event profile (t = end)
 ## Results
 
 ![Velocity field](test/ux.png)
+Velocity field
 ![Pressure field](test/p.png)
+Pressure field
 ![Error field](test/e.png)
-
+Error field
 
 ~~~gnuplot Velocity profile (N = 128)
 L0 = 1.
@@ -142,7 +233,7 @@ poiseuille(y) = - 128/2 * (y*y - plate_loc * plate_loc);
 set grid
 # set arrow from 0.25, graph 0 to 0.25, graph 1 nohead
 # set arrow from 0.5, graph 0 to 0.5, graph 1 nohead
-plot [-plate_loc:plate_loc][-0.1:1.1] 'data_velo_128' u 1:2 t 'numerics', poiseuille(x) t 'theory'
+plot [-plate_loc:plate_loc][] 'data_velo_128' u 1:2 t 'numerics', poiseuille(x) t 'theory'
 ~~~
 
 

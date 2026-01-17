@@ -43,8 +43,14 @@ not be the case, but HDF5 is a messy library that just won't pass through `qcc`
 An explanation can be found [here](https://groups.google.com/g/basilisk-fr/c/CM270hBSfWo) 
 */
 
-#pragma autolink -lhdf5
-#include <hdf5.h>
+// Check if HDF5 is available by testing if the header can be included
+#if __has_include(<hdf5.h>)
+  #define HAVE_HDF5 1
+  #pragma autolink -lhdf5
+  #include <hdf5.h>
+#else
+  #warning "HDF5 library not found. XDMF output functions will be disabled."
+#endif
 
 /** 
 ## preamble: define some useful macros
@@ -109,6 +115,7 @@ The arguments and their default values are:
  
 */
 trace void output_xmf(scalar *slist, vector *vlist, char *subname, int compression_level = 9){
+#ifdef HAVE_HDF5
   hid_t acc_tpl1;    // File access template
   hid_t file_id;     // HDF5 file ID
   hid_t group_id;    // HDF5 group ID
@@ -143,6 +150,7 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int compressi
 
   // Write the heavy data
   // Setup file access template with parallel I/O access
+#if _MPI
   acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio(acc_tpl1, MPI_COMM_WORLD, MPI_INFO_NULL);
 
@@ -151,6 +159,10 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int compressi
 
   // Release file-access template
   H5Pclose(acc_tpl1);
+#else
+  // Create a new HDF5 file without parallel I/O
+  file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+#endif
 
   // Define chunk size for parallel I/O
   hsize_t chunk_size = num_cells / npe() / 8;
@@ -197,6 +209,14 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int compressi
 
   // Close HDF5 resources
   H5Fclose(file_id);
+#else
+  // HDF5 not available - print warning and return
+  static int warning_printed = 0;
+  if (!warning_printed && pid() == 0) {
+    fprintf(stderr, "Warning: output_xmf() called but HDF5 is not available. Output skipped.\n");
+    warning_printed = 1;
+  }
+#endif
 }
 
 /** 
@@ -225,6 +245,7 @@ The arguments and their default values are:
 
 #if dimension == 3
 trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n = {0, 0, 1}, double _alpha = 0, int compression_level = 9){
+#ifdef HAVE_HDF5
   hid_t acc_tpl1;    // File access template
   hid_t file_id;     // HDF5 file ID
   hid_t group_id;    // HDF5 group ID
@@ -265,6 +286,7 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
     write_xdmf_light_data(slist, vlist, name, subname, num_cells, num_points, dim = dimension - 1);
 
   // Setup file access template with parallel I/O access
+#if _MPI
   acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio(acc_tpl1, MPI_COMM_WORLD, MPI_INFO_NULL);
 
@@ -273,6 +295,10 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
 
   // Release file-access template
   H5Pclose(acc_tpl1);
+#else
+  // Create a new HDF5 file without parallel I/O
+  file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+#endif
 
   // Define chunk size for parallel I/O
   hsize_t chunk_size = num_cells / npe() / 8;
@@ -321,6 +347,14 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
 
   // Close HDF5 resources
   H5Fclose(file_id);
+#else
+  // HDF5 not available - print warning and return
+  static int warning_printed = 0;
+  if (!warning_printed && pid() == 0) {
+    fprintf(stderr, "Warning: output_xmf_slice() called but HDF5 is not available. Output skipped.\n");
+    warning_printed = 1;
+  }
+#endif
 }
 #endif
 

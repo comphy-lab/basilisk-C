@@ -1,4 +1,4 @@
-pristine:f6d4c274e7a6603845c2cdc7e1c19351a5c53b11a666e0910be60a262e46a330
+pristine:4fa643c1ac133cf6aedd92d18ea4db719d480117360385caa470b7461fe91863
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -3181,3 +3181,163 @@ Zhang Yuanpeng <zhangyuanpeng@mail.ustc.edu.cn>**20260115151646
  Ignore-this: 1c6355166754125de6764b437b63f276bac788d97cdbd3db13f2945f4294ad9d67496efedc795157
 ] 
 hash: 0000000548-7921fbd0c169a9108e49606e52e01ae0bb8ff5d94be2a48305076267f146edf4
+[three phase
+afkhami <shahriar.afkhami@njit.edu>**20260116051625
+ Ignore-this: b6697f4481d3ea949b47957bbdc6679b68ea1844abe7773c648abab7f4cce158f680d9a750e1bfac
+] 
+hash: 0000002436-189427bd419c422880d77e44db2997b2fae433e06ba1d359e257fa6cf45d3572
+[fixed: Fshape=1, not 0
+hugo.jacquet.work@gmail.com**20260116075016
+ Ignore-this: 3a4a634dcf6a22ec21d833c246898a02
+] 
+hash: 0000000964-003ed7942b327ad0702e3ae94e7b6fcab7ed3e3d323e55583d32f3831dc032f1
+[fixed: memory leak of T_spectrum
+hugo.jacquet.work@gmail.com**20260116080122
+ Ignore-this: b443f5ec72a35ab53c350f32b7f3609c
+] 
+hash: 0000001393-ddac6535bb75abe6e3591799554f5e7ae65093d8076b91cc47246616ca7146c8
+[added: script to show test case
+hugo.jacquet.work@gmail.com**20260116091224
+ Ignore-this: c5a62b80e966bd205908a4bc91980cff
+] 
+hash: 0000004885-4f7ab20e1690e56a97f28685273d38472f4710614d9eeb3d8c8e864728e6f2a1
+[typo
+hugo.jacquet.work@gmail.com**20260116091525
+ Ignore-this: 71542105ad5b49f54676be0e45c74c6d
+] 
+hash: 0000000145-13a22845dc442037b4cf3c686f3a2fedfe874a390dc7d1b2b958ed4337b0ff61
+[redirect stderr too to logs
+hugo.jacquet.work@gmail.com**20260116092607
+ Ignore-this: a855ae3757e1f9731442ef75c670192b
+] 
+hash: 0000000208-bebf15940b41f48176db9eb5ce3ff115f20e89594d76eb9b4440dca92130eae5
+[added inline plots
+hugo.jacquet.work@gmail.com**20260116133816
+ Ignore-this: 3828ba5115751b51c336afaf0c195dcd
+] 
+hash: 0000000809-07051eec3e20f53db4fb9c870cdfc9d12b0dfc67f1df9d55969f99ce48967fe2
+[added inline plots
+hugo.jacquet.work@gmail.com**20260116133902
+ Ignore-this: 6b2cb8f1669369d9d15ca6decb715450
+] 
+hash: 0000000216-1a883f43f50e488c353cec10933f6c452b79331fc723db1521cdd14adfc60568
+[better plots
+hugo.jacquet.work@gmail.com**20260116134742
+ Ignore-this: 265406c57889e936e79f518983a79b5d
+] 
+hash: 0000000644-762da005d03e93b3f6f139de985f6f4efac74934a492d021ac875cf7fdc314f0
+[If hdf5 is not there, code should still compile
+Andrés Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260116140636
+ Ignore-this: f0e49ae13146577c76aa960d6a3d3c5e6681ff2ddd442deca1c403db577f7a56ef1f2aaef95a1a0b
+] 
+hash: 0000001757-58ce20678af95bdf28f43bd98dfe7e5ac43fbb88876f17f3be5dcc96bc6938f0
+[If hdf5 and mpi are not there, code should still compile
+Andrés Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260116142053
+ Ignore-this: fb64b9ab1c5cfada6ff636c1844a430fdbe0e8524412004582ae0b6a82d52ba084bea0938eb80c7f
+] 
+hash: 0000001571-b44fe3e9c19022390c385f247d7c34b82d6548a3c70e5b21f9697fdb90e8af28
+[If hdf5 and mpi are not there, code should still compile
+Andrés Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260116142147
+ Ignore-this: a6dacdb90cea1560307212c17e2740096bfa6598bccf72decd49161246c093d8807444a7e71f9dd1
+] 
+hash: 0000000491-7ecb04d8b17e7893654c82ba7a4561d16b11760f6c5948de31e0ed73e10cd324
+[If hdf5 and mpi are not there, code should still compile
+Andrés Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260116143301
+ Ignore-this: 65826fe97e266de4e4372714c41f9db9ebc65e5de43d7ff8d6e82b8e9c3471e05aa794d4b29fbba5
+] 
+hash: 0000004746-e08cfd6ebdd6bc026a2d792b1b61f7ecc3a32b9ac5921a9864dd9f7603253bc7
+[Add example for frozen waves
+Andrés Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260116143610
+ Ignore-this: 2d2f9eaae8c3ef1438f37ef22756ada9fe9755df05d1de25fdfada3b4e315eb5e41f70efeaee95ed
+] 
+hash: 0000038240-77a4a9875aacbb80fe63f2633ffc07ebae6deadba4f39787e2c913b5e402061e
+[added makefile
+hugo.jacquet.work@gmail.com**20260116145101
+ Ignore-this: 1b05df686cecfd30b16e61c5670624a8
+] 
+hash: 0000000530-1754dd221ec1efeb9f1665786d38f07becf8a231330acb2ab8e9a596ec419d9e
+[typo
+hugo.jacquet.work@gmail.com**20260116145325
+ Ignore-this: 8eedc9e96ccc24320abfa5b737d54231
+] 
+hash: 0000000205-d06c9a3cd07e83315f5fd6a4d07d7c5175acdc67e6316418e7c6cc69412350e3
+[Movie should show
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260116145719
+ Ignore-this: c61b11623025514fa3e0b78800f2730798de3ccf99312c25500ff399a13b6db4dde3cba9b2439658
+] 
+hash: 0000000489-9a2c19fb626408555dbaa856d6ce12f06eac6ba4c5e4eededcba33b57b6a9820
+[openmp version
+hugo.jacquet.work@gmail.com**20260116150045
+ Ignore-this: d1626d669bf258aa5e032aad953f1014
+] 
+hash: 0000000425-391a89a8656afdde7f448f2510d14462c8040b0be540d8b2e2c069b6e6a98114
+[removed my useless scripts
+hugo.jacquet.work@gmail.com**20260116151232
+ Ignore-this: 165153cc7761d0bfb81bd6203dee2f13
+] 
+hash: 0000001899-8c06bc0b623f358e5025f8df5700ec8d56e84bda7df29af534cc2a748ac12784
+[better description
+hugo.jacquet.work@gmail.com**20260116155206
+ Ignore-this: fd63a8a258a39894d736f7ccd598bacd
+] 
+hash: 0000000889-2167e4bb734c4b74b30ad03cdbef03120a92608d247daa3da9b59204906e2e92
+[Run all tests
+Stephane Popinet <popinet@basilisk.fr>**20260116160727
+ Ignore-this: 1fc84cdd3846597cb0323c8dc9dc9b2ca1f5663bb29bdf3b21c88b7983a61dc6528747a62247e491
+] 
+hash: 0000000489-f1ca5d25f1883da3cadd7755386b24d7aa1b3b76d69b388223b2e70d0a20d66f
+[No PNGs please...
+Stephane Popinet <popinet@basilisk.fr>**20260116161121
+ Ignore-this: 764dec6d295d4757e420150fc0ecf2e1f9d3917ea278d7a0fddd6bafeb7456cf958824a80ec4ce8f
+] 
+hash: 0000000608-fec034eddbee6e9a3d047fc81ae16b15c3f9fe790ff31a9bb7c89991c758dec1
+[Added OpenMP results
+Stephane Popinet <popinet@basilisk.fr>**20260116161450
+ Ignore-this: 6eeaf098adb5a170262b09270e9dac75681941096da4db2022f6eb4212af1814419f32c1d8087cb2
+] 
+hash: 0000000437-649b8adec18f6068770d997e24568c54ae08d82f055e6bfc024cd7067abc2887
+[+ turbulent test
+FanshuoMA <mafanshuo12@gmail.com>**20260116164005
+ Ignore-this: 34f139fba6c94dc0a78531efef0a42c6046c902a533b3361cabee2cf8785a5a3cee914d6ef84040f
+] 
+hash: 0000000325-178333bc1ed537d2fa9aa1f7b26ebdcf7eafd4653bc6f6316f2c043b6d14d6a8
+[+complete T.c
+FanshuoMA <mafanshuo12@gmail.com>**20260116173049
+ Ignore-this: 6407b812b386fae56fd48dddd5c7c99e8aff25e481b0a35b5d0541adedf8982aa3ea04777073ec8d
+] 
+hash: 0000003168-f74add140cea1d87a7b52ca5f36e40ed73e18fe0b7cc15315ff4d032fded8baf
+[+ turbulent viscocity and related variables 
+FanshuoMA <mafanshuo12@gmail.com>**20260116174718
+ Ignore-this: 344a54fc7c2d8c8b79fd2f9bf8e2e9f16b17932ebf4411912212bc850ce2fc04b2334ccad47ae774
+] 
+hash: 0000000789-42138cc3bbc3a5d8dfd2e82e2bd6f8d84cb1d2609582a0d021629a379baf8901
+[Changed endtime
+acastillo <andres.castillo.castellanos@gmail.com>**20260116175751
+ Ignore-this: 4d181e902db4cbf714df05d35bc123faf8bc88cc1865344d9836c89967d18c990fc1b9d3c011617
+] 
+hash: 0000000570-33dcaecbdb41d981a3d7210fd3d671398763c0a1faeebad6054f2d88ca0eb333
+[Changed aspect ratio
+acastillo <andres.castillo.castellanos@gmail.com>**20260116181349
+ Ignore-this: c838fd5652bc21053994696377b3ff216d1a1403c86db6eb44f66a17fa1896b7f1836257fad3ca8c
+] 
+hash: 0000000626-b875712c13e825d5a26da911ca7f76bc57a388b5c813a5402ceeef252e4da807
+[debug
+Fanshuo**20260116184609
+ Ignore-this: c745d09d2b632df1430e60785e8922fc0c1dd98d4e85b537b69943411d63068cc3bc1a75b460759d
+] 
+hash: 0000000294-9c809dfbfc63a39e4ac86152a43b745794c4f491d9b471b6a6d735e1cd2af03b
+[video update
+clemarech <c.lemarechal@hotmail.fr>**20260116190655
+ Ignore-this: 75ea135158a58bc0e34dc4c601ee861bb90ed7ed2853d744842099af99be1d2e116747164474fa73
+] 
+hash: 0000000272-3d6c9055b8d1f3d8559ac733b279f5ac98cd5f8941f03e32e1749a7624281d95
+[fixed issues
+afkhami <shahriar.afkhami@njit.edu>**20260116212754
+ Ignore-this: 2e893980267392bd9151c4b8d24ce96d7465c1973cd44097c33f085b72e4a106504e1541d44eb8dc
+] 
+hash: 0000004228-216766373a1d8f89cae6f35793bd025448e9a1bb9be88cea184aee75ee8fc09a
+[cosmetic
+afkhami <shahriar.afkhami@njit.edu>**20260116214040
+ Ignore-this: 6b3b9716e8ac8f95aee7964364651dff366338cb4712d5ca9489aff392686f43fd3f619c9f2054e9
+] 
+hash: 0000000631-01508e780be65319377e8e634ca40c5fe904e37e0299f64f499cb4041e8a9278

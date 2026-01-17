@@ -55,7 +55,7 @@ u.t[left] = neumann (0.);
 u.r[left] = neumann (0.);
 
 //Outflow BC
-u.n[right] = neumann (0.);
+u.n[right] = neumann (0.); 
 u.t[right] = neumann (0.);
 u.r[right] = neumann (0.);
 uf.n[right] = neumann (0.); //to help convergence
