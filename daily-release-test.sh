@@ -4,6 +4,11 @@
 
 set -uo pipefail
 
+# Ensure Homebrew paths are available (cron has minimal PATH)
+if [[ -d "/opt/homebrew/bin" ]]; then
+  export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 LOGS_DIR="$SCRIPT_DIR/logs"
 DATE_STR="$(date -u +%Y-%m-%d)"
@@ -77,9 +82,9 @@ cleanup_old_logs
 
 cd "$SCRIPT_DIR"
 
-# Run the test and capture output
+# Run the test and capture output (use tee for verbose console output)
 log "Running: ./release-comphy-tag.sh --test-only"
-if ./release-comphy-tag.sh --test-only >> "$LOG_FILE" 2>&1; then
+if ./release-comphy-tag.sh --test-only 2>&1 | tee -a "$LOG_FILE"; then
   log "SUCCESS: Release test passed"
   exit 0
 else
