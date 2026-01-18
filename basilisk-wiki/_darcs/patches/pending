@@ -16,6 +16,7 @@ rmdir ./sandbox/Vierron/Natural-convection/cylindrical/rbcyl-emb
 rmdir ./sandbox/acastillo/bouncing_droplets/bouncing_droplets
 rmdir ./sandbox/acastillo/filaments/old_but_interesting/helical
 rmdir ./sandbox/acastillo/filaments/tests_navier_stokes
+rmdir ./sandbox/acastillo/frozen_waves/without_walls
 rmdir ./sandbox/acastillo/old
 rmdir ./sandbox/crobert/1_Layered/1_SurfaceTension/vanishing_waves
 rmdir ./sandbox/easystab/sandbox/easystab

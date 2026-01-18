@@ -69,7 +69,7 @@ int main()
   
   TOLERANCE = 1e-6;
   
-  for (N = 16; N <= 128; N *= 2)
+  for (N = 32; N <= 256; N *= 2)
     run();
 }
 
@@ -179,12 +179,8 @@ event profile (t = end)
   }
 
   norm n = normf (e);
-  
-  foreach(){
-    //if (cs[] > 0.)
-      fprintf (stderr, "%d %.3g %.3g %.3g %d %d %d %d %d\n",
-	 N, n.avg, n.rms, n.max, i, mgp.i, mgp.nrelax, mgu.i, mgu.nrelax);
-  }
+  fprintf (stderr, "%d %.3g %.3g %.3g %d %d %d %d %d\n",
+           N, n.avg, n.rms, n.max, i, mgp.i, mgp.nrelax, mgu.i, mgu.nrelax);
   
   dump();
   
@@ -223,9 +219,9 @@ Pressure field
 ![Error field](test/e.png)
 Error field
 
-~~~gnuplot Velocity profile (N = 128)
+~~~gnuplot Velocity profile (N = 256)
 L0 = 1.
-N = 128.
+N = 256.
 set xlabel 'y'
 set ylabel 'u_x'
 plate_loc = (L0/8. + (L0/N/4.))
@@ -233,7 +229,7 @@ poiseuille(y) = - 128/2 * (y*y - plate_loc * plate_loc);
 set grid
 # set arrow from 0.25, graph 0 to 0.25, graph 1 nohead
 # set arrow from 0.5, graph 0 to 0.5, graph 1 nohead
-plot [-plate_loc:plate_loc][] 'data_velo_128' u 1:2 t 'numerics', poiseuille(x) t 'theory'
+plot [-plate_loc:plate_loc][] 'data_velo_256' u 1:2 t 'numerics', poiseuille(x) t 'theory'
 ~~~
 
 
@@ -251,7 +247,7 @@ set xtics 8,2,1024
 set ytics format "% .0e"
 set grid ytics
 set cbrange [1:2]
-set xrange [8:512]
+set xrange [16:512]
 set ylabel 'Error'
 set yrange [*:*]
 set key top right

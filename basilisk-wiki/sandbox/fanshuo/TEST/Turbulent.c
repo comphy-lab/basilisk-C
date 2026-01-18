@@ -164,7 +164,7 @@ event output (t = end)
 
 /**
 
-~~~gnuplot Velocity and shear profiles for Bingham flow
+~~~gnuplot Velocity and shear profiles for Turbulent flow
  set xlabel "y"
  set ylabel "u"
  p "out" u 2:3 w p t'U computed', 

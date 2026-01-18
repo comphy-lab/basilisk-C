@@ -46,6 +46,19 @@ url = {https://www.sciencedirect.com/science/article/pii/S0017931025010956},
 author = {D. Vleeschhouwers and N. Hidman and A. Åkesjö and H. Ström and S. Sasic},
 keywords = {Two-phase DNS, Falling films, Evaporation, Supersaturation, VOF}
 }
+
+@article{wang2026,
+title = {Impact of spinning droplets onto superhydrophobic surfaces: Asymmetric tumbling rapid rebound},
+journal = {Journal of Colloid and Interface Science},
+volume = {708},
+pages = {139686},
+year = {2026},
+issn = {0021-9797},
+doi = {https://doi.org/10.1016/j.jcis.2025.139686},
+url = {https://www.sciencedirect.com/science/article/pii/S0021979725030784},
+author = {Jinyang Wang and Feifei Jia and Xiaoyun Peng and Peng Zhang and Kai Sun and Tianyou Wang},
+keywords = {Droplet impacts, Superhydrophobic surface, Rapid rebound}}
+
 ~~~
 
 ### 2025

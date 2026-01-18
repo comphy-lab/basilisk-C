@@ -1,4 +1,4 @@
-pristine:4fa643c1ac133cf6aedd92d18ea4db719d480117360385caa470b7461fe91863
+pristine:59f0b97b49d345431f0905ec66eed78f44cd4197a47d045c82c0b9570a5c1e62
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -3341,3 +3341,53 @@ afkhami <shahriar.afkhami@njit.edu>**20260116214040
  Ignore-this: 6b3b9716e8ac8f95aee7964364651dff366338cb4712d5ca9489aff392686f43fd3f619c9f2054e9
 ] 
 hash: 0000000631-01508e780be65319377e8e634ca40c5fe904e37e0299f64f499cb4041e8a9278
+[cosmetic
+afkhami <shahriar.afkhami@njit.edu>**20260117011258
+ Ignore-this: c58ec62fb25a637517a78a91d78ab3884d0e24dcfa1656c82f626f9415ce7554701603a97c736aba
+] 
+hash: 0000001098-d9edce375fe64525e128b377a372602e7ca8a30323f24f1a31c1fba1fdffa341
+[Added Wang's paper, which used Basilisk.
+Jin**20260117065859
+ Ignore-this: bc9b8b7d310788fe5da5ff4ed4f3a6e35abc2f0e1e4d9cccbad9a1b244acf90bc0672fbd00ce5796
+] 
+hash: 0000000744-cc88fec7ca35ff802721e1ee142acbb8f251e10a9bf47b7a9747ff3386ade96f
+[+modify figure legend
+Fanshuo**20260117101450
+ Ignore-this: a0f64e5eae1c8c9bf1b7b2bb003df80b3147b9eae726463c1db3c497705cb4fca87c8dd70ad15a71
+] 
+hash: 0000000303-bb0578f42a223cc231eb6c24f120209c5fbee3d4b7339c48a4d3519b7a2a3434
+[Added MPI
+Stephane Popinet <popinet@basilisk.fr>**20260117113217
+ Ignore-this: d076be26d66b4f01e9b003d2f75223fb9132f123dedebb5a52424d83b66b95abbe0fded068471c9f
+] 
+hash: 0000000401-a23538671ff4d3328fd693d7438bc4762110d624cbeb89b916cb760675eb4d11
+[Added comments
+Stephane Popinet <popinet@basilisk.fr>**20260117113605
+ Ignore-this: d59552663c5261ed8adf0bd16fce962f001341e3cdad1664fd608f0409f6053e24906322c9af0919
+] 
+hash: 0000000528-3004f3d8a39f9b182201180f59e29540bf3ef7ce49784fabddd26473c77732af
+[MPI plot
+Stephane Popinet <popinet@basilisk.fr>**20260117161031
+ Ignore-this: e3327f92a168784690e4ec9e6c519c361e30f453dc0215e5e49801a8030f1ed19318675102321523
+] 
+hash: 0000000492-f740a3249e504f9bae05d86a4cc13278d87f1b8dc5f168fa93cf529371658d9e
+[Adde time evoluton
+Stephane Popinet <popinet@basilisk.fr>**20260117162231
+ Ignore-this: fc5260b7e5cdbc86e2e9e2226750728869e27fa6b232ce67fd605f256248a7de30942cb6df5798f7
+] 
+hash: 0000000555-d8948d4a73f1ce6e94e09b3ebe9880c8f00fd7838eb9a970c92c973ee5e921e9
+[Multiple successive reductions are incorrect in MPI
+Stephane Popinet <popinet@basilisk.fr>**20260117170021
+ Ignore-this: 3ef0cfafb96a01cd5f4f783fdab2339f
+] 
+hash: 0000000869-3f16688e1c9856537727aa4f2f5da7326de73cf7e8a404056a4cfb908f4ad15d
+[added microswimmer.c
+afkhami <shahriar.afkhami@njit.edu>**20260117232554
+ Ignore-this: ea07f1e24b230192d7f4fbbd93067c1f27511bfdc22ec8d352ca04c07c773062b22d6ac9a00a992
+] 
+hash: 0000000255-a2f3dab7797a42c057c4ad92765717d4361d58287ff0cbda8efafa8269f0bf9f
+[added microswimmer.c from fpicella/cylinder_between_plates/sedimentation_driver_moving.c
+afkhami <shahriar.afkhami@njit.edu>**20260117235431
+ Ignore-this: 562da87e994bf50c8ab8324435edaa3835f20c8971e81bcf5c9cc6ae118b898dd4e3ce284e210ca
+] 
+hash: 0000007918-d43aaf255fcfa5aa794150ca4d1b4e7ea7ec940541d5ed46e280a537c42b2ede

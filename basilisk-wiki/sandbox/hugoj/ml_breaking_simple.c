@@ -158,7 +158,7 @@ event compute_horizontal_avg (i++; t<=tend+1e-10){
   fprintf(stderr, "   t=%f u_sfx= %f\n",t, U);
   //#endif
   //fprintf(stderr, "t %f, i %d, value %f\n", t, i,  u_profile[nl-2]);
-
+  fprintf (stderr, "t %f u.max %f\n", t, statsf(u.x).max);
 }
 
 // WRITING U_PROFILE
@@ -210,25 +210,35 @@ event cleanup(t=end){
 /**
 ## Results
 
-~~~gnuplot The profile of layer averaged u.x in time
+~~~gnuplot The profile of layer averaged u.x in time (serial)
 set pm3d map
 set view map
 set xlabel "Time (s)"
 set ylabel "Layer"
 set cblabel "Value"
-set yrange [0:9]
-set size square
 splot "u_profile.dat" using 1:2:3 with pm3d
 ~~~
 
-~~~gnuplot The first layer average of u.x in time
+~~~gnuplot The profile of layer averaged u.x in time (MPI)
+splot "../ml_mpi/u_profile.dat" using 1:2:3 with pm3d
+~~~
+
+~~~gnuplot The first layer average of u.x in time, MPI is clearly not correct
 reset
 set xlabel "Time (s)"
 set ylabel "U_{sfx} (m/s)"
-set size square
-set yrange [-0.25:0.25]
+set logscale y
 plot "u_sfx.dat" using 1:3 w l t 'serial', \
-     "../ml_openmp/u_sfx.dat" u 1:3 w l t 'openmp'
+     "../ml_openmp/u_sfx.dat" u 1:3 t 'openmp', \
+     "../ml_mpi/u_sfx.dat" u 1:3 t 'MPI'
+~~~
+
+~~~gnuplot u.x.max
+set ylabel "u.x.max"
+unset logscale
+plot "< grep u.max log" u 2:4 w lp t 'serial', \
+     "< grep u.max ../ml_openmp/log" u 2:4 w lp t 'openmp', \
+     "< grep u.max ../ml_mpi/log" u 2:4 w lp t 'mpi'
 ~~~
 **/
 

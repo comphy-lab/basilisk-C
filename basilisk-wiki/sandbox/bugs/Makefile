@@ -17,3 +17,5 @@ foreach_neighbor_test.tst: CC=mpicc -D_MPI=8
 stack.tst: CFLAGS += -D_MPI=1 -grid=octree
 
 reductions.tst: CC=mpicc -D_MPI=4
+
+multired.tst: CC=mpicc -D_MPI=4
