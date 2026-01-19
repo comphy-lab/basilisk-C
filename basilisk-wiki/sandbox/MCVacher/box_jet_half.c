@@ -29,7 +29,7 @@ face vector muv[];
 
 int main() {
 
-  Re=112;
+  Re=250;
 
   R_d=0.5; 
   L0=10; 
@@ -44,9 +44,10 @@ int main() {
   u.t[top] = dirichlet(0);
 
   s[bottom] = dirichlet (U0*(x > -R_d));
+  p[bottom] = dirichlet(0.);
+
 
   u.n[left] = (y<4*R_d && u.n[] < 0.) ? neumann(0) : dirichlet(0);
-  u.t[left] = dirichlet(0.);
 
   u.n[right] = dirichlet(0.);
   p[right]=neumann(0.);

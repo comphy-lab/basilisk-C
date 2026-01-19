@@ -22,6 +22,17 @@ author = {A.M. Gañan-Calvo and M.A. Herrada and J.M. Lopez-Herrera},
 keywords = {Sea spray aerosols, Bubble bursting, Jetting Marine aerosols,
 Climate modeling, Droplet size distribution}}
 
+@article{esposito2026,
+  title={Hydrodynamic interaction of a tandem of Newtonian drops sedimenting in elastoviscoplastic materials},
+  author={Esposito, G and Kordalis, A and Dimakopoulos, Y and Tsamopoulos, J},
+  journal={Journal of Rheology},
+  volume={70},
+  number={1},
+  pages={85--112},
+  year={2026},
+  publisher={AIP Publishing}
+}
+
 @article{liu2026,
 title = {Direct numerical simulation of side-by-side rising bubble coalescence behavior based on a Weber number criterion},
 journal = {International Journal of Multiphase Flow},
@@ -98,6 +109,18 @@ keywords = {Droplet impacts, Superhydrophobic surface, Rapid rebound}}
   publisher = {American Physical Society},
   doi = {10.1103/fbdh-fnzv},
   url = {https://link.aps.org/doi/10.1103/fbdh-fnzv}
+}
+
+@article{esposito2025,
+title = {Rising and migration dynamics of an air bubble close to a wall in an elastoviscoplastic fluid},
+journal = {Journal of Non-Newtonian Fluid Mechanics},
+volume = {345},
+pages = {105482},
+year = {2025},
+issn = {0377-0257},
+doi = {https://doi.org/10.1016/j.jnnfm.2025.105482},
+url = {https://www.sciencedirect.com/science/article/pii/S0377025725001016},
+author = {G. Esposito and Y. Dimakopoulos and J. Tsamopoulos},
 }
 
 @article{deAquino2025, 
@@ -787,6 +810,16 @@ issn = {0045-7930},
 doi = {https://doi.org/10.1016/j.compfluid.2024.106366},
 url = {https://www.sciencedirect.com/science/article/pii/S0045793024001981},
 author = {David Gabriel Harispe and Pablo A. Kler}
+}
+
+@article{esposito2024,
+  title={Buoyancy induced motion of a Newtonian drop in elastoviscoplastic materials},
+  journal={Journal of Rheology},
+  volume={68},
+  number={5},
+  pages={815--835},
+  year={2024},
+  publisher={AIP Publishing}
 }
 
 @article{pan2024,

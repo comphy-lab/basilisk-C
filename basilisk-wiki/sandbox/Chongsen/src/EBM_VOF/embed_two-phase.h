@@ -29,35 +29,36 @@ event defaults (i = 0)
 #endif
 
 #ifdef FILTERED
-scalar sf[];
+scalar sff[];
 #else
-# define sf f
+//# define sf f
+# define sff tmp_c
 #endif
 
 event tracer_advection (i++)
 {
 
-#ifndef sf
+#ifndef sff
 for (scalar tmp_c in tmp_interfaces){
 
   foreach()
-    sf[] = (4.*tmp_c[] + 
+    sff[] = (4.*tmp_c[] + 
 	    2.*(tmp_c[0,1] + tmp_c[0,-1] + tmp_c[1,0] + tmp_c[-1,0]) +
 	    tmp_c[-1,-1] + tmp_c[1,-1] + tmp_c[1,1] + tmp_c[-1,1])/16.;
 
 }
-#endif // !sf
+#endif // !sff
 
 #if TREE
-  sf.prolongation = refine_bilinear;
-  sf.dirty = true; // boundary conditions need to be updated
+  sff.prolongation = refine_bilinear;
+  sff.dirty = true; // boundary conditions need to be updated
 #endif
 }
 
 event properties (i++)
 {
   foreach_face() {
-    double ff = (sf[] + sf[-1])/2.;
+    double ff = (sff[] + sff[-1])/2.;
     alphav.x[] = fm.x[]/rho(ff);
     if (mu1 || mu2) {
       face vector muv = mu;
@@ -66,11 +67,11 @@ event properties (i++)
   }
   
   foreach()
-    rhov[] = cm[]*rho(sf[]);
+    rhov[] = cm[]*rho(sff[]);
 
 #if TREE
-  sf.prolongation = fraction_refine;
-  sf.dirty = true; // boundary conditions need to be updated
+  sff.prolongation = fraction_refine;
+  sff.dirty = true; // boundary conditions need to be updated
 #endif
 }
 

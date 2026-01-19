@@ -7,6 +7,7 @@ This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I
 
 ## Confined Jets
 
+* [Jet in an open channel](box_jet_long.c)
 * [Jet confined in a box](box_jet.c)
 * [Impinging planar jets](imp_jets.c)
 

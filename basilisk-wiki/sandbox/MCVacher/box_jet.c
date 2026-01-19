@@ -4,7 +4,7 @@
 
 //only pressure of the inside of the box is driving the flow outside on the left
 
-//Notes : implement parabolic inlet, compare with the paper etc...
+//Notes : implement parabolic inlet, compare with the paper etc.
 
 #include "grid/multigrid.h"
 #include "navier-stokes/centered.h"
@@ -25,7 +25,7 @@ face vector muv[];
 
 int main() {
 
-  Re=112;
+  Re=250;
 
   R_d=0.5; 
   L0=10; 
@@ -40,12 +40,11 @@ int main() {
   u.t[top] = dirichlet(0.);
 
   s[bottom] = dirichlet (U0*(x > -R_d && x <R_d));
+  p[bottom] = dirichlet(0.);
 
   u.n[left] = (y<4*R_d && u.n[] < 0.) ? neumann(0) : dirichlet(0);
-  u.t[left] = dirichlet(0.);
   
   u.n[right] = (y<4*R_d && u.n[] > 0.) ? neumann(0) : dirichlet(0);
-  u.t[right] = dirichlet(0.);
   
   N=128;  
   origin (-L0/2, 0);
@@ -79,7 +78,7 @@ event profile (t = end) {
   printf ("-----END-----\n");
 }
 
-event ppm_output (t = 0; t += 0.5; t <= 400) {
+event ppm_output (t = 0; t += 0.5; t <= 1000) {
   char name1[80];
   sprintf (name1, "uX.mp4");
   output_ppm (u.x, file = name1, n = 512, min = -U0, max = +U0, linear = true);

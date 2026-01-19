@@ -606,28 +606,28 @@ if num_columns == 2:
   y = data[:,0].reshape(-1,n).T
   fmean = data[:,1].reshape(-1,n).T  
 
-  L = 6*np.trapezoid(fmean*(1-fmean), y, axis=0)
+  L = 6*np.trapz(fmean*(1-fmean), y, axis=0)
   t = np.arange(len(L))*profreq
 
   data = np.genfromtxt(filename2, skip_header=1, usecols=[1])
   UUmean = data[:].reshape(-1,n).T
-  K = 0.5*np.trapezoid(UUmean, y, axis=0)/L
+  K = 0.5*np.trapz(UUmean, y, axis=0)/L
 
   data = np.genfromtxt(filename3, skip_header=1, usecols=[1])
   gradUgradUmean = data[:].reshape(-1,n).T
-  Epsilon = np.trapezoid(gradUgradUmean, y, axis=0)/L
+  Epsilon = np.trapz(gradUgradUmean, y, axis=0)/L
 
   data = np.genfromtxt(filename4, skip_header=1, usecols=[1])
   ffmean = data[:].reshape(-1,n).T
-  Kcc = np.trapezoid(ffmean, y, axis=0)/L
+  Kcc = np.trapz(ffmean, y, axis=0)/L
 
   data = np.genfromtxt(filename5, skip_header=1, usecols=[1])
   Ymean = data[:].reshape(-1,n).T
-  Theta = np.trapezoid(Ymean, y, axis=0)/np.trapezoid(fmean*(1-fmean), y, axis=0)
+  Theta = np.trapz(Ymean, y, axis=0)/np.trapz(fmean*(1-fmean), y, axis=0)
 
   data = np.genfromtxt(filename6, skip_header=1, usecols=[1])
   Fmean = data[:].reshape(-1,n).T 
-  F = np.trapezoid(Fmean, y, axis=0)/L
+  F = np.trapz(Fmean, y, axis=0)/L
 
   fig, axes = plt.subplots(2,3, figsize=(4*3, 3*2))
   ax = axes.ravel()
