@@ -3,7 +3,7 @@ toc: no
 ...
 
 A non-exhaustive list of papers about/using Basilisk. Please add your
-own papers if they use Basilisk. See also [src/references.bib]().
+own papers if they use Basilisk. See also [src/references.bib]() for older references.
 
 ### 2026
 
@@ -75,6 +75,15 @@ keywords = {Droplet impacts, Superhydrophobic surface, Rapid rebound}}
 ### 2025
 
 ~~~bib
+@article{zhong2025,
+author = {Zhong, Wenyuan and Song, Zhiwei and Qin, Yongkang and Chao, Youchuang and Ding, Zijing},
+title = {Interface Dynamics of Droplet Impact onto a Viscoelastic Liquid Pool},
+journal = {Langmuir},
+year = {2025},
+month = {December},
+doi = {10.1021/acs.langmuir.5c03167}
+}
+
 @hal{eshima2025, hal-05419560}
 
 @article{xu2025b,

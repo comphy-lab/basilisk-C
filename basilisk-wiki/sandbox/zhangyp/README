@@ -11,7 +11,7 @@ for ice--water phase-change problems.
 ## Improved phase-field test cases for ice--water phase transition
 
 ### 1D Stefan problems
-- [One-dimensional Stefan solidification](stefan_1d_solidification.c)
+- [One-dimensional Stefan solidification](stefan_1d_solidification/stefan_1d.c)
 
 ### 2D Stefan problems
 - [Two-dimensional Stefan problem](stefan_2d.c)

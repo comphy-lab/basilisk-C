@@ -6,6 +6,9 @@ I store in this location some of the work done in Basilisk. I mainly work with p
 # Structure of this sandbox
 This sandbox is divided in different parts:
 
+- [**`frozen_waves`**](frozen_waves/frozen_waves.md) includes simulations of
+«Frozen waves» at the interface between non-miscible fluids [with
+walls](frozen_waves/with_walls/main.c) and [without walls](frozen_waves/without_walls/main.c).
 - [**`filaments`**](filaments/readme) includes an implementation of a Vortex
 Filament Method (VFM) using [Biot-Savart](filaments/biot-savart.h) and some
 examples.

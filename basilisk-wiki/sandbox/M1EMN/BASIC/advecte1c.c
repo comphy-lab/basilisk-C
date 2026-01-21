@@ -185,7 +185,7 @@ int main() {
   t=0;
   a=1.2;
   Delta = L0/N;
-  dt = (L0/N)/a;
+  dt = (Delta)/a;
   
 /**
  dynamic allocation of N cells + 2 ghosts 
@@ -236,7 +236,7 @@ $c=Delta/dt$ Lax Wendrof
     //cDelta = Delta/dt;   // Lax Wendrof
    // cDelta = 0;          // Unstable
     cDelta = a;          // Upwind
-    F[i] = a*(U[i]+U[i-1])/2.  - cDelta *(U[i]-U[i-1])/2;
+    F[i] = a*(U[i]+U[i-1])/2.  - cDelta *(U[i]-U[i-1])/2.;
     //F[i] = a*U[i-1]; // same!!!
     }
 /** 
@@ -288,7 +288,7 @@ in gnuplot terminal type
 ~~~
 which gives $U(x,t)$ plotted here for t=0 1 2 3  and $-3<x<9$ 
 
-note that if CFL=1, i.e. here $\Delta t=\Delta x$, the result is more precise...
+note that if CFL=1, i.e. here $\Delta t=\Delta x/a$, the result is more precise...
 ~~~gnuplot
 reset
  set xlabel "x"

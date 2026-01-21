@@ -1,9 +1,9 @@
-![](oberwolfach.jpg){width="200px" style="padding: 0 10px; float: left;"}
+![](academie.jpg){width="200px" style="padding: 0 10px; float: left;"}
 I am Stéphane Popinet, the creator
 of [Gerris](https://gerris.dalembert.upmc.fr) and [Basilisk](https://basilisk.fr). Since 2013 I have been
-a ''directeur de recherche'' at Centre National de la Recherche
-Scientifique ([CNRS](http://www.cnrs.fr/index.php)) based at Institut
-Jean le Rond d'Alembert ([∂’Alembert](http://www.dalembert.upmc.fr))
+a *directeur de recherche* at *Centre National de la Recherche
+Scientifique* ([CNRS](http://www.cnrs.fr/index.php)) based at *Institut
+Jean le Rond d'Alembert* ([∂’Alembert](http://www.dalembert.upmc.fr))
 of [Sorbonne Université](http://www.sorbonne-universite.fr/en), Paris,
 France. From 2001 to 2013 I was a research scientist at the National Institute of Water and Atmospheric research ([NIWA](https://en.wikipedia.org/wiki/National_Institute_of_Water_and_Atmospheric_Research)) based in Wellington, New Zealand, which I joined after completing my PhD in 2000 at [Université Pierre et Marie Curie](https://en.wikipedia.org/wiki/Pierre_and_Marie_Curie_University), Paris, France. I am both a French and New Zealand citizen.
 
@@ -49,13 +49,6 @@ year={2025}
 author={Clara Martin-Blanco and Nicolo Scapin and Jiarong Wu and Stéphane Popinet and J. Thomas Farrar and Bertrand Chapron and Luc Deike},
 title={Kinematics of gravity-capillary waves above an evolving underwater current},
 journal={Journal of Fluid Mechanics},
-year={2025}
-}
-
-@Article{scapin2025b,
-author={Nicolo Scapin and Jiarong Wu and Bertrand Chapron and J. Thomas Farrar and Stéphane Popinet and Luc Deike},
-title={Growth and dissipation in wind-forced breaking waves},
-journal={Geophysical Research Letters},
 year={2025}
 }
 
@@ -188,6 +181,8 @@ doi = {10.5194/gmd-11-4727-2018}
 ### Waves
 
 ~~~bib
+@hal{scapin2025b, hal-05466359}
+
 @hal{wu2025, hal-05108994}
 
 @hal{scapin2025, hal-05105692}

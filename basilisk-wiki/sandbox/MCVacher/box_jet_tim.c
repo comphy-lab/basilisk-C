@@ -161,8 +161,8 @@ event dump_state (t = 0; t += 10; t <= 500) {
 /**
 ## Videos
 
-![Passive tracer](box_jet_slip/s.mp4)
-![Vertical velocity](box_jet_slip/uY.mp4)
+![Passive tracer](box_jet_tim/s.mp4)
+![Vertical velocity](box_jet_tim/uY.mp4)
 */
 
 /**
@@ -199,4 +199,3 @@ plt.savefig('residuals.png')
 
 Residuals converge around t = 1800.
 */
-

@@ -24,14 +24,14 @@
     "theta0": 90.0
   },
   "numerics": {
-    "level": 8,
+    "level": 9,
     "cfl": 0.25,
     "dt": 0.1,
-    "tolerance": 1e-6,
-    "nitermin": 10
+    "tolerance": 1e-4,
+    "nitermin": 1
   },
   "runtime": {
-    "walltime": 36000.0,
-    "endtime": 500.0
+    "walltime": 3600.0,
+    "endtime": 1000.0
   }
 }

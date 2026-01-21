@@ -12,7 +12,9 @@
 
 # «Frozen waves» at the interface between non-miscible fluids with strong density contrast
 
-![An example of frozen waves with parameters corresponding to [Gréa et al. 2025](#grea:2025)](main/animate.mp4)
+![An example of frozen waves with parameters corresponding to [Gréa et al.
+(2025)](#grea:2025). Heavy fluid is at the bottom, shown in white, and light
+fluid is at the top, shown in black.](main/animate.mp4)
 
 ## Preamble
 
@@ -45,7 +47,7 @@ we identify the following eight dimensionless groups:
 | Froude number   | $\froude$    | $\displaystyle \frac{a\omega^2}{g}$ |
 | Weber number    | $\weber$     | $\displaystyle \frac{(\rho_1-\rho_2) a^3 \omega^2}{\sigma}$ |
 | Atwood number   | $\atwood$    | $\displaystyle \frac{\rho_1 - \rho_2}{\rho_1 + \rho_2}$ |
-| Viscosity ratio | $\viscosity$ | $\displaystyle \frac{\nu_1}{\nu_2}$ |
+| Viscosity ratio | $\viscosity$ | $\displaystyle \frac{\nu_2}{\nu_1}$ |
 
 To complete the problem description, we specify the contact angle and the
 initial conditions. Here, we consider a static contact angle of $\theta =
@@ -182,8 +184,8 @@ int main() {
 #else
   dimensions (nx = params.aspectratio_x, ny = params.aspectratio_y, nz = params.aspectratio_z);
   X0 = -params.width/2.;
-  Y0 = -params.height/2.;
-  Z0 = -params.depth/2.;
+  Y0 = -params.depth/2.;
+  Z0 = -params.height/2.;
 #endif
   N = (1 << params.level);
   init_grid (N);
@@ -262,7 +264,7 @@ event acceleration (i++) {
 }
 
 /** We also tweak the CFL condition to take into account the acceleration */
-#include "acceleration_cfl.h"
+#include "acastillo/frozen_waves/acceleration_cfl.h"
 event set_dtmax (i++,last) {
   dtmax = timestep_force (u, DT, ramp);
 }
@@ -578,6 +580,12 @@ For instance, an example of the 0D quantities (based on the Reynolds averaged pr
 import numpy as np
 import matplotlib.pyplot as plt
 
+# NumPy compatibility: trapz deprecated in 2.0, replaced by trapezoid
+try:
+  from numpy import trapezoid as integrate
+except ImportError:
+  from numpy import trapz as integrate
+
 def count_rows_until_empty(filename):
   count = 0
   with open(filename, 'r') as f:
@@ -606,28 +614,28 @@ if num_columns == 2:
   y = data[:,0].reshape(-1,n).T
   fmean = data[:,1].reshape(-1,n).T  
 
-  L = 6*np.trapz(fmean*(1-fmean), y, axis=0)
+  L = 6*integrate(fmean*(1-fmean), y, axis=0)
   t = np.arange(len(L))*profreq
 
   data = np.genfromtxt(filename2, skip_header=1, usecols=[1])
-  UUmean = data[:].reshape(-1,n).T
-  K = 0.5*np.trapz(UUmean, y, axis=0)/L
+  UUmean = data[:].reshape(-1,n).T                                                                      
+  K = 0.5*integrate(UUmean, y, axis=0)/L
 
   data = np.genfromtxt(filename3, skip_header=1, usecols=[1])
   gradUgradUmean = data[:].reshape(-1,n).T
-  Epsilon = np.trapz(gradUgradUmean, y, axis=0)/L
+  Epsilon = integrate(gradUgradUmean, y, axis=0)/L
 
   data = np.genfromtxt(filename4, skip_header=1, usecols=[1])
   ffmean = data[:].reshape(-1,n).T
-  Kcc = np.trapz(ffmean, y, axis=0)/L
+  Kcc = integrate(ffmean, y, axis=0)/L
 
   data = np.genfromtxt(filename5, skip_header=1, usecols=[1])
   Ymean = data[:].reshape(-1,n).T
-  Theta = np.trapz(Ymean, y, axis=0)/np.trapz(fmean*(1-fmean), y, axis=0)
+  Theta = integrate(Ymean, y, axis=0)/integrate(fmean*(1-fmean), y, axis=0)
 
   data = np.genfromtxt(filename6, skip_header=1, usecols=[1])
   Fmean = data[:].reshape(-1,n).T 
-  F = np.trapz(Fmean, y, axis=0)/L
+  F = integrate(Fmean, y, axis=0)/L
 
   fig, axes = plt.subplots(2,3, figsize=(4*3, 3*2))
   ax = axes.ravel()

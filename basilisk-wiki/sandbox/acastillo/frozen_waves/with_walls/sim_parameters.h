@@ -3,7 +3,6 @@ sim_parameters.h
 
 Clean struct-based parameter reading for main_json.c.
 Replaces preprocessor defines with runtime JSON configuration.
-
 */
 
 /** Feature detection for cJSON library */
@@ -89,11 +88,13 @@ Initialize parameters with default values
 void init_default_params(SimParams *p) {
     /** Domain parameters */
     p->width = 300.0;
-    p->height = 150.0;
+    p->height = 300.0;
     p->depth = 75.0;
-    p->aspectratio_x = 2.0;
+    p->aspectratio_x = 1.0;
     p->aspectratio_y = 1.0;
-    p->aspectratio_z = 1.0;
+    #if dimension == 3
+        p->aspectratio_z = 1.0;
+    #endif
     
     /** Dimensionless parameters */
     p->atwood = 0.5;
@@ -107,7 +108,7 @@ void init_default_params(SimParams *p) {
     p->ramp_slope = 0.04;
     
     /** Initial conditions */
-    p->amplitude = 0.05;
+    p->amplitude = 0.50;
     p->kmin = 15.0;
     p->kmax = 30.0;
     
@@ -115,7 +116,7 @@ void init_default_params(SimParams *p) {
     p->theta0 = 90.0;
     
     /** Numerical parameters */
-    p->level = 8;
+    p->level = 9;
     p->cfl = 0.25;
     p->dt = 0.1;
     p->tolerance = 1e-4;
@@ -123,7 +124,7 @@ void init_default_params(SimParams *p) {
     
     /** Runtime parameters */
     p->walltime = 3600.0;
-    p->endtime = 500.0;
+    p->endtime = 1000.0;
 }
 
 #if HAVE_CJSON
@@ -137,10 +138,16 @@ void parse_domain_section(cJSON *domain, SimParams *p) {
     GET_DOUBLE(domain, height, p->height);
     GET_DOUBLE(domain, depth, p->depth);
     
+#if dimension == 2
     double min_dim = p->width < p->height ? p->width : p->height;
     p->aspectratio_x = p->width / min_dim;
     p->aspectratio_y = p->height / min_dim;
-    p->aspectratio_z = p->depth / min_dim;
+#else 
+    double min_dim = p->depth;
+    p->aspectratio_x = p->width / min_dim;
+    p->aspectratio_y = p->depth / min_dim;
+    p->aspectratio_z = p->height / min_dim;
+#endif
 }
 
 /**

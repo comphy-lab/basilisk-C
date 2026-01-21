@@ -193,7 +193,7 @@ unset key
 set xrange [0:1.5]
 set yrange [-1:1]
 plot  "log" u 1:2 w l lw 3 lc "black" t "Simulation", \
-      "../../data/porouschannel/velocity-da-02" w p pt 64 ps 1.2 lw 3 lc "black" t "Betchen et al. (2006)"
+      "velocity-da-02" w p pt 64 ps 1.2 lw 3 lc "black" t "Betchen et al. (2006)"
 
 ~~~
 ## References

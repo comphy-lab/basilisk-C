@@ -41,6 +41,8 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@hal{scapin2025b, hal-05466359}
+
 @article{mou2026,
   title = {Singular jets and entrapments from compound drop impact},
   author = {Mou, Zeyang and Zheng, Zheng and Jian, Zhen and Antonini, Carlo and Josserand, Christophe and Thoraval, Marie-Jean},
@@ -73,13 +75,4 @@ journal={Journal of Fluid Mechanics},
 author={Patel, Kuntal and Zhu, Xiaojue}, 
 year={2026}, 
 pages={A19}}
-
-@article{zhong2025,
-author = {Zhong, Wenyuan and Song, Zhiwei and Qin, Yongkang and Chao, Youchuang and Ding, Zijing},
-title = {Interface Dynamics of Droplet Impact onto a Viscoelastic Liquid Pool},
-journal = {Langmuir},
-year = {2025},
-month = {December},
-doi = {10.1021/acs.langmuir.5c03167}
-}
 ~~~
