@@ -9,6 +9,8 @@ static const void * NULL = 0;
 static const int _NVARMAX = 65536, INT_MAX = 2147483647;
 enum AstMPI { MPI_MIN, MPI_MAX, MPI_SUM, MPI_DOUBLE };
 void mpi_all_reduce_array (void * v, int datatype, int op, int elem){}
+void mpi_sum_reduce_array (void * s, void * v, int datatype, int op, int elem){}
+void mpi_sum_reduce_init (void * s, void * v, int datatype, int op, int elem){}
 void None;
 
 FILE * stderr, * stdout, * systderr, * systdout;

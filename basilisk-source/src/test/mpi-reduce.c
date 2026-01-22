@@ -53,4 +53,16 @@ int main ()
         fprintf (qerr, "%g ", P2[i].x.x);
     fputc ('\n', qerr);
   }
+
+  // test that MPI sum reductions work also when the initial value is
+  // not zero
+  double sum = 1.;
+  foreach(reduction(+:sum));
+  assert (sum == 1.);
+
+  {
+    coord p = {1,2,3};
+    foreach(reduction(+:p));
+    assert (p.x == 1 && p.y == 2 && p.z == 3);
+  }
 }

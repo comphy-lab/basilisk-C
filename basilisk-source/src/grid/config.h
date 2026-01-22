@@ -382,6 +382,8 @@ static void trace_off()
 @define npe() omp_get_num_threads()
 @define mpi_all_reduce(v,type,op)
 @define mpi_all_reduce_array(v,type,op,elem)
+@define mpi_sum_reduce_init(s,v,type,op,elem)
+@define mpi_sum_reduce_array(s,v,type,op,elem)
 
 #elif _MPI
 
@@ -400,6 +402,8 @@ static double prof_start, _prof;
 #if FAKE_MPI
 @define mpi_all_reduce(v,type,op)
 @define mpi_all_reduce_array(v,type,op,elem)
+@define mpi_sum_reduce_init(s,v,type,op,elem)
+@define mpi_sum_reduce_array(s,v,type,op,elem)
 #else // !FAKE_MPI
 trace
 int mpi_all_reduce0 (void *sendbuf, void *recvbuf, int count,
@@ -417,25 +421,63 @@ int mpi_all_reduce0 (void *sendbuf, void *recvbuf, int count,
 }
 @
 
-trace
-void mpi_all_reduce_array (void * v, MPI_Datatype datatype, MPI_Op op, int elem)
+static size_t mpi_data_type_size (MPI_Datatype datatype)
 {
-  size_t size;
-  if (datatype == MPI_DOUBLE) size = sizeof (double);
-  else if (datatype == MPI_INT) size = sizeof (int);
-  else if (datatype == MPI_LONG) size = sizeof (long);
-  else if (datatype == MPI_C_BOOL) size = sizeof (bool);
-  else if (datatype == MPI_UNSIGNED_CHAR) size = sizeof (unsigned char);
+  if (datatype == MPI_DOUBLE) return sizeof (double);
+  else if (datatype == MPI_INT) return sizeof (int);
+  else if (datatype == MPI_LONG) return sizeof (long);
+  else if (datatype == MPI_C_BOOL) return sizeof (bool);
+  else if (datatype == MPI_UNSIGNED_CHAR) return sizeof (unsigned char);
   else {
     fprintf (stderr, "unknown reduction type\n");
     fflush (stderr);
     abort();
   }
+  return 0;
+}
+
+trace
+void mpi_all_reduce_array (void * v, MPI_Datatype datatype, MPI_Op op, int elem)
+{
+  size_t size = mpi_data_type_size (datatype);
   void * global = malloc (elem*size), * tmp = malloc (elem*size);
   memcpy (tmp, v, elem*size);
   mpi_all_reduce0 (tmp, global, elem, datatype, op, MPI_COMM_WORLD);
   memcpy (v, global, elem*size);
   free (global), free (tmp);
+}
+
+static void * mpi_sum_reduce_init0 (void * v, MPI_Datatype datatype, MPI_Op op, int elem)
+{
+  size_t size = mpi_data_type_size (datatype);
+  void * s = malloc (elem*size);
+  memcpy (s, v, elem*size);
+  memset (v, 0, elem*size);
+  return s;
+}
+
+@define mpi_sum_reduce_init(s,v,datatype,op,elem) void * s = mpi_sum_reduce_init0(v,datatype,op,elem)
+
+trace
+void mpi_sum_reduce_array (void * s, void * v, MPI_Datatype datatype, MPI_Op op, int elem)
+{
+  mpi_all_reduce_array (v, datatype, op, elem);
+  if (datatype == MPI_DOUBLE)
+    for (double * i = v, * j = s; elem; elem--, i++, j++)
+      *i += *j;
+  else if (datatype == MPI_INT)
+    for (int * i = v, * j = s; elem; elem--, i++, j++)
+      *i += *j;
+  else if (datatype == MPI_LONG)
+    for (long * i = v, * j = s; elem; elem--, i++, j++)
+      *i += *j;
+  else if (datatype == MPI_C_BOOL)
+    for (bool * i = v, * j = s; elem; elem--, i++, j++)
+      *i += *j;
+  else if (datatype == MPI_UNSIGNED_CHAR)
+    for (unsigned char * i = v, * j = s; elem; elem--, i++, j++)
+      *i += *j;
+  free (s);
 }
 #endif // !FAKE_MPI
 
@@ -526,6 +568,8 @@ void mpi_init()
 @define npe() 1
 @define mpi_all_reduce(v,type,op)
 @define mpi_all_reduce_array(v,type,op,elem)
+@define mpi_sum_reduce_init(s,v,type,op,elem)
+@define mpi_sum_reduce_array(s,v,type,op,elem)
 
 #endif // not MPI, not OpenMP
 

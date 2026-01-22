@@ -2193,17 +2193,17 @@ static char * mpi_operator (char * s, Ast * op)
 }
 
 /**
-This function returns "MPI" code to perform the reductions defined in
-`macro_statement` or NULL if no reductions are defined. */
+This function appends "MPI" code to perform the reductions defined in
+`macro_statement`, if necessary. */
 
-static Ast * mpi_reductions (const Ast * macro_statement, Stack * stack)
+static void mpi_reductions (Ast * macro_statement, Stack * stack)
 {
   Ast * reductions = ast_find (ast_schema (macro_statement, sym_macro_statement,
 					   2, sym_argument_expression_list),
 			       sym_reduction_list);
   if (!reductions)
-    return NULL;
-  char * sreductions = NULL;
+    return;
+  char * sreductions = NULL, * sinit = NULL;
   foreach_item (reductions, 1, reduction) {
     Ast * identifier = ast_schema (reduction, sym_reduction,
 				   4, sym_reduction_array,
@@ -2241,43 +2241,68 @@ static Ast * mpi_reductions (const Ast * macro_statement, Stack * stack)
     }
     else
       mtype = type;
+    char * parameters = NULL;
     if (array) {
       if (strcmp (type, "coord") && strcmp (type, "mat3")) {
-	str_append (sreductions, "mpi_all_reduce_array(", t->start, ",", mtype, ",");
-	sreductions = mpi_operator (sreductions, reduction->child[2]);
-	sreductions = ast_str_append (array, sreductions);
-	str_append (sreductions, ");");
+	str_append (parameters, t->start, ",", mtype, ",");
+	parameters = mpi_operator (parameters, reduction->child[2]);
+	parameters = ast_str_append (array, parameters);
+	str_append (parameters, ");");
       } else {
-	str_append (sreductions, "mpi_all_reduce_array((double *)", t->start, ",MPI_DOUBLE,");
-	sreductions = mpi_operator (sreductions, reduction->child[2]);
+	str_append (parameters, "(double *)", t->start, ",MPI_DOUBLE,");
+	parameters = mpi_operator (parameters, reduction->child[2]);
 	char s[100];
 	snprintf (s, 99, "sizeof(%s)/(sizeof(double))", t->start);
-	str_append (sreductions, s, ");");
+	str_append (parameters, s, ");");
       }
     }
     else {
       char s[100] = "1";
       if (strcmp (type, "coord") && strcmp (type, "mat3"))
-	str_append (sreductions, "mpi_all_reduce_array(&", t->start,",", mtype);
+	str_append (parameters, "&", t->start,",", mtype);
       else {
 	// cast the adress of the first member into a double for coord and mat3
-	str_append (sreductions, "mpi_all_reduce_array((double *)&", t->start,",MPI_DOUBLE");
+	str_append (parameters, "(double *)&", t->start,",MPI_DOUBLE");
 	snprintf (s, 99, "sizeof(%s)/(sizeof(double))", t->start);
       }
-      str_append (sreductions, ",");
-      sreductions = mpi_operator (sreductions, reduction->child[2]);
-      str_append (sreductions, s, ");");
+      str_append (parameters, ",");
+      parameters = mpi_operator (parameters, reduction->child[2]);
+      str_append (parameters, s, ");");
     }
+    if (!strcmp(ast_left_terminal (reduction->child[2])->start, "+")) {
+      str_append (sinit, "mpi_sum_reduce_init(mpi_", t->start, ",", parameters);
+      str_append (sreductions, "mpi_sum_reduce_array(mpi_", t->start, ",", parameters);
+    }
+    else
+      str_append (sreductions, "mpi_all_reduce_array(", parameters);
+    free (parameters);
     free (type);
   }
   if (!sreductions)
-    return NULL;
+    return;
+
+  AstRoot * root = ast_get_root (macro_statement);
+  if (sinit) {
+    str_prepend (sinit, "{");
+    str_append (sinit, "}");
+    Ast * expr = ast_parse_expression (sinit, root);
+    free (sinit);
+    assert (expr);
+    Ast * statement = ast_ancestor (macro_statement, 2);
+    ast_set_line (expr, ast_left_terminal (statement), true);
+    foreach_item_r (expr->child[1], sym_block_item, block_item)
+      assert (ast_block_list_insert_before2 (ast_parent (statement, sym_block_item), block_item->child[0]));
+  }
+  
   str_prepend (sreductions, "{");
   str_append (sreductions, "}");  
-  Ast * expr = ast_parse_expression (sreductions, ast_get_root (macro_statement));
+  Ast * expr = ast_parse_expression (sreductions, root);
   free (sreductions);
   assert (expr);
-  return expr;
+  
+  Ast * statement = ast_ancestor (macro_statement, 2);	  
+  Ast * item = ast_block_list_get_item (statement), * list = item->parent;
+  list = ast_block_list_append (list, item->sym, NN(item, sym_statement, expr));
 }
 
 /**
@@ -2303,14 +2328,8 @@ static void user_macros (Ast * n, Stack * stack, void * data)
   }
 
   case sym_macro_statement:
-    if (!ast_is_foreach_statement (n)) {
-      Ast * reductions = mpi_reductions (n, stack);
-      if (reductions) {
-	Ast * statement = ast_ancestor (n, 2);	  
-	Ast * item = ast_block_list_get_item (statement), * list = item->parent;
-	list = ast_block_list_append (list, item->sym, NN(item, sym_statement, reductions));
-      }
-    }
+    if (!ast_is_foreach_statement (n))
+      mpi_reductions (n, stack);
     break;
 
   case sym_statement: case sym_function_call: {
@@ -4268,12 +4287,7 @@ static void macros (Ast * n, Stack * stack, void * data)
 	exit (1);
       }
       
-      Ast * reductions = mpi_reductions (n, stack);
-      if (reductions) {
-	Ast * statement = ast_ancestor (n, 2);	  
-	Ast * item = ast_block_list_get_item (statement), * list = item->parent;
-	list = ast_block_list_append (list, item->sym, NN(item, sym_statement, reductions));
-      }
+      mpi_reductions (n, stack);
 
       Ast * m = ast_new (n, sym_basilisk_statements);
       ast_set_child (n->parent, ast_child_index (n),

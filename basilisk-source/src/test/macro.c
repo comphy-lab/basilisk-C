@@ -110,6 +110,15 @@ macro rmacro()
   {...}
 }
 
+macro lmacro (scalar * list, double * array)
+{
+  scalar * l = (scalar *) list;
+  double * a = array;
+  for (scalar s in l)
+    fprintf (stderr, "%s %g ", s.name, *a++);
+  fputc ('\n', stderr);
+}
+
 int main()
 {
   mymacro (end = 2)
@@ -153,4 +162,6 @@ int main()
 
   rmacro()
     fprintf (stderr, "rmacro test\n");
+
+  lmacro ({s, s1}, {1, 2});
 }

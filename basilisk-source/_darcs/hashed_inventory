@@ -1,4 +1,4 @@
-pristine:151444f5dcb9460ea36b2f7d2329eaaf46a44850bd352450fc416818abba207f
+pristine:c0ccfd05e055b141164ec4e766abcf7bd00ef57b26bd6bd3f768e8d2ff6d59ee
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -465,3 +465,15 @@ Stephane Popinet <popinet@basilisk.fr>**20260106124924
  Ignore-this: dc3cd54ef4201fda39ed782719260621
 ] 
 hash: 0000006655-c8466e075b1bee8fc8cebe14d770906099d84607fab3bdab4932bf2a180eb2e2
+[Macros can take array initializers as arguments
+Stephane Popinet <popinet@basilisk.fr>**20260109172334
+ Ignore-this: 971d1fc4c0eda9fc951237ee50fd6f86
+] 
+hash: 0000002652-73a18c9807ea766fc4d75ea083d89d57b4aeec65ece7ab2f427476c4a529405e
+[MPI sum reductions were not consistent with OpenMP/serial
+Stephane Popinet <popinet@basilisk.fr>**20260121101432
+ Ignore-this: b2352dd2f2d2e511c239c3344564740b
+ 
+ Only in the cases where the initial value was non-zero.
+] 
+hash: 0000009990-00ff26c27140a647e3e1fe9c2a94b941cf552107c74f40a6df1a9a4d56e4bd48

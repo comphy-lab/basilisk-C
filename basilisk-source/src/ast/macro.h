@@ -279,16 +279,45 @@ static void replace_arguments (Ast * n, Stack * stack, void * data)
       else { // postfix_initializer
 	assert (value->child[0]->sym == sym_postfix_initializer);
 	Ast * parent = ast_ancestor (n, 3);
-	assert (ast_schema (parent, sym_cast_expression,
-			    1, sym_type_name));
-	parent->sym = sym_postfix_expression;
-	ast_replace_child (parent, 3, value->child[0]);
-	int index = ast_child_index (parent);
-	Ast * grandparent = parent->parent;
-	ast_set_child (grandparent, index,
-		       NN(grandparent, sym_cast_expression,
-			  NN(grandparent, sym_unary_expression,
-			     parent)));
+	if (ast_schema (parent, sym_cast_expression,
+			1, sym_type_name)) {
+	  parent->sym = sym_postfix_expression;
+	  ast_replace_child (parent, 3, ast_copy (value->child[0]));
+	  int index = ast_child_index (parent);
+	  Ast * grandparent = parent->parent;
+	  ast_set_child (grandparent, index,
+			 NN(grandparent, sym_cast_expression,
+			    NN(grandparent, sym_unary_expression,
+			       parent)));
+	}
+	else { // need to add a type cast
+	  AstTerminal * t =  ast_terminal (identifier);
+	  Ast * cast = ast_copy (ast_parent (ast_identifier_declaration (r->sparameters, t->start),
+					     sym_parameter_declaration));
+	  assert (ast_schema (cast, sym_parameter_declaration,
+			      0, sym_declaration_specifiers,
+			      0, sym_type_specifier)); // does not know (yet) how to handle other declarations
+	  cast->sym = sym_type_name;
+	  cast->child[0]->sym = sym_specifier_qualifier_list;
+	  assert (ast_schema (cast, sym_type_name,
+			      1, sym_declarator,
+			      1, sym_direct_declarator)); // does not know (yet) how to handle other declarations
+	  assert (ast_schema (cast, sym_type_name,
+			      1, sym_declarator,
+			      0, sym_pointer)); // does not know (yet) how to handle other declarations
+	  ast_destroy (cast->child[1]);
+	  ast_replace_child (cast, 1, NN(n, sym_abstract_declarator,
+					 NN(n, sym_direct_abstract_declarator,
+					    NCA(n, "["), NCA(n, "]"))));
+	  cast = NN(n, sym_postfix_expression,
+		    NCA(n, "("), cast, NCA(n, ")"),
+		    ast_copy (value->child[0]));
+	  ast_set_line (cast, t, true);
+	  parent = ast_schema (parent, sym_multiplicative_expression,
+			       0, sym_cast_expression,
+			       0, sym_unary_expression);
+	  ast_replace_child (parent, 0, cast);
+	}
       }
     }
     else if (r->initial) {
