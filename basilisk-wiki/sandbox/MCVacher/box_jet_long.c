@@ -1,3 +1,8 @@
+/**
+# High Reynolds jet in an open channel impinging on a solid surface
+
+*/
+
 #include "grid/multigrid.h"
 #include "embed.h"
 #include "navier-stokes/centered.h"

@@ -1,3 +1,8 @@
+/**
+# Low Reynolds jet confined in a box
+
+*/
+
 #include "grid/multigrid.h"
 #include "embed.h"
 #include "navier-stokes/centered.h"
@@ -24,9 +29,9 @@ face vector muv[];
 
 int main() {
 
-  Re=30;
+  Re=26;
 
-  R_d=0.02; 
+  R_d=0.012; 
   L0=1; 
   U0=1;
   plafond=0.8;

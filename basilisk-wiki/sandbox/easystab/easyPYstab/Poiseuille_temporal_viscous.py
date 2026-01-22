@@ -49,40 +49,40 @@ plt.close('all')
 """
 def solve_eigenproblem(Re,k):
 
-# %{
-# # Construction of the matrices
+"""
+# Construction of the matrices
 
-# The problem is written as follows:
+The problem is written as follows:
 
-# $$
-# \lambda  {\mathcal B} \, \hat{q} = {\mathcal A} \, \hat{q}
-# $$
+$$
+\lambda  {\mathcal B} \, \hat{q} = {\mathcal A} \, \hat{q}
+$$
 
-# with 
-# $$
-# {\mathcal B} = 
-# \left[
-# \begin{array}{ccc} 
-# 1 & 0 & 0 \\ 
-# 0 & 1 & 0 \\
-# 0 & 0 & 0  
-# \end{array} 
-# \right] 
-# $$
+with 
+$$
+{\mathcal B} = 
+\left[
+\begin{array}{ccc} 
+1 & 0 & 0 \\ 
+0 & 1 & 0 \\
+0 & 0 & 0  
+\end{array} 
+\right] 
+$$
 
-# $$
-# {\mathcal A} = 
-# \left[
-# \begin{array}{ccc} 
-# -i k \bar{U} + Re^{-1} ( \partial_y^2 - k^2) & - \partial_y \bar{U} & - i k \\ 
-# 0 & -i k \bar{U} + Re^{-1} ( \partial_y^2 - k^2) & - \partial_y \\
-# i k  & \partial_y  & 0 
-# \end{array} 
-# \right] 
-# $$
+$$
+{\mathcal A} = 
+\left[
+\begin{array}{ccc} 
+-i k \bar{U} + Re^{-1} ( \partial_y^2 - k^2) & - \partial_y \bar{U} & - i k \\ 
+0 & -i k \bar{U} + Re^{-1} ( \partial_y^2 - k^2) & - \partial_y \\
+i k  & \partial_y  & 0 
+\end{array} 
+\right] 
+$$
 
-# Here we build the dynamics matrices $A$ and $B$. 
-# %}
+Here we build the dynamics matrices $A$ and $B$. 
+"""
 
   Z=np.zeros((Nx+1,Nx+1)); 
   I=np.eye(Nx+1); 

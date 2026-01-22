@@ -288,7 +288,7 @@ plt.savefig('decreasing.png')
 */
 
 /**
-There is a prefactor, I don't know why...
+There is a prefactor, I don't know why... I should probably dig into this test case [Capillary wave](https://basilisk.fr/src/test/capwave.c).
 
 We have the theoretical pulsation of the sloshing mode (in the case of capillary forces):
 

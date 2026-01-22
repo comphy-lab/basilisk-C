@@ -1354,4 +1354,5 @@ hunk ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h 1
 -    fprintf(stderr, "=============================\n\n");
 -}
 rmfile ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h
+rmdir ./sandbox/acastillo/frozen_waves/without_walls
 }

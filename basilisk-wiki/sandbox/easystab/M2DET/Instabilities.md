@@ -294,6 +294,8 @@ Charru, sections 5.2 and 5.3.
 
 * Viscous stability analysis of the plane Poiseuille flow
 
+> **NEW** Python program [Poiseuille_temporal_viscous.py](https://basilisk.fr/sandbox/easystab/easyPYstab/Poiseuille_temporal_viscous.py)
+
 >  Commented program [Poiseuille_temporal_viscous.m](/sandbox/easystab/Poiseuille_temporal_viscous.m) for computing a spectrum and plotting the eigenmodes.
 
 >  Program [TS_PlanePoiseuille.m](/sandbox/easystab/david/TS_PlanePoiseuille.m) for parametric study.
@@ -380,11 +382,13 @@ git clone https://gitlab.com/stabfem/StabFem
 
 - [january 2021 exam](/sandbox/easystab/M2DET/Exam_M2RDET_Stabilite_janv2021_CORRECTION.pdf). The program which has been used to generate the results of exercice 1 is [here](/sandbox/easystab/Poiseuille_temporal_viscous_compressible_adiabatic.m) 
 
-- [february 2022 exam](https://gitlab.com/stabfem/UPS_L3ME_Fluides/-/blob/master/DIVERS/Exam_M2RDET_Stabilite_fev2022_correction.pdf)
+- [february 2022 exam](https://gitlab.com/stabfem/UPS_L3ME_Fluides/-/blob/master/DIVERS/Exam_M2RDET_Stabilite_fev2022.pdf) ; with [correction](https://gitlab.com/stabfem/UPS_L3ME_Fluides/-/blob/master/DIVERS/Exam_M2RDET_Stabilite_fev2022_correction.pdf)
 
 - [february 2023 exam](https://gitlab.com/stabfem/UPS_L3ME_Fluides/-/blob/master/DIVERS/Exam_M2RDET_Stabilite_2023.pdf)
 
 - [february 2024 exam](https://gitlab.com/stabfem/UPS_L3ME_Fluides/-/blob/master/DIVERS/Exam_M2RDET_Stabilite_2024.pdf)
+
+- [february 2025 exam](https://gitlab.com/stabfem/UPS_L3ME_Fluides/-/blob/master/DIVERS/Exam_M2RDET_Stabilite_fev2025.pdf) ; with [correction](https://gitlab.com/stabfem/UPS_L3ME_Fluides/-/blob/master/DIVERS/Exam_M2RDET_Stabilite_fev2025_Correction.pdf)
 
 - A few other exam subjects from the past years are available here:
 

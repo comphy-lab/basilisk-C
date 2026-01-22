@@ -29,7 +29,6 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
-* [Multiple successive reductions are incorrect in MPI](multired.c)
 * [Multigrid solver seems to cause MPI errors with axi.h](axi_mg_text.c)
 * [Limited timer resolution can cause a crash](too_fast.c)
 * [No-slip condition violated for viscous Stokes flow with embedded boundary](marginal_embed_2.c)
@@ -94,6 +93,7 @@ mistakes.
 
 The bugs below should be fixed in the most recent release.
 
+* [Multiple successive reductions are incorrect in MPI](multired.c) [21/01/26](src/?changes=20260121101432)
 * [user-defined macros do not apply reductions](reductions.c) [15/10/25](/src/?changes=20251015162804)
 * [Optional arguments and function pointers](optional.c) [15/10/25](/src/?changes=20251015123902)
 * [Iterative convergence on a multigrid is unreasonably bad compared to a tree grid](poisson_mg.c) [17/09/25](/src/?changes=20250917131237)

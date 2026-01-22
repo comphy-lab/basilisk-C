@@ -153,6 +153,8 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int compressi
 #if _MPI
   acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio(acc_tpl1, MPI_COMM_WORLD, MPI_INFO_NULL);
+  // Disable file locking to prevent orphaned .lock files on network filesystems
+  H5Pset_file_locking(acc_tpl1, 0, 0);
 
   // Create a new HDF5 file collectively
   file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, acc_tpl1);
@@ -161,7 +163,11 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int compressi
   H5Pclose(acc_tpl1);
 #else
   // Create a new HDF5 file without parallel I/O
-  file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
+  // Disable file locking to prevent orphaned .lock files on network filesystems
+  H5Pset_file_locking(acc_tpl1, 0, 0);
+  file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, acc_tpl1);
+  H5Pclose(acc_tpl1);
 #endif
 
   // Define chunk size for parallel I/O
@@ -289,6 +295,8 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
 #if _MPI
   acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio(acc_tpl1, MPI_COMM_WORLD, MPI_INFO_NULL);
+  // Disable file locking to prevent orphaned .lock files on network filesystems
+  H5Pset_file_locking(acc_tpl1, 0, 0);
 
   // Create a new HDF5 file collectively
   file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, acc_tpl1);
@@ -297,7 +305,11 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
   H5Pclose(acc_tpl1);
 #else
   // Create a new HDF5 file without parallel I/O
-  file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+  acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
+  // Disable file locking to prevent orphaned .lock files on network filesystems
+  H5Pset_file_locking(acc_tpl1, 0, 0);
+  file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, acc_tpl1);
+  H5Pclose(acc_tpl1);
 #endif
 
   // Define chunk size for parallel I/O
