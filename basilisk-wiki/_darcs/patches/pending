@@ -49,10 +49,6 @@ rmdir ./sandbox/rulli/Geostrophic%20Adjustement
 rmdir ./sandbox/rvilliers
 rmdir ./sandbox/spertant
 rmdir ./sandbox/zied/culvert_flushing_friction/culvert
-hunk ./basilisk 1
--11
-+
-rmfile ./basilisk
 hunk ./sandbox/acastillo/frozen_waves/without_walls/Makefile 1
 -include $(BASILISK)/Makefile.defs
 -

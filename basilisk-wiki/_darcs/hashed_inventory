@@ -1,4 +1,4 @@
-pristine:e9275a313e051a2d86aa22b59d0640dfa62902f662971a2bc57f8700a4330f91
+pristine:eab372542517ce66d46a42bde3f424dda55f73ba824d349b951ba8a3910d289e
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4021,3 +4021,43 @@ erbafdavid <david.fabre@imft.fr>**20260121224923
  Ignore-this: 15b90f84a5d2c14a80d111489a8f2289c3bd57a4ff13680076ef4d35c06b26e0e0460730f74ac730
 ] 
 hash: 0000001157-863392a1388a8f04b7b681e2303c440ec69cca067b61fbd72636873e4cd594e7
+[，；了
+lancer <1901444585@qq.com>**20260122122211
+ Ignore-this: fd8400ee587464b2f921db67fa97ddb77ef1afbbe84b7b7e8b81b1ed0ad17d4aa7940a34f48a50ce
+] 
+hash: 0000000178-8688b708a6dfb50b181495366f380ad9b1f995c3f9d25d85b590c224b45e27fd
+[，；了
+lancer <1901444585@qq.com>**20260122122929
+ Ignore-this: 6fda4edae214962fd2469b582833e0165c9c3fd6aba11cb1e40b6ff598dca0a4f5c7751b1fe7ae79
+] 
+hash: 0000000204-a9d82b701c655cb51749ec3b98a27303ee67bc6ad0bc9374bf1a7b9045c5fd46
+[A copy of sessile.c
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260122165205
+ Ignore-this: 2c5016bf72d218b0565e62e672ed3cf3
+] 
+hash: 0000003487-1dc2e45a13a910da5a69dc2995c5597cfac4e911709b536d626528e0017b7e3c
+[A failed attempt to set a contact angle using clsvof and integral, but I am optimistic about a future fix
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260122165642
+ Ignore-this: c653e2dc31ba7b02ed35d00578bedd16
+] 
+hash: 0000002706-12b2748f880a0efd813ac7cc58d73b05960f8610bc82362a3db728ec361788db
+[Links
+ecipriano <edoardo.cip@gmail.com>**20260122170014
+ Ignore-this: d4e0fc11742b8196653536ae86a69dfd7681691a0f6603c67d1472fdb766e3a790304c617e99692f
+] 
+hash: 0000000507-751d556e991f737d3602e6cdf67383601b06aa9740155678e34c4aa150eb287a
+[More precise
+ecipriano <edoardo.cip@gmail.com>**20260122170137
+ Ignore-this: ba355889b0f22d9bd6058cb43faf85ec5cddfe3ab98a5ddfcbf6fcdc21b67d47c8a8d473f0ba3670
+] 
+hash: 0000000416-7c493ebc3e452a087f6d617659ac4c1152af0b7f5fd82dbec38a9d694ec7b126
+[It's "better" without overwriting the normals...
+ecipriano <edoardo.cip@gmail.com>**20260122171110
+ Ignore-this: 7dc4507da74f7827f2bcdd01d446dea3185eaa5df1b1687b8fa5d3d5a44f6d2dc2d13f89ab53b310
+] 
+hash: 0000000342-1161b58ec8f320bcd4cf2e31b2dba4ad5dd0d91cb9b8ccd3cec06d842c8362f2
+[Let's try pure levelset first
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260123151137
+ Ignore-this: fe10b202ce0b063a288815aa03ac04b8
+] 
+hash: 0000000433-e01c037804c7a4e93ea4b84f121878ab6bf4639f7f6556969d56a84b00a46b11
