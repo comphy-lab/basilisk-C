@@ -1,4 +1,4 @@
-pristine:eab372542517ce66d46a42bde3f424dda55f73ba824d349b951ba8a3910d289e
+pristine:7aeac66a3bb172a4dbfeb5d65d8b5d1868c9ce43fba3080b9c9af08e0af712f8
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4061,3 +4061,38 @@ Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260123151137
  Ignore-this: fe10b202ce0b063a288815aa03ac04b8
 ] 
 hash: 0000000433-e01c037804c7a4e93ea4b84f121878ab6bf4639f7f6556969d56a84b00a46b11
+[Tweaks for nucleate boiling case
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260122232456
+ Ignore-this: f663c7a8aafb318c07abf271f32cefa5abdbf2b7fb8f032a5ba5205d5fb53aae5445d0e531150010
+] 
+hash: 0000000590-444f9d24dcb188a3e59434dec3edbe9a0cc453c384c26e55d317e31cb5c3d69f
+[Added known solid material properties
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260122232550
+ Ignore-this: fe835e2f5d92fa788ba3ec856e83392a6bb16b2eaaa0f84cc35c7dac605d39381c32900d977975
+] 
+hash: 0000001217-3af08056481bca07c77d5a4f79bdeecd0f9412f8497c3b4fed820016ec7845ec
+[Not consistent by default if nv is 1
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260122232659
+ Ignore-this: ef3b7c82fedfd0c17a22c123fa4950e19343b575cf75021c77a168185de9ba094bff51d9007ccea2
+] 
+hash: 0000000335-74e84de8cd88f8410fcc65b59f5a0a166f8e134ada778e688797a1a6fa34fe84
+[Using interface_normal() instead of mycs directly
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260122232842
+ Ignore-this: 5686afeeb81d0836424e25969b10562f26f519a776d3f4b228802945a7d3cdf845aa435cc18e0173
+] 
+hash: 0000000710-b8da62abd4a63710c7bbb40cf8b069062353a56d06ab7b0623b1105ce17753ff
+[Improved convergence also at higher levels of refinement
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260126093141
+ Ignore-this: d0735b625679dbccebaf560452f618205020136a74c280853ff9fc9ad7fc8c7f1b15bfe95a8cc195
+] 
+hash: 0000002892-428ad548e3265bda8b407532a641a27e97319fad3eee18048fb8f296f698c382
+[Wrong flag
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260126093715
+ Ignore-this: 1ff84d5a9504954b920a0129af24200c4af91aa25df09bd6258dc34cc18b7ac8617746a2c36a0410
+] 
+hash: 0000000278-0265242f8c2638436113a613f147ff7ce49abe95e99403a26dfb97b69e1a408d
+[Tweaks for nucleate boiling
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260126100612
+ Ignore-this: 571e591d9d65946b3231c70f7cab48c9aa568048c0acdb6c6027106c676be6f911d3528b40c17848
+] 
+hash: 0000000650-516e2b96be8d22b3b75626652ee4a92c8d7144230ef00fbb97030c28fffe9332

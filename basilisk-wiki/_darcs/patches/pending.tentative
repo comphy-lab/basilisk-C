@@ -1351,4 +1351,8 @@ hunk ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h 1
 -}
 rmfile ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h
 rmdir ./sandbox/acastillo/frozen_waves/without_walls
+hunk ./basilisk 1
+-https://basilisk.fr/basilisk
++
+rmfile ./basilisk
 }

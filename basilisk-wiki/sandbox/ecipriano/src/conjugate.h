@@ -128,7 +128,9 @@ Before solving the diffusion equations on the solid and on the fluid domains, we
 compute the temperatures at both sides of the interface from the energy balance.
 These temperatures are imposed as Dirichlet boundary conditions. */
 
-event vof (i++) {
+double conjugate_dirichlet = 0.;
+
+static void conjugate (void) {
   scalar TL = liq->T, TG = gas->T;
   scalar lambdal = liq->lambda, lambdag = gas->lambda;
   foreach() {
@@ -147,13 +149,13 @@ event vof (i++) {
     TSB[] = ((acc*RInt + RF)*TS[] + RS*T[])/(acc*RInt + RS + RF);
     TLB[] = ((acc*RInt + RS)*TLL + RL*TS[])/(acc*RInt + RS + RL);
     TGB[] = ((acc*RInt + RS)*TGG + RG*TS[])/(acc*RInt + RS + RG);
+    TFB[] = ((acc*RInt + RS)*T[] + RF*TS[])/(acc*RInt + RS + RF);
   }
 
   /**
   We use the interface gradients calculation in order to impose Dirichlet BCs on
   the solid heater. */
 
-  bool conjugate_dirichlet = 0.;
   if (conjugate_dirichlet) {
     scalar fl[], fg[];
     foreach() {
@@ -195,6 +197,7 @@ void no_sources (scalar i, scalar e) {
 void (* energy_sources) (scalar i, scalar e) = no_sources;
 
 event tracer_diffusion (i++) {
+  conjugate();
   face_fraction (cw, fw);
 
   scalar cmm[];
@@ -224,5 +227,30 @@ event tracer_diffusion (i++) {
   energy_sources (zeroc, QSexp);
 
   diffusion (TS, dt, D = D, theta = theta, r = QSexp);
+}
+
+/**
+## Solid properties
+
+The materials of the solid heaters/suspenders are pretty much the same in all
+experimental works. Therefore, for common materials we provide a functions that
+helps initializing solid properties. */
+
+enum solid_props {
+  QUARTZ, SiC, SAPPHIRE
+};
+
+void solid_properties (enum solid_props s) {
+  switch (s) {
+    case QUARTZ:
+      rho3 = 2220, cp3 = 760., lambda3 = 1.5;
+      break;
+    case SiC:
+      rho3 = 2740., cp3 = 670., lambda3 = 5.2;
+      break;
+    case SAPPHIRE:
+      rho3 = 4890., cp3 = 410., lambda3 = 10.9;
+      break;
+  }
 }
 

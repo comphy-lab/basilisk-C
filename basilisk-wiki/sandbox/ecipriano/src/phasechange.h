@@ -217,8 +217,8 @@ event init (i = 0) {
   if (pcm.divergence)
     no_advection_div = true;
 
-  if (nv == 1)
-    pcm.consistent = true;
+  //if (nv == 1)
+  //  pcm.consistent = true;
 
   if (phase_is_uniform (liq))
     phase_scalars_to_tracers (liq, f);

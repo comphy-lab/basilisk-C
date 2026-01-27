@@ -35,7 +35,7 @@ macro foreach_interfacial_plic (scalar f, double tol = 1e-10,
     Reduce reductions = None)
 {
   foreach_interfacial (f, tol, reductions) {
-    coord m = mycs (point, f);
+    coord m = interface_normal (point, f);
     double alpha = plane_alpha (f[], m);
     coord prel;
     double area = plane_area_center (m, alpha, &prel);
@@ -68,7 +68,7 @@ macro number radialprofile (double r,
 
 coord normal (Point point, scalar c)
 {
-  coord n = mycs (point, c);
+  coord n = interface_normal (point, c);
   double nn = 0.;
   foreach_dimension()
     nn += sq(n.x);
@@ -130,7 +130,7 @@ typedef struct {
 } vofrecon;
 
 vofrecon vof_reconstruction (Point point, scalar f) {
-  coord m = mycs (point, f);
+  coord m = interface_normal (point, f);
   double alpha = plane_alpha (f[], m);
   coord prel;
   double area = plane_area_center (m, alpha, &prel);

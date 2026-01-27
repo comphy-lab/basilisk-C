@@ -107,7 +107,7 @@ int main (void) {
   [Torres et al., 2024](#torres2024) for a comprehensive discussion about it. */
 
   TIntVal = 310.85;
-  TL0 = TIntVal + 0.5, TG0 = TL0, TS0 = TL0;
+  TL0 = TIntVal + 0.5, TG0 = TIntVal, TS0 = TL0;
 
   /**
   We add the possibility to include an interfacial heat transfer resistance, computed
@@ -124,7 +124,6 @@ int main (void) {
   nv = 2;
 #else
   nv = 1;
-  pcm.consistent = true;
 #endif
 
   DT = 0.01;
@@ -196,7 +195,7 @@ the solution of the solid phase on the same grid. */
 #if TREE
 event adapt (i++) {
   adapt_wavelet_leave_interface ({T,u.x,u.y}, {f},
-      (double[]){1e-2,1e-2,1e-2,1e-2}, maxlevel, 5, 1);
+      (double[]){1e-3,1e-2,1e-2}, maxlevel, 5, 2);
 }
 #endif
 

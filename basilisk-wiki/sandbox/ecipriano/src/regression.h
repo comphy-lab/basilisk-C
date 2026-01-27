@@ -56,7 +56,7 @@ void vof_advection_phasechange (
   face vector upc[];
 
   foreach() {
-    coord m = mycs (point, f);
+    coord m = interface_normal (point, f);
     double nn = 0.;
     foreach_dimension()
       nn += sq (m.x);

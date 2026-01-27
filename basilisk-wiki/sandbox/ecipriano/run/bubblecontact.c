@@ -188,7 +188,33 @@ We refine the domain according to the interface and the temperature field. */
 event adapt (i++) {
   double uemax = 1e-2;
   adapt_wavelet_leave_interface ({T,u}, {f},
-      (double[]){1e-2,1e-2,uemax,uemax,uemax,1e-3}, maxlevel, minlevel, 1);
+      (double[]){1e-3,uemax,uemax}, maxlevel, minlevel, 2);
+}
+#endif
+
+/**
+Since the surface tension value is small, the time step is not sufficiently
+small to guarantee the stability of the interfacial source terms in the
+diffusion step for temperature. This is something that could be improved using
+the same approach used by [embed.h](/src/embed.h): i.e. updating the value of
+the interfacial term within the relax/residual operators, making the function
+`embed_flux()` available outside [embed.h](/src/embed.h). */
+
+double CFL_MAX = 0.05;
+event stability (i++) {
+  if (CFL > CFL_MAX)
+    CFL = CFL_MAX;
+}
+
+/**
+Using MPI, we plot the distribution of the cells among the processors. */
+
+#if _MPI
+scalar pid[];
+
+event checks (i++) {
+  foreach()
+    pid[] = pid();
 }
 #endif
 
