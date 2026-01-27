@@ -1,4 +1,4 @@
-pristine:c0ccfd05e055b141164ec4e766abcf7bd00ef57b26bd6bd3f768e8d2ff6d59ee
+pristine:089ca4a4ad6ec40b8646d0d83f6fbbcc88384fd9fa05c78b3b04ab01dad5801a
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -477,3 +477,13 @@ Stephane Popinet <popinet@basilisk.fr>**20260121101432
  Only in the cases where the initial value was non-zero.
 ] 
 hash: 0000009990-00ff26c27140a647e3e1fe9c2a94b941cf552107c74f40a6df1a9a4d56e4bd48
+[Minor warning fix
+Stephane Popinet <popinet@basilisk.fr>**20260127142841
+ Ignore-this: fe236e73584af8bc4e7f945246bc89ff
+] 
+hash: 0000000326-4e5ffd9e595f2a60642b7a07f33f2a1852bf76b287004f52e0b70263d7893bd0
+[The header of dump files must define at least one box
+Stephane Popinet <popinet@basilisk.fr>**20260127162124
+ Ignore-this: e05719d3ac20f7ed97d1a1c0d4afbf39
+] 
+hash: 0000000489-235695db3c0aa6597792ccd40b7ff35e23d4e7ebb9dbfb3ee649c2e716f32c6f

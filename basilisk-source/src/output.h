@@ -1165,10 +1165,10 @@ void dump (const char * file = "dump",
   scalar * slist = list_concat ({size}, dlist); free (dlist);
   struct DumpHeader header = { t, list_len(slist), iter, depth(), npe(),
 			       dump_version };
-
-#if MULTIGRID_MPI
   foreach_dimension()
     header.n.x = Dimensions.x;
+  
+#if MULTIGRID_MPI
   MPI_Barrier (MPI_COMM_WORLD);
 #endif
 

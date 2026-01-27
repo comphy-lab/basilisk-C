@@ -447,7 +447,7 @@ void mpi_all_reduce_array (void * v, MPI_Datatype datatype, MPI_Op op, int elem)
   free (global), free (tmp);
 }
 
-static void * mpi_sum_reduce_init0 (void * v, MPI_Datatype datatype, MPI_Op op, int elem)
+void * mpi_sum_reduce_init0 (void * v, MPI_Datatype datatype, MPI_Op op, int elem)
 {
   size_t size = mpi_data_type_size (datatype);
   void * s = malloc (elem*size);
