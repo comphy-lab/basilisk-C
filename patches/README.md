@@ -88,45 +88,6 @@ bview3D --local=3000 dump
 
 ---
 
-### 2026-01-13-mpi-tree-dump-header-fix.patch
-
-**Platform:** All (affects MPI builds)
-**Files modified:** `src/output.h`
-
-Fixes uninitialized `header.n` values in the MPI dump functionality. The MPI version of `dump()` only set grid dimensions inside `#if MULTIGRID_MPI`, while `restore()` reads `header.n` unconditionally.
-
-**Dump/Restore Compatibility (before patch):**
-
-| Dump | Restore | Status | Reason |
-|------|---------|--------|--------|
-| Serial | Serial | ✓ Works | Serial dump always sets `header.n` |
-| MPI | MPI | ✓ Works | Both use `MULTIGRID_MPI` path |
-| Serial | MPI | ✓ Works | Serial dump provides correct `header.n` |
-| MPI | Serial | ✗ **Fails** | MPI dump may leave `header.n` uninitialized; serial restore reads garbage |
-
-**What it fixes:**
-```c
-// Before (incorrect): header.n only set inside MULTIGRID_MPI block
-#if MULTIGRID_MPI
-  foreach_dimension()
-    header.n.x = Dimensions.x;
-  MPI_Barrier (MPI_COMM_WORLD);
-#endif
-
-// After (correct): header.n set unconditionally
-  foreach_dimension()
-    header.n.x = Dimensions.x;
-#if MULTIGRID_MPI
-  MPI_Barrier (MPI_COMM_WORLD);
-#endif
-```
-
-**Symptoms without patch:**
-- Garbage grid dimensions when restoring MPI-generated dumps in serial mode
-- `dimensions()` called with uninitialized values, causing incorrect grid setup
-
----
-
 ## Applying Patches Manually
 
 To apply a patch to an existing Basilisk installation:
@@ -199,6 +160,18 @@ When creating a new patch for this repository:
 |-------|-------------------|--------|
 | macos-mman-compatibility | No | comphy-lab maintained |
 | local-bview | No | comphy-lab maintained |
-| mpi-tree-dump-header-fix | No | comphy-lab maintained |
 
 Patches marked as "comphy-lab maintained" are specific to our workflow or haven't been submitted upstream yet. If you believe a patch should be submitted to the main Basilisk project, please open an issue.
+
+## Deprecated Patches
+
+### 2026-01-13-mpi-tree-dump-header-fix.patch_deprecated
+
+**Status:** Deprecated as of 2026-01-27
+**Reason:** Fix incorporated upstream in a more comprehensive form
+
+The upstream Darcs patch (committed 2026-01-24) not only fixed the uninitialized `header.n` values in `output.h` but also added safety guards in `foreach_cell.h` to prevent similar issues. The upstream implementation is more thorough and addresses the root cause.
+
+**Original issue:** MPI dumps left `header.n` uninitialized, causing failures when restoring MPI-generated dumps in serial mode.
+
+**Upstream fix:** The fix moves `header.n` initialization outside the `#if MULTIGRID_MPI` block and adds additional safety checks in the foreach cell macros.

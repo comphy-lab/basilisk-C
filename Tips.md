@@ -208,7 +208,6 @@ Our fork maintains a set of patches in the `patches/` directory that fix issues 
 |-------|----------|-------------|
 | `2025-11-03-macos-mman-compatibility.patch` | macOS | Fixes memory mapping compilation errors |
 | `2026-01-06-local-bview.patch` | All | Adds `--local` flag to bview for offline visualization |
-| `2026-01-13-mpi-tree-dump-header-fix.patch` | All | Fixes uninitialized header in MPI tree dump |
 
 ### Applying Patches Manually
 
