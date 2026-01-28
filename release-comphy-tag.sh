@@ -132,8 +132,8 @@ apply_patches_in_dir() {
   local patch_files=()
   patch_files=($(ls "$patches_dir"/*.patch 2>/dev/null | sort))
   if [[ ${#patch_files[@]} -eq 0 ]]; then
-    print_red "Error: No patches found in $patches_dir"
-    exit 1
+    print_cyan "  No patches to apply"
+    return 0
   fi
 
   local patch_path
