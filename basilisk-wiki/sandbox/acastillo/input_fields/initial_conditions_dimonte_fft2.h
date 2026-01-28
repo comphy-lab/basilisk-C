@@ -282,12 +282,12 @@ void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int N
   double *ydata = (double *)malloc(NY * sizeof(double));
   double *zdata = (double *)malloc(NX * NY * sizeof(double));
 
-  double dx = L0 / (NX - 2);
+  double dx = L0 / NX;
   for (int i = 0; i < NX; i++){
     xdata[i] = i * dx + X0;
   }
 
-  double dy = L0 / (NY - 2);
+  double dy = L0 / NY;
   for (int j = 0; j < NY; j++){    
     ydata[j] = j * dy + Y0;
   }
@@ -336,13 +336,36 @@ void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int N
     MPI_Bcast(zdata, NX * NY, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   @endif
 
-  // Now, we'll interpolate the perturbation into the mesh.
-  gsl_interp2d *interp = gsl_interp2d_alloc(gsl_interp2d_bilinear, NX, NY);
+  /** Create a 3x3 tiled grid to handle periodicity properly.
+  The center tile contains the original domain [X0, X0+L0] x [Y0, Y0+L0].
+  The surrounding 8 tiles are periodic copies, ensuring the interpolator
+  has data on all sides even near the boundaries.
+  */
+  int NX_tiled = 3 * NX;
+  int NY_tiled = 3 * NY;
+  double *xdata_tiled = (double *)malloc(NX_tiled * sizeof(double));
+  double *ydata_tiled = (double *)malloc(NY_tiled * sizeof(double));
+  double *zdata_tiled = (double *)malloc(NX_tiled * NY_tiled * sizeof(double));
+
+  // Create tiled coordinate arrays: 3 copies shifted by -L0, 0, +L0
+  for (int i = 0; i < NX_tiled; i++)
+    xdata_tiled[i] = xdata[i % NX] + ((i / NX) - 1) * L0;
+
+  for (int j = 0; j < NY_tiled; j++)
+    ydata_tiled[j] = ydata[j % NY] + ((j / NY) - 1) * L0;
+
+  // Replicate the perturbation data across all 9 tiles
+  for (int i = 0; i < NX_tiled; i++)
+    for (int j = 0; j < NY_tiled; j++)
+      zdata_tiled[i * NY_tiled + j] = zdata[(i % NX) * NY + (j % NY)];
+
+  // Now, we'll interpolate the perturbation into the mesh using the tiled data
+  gsl_interp2d *interp = gsl_interp2d_alloc(gsl_interp2d_bilinear, NX_tiled, NY_tiled);
   gsl_interp_accel *x_acc = gsl_interp_accel_alloc();
   gsl_interp_accel *y_acc = gsl_interp_accel_alloc();
 
-  // Initialize the interpolation object
-  gsl_interp2d_init(interp, xdata, ydata, zdata, NX, NY);
+  // Initialize the interpolation object with tiled data
+  gsl_interp2d_init(interp, xdata_tiled, ydata_tiled, zdata_tiled, NX_tiled, NY_tiled);
 
   /** Apply initial condition to the scalar field. Here, we take care to
   normalize the perturbation using the standard deviation and multiply it by
@@ -352,14 +375,14 @@ void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int N
   if (isvof) {
     if (isvertex)
       foreach_vertex()
-        phi[] = gsl_interp2d_eval(interp, xdata, ydata, zdata, x, y, x_acc, y_acc) - z;
+        phi[] = gsl_interp2d_eval(interp, xdata_tiled, ydata_tiled, zdata_tiled, x, y, x_acc, y_acc) - z;
     else
       foreach()
-        phi[] = gsl_interp2d_eval(interp, xdata, ydata, zdata, x, y, x_acc, y_acc) - z;
+        phi[] = gsl_interp2d_eval(interp, xdata_tiled, ydata_tiled, zdata_tiled, x, y, x_acc, y_acc) - z;
   }
   else {
     foreach(){
-      phi[] = gsl_interp2d_eval(interp, xdata, ydata, zdata, x, y, x_acc, y_acc);
+      phi[] = gsl_interp2d_eval(interp, xdata_tiled, ydata_tiled, zdata_tiled, x, y, x_acc, y_acc);
     }
   }  
 
@@ -372,6 +395,9 @@ void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int N
   free(xdata);
   free(ydata);
   free(zdata);
+  free(xdata_tiled);
+  free(ydata_tiled);
+  free(zdata_tiled);
   free(data);
 }
 

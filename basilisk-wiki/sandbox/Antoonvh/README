@@ -124,7 +124,7 @@ provide an overview of the projects under [/sandbox/Antoonvh/](). The topics her
     - [A bview function for plotting particles](scatter2.h)
 * [Ray-casting visualization](bwatch.h) 
 * [A Robin/mixed boundary condition](robin.c)
-* [5-point 8th-order accurate finite-difference derivatives](pade.c)
+* [A 5-point 12th-order accurate combined implicit scheme](order12_ccd.c)
 * [A 4th-order accurate solver for the Navier-Stokes equations](nsf4t.h)
     
 ## Documentation  

@@ -1,4 +1,4 @@
-pristine:7aeac66a3bb172a4dbfeb5d65d8b5d1868c9ce43fba3080b9c9af08e0af712f8
+pristine:ae910ca965c10496cc32e22e8d70128c1b4734bffe86aba7083aa4ec9cf42bf4
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4096,3 +4096,33 @@ Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260126100612
  Ignore-this: 571e591d9d65946b3231c70f7cab48c9aa568048c0acdb6c6027106c676be6f911d3528b40c17848
 ] 
 hash: 0000000650-516e2b96be8d22b3b75626652ee4a92c8d7144230ef00fbb97030c28fffe9332
+[8 < 12
+Antoonvh <j.a.v.hooft@gmail.com>**20260127085523
+ Ignore-this: b6188d586eabdd5b1d9dd284be6cc815b21180c641d743896760720bd894307524572c204592edd4
+] 
+hash: 0000000333-4af11d74f7b49ce93d00697e220afb4f05e0f6de5c2457b4c67d308db66cde77
+[link to modified wavenumber analysis
+j.a.v.hooft@gmail.com**20260127085704
+ Ignore-this: 87311c11a3d940503ceed235a8dda595598b37cf14f4e7868bdf7b6a283cbcd9d1d29829f446d0d3
+] 
+hash: 0000000345-f96a7ffd59c8b92d204316335f87a7ccef375db73ed5df5e314866b021cbcc99
+[test is now working as intended
+hugo.jacquet.work@gmail.com**20260127160151
+ Ignore-this: 6968bb1d8e271e1a9c17b58f931fce2f
+] 
+hash: 0000000401-76cef3c1346a428e4e7bf1ee89c7caa51151ab341a4a319e2423464a6d497f2a
+[typo
+hugo.jacquet.work@gmail.com**20260127160442
+ Ignore-this: 67fea4e5ddc81317170b8fa28288d7e2
+] 
+hash: 0000000445-d2137ba5666f70de68959932463863c86233a2682ab1e0f7a13b28092113c894
+[typo
+pyl <pyl@ccr.jussieu.fr>**20260127164341
+ Ignore-this: cd07b841175b510c17f2204d270b491b0fa0de37c760db2f2b675ef01f1f9d9a975f5af10ce3f3ec
+] 
+hash: 0000000386-3ed1e60f8be1516d5eb66b6f4bc6ec70f3c58f13e1e18551e3ac1de035b8859d
+[Fixed artifact near the edges
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260127192246
+ Ignore-this: 9e0a5460bbe5ddb3dd007baf5897c4d26d873b16b6756a0edf3d5176908657dcf88a130e51ea179e
+] 
+hash: 0000005330-9927a7d993ae00ed0ce6d0fdfb58b7c6ee413c95929c2bdecd4b90b5e23e8767

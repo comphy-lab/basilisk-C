@@ -120,5 +120,9 @@ coefs_eq1 = transpose(Bi(:,2))
 coefs_eq2 = transpose(Bi(:,3))
 ~~~
 
+## See also
+
+* [Modified wavenumber analysis of this scheme](modified_wave_ccd.c)
+
 
 */

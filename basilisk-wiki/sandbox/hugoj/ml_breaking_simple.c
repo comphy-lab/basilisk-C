@@ -223,7 +223,7 @@ splot "u_profile.dat" using 1:2:3 with pm3d
 splot "../ml_mpi/u_profile.dat" using 1:2:3 with pm3d
 ~~~
 
-~~~gnuplot The first layer average of u.x in time, MPI is clearly not correct
+~~~gnuplot The first layer average of u.x in time, MPI is clearly now correct with patch a983e576ec608cfaef43c343d30140e1a3e20c0c, thanks Stéphane.
 reset
 set xlabel "Time (s)"
 set ylabel "U_{sfx} (m/s)"

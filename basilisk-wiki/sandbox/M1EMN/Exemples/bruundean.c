@@ -26,7 +26,7 @@ p[0:10][]  -0.25*(x<1? x:1) t'initial', -(3*x/5)**(2./3) t'expected' w l  linec 
 ~~~
  Note that here $Z$ is positive, in regular Shallow Water configuration we use $z_b$ which is $-Z$, as here $\eta=0$.
  
-##Code
+## Code
 mandatory declarations:
 */
 #include "grid/cartesian1D.h"
@@ -37,7 +37,7 @@ scalar Z[];
 scalar F[];
  
 Z[left] = dirichlet(0);
-Z[right] = dirichlet(5);;  
+Z[right] = dirichlet(5);  
 
 double m=5./2;  // change for tests, m=1 advection, m=2 Burgers
 double flux(double z)
@@ -166,7 +166,7 @@ which is as well, $m=5/2$
   $$ \frac{\partial}{\partial x}Z + \frac{\partial}{\partial x}(\frac{m}{2 (m-1)}Z^{m-1})= \frac{1}{2} $$
 
 
-##Bibliography
+## Bibliography
 
 * [Lagrée P-Y](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/MFEnv.pdf)
 "Equations de Saint Venant et application, Ecoulements en milieux naturels" Cours MSF12, M1 UPMC
