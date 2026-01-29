@@ -1,4 +1,4 @@
-pristine:ae910ca965c10496cc32e22e8d70128c1b4734bffe86aba7083aa4ec9cf42bf4
+pristine:1efd22d8c17f5a5737f571a6c2613a199e717d42056f9495dd741b8886eebbc6
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4126,3 +4126,18 @@ Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**2026012719224
  Ignore-this: 9e0a5460bbe5ddb3dd007baf5897c4d26d873b16b6756a0edf3d5176908657dcf88a130e51ea179e
 ] 
 hash: 0000005330-9927a7d993ae00ed0ce6d0fdfb58b7c6ee413c95929c2bdecd4b90b5e23e8767
+[multiplied 10 to DT in crystal_growth3D.c
+k.thakurdesai@tue.nl**20260128124248
+ Ignore-this: ddea55a671cd191759dae6d9eeba0438e418c8d5b949b128c9405f228058daf1182cfb2cbd05d337
+] 
+hash: 0000000336-3bb36a00df4cb97ed09cc64617ab6974984df8c9db644cd1a7d0b777bc14a8ac
+[version 1 of daybreak with 1 layer ML, and turbulent friction, compare with Kinematic wave
+pyl <pyl@ccr.jussieu.fr>**20260128172044
+ Ignore-this: 4e0d494a56e4b210c9b72e670e6ed25b52ec48a439cfd13575d76d12244740f79f004f938b88cff1
+] 
+hash: 0000007047-fce2ea6c915b9a107eecee89ccc462a35c0fbd467e815f715e731a9e02c114ba
+[Test
+PaulaSanchez <ps2525@ic.ac.uk>**20260128172757
+ Ignore-this: b89062785f6baec05203c298a8f697b31e420feb42733e089df87042e80874150619a90e012db673
+] 
+hash: 0000000180-ab1e3dec5a95eb9354a804b29d8199cc2a745db70624e03e598a0b7cdaaa401e
