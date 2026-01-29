@@ -129,8 +129,18 @@ apply_patches_in_dir() {
   local target_dir="$1"
   local patches_dir="$2"
 
+  print_cyan "  Listing patches in $patches_dir..."
   local patch_files=()
-  patch_files=($(ls "$patches_dir"/*.patch 2>/dev/null | sort))
+  local nullglob_was_set=false
+  if shopt -q nullglob; then
+    nullglob_was_set=true
+  fi
+  shopt -s nullglob
+  patch_files=("$patches_dir"/*.patch)
+  if [[ "$nullglob_was_set" == false ]]; then
+    shopt -u nullglob
+  fi
+  print_cyan "  Found ${#patch_files[@]} patch file(s)"
   if [[ ${#patch_files[@]} -eq 0 ]]; then
     print_cyan "  No patches to apply"
     return 0
@@ -161,6 +171,7 @@ build_tarball() {
   print_cyan "Preparing $platform tarball staging dir: $stage_dir"
   copy_basilisk_source_to_stage "$stage_dir/basilisk"
   copy_selected_patches "$platform" "$stage_dir/patches"
+  print_cyan "Patch selection complete for $platform"
 
   print_cyan "Applying patches for $platform..."
   apply_patches_in_dir "$stage_dir/basilisk" "$stage_dir/patches"
