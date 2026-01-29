@@ -372,6 +372,45 @@ static void replace_ellipsis (Ast * n, Stack * stack, void * data)
   }
 }
 
+static void forward_function_declarations (Ast * n, Stack * stack, void * data)
+{
+  Ast * identifier;
+  if ((identifier = ast_schema (n, sym_function_call,
+				0, sym_postfix_expression,
+				0, sym_primary_expression,
+				0, sym_IDENTIFIER))) {
+    Ast * decl = ast_parent (ast_identifier_declaration (stack, ast_terminal (identifier)->start), sym_function_declaration);
+    if (decl && !ast_identifier_declaration_from_to (stack, ast_terminal (identifier)->start, NULL, (Ast *) ast_get_root (decl))) {
+      if (ast_is_point_function (decl->child[1])) {
+	Ast * copy = NN(n, sym_declaration,
+			NN(n, sym_declaration_specifiers,
+			   NN(n, sym_storage_class_specifier,
+			      NA(decl, sym_STATIC, "static")),
+			   NN(n, sym_declaration_specifiers,
+			      NN(n, sym_type_specifier,
+				 NN(n, sym_types,
+				    NA(decl, sym_VOID, "void"))))),
+			NN(n, sym_init_declarator_list,
+			   NN(n, sym_init_declarator,
+			      ast_copy (decl->child[1]))),
+			NCA(decl, ";"));
+	identifier = ast_find (copy, sym_IDENTIFIER);
+	str_prepend (ast_terminal (identifier)->start, "_stencil_");
+	identifier = ast_find (copy, sym_VOID);
+	ast_terminal (identifier)->before = strdup(" ");
+	ast_block_list_insert_before2 (ast_parent (data, sym_external_declaration), copy);
+      }
+      decl = NN(n, sym_declaration,
+		ast_copy (decl->child[0]),
+		NN(n, sym_init_declarator_list,
+		   NN(n, sym_init_declarator,
+		      ast_copy (decl->child[1]))),
+		NCA(decl, ";"));
+      ast_block_list_insert_before2 (ast_parent (data, sym_external_declaration), decl);
+    }
+  }
+}
+
 Ast * ast_is_macro_declaration (const Ast * function_declaration)
 {
   return ast_find (ast_schema (function_declaration, sym_function_declaration,
@@ -698,6 +737,7 @@ void ast_macro_replacement (Ast * statement, Ast * initial, Stack * stack,
     ast_traverse (copy, stack, replace_return, &r);
   if (r.statement)
     ast_traverse (copy, stack, replace_ellipsis, &r);
+  ast_traverse (copy, stack, forward_function_declarations, r.call);
   ast_pop_scope (stack, copy);
   str_prepend (ast_left_terminal (copy)->before, ast_left_terminal (macro_statement)->before);
 

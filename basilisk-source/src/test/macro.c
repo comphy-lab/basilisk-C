@@ -119,6 +119,29 @@ macro lmacro (scalar * list, double * array)
   fputc ('\n', stderr);
 }
 
+/**
+## Forward function declarations
+
+In this test, the pm3() function will be expanded in fm3() from the
+overloaded definition of m3(). Since pm3() is defined after fm3() it
+needs to be declared forward of the expansion in fm3(). */
+
+auto macro m3() {
+  fprintf (stderr, "m3\n");
+}
+
+void fm3() {
+  m3();
+}
+
+void pm3() {
+  fprintf (stderr, "overloaded m3\n");
+}
+
+macro m3() {
+  pm3();
+}
+
 int main()
 {
   mymacro (end = 2)
@@ -164,4 +187,6 @@ int main()
     fprintf (stderr, "rmacro test\n");
 
   lmacro ({s, s1}, {1, 2});
+
+  fm3();
 }

@@ -4,7 +4,7 @@
 C99_FLAGS = -std=c99
 
 # how to launch the C99 compiler
-CC99 = $(CC) $(C99_FLAGS) -Wno-unused-result -Wno-unused-function 
+CC99 = $(CC) $(C99_FLAGS) -Wno-unused-result -Wno-unused-function -D_DARWIN_C_SOURCE
 
 # how to strip unused code
 # STRIPFLAGS = -fdata-sections -ffunction-sections -Wl,--gc-sections -w

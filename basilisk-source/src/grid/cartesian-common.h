@@ -945,7 +945,7 @@ trace
 void interpolate_array (scalar * list, coord * a, int n, double * v,
 			bool linear = false)
 {
-  int len = 0;
+  int len = 0; NOT_UNUSED(len);
   for (scalar s in list)
     len++;
   for (int i = 0; i < n; i++) {

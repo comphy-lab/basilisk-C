@@ -22,6 +22,7 @@ By default grammar checks are turned off. */
 
 #if CHECK_GRAMMAR
 # define CHECK(x, recursive) ast_check_grammar(x, recursive, true)
+# warning("checking grammar")
 #else
 # define CHECK(x, recursive) ((void) x)
 #endif

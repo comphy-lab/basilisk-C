@@ -1,4 +1,4 @@
-pristine:089ca4a4ad6ec40b8646d0d83f6fbbcc88384fd9fa05c78b3b04ab01dad5801a
+pristine:b915e14a9b49afb3bfbb36e7e026b6cb0625d4714191079adfd36ad6c4b2fcba
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -487,3 +487,20 @@ Stephane Popinet <popinet@basilisk.fr>**20260127162124
  Ignore-this: e05719d3ac20f7ed97d1a1c0d4afbf39
 ] 
 hash: 0000000489-235695db3c0aa6597792ccd40b7ff35e23d4e7ebb9dbfb3ee649c2e716f32c6f
+[Minor fixes for MacOSX
+Stephane Popinet <popinet@basilisk.fr>**20260106150125
+ Ignore-this: 4d43ed2e776c5dbe4e06a4204ff96d87
+] 
+hash: 0000000393-38e2ba86452781ab39a0c1469fd8a30d50cfb2520af05123fcbf1f1ed937c323
+[Forward function declarations when expanding macros
+Stephane Popinet <popinet@basilisk.fr>**20260128172539
+ Ignore-this: 72f99ad452663e535923759e476071c1
+] 
+hash: 0000002459-ab67130d9de50c45814c4c10ed60970818734ef7e97cca3b51a43fd029bda600
+[interface_normal() is overloaded using Basilisk macros
+Stephane Popinet <popinet@basilisk.fr>**20260128172712
+ Ignore-this: 4f3cd7c41c7d199402e69dc618a32dbd
+ 
+ This ensures proper overloading when using contact.h together with display.h
+] 
+hash: 0000000847-2a6dfd836bb4e7211c0eca385cce9842754f3a1b884a95864995132e617388af

@@ -24,9 +24,9 @@ coord mycs (Point point, scalar c) {
 By default the interface normal is computed using the MYC
 approximation. This can be overloaded by redefining this macro. */
 
-#ifndef interface_normal
-# define interface_normal(point, c) mycs (point, c)
-#endif
+auto macro coord interface_normal (Point p, scalar c) {
+  return mycs (p, c);
+}
 
 /**
 ## Coarsening and refinement of a volume fraction field 
