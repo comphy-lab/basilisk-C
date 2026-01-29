@@ -1,4 +1,4 @@
-pristine:b915e14a9b49afb3bfbb36e7e026b6cb0625d4714191079adfd36ad6c4b2fcba
+pristine:f156e40f710613ac271e9554340aaae0647ef4b810be097e2e50e60d67862bd5
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -504,3 +504,13 @@ Stephane Popinet <popinet@basilisk.fr>**20260128172712
  This ensures proper overloading when using contact.h together with display.h
 ] 
 hash: 0000000847-2a6dfd836bb4e7211c0eca385cce9842754f3a1b884a95864995132e617388af
+[Removed the channel walks in karman.c to avoid vorticity artefacts
+Stephane Popinet <popinet@basilisk.fr>**20260129130940
+ Ignore-this: 887ccf8459bdfe03a4acc3482241a496
+] 
+hash: 0000000831-cf63a13d6e94e9150802d08dd4fe7adbeeb8096023c5fa56905eb7a15f8a0416
+[New 'runfast' target for examples
+Stephane Popinet <popinet@basilisk.fr>**20260129132036
+ Ignore-this: fc03cb4841736b0c700f1ceec0d98d982e9ba036084f324da78f3106f16ab188b57d35dfa34ec01c
+] 
+hash: 0000000352-ae199677e36e5209878820a077c784d9e39b20f0a4724af6382fd423e36b30d9

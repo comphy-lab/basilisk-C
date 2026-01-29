@@ -26,8 +26,53 @@ cleanup_old_logs() {
   find "$LOGS_DIR" -name "release-test-*.log" -mtime +30 -delete 2>/dev/null || true
 }
 
+sync_repo() {
+  if ! command -v git >/dev/null 2>&1; then
+    log "WARNING: git not found; skipping repo sync"
+    return
+  fi
+
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    log "WARNING: not a git repo; skipping repo sync"
+    return
+  fi
+
+  local branch
+  branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+  if [[ -z "$branch" ]]; then
+    log "WARNING: unable to determine branch; skipping repo sync"
+    return
+  fi
+  if [[ "$branch" != "main" ]]; then
+    log "WARNING: on branch '$branch'; skipping repo sync"
+    return
+  fi
+
+  if [[ -n "$(git status --porcelain 2>/dev/null)" ]]; then
+    log "WARNING: working tree not clean; skipping repo sync"
+    return
+  fi
+
+  if ! git remote get-url origin >/dev/null 2>&1; then
+    log "WARNING: missing origin remote; skipping repo sync"
+    return
+  fi
+
+  log "Syncing repo from origin/main"
+  if git fetch origin --tags && git pull --ff-only origin main; then
+    log "Repo sync complete"
+  else
+    log "WARNING: repo sync failed; continuing"
+  fi
+}
+
 open_issue_on_failure() {
   local exit_code="$1"
+
+  if ! command -v gh >/dev/null 2>&1; then
+    log "WARNING: gh not found; skipping GitHub issue creation"
+    return
+  fi
 
   # Check if an open issue with this label already exists
   local existing_issue
@@ -81,6 +126,8 @@ log "=========================================="
 cleanup_old_logs
 
 cd "$SCRIPT_DIR"
+
+sync_repo
 
 # Run the test and capture output (use tee for verbose console output)
 log "Running: ./release-comphy-tag.sh --test-only"

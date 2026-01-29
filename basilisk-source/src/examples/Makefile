@@ -5,6 +5,9 @@ CFLAGS += -O2 -fopenmp
 
 all: check
 
+runfast: brusselator.tst distance.tst ginzburg-landau.tst karman.tst \
+	life.tst madsen.tst tsunami.tst turbulence.tst wavelet.tst
+
 madsen-sv.c: madsen.c
 	ln -s madsen.c madsen-sv.c 
 madsen-sv.tst: madsen.s

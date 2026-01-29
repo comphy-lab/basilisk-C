@@ -71,20 +71,18 @@ p[right]   = dirichlet(0.);
 pf[right]  = dirichlet(0.);
 
 /**
-The top and bottom walls are free-slip and the cylinder is no-slip. */
+The cylinder is no-slip. */
 
-u.n[embed] = fabs(y) > 0.25 ? neumann(0.) : dirichlet(0.);
-u.t[embed] = fabs(y) > 0.25 ? neumann(0.) : dirichlet(0.);
+u.n[embed] = dirichlet(0.);
+u.t[embed] = dirichlet(0.);
 
 event init (t = 0)
 {
 
   /**
-  The domain is the intersection of a channel of width unity and a
-  circle of diameter 0.125. */
+  The domain contains a cylinder of diameter 0.125. */
 
-  solid (cs, fs, intersection (intersection (0.5 - y, 0.5 + y),
-			       sqrt(sq(x) + sq(y)) - D/2.));
+  solid (cs, fs, sqrt(sq(x) + sq(y)) - D/2.);
 
   /**
   We set the initial velocity field. */
