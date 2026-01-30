@@ -29,6 +29,7 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
+* [There is a missing metrics cm[] in update_tracer function in embed.h](axi_embed_tracers.c)
 * [Multigrid solver seems to cause MPI errors with axi.h](axi_mg_text.c)
 * [Limited timer resolution can cause a crash](too_fast.c)
 * [No-slip condition violated for viscous Stokes flow with embedded boundary](marginal_embed_2.c)

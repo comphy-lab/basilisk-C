@@ -107,7 +107,6 @@ plot 'out0' w l lc 'black' lw 1.5 t '32x32',\
 #include "../level_set.h"
 #include "../LS_curvature.h"
 #include "../LS_advection.h"
-#include "../LS_speed.h"
 
 #define T_eq          0.
 #define TL_inf       -1./2
@@ -123,19 +122,19 @@ double latent_heat;
 /**
 Setup of the physical parameters + level_set variables
 */
-//scalar TL[], TS[], dist[];
-//vector vpc[],vpcf[];
+scalar TL[], TS[], dist[];
+vector vpc[],vpcf[];
 
-//scalar * tracers   = {TL};
-//scalar * tracers2  = {TS};
-//scalar * level_set = {dist};
-//face vector muv[];
+scalar * tracers   = {TL};
+scalar * tracers2  = {TS};
+scalar * level_set = {dist};
+face vector muv[];
 mgstats mgT;
 scalar grad1[], grad2[];
 double DT2;
 
 double  epsK = 0.000, epsV = 0.000;
-//scalar curve[];
+scalar curve[];
 
 
 double lambda[2];
@@ -146,7 +145,7 @@ double eps4 = 0.;
 int     nb_cell_NB =  1 << 3 ;  // number of cells for the NB
 double  NB_width ;              // length of the NB
 
-//double s_clean = 1.e-10; // used for fraction cleaning
+double s_clean = 1.e-10; // used for fraction cleaning
 
 #include "../basic_geom.h"
   
@@ -178,8 +177,6 @@ double Theo(double r, double t, double undercooling, double F2_S){
   exit(1); // dimension == 3 not coded
 }
 
-double undercooling = -1/2., S = 1.56;
-
 TL[embed] = dirichlet(T_eq);
 TS[embed] = dirichlet(T_eq);
 
@@ -201,7 +198,7 @@ TS[right]  = dirichlet(TS_inf);
 /**
 These are the parameters from the Almgren paper.
 */
-//double undercooling = -1/2., S = 1.56;
+double undercooling = -1/2., S = 1.56;
 double t_fin = 1.; // duration of the calculation, final time is therefore 2.
 double t0 = 1.;
 char filename [100];
@@ -355,7 +352,7 @@ event init(t=0){
 
 
 event velocity(i++){
-  double lambda1 = lambda[0], lambda2 = lambda[1], deltat; 
+  double lambda1 = lambda[0], lambda2 = lambda[1]; 
   
   LS_speed(
   dist,latent_heat,cs,fs,TS,TL,T_eq,
@@ -435,7 +432,7 @@ event movies (i++,last;t<t_fin)
   vector h[];
   heights (cs, h);
   boundary((scalar *){h});
-  foreach(reduction(max:y_max)reduction(max:y_max2)){
+  foreach(reduction(max:y_max)){
     if(interfacial(point, cs) && y >0){
       double yy = y+Delta*height(h.y[]);
       if(yy < 1.e10)y_max = max(y_max,yy);

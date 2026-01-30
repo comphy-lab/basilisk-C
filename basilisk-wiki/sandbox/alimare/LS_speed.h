@@ -47,7 +47,7 @@ void LS_speed(struct LSspeed p){
   double deltat    = p.deltat;
   int    itrecons  = p.itrecons;
   double tolrecons = p.tolrecons;
-  double NB_width = p.NB_width;
+  double NB_width  = p.NB_width;
 
   scalar curve[];
 #if LS_perf
@@ -128,7 +128,7 @@ fprintf(stderr,"recons_speed %f seconds\n", end - start);
 }
 
 event stability(i++){
-  double lambda1 = lambda[0], lambda2 = lambda[1], dtmax; 
+  double lambda1 = lambda[0], lambda2 = lambda[1]; 
   LS_speed(
   dist,latent_heat,cs,fs,TS,TL,T_eq,
   vpc,vpcf,lambda1,lambda2,

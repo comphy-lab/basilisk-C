@@ -56,6 +56,7 @@ $$
 $$
 which is the classical Gibbs-Thomson equation.
 */
+
 /*double fac1(coord n, double eps4){
   if(eps4==0.)return 1.;
   double sum = 0;
@@ -70,6 +71,7 @@ which is the classical Gibbs-Thomson equation.
   return (1.-3.*eps4+4*eps4*sum);
 #endif
 }*/
+
 
 double Temp_GT(Point point, double epsK, double epsV, vector vpc,
   scalar curve, face vector fs, scalar cs, double eps4){

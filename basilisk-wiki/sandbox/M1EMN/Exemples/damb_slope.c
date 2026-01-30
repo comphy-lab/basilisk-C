@@ -212,6 +212,8 @@ and with [Basilisk](/sandbox/M1EMN/Exemples/damb.c) (this file)
  
 * see all the viscous collapse examples ([with laminar friction](/sandbox/M1EMN/Exemples/viscous_collapse.c))
 
+* The same with [turbulent fiction](https://basilisk.fr/sandbox/M1EMN/Exemples/damb_slope_turb.c) 
+
 ## Bibliography
 
  * [Ancey](https://lhe.epfl.ch/articles/2007wrr.pdf)  Rentschler, R.M. Iverson, R.P. Denlinger "An Exact Solution for Ideal Dam-Break Floods on Steep Slopes"

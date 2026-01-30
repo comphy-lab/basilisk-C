@@ -47,59 +47,6 @@ void advection_LS(struct LSadv p){
   double NB_width     = p.NB_width;
   scalar curve        = p.curve;
 
-/*struct LSadv{
-  scalar dist;
-  double latent_heat;
-  scalar cs;
-  face vector fs;
-  scalar TS;
-  scalar TL;
-  double T_eq;
-  vector vpc;
-  vector vpcf;
-  double lambda1;
-  double lambda2;
-  double epsK;
-  double epsV;
-  double eps4;
-  scalar curve;
-  int *k_loop;
-  double deltat;
-  int itredist;
-  double tolredist;
-  int itrecons;
-  double tolrecons;
-  double s_clean;
-  double NB_width;
-};
-
-void advection_LS(struct LSadv p){
-
-  scalar dist         = p.dist;
-  double latent_heat  = p.latent_heat;
-  scalar cs           = p.cs;
-  face vector fs      = p.fs;
-  scalar TS           = p.TS;
-  scalar TL           = p.TL;
-  double T_eq         = p.T_eq;
-  vector vpc          = p.vpc;
-  vector vpcf         = p.vpcf;
-  double lambda1      = p.lambda1;
-  double lambda2      = p.lambda2;
-  double epsk         = p.epsK;
-  double epsV         = p.epsV;
-  double eps4         = p.eps4;
-  scalar curve        = p.curve;
-  int *k_loop;
-  double deltat       = p.deltat;
-  int    itredist     = p.itredist;
-  double tolredist    = p.tolredist;
-  int itrecons        = p.itrecons;
-  double tolrecons    = p.tolrecons;
-  double s_clean      = p.s_clean;
-  double NB_width     = p.NB_width;
-  
-*/
 /**
 Previous state of cs is saved into csm1
 */

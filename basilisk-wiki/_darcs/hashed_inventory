@@ -1,4 +1,4 @@
-pristine:1efd22d8c17f5a5737f571a6c2613a199e717d42056f9495dd741b8886eebbc6
+pristine:602eb23359a09eb2b9cc4ab37849f78cb7c39615a2f4a240d2170af1d1dcd152
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4141,3 +4141,128 @@ PaulaSanchez <ps2525@ic.ac.uk>**20260128172757
  Ignore-this: b89062785f6baec05203c298a8f697b31e420feb42733e089df87042e80874150619a90e012db673
 ] 
 hash: 0000000180-ab1e3dec5a95eb9354a804b29d8199cc2a745db70624e03e598a0b7cdaaa401e
+[testWENO.c exit condition changed
+k.thakurdesai@tue.nl**20260129120643
+ Ignore-this: 68aa220f751a6f8f8901d83ae3562002a573eaa77340ffe0cae531869e1ad8092f1ee90cc1da090d
+] 
+hash: 0000000243-b1136c2cdc1007c3281bae105bc34e8cb608c161b7b50a9bb4deb9b57b9710e6
+[Reverting frank_spheres.C to old code
+k.thakurdesai@tue.nl**20260129122403
+ Ignore-this: 4de3886d71cebbad752d2f3e05eb33116fa1ad95d7bf5e74e9b48fb8078df5ad2417165682cfb628
+] 
+hash: 0000001451-434475e1785a093b51751490809ce288460ef7501a93ec70e75878f2f8ea320f
+[changes in LS_advection, LS_speed and phase_change_velocity
+k.thakurdesai@tue.nl**20260129123741
+ Ignore-this: e10f0b3ace400705c111480d95df1ab0788c77cfe9f00f78b7e33ae298add51d55ca47fefd576e67
+] 
+hash: 0000002239-cdfdcebe57879ef34da7fcf752206363cca9089ed9dd781f0b96f4dd9bcc5ed7
+[frank_3D.c changes
+k.thakurdesai@tue.nl**20260129125737
+ Ignore-this: 7baa10d98d9ca58daae8b09189cb46705c085d841de7141a34b6c8d351b63c652265608969d06cd6
+] 
+hash: 0000001233-99f89b5d9207a28aeb61b3ded44235ae06d207b1a344ca8a1489ed7c262fdbfe
+[cube_sixfold and template changes
+k.thakurdesai@tue.nl**20260129134854
+ Ignore-this: 76eeeb2140181efea91422408664d7e3e76bb35432fdf2cb119b55fc1553491c4ca54d6b39605ca0
+] 
+hash: 0000001724-73d0a1dca9644741682958600cf59ad6012b38c8e55d5f2a8b0735023466d716
+[fac1_function_in_phase_change_velocity
+k.thakurdesai@tue.nl**20260129135322
+ Ignore-this: 2c36f016278fb3965e7fb6b7dc95d4cf7bd6b9de53754f5d676196e1f70eba77a0c019f88ef112a9
+] 
+hash: 0000000696-780e6e702b9a7f26451cb9f5532061b9cbaf37581ddba4344b8a745d984a202a
+[fac1_function_in_phase_change_velocity_changes
+k.thakurdesai@tue.nl**20260129141824
+ Ignore-this: 1556d90a1ffcb36f4f093dbeef57133387f94aa544af370b539b15ef04b91843ca6b292cbaf7910c
+] 
+hash: 0000001134-804eeee3badf6c88e69212979f83562a4022afc814350266fafd55e1b3af7101
+[Cleanup
+Stephane Popinet <popinet@basilisk.fr>**20260129142811
+ Ignore-this: 4ad220456faa5426276043c86cd97304c26126fb12c9c3417bc775a1db07cfc99a829157e0060b2
+] 
+hash: 0000000239-1a6b457c97062ba71a9d9eddc77606df6e33566534021cbf1ef9464ea757f029
+[output_height_function_Rayleigh_Benard_case
+k.thakurdesai@tue.nl**20260129143344
+ Ignore-this: 6e58fa7fe1dcf309042a0e2dbc2169dcfbd24fea0233b99f0e199a3b4fcc3a9998786c6437d922fd
+] 
+hash: 0000001039-e129502338660c530734bc357edb402dc04ea0e7d58354e71497f0157e2ff1e7
+[Jonathan Billet's sandbox
+Stephane Popinet <popinet@basilisk.fr>**20260129143843
+ Ignore-this: 9039423d5a1e2fe648006639041d59518782dc4484050ef788be76f7d04a1722dad97e03cdd07a1a
+] 
+hash: 0000063907-80b3d78c007e42af01c6bdb5471dea396667feddd8760d7533affcf18d9bc25e
+[NB_width added in LS_speed.h
+k.thakurdesai@tue.nl**20260129144409
+ Ignore-this: 53e493de5208525432f1fc17e39f2febc6c0b1501420f5df006b3e6c9c37c234d9e917e886322725
+] 
+hash: 0000000291-061dda70dc6a35e4549c4a6b157f6c47701011d0678c1e6e201ca64c6363ae37
+[error 
+pyl <pyl@ccr.jussieu.fr>**20260129144751
+ Ignore-this: f688f803ca13095bdd138e294508fa050feaf61db6570b2604b2a21c68d6f211d0447dfc991624aa
+] 
+hash: 0000001282-f425d4691ba5f1183dce94651ca7185edd446cd362cfe0fb52eadad13145c3b4
+[Add the fixed embed.h
+boniouv <victor.boniou@ifpen.fr>**20260129145108
+ Ignore-this: 9ff13b0263df5ded6eb544a1bb64c87a2967d56345a5d138744d57d75c1990a4314226ec233b4831
+] 
+hash: 0000030708-1024c555f54838e35d24fcdc910a23ffdbece9e3e575feaba4631e61e97548bf
+[Favier_Ra_Be_redistancing_corrrections
+k.thakurdesai@tue.nl**20260129145247
+ Ignore-this: 5f7a070295eec60b0683ea8eaae44b4b5d5bdc047d35fdfd698062bd0e299512f9204f91a4dc5096
+] 
+hash: 0000000370-5b32167d9cc24318a889d80932088ea229620988af8bb900c7eec4d000c109de
+[Bug about a missing metrics in update_tracer that impacts all simulations using axi + embed with tracer advection
+boniouv <victor.boniou@ifpen.fr>**20260129145433
+ Ignore-this: ed9c8b5fd125edca3a4bc35cd520d1c4463ce3fc0e9c45589f4578ad743e6a6946a0f16f71648b0b
+] 
+hash: 0000000385-cac3bc8b69fa26ec7f5c2e750327c61e22948decc96a3da41bac175e232a66a7
+[reinit_circle_changes
+k.thakurdesai@tue.nl**20260129145654
+ Ignore-this: 97f0e0d0b193095800475cd054c818ef8a16f7bc23e81faf9afb6444d93a09a43d7196d1df37e204
+] 
+hash: 0000000469-721573e623483c0d8e1a833d47bab0fee314602b17c1d563e04708b511d022c2
+[cube_sixfold_header_file_ls_speed
+k.thakurdesai@tue.nl**20260129152610
+ Ignore-this: 27cac855abbc6c834bb8e5c4324b90f78604ff937fab967490468ea9e7df7f96800aac19170fa261
+] 
+hash: 0000000250-523b084c99d1e5e0a7540bbeeb7f9c05da0e75cd7258dc7b2a2aa91b149a58c4
+[reinit_circle.c_header_file_changes
+k.thakurdesai@tue.nl**20260129153051
+ Ignore-this: df6a963a6a0e452222f5dea8f4b6febe545686ab8e110ec26e7bc8fe0b952a47b0135d7e6938e10e
+] 
+hash: 0000000276-195f347c71d3fc47cb1df6ae494e9600bba711f0b7aae949ff628d6cd8dd7c1b
+[Back to the original embed.h to keep track of changes
+boniouv <victor.boniou@ifpen.fr>**20260129154310
+ Ignore-this: ff7640e0b4e78ff6822fcbd6a582edf7184004141190912d12d8aa2db97f399a0fe024ec97cf23c4
+] 
+hash: 0000000344-1889e2bb7de2eb499c82601e0c57993d023bb52c6289031764e85cb145dc2ae2
+[Add the correct metric in the flux computation
+boniouv <victor.boniou@ifpen.fr>**20260129154513
+ Ignore-this: c8d768bd56f739964dc32016d8334a15cae53809a076cd8ae514f713e030e094df39fb54ca8f975f
+] 
+hash: 0000000481-058b876c5b765fa9d8593c74237b46251dfd289c776e3286f8d6cfadf00334d2
+[Description of the problem and a proposed fix in the embed.h header
+boniouv <victor.boniou@ifpen.fr>**20260129165418
+ Ignore-this: 4a067dc44c2e2ce9f7cf938acc8a6c93f342f43980bc3e2a9c98f5613f0d1622dd14887c2cc87bf0
+] 
+hash: 0000003390-7c038ea8128d5309cc1641b12bc1a099055a06245450f29acede28bc963058bf
+[Adding a small comment on the dimensional analysis
+boniouv <victor.boniou@ifpen.fr>**20260129172342
+ Ignore-this: 756131d3d0e63f7721469163131d883c7e7211ee52b1e324d59574d367b3ec097417906a32468297
+] 
+hash: 0000000567-594a2a38b572d99c679c6a41487607505b2c93a250dc3b2c4537e7a9d894c664
+[Added sections on domain geometry and grids
+Stephane Popinet <popinet@basilisk.fr>**20260129172538
+ Ignore-this: ef39394ee0286559cfc865e7395a6613
+] 
+hash: 0000103462-6c44b79af03dd1cd5fd2cb6c1d9748bfd6e702cb374ecc6a76a594c010059b6a
+[typos and plots
+pyl <pyl@ccr.jussieu.fr>**20260129181006
+ Ignore-this: 1562f74906b5db69048762e59dc977410325fd37336c8bb2475ac66e6eba6db7eb75500f86d8575c
+] 
+hash: 0000005204-482beb700765491fb00fc9f3a2a1b55a47f6701867ba41dd767e7baf43eb472a
+[link to turbulent
+pyl <pyl@ccr.jussieu.fr>**20260129181540
+ Ignore-this: 8223d39cccf776489a7caede4d6a8097dfa3a3e5acb500cf3c190fc6f12b52f6ca320e4ae876c144
+] 
+hash: 0000000305-b99a362e5bfa591f49a06e9ca3081c696457476cb665d3276f66f21f3f28f35a

@@ -2,41 +2,43 @@
 #   Dam Break  on inclined plane, with Chézy turbulent friction (toward kinetik wave) 
 
 A reservoir held back by a dam suddenly flows down a mountain, 
-at early stages we see the discharge of the dam, the tubulent friction slow down the flow. 
+at early stages we see the discharge of the dam, the turbulent friction slows down the flow. Finaly a self similar wave (solution of the associated kinetik wave) appears.
 
 
-
+Early time: 
  ![animation  ](damb_slope_turb/animatezoom.gif)
 
-at longer times we see the flow on the slope (the slope has been diminished, so not to scale)
-
+at longer times we see the flow on the slope (the slope has been diminished, so not to scale), a self similar solution develops.
  ![animation  ](damb_slope_turb/animate.gif)
 
-We solve the Saint-Venant equation with no friction in 1D on a slope :
+We solve the Saint-Venant equation with turbulent friction in 1D on a slope :
 $$\left\{\begin{array}{l}
          \partial_t h+\partial_x (hu)=0\\
          \partial_t (hu)+ \partial_x (hu^2)= - g h\partial_x h     - g h\partial_x z_b -\frac{c_f}{2}u^2\\
   \end{array}\right.$$
 With at  $t=0$, a given triangular heap as  $h(0<x<\sqrt{2},t=0)=x$ of unit surface.
 
-We compare teh numerical solution with the analytical self similar solution of the kinematic wave
+We compare the numerical solution with the analytical self similar solution of the kinematic wave
 
 ## Kinematik wave 
 
-For long times iertia can be neglected, so that only slope and friction remain, in Chézy'case:
+For long times inertia can be neglected, so that only slope and friction remain, in Chézy'case:
 $$ Q  = h \sqrt{\frac{2  g \alpha h}{c_f}}$$
-Mass conservation 
+Mass conservation gives the kinetik wave (flood wave)
 $$
 \frac{\partial h}{\partial t} + \frac{\partial Q}{\partial x} = 0, \text{ with } Q = \beta h^n 
 $$
-$\beta = \sqrt{\frac{2 g  \alpha }{c_f} }$ and $n=3/2$ 
+with 
+$\beta = \sqrt{\frac{2 g  \alpha }{c_f} }$ and $n=3/2$, 
 with initial  distribution of height: 
-    $\int_{x_0}^{x_f} h \, dx = V_0$
+    $\int_{x_0}^{x_f} h \, dx = V_0$.
 
 
  
 
-the solution is self similar $\mathcal{H}(\eta) = \left( \frac{\eta}{ n} \right)^{\frac{1}{n-1}}$ with $\eta=...$ etc. : 
+The solution is self similar with $\eta=xt^{-2/3}$ and $h=t^{-2/3}\mathcal{H}(\eta)$, etc.
+
+we find $\mathcal{H}(\eta) = \left( \frac{\eta}{ n} \right)^{\frac{1}{n-1}}$ so that:
 $$h =     \left( \frac{ 2}{  3 \beta   t} \right)^2.$$
 for $x<x_f$ position of the front 
 $$x_f=\frac{3}{2^{2/3}}   V_0^{\frac{1}{3}} (\beta  t)^{\frac{2}{3}}= 
@@ -44,6 +46,7 @@ $$x_f=\frac{3}{2^{2/3}}   V_0^{\frac{1}{3}} (\beta  t)^{\frac{2}{3}}=
 $$
 at front for $x_f(t)$ or $t(x_f)$:
 $$h_{max}(t(x_f))=\frac{2^{2/3} V_0^{2/3}}{(\beta t(x_f))^{2/3}}$$
+note that we have 
 $$ h_{max}(x_f)=\frac{3}{V_0},\text{ and }
  h/{h}_{\mathrm{max}} = (x/x_f)^{2}$$
 
@@ -68,11 +71,11 @@ int main()
 {
     X0 = -2;
     L0 = 150; 
-    N =  1024*2; 
+    N =  1024*2*2; 
     nl = 1;
     G = 1.0;
     Cfs2 = 1;
-    DT = .01/2;
+    DT = .01/4;
     LLake = sqrt(2);
     tmax=600;  
     run();
@@ -100,22 +103,24 @@ event friction (i++) {
   {       double ff = h[] < dry ? HUGE : (1. + Cfs2*fabs(u.x[])*dt/h[]);
     u.x[] /= ff;}
 }
- 
-#if 0
-event errorS (t+=1.0) {
-  double H,eta;
+
+/**
+Error between the self similar solution and the computed one
+
+*/
+event errorS (t+=2.0) {
+  double H,eta,pt23;
   e = 0;
-  //($1/$3**(2./3)):($3>130?$2*$3**(2./3):NaN) w l, 4./9*(x)**2*(x>0),2**(2./3),(x-3/2**(2./3))
+  pt23 = pow(t+.0000001,2./3);
 foreach()
-  {  eta = x/pow(t,2./3);  
-      H = 4./9*(eta*eta)*(eta<3./pow(2,2./3))*(eta>0);
-      e = e+fabs(h[]*pow(t,2./3) - H);
-  // fprintf (stdout,"%f %f %f\n",eta,H,h[]*pow(t,2./3));
+  {  eta = (x)/pt23;  
+     H = 4./9*(eta*eta)*(eta<3./pow(2,2./3))*(eta>0);
+     e = e+fabs(h[]*pow(t,2./3) - H)*Delta/pt23;
     } 
     e=e/L0;
     fprintf (stdout,"%f %f \n",t,e);
 }
-#endif
+
 /**
 ## Outputs
 
@@ -137,7 +142,7 @@ event animatedplot (t+=1.0) {
     static FILE * fp = popen ("gnuplot -persist 2> /dev/null", "w");
     if(t==0) fprintf (fp,"set term gif animate;set output 'animate.gif';set size ratio .333333\n");
     fprintf (fp,"\nset grid\n");
-    fprintf (fp,"set title 'Turbulent Dam-Break on slope 1D --- t= %.2lf '\n"
+    fprintf (fp,"set title 'Turbulent flow on a slope 1D --- t= %.2lf '\n"
       "t= %.2lf  ; "
       "p[%g:%g][-1:.5]  '-' u 1:($2+$4) t'free surface' w l lt 3,'-' u 1:4 t'topo/L0' w l\\\n",
            t,t,X0,X0+L0);
@@ -186,20 +191,43 @@ open damb_slope_turb.c.html
 ##   Results
  
  
-An example of collapse along a unit slope with Chézy friction 
+An example of collapse along a unit slope with Chézy friction.
+At early times:
  
 ~~~gnuplot collapse
 set xlabel 'x '
 set ylabel 'h(x,t)'
-p [-1:4]'log' u 1:($3<5?($2-$1):NaN) not w l
+p [-1:4]'log' u 1:($3<5.?($2-$1):NaN) not w l
 ~~~
 
+flow a  larger time, the wave is longer and longer, but of decreasing height.
+  It looks a self similar solution...
+  
+  
 ~~~gnuplot collapse
 set xlabel 'x '
 set ylabel 'h(x,t)'
 p [-1:][0:.25]'log' u 1:($3==10||$3==20||$3==40||$3==75 ?$2:NaN) t'num t=1,20,40,80,150,300,600' w l lc 1,\
 'log' u 1:($3==150||$3==300||$3==600?$2:NaN) not w l lc 1
 ~~~
+
+
+
+
+Computation of the error (approaching the self similar solution)
+$$e(t)= \int (\mathcal{H} - h t^{2/3})^2 d \eta$$
+so that for $t >300$ the self similar solution is obtained, this is for $x \sim 90$ as 
+(3^(1./3)   (3./2 300)^(2./3)=85)
+  
+ 
+~~~gnuplot time to selfsimilar
+set xlabel 't '
+set ylabel 'error'
+p [:]'out' 
+~~~
+
+
+
 
 The solution is indeed selfsimilar
 
@@ -210,12 +238,26 @@ H(x)=4./9*(x)**2*(x>0)*(x<3/2**(2./3))
 p [-1:3][0:2]'log' u ($1/$3**(2./3)):($3>100?$2*$3**(2./3):NaN) w l t 'cal', H(x) t'self',2**(2./3) not
 ~~~
 
+## Conclusion
+
+
+We obtain the self similar solution of the kinematik wave equation as a solution at long time of the Shallow-water equation.
+Height is:
+$$h =     \left( \frac{ 2}{  3 \beta   t} \right)^2.$$
+for $x<x_f$ position of the front 
+$$x_f=\left(3 V_0 \right)^{\frac{1}{3}} \left(  \frac{3 \beta t}{2}\right)^{\frac{2}{3}}.$$
+
+
+Exactly the same analysis can be done with Manning's friction where 
+$\tau_0 = \rho g n_{GM}^2 Q^2/h^{7/3}$, this time $Q=\beta h^n$ with $n= 5/3$, so $1/(n-1)= 3/2$ and  $\beta = \frac{\sqrt{\alpha}}{n_{GM}}$ so that:
+  $$Q=\frac{\sqrt{\alpha}}{n_{GM}} h^{5/3}. $$  
+  etc. 
 
  
  
 ## Links
 
-* [Ancey-Dressler](/sandbox/M1EMN/Exemples/damb_slope.c)
+* Ideal fluid solution [Ancey-Dressler](/sandbox/M1EMN/Exemples/damb_slope.c)
 
 * see classical Dam-Break on horizontal bottom (no slope)
   [Ritter solution](/sandbox/M1EMN/Exemples/damb.c) 

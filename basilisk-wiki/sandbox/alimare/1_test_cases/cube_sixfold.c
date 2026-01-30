@@ -60,9 +60,7 @@ double fac1(coord n, double eps4){
 #include "view.h"
 #include "../level_set.h"
 #include "../LS_curvature.h"
-#include "../LS_advection_old.h"
-#include "../LS_speed.h"
-
+#include "../LS_advection.h"
 
 #define T_eq         0.
 #define TL_inf       -0.8
@@ -78,20 +76,20 @@ double H0;
 /**
 Setup of the physical parameters + level_set variables
 */
-/*scalar TL[], TS[], dist[];
+scalar TL[], TS[], dist[];
 vector vpc[],vpcf[];
 
 scalar * tracers    = {TL};
 scalar * tracers2 = {TS};
 
 scalar * level_set  = {dist};
-face vector muv[];*/
+face vector muv[];
 mgstats mgT;
 scalar grad1[], grad2[];
 double DT2;
 
 
-//double  latent_heat = 1.;
+double  latent_heat = 1.;
 double  lambda[2]; // thermal capacity of each material
 #if Gibbs_Thomson // parameters for the Gibbs-Thomson's equation
 double  epsK = 0.001, epsV = 0.001;
@@ -116,7 +114,7 @@ double  NB_width ;    // length of the NB
 
 int itrecons;
 
-//scalar curve[];
+scalar curve[];
 
 
 #define Pi 3.14159265358979323846
@@ -170,7 +168,7 @@ event init(t=0){
   lambda[0]  = 1.;
   lambda[1]  = 1.;
   // DT2        = 0.5;  // diffusion time scale
-  DT2        = 0.1*sq(L0/(1<<MAXLEVEL))/lambda[0];
+  DT2        = sq(L0/(1<<MAXLEVEL))/lambda[0];
   nb_cell_NB = 1 << 2 ; // number of cell in the 
                         // narrow band 
   itrecons = 50;
@@ -328,7 +326,7 @@ event snapshot(t+=3.e-3,last){
   dump();
 }
 
-event interface2(t+=1.e-3,last; t<7.2e-2){
+event interface2(t+=1.e-3,last; t<3.6e-2){
   output_facets(cs,stdout);
 }
 

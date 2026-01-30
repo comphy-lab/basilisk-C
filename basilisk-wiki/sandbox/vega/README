@@ -1,0 +1,43 @@
+# My Sandbox
+
+Welcome to the `README` of my sandbox. This page aims to provide an overview of my Basilisk projects.
+
+## Some (More) Test Cases
+
+* [Multilayer Poiseuille Flow](test/multilayer_poiseuille.c)
+
+## The Kolmogorov Flow
+
+The Kolmogorov Flow is a toy model for 2D turbulence (and transition to turbulence) proposed in 1960 by Andreï Kolmogorov. Later, a stratified version of this flow have been studied also as a toy model (see Balmforth 2002). The governing evolution equations for this flow are the following (under dimensionless form):
+
+$$\dfrac{\partial \mathbf{u}}{\partial t} + \left( \mathbf{u} \cdot \boldsymbol{\nabla} \right)\mathbf{u} = - \boldsymbol{\nabla} P + \dfrac{1}{Re} \Delta \mathbf{u} + \dfrac{1}{Re} \cos y \mathbf{e_x} + \dfrac{1}{Fr^2} b \mathbf{e_z}$$
+
+$$\boldsymbol{\nabla} \cdot \mathbf{u} = 0$$
+
+$$\dfrac{\partial b}{\partial t} + \left( \mathbf{u} \cdot \boldsymbol{\nabla} \right) b = \dfrac{1}{Re Pe} \Delta b$$
+
+I revisited the original Kolmogorov by changing the (periodic) boundary conditions at the top and the bottom by free-slip boundary conditions. The aim was to have some test case for the multilayer solver with the `rigid lid` option, developped by S.Poppinet for this project (see [implicit.h](/src/layered/implicit.h)).
+
+$$u_z(z = 0) = u_z(z = H) = 0$$
+
+$$\partial_z u_x(z = 0) = \partial_z u_x(z = H) = 0$$
+
+To maintain a linear background stratification (and in doing so, keeping a constant Froude number), I choose constant flux boundary conditions :
+
+$$\partial_z b(z = 0) = \partial_z b(z = H) = 1$$
+
+To confirm this test case, the Kolmogorov Flow has been simulated with two solvers: the [Navier-Stokes centered formulation](/src/navier-stokes/centered.h) and the [non-hydrostatic multilayer solver](/src/layered/nh.h).
+
+* [Centered Kolmogorov Flow](kolmogorov_flow/kolmogorov_centered.c)
+* [Multilayer Kolmogorov Flow](kolmogorov_flow/kolmogorov_multilayer.c)
+
+## 3D Atmospheric Flow
+
+We want to study a model (also presented in \#) to study turbulent flow in a 3D stratified forced only in the horizontal plane. Such settings will naturally create horizontal shearing.
+
+* [Multilayer Flow](atmospheric_flow/atmospheric.c)
+
+
+## Contact
+
+If you want to discuss, feel free to send me an email at jonathan.billet@ens.psl.eu

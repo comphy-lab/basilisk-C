@@ -17,6 +17,27 @@ language*](http://en.wikipedia.org/wiki/The_C_Programming_Language)).
 
 # Part I: Basic concepts
 
+## Domain geometry
+
+By default the computational domain is a (2D) square box of unit size
+with the origin at `(0,0)` in the lower-left corner. This can be changed using
+e.g.
+
+~~~literatec
+size (2.5);
+origin (-1.2, -3.);
+~~~
+
+Changing from 2D (the default) to 1D or 3D can be done by [changing
+grids](#one-two-or-three-dimensions). Non-squares (or non-cubic
+in 3D) domains can be defined using the
+[dimensions()](/src/Tips#non-cubic-domains) function.
+
+The default number of grid points in each dimension is 64 in one or
+two dimensions and 16 in 3D. It can be changed either using
+[init_grid()](#grid-allocation-and-deallocation) or by setting the
+value of the global variable `N`.
+
 ## Fields and stencils
 
 *Field* constructs are used to store quantities discretised
@@ -860,17 +881,121 @@ of [/src/vof.h]()) at the correct location (line 175 of
 
 ## Grid allocation and deallocation
 
-Hierarchy of grids
+A grid needs to be allocated before use (for example before using a
+loop iterator). This can be done using
+
+~~~literatec
+init_grid (32);
+~~~
+
+where `32` here is the number of grid points in each dimension. This
+will also set the value of the global variable `N` to 32. Note that
+many pre-defined solvers call `init_grid()` within the `run()`
+function, using `N` as the number of grid points.
+
+Explicitly freeing a grid is done using
+
+~~~literatec
+free_grid();
+~~~
+
+Note that `init_grid()` will call `free_grid()` before allocating the new grid.
+
+Basilisk is designed so that it is simple to change the type, the
+number of dimensions, and/or the implementations of the grids. There
+are three broad categories of grids -- cartesian, multigrid and tree --
+organised in the hierarchical fashion illustrated below
+
+![Hierarchy of grids (note that not all operators are
+ shown)](hierarchy.svg){width="80%"}
+
+The simplest grid is cartesian and supports the operations indicated
+in green. Multigrid adds multiple resolution levels and the
+corresponding operators in blue. Quadtree restricts the resolution of
+each level and adds the operators in red. A code using only green
+operators will run on all grids. A code using green and blue operators
+will run on multigrid and quadtree, and a code using green, blue and
+red operators will run only on quadtree.
+
+### Changing the grid
+
+One can change the grid using for example
+
+~~~literatec
+#include "grid/multigrid.h"
+~~~
+
+where the include statement must appear before any other include. Of
+course it is not possible to have multiple `#include "grid/..."`
+statements. If no such statement is included, the default corresponds
+to `#include "grid/quadtree.h"`.
+
+Why not use only the quadtree grid since it can do everything? A first
+reason is performance. The memory management of a quadtree
+implementation is not simple and will generally be less efficient than
+a simpler cartesian or multigrid implementation. This is even more
+relevant when using parallel, multicore computing. If one does not use
+the capabilities of the quadtree (i.e. the adaptive resolution), then
+it is more efficient to switch to multigrid (or even cartesian if one
+does not use the multilevel capability).
+
+Note also that one can use different implementations of the same grid
+type, adapted to a different hardware. For example a [GPU-accelerated
+multigrid](/src/grid/gpu/grid.h) using
+
+~~~literatec
+#include "grid/gpu/multigrid.h"
+~~~
+
+Another useful way to change the grid, without changing the source
+code, is using the `-grid` command line argument of [qcc](/src/qcc.c),
+like this for example
+
+~~~bash
+qcc -grid=gpu/multigrid ...
+~~~
+
+Note that the command-line argument will have priority over any
+`#include "grid/...` statement in the source code.
+
+### One, two or three dimensions
+
+The second reason to change the grid is to change the number of
+dimensions of the system. The hierarchy above, illustrated in two
+dimensions, is also implemented 
+
+* in one dimension: with `cartesian1D.h`, `multigrid1D.h` and `bitree.h`,
+* and in three dimensions: with `multigrid3D.h` and `octree.h` (there is no `cartesian3D.h`).
+
+Basilisk includes several mechanisms which make it quite easy to write
+codes which can run with an arbitrary number of dimensions:
+
+* the [foreach_dimension()](#foreach_dimension) iterator above,
+* the automatic "collapse" of higher dimension indices i.e. when
+  evaluating the field value `s[a,b]` in one dimension, the `b` index
+  is simply ignored.
 
 ### Multigrids
 
+Besides the general properties above, the multigrid implementations
+add some functionalities not present in other grids, including
+[non-square or non-cubic domains](/src/Tips#non-cubic-domains).
+
 ### Adaptive grids
+
+Adaptive grids are necessarily using the tree grids implementations
+(bitree, quadtree or octree). Note that the current implementations do
+not support non-square or non-cubic domains.
 
 ## Metric
 
 ## Macros
 
-Basilisk macros are defined using the `macro` keyword. They provide a cleaner and more robust interface than standard C preprocessor macros and can in particular be used to define new [iterators](#iterators). See the documentation in [macro.h](/src/ast/macro.h).
+Basilisk macros are defined using the `macro` keyword. They provide a
+cleaner and more robust interface than standard C preprocessor macros
+and can in particular be used to define new
+[iterators](#iterators). See the documentation in
+[macro.h](/src/ast/macro.h).
 
 ## Diagonalization
 
