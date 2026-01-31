@@ -37,10 +37,14 @@ call	foreach_region		basilisk	foreach_region
 call	foreach_vertex		basilisk	foreach_vertex
 
 call	face			basilisk	face-and-vertex-fields
-call	mask			basilisk	complex-domains
+call	init_grid		basilisk	grid-allocation-and-deallocation
+call	free_grid		basilisk	grid-allocation-and-deallocation
 call	periodic		basilisk	periodic-boundaries
 call	reduction		basilisk	parallel-programming
 call	serial			basilisk	parallel-programming
+call	dimensions		basilisk	domain-geometry
+call	size			basilisk	domain-geometry
+call	origin			basilisk	domain-geometry
 call	show_dimensions		basilisk	dimensional-analysis
 call	dimensional		basilisk	dimensional-analysis
 call	trace			basilisk	tracing-and-profiling

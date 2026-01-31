@@ -84,6 +84,19 @@ mgstats solve (scalar a, double func, double rhs,
 	      _d = func;
 	    a[] = _n/_d;
 	  }
+/**
+Note that the `diagonalize()` operator is not necessary, one could have written instead
+
+~~~literatec
+foreach_level_or_leaf (l) {
+  a[] = 0.;
+  double _d = - func, _n = _res[] + _d;
+  a[] = 1.;
+  _d += func;
+  a[] = _n/_d;
+}
+~~~
+*/
 	  boundary_level ({_da}, l);
 	}
       }      

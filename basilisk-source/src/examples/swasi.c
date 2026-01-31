@@ -192,6 +192,8 @@ While we run, we display the evolution of a vertical cross-section of
 the flow. */
 
 event profiles (i += 100) {
+  if (!getenv ("DISPLAY"))
+    return 0;
   static FILE * fp = popen ("gnuplot", "w");
   if (i == 0)
     fprintf (fp,

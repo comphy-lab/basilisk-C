@@ -191,11 +191,11 @@ We check for a stationary solution. */
 event logfile (i++; i <= 500)
 {
   double avg = normf(u.x).avg, du = change (u.x, un)/(avg + SEPS);
-  fprintf (stderr, "%d %d %d %d %d %d %d %d %.3g %.3g %.3g %.3g %.3g\n",
-	   maxlevel, i,
-	   mgp.i, mgp.nrelax, mgp.minlevel,
-	   mgu.i, mgu.nrelax, mgu.minlevel,
-	   du, mgp.resa*dt, mgu.resa, statsf(u.x).sum, normf(p).max);
+  printf ("%d %d %d %d %d %d %d %d %.3g %.3g %.3g %.3g %.3g\n",
+	  maxlevel, i,
+	  mgp.i, mgp.nrelax, mgp.minlevel,
+	  mgu.i, mgu.nrelax, mgu.minlevel,
+	  du, mgp.resa*dt, mgu.resa, statsf(u.x).sum, normf(p).max);
 
   /**
   If the relative change of the velocity is small enough we stop this
@@ -212,7 +212,7 @@ event logfile (i++; i <= 500)
     with $U$ the average fluid velocity. */
 
     stats s = statsf (u.x);
-    printf ("%d %g\n", maxlevel, s.sum/s.volume);
+    fprintf (stderr, "%d %.4g\n", maxlevel, s.sum/s.volume);
     
     /**
     We output fields and dump the simulation. */
@@ -279,7 +279,7 @@ event logfile (i++; i <= 500)
 set xlabel 'Level'
 set grid
 set ytics format '%.1e'
-plot 'out' w lp t ''
+plot 'log' w lp t ''
 ~~~
 
 ~~~gnuplot Convergence history
@@ -288,10 +288,8 @@ set logscale y
 set ytics format '%.0e'
 set yrange [1e-8:]
 set key center left
-plot '../porous3D.ref' u 2:9 w l t '', '' u 2:10 w l t '', \
-    '' u 2:11 w l t '', '' u 2:12 w l t '', '' u 2:13 w l t '', \
-    'log' u 2:9 w p t 'du', '' u 2:10 w p t 'resp', \
-    '' u 2:11 w p t 'resu', '' u 2:12 w p t 'u.x.sum', '' u 2:13 w p t 'p.max'
+plot 'out' u 2:9 w p t 'du', '' u 2:10 w p t 'resp', \
+     '' u 2:11 w p t 'resu', '' u 2:12 w p t 'u.x.sum', '' u 2:13 w p t 'p.max'
 ~~~
 
 ## See also

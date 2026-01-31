@@ -133,6 +133,8 @@ Note that only the documented test cases appear in the list below
 
 ## Embedded boundaries
 
+These tests can be run using `make embed-tests`.
+
 * [Poisson equation on complex domains](neumann.c)
 * [Poisson equation on complex domains in 3D](neumann3D.c)
 * [Poisson equation on complex axisymmetric domains](neumann-axi.c)

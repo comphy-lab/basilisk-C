@@ -5,8 +5,12 @@ CFLAGS += -O2 -fopenmp
 
 all: check
 
-runfast: brusselator.tst distance.tst ginzburg-landau.tst karman.tst \
-	life.tst madsen.tst tsunami.tst turbulence.tst wavelet.tst
+# These examples are run automatically, because they are not too expensive
+# (i.e. take less than a few minutes to run)
+
+fastcheck: brusselator.tst distance.tst ginzburg-landau.tst karman.tst \
+	life.tst madsen.tst tsunami.tst turbulence.tst wavelet.tst naca2414-starting.tst \
+	porous3D.tst yang.tst swasi.tst
 
 madsen-sv.c: madsen.c
 	ln -s madsen.c madsen-sv.c 

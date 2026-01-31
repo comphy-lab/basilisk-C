@@ -197,7 +197,8 @@ WS  [ \t\v\n\f]
   output_s (s1);
 }
 
-{ID}+{SP}*\( {
+{ID}+{SP}*\( |
+{ID}+{SP}*"<"[^>]*">"\( {
   if (!INCODE() || yyextra->scope > 0)
     REJECT;
   // keyword  anchor (function definition)
@@ -235,6 +236,13 @@ WS  [ \t\v\n\f]
 	  if (strchr ("0123456789", c1))
 	    tmp = append_c (tmp, c1);
 	tmp = append_s (tmp, "></span>");
+      }
+      else if (c1 == '<') {
+	tmp = append_c (tmp, c1);
+	while ((c1 = input(yyscanner)) > 0 && c1 != '>')
+	  tmp = append_c (tmp, c1);
+	if (c1 > 0)
+	  tmp = append_c (tmp, c1);
       }
       else {
 	tmp = append_c (tmp, c1);

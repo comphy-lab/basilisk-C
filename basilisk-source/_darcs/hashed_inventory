@@ -1,4 +1,4 @@
-pristine:f156e40f710613ac271e9554340aaae0647ef4b810be097e2e50e60d67862bd5
+pristine:1cf486ce040afd4dd70b458c83f293598425f4fa561044a058eee50b79b75070
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -514,3 +514,18 @@ Stephane Popinet <popinet@basilisk.fr>**20260129132036
  Ignore-this: fc03cb4841736b0c700f1ceec0d98d982e9ba036084f324da78f3106f16ab188b57d35dfa34ec01c
 ] 
 hash: 0000000352-ae199677e36e5209878820a077c784d9e39b20f0a4724af6382fd423e36b30d9
+[Fast enough examples are run automatically
+Stephane Popinet <popinet@basilisk.fr>**20260130130413
+ Ignore-this: 953efc2aaffd3c26f7735d1527074639a76d3c38b746a6d6e80c646c2239b3a4eae1dfc8761a6f5f
+] 
+hash: 0000027819-2345a7f96c490718f393cab6fe9076ec94e2de7e7705094f174bb6d1ccd12e88
+[Minor documentation updates
+Stephane Popinet <popinet@basilisk.fr>**20260130151844
+ Ignore-this: fad9ea6ca27daee2e5877c2f95a25d22
+] 
+hash: 0000000815-163664112d687f895abaa629be1969c78fb245b055a5ce075f5d4940db01fe28
+[Fixed function tags for pandoc 3.1.3
+Stephane Popinet <popinet@basilisk.fr>**20260130164332
+ Ignore-this: cab34b3255f562220e62a29a35c2949d
+] 
+hash: 0000024171-749db25306f620e7a7f19ad9053be5303ec8b4843d208fc24ef021fcdafa07cd

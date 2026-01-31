@@ -47,6 +47,9 @@ export CADNACC="clang -D_CADNA=1 -x c++ -m64 \
 # OpenGL libraries
 export OPENGLIBS="-lfb_tiny"
 
+# HOME directory
+export HOME=/home/basilisk
+
 # howto kill tests
 
 killtest()
