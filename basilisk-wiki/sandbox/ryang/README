@@ -17,3 +17,7 @@ Here is a summary of [ongoing projects](/sandbox/ryang/)
 [multilayer_varydensity/flat.c](): a modified version of [/test/horn.c](/src/test/horn.c) without tilt.
 
 [multilayer_varydensity/dispersion.c](): a modified version of [/test/dispersion.c](/src/test/dispersion.c) without tilt.
+
+# Breaking wave with surfactant
+
+[surfactant/wave.c](): a modified version of [wave.c](/sandbox/popinet/wave.c) and surfactant transportation from [farsoiya/marangoni_surfactant/](/sandbox/farsoiya/marangoni_surfactant/).

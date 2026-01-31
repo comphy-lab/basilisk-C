@@ -41,6 +41,9 @@ droplet diameter.
 #if OPENSMOKE
 # include "opensmoke/flame.h"
 #endif
+#if CHT
+# include "conjugate.h"
+#endif
 #include "defaultvars.h"
 #include "maxruntime.h"
 #include "view.h"
@@ -228,6 +231,22 @@ bool restored = false;
 scalar qspark[];
 
 /**
+If there is conjugate heat transfer, we include a function that dissipates solid
+temperature due to radiation effects. */
+
+#if CHT
+void radiation_fiber (scalar i, scalar e) {
+  double sigma_stefan_boltzmann = 5.670373e-8;
+  double emissivity = 1.;
+  double dfiber = 2.*Y0;
+  foreach()
+    if (f[] == 0.)
+      e[] -= 4.*sigma_stefan_boltzmann*emissivity/dfiber*
+        (pow (TS[], 4.) - pow (TS0, 4.))*cm[]*cw[];
+}
+#endif
+
+/**
 ## Simulation setups
 
 Here we have the main function and the intial event which set the properties
@@ -287,6 +306,16 @@ int main (int argc, char ** argv) {
   Pref = inputdata.P0*101325.;
   TG0 = inputdata.TG0;
   TL0 = inputdata.TL0;
+
+  /**
+  We set the thermal properties of the solid suspender, together with
+  source/sink functions. */
+
+#if CHT
+  TS0 = min (TL0, TG0);
+  solid_properties (QUARTZ);
+  energy_sources = radiation_fiber;
+#endif
 
   /**
   We use a two-velocities model, and we set additional options for the phase
@@ -356,7 +385,11 @@ macro number circle (double x, double y, double R,
 event init (i = 0) {
   if (!restore (file = "restart")) {
 #if TREE
+# if CHT
+    refine (circle (x, y, 4.*D0) > 0. && (y <= 3.*Y0) && level < maxlevel);
+# else
     refine (circle (x, y, 4.*D0) > 0. && level < maxlevel);
+# endif // CHT
 #endif
     fraction (f, circle (x, y, 0.5*D0));
 
@@ -446,6 +479,20 @@ event init (i = 0) {
 #if 0
   print_thermoprop (&tp1, liq->ts0, liq->n, stderr);
   print_thermoprop (&tp2, gas->ts0, gas->n, stderr);
+#endif
+
+  /**
+  We define the solid geometry and set the boundary conditions for temperature
+  when CHT is present. */
+
+#if CHT
+  {
+    solid (cw, fw, (x >= 0.) && y <= 2.*Y0);
+    scalar TL = liq->T, TG = gas->T;
+    TS[bottom] = dirichlet (TSB[]);
+    TL[bottom] = (x >= 0.) ? dirichlet (TLB[]) : neumann (0.);
+    TG[bottom] = (x >= 0.) ? dirichlet (TGB[]) : neumann (0.);
+  }
 #endif
 }
 

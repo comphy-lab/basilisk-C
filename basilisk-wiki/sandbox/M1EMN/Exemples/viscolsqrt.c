@@ -1,12 +1,12 @@
 /** 
-#Viscous Collapse (Viscous Slump): 
+# Viscous Collapse (Viscous Slump): 
 
 ## Problème de Effondrement visqueux sur une pente (sploutch)
 Effondrement visqueux: il s'agit de l'effondrement d'un tas 1D initialement rectangulaire et disposé sur une pente $Z(x)$.
 Comme l'écoulement est très visqueux, l'inertie est vite négligeable:
 on a vite un équilibre entre le terme de pente (de gravité) qui fait tomber et le frottement 
 visqueux qui freine. 
-Cet écoulement pourrait modéliser de la lave s'écoulant le long d'un volcan (il est générique en géophysique, le terme à changer est celui du frottement, nous verrons sur les autres pages le cas de bingham, fluide à seuil).
+Cet écoulement pourrait modéliser de la lave s'écoulant le long d'un volcan (il est générique en géophysique, le terme à changer est celui du frottement, nous verrons sur les autres pages le cas du fluide de  Bingham, fluide à seuil).
 
 
 Les équations de Saint Venant
@@ -24,7 +24,7 @@ La partie visqueues est résolue
 par split  
  $$\frac{\partial u}{\partial t} = -C_f \frac{u}{h^2} \text {     discretisation semi implicite}
  \frac{  u^{n+1} - u^n }{\Delta t} = -C_f \frac{u^{u+1}}{h^{n2}}$$
- onimpose $u^{n+1}=0$ quand $h^n$ très petit  (paramètre `dry`).
+ on impose $u^{n+1}=0$ quand $h^n$ très petit  (paramètre `dry`).
  
 
 Pour les pentes fortes telles que $|Z'|\gg \partial_x h$, on peut simplier les équations car on n'a plus que l'équilibre entre la pente et le frottement: alors  $Q= -gZ' h^3/(3 \nu)$ et l'équation de la masse devient 
@@ -193,12 +193,26 @@ Ce glissement est dû à l'étape visqueuse
 
 * same example with [Multilayer](/sandbox/M1EMN/Exemples/viscous_collapsesqrt_ML.c)
 * same example with [Bingham](/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
-
+* Resolution of the [associated kinetik/ diffusive wave](https://basilisk.fr/sandbox/M1EMN/Exemples/viscolsqrt_noSV.c) 
 # Bibliographie
 * [Huppert H.](http://www.itg.cam.ac.uk/people/heh/Paper49.pdf)
  "Flow and instability of a viscous current along a slope"
  Nature volume 30 1982 p 427  
-* [M2EMN non Newtonian flows](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/mainM2EMN.pdf) Tas visqueux sur fond incliné
+
+
+# Bibliography
+ * [Huppert H.](http://www.itg.cam.ac.uk/people/heh/Paper47.pdf)
+ ”The propagation of two-dimensional and axisymmetric viscous gravity currents over a rigid horizontal surface” J . Fluid Mech. (1982), vol. 121, p p . 43-58
+ * [Huppert H.](http://www.itg.cam.ac.uk/people/heh/Paper49.pdf)
+ "Flow and instability of a viscous current along a slope"
+ Nature volume 30 1982 p 427  
+ * Chiang C. Mei,  2007  [Spreading of a shallow mass on an incline](https://web.mit.edu/1.63/www/Lec-notes/chap2_slow/2-4spread-mud.pdf)
+ * Lagrée  [M1EMN
+Master 1 Ecoulements en Milieu Naturel](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/MFEnv.pdf)
+ * Lagrée  [M2EMN
+Master 2 Ecoulements en Milieu Naturel](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/mainM2EMN.pdf)
+ Tas visqueux sur fond incliné
  
+
 
 */

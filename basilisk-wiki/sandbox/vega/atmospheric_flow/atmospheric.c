@@ -1,3 +1,17 @@
+/**
+
+# Introduction
+
+![A movie of the flow](../kolmogorov_flow/out_movie_Re16000_Fr0.25.mp4)
+
+The first instability (near t = 30) of the forced flow along the x axis creates a tangential flow along the y axis.
+
+And a second instability (between t = 200 and t = 300) creates thin horizontal shearing layers.
+
+From this state, we can expect an other instability to occur looking like a Kelwin-Helmholtz instability.
+
+*/
+
 
 /**
 
@@ -459,6 +473,23 @@ double norm_L2 (scalar field, double slope) {
   return var;
 }
 
+double delta (scalar field) {
+  double max = -1.*HUGE;
+  double min = HUGE;
+  foreach(reduction(max:max) reduction(min:min)) {
+    foreach_layer() {
+//      fprintf(stderr, "deb - %g %g\n", l_max, field[0,0,0]);
+      if (field[0,0,0] > max) {
+        max = field[0,0,0];
+      }
+      if (field[0,0,0] < min) {
+        min = field[0,0,0];
+      }
+    }
+  }
+  return max - min;
+}
+
 event snapshot (t = end) {
   static FILE * fp = fopen("snapshot", "w");
   foreach (serial) {
@@ -472,17 +503,17 @@ event snapshot (t = end) {
 }
 
 /**
-In a datafile, we output the 'variance' of the stratification and the variance of the vertical velocity.
+In a datafile, we output the variance of the vertical velocity and the difference between the min and the max of the flotability.
 */
 
 event datafile (i++) {
   static FILE * fp = fopen("data", "w");
-  double Strat = norm_L1(T, 0.);
+//  double Strat = norm_L1(T, 0.);
   double uz2 = norm_L2(w, 0.);
-  fprintf(fp, "%d %g %g %g\n", i, t, uz2, Strat);
+  double delta_T = delta(T);
+  fprintf(fp, "%d %g %g %g\n", i, t, uz2, delta_T);
   fprintf(stdout, "deb - %g %d\n", t, i);
 }
-
 /**
 
 */

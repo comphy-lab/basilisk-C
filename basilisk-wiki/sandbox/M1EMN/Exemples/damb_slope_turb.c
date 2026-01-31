@@ -39,7 +39,7 @@ with initial  distribution of height:
 The solution is self similar with $\eta=xt^{-2/3}$ and $h=t^{-2/3}\mathcal{H}(\eta)$, etc.
 
 we find $\mathcal{H}(\eta) = \left( \frac{\eta}{ n} \right)^{\frac{1}{n-1}}$ so that:
-$$h =     \left( \frac{ 2}{  3 \beta   t} \right)^2.$$
+$$h =     \left( \frac{ 2 x}{  3 \beta   t} \right)^2.$$
 for $x<x_f$ position of the front 
 $$x_f=\frac{3}{2^{2/3}}   V_0^{\frac{1}{3}} (\beta  t)^{\frac{2}{3}}= 
   \left(3 V_0 \right)^{\frac{1}{3}} \left(  \frac{3 \beta t}{2}\right)^{\frac{2}{3}}.
@@ -243,7 +243,7 @@ p [-1:3][0:2]'log' u ($1/$3**(2./3)):($3>100?$2*$3**(2./3):NaN) w l t 'cal', H(x
 
 We obtain the self similar solution of the kinematik wave equation as a solution at long time of the Shallow-water equation.
 Height is:
-$$h =     \left( \frac{ 2}{  3 \beta   t} \right)^2.$$
+$$h =     \left( \frac{ 2 x }{  3 \beta   t} \right)^2.$$
 for $x<x_f$ position of the front 
 $$x_f=\left(3 V_0 \right)^{\frac{1}{3}} \left(  \frac{3 \beta t}{2}\right)^{\frac{2}{3}}.$$
 

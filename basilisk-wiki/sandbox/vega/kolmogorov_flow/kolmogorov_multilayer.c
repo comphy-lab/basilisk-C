@@ -2,6 +2,8 @@
 
 # Introduction
 
+![A movie of the flow reaching a (weak) non linear state](out_movie_Re50_alpha0.5_DT0.01_N16.mp4)
+
 # The Code
 
 ## How to execute?
@@ -59,10 +61,10 @@ Now, we define some numerical variable that will control the simulation, which r
 
 */
 double Tmax = 0.;
-double T_growth = 20.;
+double T_growth = 30.;
 
-double wait_X_tau_laminar = 3.;
-double wait_X_tau_perturb = 2.;
+double wait_X_tau_laminar = 0.2;
+double wait_X_tau_perturb = 0.2;
 
 double T_fit;
 double T_perturb;
@@ -113,17 +115,14 @@ We define a general function to set a title with gnuplot depending on both physi
 
 */
 void gnu_title (FILE * fp, char * title) {
-  char gnu_command[512];
-  snprintf(gnu_command, sizeof(gnu_command),
-           "set title \" %s - %s \\nRe = %g, {/Symbol a} = %g, Fr = %g , {/Symbol e} = %g \\n n_res = %d, DT = %g \"\n",
-           title, simulation_type, Re, ratio, Fr, epsilon, N_res, DT);
-  fprintf(fp, gnu_command); //fputs(gnu_command, fp); ?
+  fprintf(fp,
+          "set title \" %s - %s \\nRe = %g, {/Symbol a} = %g, Fr = %g , {/Symbol e} = %g \\n n_res = %d, DT = %g \"\n",
+          title, simulation_type, Re, ratio, Fr, epsilon, N_res, DT);
 }
-  /**
+  
+/**
+We define a function to draw the stability diagram (which will be used at the very end of the code execution). */
 
-We define a function to draw the stability diagram (which will be used at the very end of the code execution).
-
-*/
 void plot_stability() {
   FILE * fp = popen("gnuplot 2> /dev/null", "w");
   fprintf(fp,
@@ -238,14 +237,14 @@ We set two loops to iterate over the numerical resolution (both temporal and spa
   
 */  
   for (DT = 0.01; DT >= 0.01; DT /= 10.) {
-    for (N_res = 32; N_res <=32; N_res *=2) {
+    for (N_res = 16; N_res <=16; N_res *=2) {
       snprintf(extension_num, sizeof(extension_num), "DT%g_N%d", DT, N_res);
   /**
 
 
 */
       for (ratio = 0.1; ratio <= 0.9; ratio += 0.1) {
-        for (Re = 5.; Re <= 5.; Re += 1.) {
+        for (Re = 50.; Re <= 50.; Re += 1.) {
   /**
 We set an option if we want to do simulation close to the line $Re = Re_c(\alpha)$ in the parameter space. To do so, we compute an approximation of the critical Reynolds number (at given aspect ratio $\alpha$), and we do the simulation only if the Reynolds number of the simulation is not too far.
 */
@@ -976,7 +975,7 @@ event growth (t = end) {
           "a = 0\n"
           "b = 0\n"
           "f(x) = a + b*x\n"
-          "fit [%g:][-8*log(10):-0*log(10)] f(x) 'data_%s_%s' u 2:(log($3)) via a,b\n" // we keep only the points after the projection t~>20, and the points that are not noise amp >e-8, and still linear (a not too big)
+          "fit [%g:][-8*log(10):2*log(10)] f(x) 'data_%s_%s' u 2:(log($3)) via a,b\n" // we keep only the points after the projection t~>20, and the points that are not noise amp >e-8, and still linear (a not too big)
           "if (!FIT_CONVERGED) {a = NaN; b = NaN; b_err = NaN; FIT_STDFIT = NaN}\n"
           "set print 'sigma_%s' append\n" // give some error values if not converged
           "print %g, %g, b, b_err, FIT_STDFIT, %d, %g\n"
@@ -1073,10 +1072,10 @@ if needed, we can add a filtering on the second column to select a specific Reyn
 set xlabel 'k'
 set ylabel '{/Symbol s}'
 set grid
-files = system("ls sigma_*")
+files = system("ls sigma_DT0.01_N16")
 N = words(files)
 
-p for [i=1:N] word(files,i) u 1:(($5<0.15) ? $3 : NaN):4 w errorbars t substr(word(files,i),7,32)
+p for [i=1:N] word(files,i) u 1:(($5<0.15) ? $3 : NaN):4 w errorbars t substr(word(files,i),7,32), '../spectre_Re50' u 1:2 w l t 'linear stability theory'
 ~~~
 
 */

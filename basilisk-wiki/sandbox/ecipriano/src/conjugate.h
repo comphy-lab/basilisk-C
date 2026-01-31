@@ -196,6 +196,17 @@ void no_sources (scalar i, scalar e) {
 
 void (* energy_sources) (scalar i, scalar e) = no_sources;
 
+/**
+The thermal conductivity may vary significantly with the solid temperature.
+Therefore, we define a function which, by default, returns the constant
+conductivity value, but it can be [overloaded](/src/ast/macro.h#overloading) in
+the simulation file. */
+
+macro double lambda_solid (double T) {
+  NOT_UNUSED(T);
+  return lambda3;
+}
+
 event tracer_diffusion (i++) {
   conjugate();
   face_fraction (cw, fw);
@@ -221,8 +232,10 @@ event tracer_diffusion (i++) {
     theta[] = max (cmm[]*rho3*cp3, 1e-10);
 
   face vector D[];
-  foreach_face()
-    D.x[] = fmm.x[]*lambda3;
+  foreach_face() {
+    double TSf = face_value (TS, 0);
+    D.x[] = fmm.x[]*lambda_solid (TSf);
+  }
 
   energy_sources (zeroc, QSexp);
 

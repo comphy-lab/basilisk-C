@@ -1,11 +1,4 @@
-CFLAGS += -O2
-
-# for local use only
-ifdef MYSANDBOX
-CFLAGS += -I$(MYSANDBOX)/
-endif
-
-CFLAGS += -disable-dimensions # skip dimensions check for now
+CFLAGS += -O2 -I$(DOCUMENT_ROOT)/sandbox -Wdimensions
 
 all: ml_breaking_simple.tst plot
 
