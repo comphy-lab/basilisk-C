@@ -1,3 +1,4 @@
+
 /**
 # LS_reinit() test case
 
@@ -9,22 +10,22 @@ Extreme test case */
 
 #include "embed.h"
 #include "../alex_functions.h"
-#include "../LS_reinit.h"
-#include "view.h"
+#include "redistance.h"
+//#include "view.h"
 
 double perturb (double x, double y, double eps, coord center)
 {
   return eps + sq(x - center.x) + sq(y - center.y);
 }
 
-void draw_isolines(scalar s, double smin, double smax, int niso, int w)
+/*void draw_isolines(scalar s, double smin, double smax, int niso, int w)
 {
   scalar vdist[];
   cell2node(s,vdist);
   boundary ({vdist});
   for (double sval = smin ; sval <= smax; sval += (smax-smin)/niso)
     isoline ("vdist", sval, lw = w);
-}
+}*/
 
 scalar dist[];
 scalar * level_set = {dist};
@@ -44,19 +45,20 @@ int main()
   }
   boundary({dist});
 
-  view (fov = 15.);
+  /*view (fov = 15.);
   squares ("dist", map = cool_warm, min = -1, max = 1);
   draw_isolines (dist, -1., 1., 10, 1);
   save ("dist_init.png");
 
-  LS_reinit (dist, it_max = 200);
+  scalar resf[];
+  redistance(dist, 500, 0.5, 3, 1e-6, HUGE, resf);
   squares ("dist", map = cool_warm, min = -1, max = 1);
   draw_isolines (dist, -1., 1., 10, 1);
   save ("dist_first_reinit.png");
 
   squares ("dist", map = cool_warm, min = -1, max = 1);
   draw_isolines (dist, -1, 1, 10, 1);
-  save ("dist_final.png");
+  save ("dist_final.png");*/
 }
 
 /**

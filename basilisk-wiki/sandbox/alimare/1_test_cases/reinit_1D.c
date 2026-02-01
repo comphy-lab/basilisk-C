@@ -7,8 +7,8 @@ initialize a perturbed distance field.
 #define BICUBIC 1
 #include "embed.h"
 #include "curvature.h"
-#include "alimare/alex_functions.h"
-#include "alimare/LS_reinit.h"
+#include "../alex_functions.h"
+#include "redistance.h"
 #include "view.h"
 
 /**
@@ -75,7 +75,8 @@ the height function.
   }
   fclose(fp1);
 
-  LS_reinit(dist, it_max = 1 << (MAXLEVEL+1));
+redistance(dist);
+
 
   snprintf(filename, 100,  "log1");
   fp1 = fopen (filename,"w");
