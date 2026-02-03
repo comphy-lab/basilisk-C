@@ -29,7 +29,7 @@ static void update_color_cen_unsplit() {
         int nm[2];
         coord xm[8];
         Point pt = point;
-        int ns = get_segments (pt, config_dict, st = s_tmp, xm = xm, nm = nm, sn = ss_tmp);
+        get_segments (pt, config_dict, st = s_tmp, xm = xm, nm = nm, sn = ss_tmp);
         coord p1, p2, p3 = {0., 0.}, p4 = {1., 1.};
 
         p1.x = xm[0].x;
@@ -180,6 +180,12 @@ void advect_unsplit (int ind=0) {
 
   boundary ((scalar *) {s_tmp, ss_tmp});
 
+  // more stable for markers located on symmetric boundary
+  foreach_face() {
+    if (with_marker.x[] > 0.5 && fabs(ss_tmp.x[]) < 1.e-12)
+      ss_tmp.x[] = 0.;
+  }
+
   /** compute the new position of markers on edge
     search the 2 * 3 (3 * 2) stencil for the x (y) face */
 
@@ -208,7 +214,6 @@ void advect_unsplit (int ind=0) {
             coord xm[8];
             int ns = get_segments (pt, config_dict, st = s_tmp, xm = xm, nm = nm, sn = ss_tmp);
             for (int iseg = 0; iseg < ns; iseg++) {
-              bool with_sl = false, with_circle = false;
               double y0 = HUGE, kp[2] = {0., 0.};
               coord pm[4];
               int np = nm[iseg];
@@ -227,13 +232,11 @@ void advect_unsplit (int ind=0) {
                 // case with two segment endpoints located on two sides of the cell face
                 // intersection point based on the linear fit
                 y0 = my_intersect (pm[0].x, pm[0].y, pm[1].x, pm[1].y, 0., -HUGE, HUGE);
-                with_sl = y0 >= 0. && y0 <= 1.;
 
                 // circle fit
                 int nsec = 0;
                 double yave = 0., ymin = min(pm[0].y, pm[1].y),\
                   ymax = max(pm[0].y, pm[1].y), ycyc_int[2] = {HUGE, HUGE};
-                double ycyc[4] = {-1., -1., -1, -1}; // for debugging
 
                 for (int ip = 2; ip < np; ip++) {
                   double xrc, yrc, rc, yint[2];
@@ -258,17 +261,13 @@ void advect_unsplit (int ind=0) {
                       ycyc_int[ip - 2] = y0c; // points based on two different circle fit
                       yave += y0c;
                       nsec++;
-
-                      // for debugging
-                      ycyc[2*ip - 4] = yint[0];
-                      ycyc[2*ip - 3] = yint[1];
                     }
                   }
                   else
                     ycyc_int[ip - 2] = y0;
                 }
 
-                if (kr > kr_max) {
+                if (nsec == 2 && kr > kr_max) {
                   // for the region with large gradient of curvature, choose the fit
                   // resulting in smaller curvature (or linear fitting)
                   yave = fabs(kp[0]) < fabs(kp[1]) ? nsec*ycyc_int[0]:  nsec*ycyc_int[1];
@@ -287,7 +286,6 @@ void advect_unsplit (int ind=0) {
                   with_marker.x[] += 1.; // should be removed
                 }
                 else if (nsec > 0 && yave >= 0. && yave <= 1.) {
-                  with_circle = true;
                   snew.x[] = yave;
                   with_marker.x[] += 1.; // should be removed
                 }
@@ -297,7 +295,6 @@ void advect_unsplit (int ind=0) {
                 // intersection can only result from circle fitting.
                 int nsec = 0;
                 double yave = 0., ymin = min(pm[0].y, pm[1].y), ymax = max(pm[0].y, pm[1].y);
-                double ycyc[4] = {-1., -1., -1, -1};
                 double ycyc_int[2] = {HUGE, HUGE};
                 for (int ip = 2; ip < np; ip++) {
                   double xrc, yrc, rc, yint[2];
@@ -319,9 +316,6 @@ void advect_unsplit (int ind=0) {
                         }
                       }
 
-                      ycyc[2*ip - 4] = yint[0];
-                      ycyc[2*ip - 3] = yint[1];
-
                       if (nwithin > 0) {
                         ycyc_int[ip - 2] = y0c;
                         yave += y0c;
@@ -336,14 +330,12 @@ void advect_unsplit (int ind=0) {
                 if (nsec == 1) {
                   yave = fabs(kp[0]) < fabs(kp[1]) ? ycyc_int[0] : ycyc_int[1];
                   if (within(yave, 0., 1.)) {
-                    with_circle = true;
                     snew.x[] = yave;
                     with_marker.x[] += 1.;
                   }
                 }
                 else if (nsec == 2) {
                   yave = ycyc_int[0] + ycyc_int[1];
-                  with_circle = true;
                   snew.x[] = yave/nsec;
                   with_marker.x[] += 1.;
                 }
@@ -384,7 +376,7 @@ void advect_unsplit (int ind=0) {
               int nm[2], nm_o[2];
               coord xm[8], xm_o[8];
               int ns = get_segments (pt, config_dict, st = s_tmp, xm = xm, nm = nm, sn = ss_tmp);
-              int ns_o = get_segments (pt, config_dict, st = s, xm = xm_o, nm = nm_o);
+              get_segments (pt, config_dict, st = s, xm = xm_o, nm = nm_o);
 
               for (int iseg = 0; iseg < ns; iseg++) {
                 coord xv[8], xo = {0., 0.}, xs = {i, j};
@@ -453,7 +445,7 @@ void advect_unsplit (int ind=0) {
                 int nv_poly = 4;
                 foreach_dimension() {
                   int nsec = (int) n_ave.x;
-                  if (kr > kr_max)
+                  if (nsec == 2 && kr > kr_max)
                     xy_ave.x = fabs(kp[0]) < fabs(kp[1]) ? nsec*xy_cyc[0].x : nsec*xy_cyc[1].x;
                   else if (nsec == 2 && (within(xy_cyc[0].x, 0., 1.) != within(xy_cyc[1].x, 0., 1.)))
                     xy_ave.x = fabs(kp[0]) < fabs(kp[1]) ? 2.*xy_cyc[0].x : 2.*xy_cyc[1].x;
@@ -478,7 +470,6 @@ void advect_unsplit (int ind=0) {
                   }
                 }
 
-                bool is_in = is_inside (xv, 4, xo);
                 bool is_in_circle = is_inside (xv, nv_poly, xo);
                 if (is_in_circle)
                   color_pha_new[] = 1. - color_pha[];

@@ -1,3 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 basilisk-wiki/_darcs/patches/1024425406-* filter=lfs diff=lfs merge=lfs -text
+basilisk-wiki/_darcs/patches/1024425406-337106cd008c94406b1094c5988ab896813bd706018dd2ff48bbd165c3c5d2ac filter=lfs diff=lfs merge=lfs -text

@@ -1,6 +1,6 @@
-# 02/2021 2026
+# 02/2026
 #
-# Resolution de l'equation d'inondation "flood wave"
+# Resolution de l'equation d'advection simple
 # http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/code_C_saintvenant.pdf
 # http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/MFEnv.pdf
 # https://basilisk.fr/sandbox/M1EMN/Exemples/flood.c
@@ -16,20 +16,21 @@ n=500
 L=16
 dx=L/n
 dt=dx*.25
+# note: verifier que si CFL n'est pas 1, alors il faut augmenter le nombre de points
 
 #tableau des x
 x=np.zeros(n+2)
 for i in range(n+2):
   x[i]=(i-n/2)*dx
-# hauteur initiale: "vague" exponentielle + hauteur constante
+# hauteur initiale: une exponentielle  
 h=np.zeros(n+2)
 for i in range(n+2):
-  h[i]=1+np.exp(-x[i]*x[i])
+  h[i]=np.exp(-x[i]*x[i])
 # definition du flux numerique pour la hauteur
 # cellule "gauche" et "droite"
 def FR1(hg, hd):
-  c=1.5*(np.sqrt(hg)+np.sqrt(hd))/2
-  return (hg*np.sqrt(hg)+hd*np.sqrt(hd))*0.5-c*(hd-hg)*0.5
+  c=1.
+  return (hg + hd)*0.5-c*(hd-hg)*0.5
 #
 
 # tableaux pour les plots
@@ -92,9 +93,8 @@ x3e=np.zeros(n+2)
 h3e=np.zeros(n+2)
 for i in range(0,n+2):
   t=3
-  h3e[i]=1+np.exp(-x[i]*x[i])
-  c=3./2*np.sqrt(h3e[i])
-  x3e[i]=x[i]+t*c
+  h3e[i]=np.exp(-(x[i]-t)**2)
+
 
 # plots et traces
 # en rouge solution exacte
@@ -105,8 +105,8 @@ plt.plot(x,h2c,'b',linestyle='-',label='t=2')
 plt.plot(x,h3c,'b',linestyle='-',label='t=3')
 plt.plot(x,h4c,'b',linestyle='-',label='t=4')
 plt.plot(x,h5c,'b',linestyle='-',label='t=5')
-plt.plot(x3e,h3e,'r',label='exact t=3')
-plt.title('Solution num flood ')
+plt.plot(x,h3e,'r',label='exact t=3')
+plt.title('Solution num advecte ')
 plt.xlabel('x')
 plt.ylabel('h')
 plt.grid()
