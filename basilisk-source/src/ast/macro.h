@@ -845,6 +845,8 @@ void ast_macro_replacement (Ast * statement, Ast * initial, Stack * stack,
       char * label = strdup (ast_terminal (ast_schema (r.label, sym_generic_identifier,
 						       0, sym_IDENTIFIER))->start);
       str_append (label, "val");
+      AstTerminal * ilabel = NB(copy, sym_IDENTIFIER, label);
+      ilabel->before = strdup (" ");
       Ast * declaration = NN(copy, sym_declaration,
 			     ast_copy (returntype),
 			     NN(copy, sym_init_declarator_list,
@@ -852,7 +854,7 @@ void ast_macro_replacement (Ast * statement, Ast * initial, Stack * stack,
 				   NN(copy, sym_declarator,
 				      NN(copy, sym_direct_declarator,
 					 NN(copy, sym_generic_identifier,
-					    NB(copy, sym_IDENTIFIER, label)))))),
+					    ilabel))))),
 			     NCB(copy, ";"));
 
       AstTerminal * val =  NB(statement, sym_IDENTIFIER, label);

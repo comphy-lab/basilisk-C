@@ -1,4 +1,4 @@
-pristine:1cf486ce040afd4dd70b458c83f293598425f4fa561044a058eee50b79b75070
+pristine:56d0f31efe482489ef07bebd97457ebc1fedbbd817a863b1576a6a3f8b055323
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -529,3 +529,18 @@ Stephane Popinet <popinet@basilisk.fr>**20260130164332
  Ignore-this: cab34b3255f562220e62a29a35c2949d
 ] 
 hash: 0000024171-749db25306f620e7a7f19ad9053be5303ec8b4843d208fc24ef021fcdafa07cd
+[Missing space in macro return declaration
+Stephane Popinet <popinet@basilisk.fr>**20260202131657
+ Ignore-this: d1bc07774cf9002b94bcbd354fc06eed
+] 
+hash: 0000000372-13fe52781281d4180a48a009e28a29fa3cad2cb7530d181c6e0a1abb921a7d9c
+[The wiki does not allow files larger than 1MB
+Stephane Popinet <popinet@basilisk.fr>**20251212144706
+ Ignore-this: b1585491448d5ab5706c7a3fb07063c4
+] 
+hash: 0000000950-96506a5e6062fb12852b6f86a66f96b22ae3d41c8ad86b24dd3ca95319f893e1
+[Pushed files must not exceed 1MBytes
+Stephane Popinet <popinet@basilisk.fr>**20260202140116
+ Ignore-this: 486f5c32948cd5aec8fb111d94d486a5abba8fc610985f005e1005ba55038ea6323c9919ec45bc73
+] 
+hash: 0000000973-32892c936be67a3119573346dda2c9404e1667ffc113209b6150974125c605ce
