@@ -89,3 +89,16 @@ We use GitHub Issues to track bugs, installation problems, and feature requests.
 ### Contributing
 
 While this is a fork maintained for tracking specific issues, we welcome contributions that help improve the codebase. Please ensure your contributions align with the main Basilisk project's coding standards and practices.
+
+### Git LFS for Large Files
+
+We keep files larger than 100 MB in Git LFS using the pre-commit hook at `hooks/pre-commit`.
+
+Setup (per clone):
+```bash
+git lfs install
+ln -s ../../hooks/pre-commit .git/hooks/pre-commit
+# or: cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+```
+
+The hook auto-tracks staged files over 100 MB, updates `.gitattributes`, and re-adds the file so the commit stores an LFS pointer.
