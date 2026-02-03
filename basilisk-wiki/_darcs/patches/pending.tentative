@@ -1,12 +1,6 @@
 {
-rmdir ./$base$/%3Cspan%20class=highlighted%3Esandbox%3C/span%3E
-rmdir ./$base$/%3Cspan%20class=highlighted%3Esandbox%3C
-rmdir ./$base$
-rmdir ./%E2%80%8Bsandbo%E2%80%8Bx/Antoonvh
-rmdir ./%E2%80%8Bsandbo%E2%80%8Bx
 rmdir ./gallery
 rmdir ./iso
-rmdir ./kaitaotang
 rmdir ./sandbox/AhmedBasil/gl
 rmdir ./sandbox/Deepak
 rmdir ./sandbox/M2_MSH/2020_2021/ZHOU_Zixin/liquid_film

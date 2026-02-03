@@ -1,4 +1,12 @@
 /**
+This simulation studies the effect of surfactants on gravity-capillary wave based on breaking wave example [wave.c](/sandbox/popinet/wave.c) and Marangoni flow package by Palas Kumar Farsoiya et al. [farsoiya/marangoni_surfactant/](/sandbox/farsoiya/marangoni_surfactant/).
+*/
+
+/*
+Requirement: redistance2.h, surfactant-transport.h
+*/
+
+/**
 # Breaking wave
 
 We solve the two-phase Navier--Stokes equations with surface tension
@@ -28,10 +36,9 @@ We log some profiling information. */
 //Surfactants
 double beta = 1.0;
 double dsigma0 = 0.5;
-double gamma0 = 1., gamma_inf = 1.; // Tritox X fdhila et. al.
+double gamma0 = 1., gamma_inf = 1.;
 scalar sigmaf[];
 vector iforce[];
-//const double Zi = -9.;
 
 /**
 The primary parameters are the wave steepness $ak$, the Bond and
@@ -45,7 +52,7 @@ double TEND = 1.0;    // end of the simulation
 /**
 The default maximum level of refinement depends on the dimension. */
 
-int LEVEL = dimension == 2 ? 9 : 6;
+int LEVEL = dimension == 2 ? 8 : 6;
 
 /**
 The error on the components of the velocity field used for adaptive
@@ -72,7 +79,7 @@ these values. */
 #define h_   0.5
 #define g_   1.
 double MA = 1;
-//double cutoff = 0.00001; //minimum surface tension 
+
 /**
 The program takes optional arguments which are the level of
 refinement, steepness, Bond and Reynolds numbers, and optional Dirac
@@ -134,39 +141,39 @@ int main (int argc, char * argv[])
 #endif
 
 
-   struct stat st = {0};
-    char name[80];
-    sprintf (name, "dat");
-    char newname[80];
-    sprintf (name, "dat");
+  struct stat st = {0};
+  char name[80];
+  sprintf (name, "dat");
+  char newname[80];
+  sprintf (name, "dat");
 
-    if (stat(name, &st) == -1)
-      {
-	mkdir(name, 0700);
-      }
+  if (stat(name, &st) == -1)
+    {
+      mkdir(name, 0700);
+    }
 
-    sprintf (name, "eta");
-    if (stat(name, &st) == -1)
-      {
-        mkdir(name, 0700);
-      }
+  sprintf (name, "eta");
+  if (stat(name, &st) == -1)
+    {
+      mkdir(name, 0700);
+    }
 
     /**
       Preserve old stats restoring the simulation with a timestamp suffixed. */		
-      sprintf (name, "stats.dat");
+  sprintf (name, "stats.dat");
 	
-    if (stat(name, &st) == 0)
-      {
-	sprintf (newname, "stats-%ld.dat",time(0));
+  if (stat(name, &st) == 0)
+    {
+      sprintf (newname, "stats-%ld.dat",time(0));
 	rename(name, newname);
-      }
-    sprintf (name, "perfs");
+    }
+  sprintf (name, "perfs");
 	
-    if (stat(name, &st) == 0)
-      {
-	sprintf (newname, "perfs-%ld",time(0));
+  if (stat(name, &st) == 0)
+    {
+      sprintf (newname, "perfs-%ld",time(0));
 	rename(name, newname);
-      }
+    }
 
   run();
 }
@@ -219,7 +226,7 @@ event stability (i++){
   
     foreach(serial){
       if (sigmaf[] > 0) {
-        double dt = sqrt (rhom*cube(dmin)/(pi*sigmaf[]))/10;
+        double dt = sqrt (rhom*cube(dmin)/(pi*sigmaf[]))/10; //some prefactors maybe needed for stability
         if (dt < dtmax)
           dtmax = dt;
       }
@@ -372,11 +379,11 @@ event init (i = 0)
 
   //Surfactants
       event("properties2"); //call this so that pfield can be populated and then c1 can be initialized	
-  foreach(){
-    double deltas = (pfield[]*(1. - pfield[]))/EPSILON; //
+    foreach(){
+      double deltas = (pfield[]*(1. - pfield[]))/EPSILON; //
 
     // double gamma0 = gamma_inf*0.01;
-    c1[] = gamma0*deltas; //convert volume to surface
+      c1[] = gamma0*deltas; //convert volume to surface
       if (deltas > 1.e-2){
 	  double gamma = c1[]*4.*EPSILON;
 	  sigmaf[] =  1.0/(BO*sq(k_))*(1.   - dsigma0*tanh(MA/dsigma0 * BO * k_ * sqrt(k_)/RE * gamma/gamma0));
@@ -384,8 +391,8 @@ event init (i = 0)
       else
         sigmaf[] =  1./(BO*sq(k_));
       
-  }
-  boundary({sigmaf});//
+    }
+    boundary({sigmaf});
 
     }
 
@@ -545,7 +552,6 @@ event graphs (i++) {
     }
 
   }
-  double sigma0 = 1.0/(BO*sq(k_))*(1.   - dsigma0*tanh(MA/dsigma0* BO * k_ * sqrt(k_)/RE));
   double rates[2];
   dissipation_rate(rates);
   double dissWater = rates[0];
@@ -681,85 +687,48 @@ event adapt (i++) {
 }
 #endif
 
-
 /**
 ## Functions to extract surface quantities
 */
 
-/**
-double my_interpolation(Point point, scalar s, double xp, double yp, double zp) {
-
-#if dimension == 2
-  double xpo = (xp - x)/Delta - s.d.x/2.0;
-  double ypo = (yp - y)/Delta - s.d.y/2.0;
-    
-  int i = sign(xpo), j = sign(ypo);
-  xpo = fabs(xpo), ypo = fabs(ypo);
-  
-  return ((s[]*(1. - xpo) + s[i]*xpo)*(1. - ypo) +
-          (s[0,j]*(1. - xpo) + s[i,j]*xpo)*ypo);
-#else
-  double xpo = (xp - x)/Delta - s.d.x/2.0;
-  double ypo = (yp - y)/Delta - s.d.y/2.0;
-  double zpo = (zp - z)/Delta - s.d.z/2.0;
-    
-  int i = sign(xpo), j = sign(ypo), k = sign(zpo);
-  xpo = fabs(xpo), ypo = fabs(ypo), zpo = fabs(zpo);
-  
-  return (((s[]*(1. - xpo) + s[i]*xpo)*(1. - ypo) + 
-	   (s[0,j]*(1. - xpo) + s[i,j]*xpo)*ypo)*(1. - zpo) +
-	   ((s[0,0,k]*(1. - xpo) + s[i,0,k]*xpo)*(1. - ypo) + 
-	   (s[0,j,k]*(1. - xpo) + s[i,j,k]*xpo)*ypo)*zpo); 
-#endif
- 
+static int compare (const void * a, const void * b)
+{
+  const double * A = (const double *) a;
+  const double * B = (const double *) b;
+  // sort by first column (x)
+  if (A[0] < B[0]) return -1;
+  if (A[0] > B[0]) return  1;
+  return 0;
 }
 
-int compare (const void *a, const void *b) {
-
-  double x = *(double *)a;
-  double y = *(double *)b;
-
-  if(     x < y) {
-    return -1;
-  }
-  else if(x > y) {
-    return +1;
-  }
-  else {
-    return +0;
-  }
-
-}
-*/
-
-/**
-   We want to compute some quantities at the interface. */
-
-/**
-void output_int_qtn (char * fname, int istep, scalar c, scalar sca, double stp_eta) {
-
-  // We first loop over all the interfacial points 
+/** We want to compute some quantities at the interface. */
+void output_int_qtn (char * fname, int istep,
+                     scalar c, scalar sca,
+                     double stp_eta)
+{
+  // We first loop over all the interfacial points
   // and we count them (per processor)
-  
   int int_pt = 0;
-  foreach(serial) { 
+
+  foreach (serial) {
     if (interfacial (point, c)) {
       if (point.level == LEVEL) {
-        coord n = interface_normal(point, c), pp;
+        coord n = interface_normal (point, c), pp;
         double alpha1 = plane_alpha (c[], n);
-        plane_area_center(n, alpha1, &pp);
+        plane_area_center (n, alpha1, &pp);
+
+        // we compute centroid coordinates (used later)
         double xc = x + Delta*pp.x;
         double yc = y + Delta*pp.y + stp_eta;
+        (void) xc; (void) yc; // silence warnings in case you later edit outputs
+
 #if dimension > 2
-        double zc = z + Delta*pp.z; // we keep here to avoid warning (otherwise: unused variable)
-	Point point = locate (xc, yc, zc);
-#else
-	Point point = locate (xc, yc);
+        double zc = z + Delta*pp.z;
+        (void) zc;
 #endif
-	if (point.level > 0) { // best case
-	  POINT_VARIABLES;
-	  int_pt++;
-	}
+
+        // Stay on the current interfacial cell (no locate/Point reassignment)
+        int_pt++;
       }
     }
   }
@@ -767,112 +736,109 @@ void output_int_qtn (char * fname, int istep, scalar c, scalar sca, double stp_e
   int tot_column = 4;
   double t_mat[int_pt][tot_column];
 
-  for (int j = 0; j < tot_column; j++) {
-    for (int i = 0; i < int_pt; i++) {
-      t_mat[i][j] = 0;
-    }
-  }
-  fprintf(stderr, "First pass over interfacial points\n");
+  for (int j = 0; j < tot_column; j++)
+    for (int i = 0; i < int_pt; i++)
+      t_mat[i][j] = 0.;
+
+  fprintf (stderr, "First pass over interfacial points\n");
 
   scalar pos[];
 #if dimension > 2
   coord G = {0.,1.,0.}, Z = {0.,0.,0.};
 #else
-  coord G = {0.,1.}, Z = {0.,0.};
+  coord G = {0.,1.},   Z = {0.,0.};
 #endif
   position (c, pos, G, Z);
 
   int count = 0;
-  foreach(serial) {
+
+  foreach (serial) {
     if (interfacial (point, c)) {
       if (point.level == LEVEL) {
-        coord n = interface_normal(point, c), pp;
+        coord n = interface_normal (point, c), pp;
         double alpha1 = plane_alpha (c[], n);
-        plane_area_center(n, alpha1, &pp);
-	double eta = pos[];
+        plane_area_center (n, alpha1, &pp);
+
+        double eta = pos[];
+
         double xc = x + Delta*pp.x;
         double yc = y + Delta*pp.y + stp_eta;
+        (void) yc; // yc not otherwise used unless you re-enable interpolation
+
+#if dimension > 2
         double zc = z + Delta*pp.z;
-#if dimension > 2
-        double zc = z + Delta*pp.z; // we keep here to avoid warning (otherwise: unused variable)
-	Point point = locate (xc, yc, zc);
-#else
-	Point point = locate (xc, yc    );
 #endif
-	if (point.level > 0) { // best case
-	 
-	  POINT_VARIABLES;
 
-	  t_mat[count][0] = xc;
+        t_mat[count][0] = xc;
 #if dimension > 2
-	  t_mat[count][1] = zc;
+        t_mat[count][1] = zc;
 #else
-	  t_mat[count][1] = 0;
+        t_mat[count][1] = 0.;
 #endif
-	  //t_mat[count][2] = my_interpolation(point, sca, xc, yc, zc);
-          t_mat[count][2] = sca[];
-	  t_mat[count][3] = eta;           // already defined at the interface
-
-	  count++;
-
-	}
+        t_mat[count][2] = sca[];
+        t_mat[count][3] = eta; // already defined at the interface
+        count++;
       }
     }
   }
-  fprintf(stderr, "Second pass over interfacial points\n");
 
-  // We sort locally t_mat by the x coordinate (the first, i.e. 0-th, column) 
+  fprintf (stderr, "Second pass over interfacial points\n");
 
-  qsort(t_mat, int_pt, tot_column*sizeof(double), compare);
-  fprintf(stderr, "First sort\n");
+  // We sort locally t_mat by the x coordinate (the first, i.e. 0-th, column)
+  qsort (t_mat, int_pt, tot_column*sizeof(double), compare);
+  fprintf (stderr, "First sort\n");
 
   double tot_row;
 
 #if _MPI
-
-  // On multiple cores, we gather all the int_pt to the root pid 
+  // On multiple cores, we gather all the int_pt to the root pid
   // and, then, we broadcast this information to all the processes
-  
   int nproc;
   MPI_Comm_size (MPI_COMM_WORLD, &nproc);
   int counts_it[nproc];
-  if( pid() == 0 ) {
-    MPI_Gather(&int_pt,1,MPI_INT,counts_it,1,MPI_INT,0,MPI_COMM_WORLD); // MPI_gather gathers by rank order
-  }
-  else {
-    MPI_Gather(&int_pt,1,MPI_INT,NULL     ,1,MPI_INT,0,MPI_COMM_WORLD); // MPI_gather gathers by rank order
-  }
-  MPI_Bcast(counts_it,nproc,MPI_INT,0,MPI_COMM_WORLD);
 
-  // Each processor knows the int_pt of the others. So we can compute 
-  // the displacement, the total number of interfacial points and 
+  if (pid() == 0) {
+    MPI_Gather (&int_pt, 1, MPI_INT, counts_it, 1, MPI_INT, 0, MPI_COMM_WORLD);
+  } else {
+    MPI_Gather (&int_pt, 1, MPI_INT, NULL,      1, MPI_INT, 0, MPI_COMM_WORLD);
+  }
+
+  MPI_Bcast (counts_it, nproc, MPI_INT, 0, MPI_COMM_WORLD);
+
+  // Each processor knows the int_pt of the others. So we can compute
+  // the displacement, the total number of interfacial points and
   // the number of elements owned by each processor
-
   int tot_int_pt = 0;
   int tot_el_p[nproc], disp_r[nproc], disp[nproc];
+
   for (int i = 0; i < nproc; i++) {
-    disp_r[i]    = tot_int_pt;
-    disp[i]      = disp_r[i]*tot_column;
-    tot_int_pt  += counts_it[i];
-    tot_el_p[i]  = counts_it[i]*tot_column;
+    disp_r[i] = tot_int_pt;
+    disp[i]   = disp_r[i]*tot_column;
+    tot_int_pt += counts_it[i];
+    tot_el_p[i] = counts_it[i]*tot_column;
   }
+
   tot_row = tot_int_pt;
 
-  // --> Gather to the root pid 
+  // --> Gather to the root pid
   // --> Sort by first column
-
   double t_mat_tot[tot_int_pt][tot_column];
 
-  if( pid() == 0 ) {
+  if (pid() == 0) {
     int tot_el_p0[nproc], disp0[nproc];
     for (int i = 0; i < nproc; i++) {
       tot_el_p0[i] = tot_el_p[i];
       disp0[i]     = disp[i];
     }
-    MPI_Gatherv(&t_mat,int_pt*tot_column,MPI_DOUBLE,t_mat_tot,tot_el_p0,disp0,MPI_DOUBLE,0,MPI_COMM_WORLD);
-    fprintf(stderr, "GatherV 0\n");
-    qsort(t_mat_tot, tot_int_pt, tot_column*sizeof(double), compare);
-    fprintf(stderr, "Second sort 0\n");
+
+    MPI_Gatherv (&t_mat, int_pt*tot_column, MPI_DOUBLE,
+                 t_mat_tot, tot_el_p0, disp0, MPI_DOUBLE,
+                 0, MPI_COMM_WORLD);
+
+    fprintf (stderr, "GatherV 0\n");
+
+    qsort (t_mat_tot, tot_int_pt, tot_column*sizeof(double), compare);
+    fprintf (stderr, "Second sort 0\n");
   }
   else {
     int tot_el_p1[nproc], disp1[nproc];
@@ -880,72 +846,56 @@ void output_int_qtn (char * fname, int istep, scalar c, scalar sca, double stp_e
       tot_el_p1[i] = tot_el_p[i];
       disp1[i]     = disp[i];
     }
-    MPI_Gatherv(&t_mat,int_pt*tot_column,MPI_DOUBLE,NULL     ,tot_el_p1,disp1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+
+    MPI_Gatherv (&t_mat, int_pt*tot_column, MPI_DOUBLE,
+                 NULL, tot_el_p1, disp1, MPI_DOUBLE,
+                 0, MPI_COMM_WORLD);
   }
- 
+
 #else
-
   tot_row = int_pt;
+
   double t_mat_tot[int_pt][tot_column];
-
-  for (int j = 0; j < tot_column; j++) {
-    for (int i = 0; i < int_pt; i++) {
+  for (int j = 0; j < tot_column; j++)
+    for (int i = 0; i < int_pt; i++)
       t_mat_tot[i][j] = t_mat[i][j];
-    }
-  }
-
 #endif
 
   if (pid() == 0) {
-
-    fflush(stderr);
+    fflush (stderr);
     FILE * eta_loc = fopen (fname, "w");
-    
     // Print in ASCII format
-
     for (int i = 0; i < tot_row; i++) {
-      fprintf (eta_loc,"%8E %8E %8E %8E\n",
-	  	        t_mat_tot[i][0], t_mat_tot[i][1], t_mat_tot[i][2], t_mat_tot[i][3]);     
+      fprintf (eta_loc, "%8E %8E %8E %8E\n",
+               t_mat_tot[i][0], t_mat_tot[i][1],
+               t_mat_tot[i][2], t_mat_tot[i][3]);
     }
-
-    fclose(eta_loc);
-    fflush(eta_loc);
-
+    fclose (eta_loc);
+    fflush (eta_loc);
   }
-  fprintf(stderr, "Print\n");
 
+  fprintf (stderr, "Print\n");
 }
 
-event eta_loc (t += 0.01) {
+event eta_loc (t += 0.01)
+{
+  fflush (stderr);
 
-  fflush(stderr);
   char etaname_in[100];
   sprintf (etaname_in, "./eta/eta_loc_t%09d.out", i);
+
   double stp_eta = 0.0*(L0/pow(2.0,LEVEL)); // it corresponds to 0*Delta
-  boundary({gamma2});
+
+  boundary ({gamma2});
   output_int_qtn (etaname_in, i, f, gamma2, stp_eta);
 
   fflush (stderr);
-  if (pid() == 0) {
 
+  if (pid() == 0) {
     char name_1[80];
     sprintf (name_1,"./log_eta.out");
-    FILE * log_sim = fopen(name_1,"a");
+    FILE * log_sim = fopen (name_1,"a");
     fprintf (log_sim, "%8E %8E\n", t, 1.0*i);
-    fclose(log_sim);
-
+    fclose (log_sim);
   }
-
 }
-*/
-
-
-/**
-## Running in parallel
-
-This file will work in 2D or 3D, either with adaptivity:
-~~~bash
-qcc -source -D_MPI=1 -grid=octree wave.c
-scp _wave.c occigen.cines.fr:
-~~~
-*/

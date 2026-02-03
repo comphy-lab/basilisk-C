@@ -1,4 +1,4 @@
-# 02/2021
+# 02/2021 2026
 #
 # Resolution des equations d'inondation "flood wave"
 # http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/code_C_saintvenant.pdf
@@ -13,24 +13,20 @@ import math
 import matplotlib.pylab as plt
 #parametres
 n    = 500
-xmin = -4.
-xmax = 12.
-L=abs(xmax-xmin)
-dx   = L/n
+L=16
+dx = L/n
 dt=dx*.25
-# coefficient de friction de Coulomb
-mu=0.5
+
 #tableau des x
 x=np.zeros(n+2)
 for i in range(n+2):
   x[i]=(i-n/2)*dx
-# hauteur initiale: retenue de grains h=1 pour x<0; h=0 pour x>0
+# hauteur initiale: retenue exponentielle+1
 h=np.zeros(n+2)
 for i in range(n+2):
   h[i]=1+np.exp(-x[i]*x[i])
-# definition du flux numerique   pour la hauteur
+# definition du flux numerique pour la hauteur
 def FR1(hg, hd):
-  c=1.5*max(np.sqrt(hg),np.sqrt(hd))
   c=1.5*(np.sqrt(hg)+np.sqrt(hd))/2
   return (hg*np.sqrt(hg)+hd*np.sqrt(hd))*0.5-c*(hd-hg)*0.5
 #

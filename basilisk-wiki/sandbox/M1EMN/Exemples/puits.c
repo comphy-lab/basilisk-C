@@ -4,7 +4,7 @@
 
 The classical Shallow Water Equations in 1D with no friction but with a source of magnitude $q_s$ ( if $q_s<0$ it is a well).
  The source term is $q_s\delta(x-x_s)$ where $x_s$ is the position of the object and $\delta$ the dirac distribution.
- Her we ar in 1D, so that $\int_{-\infty}^{+\infty}\delta(x-x_s)=1$
+ Here we are in 1D, so that $\int_{-\infty}^{+\infty}\delta(x-x_s)=1$
 $$
  \left\{\begin{array}{l}
  \partial_t h+\partial_x Q=q_s \delta(x-x_s)\\
@@ -32,7 +32,7 @@ int main() {
   L0 = 10.;
   G = 1;
   N = 512*2;
-  tmax=30;
+  tmax=30.;
   
   run();
 }
@@ -79,7 +79,7 @@ event puits(i++){
 }
 /**
  monitoring of
-  $h(X_0/2,t)$,  Velocity $u(X_0/2,t),  $\partial_t h(X_0/2,t)$,  Volume $V= \int h dx$ and $dV/dt$
+  $h(X_0/2,t)$,  Velocity $u(X_0/2,t)$,  $\partial_t h(X_0/2,t)$,  Volume $V= \int h dx$ and $dV/dt$
 */
 event mesure(i++){
     static double hold=1,dhdt=0,dVdt=0,Vold=0,V=0;

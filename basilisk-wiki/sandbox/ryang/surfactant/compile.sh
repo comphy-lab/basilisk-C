@@ -1,1 +1,0 @@
-CC99='mpicc -std=c99' qcc -grid=quadtree -events -autolink -O2 -g -Wall -pipe -D_FORTIFY_SOURCE=2 -D_MPI=1 -DTREE -o wave wave.c -L$BASILISK/gl -lfb_tiny -lm -disable-dimensions

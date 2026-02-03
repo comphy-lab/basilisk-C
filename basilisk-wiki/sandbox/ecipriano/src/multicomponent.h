@@ -1,4 +1,4 @@
-#include "intgrad.h"
+#include "gradients.h"
 #include "fsolve.h"
 
 Phase * liq_int, * gas_int;
@@ -33,8 +33,8 @@ void energy_balance (const double * xdata, double * fdata, void * params) {
     double TInti = xdata[0];
     bool success = false;
 
-    double gtrgrad = ebmgrad (point, TG, fl, fg, fsl, fsg, true,  TInti, &success);
-    double ltrgrad = ebmgrad (point, TL, fl, fg, fsl, fsg, false, TInti, &success);
+    double gtrgrad = plic_gradient (point, TG, fg, fsg, TInti, true);
+    double ltrgrad = plic_gradient (point, TL, fl, fsl, TInti, true);
 
     scalar lambda1 = liq->lambda, lambda2 = gas->lambda;
 
@@ -281,13 +281,13 @@ event phasechange (i++) {
           scalar XG = gas->XList[i];
           scalar XGInt = gas_int->XList[i];
           scalar MWGInt = gas_int->MW;
-          gtrgrad = ebmgrad (point, XG, fl, fg, fsl, fsg, true, XGInt[], false);
+          gtrgrad = plic_gradient (point, XG, fg, fsg, XGInt[], true);
           gtrgrad *= (MWGInt[] > 0) ? gas_int->MWs[i]/MWGInt[] : 0.;
         }
         else {
           scalar YGInt = gas_int->YList[i];
           scalar YG = gas->YList[i];
-          gtrgrad = ebmgrad (point, YG, fl, fg, fsl, fsg, true, YGInt[], false);
+          gtrgrad = plic_gradient (point, YG, fg, fsg, YGInt[], true);
         }
         jGtot += -rhoG[]*DG[]*gtrgrad;
       }
@@ -303,12 +303,12 @@ event phasechange (i++) {
         scalar XG = gas->XList[LSI[i]];
         scalar MWGInt = gas_int->MW;
 
-        gtrgrad = ebmgrad (point, XG, fl, fg, fsl, fsg, true, XGInt[], false);
+        gtrgrad = plic_gradient (point, XG, fg, fsg, XGInt[], true);
         gtrgrad *= (MWGInt[] > 0) ? gas_int->MWs[LSI[i]]/MWGInt[] : 0.;
       }
       else {
         scalar YG = gas->YList[LSI[i]];
-        gtrgrad = ebmgrad (point, YG, fl, fg, fsl, fsg, true, YGInt[], false);
+        gtrgrad = plic_gradient (point, YG, fg, fsg, YGInt[], true);
       }
       sum_jG += -rhoG[]*DG[]*gtrgrad - YGInt[]*jGtot;
       sum_YGInt += YGInt[];
@@ -325,12 +325,12 @@ event phasechange (i++) {
         scalar XG = gas->XList[LSI[i]];
         scalar MWGInt = gas_int->MW;
 
-        gtrgrad = ebmgrad (point, XG, fl, fg, fsl, fsg, true, XGInt[], false);
+        gtrgrad = plic_gradient (point, XG, fg, fsg, XGInt[], true);
         gtrgrad *= (MWGInt[] > 0) ? gas_int->MWs[LSI[i]]/MWGInt[] : 0.;
       }
       else {
         scalar YG = gas->YList[LSI[i]];
-        gtrgrad = ebmgrad (point, YG, fl, fg, fsl, fsg, true, YGInt[], false);
+        gtrgrad = plic_gradient (point, YG, fg, fsg, YGInt[], true);
       }
       mEvap[] = mEvapTot[]*YGInt[] - rhoG[]*DG[]*gtrgrad - YGInt[]*jGtot;
     }
@@ -396,8 +396,8 @@ event phasechange (i++) {
     }
 
     scalar TL = liq->T, TG = gas->T;
-    double ltrgrad = ebmgrad (point, TL, fl, fg, fsl, fsg, false, TLInt[], false);
-    double gtrgrad = ebmgrad (point, TG, fl, fg, fsl, fsg, true, TGInt[], false);
+    double ltrgrad = plic_gradient (point, TL, fl, fsl, TLInt[], true);
+    double gtrgrad = plic_gradient (point, TG, fg, fsg, TGInt[], true);
 
     scalar slT = liq->STexp, sgT = gas->STexp;
     scalar lambdal = liq->lambda, lambdag = gas->lambda;

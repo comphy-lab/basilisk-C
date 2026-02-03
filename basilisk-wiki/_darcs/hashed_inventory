@@ -1,4 +1,4 @@
-pristine:d196114e00ea86415bb2a1dd9b299bca9b107181e3ce33b28938f5ae9a147a1c
+pristine:7a182f050c365dac0add35f95b183cb4335899e1734312875212b66deada5841
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4421,3 +4421,90 @@ thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260131205714
  Ignore-this: e74be4687a183de40d6947019301f157bf572400082bf7b603f83fc7a865c77832f1d0408a129c81
 ] 
 hash: 0000000401-2f1ac3e5d3ff5e01b97fba4945153b81727aafed9837600da09442a1a9f31282
+[Fix Tianyang's sandbox.
+Jieyun Pan**20260202100840
+ Ignore-this: fa61329f3d9f7168f1a4a0ec3c57cdc0
+ 
+ Fix the error introduced by the update on contact.h
+] 
+hash: 0000000688-08d720d59d2698f47b52bcc31915126141030c1058213272601036d8139923e1
+[?
+pyl <pyl@ccr.jussieu.fr>**20260202102403
+ Ignore-this: 1ce84112ff4308be74acea961289a66c6d7e08770e1e39164e3644a4292f14239596f7f001e51330
+] 
+hash: 0000000630-af7d8e0ce8a8da80199e136f449ff10a32c13c20b194570648b5f79d00b5a9e7
+[Cleanup
+Stephane Popinet <popinet@basilisk.fr>**20260202143723
+ Ignore-this: f83ea16fbe6515d3ad0f92fa18963e06
+] 
+hash: 0000001136-b11acef7580cad9e60ea5da3e323c8ca9d4b174264dd4ba9ec12717408aa693b
+[More cleanup
+Stephane Popinet <popinet@basilisk.fr>**20260202144108
+ Ignore-this: e333299b003da37e6e75a89cc95e6542
+] 
+hash: 0000198673-f103e05e5a7dc1afe47e5725c723b81f2f510fc36ea80c07e1307bb0f55ba470
+[changes in wave.c for surfactant
+ryang**20260202150300
+ Ignore-this: 6ab18db11e8d73eff40263a9edcb1d49a0407312920f768566b4f0099d1490501b1794adedb77684
+] 
+hash: 0000003242-39528c98150c9baab7efc95bb672f9cf6319523703d1cf3a1d8f0552bfdf8b2f
+[Formatting
+Stephane Popinet <popinet@basilisk.fr>**20260202152149
+ Ignore-this: d7f94381fcf98befe465be1407660e5e252ee66efe3221041fd1344c7ee3bb5cdc8763274abcfd90
+] 
+hash: 0000000234-d1f1c0b0754d2a429ef923e438c8b3d214841608239c9f581331bf8a80d5e7db
+[Fixed link
+Stephane Popinet <popinet@basilisk.fr>**20260202152401
+ Ignore-this: e45ffafb892bb33d7f8d75c2e53288dc0b6cd75be50db9af06f8cf435b58a8aa5d10fb00c4dc86ce
+] 
+hash: 0000000687-b483dbeeb82181c29b544c45594eaa6fadad7b9c339b1be90f4f5574e58d2b87
+[add redistance2.h
+ryang**20260202153701
+ Ignore-this: 1c9c45f6bae6d060cc391d1203e2710d52e5e89f0c071f4d154605c88e39b441db8b856d7025469f
+] 
+hash: 0000011878-00d916d33dd1d78d241f1c503b64a35ba2dcbedf322a59eda0f01908383f3b0b
+[OK
+pyl <pyl@ccr.jussieu.fr>**20260202160818
+ Ignore-this: 2b471930b84fd8b5fd9539ba7627afbc5ad04994aaf8d495248c9800142f30a977427be88d93c81b
+] 
+hash: 0000000694-dc64b809351bc70dcc1ecd3d644fe760ac9244a4d28997711d4f763f0f03d480
+[c
+pyl <pyl@ccr.jussieu.fr>**20260202162502
+ Ignore-this: a891d68f0b4f2d2591a6ea7db9b21352fddc75664a783707f8937b6b2a07f0a8e05d6b38c88bf5bb
+] 
+hash: 0000000218-a5a689bbcb7637784f709a99c366ae5edb4329c607ea557b2576ef8c212addb6
+[update surfactant wave.c after testing offline
+ryang**20260202210238
+ Ignore-this: e3722da0291077a048652e3615a8f83bc8626564307a17cd650de01f28d1d36617626c9084a11a3
+] 
+hash: 0000010676-5345278211a500d3aa52a3a2c23f3dbf53a63239041367a7700c9781993e6000
+[Deleted using web interface
+ryang**20260202210650
+ Ignore-this: ba081331e87ca19fd6ec6b96810b1be9179fda36093fba3eef593da452750ef5377ededb2353d748
+] 
+hash: 0000000418-d6e8783b95fbcafefd4c6f66d82ae93468c71f6163eebb7a5d5574974a3f5882
+[add Makefile
+ryang**20260202210800
+ Ignore-this: d0e2ccd9bd12be2e83b2cbc81033fb38c23ebd9b53c78efc17099ce111350ea43d71c33f77fe6b51
+] 
+hash: 0000000291-ca8d0dc45ae4ee4bb2907ea0698d8de32b8b9376bf46b1ec0a97a7910caecab7
+[Rewriting interfacial gradients better for compatibility with current embed implementation
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260202215004
+ Ignore-this: 9520ec5166104c797c36afbdccb316acc5c2c02a7a5ad3ce84d1af585677be277b25e040e98107d1
+] 
+hash: 0000005012-5ed1bc55d339d03bf4522e71facaa2ce87511698d994aa04acbc568a981ad3f1
+[Consistent transport of tracers
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260202215059
+ Ignore-this: 1a7ecb0321b98dd8989ab9f9b3edece0431c5f4c870d4875c7325f5f4b6bd5043bdffd07b4a87c6
+] 
+hash: 0000000266-49b9e516f7ae1c8cd5e143f570d0c65f91b1e00bc315c5752d0d16a7ef363c38
+[Update reference
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260202215310
+ Ignore-this: 248cc2cf3273e9c9019bcc0020ce81736f95da41180127a7a36a8691e203f3656d03502197530990
+] 
+hash: 0000000909-b969417eb6d3b13dbd0e79f98f999683b2d9947fd0cb36d3619cc94a0575df0b
+[Testing new version of interface gradients
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260202215618
+ Ignore-this: fc1aed06b0098404a69761fca7f2fa17c95faa8fcd471267fd99f6982288d108685b16ef0dd22dbf
+] 
+hash: 0000003251-2f16d2ecf3b5ae532a6499b12bc01bd895d9d98385f34b733c31ed13f4493956

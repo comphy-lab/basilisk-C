@@ -13,8 +13,9 @@ The code is now part of the stable release, so you can check the test cases incl
 
 Below some old links that could be useful
 
-###Related works
-* The work from the PhD of Mandeep Saini which includes a [JFM paper](https://doi.org/10.1017/jfm.2022.705) and [his thesis](https://theses.hal.science/tel-03935878/). You can check [his sandbox](/_edit/sandbox/msaini/README) for more information.
+### Related works
+
+* The work from the PhD of Mandeep Saini which includes a [JFM paper](https://doi.org/10.1017/jfm.2022.705) and [his thesis](https://theses.hal.science/tel-03935878/). You can check [his sandbox](/sandbox/msaini/README) for more information.
 * Effects of surface tension on the Richtmyer-Meshkov instability in fully compressible and inviscid fluids. [Tang et al PRF, 2021](https://journals.aps.org/prfluids/abstract/10.1103/PhysRevFluids.6.113901)
 * Optimal subharmonic emission of stable bubble oscillations in a tube [Fan et al, PRE, 2020](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.102.013105)
 
