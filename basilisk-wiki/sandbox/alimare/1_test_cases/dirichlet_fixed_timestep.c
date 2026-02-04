@@ -115,6 +115,7 @@ plot 'out0' u 1:4 w p pt 7 lc 'blue' t '16x16',\
 #include "../level_set.h"
 #include "../LS_curvature.h"
 #include "../LS_advection.h"
+#include "../LS_speed.h"
 
 #include "view.h"
 
@@ -133,16 +134,7 @@ double latent_heat;
 /**
 Setup of the physical parameters + level_set variables
 */
-scalar TL[], TS[], dist[];
-vector vpc[],vpcf[];
-scalar curve[];
 
-
-
-scalar * tracers   = {TL};
-scalar * tracers2  = {TS};
-scalar * level_set = {dist};
-face vector muv[];
 scalar grad1[], grad2[];
 double DT2;
 
@@ -158,8 +150,8 @@ int aniso = 1;
 
 int     nb_cell_NB =  1 << 3 ;  // number of cells for the NB
 double  NB_width ;              // length of the NB
+double t0;
 
-double s_clean = 1.e-10; // used for fraction cleaning
 
 TL[embed] = dirichlet(T_eq);
 TS[embed] = dirichlet(T_eq);
@@ -345,25 +337,29 @@ We've already done the advection of the interface, so the time is $t+dt$.
 }
 
 event tracer_diffusion(i++,last){
-  double lambda1 = lambda[0], lambda2 = lambda[1];
-  advection_LS(
-  dist,
-  latent_heat,
-  cs,fs,
-  TS,TL,
-  T_eq,
-  vpc,vpcf,
-  lambda1,lambda2,
-  epsK,epsV,eps4,
-  curve,
-  &k_loop,
-  deltat = 0.45*L0 / (1 << grid->maxdepth),
-  itredist = 3,
-  tolredist = 3.e-3,
-  itrecons = 16,
-  tolrecons = 1.e-2,
-  s_clean = 1.e-10,
-  NB_width);
+
+  // advection_LS(
+  // dist,
+  // cs,fs,
+  // TS,TL,
+  // vpcf,
+  // itredist = 3,
+  // s_clean = 1.e-10,
+  // NB_width,
+  // curve);
+
+  advection_LS (
+    dist = dist,
+    cs = cs,
+    fs = fs,
+    TS = TS,
+    TL = TL,
+    vpcf = vpcf,
+    itredist = 3,
+    s_clean = 1.e-10,
+    NB_width = NB_width,
+    curve = curve
+  );
 
   boundary({TL});
   myprop(muv,fs,lambda[0]);
