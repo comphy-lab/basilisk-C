@@ -34,18 +34,20 @@ struct LSadv{
   scalar curve;
 };
 
-void advection_LS(struct LSadv p){
+//void advection_LS(struct LSadv p){
+  void advection_LS(scalar dist, scalar cs, face vector fs, scalar TS, scalar TL,
+                    vector vpcf, int itredist, double s_clean, double NB_width, scalar curve){
 
-  scalar dist         = p.dist;
-  scalar cs           = p.cs;
-  face vector fs      = p.fs;
-  scalar TS           = p.TS;
-  scalar TL           = p.TL;
-  vector vpcf         = p.vpcf;
-  int    itredist     = p.itredist;
-  double s_clean      = p.s_clean;
-  double NB_width     = p.NB_width;
-  scalar curve        = p.curve;
+  // scalar dist         = p.dist;
+  // scalar cs           = p.cs;
+  // face vector fs      = p.fs;
+  // scalar TS           = p.TS;
+  // scalar TL           = p.TL;
+  // vector vpcf         = p.vpcf;
+  // int    itredist     = p.itredist;
+  // double s_clean      = p.s_clean;
+  // double NB_width     = p.NB_width;
+  // scalar curve        = p.curve;
 
 /**
 Previous state of cs is saved into csm1
@@ -67,7 +69,19 @@ Previous state of cs is saved into csm1
   boundary ({dist});
   restriction({dist});
 
-  LS_reinit(dist, it_max = itredist);
+  LS_reinit(dist = dist, dt = 0.5 * L0/(1 << grid->maxdepth), it_max = itredist);
+
+//  LS_reinit((struct LS_reinit){
+//   .dist   = dist,
+//   .dt     = dt,
+//   .it_max = itredist
+// });
+
+  // LS_reinit((struct LSreinit){
+  //   .dist = dist,
+  //   .it_max = itredist
+  // });
+  
 
 /**
 We remove the overshoots that we might create with reinitialization.

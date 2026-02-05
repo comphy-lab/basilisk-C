@@ -8,6 +8,19 @@ own papers if they use Basilisk. See also [src/references.bib]() for older refer
 ### 2026
 
 ~~~bib
+
+@article{hidman2026,
+  title={How internal fins enhance the thermohydraulic performance of geothermal pipes: A direct numerical simulation study},
+  author={Hidman, Niklas and Almgren, Daniel and Johansson, Kim and Nilsson, Eskil},
+  journal={International Journal of Heat and Mass Transfer},
+  volume={256},
+  pages={128114},
+  year={2026},
+  url={https://www.sciencedirect.com/science/article/pii/S0017931025014498},
+  doi={https://doi.org/10.1016/j.ijheatmasstransfer.2025.128114},
+  publisher={Elsevier}
+}
+
 @article{ganan2026,
 title = {The dominant role of jetting in micron- and sub-micron sea spray produced
 by bubble bursting: A revised model and comparison with measurements},
@@ -604,6 +617,19 @@ pages={A6}
 ### 2024
 
 ~~~bib
+@article{hidman2024,
+  title={How surface modifications enhance vertical falling film evaporation},
+  author={Hidman, Niklas and {\AA}kesj{\"o}, Anders and Gourdon, Mathias and Jongsma, Alfred and Str{\"o}m, Henrik and Sardina, Gaetano and Sasic, Srdjan},
+  journal={Journal of Fluid Mechanics},
+  volume={997},
+  pages={A17},
+  year={2024},
+  url={https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/how-surface-modifications-enhance-vertical-falling-film-evaporation/12DCF73A6343D4C44A67F5121628DF40},
+  doi={https://doi.org/10.1017/jfm.2024.623},
+  publisher={Cambridge University Press}
+}
+
+
 @phdthesis{sharaborin2024,
   title={Adaptive direct numerical simulation of multiscale multiphase inert and reacting flows},
   author={Evgenii Sharaborin},

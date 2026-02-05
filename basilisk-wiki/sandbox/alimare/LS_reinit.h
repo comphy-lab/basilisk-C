@@ -270,11 +270,12 @@ struct LS_reinit {
 /**
 ## LS_reinit() function
 */
-int LS_reinit(struct LS_reinit p){
-  scalar dist = p.dist; 
+//int LS_reinit(struct LS_reinit p){
+int LS_reinit(scalar dist, double dt, int it_max){
+  // scalar dist = p.dist; 
 
-  double dt   = p.dt;     // standard timestep (0.5*Delta)
-  int it_max  = p.it_max;// maximum number of iteration (100)
+  // double dt   = p.dt;     // standard timestep (0.5*Delta)
+  // int it_max  = p.it_max;// maximum number of iteration (100)
 
 /**
 In 2D, if no specific timestep is set up by the user, we take the most

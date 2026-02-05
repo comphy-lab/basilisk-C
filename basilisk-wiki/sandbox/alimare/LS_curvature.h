@@ -11,9 +11,11 @@ struct Curvature_LS{
   scalar LS, curve_LS;
 };
 
-void curvature_LS(struct Curvature_LS p){
+//void curvature_LS(struct Curvature_LS p){
+  void curvature_LS(scalar LS, scalar curve_LS){
 
-  scalar LS = p.LS, curve_LS = p.curve_LS;
+  //scalar LS = p.LS, curve_LS = p.curve_LS;
+
   vector gr_LS[];
 #if TREE
   curve_LS.refine = curvature_prolongation;

@@ -1,4 +1,4 @@
-pristine:dbc9d6d757085aeaf71d42e441622d5beb7242a80481e201e0ca7ab017c2a967
+pristine:25c4ff824e09fba26832663a91c91bcb4310340e08a9bf8216d073a77549fb58
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4538,3 +4538,98 @@ k.thakurdesai@tue.nl**20260203151822
  Ignore-this: cf583fe3b3296199336431ebdff85a58082fc5f4543c6b9d5117376d8c1612dad1fd1ed5d591e498
 ] 
 hash: 0000001570-17e3868acc294d9d8e036cd78fef697c2f9c7351e3b80e954707c4bd0d7867ec
+[Rolled-back patch for plic_gradient(), need more adjustments
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260204095249
+ Ignore-this: da78d61dc8a5e28c4b023c533513d7ac
+] 
+hash: 0000003234-0879c75ab4ed11de9c0e3e617e38d1eee11ae3cd8b1aed150386bda22508ea53
+[added hidman2026 and hidman2024 references
+hidman <niklas.hidman@chalmers.se>**20260204100419
+ Ignore-this: 84612bdd28e4775b89b7b0b547385ba8e7610559f1e19e4652737649bdd7ef02169490979013445c
+] 
+hash: 0000001394-684a47f02a1fd3a4ad4a04194c767ba575f909b71f802312fc924ccef33f1c89
+[fixed testcase
+rcaraccio <riccardo.caraccio@polimi.it>**20260204134038
+ Ignore-this: 6f67c418adbb1a517fb2e7b3d98f96b32bdedecc5b4468031b82890275b3767a2c2b667f868bc7f8
+] 
+hash: 0000001371-e252a7087f49dddc0137f1339695f93b4964e389a9215be6bda2d73f48a32f21
+[added macro definition and comment
+rcaraccio <riccardo.caraccio@polimi.it>**20260204135117
+ Ignore-this: 759b4375f81fa0b0243f62fd20ff115f34dc89bb2e0a7edd8b3d187c6989c9326aa05c7d1f240e
+] 
+hash: 0000000565-1961b35175c579273eb6db605616ebeca2de80fb851b070ccba569504416264c
+[added temperature profile header file
+rcaraccio <riccardo.caraccio@polimi.it>**20260204140736
+ Ignore-this: 4e7f238f1e5826b0e3a878ef7254a746b6d37904e4aa1479f4a00b18ca136b7193cdae9eb6f032c4
+] 
+hash: 0000003591-26599e81102cdbb9cc58e37715c5f0418c3b4f30d190a321feb7edac88f0dcfd
+[added test for temperature profile
+rcaraccio <riccardo.caraccio@polimi.it>**20260204140943
+ Ignore-this: f7746f2864fa8a2f7a9b27ca3e3d1d83a08263844a342c5194817a09de8ff82133ce95bf69126541
+] 
+hash: 0000001361-9bd596f5117cdf5dabfbd2bfae60f3ae1f8ea04b774def44c32d4abe06a11e3b
+[added OpenSMOKE header
+rcaraccio <riccardo.caraccio@polimi.it>**20260204142246
+ Ignore-this: e940c928b03b3865a435a7150b8602462b4f41352052fe038dabdbc0d719f4bf5d58178c869509dd
+] 
+hash: 0000000855-1fc7d4ae6218de07714f1699ea40d80148dbc6abbbfa5f846324f0ae365848d1
+[added variable properties header
+rcaraccio <riccardo.caraccio@polimi.it>**20260204142811
+ Ignore-this: 26ba1e1ad0281b0c99d49c33567bc5d834fc7fd48a6910a286f91ffedb0860223dc7527d21f4c6df
+] 
+hash: 0000003201-9506e3287a4a3c7f6f9c1ae76012739e54b1d0214faf505c18ab441a67845e1a
+[added opensmoke properties header
+rcaraccio <riccardo.caraccio@polimi.it>**20260204143655
+ Ignore-this: 913006995eebe8652af094d3e482b08e4df8eb3d8c31d352fc5dafef220e5e21484f6d06780f2712
+] 
+hash: 0000004000-8f34910bd51617d33dcd4c650d7a618b23925ac4ca32e3705a1e0234f488c335
+[added intgrad header
+rcaraccio <riccardo.caraccio@polimi.it>**20260204144340
+ Ignore-this: 3aa1b7c64c227638d55d197dc7ab26dfce0cf1993bb836febe802f07ac2d8c03bc27fda39fc3dd36
+] 
+hash: 0000006065-11c023540d4308a5ae0ccc3190139fe6711347d861f9c94635ab017f0b26efae
+[added explicit diffusion header
+rcaraccio <riccardo.caraccio@polimi.it>**20260204152052
+ Ignore-this: 6104017f4663dc94e642e546629dd0111584ca4948aeda7cee96c6ba72af3212689f28ff59b10ef0
+] 
+hash: 0000002020-b1fc0326e4b75efca828e41aeffca62680d8af3e0646528208a253825d23dd6b
+[added memory allocation header
+rcaraccio <riccardo.caraccio@polimi.it>**20260204153701
+ Ignore-this: 620625a070e7a7cb19dad2da8a5dc123ae2677ef7f3c502efc935380ca9652f65a7b2b2b083303c7
+] 
+hash: 0000014435-0cbe3a9b7ac5c7ed4ae046063192e627a8c2ac1408fca47fb61381b11d1dc8ad
+[dirichlet_ficed_timestep_changed
+k.thakurdesai@tue.nl**20260204155245
+ Ignore-this: 1948c7ba6cd81b84fe8229833889882aaf7b199169f53e013571f1a4552026187116853e9392e294
+] 
+hash: 0000006787-47f683d3a5bd23001d6de84773d2158fe60683ac7be609e34e157546113f2804
+[added reactors header file
+rcaraccio <riccardo.caraccio@polimi.it>**20260204155843
+ Ignore-this: 81c52e62e90adecccb0764634e6abd94bcd581fa20056e5c04c741dccc78ddf3358ee655b71200db
+] 
+hash: 0000008791-65e60beb7fb8ed1ce24689c6ef8818e803a6f1678798d7874d02d9bf082ebfc2
+[added radiation header
+rcaraccio <riccardo.caraccio@polimi.it>**20260204160224
+ Ignore-this: 607e9638ddccf6f8aa8e14f8b493a4461bbc6beb6c8da17fb575900eace40b9eaeca64e1c2d2f1bb
+] 
+hash: 0000006153-27a102f48df88ad886e200a0469d8f0f527b9a5949a2f5bca68b8fe28698f4fc
+[added chemistry header
+rcaraccio <riccardo.caraccio@polimi.it>**20260204160829
+ Ignore-this: ffcde918338511f62c55acd58a8bac329043e65d8e6ec441b80fe3187a8b30c7b1735e27f4282ef2
+] 
+hash: 0000008628-220c4d3cf284fd9044e16defea33f871ae697d62b45159e98ba34bfbe1787bcd
+[added interface temperature header
+rcaraccio <riccardo.caraccio@polimi.it>**20260204161823
+ Ignore-this: fe8c4bbffe002b58982eccfea2c351cec27e060a3455c88b590413d8c20bc242ffc6069d69ea7d44
+] 
+hash: 0000002911-6b939004da598284630f7565394d75138f8d9aa2ec492543fc9f6521093d834d
+[added non linear solver interface
+rcaraccio <riccardo.caraccio@polimi.it>**20260204165127
+ Ignore-this: c803c1c38d5321e288bfbcfa100aceca38d69cd95cd7070dd432aba928ff3a424d18f3fd707b1be2
+] 
+hash: 0000004546-ef8f67d8e68e411c459a4b08065568b7ea7e198b23dd9059b85c96311aafbfbc
+[fixed equation in description
+rcaraccio <riccardo.caraccio@polimi.it>**20260204170938
+ Ignore-this: e5d0b70c244a9be05fb7245c602b80aff9a39306ee4fa0e2b7a26df8a773b169f2f6ad3ffa465f3c
+] 
+hash: 0000001172-846b68c15b8cfd43b9df39bc9f5348c7e0e64e5cdf0dbe5e652b6612eaaabe49

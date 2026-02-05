@@ -298,11 +298,23 @@ This event is the core the of the hybrid level-set/embedded boundary.
 
 event velocity(i++){
   double lambda1 = lambda[0], lambda2 = lambda[1]; 
+  // LS_speed(
+  //   dist,latent_heat,cs,fs,TS,TL,T_eq,
+  //   vpc,vpcf,lambda1,lambda2,
+  //   epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
+  //   itrecons = 60,tolrecons = 1.e-10,NB_width);
+
   LS_speed(
-    dist,latent_heat,cs,fs,TS,TL,T_eq,
-    vpc,vpcf,lambda1,lambda2,
-    epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
-    itrecons = 60,tolrecons = 1.e-10,NB_width);
+    dist, latent_heat, cs, fs, TS, TL, T_eq,
+    vpc, vpcf, lambda1, lambda2,
+    epsK, epsV, eps4,
+    0.45*L0/(1<<MAXLEVEL),
+    60,
+    1.e-10,
+    NB_width
+  );
+  
+
   tnext = t+DT2;
   dt = DT2;
   // scalar mystat[];

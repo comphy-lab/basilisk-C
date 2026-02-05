@@ -8,7 +8,9 @@ boundary. The velocity profile and pressure drop across the plug are compared
 with the analytical solution.
 */
 
-#include "navier-stokes/centered.h"
+#define POROUS_ADVECTION 1
+#define NO_DARCY_CORRECTION 1
+#include "navier-stokes/centered-phasechange.h"
 #include "fractions.h"
 #include "darcy.h"
 
@@ -42,6 +44,8 @@ pf[right] = dirichlet (0.);
 We set the fluid properties, domain size and permeability of the plug.
 */
 
+face vector muv[];
+
 int main () {
   const face vector muv[] = {muG, muG};
   mu = muv;
@@ -63,10 +67,19 @@ scalar porosity[], f[];
 event init (i = 0) {
   fraction (f, (x - 0.4)*(0.6 - x));
 
+  scalar eps[];
   foreach() {
     porosity[] = f[]*eps0;
+    eps[] = eps0*f[] + (1. - f[]);
     u.x[] = U0;
   }
+
+  scalar centered_mu[];
+  foreach()
+    centered_mu[] = muG/eps[];
+
+  foreach_face()
+    muv.x[] = face_value(centered_mu, 0);
 }
 
 /**
@@ -111,7 +124,6 @@ set yrange [0:2]
 unset key
 set samples 20
 set size square
-set grid
 set xtics 0.2
 
 set object 1 rectangle from 0.4,graph 0 to 0.6,graph 1 behind fc "black" fs solid 0.2
@@ -119,7 +131,7 @@ set object 1 rectangle from 0.4,graph 0 to 0.6,graph 1 behind fc "black" fs soli
 u_in = 0.8
 analytical_u(x) = u_in
 
-plot "log" u 1:2 w l lc "blue" t "u", \
+plot "log" u 1:2 w l lc "black" t "u", \
      analytical_u(x) w p pt 4
 
 set xlabel "x"
@@ -127,8 +139,7 @@ set ylabel "Pressure"
 set samples 20
 unset key
 set size square
-set grid
-set yrange [-10:120]
+set yrange [-10:250]
 set xtics 0.2
 
 set object 1 rectangle from 0.4,graph 0 to 0.6,graph 1 behind fc "black" fs solid 0.2
@@ -139,16 +150,17 @@ epsilon = 0.6
 K = 1e-4
 rho = 1
 F = 1.75/sqrt (150*epsilon**3)
-B = mu*u_in*epsilon/K + rho*F*epsilon*u_in*u_in/K**0.5
+B = mu*u_in/K + rho*F*epsilon*u_in*u_in/K**0.5
 analytical_p(x) = (x < 0.4) ? B*(0.6-0.4) : \
                   (x > 0.6) ? 0 : \
                   rho*u_in*u_in*(1-1/epsilon) + B*(0.4-x + (0.6-0.4))
 
-plot "log" u 1:3 w l lc "blue" t "p", \
+plot "log" u 1:3 w l lc "black" t "p", \
      analytical_p(x) w p pt 4
 
 unset multiplot
 ~~~
+
 ## References
 ~~~bib
 @article{speth2013balanced,

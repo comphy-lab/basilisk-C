@@ -238,16 +238,17 @@ struct LS_recons {
   double NB_width;
 };
 
-void recons_speed(struct LS_recons p){
-  scalar dist       = p.dist;
-  double deltat     = p.deltat;
-  scalar * LS_speed = p.LS_speed;
-  double tolerance  = p.tolerance; // default tolerance is 1.e-8
-  double * err      = p.err;
-  int nb_iter       = p.nb_iter; // default is 35
-  scalar cs         = p.cs;
-  face vector fs    = p.fs;
-  double NB_width   = p.NB_width;
+void recons_speed(scalar dist, double deltat, scalar * LS_speed, double tolerance, double * err,
+                  int nb_iter, scalar cs, face vector fs, double NB_width){
+  // scalar dist       = p.dist;
+  // double deltat     = p.deltat;
+  // scalar * LS_speed = p.LS_speed;
+  // double tolerance  = p.tolerance; // default tolerance is 1.e-8
+  // double * err      = p.err;
+  // int nb_iter       = p.nb_iter; // default is 35
+  // scalar cs         = p.cs;
+  // face vector fs    = p.fs;
+  // double NB_width   = p.NB_width;
 
 #if LS_perf
 double start; 

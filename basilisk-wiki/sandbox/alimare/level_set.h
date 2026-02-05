@@ -113,11 +113,12 @@ struct LS2frac{
   double s_clean;
 };
 
-void LS2fractions(struct LS2frac p){
-  scalar dist = p.dist;
-  scalar cs = p.cs;
-  face vector fs = p.fs;
-  double s_clean = p.s_clean;
+//void LS2fractions(struct LS2frac p){
+  void LS2fractions(scalar dist, scalar cs, face vector fs, double s_clean){
+  // scalar dist = p.dist;
+  // scalar cs = p.cs;
+  // face vector fs = p.fs;
+  // double s_clean = p.s_clean;
 
   vertex scalar distn[];
   cell2node(dist,distn);
