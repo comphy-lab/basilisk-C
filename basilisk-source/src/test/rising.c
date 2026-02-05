@@ -193,7 +193,7 @@ event display (i++) {
 
 #if ADAPT
 event adapt (i++) {
-  adapt_wavelet ({f,u}, (double[]){5e-4,1e-3,1e-3}, LEVEL);
+  adapt_wavelet ({f,u}, {5e-4,1e-3,1e-3}, LEVEL);
 }
 #endif
 

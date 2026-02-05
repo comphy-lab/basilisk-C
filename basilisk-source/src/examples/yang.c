@@ -197,7 +197,7 @@ event movie (t += 1; t <= 300)
 
 #if 0 // TREE
 event adapt (i++) {
-  adapt_wavelet ({u,w}, (double[]){1e-3,1e-3,1e-3}, minlevel = 5, maxlevel = 8);
+  adapt_wavelet ({u,w}, {1e-3,1e-3,1e-3}, minlevel = 5, maxlevel = 8);
 }
 #endif
 

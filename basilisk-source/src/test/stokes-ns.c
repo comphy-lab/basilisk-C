@@ -113,8 +113,7 @@ event init (i = 0)
     not refine the mesh anymore. */
 
 #if TREE
-    while (adapt_wavelet ({f,u},
-			  (double[]){0.01,uemax,uemax,uemax}, LEVEL, 5).nf);
+    while (adapt_wavelet ({f,u}, {0.01,uemax,uemax,uemax}, LEVEL, 5).nf);
 #else
     while (0); // to match 'do' above
 #endif
@@ -147,6 +146,6 @@ and velocity. */
 
 #if TREE
 event adapt (i++) {
-  adapt_wavelet ({f,u}, (double[]){0.01,uemax,uemax,uemax}, LEVEL, 5);
+  adapt_wavelet ({f,u}, {0.01,uemax,uemax,uemax}, LEVEL, 5);
 }
 #endif

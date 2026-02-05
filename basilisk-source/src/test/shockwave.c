@@ -121,7 +121,7 @@ Grid adaptation. */
 
 #if TREE
 event adapt (i++) {
-  adapt_wavelet ((scalar *){p}, (double[]){0.01}, maxlevel = log(N)/log(2.));
+  adapt_wavelet ({p}, {0.01}, maxlevel = log(N)/log(2.));
 }
 #endif
 

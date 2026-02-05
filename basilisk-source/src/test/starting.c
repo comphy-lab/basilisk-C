@@ -339,7 +339,7 @@ The mesh is adapted according to the embedded boundary and velocity
 field. */
 
 event adapt (i++) {
-  adapt_wavelet ({cs,u}, (double[]){1e-2,cmax,cmax}, maxlevel, 5);
+  adapt_wavelet ({cs,u}, {1e-2,cmax,cmax}, maxlevel, 5);
 }
 
 /**

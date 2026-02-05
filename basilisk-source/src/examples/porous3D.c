@@ -259,7 +259,7 @@ event logfile (i++; i <= 500)
     
     maxlevel++;
 #if TREE
-    adapt_wavelet ({cs,u}, (double[]){1e-2,4e-6,4e-6,4e-6}, maxlevel);
+    adapt_wavelet ({cs,u}, {1e-2,4e-6,4e-6,4e-6}, maxlevel);
 #endif
     porous (cs, fs);
     event ("adapt");

@@ -63,7 +63,7 @@ event adapt (i++) {
     foreach_dimension()
       momb.x += dv()*rho(f[])*u.x[];
   
-  adapt_wavelet ({f}, (double[]){5e-3}, LEVEL);
+  adapt_wavelet ({f}, {5e-3}, LEVEL);
 
   coord moma = {0};
   foreach()

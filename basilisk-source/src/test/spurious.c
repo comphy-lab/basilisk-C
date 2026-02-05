@@ -172,7 +172,7 @@ interface. */
 
 #if TREE
 event adapt (i <= 10; i++) {
-  adapt_wavelet ({c}, (double[]){0}, maxlevel = LEVEL, minlevel = 0);
+  adapt_wavelet ({c}, {0}, maxlevel = LEVEL, minlevel = 0);
 }
 #endif
 

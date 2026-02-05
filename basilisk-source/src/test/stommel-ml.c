@@ -258,7 +258,7 @@ event init (i = 0)
 #if 0 // TREE
 event adapt (i++)
 {
-  adapt_wavelet ((scalar *){u}, (double[]){MAXEU,MAXEU}, MAXLEVEL, 5);
+  adapt_wavelet ((scalar *){u}, {MAXEU,MAXEU}, MAXLEVEL, 5);
 }
 #endif
  

@@ -228,7 +228,7 @@ We adapt the mesh according to the error on the volume fraction field
 and the velocity. */
 
 event adapt (i++) {
-  adapt_wavelet ({f,u}, (double[]){0.01,uemax,uemax,uemax}, maxlevel);
+  adapt_wavelet ({f,u}, {0.01,uemax,uemax,uemax}, maxlevel);
 }
 
 /**

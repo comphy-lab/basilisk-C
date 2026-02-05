@@ -380,7 +380,7 @@ event adapt (i++) {
 #endif
   }
 
-  astats s = adapt_wavelet ({eta1}, (double[]){3e-4}, MAXLEVEL, MINLEVEL);
+  astats s = adapt_wavelet ({eta1}, {3e-4}, MAXLEVEL, MINLEVEL);
   fprintf (stderr, "# refined %d cells, coarsened %d cells\n", s.nf, s.nc);
 }
 #endif

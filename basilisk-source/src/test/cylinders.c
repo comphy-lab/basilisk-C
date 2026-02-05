@@ -156,7 +156,7 @@ event logfile (i++; i <= 500)
 #if 0
     refine (level < maxlevel);
 #else
-    adapt_wavelet ({cs,u}, (double[]){1e-2,2e-6,2e-6}, maxlevel);
+    adapt_wavelet ({cs,u}, {1e-2,2e-6,2e-6}, maxlevel);
 #endif
     solid (cs, fs, sq(x) + sq(y) - sq(radius));
   }

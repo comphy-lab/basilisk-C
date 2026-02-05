@@ -40,4 +40,5 @@ rmacro test
 rmacro1
 rmacro test
 s 1 s1 2 
+s 3 s1 4 
 overloaded m3

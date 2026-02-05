@@ -126,7 +126,7 @@ velocity errors. */
 
 #if TREE
 event adapt (i++) {
-  adapt_wavelet ({f, u.x, u.y}, (double[]){1e-2, 5e-3, 5e-3},
+  adapt_wavelet ({f, u.x, u.y}, {1e-2, 5e-3, 5e-3},
 		 maxlevel = LEVEL, minlevel = LEVEL - 2);
 }
 #endif

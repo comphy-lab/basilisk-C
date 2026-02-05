@@ -124,7 +124,7 @@ plot [0:90][0:0.75]'out' u (rdist($1,$2)):5 ps 0.25 pt 6 t '', \
 event adapt (i++) {
   double sb = statsf(h).sum;
   restriction ({cm,zb,h}); // fixme: for restriction on eta
-  adapt_wavelet ({eta}, (double[]){1e-3}, 8);
+  adapt_wavelet ({eta}, {1e-3}, 8);
   double sa = statsf(h).sum;
   assert (fabs(sa - sb) < 1e-12);
 }

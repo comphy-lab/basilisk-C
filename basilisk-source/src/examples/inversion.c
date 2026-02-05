@@ -66,7 +66,7 @@ event init (i = 0) {
     f1[] = (x <= 0 && y <= 0 && z <= 0);
   astats s;
   do {
-    s = adapt_wavelet ({f1}, (double[]){0.0}, maxlevel, list = NULL);
+    s = adapt_wavelet ({f1}, {0.0}, maxlevel, list = NULL);
     foreach()
       f1[] = (x <= 0 && y <= 0 && z <= 0);
   } while (s.nf);
@@ -228,6 +228,6 @@ event snapshot (i = 100; i += 100) {
 
 #if TREE
 event adapt (i++) {
-  adapt_wavelet ({f,u}, (double[]){0.005,0.005,0.005,0.005}, maxlevel);
+  adapt_wavelet ({f,u}, {0.005,0.005,0.005,0.005}, maxlevel);
 }
 #endif

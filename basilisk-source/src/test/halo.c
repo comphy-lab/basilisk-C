@@ -28,7 +28,7 @@ int main (int argc, char ** argv)
   
   /* initial coarsening */
 
-  while (adapt_wavelet ({h}, (double []){1e-2}, 5).nc);
+  while (adapt_wavelet ({h}, {1e-2}, 5).nc);
 
   for (int l = 0; l < depth(); l++)
     foreach_halo (prolongation, l)

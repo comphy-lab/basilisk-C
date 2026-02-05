@@ -161,7 +161,7 @@ event init (t = 0)
 
 #if TREE
 event adapt (i++) {
-  adapt_wavelet ({f, c, u}, (double[]){0.01,0.01,0.01,0.01,0.01},
+  adapt_wavelet ({f, c, u}, {0.01,0.01,0.01,0.01,0.01},
 		 maxlevel = MAXLEVEL); 
 }
 #endif

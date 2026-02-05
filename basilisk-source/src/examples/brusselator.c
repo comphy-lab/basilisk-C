@@ -129,7 +129,10 @@ event integration (i++)
   $$
   \partial_t C_2 = D \nabla^2 C_2  + k k_b C_1 - k C_1^2 C_2
   $$
-  And use the diffusion solver to advance the system from $t$ to $t+dt$. */
+  And use the diffusion solver to advance the system from $t$ to
+  $t+dt$. Note that a simpler and more tightly coupled approach is
+  described in the [Ginzburg-Landau
+  example](ginzburg-landau.c#using-the-generic-linear-system-solver). */
 
   scalar r[], beta[];
   

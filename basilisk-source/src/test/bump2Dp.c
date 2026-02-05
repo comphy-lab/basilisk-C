@@ -59,7 +59,7 @@ event adapt (i++) {
     u.x[] = 1;
 #endif
   
-  astats st = adapt_wavelet ({h}, (double[]){1e-2}, LEVEL);
+  astats st = adapt_wavelet ({h}, {1e-2}, LEVEL);
   fprintf (stderr, "# refined %d cells, coarsened %d cells\n", st.nf, st.nc);
   restriction ({zb}); // fixme: why is it necessary with MPI?
 

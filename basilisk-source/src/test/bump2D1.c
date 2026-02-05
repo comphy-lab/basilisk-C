@@ -109,7 +109,7 @@ event outputfile (t <= 2.5; t += 2.5/8) {
 
 #if TREE
 event adapt (i++) {
-  astats s = adapt_wavelet ({h}, (double[]){1e-3}, LEVEL);
+  astats s = adapt_wavelet ({h}, {1e-3}, LEVEL);
   fprintf (stderr, "# refined %d cells, coarsened %d cells\n", s.nf, s.nc);
 }
 #endif

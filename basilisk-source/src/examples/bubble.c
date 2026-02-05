@@ -150,7 +150,7 @@ velocity field. */
 
 event adapt (i++) {
   double uemax = 1e-2;
-  adapt_wavelet ({f,u}, (double[]){0.01,uemax,uemax,uemax}, LEVEL, 5);
+  adapt_wavelet ({f,u}, {0.01,uemax,uemax,uemax}, LEVEL, 5);
 }
 
 /**

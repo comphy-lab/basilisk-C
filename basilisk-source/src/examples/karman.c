@@ -118,7 +118,7 @@ We adapt according to the error on the embedded geometry, velocity and
 tracer fields. */
 
 event adapt (i++) {
-  adapt_wavelet ({cs,u,f}, (double[]){1e-2,3e-2,3e-2,3e-2}, maxlevel, 4);
+  adapt_wavelet ({cs,u,f}, {1e-2,3e-2,3e-2,3e-2}, maxlevel, 4);
 }
 
 /**

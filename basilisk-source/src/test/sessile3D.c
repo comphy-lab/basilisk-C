@@ -176,9 +176,9 @@ event adapt (i++) {
   scalar f1[];
   foreach()
     f1[] = f[];
-  adapt_wavelet ({f1}, (double[]){1e-3}, minlevel = 3, maxlevel = MAXLEVEL);
+  adapt_wavelet ({f1}, {1e-3}, minlevel = 3, maxlevel = MAXLEVEL);
 #else
-  adapt_wavelet ({f}, (double[]){1e-4}, minlevel = 3, maxlevel = MAXLEVEL);
+  adapt_wavelet ({f}, {1e-4}, minlevel = 3, maxlevel = MAXLEVEL);
 #endif
 }
 #endif

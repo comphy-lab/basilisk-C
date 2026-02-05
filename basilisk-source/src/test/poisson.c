@@ -33,7 +33,7 @@ int main (int argc, char ** argv)
   }
 
   size (1. [0]); // dimensionless
-  origin (-0.5, -0.5, -0.5);
+  origin (-0.3, -0.2, 0.1);
   int depth = argc < 2 ? (dimension <= 2 ? 9 : 6) :
     atoi(argv[1]), nrelax = 4;
   init_grid(1 << depth);

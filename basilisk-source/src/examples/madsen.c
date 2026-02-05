@@ -69,7 +69,7 @@ We need a low error threshold for adaptation on $\eta$. */
 
 #if TREE
 event adapt (i++) {
-  astats s = adapt_wavelet ({eta}, (double[]){1e-6}, MAXLEVEL);
+  astats s = adapt_wavelet ({eta}, {1e-6}, MAXLEVEL);
   fprintf (stderr, "%g refined %d cells, coarsened %d cells\n",
 	   t, s.nf, s.nc);
 }

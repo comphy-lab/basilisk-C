@@ -75,7 +75,7 @@ event velo (t = end)
 event adapt (i++) {
   double sb = statsf(f).sum;
   double sb1 = statsf(f1).sum;
-  adapt_wavelet ({f1}, (double[]){5e-3}, maxlevel = 6, minlevel = 4);
+  adapt_wavelet ({f1}, {5e-3}, maxlevel = 6, minlevel = 4);
   double sa = statsf(f).sum;
   double sa1 = statsf(f1).sum;
   // the mass of VOF tracers is not conserved exactly

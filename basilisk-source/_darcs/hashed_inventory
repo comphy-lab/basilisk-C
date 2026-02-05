@@ -1,4 +1,4 @@
-pristine:56d0f31efe482489ef07bebd97457ebc1fedbbd817a863b1576a6a3f8b055323
+pristine:69b4e9d38a01e44ac2d9ec02d944201f8f1088f8fd5a8b57b3d98facd26e9b11
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -544,3 +544,32 @@ Stephane Popinet <popinet@basilisk.fr>**20260202140116
  Ignore-this: 486f5c32948cd5aec8fb111d94d486a5abba8fc610985f005e1005ba55038ea6323c9919ec45bc73
 ] 
 hash: 0000000973-32892c936be67a3119573346dda2c9404e1667ffc113209b6150974125c605ce
+[Optional parameters for array initializers need to be set properly
+Stephane Popinet <popinet@basilisk.fr>**20260203171335
+ Ignore-this: 99d1c61f5b8d3f3d084eaefcd28065e
+] 
+hash: 0000001105-b82b71e7c605bf95153076e3676ce656610b3055b4dd498b422ce5b6bbf241cd
+[Shifted origin to properly test homogeneous Dirichlet BCs
+Stephane Popinet <popinet@basilisk.fr>**20260204084907
+ Ignore-this: 3432a3ebb8aff602c772bbdc85aee984
+] 
+hash: 0000001262-cc1467081e8d9914b69b28379494a6f4e3536072d7533c04cb0d11d6f97500ab
+[New msolve() macro solves generic coupled linear systems
+Stephane Popinet <popinet@basilisk.fr>**20260204165056
+ Ignore-this: e920d5f323d30730ac9639fcc8eab6f5
+] 
+hash: 0000009688-9062d9dab06b28fd8e13a45e04ff0a968723d080ae5e6f1aa1e3212c38353b4e
+[The Ginzburg-Landau example uses the generic linear system solver
+Stephane Popinet <popinet@basilisk.fr>**20260204172623
+ Ignore-this: 2f9c635e64943a26909b1f605e3e234b
+ 
+ With thanks to Arnaud Antkowiak for the extended parameters.
+] 
+hash: 0000006949-8ccf6673fd7d8c15a256141505eaa4b651c85f5a13fafc968e449e2be186cb51
+[(double[]) cast is not necessary anymore in adapt_wavelet()
+Stephane Popinet <popinet@basilisk.fr>**20260204174837
+ Ignore-this: fae2708e18ecf37e20da79d786791c96
+ 
+ ...and in other functions taking optional parameters.
+] 
+hash: 0000010405-6b090b8ccdc24d596a55457922bd88b9c3c4f4852dc982abc13306980efcfc13

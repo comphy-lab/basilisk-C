@@ -122,7 +122,7 @@ event init (i = 0)
 ## Grid adaptation */
 
 event adapt (i++) {
-  adapt_wavelet ((scalar *){p}, (double[]){0.01}, maxlevel = LEVEL);
+  adapt_wavelet ({p}, {0.01}, maxlevel = LEVEL);
 }
  
 /**

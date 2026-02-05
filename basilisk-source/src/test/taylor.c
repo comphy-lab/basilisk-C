@@ -241,7 +241,7 @@ The mesh is adapted according to interpolation errors on the volume
 fraction, charge density and velocity fields. */
 
 event adapt (i += 20) {
-  adapt_wavelet ({f, rhoe, u.x, u.y}, (double[]){1e-3, 1, 2e-4, 2e-4},
+  adapt_wavelet ({f, rhoe, u.x, u.y}, {1e-3, 1, 2e-4, 2e-4},
 		 maxlevel = LEVEL);
 }
 

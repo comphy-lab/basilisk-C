@@ -71,7 +71,7 @@ pstoedit -f gnuplot -flat 0.1 basilisk.eps basilisk.gnu
   
   scalar d[];
   distance (d, p);
-  while (adapt_wavelet ({d}, (double[]){1e-2}, 12).nf);
+  while (adapt_wavelet ({d}, {1e-2}, 12).nf);
 
   /**
   We tag each letter (counting the dots on the i's). 

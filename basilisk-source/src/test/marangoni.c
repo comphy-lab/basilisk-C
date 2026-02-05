@@ -164,7 +164,7 @@ event graphics (t = 3.*t0)
 
 #if TREE
 event adapt (i++) {
-  adapt_wavelet ({f,u}, (double[]){1e-2, 1e-5, 1e-5}, LEVEL);
+  adapt_wavelet ({f,u}, {1e-2, 1e-5, 1e-5}, LEVEL);
 }
 #endif
 

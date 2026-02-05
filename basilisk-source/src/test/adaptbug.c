@@ -31,7 +31,7 @@ int  main(int argc, char const *argv[])
     fraction (f, sq(x) + sq(y) - sq(1.));
   }
   while (check_flags() &&
-	 adapt_wavelet ({f}, (double[]){1e-3}, LEVEL).nf != 0 &&
+	 adapt_wavelet ({f}, {1e-3}, LEVEL).nf != 0 &&
 	 iteration++ <= 10);
 
   for (int i = 0; i <= 5; i++) {
@@ -45,7 +45,7 @@ int  main(int argc, char const *argv[])
     set. */
 
     check_flags();
-    adapt_wavelet ({s}, (double []){0}, maxlevel = LEVEL, minlevel = 5);
+    adapt_wavelet ({s}, {0}, maxlevel = LEVEL, minlevel = 5);
     
     /**
     This should eventually give a uniform refinement.

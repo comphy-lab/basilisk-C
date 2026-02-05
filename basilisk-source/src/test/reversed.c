@@ -81,7 +81,7 @@ event velocity (i++) {
   `f` and associated tracer `cf`. */
 
 #if TREE
-  adapt_wavelet ({f}, (double[]){5e-3}, MAXLEVEL, list = {f, cf});
+  adapt_wavelet ({f}, {5e-3}, MAXLEVEL, list = {f, cf});
 #endif
 
   /**

@@ -11,7 +11,7 @@ int main()
   fraction (c, min(sq(x + 0.1) + sq(y + 0.22) - sq(0.18),
 		   sq(x - 0.1) + sq(y - 0.22) - sq(0.18)));
   c.refine = c.prolongation = fraction_refine;
-  while (adapt_wavelet ({c}, (double[]){1e-4}, 6).nf)
+  while (adapt_wavelet ({c}, {1e-4}, 6).nf)
     ;
 
   trash ({c});

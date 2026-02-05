@@ -341,6 +341,20 @@ static void optional_arguments (Ast * call, Stack * stack)
 	  Ast * declarator = ast_schema (parameter, sym_parameter_declaration,
 					 1, sym_declarator);
 	  Ast * abstract = abstract_declarator_from_declarator (declarator);
+	  Ast * field;
+	  if (ast_schema (abstract, sym_abstract_declarator,
+			  0, sym_pointer,
+			  0, token_symbol('*')) &&
+	      (!(field = ast_schema (type_specifier, sym_type_specifier,
+				     0, sym_types,
+				     0, sym_TYPEDEF_NAME)) ||
+	       !ast_is_field (ast_terminal (field)->start))) {
+	    ast_destroy (abstract);
+	    abstract = NN(parameter, sym_abstract_declarator,
+			  NN(parameter, sym_direct_abstract_declarator,
+			     NCB(parameter, "["),
+			     NCB(parameter, "]")));
+	  }
 	  assert (type_specifier);
 	  AstTerminal * ob = NCA(parameter, "("), * cb = NCA(parameter, ")");
 	  Ast * type_name = abstract ?

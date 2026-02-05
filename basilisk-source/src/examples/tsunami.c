@@ -133,7 +133,7 @@ int adapt() {
   
   The function then returns the number of cells refined. */
 
-  astats s = adapt_wavelet ({eta, hmax}, (double[]){ETAE,HMAXE},
+  astats s = adapt_wavelet ({eta, hmax}, {ETAE,HMAXE},
 			    maxlevel, MINLEVEL);
   fprintf (stderr, "# refined %d cells, coarsened %d cells\n", s.nf, s.nc);
   return s.nf;

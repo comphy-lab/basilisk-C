@@ -51,7 +51,7 @@ int main()
 
   scalar d[];
   distance (d, p);
-  while (adapt_wavelet ({d}, (double[]){5e-4*L0}, 10).nf);
+  while (adapt_wavelet ({d}, {5e-4*L0}, 10).nf);
 
   /**
   We display an isosurface of the distance function coloured with the

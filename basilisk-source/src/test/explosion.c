@@ -95,7 +95,7 @@ field. */
 
 #if TREE
 event adapt (i++) {
-  adapt_wavelet ({rho}, (double[]){5e-3}, LEVEL + 1);
+  adapt_wavelet ({rho}, {5e-3}, LEVEL + 1);
 }
 #endif
 

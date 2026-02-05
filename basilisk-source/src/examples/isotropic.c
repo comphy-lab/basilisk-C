@@ -158,7 +158,7 @@ We can optionally try adaptivity. */
 #if TREE
 event adapt (i++) {
   double uemax = 0.2*normf(u.x).avg;
-  adapt_wavelet ((scalar *){u}, (double[]){uemax,uemax,uemax}, maxlevel);
+  adapt_wavelet ((scalar *){u}, {uemax,uemax,uemax}, maxlevel);
 }
 #endif
 

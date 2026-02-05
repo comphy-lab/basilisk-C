@@ -73,7 +73,7 @@ event movie (t += 0.0025; t <= 0.3) {
 The mesh is adapted according to the error on the height field. */
 
 event adapt (i++) {
-  astats s = adapt_wavelet ({h}, (double[]){1e-2}, LEVEL);
+  astats s = adapt_wavelet ({h}, {1e-2}, LEVEL);
   fprintf (stderr, "# refined %d cells, coarsened %d cells\n", s.nf, s.nc);
 }
 

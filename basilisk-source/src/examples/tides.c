@@ -106,6 +106,6 @@ event adapt (i++) {
     eta[] = h[] > dry ? h[] + zb[] : 0;
 
   double cmax = 1e-2;
-  astats s = adapt_wavelet ({eta}, (double[]){cmax}, MAXLEVEL, MINLEVEL);
+  astats s = adapt_wavelet ({eta}, {cmax}, MAXLEVEL, MINLEVEL);
   fprintf (stderr, "# refined %d cells, coarsened %d cells\n", s.nf, s.nc);
 }

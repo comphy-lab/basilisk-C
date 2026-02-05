@@ -189,7 +189,7 @@ event logfile (i++; i <= 500)
 #if 0
     refine (level < maxlevel && cs[] > 0. && cs[] < 1.);
 #else
-    adapt_wavelet ({cs,u}, (double[]){1e-2,2e-6,2e-6}, maxlevel);
+    adapt_wavelet ({cs,u}, {1e-2,2e-6,2e-6}, maxlevel);
 #endif
     porous (cs, fs);
   }

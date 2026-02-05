@@ -71,9 +71,9 @@ int main()
   refine (level < 7 && cs[] > 0 && cs[] < 1);
   porous (cs, fs);
 #else
-  adapt_wavelet ({cs}, (double[]){0.01}, 7);
+  adapt_wavelet ({cs}, {0.01}, 7);
   porous (cs, fs);
-  adapt_wavelet ({cs}, (double[]){0.01}, 7);
+  adapt_wavelet ({cs}, {0.01}, 7);
   porous (cs, fs);
 #endif
 

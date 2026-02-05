@@ -135,7 +135,7 @@ We set an adaptation criterion with an error threshold of 0.02 on all
 velocity components and $10^{-2}$ on the geometry. */
 
 event adapt (i++) {
-  astats s = adapt_wavelet ({cs,u}, (double[]){1e-2,0.02,0.02,0.02}, // fixme: these are not seen....
+  astats s = adapt_wavelet ({cs,u}, {1e-2,0.02,0.02,0.02}, // fixme: these are not seen....
 			    maxlevel, 4);
   fprintf (stderr, "# refined %d cells, coarsened %d cells\n", s.nf, s.nc);
 }

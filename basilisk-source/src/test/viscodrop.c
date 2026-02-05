@@ -111,7 +111,7 @@ The mesh is adapted according to the errors on volume fraction and
 velocity. */
 
 event adapt (i++) {
-  adapt_wavelet ({f, u}, (double[]){1e-2, 1e-3, 1e-3}, MAXLEVEL, MAXLEVEL - 2);
+  adapt_wavelet ({f, u}, {1e-2, 1e-3, 1e-3}, MAXLEVEL, MAXLEVEL - 2);
 }
 
 /**

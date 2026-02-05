@@ -71,7 +71,7 @@ control on $\omega$. */
 
 #if TREE
 event adapt (i++) {
-  adapt_wavelet ({omega}, (double[]){1e-2}, MAXLEVEL, list = {omega, psi});
+  adapt_wavelet ({omega}, {1e-2}, MAXLEVEL, list = {omega, psi});
 }
 #endif
 

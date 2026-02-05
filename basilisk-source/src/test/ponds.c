@@ -193,5 +193,5 @@ event adapt (i++) {
   scalar h1[];
   foreach()
     h1[] = h[];
-  adapt_wavelet ({h1}, (double[]){1e-2}, LEVEL, 4); 
+  adapt_wavelet ({h1}, {1e-2}, LEVEL, 4); 
 }

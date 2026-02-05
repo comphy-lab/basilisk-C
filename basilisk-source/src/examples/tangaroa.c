@@ -60,7 +60,7 @@ void fraction_from_stl (scalar f, FILE * fp, double eps, int maxlevel)
 
   scalar d[];
   distance (d, p);
-  while (adapt_wavelet ({d}, (double[]){eps*maxl}, maxlevel, 5).nf);
+  while (adapt_wavelet ({d}, {eps*maxl}, maxlevel, 5).nf);
 
   /**
   We also compute the volume fraction from the distance field. We
@@ -266,8 +266,7 @@ both on volume fraction and velocity accuracy. */
 	      
 event adapt (i++) {
   double uemax = 0.1;
-  adapt_wavelet ({f,tangaroa,u},
-		 (double[]){0.01,0.01,uemax,uemax,uemax}, LEVEL, 5);
+  adapt_wavelet ({f,tangaroa,u}, {0.01,0.01,uemax,uemax,uemax}, LEVEL, 5);
 }
 
 /**

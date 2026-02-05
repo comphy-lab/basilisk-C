@@ -22,7 +22,7 @@ int main (int argc, char ** argv)
   int i;
   for (i = 0; i < 61; i++) {
     /* coarsening */
-    adapt_wavelet ({h}, (double []){1e-5}, 10);
+    adapt_wavelet ({h}, {1e-5}, 10);
     if (i == 0)
       end0 = clock();
   }

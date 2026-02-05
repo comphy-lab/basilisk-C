@@ -90,7 +90,7 @@ event epfield (t = 10) {
 #if TREE // fixme: this does not work
 event adapt (i++) {
   double Qb = statsf(rhoe).sum;
-  adapt_wavelet ({f}, (double []){1e-6},
+  adapt_wavelet ({f}, {1e-6},
 		 maxlevel = LEVEL + 1, minlevel = LEVEL);
   double Qa = statsf(rhoe).sum;
   assert (fabs(Qa - Qb) < 1e-10);

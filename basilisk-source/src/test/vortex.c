@@ -139,7 +139,7 @@ vector $\mathbf{u}$). */
 
 #if TREE
 event adapt (i++) {
-  adapt_wavelet ((scalar *){u}, (double[]){5e-5,5e-5}, MAXLEVEL);
+  adapt_wavelet ((scalar *){u}, {5e-5,5e-5}, MAXLEVEL);
 }
 #endif
 

@@ -39,7 +39,7 @@ event output (t++) {
 }
 
 event velocity (i++) {
-  adapt_wavelet ({f}, (double[]){1e-2}, 8, 5, list = {f});
+  adapt_wavelet ({f}, {1e-2}, 8, 5, list = {f});
 
   vertex scalar psi[];
   foreach_vertex()

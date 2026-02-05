@@ -111,13 +111,22 @@ macro rmacro()
 }
 
 macro lmacro (scalar * list, double * array)
-{
+{{
   scalar * l = (scalar *) list;
   double * a = array;
   for (scalar s in l)
     fprintf (stderr, "%s %g ", s.name, *a++);
   fputc ('\n', stderr);
-}
+}}
+
+macro lmacro1 (scalar * list, double * array, int dummy = 1)
+{{
+  scalar * l = (scalar *) list;
+  double * a = array;
+  for (scalar s in l)
+    fprintf (stderr, "%s %g ", s.name, *a++);
+  fputc ('\n', stderr);
+}}
 
 /**
 ## Forward function declarations
@@ -187,6 +196,7 @@ int main()
     fprintf (stderr, "rmacro test\n");
 
   lmacro ({s, s1}, {1, 2});
+  lmacro1 ({s, s1}, {3, 4});
 
   fm3();
 }

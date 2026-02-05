@@ -156,7 +156,7 @@ event init (i = 0)
   int ic = 100;
   do {
     airfoil (cs, fs);
-    ss = adapt_wavelet ({cs}, (double[]) {1.e-30}, maxlevel = lmax);
+    ss = adapt_wavelet ({cs}, {1.e-30}, maxlevel = lmax);
   } while ((ss.nf || ss.nc) && --ic);
 #endif // TREE
   
@@ -185,7 +185,7 @@ event init (i = 0)
 #if TREE
 event adapt (i++)
 {
-  adapt_wavelet ({cs,u}, (double[]) {1.e-2, cmax, cmax}, maxlevel = lmax);
+  adapt_wavelet ({cs,u}, {1.e-2, cmax, cmax}, maxlevel = lmax);
 }
 #endif // TREE
 

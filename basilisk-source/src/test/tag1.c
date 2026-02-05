@@ -23,7 +23,7 @@ int main()
   do {
     iteration++;
     fraction (f, geom(x,y));
-  } while (adapt_wavelet({f}, (double []){0.005}, maxlevel = LEVEL, 5).nf != 0
+  } while (adapt_wavelet({f}, {0.005}, maxlevel = LEVEL, 5).nf != 0
 	   && iteration <= 10);
 
   scalar m[];

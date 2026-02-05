@@ -166,7 +166,7 @@ int my_adapt() {
   scalar eta[];
   foreach()
     eta[] = h[] > dry ? h[] + zb[] : 0;
-  astats s = adapt_wavelet ({eta, etamax}, (double[]){ETAE,ETAMAXE},
+  astats s = adapt_wavelet ({eta, etamax}, {ETAE,ETAMAXE},
 			    MAXLEVEL, MINLEVEL);
   fprintf (stderr, "# refined %d cells, coarsened %d cells\n", s.nf, s.nc);
   return s.nf;
