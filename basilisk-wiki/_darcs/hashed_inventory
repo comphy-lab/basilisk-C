@@ -1,4 +1,4 @@
-pristine:25c4ff824e09fba26832663a91c91bcb4310340e08a9bf8216d073a77549fb58
+pristine:fddde651083f4d653b0d64e2b2bfeb0a96b19da701731c17747e0355b4ec76ca
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4633,3 +4633,48 @@ rcaraccio <riccardo.caraccio@polimi.it>**20260204170938
  Ignore-this: e5d0b70c244a9be05fb7245c602b80aff9a39306ee4fa0e2b7a26df8a773b169f2f6ad3ffa465f3c
 ] 
 hash: 0000001172-846b68c15b8cfd43b9df39bc9f5348c7e0e64e5cdf0dbe5e652b6612eaaabe49
+[A short description of the multiple centered NS equations
+ecipriano <edoardo.cip@gmail.com>**20260205123942
+ Ignore-this: 48983caf621858320005fd60441ff3a908b7f967aff9512ffb4cd597bfc7fb2d6772a238f95280d6
+] 
+hash: 0000000679-ada5abf3c4de7e5682bb5ff55719d39cd3653663622208da976bf49fe638d412
+[Added link to patch
+Stephane Popinet <popinet@basilisk.fr>**20260205125846
+ Ignore-this: b8e72890202a72a3200cf59c88ff130dcc00b92913b1427aa06d3a5b7034f97daeb1d4b90483e66c
+] 
+hash: 0000001145-9614278b13ed63f07856ba1878d89679f8bb3abf4956c858fdb00203bb240995
+[Bug fixed
+Stephane Popinet <popinet@basilisk.fr>**20260205155039
+ Ignore-this: b89933db4b44484e4838543664845da6f06247807d9e7891b4c966cca1972559e5435cde4b56bf9
+] 
+hash: 0000000492-f3cc98ca8147f1b8b17877f03033f4bffca6780ea818a411fb5cdb028da2ccdc
+[Fix ref.
+Jieyun Pan**20260205160849
+ Ignore-this: b99253b6cf9f1f89d64c6c5105dffc7b
+] 
+hash: 0000011245-63d3ae351d10f8caa2e7e5ab35b5048c8b03c5cd584cbdd74be24fb75b1e6dcf
+[frank_spheres_corrected
+k.thakurdesai@tue.nl**20260205180822
+ Ignore-this: f95d67b2949340780b706d1ce0ca2795523b34ea82cde36345ac89926eab94f506aee807f7cab117
+] 
+hash: 0000002647-32d220397734d853be18f80515c4c67789e95955a0362782d08886dcd79afc69
+[cube_sixfold_resolved
+k.thakurdesai@tue.nl**20260205183046
+ Ignore-this: 40121e0214bf3c9d32e4b34284927e7a91476fec9c744d20871c39a2c87289319d65828f5028023c
+] 
+hash: 0000003148-2cf95a579ad5faa1c42b769776b904cc8bebdd21806c62f1b707fb02559cc611
+[Bug about the automatic BC
+Jieyun Pan <panjieyun@pku.edu.cn>**20260205225828
+ Ignore-this: d9b91057b98863712e7d943883c3396aeb3edfd52db76d7d702fbe6ca7fd296888d1faa82aa4dcd0
+] 
+hash: 0000000287-30ba6970b8b8528fcfa7b867c63961b4c4ebcbeca838437a4087af1b9b154c02
+[Add example for the bug report.
+Jieyun Pan <panjieyun@pku.edu.cn>**20260205225938
+ Ignore-this: a76d0aa4b750a701cbc665dead1f7d88e36ce4b8aa83137fafffc69ca0359422a70ff8de6ddd720e
+] 
+hash: 0000001089-374306be024b86b8917d121a8767e1a1507fce64fd208db58308981abdf99a32
+[cube_template_resolved
+thakurdesaikaustubh@gmail.com**20260205231030
+ Ignore-this: 692a356ed98dbc962a24661ee44cfafa690ee3ac57f8b9f60d845fe1c5375fce6c0791bbc837fd50
+] 
+hash: 0000003840-382777725ad07fb311384d8d8c419bdf1fe807c2b20b4fd6f0bb671e635b0928

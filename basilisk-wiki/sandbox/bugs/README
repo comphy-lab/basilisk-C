@@ -29,6 +29,7 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
+* [The automatic boundary condition does not work for vector fields](bc_vector.c)
 * [There is a missing metrics cm[] in update_tracer function in embed.h](axi_embed_tracers.c)
 * [Multigrid solver seems to cause MPI errors with axi.h](axi_mg_text.c)
 * [Limited timer resolution can cause a crash](too_fast.c)
@@ -203,7 +204,6 @@ Critical information is lacking to be able to reproduce the bugs reported below:
 * Add anchors for plots
 * "Show changes" button in edit mode
 * `gnuplot` on all pages (e.g. a `*.h` page)
-* HTML in "diff" document breaks changes page. [e.g. here](/sandbox/Antoonvh/two_rings.c?changes=20240514102413)
 * could be nice to use vtk on python scripts  
 * ...
 
@@ -226,6 +226,7 @@ Critical information is lacking to be able to reproduce the bugs reported below:
 
 ## Fixed bugs
 
+* HTML in "diff" document breaks changes page. [e.g. here](/sandbox/Antoonvh/two_rings.c?changes=20240514102413) [05/02/26](/src/?changes=20260205154719)
 * [Forbidden search queries](jacod.md) this was due to a weird "URL filter" on the Jussieu firewall
 * All pages in [the sandbox](/sandbox/) give an "Internal Error" message.
 * SIGFPE in progress.h: [e.g. here](/sandbox/Antoonvh/internalwacesMG.c)

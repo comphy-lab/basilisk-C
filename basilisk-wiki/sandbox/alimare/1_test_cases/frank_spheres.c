@@ -89,7 +89,7 @@ plot 'out0' w l lc 'black' lw 1.5 t '32x32',\
 #define GHIGO 1
 #define CURVE_LS 0
 #define DEBUG 0
-#define ANISO 0
+//#define ANISO 0
 
 
 #include "../../ghigo/src/myembed.h"
@@ -108,6 +108,8 @@ plot 'out0' w l lc 'black' lw 1.5 t '32x32',\
 #include "../LS_curvature.h"
 #include "../LS_advection.h"
 
+#include "../LS_speed.h"
+
 #define T_eq          0.
 #define TL_inf       -1./2
 #define TS_inf        0.
@@ -122,19 +124,19 @@ double latent_heat;
 /**
 Setup of the physical parameters + level_set variables
 */
-scalar TL[], TS[], dist[];
-vector vpc[],vpcf[];
+// scalar TL[], TS[], dist[];
+// vector vpc[],vpcf[];
 
-scalar * tracers   = {TL};
-scalar * tracers2  = {TS};
-scalar * level_set = {dist};
-face vector muv[];
+// scalar * tracers   = {TL};
+// scalar * tracers2  = {TS};
+// scalar * level_set = {dist};
+// face vector muv[];
 mgstats mgT;
 scalar grad1[], grad2[];
 double DT2;
 
 double  epsK = 0.000, epsV = 0.000;
-scalar curve[];
+//scalar curve[];
 
 
 double lambda[2];
@@ -145,7 +147,7 @@ double eps4 = 0.;
 int     nb_cell_NB =  1 << 3 ;  // number of cells for the NB
 double  NB_width ;              // length of the NB
 
-double s_clean = 1.e-10; // used for fraction cleaning
+//double s_clean = 1.e-10; // used for fraction cleaning
 
 #include "../basic_geom.h"
   
@@ -156,6 +158,8 @@ mgstats mg1,mg2;
 
 int j;
 int k_loop = 0;
+
+double undercooling = -1/2., S = 1.56;
 
 /**
 Theoretical functions and parameters for this test case.
@@ -198,7 +202,7 @@ TS[right]  = dirichlet(TS_inf);
 /**
 These are the parameters from the Almgren paper.
 */
-double undercooling = -1/2., S = 1.56;
+// double undercooling = -1/2., S = 1.56;
 double t_fin = 1.; // duration of the calculation, final time is therefore 2.
 double t0 = 1.;
 char filename [100];
@@ -355,10 +359,17 @@ event velocity(i++){
   double lambda1 = lambda[0], lambda2 = lambda[1]; 
   
   LS_speed(
-  dist,latent_heat,cs,fs,TS,TL,T_eq,
-  vpc,vpcf,lambda1,lambda2,
-  epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
-  itrecons = 40,tolrecons = 1.e-12
+  // dist,latent_heat,cs,fs,TS,TL,T_eq,
+  // vpc,vpcf,lambda1,lambda2,
+  // epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
+  // itrecons = 40,tolrecons = 1.e-12
+  dist, latent_heat, cs, fs, TS, TL, T_eq,
+  vpc, vpcf, lambda1, lambda2,
+  epsK, epsV, eps4,
+  0.45*L0/(1<<MAXLEVEL),
+  60,
+  1.e-10,
+  NB_width
   );
   double DT3 = timestep_LS(vpcf,DT2,dist,NB_width);
   tnext = t+DT3;
@@ -388,25 +399,27 @@ event tracer_diffusion(i++){
 This event is the core the of the hybrid level-set/embedded boundary.
 */
 event LS_advection(i++,last){
-  double lambda1 = lambda[0], lambda2 = lambda[1]; 
+ 
   advection_LS(
-  dist,
-  latent_heat,
-  cs,fs,
-  TS,TL,
-  T_eq,
-  vpc,vpcf,
-  lambda1,lambda2,
-  epsK,epsV,eps4,
-  curve,
-  &k_loop,
-  deltat = 0.45*L0 / (1 << grid->maxdepth),
-  itredist = 10,
-  tolredist = 3.e-3,
-  itrecons = 40,
-  tolrecons = 1.e-6,
+  // dist,
+  // cs,fs,
+  // TS,TL,
+  // vpcf,
+  // itredist = 10,
+  // s_clean = 1.e-10,
+  // NB_width,
+  // curve
+  dist = dist,
+  cs = cs,
+  fs = fs,
+  TS = TS,
+  TL = TL,
+  vpcf = vpcf,
+  itredist = 3,
   s_clean = 1.e-10,
-  NB_width);
+  NB_width = NB_width,
+  curve = curve
+);
 
   foreach_face(){
     uf.x[] = 0.;
@@ -432,7 +445,7 @@ event movies (i++,last;t<t_fin)
   vector h[];
   heights (cs, h);
   boundary((scalar *){h});
-  foreach(reduction(max:y_max)){
+  foreach(reduction(max:y_max) reduction(max:y_max2)){
     if(interfacial(point, cs) && y >0){
       double yy = y+Delta*height(h.y[]);
       if(yy < 1.e10)y_max = max(y_max,yy);

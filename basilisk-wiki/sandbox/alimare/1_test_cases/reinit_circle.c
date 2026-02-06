@@ -3,6 +3,7 @@
 # LS_reinit() test case
 
 Extreme test case */
+#define NO_GRAPHICS
 
 #define BICUBIC 1
 #define BGHOSTS 2
@@ -20,11 +21,11 @@ double perturb (double x, double y, double eps, coord center)
 
 /*void draw_isolines(scalar s, double smin, double smax, int niso, int w)
 {
-  scalar vdist[];
-  cell2node(s,vdist);
-  boundary ({vdist});
-  for (double sval = smin ; sval <= smax; sval += (smax-smin)/niso)
-    isoline ("vdist", sval, lw = w);
+  // scalar vdist[];
+  // cell2node(s,vdist);
+  // boundary ({vdist});
+  // for (double sval = smin ; sval <= smax; sval += (smax-smin)/niso)
+  //   isoline ("vdist", sval, lw = w);
 }*/
 
 scalar dist[];

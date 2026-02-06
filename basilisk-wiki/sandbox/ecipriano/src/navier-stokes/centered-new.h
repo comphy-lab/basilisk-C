@@ -1,6 +1,12 @@
 /**
 # Incompressible Navier--Stokes solver (centered formulation)
 
+<div class="message">
+This module resolves `nv` sets of Navier--Stokes equations, each with their own velocity and pressure fields. Density, viscosity, and accelerations are (currently) shared among all equation sets. The module defines lists of velocity and pressure variables and applies, for each list element, the same numerical operators implemented in [centered.h](/src/navier-stokes/centered.h). 
+
+The main differences with [centered.h](/src/navier-stokes/centered.h) are in
+[this patch](centered-new.h?changes=20251023134925). </div>
+
 We wish to approximate numerically the incompressible,
 variable-density Navier--Stokes equations
 $$

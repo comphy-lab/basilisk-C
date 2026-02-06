@@ -71,7 +71,7 @@ plot 'out_growth_grid8' w l lw 3 lc rgb "black" t ''
 #define CURVE_LS 1
 #define DEBUG 0
 #define Pi 3.14159265358979323846
-#define ANISO 0
+//#define ANISO 0
 
 #include "../../ghigo/src/myembed.h"
 #include "../embed_extrapolate_3.h"
@@ -89,6 +89,8 @@ plot 'out_growth_grid8' w l lw 3 lc rgb "black" t ''
 #include "../level_set.h"
 #include "../LS_curvature.h"
 #include "../LS_advection.h"
+
+#include "../LS_speed.h"
 
 #define T_eq         0.
 #define TL_inf       -0.5
@@ -109,20 +111,13 @@ double H0;
 /**
 Setup of the physical parameters + level_set variables
 */
-scalar TL[], TS[], dist[];
-vector vpc[],vpcf[];
 
-scalar * tracers    = {TL};
-scalar * tracers2 = {TS};
-
-scalar * level_set  = {dist};
-face vector muv[];
 mgstats mgT;
 scalar grad1[], grad2[];
 double DT2;
 
 
-double  latent_heat = 1.;
+//double  latent_heat = 1.;
 double  lambda[2]; // thermal capacity of each material
 #if Gibbs_Thomson // parameters for the Gibbs-Thomson's equation
 #ifdef EPSK
@@ -164,7 +159,7 @@ int itrecons;
 int nb_cell_NB;
 double  NB_width ;    // length of the NB
 
-scalar curve[];
+//scalar curve[];
 
 
 #define Pi 3.14159265358979323846
@@ -221,8 +216,8 @@ event init(t=0){
 
   lambda[0]  = 1.;
   lambda[1]  = 1.;
-  DT2        = 5.e-4;  // diffusion time scale
-  // DT2        = 0.3*sq(L0/(1<<MAXLEVEL))/lambda[0];
+  //DT2        = 5.e-4;  // diffusion time scale
+   DT2        = 0.3*sq(L0/(1<<MAXLEVEL))/lambda[0];
   nb_cell_NB = 1 << 3 ; // number of cell in the 
                         // narrow band 
   itrecons = 50;
@@ -269,11 +264,21 @@ crystal growth.
   boundary({curve});
 #endif
     double lambda1 = lambda[0], lambda2 = lambda[1]; 
+    // LS_speed(
+    // dist,latent_heat,cs,fs,TS,TL,T_eq,
+    // vpc,vpcf,lambda1,lambda2,
+    // epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
+    // itrecons = 30,tolrecons = 1.e-12);
+
     LS_speed(
-    dist,latent_heat,cs,fs,TS,TL,T_eq,
-    vpc,vpcf,lambda1,lambda2,
-    epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
-    itrecons = 30,tolrecons = 1.e-12);
+    dist, latent_heat, cs, fs, TS, TL, T_eq,
+    vpc, vpcf, lambda1, lambda2,
+    epsK, epsV, eps4,
+    0.45*L0/(1<<MAXLEVEL),
+    30,
+    1.e-12,
+    NB_width
+  );
     event("adapt");
    
   }
@@ -323,12 +328,23 @@ crystal growth.
 
 event velocity(i++){
   double lambda1 = lambda[0], lambda2 = lambda[1]; 
-  LS_speed(
-  dist,latent_heat,cs,fs,TS,TL,T_eq,
-  vpc,vpcf,lambda1,lambda2,
-  epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
-  itrecons = 60,tolrecons = 1.e-12
+  // LS_speed(
+  // dist,latent_heat,cs,fs,TS,TL,T_eq,
+  // vpc,vpcf,lambda1,lambda2,
+  // epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
+  // itrecons = 60,tolrecons = 1.e-12
+  // );
+
+   LS_speed(
+    dist, latent_heat, cs, fs, TS, TL, T_eq,
+    vpc, vpcf, lambda1, lambda2,
+    epsK, epsV, eps4,
+    0.45*L0/(1<<MAXLEVEL),
+    60,
+    1.e-12,
+    NB_width
   );
+  
   double DT3 = timestep_LS(vpcf,DT2,dist,NB_width);
   tnext = t+DT3;
   dt = DT3;
@@ -355,25 +371,39 @@ This event is the core the of the hybrid level-set/embedded boundary.
 */
 event LS_advection(i++,last){
   fprintf(stderr, "## LS_ADVECTION\n" );
-  double lambda1 = lambda[0], lambda2 = lambda[1];
-  advection_LS(
-  dist,
-  latent_heat,
-  cs,fs,
-  TS,TL,
-  T_eq,
-  vpc,vpcf,
-  lambda1,lambda2,
-  epsK,epsV,eps4,
-  curve,
-  &k_loop,
-  deltat = 0.45*L0 / (1 << grid->maxdepth),
-  itredist = 10,
-  tolredist = 3.e-3,
-  itrecons = 60,
-  tolrecons = 1.e-12,
-  s_clean = 1.e-10,
-  NB_width);
+  //double lambda1 = lambda[0], lambda2 = lambda[1];
+  // advection_LS(
+  // dist,
+  // latent_heat,
+  // cs,fs,
+  // TS,TL,
+  // T_eq,
+  // vpc,vpcf,
+  // lambda1,lambda2,
+  // epsK,epsV,eps4,
+  // curve,
+  // &k_loop,
+  // deltat = 0.45*L0 / (1 << grid->maxdepth),
+  // itredist = 10,
+  // tolredist = 3.e-3,
+  // itrecons = 60,
+  // tolrecons = 1.e-12,
+  // s_clean = 1.e-10,
+  // NB_width);
+
+
+  advection_LS (
+    dist = dist,
+    cs = cs,
+    fs = fs,
+    TS = TS,
+    TL = TL,
+    vpcf = vpcf,
+    itredist = 10,
+    s_clean = 1.e-10,
+    NB_width = NB_width,
+    curve = curve
+  );
 
   foreach_face(){
     uf.x[] = 0.;
