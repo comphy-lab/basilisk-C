@@ -213,7 +213,8 @@ if [[ "$REQUEST_URI" == *\?changes=* ]] && is_not_bot; then
     echo -e "Content-type: text/html; charset=utf-8\n"
     # replace --match "date $hash with --hash=$hash for darcs version 2.12
     ( cd $DOCUMENT_ROOT && timeout 60 darcs changes --verbose --match "date $hash" \
-				 --repodir=$DOCUMENT_ROOT ) | \
+				   --repodir=$DOCUMENT_ROOT ) | \
+	sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g; s/[^ ]*@[^ ]*//g' | \
 	awk -v basename="$basename" -f $BASILISK/darcsit/changes2html.awk |   \
 	$PANDOCT -s -V wikititle="$WIKI_TITLE"		    \
 		-V pagetitle="Changes to $shortname" 	    \

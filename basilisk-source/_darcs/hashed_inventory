@@ -1,4 +1,4 @@
-pristine:69b4e9d38a01e44ac2d9ec02d944201f8f1088f8fd5a8b57b3d98facd26e9b11
+pristine:2ba7b79c260f0959f645ecb860c43c3c8a0837622b76cde38dadf31dbabef227
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -573,3 +573,8 @@ Stephane Popinet <popinet@basilisk.fr>**20260204174837
  ...and in other functions taking optional parameters.
 ] 
 hash: 0000010405-6b090b8ccdc24d596a55457922bd88b9c3c4f4852dc982abc13306980efcfc13
+[darcsit escapes HTML tags in changes
+Stephane Popinet <popinet@basilisk.fr>**20260205154719
+ Ignore-this: e252ea39203bee20c96f2bb58b5a7df60520b2262a07fafc0c860571a28187eec4dd840dc1691b85
+] 
+hash: 0000000406-56cc347213c8f1f7bef42df785ac247179a35becb1463355622514364ee05291
