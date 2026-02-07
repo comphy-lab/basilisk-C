@@ -1,36 +1,27 @@
-vector u[];
-
-u.n[bottom] = dirichlet(0);
+/**
+# Boundary conditions on a single component of a vector field are
+  incorrect on trees */
 
 int main(){
-  init_grid(4);
+  init_grid(1);
 
-  foreach() {
-    u.x[] = x;
-    u.y[] = x;
-  }
-
-  /* This loop fails to trigger the automatic BC, since the value of u.y in 
-    the ghost cell is incorrect. */ 
-  double dd=L0/N;
-  foreach(){
-    if (fabs(x - 0.5) < dd && fabs(y) < dd) {
-      printf("loop1, pid:%d x:%g y: %g uy:%g %g\n", pid(), x, y, 
-      u.y[], u.y[0, -1]);
-    }
-  }
-
-  printf("\n");
-  /* However, this loop works. In short, only the x component of u triggers
-    the automatic BC. */ 
-  foreach() {
-    if (fabs(x - 0.5) < dd && fabs(y) < dd) {
-      printf("loop2, pid:%d x:%g y: %g uy:%g %g\n", pid(), x, y, 
-      u.y[], u.y[0, -1]);
-      printf("loop2, pid:%d x:%g y: %g ux:%g %g\n", pid(), x, y, 
-      u.x[], u.x[0, -1]);
-    }
-  }
+  vector u[];
+  u.n[bottom] = dirichlet(0);
   
-  return 0;
+  foreach()
+    u.y[] = 1;
+
+  /**
+  Note that this is not really due to automatic BCs, which are
+  correctly applied (on a single component), but to the implementation
+  of boundary conditions on trees (this works on multigrid). This is
+  most probably due to the deprecated `mask()` feature. */
+  
+  // boundary ({u.y}); // this still does not work
+  // boundary ((scalar *){u}); // this works
+  
+  foreach() {
+    fprintf (stderr, "%g\n", u.y[0,-1]);
+    assert ((u.y[0,-1] == -1.));
+  }
 }

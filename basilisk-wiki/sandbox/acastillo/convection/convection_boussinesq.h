@@ -32,6 +32,8 @@ scalar T[];
 scalar * tracers = {T};
 mgstats mgT;
 
+face vector D[];
+
 double Ra, Pr;
 
 
@@ -45,8 +47,10 @@ event init (i=0) {
   mu = new face vector;
 
   face vector muc = mu;
-  foreach_face()
+  foreach_face(){
     muc.x[] = fm.x[]*Pr/sqrt(Ra);
+    D.x[] = fm.x[]*1./sqrt(Ra);
+  }
 }
 
 /**
@@ -54,10 +58,6 @@ event init (i=0) {
 */
 
 event tracer_diffusion (i++) {
-  face vector D[];
-  foreach_face()
-    D.x[] = fm.x[]*1./sqrt(Ra);
-
   mgT = diffusion (T, dt, D);
 }
 
@@ -66,8 +66,13 @@ Finally, we add the bouyancy to the acceleration term
 */
 event acceleration (i++) {
   face vector av = a;
+  #if dimension == 2
   foreach_face(y)
     av.y[] += Pr*(T[] + T[0,-1])/2.;
+  #else
+  foreach_face(z)
+    av.z[] += Pr*(T[] + T[0,0,-1])/2.;
+  #endif
 }
 
 /** and clean-up the variables we allocated manually */

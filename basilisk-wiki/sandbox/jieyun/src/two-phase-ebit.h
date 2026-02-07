@@ -15,7 +15,11 @@ The volume fraction in fluid 1 is $f=1$ and $f=0$ in fluid
 scalar f[], * interfaces = {f};
 vector * u_ebit = {u};
 
+#if dimension <= 2
 #include "ebit-2d.h"
+#else
+#include "ebit-3d.h"
+#endif
 
 #include "two-phase-generic.h"
 

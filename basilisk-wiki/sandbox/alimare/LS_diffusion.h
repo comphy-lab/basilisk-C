@@ -76,15 +76,28 @@ The advection of the level-set function must be done before the tracer diffusion
 */
 
 event tracer_diffusion(i++){
-  advection_LS(
-  dist,
-  cs,fs,
-  TS,TL,
-  vpcf,
-  itredist = 10,
-  s_clean = 1.e-10,
-  NB_width,
-  curve);
+  // advection_LS(
+  // dist,
+  // cs,fs,
+  // TS,TL,
+  // vpcf,
+  // itredist = 10,
+  // s_clean = 1.e-10,
+  // NB_width,
+  // curve);
+
+  advection_LS (
+    dist = dist,
+    cs = cs,
+    fs = fs,
+    TS = TS,
+    TL = TL,
+    vpcf = vpcf,
+    itredist = 3,
+    s_clean = 1.e-10,
+    NB_width = NB_width,
+    curve = curve
+  );
 
   boundary({TL});
   myprop(muv,fs,lambda[0]); // MANDATORY, the interface has moved !!!!!

@@ -19,3 +19,7 @@ stack.tst: CFLAGS += -D_MPI=1 -grid=octree
 reductions.tst: CC=mpicc -D_MPI=4
 
 multired.tst: CC=mpicc -D_MPI=4
+
+bc_face_vector.tst: CC=mpicc -D_MPI=4
+
+bc_vector.tst: CFLAGS += -DPRINTBOUNDARY=1

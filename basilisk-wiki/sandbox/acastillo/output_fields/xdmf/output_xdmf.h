@@ -153,8 +153,12 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int compressi
 #if _MPI
   acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio(acc_tpl1, MPI_COMM_WORLD, MPI_INFO_NULL);
-  // Disable file locking to prevent orphaned .lock files on network filesystems
   H5Pset_file_locking(acc_tpl1, 0, 0);
+  // Enable collective metadata operations for better parallel I/O performance (HDF5 1.10.0+)
+#if (H5_VERS_MAJOR > 1) || (H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 10)
+  H5Pset_coll_metadata_write(acc_tpl1, 1);
+  H5Pset_all_coll_metadata_ops(acc_tpl1, 1);
+#endif
 
   // Create a new HDF5 file collectively
   file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, acc_tpl1);
@@ -164,7 +168,6 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int compressi
 #else
   // Create a new HDF5 file without parallel I/O
   acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
-  // Disable file locking to prevent orphaned .lock files on network filesystems
   H5Pset_file_locking(acc_tpl1, 0, 0);
   file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, acc_tpl1);
   H5Pclose(acc_tpl1);
@@ -295,8 +298,13 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
 #if _MPI
   acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
   H5Pset_fapl_mpio(acc_tpl1, MPI_COMM_WORLD, MPI_INFO_NULL);
-  // Disable file locking to prevent orphaned .lock files on network filesystems
   H5Pset_file_locking(acc_tpl1, 0, 0);
+
+  // Enable collective metadata operations for better parallel I/O performance (HDF5 1.10.0+)
+#if (H5_VERS_MAJOR > 1) || (H5_VERS_MAJOR == 1 && H5_VERS_MINOR >= 10)
+  H5Pset_coll_metadata_write(acc_tpl1, 1);
+  H5Pset_all_coll_metadata_ops(acc_tpl1, 1);
+#endif
 
   // Create a new HDF5 file collectively
   file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, acc_tpl1);
@@ -306,7 +314,6 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
 #else
   // Create a new HDF5 file without parallel I/O
   acc_tpl1 = H5Pcreate(H5P_FILE_ACCESS);
-  // Disable file locking to prevent orphaned .lock files on network filesystems
   H5Pset_file_locking(acc_tpl1, 0, 0);
   file_id = H5Fcreate(name, H5F_ACC_TRUNC, H5P_DEFAULT, acc_tpl1);
   H5Pclose(acc_tpl1);

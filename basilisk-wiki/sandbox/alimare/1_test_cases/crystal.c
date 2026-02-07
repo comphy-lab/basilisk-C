@@ -118,7 +118,7 @@ int main() {
 
 
 event init(t=0){
-  DT   = sq(L0/(1 << MAXLEVEL));  // Delta
+  DT   = 0.3*sq(L0/(1 << MAXLEVEL));  // Delta
   epsK = 0.001 ; epsV = 0.001;
   eps4 = 0.;
   DT_LS = 0.45*(L0)/(1 << MAXLEVEL);
@@ -138,7 +138,7 @@ event init(t=0){
   boundary ({dist});
   restriction({dist});
 
-  LS2fractions(dist,cs,fs);
+  LS2fractions(dist,cs,fs,1e-10);
   
   curvature(cs,curve);
 

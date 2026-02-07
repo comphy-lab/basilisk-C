@@ -29,7 +29,8 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
-* [The automatic boundary condition does not work for vector fields](bc_vector.c)
+* [The automatic boundary condition does not work for face vector fields in MPI runs when the default BC is applied](bc_face_vector.c)
+* [Boundary conditions on a single component of a vector field are incorrect on trees](bc_vector.c)
 * [There is a missing metrics cm[] in update_tracer function in embed.h](axi_embed_tracers.c)
 * [Multigrid solver seems to cause MPI errors with axi.h](axi_mg_text.c)
 * [Limited timer resolution can cause a crash](too_fast.c)

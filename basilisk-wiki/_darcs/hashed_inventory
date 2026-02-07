@@ -1,4 +1,4 @@
-pristine:fddde651083f4d653b0d64e2b2bfeb0a96b19da701731c17747e0355b4ec76ca
+pristine:f7a5c3301c0f67bec59d78fc1d0182a0a21fc1bbaef94f18643e00b6f2f137e9
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4678,3 +4678,88 @@ thakurdesaikaustubh@gmail.com**20260205231030
  Ignore-this: 692a356ed98dbc962a24661ee44cfafa690ee3ac57f8b9f60d845fe1c5375fce6c0791bbc837fd50
 ] 
 hash: 0000003840-382777725ad07fb311384d8d8c419bdf1fe807c2b20b4fd6f0bb671e635b0928
+[Add link
+Jieyun Pan <panjieyun@pku.edu.cn>**20260206085450
+ Ignore-this: f55a82cd382356f9eb69b71514043a66f04dfe38041702fbbf76ad006a911826d3b13fc621decd53
+] 
+hash: 0000000322-e20ce075f1927b6c808ede1e207f0efc978bd894aa66a59425f895314b873d16
+[Add code for the bug report
+Jieyun Pan <panjieyun@pku.edu.cn>**20260206085528
+ Ignore-this: a57df27311b8d531dde8c8d5ba99567b977d38c2d3106547ddc572ca56ddf4b6fa448c240fa277d4
+] 
+hash: 0000001182-c74f6e87ed83fcc91934b682391ece14c940c727953d20559109f9746ceb029d
+[Modify Makefile for the bc_face_vector bug
+Jieyun Pan <panjieyun@pku.edu.cn>**20260206085717
+ Ignore-this: eda85480df133ec3e08fdf588055f87d9f6b44d6b06c5782379afe1b57caf878e5a5bb4dcb9b2a4f
+] 
+hash: 0000000261-9dc946fb90857c5dbd3d2fedf26ce768a82a73d409f7bf5eada753149a95f130
+[Add output
+Jieyun Pan <panjieyun@pku.edu.cn>**20260206090626
+ Ignore-this: 78b317e6337672511604cda668558e82471a785b0958802ff650f9a97015aa615068de38c3c1d39a
+] 
+hash: 0000000498-8cef46dd2e5da39158f845a73b22847878b681c6a2f4b341c85ceded508e4e33
+[Add output
+Jieyun Pan <panjieyun@pku.edu.cn>**20260206090855
+ Ignore-this: 74233e3f19527c8ac8136f38b197f890a5c30cbfadbc514bb305ceb4008907d18dee0306f6aca01d
+] 
+hash: 0000000742-c7ca169f9797e7b72d31d10b30da4b3a944855bafe899dd9f2ea5335960c0c65
+[Simplified and clarified bug report
+Stephane Popinet <popinet@basilisk.fr>**20260206100319
+ Ignore-this: 9c87c646ddf781bf85402f38c3d743b3
+] 
+hash: 0000002363-2fd71b1f85a910984e03af4156349bc30adec8b71c6d506b32534a4a6ce25f02
+[vtu updated to work with dimensions
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260206112811
+ Ignore-this: 9c8df6171a2959f463e4c6dce2da8c534b63dc7333a8af660533431f3ea56a0cf9a74a21c3f04e4d
+] 
+hash: 0000003378-131bb60b63a0957ac4d9ea9636025c91687bd251f549f6fdab85ec85079cf1cb
+[vtu updated to work with dimensions
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260206113032
+ Ignore-this: 168baacc6e18e218a5435e91a359c4f3b6fa75179eb08244950a038279d816fe54be009b666abec6
+] 
+hash: 0000005345-842639110ca156d6446ee5a5daeb9ad70883a4f1c52d64ea2b62f1100b126d57
+[vtu updated to work with dimensions
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260206113511
+ Ignore-this: de0909963862295e669d29fa5b0930b2423f3d5be5ca31401f55af9b540d83cdef5e919e6278292f
+] 
+hash: 0000000899-cd9ba89eb37e1b8742c088754a3b6ef989e638d5194639f77fd1a6079b94e79d
+[Similar fixes for XDMF
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260206133805
+ Ignore-this: 98c0d7cb7cbeb8e038e678fa6815f862dbeb927383386e99b85df31347572bc4347d0b75f899dd6c
+] 
+hash: 0000015699-4ea8b4bcaa16acfce420e609f08d45c2afe8ed749e764f073f1bef532007bd52
+[Minor tweak
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260206194210
+ Ignore-this: 84ddcfe3e7db9ee9760131736d4058ffb3778ed62a06cb536975899302b9f9a34857cfd6364a5a05
+] 
+hash: 0000000837-f8d9540249c30d346d4e4b3c733851f905f65d1c4135f6382e65b43e90382e23
+[updating tests
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260206194411
+ Ignore-this: b4bf11b2827c18612b243d58872cab0d86ea8094852fd6c2bedd989179e2b046cbef25cebf979e40
+] 
+hash: 0000019115-0bacddba8a77043d7628eb2d2cf41ad4df1692a98761156e54dca64d25fc229c
+[crystal_working
+thakurdesaikaustubh@gmail.com**20260206205641
+ Ignore-this: 753670815b673c0f1b79d9013b5374deecd0549de2fca3a823a59a91264862f71657d36cb0e54ed
+] 
+hash: 0000000923-f93613879f6b8d905ece363ccf7c8d081f93c40b95076234469151ecad25aec0
+[Update Makefile
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260206205749
+ Ignore-this: ff682a1f64b7f2bb85f20c77e8da41d5c6bcc388170d6a3f84626d89a444e37d56edbcbeadb56ebe
+] 
+hash: 0000012693-1ec03bd32138cc478feca444d61f2476b7b5dea5b97d392ed40554b19b20cd05
+[Some HDF are fine, some are not
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260206212126
+ Ignore-this: 9ec7fcb573ea982eb1113afeec3727f7579d629b4851ba9cc03de015d550330f0b343a9cc2c23b7c
+] 
+hash: 0000003669-946d930d38bd5f82241ba1e773ffb01bfa350c98cabdb4d3d9274170d1bfe3c1
+[cube_linear_solvability_cleared
+thakurdesaikaustubh@gmail.com**20260206224132
+ Ignore-this: ce02ce5ff0c8c920170d66673e951feb0a551d1134a9db8b7ef187b45a230aa1839f74b245d4a6d8
+] 
+hash: 0000003285-3d9b5b96fe73ff91f71c3a423229f06e0d11ca1478d9a4f424ce6f3a62e06a1f
+[Add 3D EBIT code.
+Jieyun Pan**20260206224109
+ Ignore-this: 5c0deedf9bbbe4c82ef1be2d64baa756
+] 
+hash: 0000058551-f851f657ceb253abf7a2d69532db3f3e84297ffd5afa1939222f4e3d5710eda8

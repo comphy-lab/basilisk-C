@@ -301,6 +301,7 @@ void populate_points_dset(double **points_dset, int num_points, int *offset_poin
   *points_dset = (double *)malloc(count[0] * count[1] * sizeof(double));
 
   // Iterate over each vertex
+  int num_points_iter = 0;
   foreach_vertex(serial, noauto){
     #if !TREE
       #if dimension == 2
@@ -308,6 +309,8 @@ void populate_points_dset(double **points_dset, int num_points, int *offset_poin
       #else
         int _k = (point.i - 2) * sq((1 << point.level) + 1) + (point.j - 2) * ((1 << point.level) + 1) + (point.k - 2);
       #endif
+    #else
+      int _k = num_points_iter;
     #endif
 
     // Calculate starting index
@@ -321,6 +324,7 @@ void populate_points_dset(double **points_dset, int num_points, int *offset_poin
     #else 
       (*points_dset)[ii + 2] = z;
     #endif
+    num_points_iter++;
   }
 }
 

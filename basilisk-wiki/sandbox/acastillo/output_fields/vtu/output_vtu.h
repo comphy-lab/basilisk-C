@@ -102,15 +102,7 @@ void output_vtu_pid(scalar *list, vector *vlist, char *subname) {
   vertex scalar marker[];
   long no_points = 0, no_cells = 0;
   foreach_vertex(serial, noauto){
-    #if TREE
-      marker[] = _k;
-    #else
-      #if dimension == 2
-        marker[] = (point.i - 2) * ((1 << point.level) + 1) + (point.j - 2);
-      #else
-        marker[] = (point.i - 2) * sq((1 << point.level) + 1) + (point.j - 2) * ((1 << point.level) + 1) + (point.k - 2);
-      #endif
-    #endif
+    marker[] = no_points;
     no_points++; // Increment the number of points
   }
 

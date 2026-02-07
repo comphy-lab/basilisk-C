@@ -67,6 +67,7 @@ static inline void my_restriction_vertex (Point point, scalar s) {
 }
 
 /** For color vertex*/
+#if dimension <= 2
 static void refine_vertex_ebit (Point point, scalar ss) {
   fine(ss, 1, 1) = ss[];
 
@@ -82,6 +83,7 @@ static void refine_vertex_ebit (Point point, scalar ss) {
         }
   }
 }
+#endif
 
 static inline void my_restriction_vertex_zero (Point point, scalar s) {
   for (int i = 0; i <= 1; i++) {
@@ -130,6 +132,38 @@ void set_mask (scalar intf, int n_iter = 1) {
   mask_intf.restriction = restriction_intf;
 }
 
+#if dimension == 3
+foreach_dimension()
+static void refine_face_injection_x (Point point, scalar s) {
+  vector v = s.v;
+  if (!is_refined(neighbor(-1)) &&
+      (is_local(cell) || is_local(neighbor(-1)))) {
+    for (int j = 0; j <= 1; j++)
+      for (int k = 0; k <= 1; k++)
+	      fine(v.x,0,j,k) = v.x[];
+  }
+  if (!is_refined(neighbor(1)) && neighbor(1).neighbors &&
+      (is_local(cell) || is_local(neighbor(1)))) {
+    for (int j = 0; j <= 1; j++)
+      for (int k = 0; k <= 1; k++)
+	      fine(v.x,2,j,k) = v.x[1];
+  }
+  if (is_local(cell)) {
+    for (int j = 0; j <= 1; j++)
+      for (int k = 0; k <= 1; k++)
+	      fine(v.x,1,j,k) = (v.x[] + v.x[1])/2.;
+  }
+}
+
+/** All these are used for debugging*/
+static void my_no_restriction_r (Point point, scalar s) {
+  s.dirty = false;
+}
+
+static void my_no_restriction_p (Point point, scalar s) {
+  s.dirty = false;
+}
+#endif
 
 /** Warper function of adapt_wavelet. Add the criteria of the EBIT method and 
   the embedded buondary. 

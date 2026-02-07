@@ -82,18 +82,19 @@ allows almost automatic parallelization on a quad/octree grid.
 
 The main header files can be found on the following pages:
 
-* [Interface advection](src/ebit-2d.h)
-* [Interface advection with an unsplit scheme](src/ebit-unsplit.h)
+* [2D Interface advection](src/ebit-2d.h)
+* [2D Interface advection with an unsplit scheme](src/ebit-unsplit.h)
 * [Two-phase flow with the EBIT method](src/two-phase-ebit.h)
 * [Fitting functions](src/fitting-ebit.h)
 * [Helper functions for EBIT method](src/utils-ebit.h)
 * [EBIT method + AMR](src/ebit-tree.h)
+* [3D Interface advection](src/ebit-3d.h)
 
 ## Verification test cases
 
 Verification test cases can be found on the following pages:
 
-### Benchmark test cases with the EBIT method
+### Benchmark test cases with the 2D EBIT method
 * [Stagnation flow](test/stagnation_ebit.c)
 * [Translation](test/translation_ebit.c)
 * [Single vortex](test/vortex_ebit.c)
@@ -101,6 +102,10 @@ Verification test cases can be found on the following pages:
 * [Capillary wave](test/capillary_ebit.c)
 * [Rayleigh-Taylor instability](test/rti_ebit.c)
 * [Rising bubble](test/rising_ebit.c)
+
+### Benchmark test cases with the 3D EBIT method
+* [Translation](test/translation_ebit_3d.c)
+* [Single vortex](test/vortex_ebit_3d.c)
 
 ### Benchmark test cases with the EBIT method (Unsplit)
 * [Single vortex](test/vortex_ebit_unsplit.c)
