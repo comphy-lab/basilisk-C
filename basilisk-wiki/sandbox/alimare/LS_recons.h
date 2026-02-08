@@ -36,23 +36,49 @@ void buildCache(scalar dist, double NB_width, Cache * c) {
 // }
 
 
-void myFE(scalar f, scalar fi, vector ndist, double deltat, scalar dist, 
-  double maxd, Cache H){
-/**
-Simple Forward Euler scheme.
-*/
+// void myFE(scalar f, scalar fi, vector ndist, double deltat, scalar dist, 
+//   double maxd, Cache H){
+// /**
+// Simple Forward Euler scheme.
+// */
 
-  foreach_cache(H){
-    foreach_dimension(){
-      double graplus  = WENOdiff_x(point, fi,-1);
-      double graminus = WENOdiff_x(point, fi,1);
-      f[] -= deltat * ( max(ndist.x[],0.)*graplus
-        + min(ndist.x[],0.)*graminus);
+//   foreach_cache(H){
+//     foreach_dimension(){
+//       double graplus  = WENOdiff_x(point, fi,-1);
+//       double graminus = WENOdiff_x(point, fi,1);
+//       f[] -= deltat * ( max(ndist.x[],0.)*graplus
+//         + min(ndist.x[],0.)*graminus);
+//     }
+//   }
+//   boundary({f});
+//   restriction({f});
+// }
+
+
+void myFE (scalar f, scalar fi,
+           vector ndist, double deltat,
+           scalar dist, double maxd,
+           Cache H)
+{
+  foreach_cache (H) {
+    foreach_dimension() {
+
+      double graplus  = WENOdiff_x (point, fi, -1);
+      double graminus = WENOdiff_x (point, fi,  1);
+
+      // velocity magnitude (example)
+      double v = 1.0;  // MUST have dimension L/T
+
+      f[] -= deltat * v *
+             ( max(ndist.x[], 0.) * graplus
+             + min(ndist.x[], 0.) * graminus );
     }
   }
-  boundary({f});
-  restriction({f});
+
+  boundary ({f});
+  restriction ({f});
 }
+
 
 /**
 Runge Kutta 2 advection scheme

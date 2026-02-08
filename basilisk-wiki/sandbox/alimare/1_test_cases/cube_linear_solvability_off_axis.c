@@ -77,6 +77,8 @@ double fac1(coord n, double eps4){
 #include "../LS_curvature.h"
 #include "../LS_advection.h"
 
+#include "../LS_speed.h"
+
 
 #define T_eq         0.
 #define TL_inf       -0.55
@@ -92,20 +94,20 @@ double H0;
 /**
 Setup of the physical parameters + level_set variables
 */
-scalar TL[], TS[], dist[];
-vector vpc[],vpcf[];
+// scalar TL[], TS[], dist[];
+// vector vpc[],vpcf[];
 
-scalar * tracers    = {TL};
-scalar * tracers2 = {TS};
+// scalar * tracers    = {TL};
+// scalar * tracers2 = {TS};
 
-scalar * level_set  = {dist};
-face vector muv[];
+// scalar * level_set  = {dist};
+// face vector muv[];
 mgstats mgT;
 scalar grad1[], grad2[];
 double DT2;
 
 
-double  latent_heat = 1.;
+//double  latent_heat = 1.;
 double  lambda[2]; // thermal capacity of each material
 #if Gibbs_Thomson // parameters for the Gibbs-Thomson's equation
 double  epsK = 0.5, epsV = 0.000;
@@ -130,7 +132,7 @@ double  NB_width ;    // length of the NB
 
 int itrecons;
 
-scalar curve[];
+//scalar curve[];
 
 
 #define Pi 3.14159265358979323846
@@ -226,11 +228,21 @@ crystal growth.
     boundary({dist,TL,TS});
     restriction({dist,TL,TS});
     double lambda1 = lambda[0], lambda2 = lambda[1]; 
-    LS_speed(
-    dist,latent_heat,cs,fs,TS,TL,T_eq,
-    vpc,vpcf,lambda1,lambda2,
-    epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
-    itrecons = 10,tolrecons = 1.e-12,NB_width);
+    // LS_speed(
+    // dist,latent_heat,cs,fs,TS,TL,T_eq,
+    // vpc,vpcf,lambda1,lambda2,
+    // epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
+    // itrecons = 10,tolrecons = 1.e-12,NB_width);
+
+      LS_speed(
+    dist, latent_heat, cs, fs, TS, TL, T_eq,
+    vpc, vpcf, lambda1, lambda2,
+    epsK, epsV, eps4,
+    0.45*L0/(1<<MAXLEVEL),
+    60,
+    1.e-10,
+    NB_width
+  );
     event("adapt");
     
   }
@@ -279,12 +291,22 @@ crystal growth.
 
 event stability(i++){
   double lambda1 = lambda[0], lambda2 = lambda[1];
-  LS_speed(
-  dist,latent_heat,cs,fs,TS,TL,T_eq,
-  vpc,vpcf,lambda1,lambda2,
-  epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
-  itrecons = itrecons,tolrecons = 1.e-4,
-  NB_width);
+  // LS_speed(
+  // dist,latent_heat,cs,fs,TS,TL,T_eq,
+  // vpc,vpcf,lambda1,lambda2,
+  // epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
+  // itrecons = itrecons,tolrecons = 1.e-4,
+  // NB_width);
+
+    LS_speed(
+    dist, latent_heat, cs, fs, TS, TL, T_eq,
+    vpc, vpcf, lambda1, lambda2,
+    epsK, epsV, eps4,
+    0.45*L0/(1<<MAXLEVEL),
+    60,
+    1.e-10,
+    NB_width
+  );
   double DT3 = 0.5*timestep_LS(vpcf,DT2,dist,NB_width);
   tnext = t+DT3;
   dt = DT3;
@@ -294,26 +316,40 @@ event stability(i++){
 }
 
 event tracer_diffusion(i++){
-  double lambda1 = lambda[0], lambda2 = lambda[1];
-  advection_LS(
-  dist,
-  latent_heat,
-  cs,fs,
-  TS,TL,
-  T_eq,
-  vpc,vpcf,
-  lambda1,lambda2,
-  epsK,epsV,eps4,
-  curve,
-  &k_loop,
-  deltat = 0.45*L0 / (1 << grid->maxdepth),
-  itredist = 2*nb_cell_NB,
-  tolredist = 3.e-3,
-  itrecons = itrecons,
-  tolrecons = 1.e-4,
-  s_clean = 1.e-10,
-  NB_width,
-  0);
+  // double lambda1 = lambda[0], lambda2 = lambda[1];
+  // advection_LS(
+  // dist,
+  // latent_heat,
+  // cs,fs,
+  // TS,TL,
+  // T_eq,
+  // vpc,vpcf,
+  // lambda1,lambda2,
+  // epsK,epsV,eps4,
+  // curve,
+  // &k_loop,
+  // deltat = 0.45*L0 / (1 << grid->maxdepth),
+  // itredist = 2*nb_cell_NB,
+  // tolredist = 3.e-3,
+  // itrecons = itrecons,
+  // tolrecons = 1.e-4,
+  // s_clean = 1.e-10,
+  // NB_width,
+  // 0);
+ 
+    advection_LS (
+    dist = dist,
+    cs = cs,
+    fs = fs,
+    TS = TS,
+    TL = TL,
+    vpcf = vpcf,
+    itredist = 3,
+    s_clean = 1.e-10,
+    NB_width = NB_width,
+    curve = curve
+  );
+
   foreach_face(){ // for GHIGO
     uf.x[] = 0.;
   }
@@ -334,7 +370,7 @@ event tracer_diffusion(i++){
 }
 
 
-event interface2(t+=180,last; t<12000){
+event interface2(t+=20,last; t<100){
   output_facets(cs,stdout);
 }
 
@@ -360,7 +396,7 @@ event tip_velocity(i++,last){
   y_max_pre = y_max;
 }
 
-event movie(t+=200,last){
+event movie(t+=10,last){
   squares("TL");
   save("TL.mp4");
 }

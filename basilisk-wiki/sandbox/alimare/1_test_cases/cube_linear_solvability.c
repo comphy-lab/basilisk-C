@@ -371,27 +371,59 @@ event interface2(t+=180,last; t<12000){
   output_facets(cs,stdout);
 }
 
-event tip_velocity(i++,last){
-  // event to output the velocity on the top tip of the dendrite and its
- // position
-  double y_max=0, velomax = 0.;
+// event tip_velocity(i++,last){
+//   // event to output the velocity on the top tip of the dendrite and its
+//  // position
+//   double y_max=0, velomax = 0.;
+//   vector h[];
+//   heights (cs, h);
+//   boundary((scalar *){h});
+//   foreach(reduction(max:y_max)){
+//     if(interfacial(point, cs) && y >0){
+//       double yy = y+Delta*height(h.y[]);
+//       if(yy < 1.e10){
+//         y_max = max(y_max,yy);
+//         velomax = vpcf.y[];
+//       }
+//     }     
+//   }
+//   double d0 = epsK;
+//   fprintf(stderr, "%g %g %g\n", t/sq(d0), (y_max-y_max_pre)/dt,
+//    velomax*d0);
+//   y_max_pre = y_max;
+// }
+
+event tip_velocity (i++, last)
+{
+  double y_max = -HUGE;
+  double velomax = 0.;
+  double velomax_loc = 0.;
+
   vector h[];
   heights (cs, h);
-  boundary((scalar *){h});
-  foreach(reduction(max:y_max)){
-    if(interfacial(point, cs) && y >0){
-      double yy = y+Delta*height(h.y[]);
-      if(yy < 1.e10){
-        y_max = max(y_max,yy);
-        velomax = vpcf.y[];
+  boundary ((scalar *){h});
+
+  foreach (reduction(max:y_max)) {
+    if (interfacial(point, cs) && y > 0) {
+      double yy = y + Delta*height(h.y[]);
+      if (yy > y_max) {
+        y_max = yy;
+        velomax_loc = vpcf.y[];
       }
-    }     
+    }
   }
+
+  velomax = velomax_loc;
+
   double d0 = epsK;
-  fprintf(stderr, "%g %g %g\n", t/sq(d0), (y_max-y_max_pre)/dt,
-   velomax*d0);
+  fprintf (stderr, "%g %g %g\n",
+           t/sq(d0),
+           (y_max - y_max_pre)/dt,
+           velomax*d0);
+
   y_max_pre = y_max;
 }
+
 
 event movie(t+=200,last){
   squares("TL");

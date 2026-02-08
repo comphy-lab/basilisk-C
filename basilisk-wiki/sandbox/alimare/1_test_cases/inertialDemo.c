@@ -86,5 +86,6 @@ int main(){
   double voltheo = 4./3*M_PI*R_init*R_init*R_init;
   fprintf(stderr, "%g %g %g %g\n", voltheo,
     center.x,center.y,center.z);
-  exit(1);
+  //exit(1);
+  return 0;
 }

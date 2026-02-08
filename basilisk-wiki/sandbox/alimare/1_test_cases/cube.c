@@ -26,8 +26,8 @@ set size ratio -1
 plot 'out' w l lw 3 t 'Interface' 
 ~~~
 
-
 */
+
 #define Gibbs_Thomson 1
 #define Pi 3.14159265358979323846
 #define QUADRATIC 1
@@ -111,7 +111,7 @@ int main() {
 
 event init(t=0){
 
-  DT         = 5.*sq(L0/(1<<MAXLEVEL));  // Delta
+  DT         = 0.25*sq(L0/(1<<MAXLEVEL));  // Delta
   epsK       = 0.0001 ; 
   epsV       = 0.;
   eps4       = 0.;
@@ -139,7 +139,8 @@ crystal growth.
   boundary ({dist});
   restriction({dist});
 
-  LS2fractions(dist,cs,fs);
+  // LS2fractions(dist,cs,fs);
+   LS2fractions(dist,cs,fs,1e-10);
 
   curvature(cs,curve);
   boundary({curve});
@@ -163,11 +164,11 @@ crystal growth.
 #endif
 }
 
-event interface2(t+=0.1,last){
+event interface2(t+=0.01,last){
   output_facets (cs, stdout);
 }
 
-event movies (t+=0.01; t<1.)
+event movies (t+=0.01; t<0.5)
 {
   boundary({TL,TS});
   scalar visu[];

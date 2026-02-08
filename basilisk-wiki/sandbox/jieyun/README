@@ -104,8 +104,11 @@ Verification test cases can be found on the following pages:
 * [Rising bubble](test/rising_ebit.c)
 
 ### Benchmark test cases with the 3D EBIT method
-* [Translation](test/translation_ebit_3d.c)
-* [Single vortex](test/vortex_ebit_3d.c)
+* [Translation](test/translation_3d_ebit.c)
+* [Single vortex](test/vortex_3d_ebit.c)
+* [Oscillating drop](test/oscillation_3d_ebit.c)
+* [Rising bubble](test/rising_3d_ebit.c)
+* [Bubble merging](test/merging_3d_ebit.c)
 
 ### Benchmark test cases with the EBIT method (Unsplit)
 * [Single vortex](test/vortex_ebit_unsplit.c)

@@ -129,9 +129,9 @@ Advection loop
     scalar * speed_recons  = {vpcr.x,vpcr.y};
     double err = 0.;
 
-    recons_speed(dist, deltat = 0.45*L0/(1<<MAXLEVEL), speed_recons,
-     tolerance = 1.e-6, &err, 
-     nb_iter = 30, 
+    recons_speed(dist,  0.45*L0/(1<<MAXLEVEL), speed_recons,
+      1.e-6, &err, 
+      30, 
      cs, fs,NB_width);
 
   // advect LS
@@ -140,7 +140,8 @@ Advection loop
       output_facets(cs,stdout);
     }
     k++;
-    LS_reinit(dist);
+    //LS_reinit(dist);
+    LS_reinit(dist, mydt, 5);
     foreach(){
       dist[] = clamp(dist[], -NB_width, NB_width);
     }

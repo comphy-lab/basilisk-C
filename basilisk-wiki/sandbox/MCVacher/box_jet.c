@@ -1,59 +1,70 @@
 /**
 # Low Reynolds jet confined in a box
 
+This simulation models a 2D planar jet confined inside a rectangular box. A low Reynolds instability of the jet takes place, reaching a limit cycle.
 */
 
 #include "grid/multigrid.h"
 #include "embed.h"
 #include "navier-stokes/centered.h"
-#include "tracer.h"
 #include "navier-stokes/perfs.h"
+#include "tracer.h"
 
+// Passive tracer
 scalar s[];
 scalar * tracers = {s};
 
-double U0;
-double R_d;
-double plafond;
+// Physical and geometrical parameters
 
-double xmin;
-double ymin;
-double xmax;
-double ymax;
+double U0;        // Jet inlet velocity
+double R_d;       // Jet radius
+double ceiling;   // Height of the solid ceiling
 
-double Re;
+// Domain extents used for visualization
+double xmin, ymin;
+double xmax, ymax;
 
-FILE * fpmax; //
+double Re;        // Reynolds number
+
+FILE * fpmax; 
 
 face vector muv[];
 
 int main() {
 
-  Re=26;
-
-  R_d=0.012; 
-  L0=1; 
-  U0=1;
-  plafond=0.8;
+    // Flow parameters
+  Re      = 26;      // Reynolds number
+  
+  R_d     = 0.012;   // Jet radius
+  L0      = 1.;      // Box size
+  U0      = 1.;      // Inlet velocity
+  ceiling = 0.8;     // Ceiling height
 
   TOLERANCE = 1e-3 [*];
 
-  u.n[bottom] = dirichlet(U0*(x > -R_d && x <R_d));
+  
+  // Boundary conditions
+  
+  // Bottom inlet: top-hat velocity profile
+  u.n[bottom] = dirichlet(U0*(x > -R_d && x < R_d));
   u.t[bottom] = dirichlet(0.);
-  p[embed] = dirichlet(0.);
-  pf[embed]=dirichlet(0.);
+  p[embed]    = dirichlet(0.);
+  pf[embed]   = dirichlet(0.);
 
+  // No-slip condition on the embedded solid ceiling
   u.n[embed] = dirichlet(0.);
   u.t[embed] = dirichlet(0.);
 
-  s[bottom] = dirichlet(U0*(x > -R_d && x <R_d));
+  // Tracer injected with the jet
+  s[bottom] = dirichlet(U0*(x > -R_d && x < R_d));
 
-  u.n[left] = y < R_d ? dirichlet(-U0) : dirichlet(0.);
-  u.t[left] = y < R_d ? neumann(0.) : dirichlet(0.);
-
+  // Lateral walls: no-slip walls except for the lower part where there is imposed outflow
+  u.n[left]  = y < R_d ? dirichlet(-U0) : dirichlet(0.);
+  u.t[left]  = y < R_d ? neumann(0.)  : dirichlet(0.);
   u.n[right] = y < R_d ? dirichlet(U0) : dirichlet(0.);
-  u.t[right] = y < R_d ? neumann(0.) : dirichlet(0.);
-
+  u.t[right] = y < R_d ? neumann(0.)  : dirichlet(0.);
+  
+  // Grid initialization
   N=256;  
   origin (-L0/2, 0);
   init_grid(N);
@@ -71,6 +82,9 @@ int main() {
   run();
 }
 
+/**
+Viscosity definition: $\mu = U_0 \times R_d / Re$ inside the fluid.
+*/
 event properties (i++)
 {
   foreach_face() {
@@ -78,12 +92,15 @@ event properties (i++)
   }
 }
 
+/**
+Initialization: domain extents and embedded ceiling.
+*/
 event init (t = 0) {
 
   xmin = -L0/2;
   xmax = L0/2;
   ymin = 0.0;
-  ymax = plafond;
+  ymax = ceiling;
 
   if (!restore("restart")) {
     fprintf(stderr, "Starting new simulation.\n");
@@ -91,7 +108,7 @@ event init (t = 0) {
     fprintf(stderr, "Restarting from previous dump\n");
   }
 
-  solid (cs, fs, y<plafond);
+  solid (cs, fs, y<ceiling); // Embedded ceiling using embed.h
 }
 
 event logfile (i++) {
@@ -99,16 +116,18 @@ event logfile (i++) {
   fprintf (fpmax, "%d %g \n", i, t);
 }
 
+/**
+Movie outputs for velocity, tracer, and pressure fields.
+*/
 event ppm_output (t = 0; t += 0.05; t <= 100) {
   char name[80];
   sprintf (name, "uX.mp4");
-  output_ppm (u.x, file = name, n = 512, min = 0, max = 1, linear = true, box = {{xmin, ymin}, {xmax, ymax}});
+  output_ppm (u.x, file = name, n = 512, min = -U0, max = U0, linear = true, box = {{xmin, ymin}, {xmax, ymax}});
   
   char name1[80];
   sprintf (name1, "uY.mp4");
   output_ppm (u.y, file = name1, n = 512, min = -U0, max = +U0, linear = true, box = {{xmin, ymin}, {xmax, ymax}});
 
-  // optionally tracer
   char name2[80];
   sprintf (name2, "s.mp4");
   output_ppm (s, file = name2, n = 512, min = 0., max = U0, linear = true , box = {{xmin, ymin}, {xmax, ymax}});
@@ -116,12 +135,12 @@ event ppm_output (t = 0; t += 0.05; t <= 100) {
   char name3[80];
   sprintf (name3, "p.mp4");
   output_ppm (p, file = name3, n = 512, min = 0, max = 0.1*U0*U0, linear = true, box = {{xmin, ymin}, {xmax, ymax}});
-
-  char name4[80];
-  sprintf (name4, "uX.mp4");
-  output_ppm (u.x, file = name4, n = 512, min = -U0, max = +U0, linear = true, box = {{xmin, ymin}, {xmax, ymax}});
 }
 
+
+/**
+Periodic dump for restart and post-processing.
+*/
 double t_prev_dump = 0.;
 
 event dump_state (t = 0; t += 10; t <= 100) { //t_max
@@ -142,6 +161,8 @@ event profile (t = end) {
 }
 
 /**
+## Movies
+
 ![Passive tracer](box_jet/s.mp4)
 ![Vertical velocity](box_jet/uY.mp4)
 ![Horizontal velocity](box_jet/uX.mp4)

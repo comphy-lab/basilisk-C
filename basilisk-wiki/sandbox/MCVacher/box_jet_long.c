@@ -1,29 +1,33 @@
 /**
 # High Reynolds jet in an open channel impinging on a solid surface
 
+This simulation models a 2D planar jet entering an open channel
+and impinging on a solid ceiling using the embed.h. 
 */
 
 #include "grid/multigrid.h"
 #include "embed.h"
 #include "navier-stokes/centered.h"
-#include "tracer.h"
 #include "navier-stokes/perfs.h"
+#include "tracer.h"
 
+// Passive tracer
 scalar s[];
 scalar * tracers = {s};
 
-double U0;
-double R_d;
-double plafond;
+// Physical and geometrical parameters
+double U0;        // Jet inlet velocity
+double R_d;       // Jet radius
+double ceiling;   // Height of the solid ceiling
 
-double xmin;
-double ymin;
-double xmax;
-double ymax;
 
-double Re;
+// Domain extents used for visualization
+double xmin, ymin;
+double xmax, ymax;
 
-FILE * fpmax; //
+double Re;    // Reynolds number
+
+FILE * fpmax; 
 
 face vector muv[];
 
@@ -31,41 +35,48 @@ int main() {
 
   Re=160;
 
-  R_d=0.003; //Rayon du jet initial
-  L0=0.5; //Taille de la boite  
-  U0=1;
-  plafond=0.1;
+  R_d     = 0.003;  // Initial jet radius
+  L0      = 0.5;    // Domain size
+  U0      = 1.;     // Inlet velocity magnitude
+  ceiling = 0.1;    // Ceiling height
 
   TOLERANCE = 1e-3 [*];
 
-  u.n[bottom] = dirichlet(U0*(x > -R_d && x <R_d));
+  // Jet inflow at the bottom boundary (top-hat profile)
+  u.n[bottom] = dirichlet(U0*(x > -R_d && x < R_d));
   u.t[bottom] = dirichlet(0.);
-  p[bottom]=dirichlet(0.);
-  pf[bottom]=dirichlet(0.);
+  p[bottom]   = dirichlet(0.);
+  pf[bottom]  = dirichlet(0.);
 
+  // No-slip condition on the embedded solid
   u.n[embed] = dirichlet(0.);
   u.t[embed] = dirichlet(0.);
 
-  s[bottom] = dirichlet(U0*(x > -R_d && x <R_d));
+  // Tracer injected with the jet
+  s[bottom] = dirichlet(U0*(x > -R_d && x < R_d));
 
-  u.n[left] = neumann(0.);
-  p[left] = neumann(0.);
-  //p[left]   = dirichlet(0);
-
+  // Open boundaries on the sides
+  u.n[left]  = neumann(0.);
+  p[left]    = neumann(0.);
   u.n[right] = neumann(0.);
-  p[right] = neumann(0.);
-  //p[right]   = dirichlet(0);
+  p[right]   = neumann(0.);
 
-  N=256;  
+  // Grid initialization
+  N = 256;
   origin (-L0/2, 0);
   init_grid(N);
 
-  mu=muv;
+  // Assign spatially varying viscosity
+  mu = muv;
 
   fpmax =  fopen("log.dat", "w"); 
 
   run();
 }
+
+/**
+Viscosity definition : $\mu = U_0 \times R_d / Re$ inside the fluid.
+*/
 
 event properties (i++)
 {
@@ -79,7 +90,7 @@ event init (t = 0) {
   xmin = -L0/2;
   xmax = L0/2;
   ymin = 0.0;
-  ymax = plafond;
+  ymax = ceiling;
 
   if (!restore("restart")) {
     fprintf(stderr, "Starting new simulation.\n");
@@ -87,7 +98,7 @@ event init (t = 0) {
     fprintf(stderr, "Restarting from previous dump\n");
   }
 
-  solid (cs, fs, y<plafond);
+  solid (cs, fs, y<ceiling); //Use of embed
 }
 
 event logfile (i++) {
@@ -95,6 +106,9 @@ event logfile (i++) {
   fprintf (fpmax, "%d %g \n", i, t);
 }
 
+/**
+Movie outputs for velocity, tracer and pressure fields
+*/
 event ppm_output (t = 0; t += 0.02; t <= 40) { //t_max
   char name[80];
   sprintf (name, "uX.mp4");
@@ -113,6 +127,9 @@ event ppm_output (t = 0; t += 0.02; t <= 40) { //t_max
   output_ppm (p, file = name3, n = 512, min = -1/2*U0*U0, max = -1/2*U0*U0 , linear = true, box = {{xmin, ymin}, {xmax, ymax}});
 }
 
+/**
+Periodic dump for restart and post-processing
+*/
 double t_prev_dump = 0.;
 
 event dump_state (t = 0; t += 10; t <= 40) { //t_max
@@ -133,6 +150,8 @@ event profile (t = end) {
 }
 
 /**
+## Movies
+
 ![Passive tracer](box_jet_long/s.mp4)
 ![Vertical velocity](box_jet_long/uY.mp4)
 ![Horizontal velocity](box_jet_long/uX.mp4)
