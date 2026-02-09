@@ -137,13 +137,13 @@ double latent_heat;
 /**
 Setup of the physical parameters + level_set variables
 */
-scalar TL[], TS[], dist[];
+// scalar TL[], TS[], dist[];
 
 
-scalar * tracers   = {TL};
-scalar * tracers2  = {TS};
-scalar * level_set = {dist};
-face vector muv[];
+// scalar * tracers   = {TL};
+// scalar * tracers2  = {TS};
+// scalar * level_set = {dist};
+// face vector muv[];
 scalar grad1[], grad2[];
 double DT2;
 
@@ -159,7 +159,7 @@ int aniso = 1;
 int     nb_cell_NB =  1 << 3 ;  // number of cells for the NB
 double  NB_width ;              // length of the NB
 
-double s_clean = 1.e-10; // used for fraction cleaning
+//double s_clean = 1.e-10; // used for fraction cleaning
 
 TL[embed] = dirichlet(T_eq);
 TS[embed] = dirichlet(T_eq);
@@ -342,7 +342,7 @@ Previous state of the metric is saved.
   RK3(dist,vpc,dt, NB_width);
   boundary ({dist});
   restriction({dist});
-  LS_reinit(dist, it_max = 10);
+  LS_reinit(dist, 0, 10);
 
   vertex scalar distn[];
   foreach_vertex(){
@@ -373,7 +373,9 @@ Previous state of the metric is saved.
       double TLb = (TL.boundary[embed] (point, point, TL, &dirichlet));
       assert (dirichlet);
 
-      TL[] = embed_extrapolate (point, TL, n, TLb);    
+      //TL[] = embed_extrapolate (point, TL, n, TLb); 
+      TL[] = embed_extrapolate (point, TL, cs, n, b, TLb);
+   
     }
     if(cs[] <=0. && csm1[]>0.){
       TL[] = nodata;

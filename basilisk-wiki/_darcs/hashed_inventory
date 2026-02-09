@@ -1,4 +1,4 @@
-pristine:97b6b643a6fdb25c0f8b848ee644b96d3403804fc91a417dceb156436f1999a4
+pristine:b1d04f34230ab9b2281aaab8661a258dacffe2c228f68125d92b5ae811a4f001
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4828,3 +4828,28 @@ thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260207212123
  Ignore-this: 81394396beca7225380d0a584e980c1890a9733a8dfa9d2438c0c5ad67ecab8a383643ae5d93c1f
 ] 
 hash: 0000000333-2c4ef376c04e41172ff3500874b1ba4bde7be741bd3d6211ae3c1c269d21aea2
+[Coanda effect example
+Antoonvh <j.a.v.hooft@gmail.com>**20260208123533
+ Ignore-this: 13ee0d5ce24b60f17c2262b0813b1e7a49275556c0826a7eba3f153282df54ff60e150f628a13e0
+] 
+hash: 0000002316-f3a80a3889a2213dcea922a0511957926ef5df742b6a80337ccc3c53816bb286
+[Favier_Rayleigh_Benard_case
+thakurdesaikaustubh@gmail.com**20260208131604
+ Ignore-this: 519fe48ac8af5dee33170beeb14baa75b017650760906d466b62c19c2e393331699775192faddae4
+] 
+hash: 0000001912-284fb36fed40b246b49cb201742d511dc2da34b8b14fcc0d3e972ae306c72bb4
+[LS_reinit_reintroduced
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260208221224
+ Ignore-this: bbdd303ec8d6ca1104580597faa5ad3f01fca588106bbd90613334d0f651842f0159148ea020f2f3
+] 
+hash: 0000000448-cb6d8759af5ca71857d5795c7011eefb00cab19d84d79d1ade4b9cf0a4ab26a4
+[LS_reinit_added
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260208221331
+ Ignore-this: 49eb601bd18533afe27d1efbd92af3a415ea33678000a03a87cad5c5e2e5eef9ba2fb65c2e0b93c0
+] 
+hash: 0000000921-dbb7d5e9765bf5e9af33930866cd6d92e015292defcb72c32bcf8a54553e68bc
+[mydirichlet_expand_1d_updated
+thakurdesaikaustubh@gmail.com**20260208233748
+ Ignore-this: dd10639a2b08d3d4eb7990a9d43433e3784047de9e6af538239400271ae1d644760af2794ea0130
+] 
+hash: 0000001071-4e031db52edc0b54bef3325f8642f24efe1013f2e5752707cfc965d95bb78aaa

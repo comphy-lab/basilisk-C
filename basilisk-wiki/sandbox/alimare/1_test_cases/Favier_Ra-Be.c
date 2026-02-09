@@ -58,6 +58,7 @@ Required for using hybrid level-set/embedded boundary method
 #include "view.h"
 // #define dtLS 1
 #include "../LS_diffusion.h"
+#include "redistance.h"
 
 /**
 ## Miscalleneous functions for this test case
@@ -67,7 +68,13 @@ Convention:
 -cell is completely fluid => frac == 1
 -cell is completely solid => frac == 0
 */
+struct OutputFacets {
+    scalar c;
+    face vector s;
+    FILE *fp;
+  };
 
+  
 #define ratio 8.            // Ratio of length to width in the domain
 double TLfield (double y, double frac, double Thetam, double H0){
   y += ratio/2.; // change of reference for having y = 0 in the bottom rather
@@ -89,6 +96,7 @@ double TSfield (double y, double frac, double Thetam, double H0){
   else
     return Thetam;
 }
+
 
 /**
 Function to calculate the kinetic energy density
@@ -115,8 +123,6 @@ double energy_density(){
 /**
 Function to calculate the average height of the interface
 */
-
-
 
 double output_height (struct OutputFacets p){
   scalar c = p.c;
@@ -206,9 +212,9 @@ We use mask() to create rectangle domain
 }
 
 event init (t = 0) {
-  DT_LS = 0.45*(L0)/( 1 << MAXLEVEL);
+  DT_LS = 0.1*(L0)/( 1 << MAXLEVEL);
   DT = 1.;
-  CFL = 0.1;
+  CFL = 0.05;
 
   T_eq   =      0.3;    // Theta m in the paper
   latent_heat = 10;
@@ -229,12 +235,30 @@ event init (t = 0) {
   foreach()
     dist[] = h0-ratio/2.-y;
 
+
+
+// double a = 1.0;
+// double b = 1.0;
+// double c = 0.0;   // shifts the line
+// foreach(){
+//   dist[] = a*x + b*y - c;
+// }
+
+
+
   fprintf(stderr, "## init %g %g %g %g\n",Ra, ratio/2.,h0, L0/(1<<MAXLEVEL));
 
   boundary ({dist});
   restriction({dist});
-  LS_reinit(dist);
-  LS2fractions(dist,cs,fs);
+  //LS_reinit(dist);
+LS_reinit(dist, 0, 0);
+
+  scalar resf[];
+//int niter = redistance(dist, 500, 0.5, 3, 1e-6, HUGE, resf);
+fprintf(stderr, "Reinitialized in %d iterations\n", niter);
+
+
+  LS2fractions(dist,cs,fs, s_clean);
 
   foreach_face(){
     vpc.x[] = 0.;
@@ -242,10 +266,12 @@ event init (t = 0) {
   boundary((scalar *){vpc,av});
   lambda[0] = 1.;
   lambda[1] = 1.;
-  foreach() {
-    TL[] = TLfield(y,cs[],T_eq,h0);
-    TS[] = TSfield(y,cs[],T_eq,h0);
-  }
+   foreach() {
+     TL[] = TLfield(y,cs[],T_eq,h0);
+     TS[] = TSfield(y,cs[],T_eq,h0);
+   }
+
+
   boundary({TL,TS});
   restriction({TL,TS});
 
