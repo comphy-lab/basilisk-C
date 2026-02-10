@@ -1,36 +1,37 @@
-/** You need to run this code using MPI and see the output file for
-  understanding the bug CC='mpicc -D_MPI=4' make my_adapt_bug.tst*/
+/** 
+# Default boundary conditions do not work for face vector fields in MPI
 
-// uf.x[right] = 0; // The automatic BC works again with this statement
+You need to run this code using MPI and see the output file for
+understanding the bug CC='mpicc -D_MPI=4' make bc_face_vector.tst*/
+
+// uf.x[right] = 0; // including this statement changes the results
 
 face vector uf[];
 
-int main(){
-  init_grid(4);
-
-  foreach_face()
-    uf.x[] = -1.;
-  boundary ((scalar *) {uf});
+int main()
+{
+  init_grid (2);
+  reset ((scalar *){uf}, -1);
   foreach_face()
     uf.x[] = pid();
 
-  FILE * fp = fopen("out.txt", "w");
-  foreach_face(x){
-    // this should trigger the automatic boundary condition, but actually not
+  foreach_face (x) {
+    // this correctly triggers the automatic BCs (see the output below)
     double a = uf.x[1] + uf.x[-1] - 2*uf.x[];
+    
     /** 
-    We output the values of face vector on the boudary between blocks. 
-    Note that the values in the ghost cells, 
-    such as uf[1] for rank 0 and 1, uf[-1] for rank 2 and 3, are incorrect. */ 
-    if (fabs(x - 0.5) < 1.e-6)
-      fprintf(fp,"Face vertor test: pid:%d, x:%g y:%g uf:%g uf[-1]:%g uf[1]:%g\n",
-      pid(), x, y, uf.x[], uf.x[-1], uf.x[1]);
+    We output the values of face vector on the boudary between blocks.
+    Note that the values in the ghost cells, such as uf[1] for rank 0
+    and 1, uf[-1] for rank 2 and 3, are incorrect. */
+    
+    fprintf (qerr, "pid: %d\tx: %g\ty: %g\tuf: %g\tuf[-1]: %g\tuf[1]: %g\ta: %g\n",
+	     pid(), x, y, uf.x[], uf.x[-1], uf.x[1], a);
   }
-  fclose (fp);
-  
-  return 0;
+  fflush (qerr);
+  system ("cat log log-* > log.txt");
 }
 
 /**
-![Output](bc_face_vector/out.txt)
+This is the output:
+![](bc_face_vector/log.txt){width="100%" height="250px"}
 */

@@ -20,6 +20,6 @@ reductions.tst: CC=mpicc -D_MPI=4
 
 multired.tst: CC=mpicc -D_MPI=4
 
-bc_face_vector.tst: CC=mpicc -D_MPI=4
+bc_face_vector.tst: CC=mpicc -D_MPI=4 -DPRINTBOUNDARY=1
 
 bc_vector.tst: CFLAGS += -DPRINTBOUNDARY=1

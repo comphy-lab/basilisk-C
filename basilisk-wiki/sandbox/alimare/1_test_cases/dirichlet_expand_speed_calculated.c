@@ -136,13 +136,13 @@ double latent_heat;
 /**
 Setup of the physical parameters + level_set variables
 */
-scalar TL[], TS[], dist[];
+// scalar TL[], TS[], dist[];
 
 
-scalar * tracers   = {TL};
-scalar * tracers2  = {TS};
-scalar * level_set = {dist};
-face vector muv[];
+// scalar * tracers   = {TL};
+// scalar * tracers2  = {TS};
+// scalar * level_set = {dist};
+// face vector muv[];
 scalar grad1[], grad2[];
 double DT2;
 
@@ -158,7 +158,7 @@ int aniso = 1;
 int     nb_cell_NB =  1 << 3 ;  // number of cells for the NB
 double  NB_width ;              // length of the NB
 
-double s_clean = 1.e-10; // used for fraction cleaning
+//double s_clean = 1.e-10; // used for fraction cleaning
 
 TL[embed] = dirichlet(T_eq);
 TS[embed] = dirichlet(T_eq);
@@ -345,7 +345,7 @@ Previous state of the metric is saved.
 
   vector vpc[];
   phase_change_velocity_LS_embed (cs, fs ,TL, TS, T_eq, vpc, latent_heat, 
-      lambda,epsK=0, epsV =0, aniso =1);/**
+      lambda, 0, 0, 0.02, curve);/**
 We copy this value in vpcr.
 */
   vector vpcr[];
@@ -365,18 +365,18 @@ We copy this value in vpcr.
 We reconstruct a cell-centered vpc field in the vicinity of the interface where
 vpcr is the solution to the bilinear interpolation of vpc on face centroids.
 */
-  int err = 0;
+  double err = 0;
 
-  recons_speed(dist, dt = 0.5 * L0/(1<<MAXLEVEL), LS_speed = speed_recons,
-   tolerance = 1.e-12, &err, 
-   nb_iter = 60, 
-   cs, fs);
+  recons_speed(dist, 0.5 * L0/(1<<MAXLEVEL), speed_recons,
+    1.e-12, &err, 
+    60, 
+   cs, fs, NB_width);
 
   RK3(dist,vpcr,dt, NB_width);
 
   boundary ({dist});
   restriction({dist});
-  LS_reinit(dist, it_max = 10);
+  LS_reinit(dist, 0 ,10);
 
   vertex scalar distn[];
   foreach_vertex(){
@@ -408,7 +408,9 @@ vpcr is the solution to the bilinear interpolation of vpc on face centroids.
       double ab = (TL.boundary[embed] (point, point, TL, &dirichlet));
       assert (dirichlet);
 
-      TL[] = dirichlet_extrapolate (point, TL, n, b, ab, dirichlet);
+      //TL[] = dirichlet_extrapolate (point, TL, n, b, ab, dirichlet);
+            TL[] = embed_extrapolate (point, TL, cs, n, b, ab);
+
     }
     if(cs[] <=0. && csm1[]>0.){
       TL[] = nodata;

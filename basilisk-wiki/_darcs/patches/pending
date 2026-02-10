@@ -27,8 +27,6 @@ rmdir ./sandbox/jobic/validations/bagnold_periodic
 rmdir ./sandbox/joubert/test/diffusion/face_vector_diff_test
 rmdir ./sandbox/joubert/test/diffusion/face_vector_test
 rmdir ./sandbox/joubert/test/output
-rmdir ./sandbox/kaustubh/dirichlet_fixed_timestep/ghigo/src
-rmdir ./sandbox/kaustubh/dirichlet_fixed_timestep/ghigo
 rmdir ./sandbox/leo_car_dem/Tests-Injection-Canal/fluvial_QBASE
 rmdir ./sandbox/leo_car_dem/Tests-Injection-Canal/fluvial_qt
 rmdir ./sandbox/leo_car_dem/Tests-Injection-Canal/torrentiel_QBASE

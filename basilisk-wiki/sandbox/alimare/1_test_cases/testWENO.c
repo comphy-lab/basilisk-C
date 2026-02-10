@@ -40,7 +40,7 @@ int main() {
     
     free_grid();
   }
-  exit(1);
+  return 0;
 }
 
 /**
