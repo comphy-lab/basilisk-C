@@ -23,6 +23,9 @@ We check that the gradient on the interface is 1.
 #include "fractions.h"
 #include "curvature.h"
 
+#include "poisson.h"
+#include "diffusion.h"
+
 #include "../level_set.h"
 #include "view.h"
 #include "../phase_change_velocity.h"
@@ -39,24 +42,35 @@ double latent_heat;
 #define plane( y,H0) (y -H0)
 #define Stefan 1.
 
-double T_init(double y,double y0){
-  if(y>y0)
-    return T_eq + 1.-exp(y0-y);
-  else
-    return T_eq ;
+// double T_init(double y,double y0){
+//   if(y>y0)
+//     return T_eq + 1.-exp(y0-y);
+//   else
+//     return T_eq ;
   
+// }
+
+double T_init (double y, double y0)
+{
+  double L = 1.;  // characteristic length scale
+
+  if (y > y0)
+    return T_eq + 1. - exp((y0 - y)/L);
+  else
+    return T_eq;
 }
 
-scalar TL[], TS[], dist[];
-vector vpc[];
-face vector vpcf[];
+
+// scalar TL[], TS[], dist[];
+// vector vpc[];
+// face vector vpcf[];
 
 
-scalar * tracers   = {TL};
-scalar * tracers2  = {TS};
-scalar * level_set = {dist};
+// scalar * tracers   = {TL};
+// scalar * tracers2  = {TS};
+ //scalar * level_set = {dist};
 scalar grad1[], grad2[];
-scalar curve[];
+//scalar curve[];
 
 TL[embed] = dirichlet(T_eq);
 TS[embed] = dirichlet(T_eq);
@@ -128,7 +142,7 @@ not mandatory
     boundary({TL,TS});
     restriction({TL,TS});
     phase_change_velocity_LS_embed (cs, fs ,TL, TS, T_eq, vpc, latent_heat, 
-      lambda,epsK=0, epsV =0, aniso =1);
+      lambda,0, 0, 0, curve);
     double myprint = 0;
     foreach_face(y){
       if(vpc.y[] !=0. && myprint == 0){

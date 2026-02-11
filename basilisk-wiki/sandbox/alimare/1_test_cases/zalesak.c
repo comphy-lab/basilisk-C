@@ -183,7 +183,7 @@ event LS_advection(i++,last){
 }
 
 event LS_reinitialization(i++,last){
-  LS_reinit(dist, it_max = 20);
+  LS_reinit(dist, 0,  20);
 }
 
 /**

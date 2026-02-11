@@ -125,7 +125,7 @@ int main() {
     draw_isolines(dist, -2., 1., 30, 1);
     save("dist_init.png");
 
-    LS_reinit(dist, it_max = 1 << (MAXLEVEL+1));
+    LS_reinit(dist, 0, 1 << (MAXLEVEL+1));
     squares ("dist", map = cool_warm, min = -2, max = 1);
     draw_isolines(dist, -2., 1., 30, 1);
     save("dist_first_reinit.png");

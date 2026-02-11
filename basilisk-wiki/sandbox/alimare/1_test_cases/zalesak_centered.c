@@ -200,10 +200,10 @@ event LS_advection(i++,last){
 }
 
 event LS_reinitialization(i++,last){
-  LS_reinit(dist, it_max = 10);
-  LS_reinit(dist2, it_max = 10);
-  LS_reinit(dist3, it_max = 10);
-  LS_reinit(dist4, it_max = 10);
+  LS_reinit(dist, 0, 10);
+  LS_reinit(dist2,0, 10);
+  LS_reinit(dist3, 0, 10);
+  LS_reinit(dist4, 0, 10);
 }
 
 /**
