@@ -5,6 +5,8 @@ To be described...
 
 An analog of the [splouch](/sandbox/M1EMN/Exemples/column_viscous.c), here with twophase.h.
 
+Note : remove_droplets needs to be added.
+
 ## Simulation
 */
 

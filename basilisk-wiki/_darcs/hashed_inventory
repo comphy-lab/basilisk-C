@@ -1,4 +1,4 @@
-pristine:d88bfd839872d5022a34b88694e29085f7544297d1fac5177fdefb98ae432a01
+pristine:d401448d4dbc0f6407ea77692fec3ed4496c5fbae8bc95d5b6873baa7c0abc7f
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -4948,3 +4948,98 @@ thakurdesaikaustubh@gmail.com**20260210155749
  Ignore-this: f6f1f63d4c6747d97ebf939c90245b3ed8148f338637ed62bbb00b2e1fd99e4991e9c04fb47d3b20
 ] 
 hash: 0000008820-83b709d3b25f884223fe1255c82f17aa7f10d0e36fd1f61ed793b7783cba8c11
+[Fully implicit version
+antoine.aubert <antoine.aubert@polytechnique.edu>**20260211100501
+ Ignore-this: 4201cca3bfa17a8f49079b5217bb1e467a3f4fc6b3cf4eeda524476dbef84ceeba6ae26df2257adb
+] 
+hash: 0000014802-cb2c54bb0221e3079dc9e38030ce1d8bdac14ccfb0eb1e3f9c4a1caa8a48c0ad
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20260211100745
+ Ignore-this: ecd6b4b849aef64076ebdf5539a47df6fee4219daf4501b136aef5d5345b65b37baceeb6cb53981e
+] 
+hash: 0000000248-09b32331ed8c4d08cf3ae09398570e49b5f9ed90851e89572a1557d83513f013
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20260211101308
+ Ignore-this: d4b179a19d618feff9cc289a3ea0f39baf2d3dcd3c65a523c8b095803e914564d1f912f9da09e27f
+] 
+hash: 0000000593-c5b97971f03bb331af97351d3413a2d092fe6c59dd2984bcd22cb0f4d9d76d70
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20260211101320
+ Ignore-this: 40384355471b1e69b52ccfd2bb93128e1edfb9528fee2048d64cff275765fedd553387ea72debc00
+] 
+hash: 0000000275-20a0de0077747319d884075f9e6d793bf0ea742f11fb45ef74067400e97d3f35
+[Kaustubh_sandbox_cleaned
+thakurdesaikaustubh@gmail.com**20260211101633
+ Ignore-this: 6df261a6b38a96ce36e5b48c9470743696b372e25c5d104fea3cfd99dd1824c5983a5c4d4bc65cc2
+] 
+hash: 0000012460-360f80d9202b3390a279e8665b85f4092a6d51e08f3eaacc53b07e5a8afb8e11
+[Do not forget useful default sandbox flags
+Stephane Popinet <popinet@basilisk.fr>**20260211124747
+ Ignore-this: 3196ade7a48eb22b3282ef3ef2e5c6848a16b79a080395f5e878a9b53861b61e917e87e0201e2df6
+] 
+hash: 0000000420-13907f7a34cfa88b936a212755316740c60ee474772781ad7e8fda226f78d329
+[Someone typed this here for some reason. 
+acastillo <andres.castillo.castellanos@gmail.com>**20260211134413
+ Ignore-this: 66de3e23416800a4986624cd92da27274eab9f9532672880a340ca29381929c833fb92d865e525bd
+] 
+hash: 0000000311-468ee0d05ebbe053e8dc1dead7a08b158c0267e144596316be5565de18e24a2b
+[add shear_varyvis.c
+ryang**20260211153346
+ Ignore-this: fe6ed8f37de098b613f46a948158588dc33fee4c77fec2b9743d8ce3b6845477da07d38aeb6258d5
+] 
+hash: 0000005134-d6c889d28ad52b2d6cff57478004aad25b331511e61346b205ea2cb008818de9
+[add shear_varyvis.c
+ryang**20260211154820
+ Ignore-this: 6e0c048819bd1269627b96dadd263f5201689ae735e5c78aebeb175b5e63b445b1dadc88fc03f08b
+] 
+hash: 0000000291-8a978c5d7a423fb8a4fcf52fadcbb6dfd24090346ffa8b867912d27a8d7876b7
+[add my_diffusion.h
+ryang**20260211155748
+ Ignore-this: c8f65ef3c5df4c3df26a7ba001c5f650d1c8a7dafabeb614306e20dec17f1da8821cea13c008a0d1
+] 
+hash: 0000009238-279824b88d37b381e78f0c3e6575d74f677fd253bdc4a784090553e5d770779e
+[add my_hydro.h
+ryang**20260211155958
+ Ignore-this: 681b282a57805848f97cbd5d75aab411b4a30b78b994f4b1b5fbfafd9c050a6a1bbe3da512172b61
+] 
+hash: 0000020615-38853a52711649731c3b0914dad5979dabc8c9d76f9bf91b54afbfd7fd38d800
+[add stokes.c
+ryang**20260211160431
+ Ignore-this: 7b0a6a362e1ebda6a9142647c1badd039f3bd69b1ae3011031ab01f648c87559bfc5acf183e55a28
+] 
+hash: 0000000522-0e3fdf02efc82b120fc52c1d0e27a60ce734ee9757c31d788a2cc3cad34b543b
+[add stokes.c
+ryang**20260211163903
+ Ignore-this: 4a2953a20a3292ec9eb6f0deb08aa456db0b364e8c1760114ab2083a383389d64412c73f51c1ef1d
+] 
+hash: 0000005339-e6e58039aa9a8e1316b05f2a332a7fce6c492f156963719877e3432e7828941e
+[distancetoellipsoid_rectified
+thakurdesaikaustubh@gmail.com**20260211180401
+ Ignore-this: 543e13a1168eb48509361d279469bfa9508d1a851e488a99bd0288bb63670fe02a782e07733ed776
+] 
+hash: 0000000687-993dd2b2db0f26e7ca7b4ff892ab5f99b5aad7b60ae92a6792ac6da94a7c4040
+[redistance to ls_reinit
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260211192322
+ Ignore-this: a47b21f308b67e628e629e32ffe57e0a039bba65f6f8c9e9b38ca65fac1ef04c6e293e9104c3e071
+] 
+hash: 0000000741-1ee17120c230326ccda20418f2dac3f7714fdef383f4d34bbbc2d8b36679836f
+[redisttance changed to LS_reinit
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260211194411
+ Ignore-this: cc56ddc381f522e6f4798d2595c9f4f5dbdbcd7b1dd746d7e322de286f13e11dccd227008913421e
+] 
+hash: 0000000490-d66cb3c570010c203128214fd96179711136239c5c25c64317d603e82ce29194
+[reinit_LS header files and exit condition changed
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260211194635
+ Ignore-this: d2ce46ee221a267ad988ccacb479d2632ed8116175c14c546cbb20a8494824f788879f084b4d0fcc
+] 
+hash: 0000000626-121c768b88e072aea7fcbdb048b9d7ef7034b8abd7a7c862a4cfe40349b58d25
+[LS_reinit_call_changed
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260211194833
+ Ignore-this: ec2053f49687039cd9d0800495d2f7605feadf519b64caf650fa7d58dff5a8ad5a1aa7422a3b2247
+] 
+hash: 0000000356-442aa220711623452c1e6f9e779bfe95d0dd9b58c4fafe3181968328ef89aa58
+[LS_reinit and recons_speed calls changed
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260211211510
+ Ignore-this: aa29e5c4ebdaee2067c7fd5cc814f4216fce42c5d83f734a485273f064caa67c2b6db0df37e49383
+] 
+hash: 0000000604-18457de5af846107e4486da92c17ddbb3bc6b73729f55e2455f963551b04eec2

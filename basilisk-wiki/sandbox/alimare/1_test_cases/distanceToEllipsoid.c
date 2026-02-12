@@ -32,6 +32,7 @@ perturbation.
 #include "../distance_point_ellipse3D.h"
 #include "../alex_functions.h"
 #include "../LS_reinit.h"
+//#include "redistance.h"
 #include "../basic_geom.h"
 #include "view.h"
 
@@ -116,7 +117,12 @@ int main() {
  /**
 And now we reinit
 **/
-    int nbit = LS_reinit(dist, it_max = 1 << (MAXLEVEL+1));
+    int nbit = LS_reinit(dist, 1 << (MAXLEVEL+1),4);
+  /* int nbit = redistance(dist,
+                      imax = 1 << (MAXLEVEL+1),
+                      cfl = 0.5,
+                      order = 3,
+                      eps = 1e-6 );*/
     scalar err[],LogErr[];
     foreach(){
       double a,b,c;

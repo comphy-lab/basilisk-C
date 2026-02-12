@@ -2,9 +2,9 @@ This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I
 
 ## Free Jets
 
-* [Schlichting 2D Jet](schlichting.c)
+* [Schlichting 2D jet](schlichting.c)
 
-* [Unstable 2D Jet](unstable_2D_jet.c)
+* [Unstable 2D jet](unstable_2D_jet.c)
 
 ## Confined Jets
 
@@ -24,5 +24,11 @@ This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I
 
 * [Sloshing with wall dissipation](slosh_dissipation_wall.c)
 
-* [Capillary Sloshing](slosh_dissipation_cap.c)
+* [Capillary sloshing](slosh_dissipation_cap.c)
+
+## Other
+
+* [Gravity current (Huppert)](gravity_current.c)
+
+* [Test of harmonic.h](test_harmonic.c)
 

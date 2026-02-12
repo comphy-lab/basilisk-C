@@ -12,23 +12,14 @@ $$
 $$
 with $\mathbf{g}$ the acceleration and $T$ the transpose.
 
-In the case of incompressible flow, the viscous term
-can be further simplified. Since
+We solve implictly this equation using the multigrid solver
 $$
-\nabla \cdot (\mu  \nabla \mathbf{u}) =
-(\nabla \mu) \cdot \nabla \mathbf{u} + \mu \nabla (\nabla \cdot  \mathbf{u}) = (\nabla \mu) \cdot \nabla \mathbf{u}
+dt\nabla \cdot [\mu ( \nabla \mathbf{u}^{n+1} + \nabla^T \mathbf{u}^{n+1})] - (\rho + \mathbf{\lambda}) \mathbf{u}^{n+1}
++ \underbrace{(\rho  \mathbf{u}^{n+1}+ \mathbf{g}\, dt) }_{r_i} = \mathbf{0}
 $$
-the viscous term reduces to
-$$
-\nabla \cdot [\mu ( \nabla \mathbf{u} + \nabla^T \mathbf{u})] =
-\nabla \cdot (\mu \nabla^T \mathbf{u}) + (\nabla \mu) \cdot \nabla \mathbf{u}
-$$
-We deal explicitly with the last term such that the equations for each velocity component are decoupled. For each component $v_i$, the following discrete implicit equation is solved using the multigrid solver
-$$
-\frac{\Delta t} \nabla (\mu \nabla v_i^{n+1}) - (\rho + \lambda_i) v_i^{n+1}
-+ \underbrace{(\rho v_i^{n} + g_i\, Delta t) +(\nabla \mu^n) \cdot \nabla \mathbf{u^n}\cdot\mathbf{e}_i }_{r_i} = 0
-$$
-$\lambda_i$ is a possible extra term due to the metric. */
+$\mathbf{\lambda}$ is a possible extra term due to the metric. 
+
+The flux coming from the solid is obtained like the viscous force in embed.h*/
 
 #include "poisson_perso.h"
 
@@ -36,22 +27,80 @@ struct Viscosity {
   face vector mu;
   scalar rho;
   double dt;
+#if EMBED
   double (* embed_flux) (Point, scalar, vector, double *);
+#endif // EMBED
 };
 
 #if AXI
-# define lambda ((coord){0, dt*(mu.x[] + mu.x[1]			\
-				+ mu.y[] + mu.y[0,1])*sq(cs[])		\
-	/(fm.x[] + fm.x[1] + fm.y[] + fm.y[0,1] + SEPS)/(cm[] + SEPS)})
-
+// fixme: RHO here not correct
+# define lambda ((coord){0.,dt*(mu.x[] + mu.x[1] +	\
+					  mu.y[] + mu.y[0,1])/2./sq(y),0.})
 #else // not AXI
-# define lambda ((coord){0.,0.,0.})
+# if dimension == 1
+#   define lambda ((coord){0.})
+# elif dimension == 2
+#   define lambda ((coord){0.,0.})
+# elif dimension == 3
+#   define lambda ((coord){0.,0.,0.})
+#endif
 #endif
 
+// Temporary placement for tangential face gradients
+
+#if EMBED
+#define face_avg_gradient_t1_x(a,i)				\
+  ((a[1,i-1] + a[1,i] - a[-1,i-1] - a[-1,i])/(4.*Delta))
+#define face_avg_gradient_t2_x(a,i) \
+  ((a[1,0,i-1] + a[1,0,i] - a[-1,0,i-1] - a[-1,0,i])/(4.*Delta))
+
+#define embed_face_avg_gradient_t1_x(a,i)				\
+  (fs.y[]>0. && fs.y[]<1. ? fs.y[1]>0. ? ((a[1,i-1] + a[1,i]) - (a[0,i-1] + a[0,i]))/(2.*Delta) : ((a[0,i-1] + a[0,i])- (a[-1,i] + a[-1,i-1]))/(2.*Delta) \ 
+    : fs.y[]>=1. ? (a[1,i-1] + a[1,i] - a[-1,i-1] - a[-1,i])/(4.*Delta) \
+    : 0.)
+    
+#define embed_face_avg_gradient_t2_x(a,i)				\
+  (fs.z[]>0. && fs.z[]<1. ? fs.z[1]>0. ? ((a[1,0,i-1] + a[1,0,i]) -(a[0,0,i-1] + a[0,0,i]))/(2.*Delta) : ((a[0,0,i-1] + a[0,0,i])- (a[-1,0,i-1] + a[-1,0,i]))/(2.*Delta) \
+    : fs.z[]>=1. ? (a[1,0,i-1] + a[1,0,i] - a[-1,0,i-1] - a[-1,0,i])/(4.*Delta) \
+    : 0.)
+
+#define face_avg_gradient_t1_y(a,i) \
+  ((a[i-1,1] + a[i,1] - a[i-1,-1] - a[i,-1])/(4.*Delta))
+#define face_avg_gradient_t2_y(a,i) \
+  ((a[0,1,i-1] + a[0,1,i] - a[0,-1,i-1] - a[0,-1,i])/(4.*Delta))
+
+#define embed_face_avg_gradient_t1_y(a,i)				\
+  (fs.x[]>0. && fs.x[]<1. ? fs.x[0,1]>0. ? ((a[i-1,1] + a[i,1]) - (a[i-1,0] + a[i,0]))/(2.*Delta) : ((a[i-1,0] + a[i,0]) - (a[i-1,-1] + a[i,-1]))/(2.*Delta) \ 
+      : fs.x[]>=1. ? (a[i-1,1] + a[i,1] - a[i-1,-1] - a[i,-1])/(4.*Delta) \
+      : 0.)
+
+#define embed_face_avg_gradient_t2_y(a,i)				\
+  (fs.z[]>0. && fs.z[]<1. ? fs.z[0,1]>0. ? ((a[0,1,i-1] + a[0,1,i]) - (a[0,0,i-1] + a[0,0,i]))/(2.*Delta) : ((a[0,0,i-1] + a[0,0,i]) - (a[0,-1,i-1] + a[0,-1,i]))/(2.*Delta) \
+  : fs.z[]>=1. ? (a[0,1,i-1] + a[0,1,i] - a[0,-1,i-1] - a[0,-1,i])/(4.*Delta) \
+  : 0.)
+
+#define face_avg_gradient_t1_z(a,i) \
+  ((a[i-1,0,1] + a[i,0,1] - a[i-1,0,-1] - a[i,0,-1])/(4.*Delta))
+#define face_avg_gradient_t2_z(a,i) \
+  ((a[0,i-1,1] + a[0,i,1] - a[0,i-1,-1] - a[0,i,-1])/(4.*Delta))
+
+#define embed_face_avg_gradient_t1_z(a,i)				\
+  (fs.x[]>0. && fs.x[]<1. ? fs.x[0,0,1]>0. ? ((a[i-1,0,1] + a[i,0,1]) - (a[i-1,0,0] + a[i,0,0]))/(2.*Delta) : ((a[i-1,0,0] + a[i,0,0]) - (a[i-1,0,-1] + a[i,0,-1]))/(2.*Delta) \
+    : fs.x[]>=1. ? (a[i-1,0,1] + a[i,0,1] - a[i-1,0,-1] - a[i,0,-1])/(4.*Delta) \
+    : 0.)
+
+#define embed_face_avg_gradient_t2_z(a,i)				\
+  (fs.y[]>0. && fs.y[]<1. ? fs.y[0,0,1]>0. ? ((a[0,i-1,1] + a[0,i,1]) - (a[0,i-1,0] + a[0,i,0]))/(2.*Delta) : ((a[0,i-1,0] + a[0,i,0]) - (a[0,i-1,-1] + a[0,i,-1]))/(2.*Delta) \
+    : fs.y[]>=1. ? (a[0,i-1,1] + a[0,i,1] - a[0,i-1,-1] - a[0,i,-1])/(4.*Delta) \
+    : 0.)
+
+
+#endif // EMBED
+  
 // Note how the relaxation function uses "naive" gradients i.e. not
 // the face_gradient_* macros.
 
-static void relax_diffusion (scalar * a, scalar * b, int l, void * data)
+static void relax_viscosity (scalar * a, scalar * b, int l, void * data)
 {
   struct Viscosity * p = (struct Viscosity *) data;
   (const) face vector mu = p->mu;
@@ -59,23 +108,73 @@ static void relax_diffusion (scalar * a, scalar * b, int l, void * data)
   double dt = p->dt;
   vector u = vector(a[0]), r = vector(b[0]);
 
+#if EMBED
   double (* embed_flux) (Point, scalar, vector, double *) = p->embed_flux;
-  foreach_level_or_leaf (l, nowarning) {
-    double avgmu = 0.;
-    foreach_dimension()
-      avgmu += mu.x[] + mu.x[1];
-    avgmu = dt*avgmu + SEPS;
+#endif // EMBED
+
+#if JACOBI
+  vector w[];
+#else
+  vector w = u;
+#endif
+  
+  boundary({u});
+  scalar s=u.x;
+  foreach_level_or_leaf (l,nowarning) {
+
     foreach_dimension() {
-      double c = 0.;
-      double d = embed_flux ? embed_flux (point, u.x, mu, &c) : 0.;
-      scalar s = u.x;
-      double a = 0.;
-      foreach_dimension()
-	a += mu.x[1]*s[1] + mu.x[]*s[-1];
-      u.x[] = (dt*a + (r.x[] - dt*c)*sq(Delta))/
-	(sq(Delta)*(rho[] + lambda.x + dt*d) + avgmu);
+      double embedflux=0.;
+#if EMBED
+      if (embed_flux) {
+        if ((cs[]>0.)&&(cs[]<1.)) {
+          coord n=facet_normal (point,cs,fs);
+          double alpha=plane_alpha(cs[],n);
+          coord p;
+          double area=plane_area_center(n,alpha,&p);
+          if (metric_embed_factor) {
+            area*=metric_embed_factor(point,p);
+          }
+          normalize(&n);
+          coord dudn=embed_gradient(point,u,p,n);
+
+          double mua=0.,fua=0.;
+          foreach_dimension() {
+            mua+=mu.x[]+mu.x[1];
+            fua+=fm.x[]+fm.x[1];
+          }
+          embedflux=-mua/fua*area*(2.*dudn.x*sq(n.x)+dudn.x*sq(n.y)+dudn.y*n.x*n.y)/Delta;
+        }
+      }
+#endif // EMBED
+      w.x[] = (dt*(2.*mu.x[1]*u.x[1] + 2.*mu.x[]*u.x[-1]
+               #if dimension > 1
+		   + mu.y[0,1]*(u.x[0,1] +face_avg_gradient_t1_x (u.y, 1)*Delta)
+		   - mu.y[]*(- u.x[0,-1] +
+			     face_avg_gradient_t1_x (u.y, 0)*Delta)
+               #endif
+	       #if dimension > 2
+		   + mu.z[0,0,1]*(u.x[0,0,1] +
+				  face_avg_gradient_t2_x (u.z, 1)*Delta)
+		   - mu.z[]*(- u.x[0,0,-1] +
+			     face_avg_gradient_t2_x (u.z, 0)*Delta)
+               #endif
+       ) + (r.x[] - dt*embedflux)*sq(Delta))/
+    (sq(Delta)*(rho[]+lambda.x ) + dt*(2.*mu.x[1] + 2.*mu.x[]
+                                    #if dimension > 1
+						   + mu.y[0,1] + mu.y[]
+                                    #endif
+			            #if dimension > 2
+						   + mu.z[0,0,1] + mu.z[]
+			            #endif
+						   ) + SEPS);
     }
   }
+
+#if JACOBI
+  foreach_level_or_leaf (l)
+    foreach_dimension()
+      u.x[] = (u.x[] + 2.*w.x[])/3.;
+#endif
   
 #if TRASH
   vector u1[];
@@ -89,52 +188,125 @@ static void relax_diffusion (scalar * a, scalar * b, int l, void * data)
 #endif
 }
 
-static double residual_diffusion (scalar * a, scalar * b, scalar * resl, 
+static double residual_viscosity (scalar * a, scalar * b, scalar * resl, 
 				  void * data)
 {
   struct Viscosity * p = (struct Viscosity *) data;
   (const) face vector mu = p->mu;
   (const) scalar rho = p->rho;
   double dt = p->dt;
-  double (* embed_flux) (Point, scalar, vector, double *) = p->embed_flux;
   vector u = vector(a[0]), r = vector(b[0]), res = vector(resl[0]);
   double maxres = 0.;
+
+#if EMBED
+  double (* embed_flux) (Point, scalar, vector, double *) = p->embed_flux;
+  double (* embed_partial_flux) (Point, scalar, vector, double *,bool,bool) = p->embed_partial_flux;
+#endif
+    
 #if TREE
   /* conservative coarse/fine discretisation (2nd order) */
+  boundary({u});
+  scalar s=u.x;
   foreach_dimension() {
-    scalar s = u.x;
-    face vector g[];
-    foreach_face()
-      g.x[] = mu.x[]*face_gradient_x (s, 0);
-    foreach (reduction(max:maxres), nowarning) {
+    //bool xny=(s.i==u.x.i);
+    face vector taux[];
+    foreach_face(x)
+      taux.x[] = 2.*mu.x[]*face_gradient_x (u.x, 0);
+    #if dimension > 1
+      foreach_face(y)
+	taux.y[] = mu.y[]*(face_gradient_y (u.x, 0) + 
+			   embed_face_avg_gradient_t1_x (u.y, 0));
+    #endif
+    #if dimension > 2
+      foreach_face(z)
+	taux.z[] = mu.z[]*(face_gradient_z (u.x, 0) + 
+			   embed_face_avg_gradient_t2_x (u.z, 0));
+    #endif
+    foreach (reduction(max:maxres)) {
       double a = 0.;
-      foreach_dimension()
-	a += g.x[] - g.x[1];
-      res.x[] = r.x[] - (rho[] + lambda.x)*u.x[] - dt*a/Delta;
+
+      double embedflux=0.;
+#if EMBED
       if (embed_flux) {
-	double c, d = embed_flux (point, u.x, mu, &c);
-	res.x[] -= dt*(c + d*u.x[]);
+        if ((cs[]>0.)&&(cs[]<1.)) {
+          coord n=facet_normal (point,cs,fs);
+          double alpha=plane_alpha(cs[],n);
+          coord p;
+          double area=plane_area_center(n,alpha,&p);
+          if (metric_embed_factor) {
+            area*=metric_embed_factor(point,p);
+          }
+          normalize(&n);
+          coord dudn=embed_gradient(point,u,p,n);
+
+          double mua=0.,fua=0.;
+          foreach_dimension() {
+            mua+=mu.x[]+mu.x[1];
+            fua+=fm.x[]+fm.x[1];
+          }
+          embedflux=-mua/fua*area*(2.*dudn.x*sq(n.x)+dudn.x*sq(n.y)+dudn.y*n.x*n.y)/Delta;
+        }
       }
+#endif // EMBED
+      
+      foreach_dimension()
+	a += taux.x[1] - taux.x[];
+      res.x[] = r.x[] - (rho[]+lambda.x)*u.x[] + dt*(a/Delta - embedflux);
       if (fabs (res.x[]) > maxres)
 	maxres = fabs (res.x[]);
     }
   }
+  boundary (resl);
 #else
   /* "naive" discretisation (only 1st order on trees) */
-  foreach (reduction(max:maxres), nowarning)
+  scalar s=u.x;
+  foreach (reduction(max:maxres), nowarning) {
+       
     foreach_dimension() {
-      scalar s = u.x;
-      double a = 0.;
-      foreach_dimension()
-	a += mu.x[0]*face_gradient_x (s, 0) - mu.x[1]*face_gradient_x (s, 1);
-      res.x[] = r.x[] - (rho[] + lambda.x)*u.x[] - dt*a/Delta;
+
+      double embedflux=0.;
+#if EMBED
       if (embed_flux) {
-	double c, d = embed_flux (point, u.x, mu, &c);
-	res.x[] -= dt*(c + d*u.x[]);
+        if ((cs[]>0.)&&(cs[]<1.)) {
+          coord n=facet_normal (point,cs,fs);
+          double alpha=plane_alpha(cs[],n);
+          coord p;
+          double area=plane_area_center(n,alpha,&p);
+          if (metric_embed_factor) {
+            area*=metric_embed_factor(point,p);
+          }
+          normalize(&n);
+          coord dudn=embed_gradient(point,u,p,n);
+
+          double mua=0.,fua=0.;
+          foreach_dimension() {
+            mua+=mu.x[]+mu.x[1];
+            fua+=fm.x[]+fm.x[1];
+          }
+          embedflux=-mua/fua*area*(2.*dudn.x*sq(n.x)+dudn.x*sq(n.y)+dudn.y*n.x*n.y)/Delta;
+        }
       }
+#endif // EMBED
+      res.x[] = r.x[] - (rho[]+lambda.x)*u.x[] +
+        dt*(2.*mu.x[1,0]*face_gradient_x (u.x, 1)
+	    - 2.*mu.x[]*face_gradient_x (u.x, 0)
+        #if dimension > 1
+	    + mu.y[0,1]* (face_gradient_y (u.x, 1) +
+			    embed_face_avg_gradient_t1_x (u.y, 1))
+	    - mu.y[]*(face_gradient_y (u.x, 0) +
+		      embed_face_avg_gradient_t1_x (u.y, 0))
+	#endif
+        #if dimension > 2
+	    + mu.z[0,0,1]*(face_gradient_z (u.x, 1) +
+			   embed_face_avg_gradient_t2_x (u.z, 1))
+	    - mu.z[]*(face_gradient_z (u.x, 0) +
+		      embed_face_avg_gradient_t2_x (u.z, 0))
+	#endif
+      )/Delta - dt*embedflux;
       if (fabs (res.x[]) > maxres)
 	maxres = fabs (res.x[]);
     }
+  }
 #endif
   return maxres;
 }
@@ -145,36 +317,23 @@ double TOLERANCE_MU = 0.; // default to TOLERANCE
 
 trace
 mgstats viscosity (vector u, face vector mu, scalar rho, double dt,
-		   int nrelax = 4, scalar * res = NULL)
+		   int nrelax=4, scalar * res=NULL)
 {
-  vector r[];
-  foreach() 
-    foreach_dimension() {
+  vector r[]; 
+  foreach()
+    foreach_dimension()
       r.x[] = rho[]*u.x[];
-      if (cs[]>=1.) {   // This term is \nabla \mu . \nabla u . We apply this new term away from the solid
-        r.x[]+=dt*(mu.x[1]-mu.x[])/Delta*center_gradient(u.x)+dt*(mu.y[0,1]-mu.y[])/Delta*center_gradient(u.y);    //we add the term due to
-//the gradient of viscosity
-      }
-    }
-    
-#if AXI
-  foreach() {
-    if (cs[]>=1.) {
-      //term due to the axisymmetry
-      r.x[]+=-dt*(mu.x[]+mu.x[1]+mu.y[]+mu.y[0,1])/(fm.x[]+fm.x[1]+fm.y[]+fm.y[0,1]+SEPS)*(face_gradient_x(u.y,1)+face_gradient_x(u.y,0))/2.;
-      r.y[]+=-dt*(mu.x[]+mu.x[1]+mu.y[]+mu.y[0,1])/(fm.x[]+fm.x[1]+fm.y[]+fm.y[0,1]+SEPS)*(face_gradient_y(u.y,1)+face_gradient_y(u.y,0))/2.;
-      // There should have an other term due to the axisymmetry but it is taken into account in the lambda term 
-      // +dt*(mu.x[]+mu.x[1]+mu.y[]+mu.y[0,1])*sq(cs[])/(fm.x[]+fm.x[1]+fm.y[]+fm.y[0,1]+SEPS)/(cm[]+SEPS)*u.y[];
-    }
-  }
-#endif
 
   restriction ({mu, rho});
-  struct Viscosity p = { mu, rho, dt };
+  struct Viscosity p={mu,rho,dt};
+
+#if EMBED
   p.embed_flux = u.x.boundary[embed] != antisymmetry ? embed_flux : NULL;
+#endif // EMBED
   return mg_solve ((scalar *){u}, (scalar *){r},
-		   residual_diffusion, relax_diffusion, &p, nrelax, res,
+		   residual_viscosity, relax_viscosity, &p, nrelax, res,
 		   minlevel = 1, // fixme: because of root level
-                                  // BGHOSTS = 2 bug on trees
-		   tolerance = TOLERANCE_MU ? TOLERANCE_MU : TOLERANCE);
+                                 // BGHOSTS = 2 bug on trees
+		   tolerance = TOLERANCE_MU? TOLERANCE_MU : TOLERANCE);
 }
+

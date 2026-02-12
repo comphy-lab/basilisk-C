@@ -1,4 +1,4 @@
-upload test contentupload test content/**
+/**
 
 # XML File Formats
 

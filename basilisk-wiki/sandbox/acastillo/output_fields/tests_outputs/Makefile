@@ -1,5 +1,5 @@
 include $(BASILISK)/Makefile.defs
-CFLAGS+= -O2 -march=native -mtune=native -disable-dimensions
+CFLAGS+= -O2 -march=native -mtune=native -disable-dimensions -DMTRACE=3 I$(DOCUMENT_ROOT)/sandbox
 
 VTU_TESTS = test_output_vtu.tst \
             test_output_vtu_box.tst \

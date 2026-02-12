@@ -18,6 +18,10 @@ Here is a summary of [ongoing projects](/sandbox/ryang/)
 
 [multilayer_varydensity/dispersion.c](): a modified version of [/test/dispersion.c](/src/test/dispersion.c) without tilt.
 
+[multilayer_varydensity/stokes.c](): a modified version of [/test/stokes.c](/src/test/stokes.c) with variable density.
+
+[multilayer_varydensity/shear_varyvis.c](): shear flow with two layers of fluid with variable density and viscosity.
+
 # Breaking wave with surfactant
 
 [surfactant/wave.c](): a modified version of [wave.c](/sandbox/popinet/wave.c) and surfactant transportation from [farsoiya/marangoni_surfactant/](/sandbox/farsoiya/marangoni_surfactant/).

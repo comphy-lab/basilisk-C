@@ -28,10 +28,10 @@ perturbation.
 */
 #define BICUBIC 1
 #define BGHOSTS 2
-#include "popinet/distance_point_ellipse.h"
-#include "alimare/alex_functions.h"
-#include "alimare/LS_reinit.h"
-#include "alimare/basic_geom.h"
+#include "distance_point_ellipse.h"
+#include "../alex_functions.h"
+#include "../LS_reinit.h"
+#include "../basic_geom.h"
 #include "view.h"
 
 double perturb (double x, double y, double eps, coord center){
@@ -123,7 +123,7 @@ int main() {
     draw_isolines(dist, -2., 2., 20, 1);
     save("dist_init.png");
 
-    int nbit = LS_reinit(dist, it_max = 1 << (MAXLEVEL+1));
+    int nbit = LS_reinit(dist,  1 << (MAXLEVEL+1),4);
     squares ("dist", map = cool_warm, min = -2, max = 2);
     draw_isolines(dist, -2., 2., 20, 1);
     save("dist_first_reinit.png");
@@ -147,7 +147,8 @@ int main() {
       save("err.png");
     }
   }
-  exit(1);
+  //exit(1);
+return 0;
 }
 
 
