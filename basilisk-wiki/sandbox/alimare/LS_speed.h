@@ -157,6 +157,6 @@ event stability(i++){
   dt = DT3;
 #else // navier stokes
   //dtmax = timestep_LS(vpcf,DT,dist,NB_width);
-  timestep_LS(vpcf,DT,dist,NB_width);
+  DT = timestep_LS(vpcf,DT,dist,NB_width);
 #endif
 }

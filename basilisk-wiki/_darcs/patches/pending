@@ -3,6 +3,7 @@ rmdir ./gallery
 rmdir ./iso
 rmdir ./sandbox/AhmedBasil/gl
 rmdir ./sandbox/Deepak
+rmdir ./sandbox/Kaustubh
 rmdir ./sandbox/M2_MSH/2020_2021/ZHOU_Zixin/liquid_film
 rmdir ./sandbox/M2_MSH/2020_2021/ZHOU_Zixin
 rmdir ./sandbox/Vierron/Natural-convection/cylindrical/rbcyl

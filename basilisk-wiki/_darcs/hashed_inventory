@@ -1,4 +1,4 @@
-pristine:d401448d4dbc0f6407ea77692fec3ed4496c5fbae8bc95d5b6873baa7c0abc7f
+pristine:2ab6f49986e3313a6df916dd6c70a6fb82a0f0e9f69cb3111c6c7f5bd14d98a7
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -5043,3 +5043,53 @@ thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260211211510
  Ignore-this: aa29e5c4ebdaee2067c7fd5cc814f4216fce42c5d83f734a485273f064caa67c2b6db0df37e49383
 ] 
 hash: 0000000604-18457de5af846107e4486da92c17ddbb3bc6b73729f55e2455f963551b04eec2
+[Favier_Rayleigh_Benard_case_fixed
+thakurdesaikaustubh@gmail.com**20260212104337
+ Ignore-this: 34c2d45c786ed6f39265f98448bbbb063d512c44a68ebe95dfc23a62a8419b3e7123774e9eb0846c
+] 
+hash: 0000003293-b1d83d7b3b86810bd00e65061fbc8efdd6c6ed795a75cded335a437222423c73
+[included LS_reinit  header for testing
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260212150523
+ Ignore-this: 673cbddb941db3884eafd9f19d4b200c205e872e55c7a04afdd28ed8c4a9a85c11e76d445567585e
+] 
+hash: 0000000287-a03300e85a8181b460d9ce49e5166d4b7dcb8aba04aeb1f3c307cb2b734a3cf5
+[trial_run_with_LS_reinit
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260212152939
+ Ignore-this: 3cadef8b5e5b407e11444e7131995103ae2570e169c82b0bc992408c47b7b359016e39b4d52df67f
+] 
+hash: 0000000664-567e0ef151b715b2e73ed4dc2ab5039e1662297abdc912241c8f6f3a091bfaaa
+[Declared dtmax in ls_speed
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260212163020
+ Ignore-this: 7b88f20e9507565711f6ce0e84c3647b40a94ae2883715346c63506b1c080d55b2004b88f8b5f256
+] 
+hash: 0000000343-5e0957d6c62d8b873123a296a870bfaa9dbb5482d92c74dd7c9fa287886f41e1
+[Formatting
+Stephane Popinet <popinet@basilisk.fr>**20260212163549
+ Ignore-this: 7d62f822b3a03527b3f21a1fb7cac89a0451c95c5ec45d573bc42801d65b5dea9dfc9579ed34e628
+] 
+hash: 0000000580-46913b17447c3629e9d7ccc28ac3bdd3b03f52283a0699df394620eee3dc941e
+[creation
+mvacher <marc.cordelle.vacher@gmail.com>**20260212171416
+ Ignore-this: 775abe418d9d515b90390a3788d9d78cb126f984642fa04fd4d71d386b47475dbb4e70a46ce0df0b
+] 
+hash: 0000003104-381abb5fd55191e87d67b464c75d06c556853e23ced72d3516bccd7f31f8969c
+[new parameters
+mvacher <marc.cordelle.vacher@gmail.com>**20260212190254
+ Ignore-this: a0dec9165565e2b0a986bccdcf8c2989fb2fa0b645989da9568a9ee8090cf12434ceaaf905f334f7
+] 
+hash: 0000000353-c8ddca95faec3b4004725644b01f77cf894c6051dd7dcdf7e6f9a0dd93ccaeed
+[parameters
+mvacher <marc.cordelle.vacher@gmail.com>**20260212192828
+ Ignore-this: daf65fbeac5ed016dc99651ba7c0a5c815bb1d4fe2e8c25b87856dd0668e66ca61dc493fb8d05d3
+] 
+hash: 0000000481-8d6cf89bf4460890a809e574c71e1f3ec938a434fde07313e5e28ee34499ac35
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260212195905
+ Ignore-this: 4ab8cd3f6f067bb67e149bf440d96af516439dcdca64460e4282789a6acc89dd5bdb0148084f7249
+] 
+hash: 0000000609-01cf4f29788e7f18792c4d27f57c51eba8f6bfff7f8bb7995820f0ce66036148
+[dtmax renamed as DT as per simple_discretizarion,h definition
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260212233214
+ Ignore-this: e02b009f159d6930583dbdda968b238d81897f19a83134214cd380ff851533996d0854875d2fc6f0
+] 
+hash: 0000000507-bdf31547e61628524a3a87fb36a33c14ce34eb9d3b8131d324e1a6970317f230
