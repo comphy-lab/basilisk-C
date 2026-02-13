@@ -12,6 +12,7 @@ set -euo pipefail
 HARD_RESET=false
 LOCAL_BVIEW=false
 SHOW_HELP=false
+REF_PROVIDED=false
 REF=""
 
 for arg in "$@"; do
@@ -26,6 +27,7 @@ for arg in "$@"; do
       SHOW_HELP=true
       ;;
     --ref=*)
+      REF_PROVIDED=true
       REF="${arg#*=}"
       ;;
   esac
@@ -402,6 +404,12 @@ if [[ "$SHOW_HELP" == true ]]; then
   exit 0
 fi
 
+if [[ "$REF_PROVIDED" == true ]] && [[ -z "${REF}" ]]; then
+  print_red "Error: --ref was provided but empty."
+  print_red "Use a valid tag (for example --ref=v2026-01-29), or omit --ref to install the latest release."
+  exit 1
+fi
+
 if [[ -z "${REF}" ]]; then
   resolve_latest_ref
 else
@@ -536,7 +544,8 @@ else
   fi
   if [[ "$local_lock_ref" != "$REF" ]]; then
     print_red "Error: Existing $BASILISK_DIR is locked to ref '$local_lock_ref' but you requested '$REF'."
-    print_red "Run with --hard to reinstall the requested ref."
+    print_red "Use --hard to reinstall '$REF'."
+    print_red "Or run with --ref=$local_lock_ref (without --hard) to reuse the current install and regenerate .project_config."
     exit 1
   fi
 
