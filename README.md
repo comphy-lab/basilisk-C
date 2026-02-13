@@ -8,17 +8,22 @@
 
 ## Quick Start (Ref-Locked Installation)
 
-First-time install (or reinstall):
+First-time install (or reinstall) using the **latest release**:
 ```bash
-curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=v2026-01-13 --hard
+curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --hard
 ```
 
-Subsequent runs (reuses existing `basilisk/` if same ref):
+Subsequent runs (reuses existing `basilisk/` if same resolved ref):
 ```bash
-curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=v2026-01-13
+curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s --
 ```
 
-> **Note**: Replace `v2026-01-13` with the [latest release tag](https://github.com/comphy-lab/basilisk-C/releases).
+Pin to a specific release (optional):
+```bash
+curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=vYYYY-MM-DD --hard
+```
+
+> **Note**: `--ref` is optional. If omitted, the installer resolves the [latest release tag](https://github.com/comphy-lab/basilisk-C/releases/latest).
 
 ## About This Fork
 

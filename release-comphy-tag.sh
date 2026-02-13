@@ -366,8 +366,9 @@ Assets:
 - \`basilisk-linux.tar.gz\`: Basilisk source (darcs snapshot) + comphy-lab patches for Linux (local-bview not applied)
 
 Install (ref-locked):
+- \`./reset_install_basilisk-ref-locked.sh --hard\` (latest release)
+- \`./reset_install_basilisk-ref-locked.sh --ref=$TAG --hard\` (this tag)
 - \`./reset_install_basilisk.sh --mode=4 --ref=$TAG --hard\`
-- \`./reset_install_basilisk-ref-locked.sh --ref=$TAG --hard\`
 EOF
 
 print_cyan "Creating annotated tag: $TAG"

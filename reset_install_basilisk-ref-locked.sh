@@ -4,8 +4,8 @@
 # in comphy-lab/basilisk-C for reproducible installs (no darcs/git required).
 #
 # Supported remote usage:
-#   curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=<tag>
-#   curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | zsh  -s -- --ref=<tag>
+#   curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --hard
+#   curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | zsh  -s -- --ref=<tag> --hard
 
 set -euo pipefail
 
@@ -37,6 +37,7 @@ print_yellow() { printf "\033[0;33m%s\033[0m\n" "$1"; }
 print_cyan() { printf "\033[0;36m%s\033[0m\n" "$1"; }
 
 PATCHES_API_URL="https://api.github.com/repos/comphy-lab/basilisk-C/contents/patches"
+LATEST_RELEASE_API_URL="https://api.github.com/repos/comphy-lab/basilisk-C/releases/latest"
 
 show_help() {
   cat << 'EOF'
@@ -53,18 +54,21 @@ Options:
   --help, -h      Show this help message
   --hard          Force reinstall (removes existing basilisk directory)
   --local-bview   Apply optional local-bview convenience patch (enables `bview --local` URL output for bview-local-client)
-  --ref=REF       Required. GitHub Release tag in comphy-lab/basilisk-C
+  --ref=REF       Optional. GitHub Release tag in comphy-lab/basilisk-C
+                  If omitted, installs the latest GitHub release.
 
 Examples:
+  ./reset_install_basilisk-ref-locked.sh --hard
   ./reset_install_basilisk-ref-locked.sh --ref=v2026-01-13 --hard
   ./reset_install_basilisk-ref-locked.sh --ref=v2026-01-13 --local-bview --hard
 
 Remote:
+  curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --hard
   curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --ref=v2026-01-13 --hard
   curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | zsh  -s -- --ref=v2026-01-13 --hard
 
 Notes:
-  - GitHub Release tarballs intentionally exclude the local-bview patch; `--local-bview` downloads and applies it for the same `--ref`.
+  - GitHub Release tarballs intentionally exclude the local-bview patch; `--local-bview` downloads and applies it for the resolved release ref (latest if `--ref` is omitted, pinned if provided).
 EOF
 }
 
@@ -138,6 +142,32 @@ check_prerequisites() {
 
   print_green "✅ All prerequisites are satisfied!"
   echo ""
+}
+
+resolve_latest_ref() {
+  local latest_ref=""
+  local latest_json=""
+  local latest_url=""
+
+  print_cyan "No --ref provided. Resolving latest GitHub release tag..."
+
+  if latest_json="$(curl -s -f -L "$LATEST_RELEASE_API_URL")"; then
+    latest_ref="$(printf '%s\n' "$latest_json" | sed -n 's/^[[:space:]]*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p' | head -n 1)"
+  fi
+
+  if [[ -z "$latest_ref" ]]; then
+    latest_url="$(curl -s -I -L -o /dev/null -w '%{url_effective}' "https://github.com/comphy-lab/basilisk-C/releases/latest" 2>/dev/null || true)"
+    latest_ref="$(printf '%s\n' "$latest_url" | awk -F/ '{print $NF}')"
+  fi
+
+  if [[ -z "$latest_ref" ]] || [[ "$latest_ref" == "latest" ]]; then
+    print_red "Error: Failed to resolve latest release tag."
+    print_red "Provide an explicit --ref=<tag> and try again."
+    exit 1
+  fi
+
+  REF="$latest_ref"
+  print_green "Using latest release tag: $REF"
 }
 
 read_lock_ref() {
@@ -373,10 +403,9 @@ if [[ "$SHOW_HELP" == true ]]; then
 fi
 
 if [[ -z "${REF}" ]]; then
-  print_red "Error: --ref is required"
-  echo ""
-  show_help
-  exit 1
+  resolve_latest_ref
+else
+  print_cyan "Using requested release tag: $REF"
 fi
 
 REPO_ROOT="$PWD"
@@ -523,6 +552,8 @@ verify_installation
 
 echo ""
 print_green "✅ Basilisk ref-locked installation complete!"
+echo "Installed ref:"
+echo "  $REF"
 echo "To use basilisk in your shell, run:"
 echo "  source $PROJECT_CONFIG"
 echo "Lock stamp:"

@@ -130,10 +130,12 @@ This script:
 Use this when you want to lock Basilisk + patches to a GitHub **Release tag** in `comphy-lab/basilisk-C`.
 
 ```shell
+./reset_install_basilisk-ref-locked.sh --hard
+# optional pin:
 ./reset_install_basilisk-ref-locked.sh --ref=v2026-01-13 --hard
 ```
 
-Equivalent (using the unified installer):
+Equivalent (using the unified installer, which still requires `--ref` for mode 4):
 
 ```shell
 ./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --hard
@@ -175,7 +177,7 @@ For any script, use the `--hard` flag to remove existing installation and start 
 # or
 ./reset_install_basilisk-no-darcs-no-git.sh --hard
 # or (ref-locked)
-./reset_install_basilisk-ref-locked.sh --ref=v2026-01-13 --hard
+./reset_install_basilisk-ref-locked.sh --hard
 ```
 
 ### Manual Installation
@@ -276,6 +278,7 @@ To enable it, install Basilisk with `--local-bview` (not applied by default), th
    ```shell
    # installer examples
    ./reset_install_basilisk.sh --mode=1 --local-bview --hard
+   ./reset_install_basilisk-ref-locked.sh --local-bview --hard
    ./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --local-bview --hard
 
    # usage
@@ -292,6 +295,6 @@ The visualization URL has two parts:
 
 The local-bview patch only changes where the JS client is served from—the websocket always connects to your local bview process regardless.
 
-**Note:** Our GitHub Release tarballs (`basilisk-mac.tar.gz` / `basilisk-linux.tar.gz`) intentionally exclude `2026-01-06-local-bview.patch`. If you want `bview --local` with a ref-locked install, pass `--local-bview` so the installer downloads and applies the patch for that same `--ref`.
+**Note:** Our GitHub Release tarballs (`basilisk-mac.tar.gz` / `basilisk-linux.tar.gz`) intentionally exclude `2026-01-06-local-bview.patch`. If you want `bview --local` with a ref-locked install, pass `--local-bview` so the installer downloads and applies the patch for the resolved release ref (latest if `--ref` is omitted, pinned if `--ref` is provided).
 
 For more details, see the [bview-local-client repository](https://github.com/comphy-lab/bview-local-client).

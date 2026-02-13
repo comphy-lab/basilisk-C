@@ -84,7 +84,7 @@ bview3D --local=3000 dump
 **Note:** The `--local` flag only changes where the JavaScript client is served from. The WebSocket connection always connects back to your local bview process.
 `--local` hardcodes `localhost`; for viewing from another machine, use the manual URL approach and replace the base URL host with the correct IP/hostname.
 
-**Packaging note:** Our GitHub Release tarballs intentionally exclude this patch. To enable it during installation, pass `--local-bview` to the installer (including ref-locked installs with `--ref=...`).
+**Packaging note:** Our GitHub Release tarballs intentionally exclude this patch. To enable it during installation, pass `--local-bview` to the installer (including ref-locked installs where `--ref` is optional: omit for latest, provide to pin).
 
 ---
 
