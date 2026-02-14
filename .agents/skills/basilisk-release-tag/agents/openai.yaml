@@ -1,0 +1,4 @@
+interface:
+  display_name: "Basilisk Release Tag"
+  short_description: "Cut and publish Basilisk release tags"
+  default_prompt: "Use $basilisk-release-tag to cut and publish a repository release tag."

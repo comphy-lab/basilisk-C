@@ -97,13 +97,11 @@ While this is a fork maintained for tracking specific issues, we welcome contrib
 
 ### Git LFS for Large Files
 
-We keep files larger than 100 MB in Git LFS using the pre-commit hook at `hooks/pre-commit`.
+We keep files larger than 100 MB in Git LFS using the pre-commit hook at `.github/hooks/pre-commit`.
 
 Setup (per clone):
 ```bash
-git lfs install
-ln -s ../../hooks/pre-commit .git/hooks/pre-commit
-# or: cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+.github/scripts/setup.sh
 ```
 
-The hook auto-tracks staged files over 100 MB, updates `.gitattributes`, and re-adds the file so the commit stores an LFS pointer.
+The hook auto-tracks staged files over 100 MB, updates `.gitattributes`, and re-adds the file so the commit stores an LFS pointer. CI also checks that large tracked files use Git LFS.

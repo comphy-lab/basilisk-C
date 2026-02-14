@@ -1,0 +1,16 @@
+name: Enforce Git LFS for Large Files
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+jobs:
+  lfs-large-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify large files are tracked by Git LFS
+        run: ./.github/scripts/lfs-guard.sh check-repo
