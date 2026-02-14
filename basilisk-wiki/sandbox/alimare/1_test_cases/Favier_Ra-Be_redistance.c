@@ -12,12 +12,12 @@ the solid.
 
 Global Rayleigh is $10^5$.
 
-![Animation of the temperature](Favier_Ra-Be/temperature.mp4)(width="100%")
+![Animation of the temperature](Favier_Ra-Be/temperature.mp4)
 */
 
 
 /**
-# Figures
+#Figures
 
 
 ~~~gnuplot Average Height
@@ -58,11 +58,10 @@ Required for using hybrid level-set/embedded boundary method
 #include "view.h"
 // #define dtLS 1
 #include "../LS_diffusion.h"
-//#include "redistance.h"
-#include "../LS_reinit.h"
+#include "redistance.h"
 
 /**
-## Miscellaneous functions for this test case
+## Miscalleneous functions for this test case
 
 Function to initalize TL
 Convention:
@@ -222,8 +221,8 @@ event init (t = 0) {
 
   boundary ({dist});
   restriction({dist});
-  LS_reinit(dist,0,5);
-  //  redistance(dist);
+  //LS_reinit(dist,0,5);
+    redistance(dist, 0.5*L0/(1 << grid->maxdepth));
 
 
   LS2fractions(dist, cs, fs, 1e-10);
@@ -253,11 +252,11 @@ event init (t = 0) {
 }
 
 event stability (i++) {
-  /**
-  Sometimes, because the embedded boundary is moving, some cells have uf.x[] != 0.
-  && fm.x[] == 0. Therefore, we do an ugly quickfix for cell that are incoherent
-  with the embedded boundary stability conditions. */
-  
+/**
+Sometimes, because the embedded boundary is moving, some cells have uf.x[] != 0.
+&& fm.x[] == 0. Therefore, we do an ugly quickfix for cell that are incoherent
+with the embedded boundary stability conditions.
+*/
   foreach_face()
     if(fm.x[]==0. && uf.x[] !=0.) uf.x[] = 0.;
   boundary((scalar *){uf});
@@ -272,7 +271,8 @@ event properties (i++){
 
 /**
 The top condition works not well if i>1. So we do an ugly quickfix for
-reforcement of mask and top condition. */
+reforcement of mask and top condition.
+**/
 
 event renforcemask(i++){
   mask(y > 1.-ratio/2. ? top : none);
@@ -282,8 +282,8 @@ event renforcemask(i++){
 }
 
 /**
-Boussinesq term. */
-
+Boussinesq term.
+*/
 event acceleration (i++) {
   foreach_face(x)
     av.x[] = 0;
@@ -324,10 +324,11 @@ event adapt (i++, last) {
 }
 #endif
 
-/**
-## Outputs */
 
-event movie1 (t+=0.005,last;t <2.5){
+/**
+## Outputs
+*/
+event movie1 (t+=0.005,last;t <1.5){
   fprintf(stderr, "t = %g\n",t );
 
   view (fov = 2.75, ty = 0.44, width = 1600, height = 200);
@@ -339,18 +340,21 @@ event movie1 (t+=0.005,last;t <2.5){
   boundary({visu});
   restriction({visu});
   draw_vof("cs");
-  squares("visu", min = 0. , max = 1., linear = true);
+  squares("visu", min = 0. , max = 1.);
   save("temperature.mp4");  
 }
-
 /**
-We create an event to output effective Rayleigh number, average height of interface and kinetic energy density. **/
+We create an event to output effective Rayleigh number, everge height of interface and kinetic energy density 
+**/
+
 
 event Calculation(i++){
   double Rae = Ra*(1-T_eq)*pow(output_height(cs,fs),3);
   fprintf(stdout, "%g %g %g %g \n", t, Rae, energy_density(), output_height(cs,fs));
   fprintf(stderr, "t = %g \n", t);
 }
+
+
 
 /**
 ~~~bib
