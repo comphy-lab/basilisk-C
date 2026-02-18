@@ -1,4 +1,4 @@
-pristine:2ba7b79c260f0959f645ecb860c43c3c8a0837622b76cde38dadf31dbabef227
+pristine:30984cf41fb38b2b528a2c318465346f18dc2486a2b722e89864ecb78a1a11c3
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -578,3 +578,13 @@ Stephane Popinet <popinet@basilisk.fr>**20260205154719
  Ignore-this: e252ea39203bee20c96f2bb58b5a7df60520b2262a07fafc0c860571a28187eec4dd840dc1691b85
 ] 
 hash: 0000000406-56cc347213c8f1f7bef42df785ac247179a35becb1463355622514364ee05291
+[Makefile filtering allows spaces
+Stephane Popinet <popinet@basilisk.fr>**20260216142539
+ Ignore-this: dba1bb37ae7b0bb7cac18413e15ead4198751077d1a5efce9e7d7b92cbe7634d836a463a282aeb55
+] 
+hash: 0000000505-dc9a6d2fb9ff0587653793383ed951a2aa0b5592306ebb048b836ef82d53114e
+[darcsit warns when using restricted Makefile recipes
+Stephane Popinet <popinet@basilisk.fr>**20260216172959
+ Ignore-this: 85fc82030b5a0e2fa67d59a3936483edcf7eb88b009249224ad3ea6a9a665e6046d14ac19731c328
+] 
+hash: 0000001068-43900c3dc54f49d12f2662c909f430814d918da76af51bb26e00f8001a5bfe1d

@@ -1077,6 +1077,10 @@ if [[ "$REQUEST_URI" == /_run/* ]] && runnable "$REQUEST_URI"; then
 			rm -f "$basename.log"
 			$GENSUM "$filename" > "$basename/fail.tst"
 		    fi
+		    if test -f filter-makefile.warnings; then
+			cat filter-makefile.warnings >> "$basename/warn"
+			rm -f filter-makefile.warnings
+		    fi
 		fi
 	    else ##### Not allowed
 		messages="<li>Please ask the system administrator for permission to run code on the server.</li>"
