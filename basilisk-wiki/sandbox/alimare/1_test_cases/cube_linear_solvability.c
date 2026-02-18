@@ -367,7 +367,7 @@ event tracer_diffusion(i++){
 }
 
 
-event interface2(t+=180,last; t<12000){
+event interface2(t+=180,last; t<3000){
   output_facets(cs,stdout);
 }
 
@@ -393,7 +393,7 @@ event interface2(t+=180,last; t<12000){
 //   y_max_pre = y_max;
 // }
 
-event tip_velocity (i++, last)
+/*event tip_velocity (i++, last)
 {
   double y_max = -HUGE;
   double velomax = 0.;
@@ -422,7 +422,45 @@ event tip_velocity (i++, last)
            velomax*d0);
 
   y_max_pre = y_max;
+}*/
+
+event tip_velocity (i++, last)
+{
+  double y_max = -HUGE;
+  double velomax = 0.;
+
+  vector h[];
+  heights (cs, h);
+  boundary ((scalar *){h});
+
+  // First: find maximum y
+  foreach (reduction(max:y_max)) {
+    if (interfacial(point, cs) && y > 0) {
+      double yy = y + Delta*height(h.y[]);
+      if (yy > y_max)
+        y_max = yy;
+    }
+  }
+
+  // Second: find velocity at that location
+  foreach() {
+    if (interfacial(point, cs) && y > 0) {
+      double yy = y + Delta*height(h.y[]);
+      if (fabs(yy - y_max) < 1e-12)
+        velomax = vpcf.y[];
+    }
+  }
+
+  double d0 = epsK;
+  fprintf (stderr, "%g %g %g\n",
+           t/sq(d0),
+           (y_max - y_max_pre)/dt,
+           velomax*d0);
+
+  y_max_pre = y_max;
 }
+
+
 
 
 event movie(t+=200,last){

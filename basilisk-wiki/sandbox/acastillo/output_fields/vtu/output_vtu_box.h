@@ -1,3 +1,6 @@
+#ifndef OUTPUT_VTU_BOX_H
+#define OUTPUT_VTU_BOX_H
+
 /**
 
 # XML File Formats
@@ -65,7 +68,7 @@ output_vtu_box(slist, vlist, subname, box);
 // Function prototypes
 void output_vtu_box_pid(scalar *list, vector *vlist, char *subname, coord box[2]);
 #ifdef _MPI
-void output_pvtu(scalar *list, vector *vlist, char *subname, coord box[2]);
+void output_pvtu_box(scalar *list, vector *vlist, char *subname, coord box[2]);
 #endif
 
 trace    
@@ -73,7 +76,7 @@ void output_vtu_box(scalar *list, vector *vlist, char *subname, coord box[2]){
 // Check if MPI is defined
 @if _MPI
   // If MPI is defined, call output_pvtu to handle parallel VTU output
-  output_pvtu(list, vlist, subname, box);
+  output_pvtu_box(list, vlist, subname, box);
 @else
   // If MPI is not defined, call output_vtu_box_pid to handle serial VTU output
   output_vtu_box_pid(list, vlist, subname, box);
@@ -170,8 +173,8 @@ void output_vtu_box_pid(scalar *list, vector *vlist, char *subname, coord box[2]
   write_scalar_heavy_data(fp, list, cell_mask, no_cells);            // Write scalar field data
   write_vector_heavy_data(fp, vlist, cell_mask, no_cells);           // Write vector field data
   write_points_heavy_data_masked(fp, no_points, vertex_needed);      // Write points data
-  write_cell_offsets(fp, no_cells, noffset);                        // Write cell offsets
-  write_cell_types(fp, no_cells, type);                             // Write cell types
+  write_cell_offsets(fp, no_cells, noffset);                         // Write cell offsets
+  write_cell_types(fp, no_cells, type);                              // Write cell types
   write_cell_connectivity(fp, marker, cell_mask, no_cells, noffset); // Write cell connectivity
 
   /** and close the file */ 
@@ -188,7 +191,7 @@ void output_vtu_box_pid(scalar *list, vector *vlist, char *subname, coord box[2]
 
 /** ### *output_pvtu()*: if MPI, writes one `.pvtu` and `.vtu` for each process */
 @ if _MPI 
-void output_pvtu(scalar *list, vector *vlist, char *subname, coord box[2])
+void output_pvtu_box(scalar *list, vector *vlist, char *subname, coord box[2])
 {
   char name[112]; // Buffer for file name construction
   FILE *fp;       // File pointer for file operations
@@ -217,3 +220,5 @@ void output_pvtu(scalar *list, vector *vlist, char *subname, coord box[2])
   output_vtu_box_pid(list, vlist, name, box);
 }
 @endif
+
+#endif

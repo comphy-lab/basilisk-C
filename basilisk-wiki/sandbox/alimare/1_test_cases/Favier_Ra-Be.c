@@ -327,7 +327,7 @@ event adapt (i++, last) {
 /**
 ## Outputs */
 
-event movie1 (t+=0.005,last;t <2.5){
+event movie1 (t+=0.005,last;t <2.0){
   fprintf(stderr, "t = %g\n",t );
 
   view (fov = 2.75, ty = 0.44, width = 1600, height = 200);

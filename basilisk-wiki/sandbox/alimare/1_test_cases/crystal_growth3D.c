@@ -103,7 +103,7 @@ event init(t=0){
   epsV = 0.;
   eps4 = 0.4;
 
-  DT        = 10*sq(L0/(1<<MAXLEVEL))/lambda[0];
+  DT        = 0.1*sq(L0/(1<<MAXLEVEL))/lambda[0];
   DT_LS = 0.45*(L0)/(1 << MAXLEVEL);
   nb_cell_NB = 1 << 3 ; // number of cell in the 
                         // narrow band 
@@ -126,7 +126,7 @@ crystal growth.
     }
     boundary({dist});
     restriction({dist});
-    LS2fractions(dist,cs,fs);
+    LS2fractions(dist,cs,fs, 1e-3);
 
     foreach() {
       TL[] = TL_init(dist[],40,0.);
@@ -134,12 +134,25 @@ crystal growth.
     }
     boundary({dist,TL,TS});
     restriction({dist,TL,TS});
+
     double lambda1 = lambda[0], lambda2 = lambda[1]; 
-    LS_speed(
-    dist,latent_heat,cs,fs,TS,TL,T_eq,
-    vpc,vpcf,lambda1,lambda2,
-    epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
-    itrecons = 30,tolrecons = 1.e-3,NB_width);
+
+    // LS_speed(
+    // dist,latent_heat,cs,fs,TS,TL,T_eq,
+    // vpc,vpcf,lambda1,lambda2,
+    // epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
+    // itrecons = 30,tolrecons = 1.e-3,NB_width);
+
+      LS_speed(
+    dist, latent_heat, cs, fs, TS, TL, T_eq,
+    vpc, vpcf, lambda1, lambda2,
+    epsK, epsV, eps4,
+    0.45*L0/(1<<MAXLEVEL),
+    60,
+    1.e-3,
+    NB_width
+  );
+
     event("adapt");
     
   }
@@ -149,7 +162,7 @@ crystal growth.
   }
   boundary ({dist});
   restriction({dist});
-  LS2fractions(dist,cs,fs);
+  LS2fractions(dist,cs,fs,1e-3);
 
   foreach_face(){
     vpc.x[] = 0.;
@@ -205,7 +218,7 @@ event snapshot(t+=3.e-3,last){
   dump();
 }
 
-event interface2(t+=1.e-3,last; t<3.6e-2){
+event interface2(t+=1.e-3,last; t<0.6e-2){
   output_facets(cs,stdout);
 }
 

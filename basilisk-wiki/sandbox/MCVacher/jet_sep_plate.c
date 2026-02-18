@@ -28,16 +28,16 @@ FILE * fpmax; //
 
 int main() {
 
-  R_d=0.003; 
-  R_d_2=0.005;
+  R_d=0.005; 
+  R_d_2=0.003;
   L0=0.4; 
   rho2 = 1.3;
   rho1=1000;
   mu1 = 0.1;
   mu2 = 0.01*mu1;
-  U0=0.8;
-  h=0.25;
-  h_2=0.15;
+  U0=0.6;
+  h=0.15;
+  h_2=0.1;
 
   TOLERANCE = 1e-3 [*];
 
@@ -57,7 +57,7 @@ int main() {
  
   G.y = -9.81;
 
-  N=128;
+  N=256;
   origin (-L0/2, 0);
   init_grid(N);
   
@@ -81,7 +81,7 @@ event profile (t = end) {
 }
 
 int isave1 = 1;
-event res_save (t += 1; t <= 30) {
+event res_save (t += 1; t <= 20) {
   char name[80];
   
   sprintf (name, "interface-%d.txt", isave1);
@@ -95,7 +95,7 @@ event res_save (t += 1; t <= 30) {
 /**
 To visualize both the surface and the jet, we can follow lagrangian trajectories using a passive tracer. We generate videos:
 */
-event ppm_output (t = 0; t += 0.05; t <= 30) {
+event ppm_output (t = 0; t += 0.05; t <= 20) {
   char name[80];
   sprintf (name, "f.mp4");
   output_ppm (f, file = name, n = 512, min = 0, max = 1, linear = true);
@@ -114,7 +114,7 @@ event ppm_output (t = 0; t += 0.05; t <= 30) {
 
   char name3[80];
   sprintf (name3, "p.mp4");
-  output_ppm (p, file = name3, n = 512, min = 0, max = 1, linear = true);
+  output_ppm (p, file = name3, n = 512, min = 0, max = 100, linear = true);
 }
 
 /**

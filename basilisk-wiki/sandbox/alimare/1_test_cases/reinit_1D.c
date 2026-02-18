@@ -8,8 +8,8 @@ initialize a perturbed distance field.
 #include "embed.h"
 #include "curvature.h"
 #include "../alex_functions.h"
-//#include "redistance.h"
-#include "../LS_reinit.h"
+#include "redistance.h"
+//#include "../LS_reinit.h"
 #include "view.h"
 
 /**
@@ -76,8 +76,8 @@ the height function.
   }
   fclose(fp1);
 
-//redistance(dist,1 << (MAXLEVEL+1),0.5,3,1e-6);
- LS_reinit(dist, 1 << (MAXLEVEL+1),4);
+redistance(dist,1 << (MAXLEVEL+1),0.5,3,1e-6);
+ //LS_reinit(dist, 1 << (MAXLEVEL+1),4);
 
   snprintf(filename, 100,  "log1");
   fp1 = fopen (filename,"w");

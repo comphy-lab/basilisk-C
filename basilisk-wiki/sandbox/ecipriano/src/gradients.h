@@ -10,7 +10,9 @@ embedded boundary.
 The calculation follows [Johansen and Colella, 1998](#johansen1998)
 and is summarised in the figure below (see also Figure 4 of Johansen
 and Colella and Figure 2 of [Schwartz et al, 2006](#schwartz2006) for
-the 3D implementation).
+the 3D implementation). For interface gradients in VOF simulations,
+we emply the VOF-biased scheme proposed by [Bothe and Fleckenstein,
+2013](#bothe2013).
 
 ![Third-order normal gradient scheme](figures/dirichlet_gradient.svg) 
 
@@ -20,11 +22,15 @@ For degenerate cases, a non-zero value of *coef* is returned and
 #define quadratic(x,a1,a2,a3) \
   (((a1)*((x) - 1.) + (a3)*((x) + 1.))*(x)/2. - (a2)*((x) - 1.)*((x) + 1.))
 
+typedef struct {
+  double d[2], v[2];
+} dstats;
+
 foreach_dimension()
 static inline double dirichlet_gradient_x (Point point, scalar s,
              scalar cs, face vector fs,
              coord n, coord p, double bc,
-             double * coef, bool vof = false)
+             double * coef, bool vof = false, dstats * stat = NULL)
 {
   foreach_dimension()
     n.x = - n.x;
@@ -68,6 +74,12 @@ static inline double dirichlet_gradient_x (Point point, scalar s,
       else
         break;
     }
+
+  if (stat) {
+    stat->d[0] = d[0], stat->d[1] = d[1];
+    stat->v[0] = v[0], stat->v[1] = v[1];
+  }
+
   if (v[0] == nodata) {
 
     /**
@@ -92,40 +104,91 @@ static inline double dirichlet_gradient_x (Point point, scalar s,
     return (bc - v[0])/(d[0]*Delta); // second-order gradient
 }
 
+/**
+## dirichlet_gradient(): embed interface gradients
+*/
+
 double dirichlet_gradient (Point point, scalar s, scalar cs, face vector fs,
-         coord n, coord p, double bc, double * coef, bool vof = false)
+         coord n, coord p, double bc, double * coef,
+         bool vof = false, dstats * stat = NULL)
 {
 #if dimension == 2
   foreach_dimension()
     if (fabs(n.x) >= fabs(n.y))
-      return dirichlet_gradient_x (point, s, cs, fs, n, p, bc, coef, vof);
+      return dirichlet_gradient_x (point, s, cs, fs, n, p, bc, coef, vof, stat);
 #else // dimension == 3
   if (fabs(n.x) >= fabs(n.y)) {
     if (fabs(n.x) >= fabs(n.z))
-      return dirichlet_gradient_x (point, s, cs, fs, n, p, bc, coef, vof);
+      return dirichlet_gradient_x (point, s, cs, fs, n, p, bc, coef, vof, stat);
   }
   else if (fabs(n.y) >= fabs(n.z))
-    return dirichlet_gradient_y (point, s, cs, fs, n, p, bc, coef, vof);
-  return dirichlet_gradient_z (point, s, cs, fs, n, p, bc, coef, vof);
+    return dirichlet_gradient_y (point, s, cs, fs, n, p, bc, coef, vof, stat);
+  return dirichlet_gradient_z (point, s, cs, fs, n, p, bc, coef, vof, stat);
 #endif // dimension == 3
   return nodata;
 }
 
 /**
+## plic_gradient(): VOF interface gradients
+
 The interface gradients for VOF-tracers can be computed using the following
 function, provided the volume and surface fractions `cs` and `fs` which define
 the region where the tracers `s` is defined, and the value of the field at the
 interface (`bc`). */
 
 double plic_gradient (Point point, scalar s, scalar cs, face vector fs,
-    double bc, bool vof = true)
+    double bc, bool vof = true, dstats * stat = NULL)
 {
-  coord m = interface_normal (point, cs), p;
+  coord m = vof ?
+    interface_normal (point, cs) :
+    facet_normal (point, cs, fs), p;
   double alpha = plane_alpha (cs[], m);
   plane_area_center (m, alpha, &p);
   normalize (&m);
   double coef = 0.;
-  double grad = dirichlet_gradient (point, s, cs, fs, m, p, bc, &coef, vof);
+  double grad = dirichlet_gradient (point, s, cs, fs, m, p, bc, &coef, vof, stat);
   return (grad == nodata || coef != 0.) ? 0. : grad;
 }
 
+/**
+## References
+
+~~~bib
+@article{johansen1998,
+  title={A Cartesian grid embedded boundary method for Poisson's
+  equation on irregular domains},
+  author={Johansen, Hans and Colella, Phillip},
+  journal={Journal of Computational Physics},
+  volume={147},
+  number={1},
+  pages={60--85},
+  year={1998},
+  publisher={Elsevier},
+  url={https://pdfs.semanticscholar.org/17cd/babecd054d58da05c2ba009cccb3c687f58f.pdf}
+}
+
+@article{schwartz2006,
+  title={A Cartesian grid embedded boundary method for the heat equation 
+  and Poisson’s equation in three dimensions},
+  author={Schwartz, Peter and Barad, Michael and Colella, Phillip and Ligocki, 
+  Terry},
+  journal={Journal of Computational Physics},
+  volume={211},
+  number={2},
+  pages={531--550},
+  year={2006},
+  publisher={Elsevier},
+  url={https://cloudfront.escholarship.org/dist/prd/content/qt0fp606kk/qt0fp606kk.pdf}
+}
+
+@article{bothe2013,
+  title={A volume-of-fluid-based method for mass transfer processes at fluid particles},
+  author={Bothe, Dieter and Fleckenstein, Stefan},
+  journal={Chemical Engineering Science},
+  volume={101},
+  pages={283--302},
+  year={2013},
+  publisher={Elsevier},
+}
+~~~
+*/

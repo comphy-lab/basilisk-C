@@ -35,7 +35,7 @@ plot 'out' w l lw 3 t 'Interface'
 #define QUADRATIC 1
 #define GHIGO 1
 #define CURVE_LS 0
-#define ANISO 1
+//#define ANISO 1
 
 #include "grid/octree.h"
 #include "../../ghigo/src/myembed.h"
@@ -53,6 +53,7 @@ plot 'out' w l lw 3 t 'Interface'
 #include "../level_set.h"
 #include "../LS_curvature.h"
 #include "../LS_advection.h"
+#include "../LS_speed.h"
 
 
 #define T_eq         0.
@@ -69,20 +70,20 @@ double H0;
 /**
 Setup of the physical parameters + level_set variables
 */
-scalar TL[], TS[], dist[];
-vector vpc[],vpcf[];
+// scalar TL[], TS[], dist[];
+// vector vpc[],vpcf[];
 
-scalar * tracers    = {TL};
-scalar * tracers2 = {TS};
+// scalar * tracers    = {TL};
+// scalar * tracers2 = {TS};
 
-scalar * level_set  = {dist};
-face vector muv[];
+// scalar * level_set  = {dist};
+// face vector muv[];
 mgstats mgT;
 scalar grad1[], grad2[];
 double DT2;
 
 
-double  latent_heat = 1.;
+//double  latent_heat = 1.;
 double  lambda[2]; // thermal capacity of each material
 #if Gibbs_Thomson // parameters for the Gibbs-Thomson's equation
 double  epsK = 0.001, epsV = 0.;
@@ -105,7 +106,7 @@ double eps4 = 0.;
 int nb_cell_NB;
 double  NB_width ;    // length of the NB
 
-scalar curve[];
+//scalar curve[];
 
 
 #define Pi 3.14159265358979323846
@@ -168,8 +169,8 @@ event init(t=0){
 
   lambda[0]  = 1.;
   lambda[1]  = 1.;
-  // DT2        = 0.9*sq(L0/(1<<MAXLEVEL))/lambda[0];  // diffusion time scale
-  DT2        = 1.e-4;  // diffusion time scale
+   DT2        = 0.1*sq(L0/(1<<MAXLEVEL))/lambda[0];  // diffusion time scale
+  //DT2        = 1.e-4;  // diffusion time scale
   // DT2        = 1.e-5;  // diffusion time scale
   nb_cell_NB = 1 << 3 ; // number of cell in the 
                         // narrow band 
@@ -266,12 +267,24 @@ crystal growth.
 
 event velocity(i++){
   double lambda1 = lambda[0], lambda2 = lambda[1]; 
-  LS_speed(
-  dist,latent_heat,cs,fs,TS,TL,T_eq,
-  vpc,vpcf,lambda1,lambda2,
-  epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
-  itrecons = 10,tolrecons = 1.e-12
+  // LS_speed(
+  // dist,latent_heat,cs,fs,TS,TL,T_eq,
+  // vpc,vpcf,lambda1,lambda2,
+  // epsK,epsV,eps4,deltat=0.45*L0/(1<<MAXLEVEL),
+  // itrecons = 10,tolrecons = 1.e-12
+  // );
+   
+    LS_speed(
+    dist, latent_heat, cs, fs, TS, TL, T_eq,
+    vpc, vpcf, lambda1, lambda2,
+    epsK, epsV, eps4,
+    0.45*L0/(1<<MAXLEVEL),
+    60,
+    1.e-10,
+    NB_width
   );
+  
+
   double DT3 = timestep_LS(vpcf,DT2,dist,NB_width);
   tnext = t+DT3;
   dt = DT3;
@@ -296,25 +309,20 @@ event tracer_diffusion(i++){
 This event is the core the of the hybrid level-set/embedded boundary.
 */
 event LS_advection(i++,last){
-  double lambda1 = lambda[0], lambda2 = lambda[1];
-  advection_LS(
-  dist,
-  latent_heat,
-  cs,fs,
-  TS,TL,
-  T_eq,
-  vpc,vpcf,
-  lambda1,lambda2,
-  epsK,epsV,eps4,
-  curve,
-  &k_loop,
-  deltat = 0.45*L0 / (1 << grid->maxdepth),
-  itredist = 10,
-  tolredist = 3.e-3,
-  itrecons = 30,
-  tolrecons = 1.e-12,
-  s_clean = 1.e-10,
-  NB_width);
+ // double lambda1 = lambda[0], lambda2 = lambda[1];
+
+    advection_LS (
+    dist = dist,
+    cs = cs,
+    fs = fs,
+    TS = TS,
+    TL = TL,
+    vpcf = vpcf,
+    itredist = 3,
+    s_clean = 1.e-10,
+    NB_width = NB_width,
+    curve = curve
+  );
 
   foreach_face(){
     uf.x[] = 0.;

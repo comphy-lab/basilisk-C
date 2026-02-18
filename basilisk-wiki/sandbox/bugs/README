@@ -29,6 +29,7 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
+* [Incompatible arguments in _stencil_function with pre-defined input values](args-stencil.c)
 * [Default boundary conditions do not work for face vector fields in MPI](bc_face_vector.c)
 * [Boundary conditions on a single component of a vector field are incorrect on trees](bc_vector.c)
 * [There is a missing metrics cm[] in update_tracer function in embed.h](axi_embed_tracers.c)

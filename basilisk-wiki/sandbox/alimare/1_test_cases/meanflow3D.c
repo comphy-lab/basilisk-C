@@ -14,11 +14,13 @@ See e.g [Deckelnick et al,
 */
 #define QUADRATIC 1
 #define BGHOSTS 2
-#include "profiling.h"
+//#include "profiling.h"
 #include "grid/octree.h"
 #include "embed.h"
 #include "advection.h"
 #include "curvature.h"
+
+#include "profiling.h"
 
 scalar * tracers = NULL, * interfaces = NULL;
 #include "../simple_discretization.h"
@@ -31,8 +33,9 @@ scalar * tracers = NULL, * interfaces = NULL;
 double circle (double x, double y, double z, double R0, double A, double m)
 { 
   double eps = 1.e-15;
-  double r= sqrt(sq(x) + sq(y)), R = sqrt(sq(x) + sq(y) + sq(z) );
-  double theta = atan2(y,x);
+  //double r= sqrt(sq(x) + sq(y));
+  double R = sqrt(sq(x) + sq(y) + sq(z) );
+  //double theta = atan2(y,x);
 
 
   double psi = acos(z/(R+eps));
@@ -139,7 +142,7 @@ Advection loop
     recons_speed(dist, DT2, speed_recons,
 		 1.e-6, &err, 
 		 20, 
-		 cs, fs);
+		 cs, fs, NB_width);
 
     // advect LS
     RK3(dist,vpc,DT2, 0.2);  
@@ -147,7 +150,7 @@ Advection loop
     cells();
     cells(n = {0,1,0});
     save("cs.mp4");
-    LS_reinit(dist);
+    LS_reinit(dist,DT2, 4);
     foreach(){
       dist[] = clamp(dist[], -NB_width, NB_width);
     }

@@ -210,7 +210,7 @@ event output_data (i++) {
 We output the total liquid volume in time (for testing). */
 
 event logger (t += 10) {
-  fprintf (stderr, "%d %f %.3g\n", i, t, statsf (f).sum);
+  fprintf (stderr, "%d %.2f %.3g\n", i, t, statsf (f).sum);
 }
 
 /**

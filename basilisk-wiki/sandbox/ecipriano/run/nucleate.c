@@ -124,6 +124,7 @@ int main (void) {
   nv = 2;
 #else
   nv = 1;
+  pcm.consistent = true;
 #endif
 
   DT = 0.01;

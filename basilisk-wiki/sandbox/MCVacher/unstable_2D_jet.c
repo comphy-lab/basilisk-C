@@ -1,13 +1,11 @@
 /**
 # Unstable 2D Jet.
 
-Schlichting's 2D jet (see [here](/sandbox/MCVacher/schlichting.c)) is unstable after $Re \approx 30$ if you allow the left-right symmetry to be broken. 
+Schlichting's 2D jet (see [here](/sandbox/MCVacher/schlichting.c)) is unstable after $Re \approx 30$ if you allow the left-right symmetry to be broken (Boundary Layer Theory, section IX.f, 7th edition, *H. Schlichting*, 1998)
 
 It seems that it is a Kelvin-Helmotz instability created by the shear on the sides of the jet that is the physical mechanism behind it. Starting from a fluid at rest, this shear instability can be created by the initial bulb of the jet when issuing the nozzle. Here you can admire the beautiful vortices it creates...
 
 */
-
-//test schlichting
 
 #include "grid/multigrid.h"
 #include "navier-stokes/centered.h"
@@ -54,12 +52,6 @@ int main() {
   origin (-L0/2, 0);
   init_grid(N);
   
-  char param_dim[80];
-  sprintf (param_dim, "param_dim.txt");
-  FILE * fparam = fopen(param_dim, "w");
-  fprintf (fparam, "%g %g %g %d\n",L0,R_d,U0,N);
-  fclose (fparam);
-
   mu=muv;
 
   fpmax =  fopen("log.dat", "w"); 
@@ -83,7 +75,7 @@ event profile (t = end) {
   sprintf (name, "res_end.txt");
   FILE * fpres = fopen(name, "w");
   foreach()
-    fprintf (fpres, "%g %g %g %g %g %g", x, y, u.x[], u.y[], p[],s[]);
+    fprintf (fpres, "%g %g %g %g %g %g \n", x, y, u.x[], u.y[], p[],s[]);
   fclose(fpres);
   
   printf ("-----END-----\n");

@@ -7,9 +7,9 @@ wavelet_bug.tst: CC=mpicc -D_MPI=6
 automatic.tst: CC=mpicc -D_MPI=4
 
 restore.c: restart-restore.c
-	ln -s restart-restore.c restore.c
+	ln -sf restart-restore.c restore.c
 restart-restore.dump: restore.tst
-	rm -f restart-restore.dump; ln -s restore/dump restart-restore.dump
+	ln -sf restore/dump restart-restore.dump
 restart-restore.tst: restart-restore.dump
 
 foreach_neighbor_test.tst: CC=mpicc -D_MPI=8

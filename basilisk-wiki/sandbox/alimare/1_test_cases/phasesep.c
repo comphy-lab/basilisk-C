@@ -90,7 +90,7 @@ event gnuplot(t+=0.1,last){
   fflush (fp);
 }
 
-event end(t= 40){
+event end(t= 35){
   system ("for f in gnuplot/plot-*.png; do"
     " convert $f ppm:- && rm -f $f; done | "
     "ppm2mp4 movie_normal.mp4");

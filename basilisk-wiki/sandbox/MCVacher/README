@@ -6,6 +6,8 @@ This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I
 
 * [Unstable 2D jet](unstable_2D_jet.c)
 
+* [Schlichting axisym. jet](schlichting_axi.c)
+
 ## Confined Jets
 
 * [High Reynolds jet in an open channel impinging on a solid surface](box_jet_long.c)

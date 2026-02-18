@@ -1,9 +1,70 @@
 /**
 # Co-flow device 
 
-![Horizontal velocity component and interface](coflow/ux.png){width="60%"}
+Note that the [viscous term](/src/viscosity-embed.h) in the embedded
+boundary solver assumes constant viscosity, which is not the case
+here. So the results below need to be interpreted with caution.
 
-![Adaptive mesh refinement](coflow/cells.png){width="60%"}
+The left figure is the norm of the velocity and the interface, right
+figure shows adaptive mesh refinement.
+
+<table>
+<tr><td>
+![](coflow/u.png){width="100%"}
+</td><td>
+![](coflow/cells.png){width="100%"}
+</td></tr>
+</table>
+
+~~~gnuplot Average width of the thread close to the exit ($x > 1.5$) as a function of time
+set xlabel 'Time'
+set logscale y
+aw = 1.*system("tail -n1 log | cut -d' ' -f2")
+title(a) = sprintf("measured final average width = %.3g", a)
+set grid
+plot 'log' w l t '', aw t title(aw) lt 3
+~~~
+
+~~~gnuplot Final interface and measured average width close to the exit
+reset
+set grid
+plot 'out' w l t 'interface', aw/2. lt 3 t title(aw), -aw/2. lt 3 t ''
+~~~
+
+~~~gnuplot Velocity profile at $x=1.5$
+unset grid
+set xlabel 'y'
+set arrow from -aw/2.,0 to -aw/2.,35 nohead lt 3
+set arrow from aw/2.,0 to aw/2.,35 nohead lt 3
+poiseuille(x)=(6.*((x) + 0.5)*(0.5 - (x)))
+Uv = 10.
+set key bottom left
+plot [-0.5:0.5][0:]'profile' w p t 'measured', (1 + 2*Uv)*poiseuille(x) t '(1 + 2*Uv)*poiseuille(y)', 1 + 3*Uv lt 4
+~~~
+
+As illustrated in the figure the outflow profile is well matched by the
+Poiseuille flow
+$$
+u(y) = 6 (1 + 2 \text{Uv}) (y + 1 / 2) (1 / 2 - y)
+$$
+where $1 + 2 \text{Uv}$ is the total flow rate. The maximum velocity near the
+outflow is thus
+$$
+u_{\max} = u (0) = 3 / 2 (1 + 2 \text{Uv})
+$$
+If the thread diameter is small we can assume that the exit flow rate is given
+by $u_{\max} w$ and since this must match the inflow rate (unity) we get
+$$
+w = \frac{1}{u_{\max}} = \frac{2}{3 (1 + 2 \text{Uv})}
+$$
+For $\text{Uv} =$ 10 this gives $w \approx$ 0.0317 which is not far from the
+measured 0.0324. 
+
+**Exercise**: show that a more accurate approximation (valid also for a finite-width very-viscous thread) is
+$$
+u_{\max} = 1 + 3 \text{Uv}, \;\;\; w = \frac{1}{1 +3 \text{Uv}}
+$$
+which gives $w \approx$ 0.0322.
 */
 
 #include "embed.h"
@@ -47,7 +108,7 @@ Left boundary: inflow with unit velocity and Poiseuille flow. */
 u.n[left] = dirichlet(cs[]*poiseuille(y));
 p[left]   = neumann(0.);
 pf[left]  = neumann(0.);
-f[left]   = 1.;
+f[left]   = (cs[] > 0.);
 
 /**
 Right boundary: outflow */
@@ -63,13 +124,13 @@ flow. */
 u.n[bottom] = dirichlet(+ Uv*cs[]*poiseuille(x));
 p[bottom]   = neumann(0.);
 pf[bottom]  = neumann(0.);
-f[bottom]   = dirichlet(0.);
+f[bottom]   = 0.;
 
 u.n[top] = dirichlet(- Uv*cs[]*poiseuille(x));
 p[top]   = neumann(0.);
 pf[top]  = neumann(0.);
-f[top]   = dirichlet(0);
-  
+f[top]   = 0.;
+
 /**
 Embedded boundary is no slip. */
 
@@ -82,7 +143,7 @@ face vector mut[];
 
 int main()
 {
-  L0 = 3.;
+  L0 = 3.000001; // just to make sure that the solid boundaries do not exactly coincide with cell boundaries
   DT = HUGE;
   origin (-1.25, -L0/2.);
   N = 128;
@@ -125,13 +186,8 @@ event properties (i++) {
 The channel geometry is a cross. */
 
 event init (t = 0) {
-
-  /**
-  Be careful here, if the channel width is exactly one, then no-slip
-  boundary conditions are not applied properly... this is a bug. */
-  
-  solid (cs, fs,  union (intersection(- y + 0.999/2., + y + 0.999/2.),
-			 intersection(- x + Hv*0.999/2. , + x + Hv*0.999/2.)));
+  solid (cs, fs,  union (intersection(- y + 1./2., + y + 1./2.),
+			 intersection(- x + Hv/2. , + x + Hv/2.)));
 
   /**
   The initial tracer fills the inflow channel. */
@@ -153,32 +209,56 @@ event tracer_diffusion (i++)
 /**
 Mesh adaptation. */
 
-#if 1
-event adapt (t = 0.3; i++) {
+event adapt (t = 2./Uv; i++) {
   const double mmax = 1e-2, fmax = 1e-2, uemax = 0.1;
   adapt_wavelet ({cs, f, u}, (double[]){mmax, fmax, uemax, uemax}, maxlevel);
 }
-#endif
+
+/**
+We measure the average width of the thread close to the exit. */
+
+event thread_width (i++)
+{
+  double s = 0., sf = 0.;
+  foreach (reduction(+:s) reduction(+:sf))
+    if (x > L0/2.)
+      s += dv(), sf += f[]*dv();
+  fprintf (stderr, "%g %g\n", t, sf/s);
+}
 
 /**
 We make images. */
 
-event movie (t = 0.35)
+event movie (t = 4./Uv)
 {
   view (tx = -0.118, ty = -0.000, tz = -3.038,
 	width = 918, height = 890);
-  draw_vof (c = "cs", s = "fs", edges = true, filled = -1);
-  squares (color = "u.x", spread = -1, linear = true);
+
+  draw_vof (c = "f", lc = {1,1,1}, lw = 2);
+  draw_vof (c = "cs", s = "fs", edges = true, filled = -1, fc = {1,1,1});
+  squares (color = "sqrt(u.x*u.x + u.y*u.y)", spread = -1, linear = true);
   box ();
   //  vectors (u = "u", scale = 0.001);
-  draw_vof (c = "f");
-  save ("ux.png");
+  save ("u.png");
 
   
-  draw_vof (c = "cs", s = "fs", edges = true, filled = -1);
-  squares (color = "u.x", spread = -1, linear = true);
+  draw_vof (c = "f", lc = {1,1,1}, lw = 2);
+  draw_vof (c = "cs", s = "fs", edges = true, filled = -1, fc = {1,1,1});
+  squares (color = "sqrt(u.x*u.x + u.y*u.y)", spread = -1, linear = true);
   box ();
-  draw_vof (c = "f");
   cells ();
   save ("cells.png");
+
+  /**
+  We also save the shape of the thread. */
+
+  output_facets (f, stdout);
+  
+  /**
+  And a velocity profile. */
+  
+  FILE * fp = fopen ("profile", "w");
+  for (double y = -0.5; y < 0.51; y += 0.01)
+    fprintf (fp, "%g %g\n", y, interpolate (u.x, L0/2., y));
+  fclose (fp);
 }

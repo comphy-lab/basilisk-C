@@ -11,6 +11,9 @@ It is a monophasic problem depending only on the Reynolds number $Re$. Here we t
 #include "navier-stokes/centered.h"
 #include "tracer.h"
 #include "navier-stokes/perfs.h"
+#include "view.h"
+#define BVIEW 1
+
 
 scalar s[];
 scalar * tracers = {s};
@@ -19,9 +22,8 @@ double U0;
 double R_d;
 
 double Re;
-double grav;
 
-FILE * fpmax; //
+FILE * fpmax; 
 
 face vector muv[];
 
@@ -33,19 +35,19 @@ int main() {
 
   Re=10;
 
-  R_d=0.01; //Rayon du jet initial
-  L0=1; //Taille de la boite  
+  R_d=0.01; //Initial radius for the jet
+  L0=1;  
   U0=1;
 
   TOLERANCE = 1e-3 [*];
 
-  u.n[bottom] = dirichlet (U0*(x > -R_d));
+  u.n[bottom] = dirichlet (U0*(x > L0/2-R_d));
   u.t[bottom] = dirichlet(0.);
 
   u.n[top] = u.n[] > 0. ? neumann(0) : dirichlet(0);
   p[top] = dirichlet(0.);
 
-  s[bottom] = dirichlet (U0*(x > -R_d));
+  s[bottom] = dirichlet (U0*(x > L0/2-R_d));
 
   u.n[left] = neumann(0);
   p[left] = dirichlet(0);
@@ -53,8 +55,8 @@ int main() {
   u.n[right] = dirichlet(0.);
   p[right]=neumann(0.);
 
-  N=256; //256 works even better
-  origin (-L0, 0);
+  N=256;
+  origin (-L0/2, 0);
   init_grid(N);
   
   char param_dim[80];
@@ -147,7 +149,7 @@ Residuals are converged around t=800.
 We plot the vertical velocity as well as a passive tracer to observe the establishment of the flow.
 */
 
-event ppm_output (t = 0; t += 0.1; t <= 550) {
+event ppm_output (t = 0; t += 0.05; t <= 200) {
   
     char name1[80];
     sprintf (name1, "uY.mp4");
@@ -159,9 +161,41 @@ event ppm_output (t = 0; t += 0.1; t <= 550) {
     output_ppm (s, file = name2, n = 512, min = 0., max = U0, linear = true);
 }
 
+event movie_streamlines (t += 0.05; t <= 200)
+{
+  scalar omega[];
+  vertex scalar stream[];
+  scalar psi[];
+
+  vorticity(u, omega);
+
+  psi[bottom] = dirichlet (0.);
+  psi[top]    = neumann (0.);
+  psi[left]   = neumann (0.);
+  psi[right]  = dirichlet (0.);
+
+  poisson (psi, omega);
+  boundary ({psi});
+
+  foreach_vertex()
+    stream[] = (psi[0,-1] + psi[-1,-1] + psi[] + psi[-1])/4.;
+
+  clear();
+  view(
+    width = L0/2,
+    height = L0/2,
+    tx     = 0,       // center horizontally
+    ty     = -1.5*L0/4     // shift up so bottom aligns with y=0
+);
+  isoline("stream", n = 30);
+  box();
+  save ("streamlines.mp4");
+}
+
 /**
 ![Passive tracer](schlichting/s.mp4)
 ![Vertical velocity](schlichting/uY.mp4)
+![Streamlines](schlichting/streamlines.mp4)
 
 We can clearly see that the Neumann condition at the top for the velocity creates a slow down of the flow, because the condition does not respect the flow solution : *equations to be written soon*.
 
@@ -176,7 +210,7 @@ event profile (t = end) {
   sprintf (name, "res_end.txt");
   FILE * fpres = fopen(name, "w");
   foreach()
-    fprintf (fpres, "%g %g %g %g %g %g", x, y, u.x[], u.y[], p[],s[]);
+    fprintf (fpres, "%g %g %g %g %g %g \n", x, y, u.x[], u.y[], p[],s[]);
   fclose(fpres);
   
   printf ("-----END-----\n");
@@ -185,5 +219,215 @@ event profile (t = end) {
 /**
 ## Comparison with theory
 
-*soon*
+We consider the boundary layer equations (also called Prandtl model) :
+
+$$\frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0\\
+        u\frac{\partial v}{\partial x} + v\frac{\partial v}{\partial y} = \nu\frac{\partial^{2}v}{\partial x^{2}} $$
+
+The flow has to recover zero velocity at infinity. We write this set of equation with the stream function as varaible:
+
+$$u(x,y) = \frac{\partial \psi}{\partial y} \\ v(x, y) = -\frac{\partial \psi}{\partial x}$$
+
+Mass conservation:
+
+$$\frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = \frac{\partial^{2} \psi}{\partial x \partial y} - \frac{\partial^{2} \psi}{\partial y \partial x} = 0$$
+
+Momentum:
+
+$$-\frac{\partial\psi}{\partial y}\frac{\partial^{2} \psi}{\partial x^{2}} + \frac{\partial\psi}{\partial x}\frac{\partial^{2} \psi}{\partial y \partial x} = -\nu \frac{\partial^{3}\psi}{\partial x^{3}}$$
+
+We look for a self-similar solution for the stream function $\psi$ that would be satisified far from the nozzle: 
+
+$$\psi(x,y) = y^{p}F(\frac{x}{y^{p}})$$
+
+To find $p$ and $q$, we refer to the two following conditions. First, the total y-momentum fluw has to be constant (see Schlichting's book for details):
+
+$$ J = \rho \int_{-\infty}^{\infty} v^{2}\mathrm{d}x = cst~~~~(=\mathrm{2R_dU_0^{2}~in~this~case})$$
+$$\Rightarrow y^{2(p-q)+q } \sim 1\\ \Rightarrow 2p - q = 0$$
+
+Second, inertial is balanced by viscous forces:
+
+$$v\frac{\partial v}{\partial y} \sim \nu\frac{\partial^{2}v}{\partial x^{2}} $$
+
+$$\Rightarrow p+q = 1$$
+
+Hence:
+
+$$\psi(x,y) = y^{1/3}F(\frac{x}{y^{2/3}})$$
+
+This is equivalent to: 
+
+$$\psi(x,y) = \nu^{1/2}y^{1/3}F(\frac{1}{3\nu^{1/2}}\eta)$$
+
+with $\eta = \frac{x}{y^{2/3}}$. Using this into the previous momentum equation, it gives that F is solution of the following ODE:
+
+$$ (F')^{2} + FF'' + F''' = 0$$
+
+It can be shown that the solution of this ODE is: 
+
+$$ F'(\frac{1}{3\nu^{1/2}}\eta) = 2\alpha \times \mathrm{sech^{2}}(\alpha\frac{1}{3\nu^{1/2}} \eta)$$
+
+where $\alpha$ is deduced from $J$ (see Schlichting's book). In the end, we can write :
+
+$$ y^{1/3} \times v(x,y) = A~\mathrm{sech^{2}}(B \eta) $$
+
+with $A$ and $B$ constants.
+
+This is verified just below for most of the positions, far enough from the boundaries.                                    
+*/
+
+
+
+/**
+~~~pythonplot Self-similarity check
+import numpy as np
+import matplotlib.pyplot as plt
+
+# ============================================================
+# Load numerical data
+# ============================================================
+data = np.loadtxt("res_end.txt")
+
+x = data[:, 0]
+y = data[:, 1]
+u_y = data[:, 3]
+
+# ============================================================
+# Build structured 2D matrix U_y[y,x]
+# ============================================================
+x_unique = np.unique(x)
+y_unique = np.unique(y)
+
+nx = len(x_unique)
+ny = len(y_unique)
+
+U_y = np.zeros((ny, nx))
+
+for i, yi in enumerate(y_unique):
+    for j, xj in enumerate(x_unique):
+        idx = np.where((x == xj) & (y == yi))[0]
+        if len(idx) > 0:
+            U_y[i, j] = u_y[idx[0]]
+        else:
+            U_y[i, j] = np.nan
+
+# ============================================================
+# Self-similar collapse from numerical data
+# ============================================================
+
+eta_all = []
+f_all = []
+y_all = []
+
+for i, yi in enumerate(y_unique):
+
+    if yi <= 0:
+        continue
+
+    v_slice = U_y[i, :]
+
+    if np.max(np.abs(v_slice)) < 1e-10:
+        continue
+
+    # shifted x
+    x_shift = x_unique - 1/2
+
+    # similarity variable
+    eta = x_shift / (yi**(2/3))
+
+    # rescaled velocity (multiply by y^(2/3))
+    f = v_slice * (yi**(1/3))
+
+    eta_all.extend(eta)
+    f_all.extend(f)
+    y_all.extend([yi]*len(eta))
+
+eta_all = np.array(eta_all)
+f_all = np.array(f_all)
+y_all = np.array(y_all)
+
+# ============================================================
+# Theoretical profile: A y^{-1/3} sech²(B x / y^{2/3})
+# In similarity variables:
+# y^{1/3} v = A sech²(B eta)
+# ============================================================
+
+#Param sim.
+
+Re=10
+V_0=1
+rho=1
+R_d=0.01
+nu=V_0*R_d/Re
+
+
+J=rho*V_0**2*0.01
+alpha=0.8255*(J/(rho*nu**(1/2)))**(1/3)
+
+A=2/3*alpha**2 #Theory
+B=alpha*1/(3*nu**(1/2)) #Theory
+
+A = 0.3 #best fit according to me ^^
+B = 7.1 #best fit according to me ^^
+
+
+eta_theory = np.linspace(-1, 1, 500)
+f_theory = A * (1 / np.cosh(B * eta_theory))**2
+
+# ============================================================
+# Plot
+# ============================================================
+
+
+plt.figure(figsize=(7,6))
+
+sc = plt.scatter(
+    eta_all,
+    f_all,
+    c=y_all,
+    cmap='viridis',
+    s=5,
+    alpha=0.6,
+)
+
+sc = plt.scatter(
+    -eta_all,
+    f_all,
+    c=y_all,
+    cmap='viridis',
+    s=5,
+    alpha=1,
+    label='Numerical data'
+)
+
+plt.plot(
+    eta_theory,
+    f_theory,
+    'r',
+    linewidth=2,
+    label=r'Theory: $A\,\mathrm{sech}^2(B\eta)$'
+)
+
+plt.xlabel(r'$\eta = \frac{x}{y^{2/3}}$')
+plt.ylabel(r'$y^{1/3} v(x,y)$')
+plt.xlim([-0.5,0.5])
+plt.ylim([-0.025,0.4])
+plt.legend()
+plt.grid(True)
+
+cbar = plt.colorbar(sc)
+cbar.set_label(r'$\mathrm{Vertical~position~~~y/L}$')
+
+plt.tight_layout()
+plt.savefig('self_sim.png')
+~~~
+*/
+
+/**
+## See also
+
+See also the axisymmetric case [here](/sandbox/MCVacher/schlichting_axi.c).
+
+
+
 */

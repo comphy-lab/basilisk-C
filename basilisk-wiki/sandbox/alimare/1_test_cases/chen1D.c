@@ -60,7 +60,7 @@ double latent_heat;
 /**
 Setup of the physical parameters + level_set variables
 */
-scalar TL[], TS[], dist[];
+/*scalar TL[], TS[], dist[];
 vector vpc[];
 face vector vpcf[];
 
@@ -68,14 +68,14 @@ face vector vpcf[];
 scalar * tracers   = {TL};
 scalar * tracers2  = {TS};
 scalar * level_set = {dist};
-face vector muv[];
+face vector muv[];*/
 mgstats mgT;
 scalar grad1[], grad2[];
 double DT2;
 
 double  epsK = 0., epsV = 0.;
 
-scalar curve[];
+//scalar curve[];
 
 
 double lambda[2];
@@ -91,7 +91,7 @@ int aniso = 1;
 int     nb_cell_NB =  1 << 3 ;  // number of cells for the NB
 double  NB_width ;              // length of the NB
 
-double s_clean = 1.e-10; // used for fraction cleaning
+//double s_clean = 1.e-10; // used for fraction cleaning
   
 mgstats mg1,mg2;
 
@@ -279,7 +279,7 @@ This event is the core the of the hybrid level-set/embedded boundary.
 event velocity(i++){
   
   double lambda1 = lambda[0], lambda2 = lambda[1]; 
-  advection_LS(
+  /*advection_LS(
   dist,
   latent_heat,
   cs,fs,
@@ -296,7 +296,20 @@ event velocity(i++){
   itrecons = 60,
   tolrecons = 1.e-6,
   s_clean = 1.e-10,
-  NB_width);
+  NB_width);*/
+    advection_LS (
+    dist = dist,
+    cs = cs,
+    fs = fs,
+    TS = TS,
+    TL = TL,
+    vpcf = vpcf,
+    itredist = 10,
+    s_clean = 1.e-10,
+    NB_width = NB_width,
+    curve = curve
+  );
+  
 
   foreach_face(){
     uf.x[] = 0.;

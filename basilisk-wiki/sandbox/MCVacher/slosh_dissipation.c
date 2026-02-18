@@ -187,7 +187,7 @@ event ppm_output (t = 0; t += 0.01; t <= 15) {
 /**
 ## Comparison with theory : damping due to bulk dissipation
 
-For the full derivation of the formulas, go [there]() *soon*
+For the full derivation of the formulas, go [there]() *soon*. Comparisons needs to be made with [gravity.c](https://basilisk.fr/src/test/gravity.c).
 
 We find in the end that the amplitude of the oscillation $\eta_0$ is following a logarithmic decrement, such as :
 
