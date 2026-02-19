@@ -1,4 +1,4 @@
-pristine:49578a409266fc0280593b821a12caf0119e361ce1c02883d53cecceb2db20d1
+pristine:d558563d03d130d1173a46cb2cd738f4557ad6b1be5f6b14a2628d03e803e1a3
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -5523,3 +5523,168 @@ mvacher <marc.cordelle.vacher@gmail.com>**20260217234256
  Ignore-this: 5ba4ac26f0af09674d978562ef3acd108350ecb0ce33d58b789f29b803c46cb16e2f034d12054112
 ] 
 hash: 0000001387-62b073effbae7eedf04ba503f554b5fb51ffff8a21f527e039752a08788c995c
+[Dump can be mangled due to integer overflow in multigrid if N is big
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260218082657
+ Ignore-this: 1f436b1580a6415169e696570d71b7d5dc52e9782ad259dd67f9975f57b55fdbc38236dc01845250
+] 
+hash: 0000003358-110fd813cc8116401a82cf9e5a7d0aee32e67661fd59d439ab7871d4495f0498
+[Dump can be mangled due to integer overflow in multigrid if N is big
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260218082748
+ Ignore-this: 6566b9134a164c1bc52b1d68ff3bad949b155ba86159d87519637ce215b296a099f292d9e87e79a2
+] 
+hash: 0000000371-532b923fa88ccf05e8c605b256de49e99836a443b877b5d1f208fca5346c3059
+[parameters to match Varieras et al.
+mvacher <marc.cordelle.vacher@gmail.com>**20260218091824
+ Ignore-this: feab33dc421a841daf4de35b219c8ad8fc9978492685ef431ad4e42a9cfa43cd8fdb19d5ef3314a8
+] 
+hash: 0000000944-5bc684148423e5b213d6192b04c5d214b7dff36176986403aa89d3712333e474
+[tests
+mvacher <marc.cordelle.vacher@gmail.com>**20260218105424
+ Ignore-this: d2dd42b223869ade5a89aaaf59058bf1a00a3b2e1abc0b80e49070534944a3bbab150ce5e06f5b9b
+] 
+hash: 0000001351-93ecf57bd6389132f1a90fe9a032585115d46bb621d0dd5042e46f1d174b48fb
+[creation
+mvacher <marc.cordelle.vacher@gmail.com>**20260218110228
+ Ignore-this: 22030c4750a29cb785e14a6a070311656f51c702243342c027f52e2a6a8c39bd216cbac27869ee49
+] 
+hash: 0000003240-d97faf3e11290fbd3837de61d4fc873ff899326a71bb59b58e9d658ce5aabc13
+[modif'
+mvacher <marc.cordelle.vacher@gmail.com>**20260218110852
+ Ignore-this: 187f0c12a63092c56bb71f1171e27ac2559ccad7e8acb8968e973f3fafd955c8db76f4bfdbd9324c
+] 
+hash: 0000000377-43d62778b09e60e6cfc7e71482ca46c5c77cea1f984ecf1e89acee1bb75e92e8
+[add two-phase.h
+mvacher <marc.cordelle.vacher@gmail.com>**20260218124513
+ Ignore-this: a5165544ca783a6e83eaf1283bb9cd4a1e1a0fdf9e3857d151770855d0f71b6315d1873dd8073ecb
+] 
+hash: 0000000982-feef92ba61bfc6fb1eab9f051968d97633bab701ec89303aeeda3df3a8f890ab
+[add two-phase.h
+mvacher <marc.cordelle.vacher@gmail.com>**20260218125425
+ Ignore-this: 9e734b4a8a6d8ef3354972bd7e68e36d0b77f2ae7e174e49c5666c19e7227589b7c2fee386a48640
+] 
+hash: 0000001106-05ca24bcf33624f50d2be2c30e5e279d5f4153a789a3b0e640e7504a5ea94af5
+[add gravity
+mvacher <marc.cordelle.vacher@gmail.com>**20260218135512
+ Ignore-this: 4db58fbaf2373cee9411e350b1c4c085ea34d5a6250666039f31805be08781e2131d9ed6bfae863f
+] 
+hash: 0000001217-542d6c1c966f0f2829560a0308aeec9264fc423333d14d8611b87767f311d348
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260218135918
+ Ignore-this: ed4630b4aa37ef846c93ff4679d2a3e16dbec3fcd3fe52c0f69fbb867a609586296745fe88626cb2
+] 
+hash: 0000000801-2c83aef3f5ccb013bdd32ac6c68f2843ff1062b564ab4ba359afdfe7b81e7572
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260218140406
+ Ignore-this: 9f269dd55e52723f58ccc9a6602c63af40158a3963d9941bbfe5279c4d545f45e121f147de1f6f40
+] 
+hash: 0000000225-a633140756ef6bfbae96b85bfbd10663b7874fda014394206986c062301545fa
+[cannot make reduced work...
+mvacher <marc.cordelle.vacher@gmail.com>**20260218140700
+ Ignore-this: 79ff93fa6af0b3cd103ed1b7870cdecfabb856c07c26ccf9306149f6271c42ae4c780ebd41dffde8
+] 
+hash: 0000000293-19e018d0b37c4b1c6dbd9c0d0498e7977c4be628c5d14faf8c4eb53b1d9f09fa
+[Link to displaying dump files
+Stephane Popinet <popinet@basilisk.fr>**20260218145827
+ Ignore-this: 56dcac38b2b3d157a24eead52e2abc719a976edb99ab9597f15a98382b4ea678e35ca5f4b0a508c4
+] 
+hash: 0000000445-80e49e3858f43ce0d20e254afdad7b5d5217d016126ceab36d40c28bc57e74f9
+[How to construct a 3D terrain from a KDT database
+Stephane Popinet <popinet@basilisk.fr>**20260218150832
+ Ignore-this: 9cd8ddcc0cbdf7885bf50090bdd4a118
+] 
+hash: 0000003784-29bd9de8155361be0a8e8a074ddb009af8ab29a0e765cb8f8c4fd954c7e17531
+[Added link
+Stephane Popinet <popinet@basilisk.fr>**20260218151708
+ Ignore-this: 261ab68f6082ecaa9c4175608bcc1ec48d2b61186b18a4a25db3f618bd24d5d4082fa1413f5d87a4
+] 
+hash: 0000000234-59099a5d7ea55192476648bb40aadefc529ec6d5bd4dd124464cecb390eac0e0
+[EHD stresses are checked for 3D
+J.M. Lopez-Herrera <jmlopez@us.es>**20260218165641
+ Ignore-this: 752078e0cacfec94dceb5915795b15fa
+] 
+hash: 0000005774-fca9b38d3fbacb8132d2d10233beb34975c495fddfbe762afaa4b56e64a5384c
+[new try
+mvacher <marc.cordelle.vacher@gmail.com>**20260218185615
+ Ignore-this: 22bcc1fe7c5e7ead4b7c593521b2964be4b3da8e60ee5f6e188e57479039819abd77e06b4e8cb1e1
+] 
+hash: 0000003021-71b40ec6f57d5b8ff9608707a49356336d0a13a73729475e4e01c5ed19f09237
+[tests
+mvacher <marc.cordelle.vacher@gmail.com>**20260218192616
+ Ignore-this: 4b204cd88b63d384ea33090e37cde8583100f5d1820098f5535867451c6b8ff3cf858fcd20c4b8d6
+] 
+hash: 0000002656-126514776600b51f253d692ae3d6e76af409c92b2bcbe5a86f45ec560c424876
+[thx WMW
+mvacher <marc.cordelle.vacher@gmail.com>**20260218203011
+ Ignore-this: 16391db674838beeacb366dbeeb65210befbe437e7ef33b53e980f3ce16b0087b2c4878b9664f45a
+] 
+hash: 0000001278-ccd805d31325a29a42a3c118052f6ccc527bbfc12fdcb037bff5b263fedc06ef
+[video
+mvacher <marc.cordelle.vacher@gmail.com>**20260218203242
+ Ignore-this: e5fbc2790abfc35b1c76070b7aade659bce82567a756926ce471587099164d6779463c966c6bef06
+] 
+hash: 0000000238-934adb92213ef8979181c5e550675b5865de5e2d81a45112021c31f79e5e36b0
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260218204457
+ Ignore-this: 9ff7fb1332cd1704647edb0a9da12b507df116afa25f010c49af62aad692eb8a4cb91a778d56e417
+] 
+hash: 0000000215-937a86ad306934781238deb32b2712c9ca7bd202e8944ba3415e79bd1a170785
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260218204613
+ Ignore-this: da01837f2cebdd75451e994e9bdc21fb7ed1d542851be6cad3895d8afcdaeefe9ed3a1c302e2abc
+] 
+hash: 0000000399-87657aa09296975bbad4f549a57d446e5195c413dbbac7baa285a5411977ee3e
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260218210620
+ Ignore-this: 9cda88d4e417c8263fdacaf38e488161679333ea08280f4e82afb44236cb054d4286f6a81ccea18f
+] 
+hash: 0000000771-0f6beacd39d9b63059009daa5ec270a782516622d91c388493a035e8e982850d
+[need for more adimensionning but ok !
+mvacher <marc.cordelle.vacher@gmail.com>**20260218211842
+ Ignore-this: 3e0e2bdd40ca09db6a491e83590e064d72e516594a0693672cbe4abfc7a37eeb0205cfb084396345
+] 
+hash: 0000000571-c0600dfb06ad7fb9ed885e8d03abd5f18c964977354ab406fbecc7f26dfdfcc6
+[remove things
+mvacher <marc.cordelle.vacher@gmail.com>**20260218212123
+ Ignore-this: 625b60ee8d1b105bd7eb30bd8d519d7b4f5258f52f0d763a6867e4566443dd8f5c45fb712a732d18
+] 
+hash: 0000000377-1c87ce2863fc61361e262dd45e50d81cf126fb35a816141d2dd4dd19b82a2b59
+[Deleted using web interface
+mvacher <marc.cordelle.vacher@gmail.com>**20260218213901
+ Ignore-this: e4c68ea1ad78cdcfe3906e5093f5a288eafce8b1826ec7bcf7dab6cc4af71aa7052f4c076b26058
+] 
+hash: 0000003743-bbc9f7797abfca89edf2b1d16e94a25279bc12ec58895cc3f94ecdbeb10797fe
+[done for today
+mvacher <marc.cordelle.vacher@gmail.com>**20260218213943
+ Ignore-this: f5e00e2cdc760dcf0b0eb36e7a519ed4344eec78d7b36fc2afa710a248583c5c32e3b99051075b41
+] 
+hash: 0000000759-5882d5937c23650bc85f4cfe7e8e4fb459ef90cd92e71a7fc6d8fea16258bf66
+[better video
+mvacher <marc.cordelle.vacher@gmail.com>**20260218214157
+ Ignore-this: ba743ec7ae3e9c3df7a9e3248cbc40103ca8aab630fc377eb19ff8df9064bc851987750877a228be
+] 
+hash: 0000000322-1c5fec87fcc8a98535a28846aa453de4e019eea5eeb7114f212359e7b765a3cc
+[renaming
+mvacher <marc.cordelle.vacher@gmail.com>**20260218215253
+ Ignore-this: dae385736b91c9fe9e11b67e0f6c59d9b93c2185de843a3b7df70e868fbec574ddf7f88c1ce7a0f4
+] 
+hash: 0000003446-cf99c7ab19e155580009222db0c82e78495966fce71ba6ceef191f3c4e2a1b73
+[renaming
+mvacher <marc.cordelle.vacher@gmail.com>**20260218215440
+ Ignore-this: bec7fdcd116fba7b37f2e4d41b20d12437269275c9d7b3589d932c5e255dfb7fae4b047918c609ec
+] 
+hash: 0000000769-ba354af384fe7d91a246849dbd2c05190838b23377243953dd8d228ac8ca47eb
+[Deleted using web interface
+mvacher <marc.cordelle.vacher@gmail.com>**20260218215455
+ Ignore-this: 5ed6efd4bd4694a423e6303aa8a2fd0f00f86b802af5cbece5496b1b75e6429fd4e2f4c3b57cd14f
+] 
+hash: 0000003440-53ff6cc41cd88eadb67e7f2a38e34c62d1a6d32db950f6fb68099f9f0677dd1e
+[better video
+mvacher <marc.cordelle.vacher@gmail.com>**20260218223518
+ Ignore-this: 9412ec211704b286b054b32cb567db11a3323f3557d90f620b59a798c518df49439d38af53a1fb87
+] 
+hash: 0000000500-ba65d7b493df52c4bdd3c6086f324c66a4cf22e8b952397a1f3d4b51d96e0cdd
+[video quality
+mvacher <marc.cordelle.vacher@gmail.com>**20260218225702
+ Ignore-this: 15b5adeeecd428d14366e87c50b4961ce29468588c486b5a4acea79b7ad3cd83c6f15e1ba95d1ef
+] 
+hash: 0000001004-8911cd799f980e8583dfa257eff42f184661a47b8f165de16f6ef9dafde63978

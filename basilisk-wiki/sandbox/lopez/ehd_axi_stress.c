@@ -77,6 +77,9 @@ the forcing terms diverge near the axis of symmetry. */
 
 #define FX(x,y) cos(x)*sin(x)*sin(y)*(-3*y*cos(y)+(2*sq(y)-1)*sin(y))
 
+#define EX(x,y) (-y*sin(x)*sin(y))
+#define EY(x,y) (y*cos(x)*cos(y) + cos(x)* sin(y))
+
 phi[top] = dirichlet(0.);
 phi[bottom] = dirichlet(0.);
 
@@ -112,15 +115,11 @@ event plot_err (i = 0)
 {     
   face vector err[];
 
-  foreach_face (x) {
+  foreach_face (x)
     err.x[] = a.x[] - FX(x,y);
-    printf ("x: %g %g %g %g %g  \n", x, y, a.x[], FX(x,y), err.x[]);
-  }
      
-  foreach_face (y) {
+  foreach_face (y)
     err.y[] = a.y[] - FY(x,y);
-    printf ("y: %g %g %g %g %g \n", x, y, a.y[], FY(x,y),err.y[]);
-  }
   
   norm nx = normf (err.x), ny = normf (err.y);
      

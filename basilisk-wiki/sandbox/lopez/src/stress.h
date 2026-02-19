@@ -25,20 +25,20 @@ The logical place of these macros is in *common.h* as others. However,
 meanwhile... */
 
 #ifndef EMBED
-#define face_avg_gradient_t1_x(a,i) \
-  ((a[1,i-1] + a[1,i] - a[-1,i-1] - a[-1,i])/(4.*Delta)) 
-#define face_avg_gradient_t2_x(a,i) \
-  ((a[1,0,i-1] + a[1,0,i] - a[-1,0,i-1] - a[-1,0,i])/(4.*Delta)) 
-
 #define face_avg_gradient_t1_y(a,i) \
   ((a[i-1,1] + a[i,1] - a[i-1,-1] - a[i,-1])/(4.*Delta)) 
+#define face_avg_gradient_t2_z(a,i) \
+  ((a[i-1,0,1] + a[i,0,1] - a[i-1,0,-1] - a[i,0,-1])/(4.*Delta)) 
+
+#define face_avg_gradient_t1_x(a,i)				\
+  ((a[1,i-1] + a[1,i] - a[-1,i-1] - a[-1,i])/(4.*Delta)) 
+#define face_avg_gradient_t1_z(a,i) \
+  ((a[0,i-1,1] + a[0,i,1] - a[0, i-1,-1] - a[0,i,-1])/(4.*Delta)) 
+
+#define face_avg_gradient_t2_x(a,i)					\
+  ((a[1,0,i-1] + a[1,0,i] - a[-1,0,i-1] - a[-1,0,i])/(4.*Delta)) 
 #define face_avg_gradient_t2_y(a,i) \
   ((a[0,1,i-1] + a[0,1,i] - a[0,-1,i-1] - a[0,-1,i])/(4.*Delta))
-
-#define face_avg_gradient_t1_z(a,i) \
-  ((a[i-1,0,1] + a[i,0,1] - a[i-1,0,-1] - a[i,0,-1])/(4.*Delta)) 
-#define face_avg_gradient_t2_z(a,i) \
-  ((a[0,i-1,1] + a[0,i,1] - a[i-1,0,-1] - a[0,i,-1])/(4.*Delta)) 
 #endif
 
 /**
@@ -123,7 +123,7 @@ event acceleration (i++) {
       Mx.x[] = epsilon.x[]/2.*(sq(face_gradient_x (phi,0))  
                                - sq(face_avg_gradient_t1_y(phi, 0))
 #if dimension > 2			       
-                               - sq(face_avg_gradient_t1_z(phi, 0))
+                               - sq(face_avg_gradient_t2_z(phi, 0))
 #endif
 			       );
     foreach_face(y)
@@ -132,13 +132,13 @@ event acceleration (i++) {
 
 #if dimension > 2
     foreach_face(z)
-      Mx.z[] = epsilon.z[]*(face_gradient_z (phi, 0))*
-                          *face_avg_gradient_t1_x (phi, 0);
+      Mx.z[] = epsilon.z[]*(face_gradient_z (phi, 0))
+      *face_avg_gradient_t2_x (phi, 0);
 #endif    
     
     /**
-    The electric force is the divergence of the Maxwell stress tensor
-    $\mathbf{M}$. */
+       The electric force is the divergence of the Maxwell stress tensor
+       $\mathbf{M}$. */
 
     foreach() {
       double d = 0.;

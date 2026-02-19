@@ -59,6 +59,8 @@ hunk ./sandbox/Kaustubh/Readme 1
 -
 -Codes to be uploaded soon !!!
 rmfile ./sandbox/Kaustubh/Readme
+rmdir ./sandbox/Kaustubh
+rmdir ./sandbox/MCVacher/imp_jets
 hunk ./sandbox/acastillo/frozen_waves/without_walls/Makefile 1
 -include $(BASILISK)/Makefile.defs
 -

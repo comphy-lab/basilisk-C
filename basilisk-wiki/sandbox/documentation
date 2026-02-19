@@ -41,9 +41,10 @@ The contributions in the `sandbox/` which have proven their usefulness are meant
 ## Basilisk view (`bview`)
 
 * [Runtime graphics generation](/src/view.h)
-* [Installation](/src/gl/INSTALL)
-* [The draw commands](/src/draw.h)  
+* [The draw commands](/src/draw.h)
 * [Interactive bview](/src/jview/README)  
+* [Displaying dump files](/src/bview.c)
+* [Installation (for experts)](/src/gl/INSTALL)
 
 ## The wiki
 

@@ -19,7 +19,7 @@ scalar * tracers = {s};
 double U0;        // Jet inlet velocity
 double R_d;       // Jet radius
 double ceiling;   // Height of the solid ceiling
-
+double as_r;      // Aspect ratio of the jet
 
 // Domain extents used for visualization
 double xmin, ymin;
@@ -33,12 +33,13 @@ face vector muv[];
 
 int main() {
 
-  Re=160;
-
-  R_d     = 0.003;  // Initial jet radius
-  L0      = 0.5;    // Domain size
-  U0      = 1.;     // Inlet velocity magnitude
-  ceiling = 0.1;    // Ceiling height
+  Re=340;
+  
+  as_r    = 8;                 // H/(2*R_d)
+  L0      = 0.8;               // Domain size
+  U0      = 1.;                // Inlet velocity magnitude
+  ceiling = 0.1;               // Ceiling height
+  R_d     = ceiling/(2*as_r);  // Initial jet radius
 
   TOLERANCE = 1e-3 [*];
 
@@ -75,13 +76,13 @@ int main() {
 }
 
 /**
-Viscosity definition : $\mu = U_0 \times R_d / Re$ inside the fluid.
+Viscosity definition : $\mu = U_0 \times 2R_d / Re$ inside the fluid.
 */
 
 event properties (i++)
 {
   foreach_face() {
-    muv.x[] = fm.x[]*U0*R_d/Re;
+    muv.x[] = fm.x[]*U0*2*R_d/Re;
   }
 }
 
@@ -109,7 +110,7 @@ event logfile (i++) {
 /**
 Movie outputs for velocity, tracer and pressure fields
 */
-event ppm_output (t = 0; t += 0.02; t <= 40) { //t_max
+event ppm_output (t = 0; t += 0.01; t <= 10) { //t_max
   char name[80];
   sprintf (name, "uX.mp4");
   output_ppm (u.x, file = name, n = 512, min = -U0, max = +U0, linear = true, box = {{xmin, ymin}, {xmax, ymax}});
@@ -124,7 +125,7 @@ event ppm_output (t = 0; t += 0.02; t <= 40) { //t_max
   
   char name3[80];
   sprintf (name3, "p.mp4");
-  output_ppm (p, file = name3, n = 512, min = -1/2*U0*U0, max = -1/2*U0*U0 , linear = true, box = {{xmin, ymin}, {xmax, ymax}});
+  output_ppm (p, file = name3, n = 512, min = -1/2*U0*U0, max = 1/2*U0*U0 , linear = true, box = {{xmin, ymin}, {xmax, ymax}});
 }
 
 /**
@@ -132,7 +133,7 @@ Periodic dump for restart and post-processing
 */
 double t_prev_dump = 0.;
 
-event dump_state (t = 0; t += 10; t <= 40) { //t_max
+event dump_state (t = 0; t += 5; t <= 10) { //t_max
   dump("restart");
   t_prev_dump = t;
   fprintf(stderr, "Dumped state at t = %g\n", t);
