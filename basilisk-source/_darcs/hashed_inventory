@@ -1,4 +1,4 @@
-pristine:30984cf41fb38b2b528a2c318465346f18dc2486a2b722e89864ecb78a1a11c3
+pristine:5690c669a357f8e9ef8386819bb1ad3ad383f1a6f442a6e119da66a61a189a53
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -588,3 +588,18 @@ Stephane Popinet <popinet@basilisk.fr>**20260216172959
  Ignore-this: 85fc82030b5a0e2fa67d59a3936483edcf7eb88b009249224ad3ea6a9a665e6046d14ac19731c328
 ] 
 hash: 0000001068-43900c3dc54f49d12f2662c909f430814d918da76af51bb26e00f8001a5bfe1d
+[Updated references
+Stephane Popinet <popinet@basilisk.fr>**20260106105039
+ Ignore-this: 49332d5889dfa9a05c012c4b119f8609
+] 
+hash: 0000117438-b54d49ced3254687886535f7d2389739d1ed3558f1e67764a4121dd18f7c7431
+[Fixed expression for the quadratic bottom friction
+Stephane Popinet <popinet@basilisk.fr>**20260219153752
+ Ignore-this: 35c9d012952e18f6f55d6f92b0b71362
+] 
+hash: 0000100663-3eda0c87e3df1b3d1cf9667edc7de0e7c38ca1bb9eb963d5d866ebb22d1ee8bb
+[Updated references
+Stephane Popinet <popinet@basilisk.fr>**20260219155914
+ Ignore-this: 501a6a7e7057719e2e42830a525657b1001a157262b80527902361d20d9e389b438cc646fd83f936
+] 
+hash: 0000100163-919db8b86658d248c340350034d1f20ee6433627d82ee69f430d40eb424b1ea4

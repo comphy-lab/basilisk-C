@@ -233,7 +233,7 @@ event init (i = 0)
 The bottom boundary slip length corresponding to quadratic bottom
 friction is given by
 $$
-\lambda_b = \nu\frac{h_0}{C_f|\mathbf{u}|}
+\lambda_b = \frac{\nu}{C_f|\mathbf{u}|}
 $$
 with $C_f$ the (dimensionless) quadratic bottom friction coefficient. */
 
@@ -243,11 +243,11 @@ event viscous_term (i++)
 {
   // Quadratic bottom friction,
   // see also: gerris-snapshot/doc/figures/diffusion.tm
-  double Cf = 1e-2; // fixme: this has the dimensions of a length...
+  double Cf = 1e-2;
   lambda_b = lambda_q;
   foreach() {
     double au = norm(u);
-    lambda_q.x[] = au < 1e-6 ? HUGE : nu*h[]/(Cf*au);
+    lambda_q.x[] = au < 1e-6 ? HUGE : nu/(Cf*au);
   }
 }
 
