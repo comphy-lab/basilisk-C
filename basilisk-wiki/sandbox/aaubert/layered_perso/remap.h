@@ -8,7 +8,9 @@ The remap function is inspired by the Fortran [PPR Library](https://github.com/d
 and Kelley to perform the remapping. The default settings are using
 the Parabolic Piecewise Method without limiting. */
 
-//#include "ppr/ppr.h"   //not needed anymore
+#include "ppr/ppr.h"   //not used for the new remap
+
+#include "remap-util.h"  //utility function that implements the new remap
 
 /**
 For now, it only implements the p3e method for the edge value and the ppm method for the polynomial reconstruction
@@ -128,16 +130,6 @@ void vertical_remapping (scalar h, scalar * tracers)
   }
 }
 
-
-//limiter used by the remap function. It is a minmod limiter
-double minmodremap(double a, double b) {
-  if (a*b>0.) {
-    return fabs(a)<fabs(b)?a:b;
-  }
-  else {
-    return 0.;
-  }
-}
 
 void vertical_remapping_2 (scalar hprec, scalar hnew, scalar * tracers2,bool pressure)
 {

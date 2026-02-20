@@ -1,5 +1,5 @@
 include $(BASILISK)/Makefile.defs
-CFLAGS+= -O2 -march=native -mtune=native -disable-dimensions -DMTRACE=3 I$(DOCUMENT_ROOT)/sandbox
+CFLAGS+= -O2 -march=native -mtune=native -disable-dimensions -DMTRACE=3 -I$(DOCUMENT_ROOT)/sandbox
 
 VTU_TESTS = test_output_vtu.tst \
             test_output_vtu_box.tst \
@@ -24,11 +24,12 @@ hdf-tree3D:  GFLAGS = -grid=octree
 hdf-mgrid:   GFLAGS = -grid=multigrid
 hdf-mgrid3D: GFLAGS = -grid=multigrid3D
 
-# Notes: 
-# - box in hdf-tree-mpi is empty, 3D is fine 
-# - box in hdf-mgrid-mpi is empty, 3D is fine 
+# Notes:
+# - box in hdf-tree-mpi is empty, 3D is fine
+# - box in hdf-mgrid-mpi is empty, 3D is fine
 # - hdf-mgrid-mpi and hdf-mgrid3D-mpi are fine
 # - hdf-mgrid-mpi and hdf-tree3D-mpi are fine
+# - for now, prefer xmf to hdf
 
 # Runner for all grid types
 vtu-tree vtu-tree3D vtu-mgrid vtu-mgrid3D:

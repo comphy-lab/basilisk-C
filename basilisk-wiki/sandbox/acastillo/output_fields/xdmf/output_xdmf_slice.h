@@ -21,14 +21,15 @@ The arguments and their default values are:
  * **slist** : Pointer to an array of scalar data.
  * **vlist** : Pointer to an array of vector data.
  * **subname** : String used to construct the HDF5 file name.
- * **n** : Vector defining the plane
- * **alpha** : Intersect defining the plane
- * **compression_level** : Level of compression to use when writing data to the HDF5 file. 
+  * **n** : Vector defining the plane
+  * **alpha** : Intersect defining the plane
+  * **mode** : Writing mode (HDF5_CONTIGUOUS or HDF5_CHUNKED).
+  * **compression_level** : Compression level for GZIP or rate for ZFP.
 
 */
 
 
-trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n = {0, 0, 1}, double _alpha = 0, int compression_level = 9){
+trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n = {0, 0, 1}, double _alpha = 0, int mode = HDF5_CHUNKED, int compression_level = 6){
 #ifdef HAVE_HDF5
   hid_t file_id;     // HDF5 file ID
   hid_t group_id;    // HDF5 group ID
@@ -53,11 +54,12 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
   }
 
   // Obtain the number of points and cells and get a marker to reconstruct the topology
-  int num_points = 0, num_cells = 0, num_points_loc = 0, num_cells_loc = 0;
+  long num_points = 0, num_cells = 0;
+  long num_points_loc = 0, num_cells_loc = 0;
   count_points_and_cells_slice(&num_points, &num_cells, &num_points_loc, &num_cells_loc, per_mask, n, _alpha);
 
   // Calculate offsets for parallel I/O
-  int offset_points[npe()], offset_cells[npe()];
+  long offset_points[npe()], offset_cells[npe()];
   calculate_offsets(offset_points, offset_cells, num_points_loc, num_cells_loc, offset);
 
   // Initialize marker for topology reconstruction
@@ -69,15 +71,16 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
     write_xdmf_light_data(slist, vlist, name, subname, num_cells, num_points, dim = dimension - 1);
 
   // Create HDF5 file using helper
-  file_id = create_xdmf_file(name);
+  file_id = create_hdf5_file(name);
+  if (file_id < 0) return; // Exit if file creation failed
 
-  // Define chunk size for parallel I/O
-  hsize_t chunk_size = num_cells / npe() / 8;
+  // Centralized chunk size calculation
+  hsize_t chunk_size = compute_chunk_size(num_cells);
 
   // Populate and write the topology dataset
   long *topo_dset;
   populate_topo_dset_slice(&topo_dset, num_cells_loc, offset_cells, count, offset, per_mask, marker, n, _alpha);
-  create_chunked_dataset(file_id, count, offset, "/Topology", num_cells, num_cells_loc, pow(2, dimension - 1), topo_dset, H5T_NATIVE_LONG, chunk_size, compression_level);
+  write_dataset(file_id, count, offset, "/Topology", num_cells, num_cells_loc, pow(2, dimension - 1), topo_dset, H5T_NATIVE_LONG, mode, chunk_size, compression_level);
   free(topo_dset);
 
   // Create group for mesh geometry data
@@ -86,7 +89,7 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
   // Populate and write the points dataset
   double *points_dset;
   populate_points_dset_slice(&points_dset, num_points_loc, offset_points, count, offset, n, _alpha);
-  create_chunked_dataset(group_id, count, offset, "/Geometry/Points", num_points, num_points_loc, 3, points_dset, H5T_NATIVE_DOUBLE, chunk_size, compression_level);
+  write_dataset(group_id, count, offset, "/Geometry/Points", num_points, num_points_loc, 3, points_dset, H5T_NATIVE_DOUBLE, mode, chunk_size, compression_level);
   free(points_dset);
   H5Gclose(group_id);
 
@@ -100,7 +103,7 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
     char substamp[1024];
     sprintf(substamp, "/Cells/%s", s.name);
     populate_scalar_dset_slice(s, scalar_dset, num_cells_loc, offset_cells, count, offset, per_mask, n, _alpha);
-    create_chunked_dataset(group_id, count, offset, substamp, num_cells, num_cells_loc, 1, scalar_dset, H5T_NATIVE_DOUBLE, chunk_size, compression_level);
+    write_dataset(group_id, count, offset, substamp, num_cells, num_cells_loc, 1, scalar_dset, H5T_NATIVE_DOUBLE, mode, chunk_size, compression_level);
   }
   free(scalar_dset);
 
@@ -111,12 +114,13 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
     char substamp[1024];
     sprintf(substamp, "/Cells/%s", v.x.name);
     populate_vector_dset_slice(v, vector_dset, num_cells_loc, offset_cells, count, offset, per_mask, n, _alpha);
-    create_chunked_dataset(group_id, count, offset, substamp, num_cells, num_cells_loc, 3, vector_dset, H5T_NATIVE_DOUBLE, chunk_size, compression_level);
+    write_dataset(group_id, count, offset, substamp, num_cells, num_cells_loc, 3, vector_dset, H5T_NATIVE_DOUBLE, mode, chunk_size, compression_level);
   }
   free(vector_dset);
   H5Gclose(group_id);
 
   // Close HDF5 resources
+  H5Fflush(file_id, H5F_SCOPE_GLOBAL);
   H5Fclose(file_id);
 #else
   // HDF5 not available - print warning and return

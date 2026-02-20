@@ -128,9 +128,9 @@ int main() {
 
 
     for (int n=0;n<Nremap;n++) {
-        my_remap_perso_perso_C (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_pc, end_pc,
+        my_remap_perso (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_pc, end_pc,
 		    &edge_meth, &cell_meth, &cell_lim, &f_b,&lambda_b,&f_t,&lambda_t);
-        my_remap_perso_perso_C (&nposend, &nposinit, &ndof, &nvar, zend, zinit, end_pc, init_pc,
+        my_remap_perso (&nposend, &nposinit, &ndof, &nvar, zend, zinit, end_pc, init_pc,
 		    &edge_meth, &cell_meth, &cell_lim, &f_b,&lambda_b,&f_t,&lambda_t);
         my_remap (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_pf, end_pf,
 		    &edge_meth, &cell_meth, &cell_lim);
@@ -173,9 +173,9 @@ plot "test_polynom.txt" using 2:3 title "init" with boxes fc 'gray', "test_polyn
 
 
     for (int n=0;n<Nremap;n++) {
-        my_remap_perso_perso_C (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_sc, end_sc,
+        my_remap_perso (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_sc, end_sc,
 		    &edge_meth, &cell_meth, &cell_lim, &f_b,&lambda_b,&f_t,&lambda_t);
-        my_remap_perso_perso_C (&nposend, &nposinit, &ndof, &nvar, zend, zinit, end_sc, init_sc,
+        my_remap_perso (&nposend, &nposinit, &ndof, &nvar, zend, zinit, end_sc, init_sc,
 		    &edge_meth, &cell_meth, &cell_lim, &f_b,&lambda_b,&f_t,&lambda_t);
         my_remap(&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_sf, end_sf,
 		    &edge_meth, &cell_meth, &cell_lim);
@@ -218,9 +218,9 @@ plot "test_sharp.txt" using 2:3 title "init" with boxes fc 'gray', "test_sharp.t
 
 
     for (int n=0;n<Nremap;n++) {
-        my_remap_perso_perso_C (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_gc, end_gc,
+        my_remap_perso (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_gc, end_gc,
 		    &edge_meth, &cell_meth, &cell_lim, &f_b,&lambda_b,&f_t,&lambda_t);
-        my_remap_perso_perso_C (&nposend, &nposinit, &ndof, &nvar, zend, zinit, end_gc, init_gc,
+        my_remap_perso (&nposend, &nposinit, &ndof, &nvar, zend, zinit, end_gc, init_gc,
 		    &edge_meth, &cell_meth, &cell_lim, &f_b,&lambda_b,&f_t,&lambda_t);
         my_remap (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_gf, end_gf,
 		    &edge_meth, &cell_meth, &cell_lim);

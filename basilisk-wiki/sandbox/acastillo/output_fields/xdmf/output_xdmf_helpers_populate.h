@@ -4,7 +4,8 @@
 #ifdef HAVE_HDF5
 
 /** ### Populate topo_dset based on markers and dimensions */ 
-void populate_topo_dset(long **topo_dset, int num_cells, int *offset_cells, hsize_t *count, hsize_t *offset, scalar per_mask, vertex scalar marker) {
+trace
+void populate_topo_dset(long **topo_dset, long num_cells, long *offset_cells, hsize_t *count, hsize_t *offset, scalar per_mask, vertex scalar marker) {
   // Each process defines dataset in memory and writes to an hyperslab
   count[0] = num_cells;
   count[1] = pow(2, dimension);
@@ -20,11 +21,11 @@ void populate_topo_dset(long **topo_dset, int num_cells, int *offset_cells, hsiz
   *topo_dset = (long *)malloc(count[0] * count[1] * sizeof(long));
 
   // Iterate over each cell
-  int num_cells_iter = 0;
+  long num_cells_iter = 0;
   foreach (serial, noauto){
     if (per_mask[]){    
       // Calculate starting index for topo_dset
-      int ii = num_cells_iter * count[1];
+      long ii = num_cells_iter * count[1];
 
       // Assign marker values to topo_dset
       (*topo_dset)[ii + 0] = (long)marker[];
@@ -39,12 +40,13 @@ void populate_topo_dset(long **topo_dset, int num_cells, int *offset_cells, hsiz
         (*topo_dset)[ii + 6] = (long)marker[1, 1, 1];
         (*topo_dset)[ii + 7] = (long)marker[0, 1, 1];
       #endif
-    }
-    num_cells_iter++;
+      num_cells_iter++;
+    }    
   }
 }
 
-void populate_topo_dset_slice(long **topo_dset, int num_cells, int *offset_cells, hsize_t *count,
+trace
+void populate_topo_dset_slice(long **topo_dset, long num_cells, long *offset_cells, hsize_t *count,
                               hsize_t *offset, scalar per_mask, vertex scalar marker, coord n = {0, 0, 1}, double _alpha = 0)
 {
   // Each process defines dataset in memory and writes to an hyperslab
@@ -66,7 +68,7 @@ void populate_topo_dset_slice(long **topo_dset, int num_cells, int *offset_cells
   foreach (serial, noauto){
     if (per_mask[]){
       // Calculate index
-      int ii = num_cells * count[1];
+      long ii = num_cells * count[1];
       if (n.x == 1){
         (*topo_dset)[ii + 0] = (long)marker[1, 0, 0];
         (*topo_dset)[ii + 1] = (long)marker[1, 1, 0];
@@ -91,7 +93,8 @@ void populate_topo_dset_slice(long **topo_dset, int num_cells, int *offset_cells
 }
 
 /** ### Populate points_dset based on markers and dimensions */ 
-void populate_points_dset(double **points_dset, int num_points, int *offset_points, hsize_t *count, hsize_t *offset) {
+trace
+void populate_points_dset(double **points_dset, long num_points, long *offset_points, hsize_t *count, hsize_t *offset) {
   // Each process defines dataset in memory and writes to an hyperslab
   count[0] = num_points;
   count[1] = 3;
@@ -107,10 +110,10 @@ void populate_points_dset(double **points_dset, int num_points, int *offset_poin
   *points_dset = (double *)malloc(count[0] * count[1] * sizeof(double));
 
   // Iterate over each vertex
-  int num_points_iter = 0;
+  long num_points_iter = 0;
   foreach_vertex(serial, noauto){
     // Calculate starting index
-    int ii = num_points_iter * 3;
+    long ii = num_points_iter * 3;
 
     // Store coordinates
     (*points_dset)[ii + 0] = x;
@@ -124,7 +127,8 @@ void populate_points_dset(double **points_dset, int num_points, int *offset_poin
   }
 }
 
-void populate_points_dset_slice(double **points_dset, int num_points, int *offset_points, hsize_t *count,
+trace
+void populate_points_dset_slice(double **points_dset, long num_points, long *offset_points, hsize_t *count,
                                 hsize_t *offset, coord n = {0, 0, 1}, double _alpha = 0)
 {
   // Each process defines dataset in memory and writes to an hyperslab
@@ -147,7 +151,7 @@ void populate_points_dset_slice(double **points_dset, int num_points, int *offse
     shortcut_slice(n, _alpha);
 
     // Calculate starting index
-    int ii = num_points * 3;
+    long ii = num_points * 3;
 
     // Store coordinates
     (*points_dset)[ii + 0] = x;
@@ -158,7 +162,8 @@ void populate_points_dset_slice(double **points_dset, int num_points, int *offse
 }
 
 /** ### Populate scalar_dset using the the scalar s */ 
-void populate_scalar_dset(scalar s, double *scalar_dset, int num_cells, int *offset_cells, hsize_t *count, hsize_t *offset, scalar per_mask) {
+trace
+void populate_scalar_dset(scalar s, double *scalar_dset, long num_cells, long *offset_cells, hsize_t *count, hsize_t *offset, scalar per_mask) {
   // Each process defines dataset in memory and writes to an hyperslab
   count[0] = num_cells;
   count[1] = 1;
@@ -170,7 +175,7 @@ void populate_scalar_dset(scalar s, double *scalar_dset, int num_cells, int *off
     }
   }
 
-  int num_cells_iter = 0;
+  long num_cells_iter = 0;
   foreach (serial, noauto){
     if (per_mask[]){
       // Store values
@@ -180,7 +185,8 @@ void populate_scalar_dset(scalar s, double *scalar_dset, int num_cells, int *off
   }
 }
 
-void populate_scalar_dset_slice(scalar s, double *scalar_dset, int num_cells, int *offset_cells, hsize_t *count,
+trace
+void populate_scalar_dset_slice(scalar s, double *scalar_dset, long num_cells, long *offset_cells, hsize_t *count,
                                 hsize_t *offset, scalar per_mask, coord n = {0, 0, 1}, double _alpha = 0)
 {
   // Each process defines dataset in memory and writes to an hyperslab
@@ -194,7 +200,7 @@ void populate_scalar_dset_slice(scalar s, double *scalar_dset, int num_cells, in
     }
   }
 
-  int num_cells_iter = 0;
+  long num_cells_iter = 0;
   foreach (serial, noauto){
     if (per_mask[]){
       if (n.x == 1)
@@ -209,7 +215,8 @@ void populate_scalar_dset_slice(scalar s, double *scalar_dset, int num_cells, in
 }
 
 /** ### Populate vector_dset using the vector v */ 
-void populate_vector_dset(vector v, double *vector_dset, int num_cells, int *offset_cells, hsize_t *count, hsize_t *offset, scalar per_mask) {
+trace
+void populate_vector_dset(vector v, double *vector_dset, long num_cells, long *offset_cells, hsize_t *count, hsize_t *offset, scalar per_mask) {
   // Each process defines dataset in memory and writes to an hyperslab
   count[0] = num_cells;
   count[1] = 3;
@@ -221,11 +228,11 @@ void populate_vector_dset(vector v, double *vector_dset, int num_cells, int *off
     }
   }
 
-  int num_cells_iter = 0;
+  long num_cells_iter = 0;
   foreach (serial, noauto){
     if (per_mask[]){
       // Calculate starting index
-      int ii = num_cells_iter * 3;
+      long ii = num_cells_iter * 3;
 
       // Store each component
       vector_dset[ii + 0] = v.x[];
@@ -241,7 +248,8 @@ void populate_vector_dset(vector v, double *vector_dset, int num_cells, int *off
 }
 
 #if dimension == 3
-void populate_vector_dset_slice(vector v, double *vector_dset, int num_cells, int *offset_cells, hsize_t *count,
+trace
+void populate_vector_dset_slice(vector v, double *vector_dset, long num_cells, long *offset_cells, hsize_t *count,
                                 hsize_t *offset, scalar per_mask, coord n = {0, 0, 1}, double _alpha = 0){
   // Each process defines dataset in memory and writes to an hyperslab
   count[0] = num_cells;
@@ -254,10 +262,10 @@ void populate_vector_dset_slice(vector v, double *vector_dset, int num_cells, in
     }
   }
 
-  int num_cells_iter = 0;
+  long num_cells_iter = 0;
   foreach (serial, noauto){
     if (per_mask[]){
-      int ii = num_cells_iter * 3;
+      long ii = num_cells_iter * 3;
       if (n.x == 1){
         vector_dset[ii + 0] = 0.5 * (val(v.x) + val(v.x, 1, 0, 0));
         vector_dset[ii + 1] = 0.5 * (val(v.y) + val(v.y, 1, 0, 0));
