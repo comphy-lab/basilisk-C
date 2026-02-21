@@ -12,7 +12,9 @@ despite having used the right amount of processors.
 
 */
 
-#include "navier-stokes/multigrid3D.h"
+#include "grid/multigrid3D.h"
+#include "utils.h"
+#include "output.h"
 #define LEVEL 8 // You need to change this to 10 or 11 to see the bug
 
 int main(){

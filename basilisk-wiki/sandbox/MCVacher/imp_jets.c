@@ -144,29 +144,3 @@ as reported by Bongarzone *et al.* (2021) and Bertsch *et al.* (2020).
 event profile (t = end) {
   printf("-----END-----\n");
 }
-/**
-## Results and interpretations
-
-A clear unstable periodic mode is taking place in the channel. We can perform, as done in the articles, a linear stability study. Here are some quick results obtained by Timothée Salamon.
-
-<img src="https://lh3.googleusercontent.com/sitesv/AAzXCkcqvbCUkOffg6Cb71PZ-FUt3itkyoR65ezSEBHJx8KpFiNY4PF4WtVgeY78usICMe1MXEquUjNsfqzHU7gODGDoigCvp42hMA0HmQOPO59MhtXs6ENcAQhjBy7RFavnzqmGbvuvez1h-e4x5CTOJrfXX-1U6zhwX1NR84PUZA6xOGhQiVzBx7vm2jcOwKV0smzgkXk7HbA2bjMp2tgaVbs0eXUmO6QkjTPnsH0=w1280" alt="drawing" width="400" style="display:block; margin-left:auto; margin-right:auto;"/>
-
-<p align="center">*Mode 1 obtained by linear stability analysis*</p>
-
-Mode 1 is the unstable mode that we are mostly seeing. It has a exponential growth rate of $\approx 2 \times 10^{-2}$ s$^{-1}$ and a pulsation of $\approx 1.5 \times 10^{-2}$ s$^{-1}$ which is the one we see on the video.
-
-<img src="https://lh3.googleusercontent.com/sitesv/AAzXCkdi6eoBX5gGY3ngN4uupuUyWtF804ik3P5mAcVn4r0xouwqYt1HMFEYSy028cDZE3SBxQ7cHhk0OdU9OV3MEzyJtjmzytyjIawiNITgIG7KRSFwQtjrQ4MO9xHGD_k8VbVdpBRl_T4OL89AdIQkWQ9kpSrW3ImsGMuvR7cW2Pt-XaftaHVa4pmiV4p-R0OFKLq949V4qC3lIYcApgbSR2IyJlip838luccp=w1280" alt="drawing" width="400" style="display:block; margin-left:auto; margin-right:auto;"/>
-
-<p align="center">*Mode 2 obtained by linear stability analysis*</p>
-
-<img src="https://lh3.googleusercontent.com/sitesv/AAzXCkezU6YfWGV5TUcuIntSCjpOO6kfpUd3n6hrvR4JaWN7y_5BxHcM3Gm8L84mPgp1aR6ksXN8121zaJ7clG8hswJg6NAOiO_qsRiPXU-MOJpyY7gufpebZgs4tih_m4wYWC5ERFS9FsEZOGfSuLYX6jY62uql4DkTbFlaMOQ--BidcbH-zEAmtOv-uq8KxQHBD-iHo1dLIRxzUgDssg6W3_h-ttJfAYEzlUgS98E=w1280" alt="drawing" width="400" style="display:block; margin-left:auto; margin-right:auto;"/>
-
-<p align="center">*Mode 3 obtained by linear stability analysis*</p>
-
-Mode 2 and Mode 3 are stationnary mode (meaning the pulsation $\omega$ = 0). They are very close one to another in the eigenvalue plot (they are circled), so maybe they are in reality the same mode and it is the mesh discretization that creates two separated spurious modes.
-
-<img src="https://lh3.googleusercontent.com/sitesv/AAzXCkcW6H7OylpTrYbU8L3Ytvw9GUnhGFJWGdCRy4Bjwx_wOqJDTOPEu_FvJI_qNkgPnMxp2BYJy-9IQk_OIYw4TA6gwhVm5pQVmlbuMC7Hl8ux-LW5QPPvacivTTVvgt8ntvgzgyzY0TuSZFJIKBTid2DRvcWC02gVrGon-FyJ1ySOmJ9loMR-ZPaypGH-bleibnxkC0xvwTOpFdaX1QpEeJx5HLZe3NLKkAAE=w1280" alt="drawing" width="400" style="display:block; margin-left:auto; margin-right:auto;"/>
-
-<p align="center">*Eigenvalue map*</p>
-
-*/

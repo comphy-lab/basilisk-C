@@ -16,7 +16,7 @@ double minmodremap(double a, double b) {
 
 
 void my_remap_perso (int * npos, int * nnew, int * nvar, int * ndof,
-	       double * xpos, double * xnew,
+	       const double * xpos, const double * xnew,
 	       double * fdat, double * fnew,
 	       int * edge_meth, int * cell_meth, int * cell_lim,
            double * f_b, double * lambda_b, double * f_t, double * lambda_t) {  

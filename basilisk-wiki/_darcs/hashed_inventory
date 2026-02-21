@@ -1,4 +1,4 @@
-pristine:88c63e7b5b37e591a5dc232dabec131ec7597e526a324df2d5055cd70b15b3ec
+pristine:b2ea4072ffb885c62139ac1351d11a12f56c4ff4ff52010f685313c2fc01bfcb
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -5778,3 +5778,158 @@ mvacher <marc.cordelle.vacher@gmail.com>**20260219170023
  Ignore-this: 4e2b111cbbf7cb8d3a4a1733b8988e6ecdcd47d840dc32eb7498220b7ece5f9108852f4019e2e0fc
 ] 
 hash: 0000000295-b37495763ed2eb3c95a1d9037d2ad01a92d850dfb0065da3b8a2bc8e175b107a
+[many tries, there is an effect of whether fraction is on the mesh or not
+mvacher <marc.cordelle.vacher@gmail.com>**20260220015450
+ Ignore-this: 3b177188b69c9fca6a545ff2dc47c0b4e6d060b6ec0c90bdee6a3c03e7825df025744584c2c9558b
+] 
+hash: 0000001375-85bccbc924dc311f4056673b1fc44e89280a9b8cbe07dcb9136ed5db5735f562
+[another try
+mvacher <marc.cordelle.vacher@gmail.com>**20260220030545
+ Ignore-this: a3c03948c2a834be64b79ea86dc2d25ee22485f2e14176c43de6527d59797850bdfbab5854a6021f
+] 
+hash: 0000000346-4e9d34569bfbf0497181fb7a92f524cc2348d15234e98d40ff8c391383c569f2
+[Added Wang et al
+Stephane Popinet <popinet@basilisk.fr>**20260220090539
+ Ignore-this: 678139f6826412c42776105965ef4a75d03efea59c1ca0b1967e2a3f95d64a07ca3136a1be6ebe7
+] 
+hash: 0000000900-37a01212b1ad5476338860b035c432c1a6ccba8fda85d3b0bf787b3d44e3f807
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20260220090555
+ Ignore-this: b072b4617712d036350b0e7a5763648e8321345abbbac0da61814ac00b361971aa48072472686d6
+] 
+hash: 0000000472-b7d8ceca04694d79b9483eb0b328b223ab7ae34d9d0c0fcc666e627d1c4b745d
+[Simpler
+Stephane Popinet <popinet@basilisk.fr>**20260220090838
+ Ignore-this: 12a65d1d70fcdfe30b539076fa8f52a7b39b26f8e218e250e31f0eb8181303b255016c5e779c6714
+] 
+hash: 0000001252-0360587470d5e7a69a63df4919ecdffd6ccccd02eb8cc4945929c324435cb9d6
+[dimensions OK
+pyl <pyl@ccr.jussieu.fr>**20260220090845
+ Ignore-this: ece0d50b9c632fd1b9c5e5c5d2179aa3e46786c9e2906bbf30e2c9906b409450bcb9e0a1b4cf2629
+] 
+hash: 0000000418-89b6b434a0d02c23f32eced0b5510abf1662691d8d9ce91e9cd9ac1692e24256
+[Added other link
+Stephane Popinet <popinet@basilisk.fr>**20260220091156
+ Ignore-this: 20e8b9732926c2104e10ca63e9ebed6ad661566fd2c72f7304e8b32c3a42070b87ac0fab4b8ed0b4
+] 
+hash: 0000000283-2dd29bf446952c2b93ab6914577af492819e806d14e7607cbb3e7eabe6a73faa
+[removed lousy images
+mvacher <marc.cordelle.vacher@gmail.com>**20260220093304
+ Ignore-this: 31856424e8b0174d00dd3de2720c3d492968c9fccaedbef60e6ce792cfe84f9e519f166f3cad809b
+] 
+hash: 0000002744-63e447eaf6a2cdc310efbc08a0c486c3fc8c4b8dd466188599d6e19a58a1b1f7
+[Added 1MB file size limit
+Stephane Popinet <popinet@basilisk.fr>**20260220093538
+ Ignore-this: 226dd8f96bd92654e5e0d09f80e1af3438cf0933ece749c1d7a697cbc3c8fd88e54df9997c74e826
+] 
+hash: 0000001385-f4e1357dd5a9bc2f7505e55931c7ce4be43a9bce22e35b82408e0cc90d5af86f
+[other tests
+mvacher <marc.cordelle.vacher@gmail.com>**20260220094156
+ Ignore-this: aa2a25a2e8f954e5697a518a3c7b6eba9b2f2f6e44334d1e3badeb7609d3f21c624a66f95f275947
+] 
+hash: 0000000768-eeec1d3253b60e319d138916f7dfa138fa3a484db3c1c9b862ad841cc89b6bc5
+[other test
+mvacher <marc.cordelle.vacher@gmail.com>**20260220095306
+ Ignore-this: 9deaf4556454af495d7fc1c3cb115a8a1f1fe7c6abbe5f87e4dab97fb7c91ba73b7f8460b046321c
+] 
+hash: 0000000360-5580edc3b8fbe5b874bf57bd3c78841632fcbf54041525649f09591aabc15e80
+[MWE was wrong
+acastillo <andres.castillo.castellanos@gmail.com>**20260220100648
+ Ignore-this: 100ba20348e0a3fa84aead1414534d5ef3d60a21d155696fff9c8e3a589844ac11453ee54d84b864
+] 
+hash: 0000000336-5b83994f3bbb2630e12f610d1d81f60ff842c2e50ed5caec009ff51afb46f9a6
+[problem with ML but not with SGN which is OK 
+pyl <pyl@ccr.jussieu.fr>**20260220102553
+ Ignore-this: 840e03e125019878d3edcd61c27c264fb043cfee1497a88b2618f51d3bbe8fb62dee973514137b39
+] 
+hash: 0000002817-889fcfa0c275b55514d84f08908dbf7832c7d61f48e5a7c94f2d0f330198410c
+[other try
+mvacher <marc.cordelle.vacher@gmail.com>**20260220103552
+ Ignore-this: 25c78a6be914a231c3d2bfa40fae923fcb2465052d5d7adb99cfbdbdc561cde4cb966c994d4f5330
+] 
+hash: 0000001406-dd7d7fbad5dd1a9c9d7d4e7771578942eb5dbfaa178b9657e393f18ce2b8cf92
+[Memory leak in solve from solve.h
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260220094352
+ Ignore-this: 57d250a681a6ef0dc3e673df6d1ca46da5e3be94b4f4bcf2a8662566674ae4c998cff5aebfe134e0
+] 
+hash: 0000001951-892d89c56459aec9c025775f5b3def8acc959b193c394d0d9ce5b4076d731dcc
+[memory leak on solve
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260220123537
+ Ignore-this: 2700f3394acfd6ffa5d010752a6662e69e549073148d97a87081588286ba941ca6563337dfae82dc
+] 
+hash: 0000005327-eb7b03b6ca28d649272e28c506d86e56216da01f20b7bb7d2cf0ef3872e9f307
+[try at killing backflows
+mvacher <marc.cordelle.vacher@gmail.com>**20260220142412
+ Ignore-this: 90fb58f06753d1e047e55e2c4695dec6f8ef5c63c747ab4578d2c24e3e9c26a4e72742c7e1ca3cb1
+] 
+hash: 0000001031-5672cc48163d9b2e3edab467e21b2faf4cc494f3416f3a82c70f705f0c9877ad
+[best I can do for now
+mvacher <marc.cordelle.vacher@gmail.com>**20260220151131
+ Ignore-this: 5c3b0e747ff39c8bd625254976c504da061b1d1b9ec06a25c45c5e431292d37fa5d0051a6914735b
+] 
+hash: 0000000998-d21b2046afa701cb6a38d9b433b437b29edfa0104da953389e6ec63c8a66654e
+[Formatting, please learn how to use a text editor
+Stephane Popinet <popinet@basilisk.fr>**20260220142108
+ Ignore-this: dcf16bdcafc439fb0c2b3047de58afc1
+] 
+hash: 0000013240-818b4b056da2b3114b71c640dd1ab44afe3869541691ce0c5c9c0bef227bef05
+[Simplified using functions
+Stephane Popinet <popinet@basilisk.fr>**20260220154102
+ Ignore-this: 8b3be4d2075e8dc335af7da1dff1414c
+] 
+hash: 0000010165-288559fef3d54b955dc573d3d662a056a5023668bf56171ccb6e0175d07d7b19
+[Do not forget the reference files for test cases
+Stephane Popinet <popinet@basilisk.fr>**20260220154118
+ Ignore-this: 40ce62a3e7c00b687e3b88ef1046d4f9
+] 
+hash: 0000007051-13aa1146f064add5e4dfe22fa41231fa737426d48e086f305220d8dcaa03e0de
+[Input arguments are not modified
+Stephane Popinet <popinet@basilisk.fr>**20260220154135
+ Ignore-this: c98ab1b8cf6c201f3d4c27642455337
+] 
+hash: 0000000335-d2e8f7ff6c653e9eaf5eeec6299d76477db1364faa4251e6645f1e821b2567b7
+[Skip warnings
+Stephane Popinet <popinet@basilisk.fr>**20260220155255
+ Ignore-this: 91e876377f9a828e22432cee631f0bc3
+] 
+hash: 0000001465-aa743ef0209a4627856a2866433850aa226691429c0e34a415473ce12dea6243
+[Save changes
+mvacher <marc.cordelle.vacher@gmail.com>**20260220161235
+ Ignore-this: 96f1c049ee9819cde62caa52f944da4f9990e241488a4b2a4358e46e7fe2af296a7c65b535165450
+] 
+hash: 0000000632-ef196dd3821778873d382435ed7d3f0f6e706085bebadd2ae83082874a98fa20
+[Save changes
+mvacher <marc.cordelle.vacher@gmail.com>**20260220162209
+ Ignore-this: 6a48d670467a3a4621dab8e44f5295caa346ed92538ee43bea706f4f02b4e08a5962c6c717381a6
+] 
+hash: 0000000477-5f4f8d032ce5dd239c41d9f5cb55e8028ab81d952f59eb0c511c2fb5c5fc2612
+[Save changes
+mvacher <marc.cordelle.vacher@gmail.com>**20260220163926
+ Ignore-this: 758c7f231dd9ec4681d534c6a2d7ee68f137bcc403fcae6d785136096aafe443ad830659a0efe73c
+] 
+hash: 0000000304-6ba635f0027c863303496e021c6afd7d0227ec5534c28a04f6f865e5fd0c1ae8
+[restructuring_mydiffusion.h
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260220170151
+ Ignore-this: fa2e25c2316f8f6db449290f512d40c9d50b26c0d8c831a54f77fe43999322346e1e9130c99ed19
+] 
+hash: 0000001473-c9ec871718ec81d8da2f363320d306715755e7d2d3e8db34318cbe2a251b54a8
+[original_file
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260220170240
+ Ignore-this: 4f95496a620d9eed8e878af242d30118ed4f4dd8bd78cfe97cc98f3e0fb098d56ee33fbf7dd7590a
+] 
+hash: 0000001456-df7785a669d058e811cf1fe44bc7718ce5b394d2bb050a93d2130dd55d619ca6
+[changed_mydiffusion
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260220173825
+ Ignore-this: 7d95b4b277d88e119f07fb91f5f7474d745513442b08751845c48b4a728dcf27bbbebc300bb0409d
+] 
+hash: 0000004035-2df2ddec2d2dffade7ab679833c39e9e67c48a8367ba7961a5db54186beb224a
+[reverting to mydiffusion_old
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260220180329
+ Ignore-this: f99c91b242a9b03b1f92967e68f0410d45abce81e4a6295eb097af09096d3514d6b9658bfd0bb39a
+] 
+hash: 0000004045-351169f9d10610b53cc8dd5f9c38c5594536ccc27af0e8f09bfcd6454af39efb
+[Added bib item for paper: boswell2026.
+hboswell <hunter.c.boswell@usace.army.mil>**20260220210933
+ Ignore-this: 83058d6d0e0ae628e11732bd893df8242c6f42fdcc2500cf97de9da6fb0a6b0fb0c7063223843a5e
+] 
+hash: 0000000577-a5b001f5956d5095ffb6bb5b407d796a7d6e59261d34db34570d3fb2be12ed0c

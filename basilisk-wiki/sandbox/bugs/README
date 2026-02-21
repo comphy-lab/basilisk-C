@@ -74,6 +74,7 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 * [Minor qcc errors when compiling+linking with OpenMPI,Petsc libraries](openmpi_petsc_minimal.c)
 * [Tracer noise when there are embedded boundaries and two viscosities](tracer_noise.c)
 * [Dumps are mangled when using 3D multigrid over a certain level](dump_integer_overflow.c)
+* [Memory leak in solve.h](memory_leak_solve.c)
 
 # [It's not a bug, it's a feature](https://fr.wiktionary.org/wiki/it%E2%80%99s_not_a_bug,_it%E2%80%99s_a_feature)
 

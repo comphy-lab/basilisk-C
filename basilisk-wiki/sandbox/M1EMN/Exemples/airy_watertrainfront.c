@@ -23,14 +23,14 @@ The response may be found using asymptotic behavior of a wave packet.
  
  
  
- # Code
+# Code
  
- This can be done by the Multilyer Euler Lagrange `layered/hydro.h`
-  with `layered/nh.h`the non hydrostatic correction, or w
- 
+This can be done by the Multilyer Euler Lagrange `layered/hydro.h`
+  with `layered/nh.h` the non hydrostatic correction,  or Serre Green Naghdi
+ (note that results differ a bit)
  
  */
-#define ML 1
+#define ML 0
 #include "grid/multigrid1D.h"
 #if ML
   #include "layered/hydro.h"
@@ -46,13 +46,12 @@ wave reflection at the outlet. Relatively high resolution is needed to
 capture the dynamics properly. */
 
 int main() {
-  N = 2048*8*2;
-  L0 = 400;
+  N = 512*8;
+  L0 = 800;
   X0= -20;
   G = 1;
   DT = HUGE;
 #if ML
-  N=N/8;
   nl = 4;
   //breaking = 0.1;
 #endif
@@ -69,7 +68,6 @@ event init (i = 0) {
 #if ML
     u.n[left]  = - radiation (0);
     u.n[right] = + radiation (0);
- 
 #else
   u.n[left]  = - radiation (0);
   u.n[right] = + radiation (0);  
@@ -81,9 +79,9 @@ event init (i = 0) {
     zb[] = -1.;
 #if ML
     foreach_layer()
-      h[] =  (- zb[] + 0.05*exp(-pi*x*x))/nl ;
+      h[] =  (- zb[] + 0.005*exp(-pi*x*x))/nl ;
 #else
-    h[] = - zb[] + 0.05*exp(-pi*x*x);
+    h[] = - zb[] + 0.005*exp(-pi*x*x);
     u.x[] = 0.*exp(-pi*x*x);
 #endif
   }
@@ -100,7 +98,7 @@ void plot_profile (double t, FILE * fp)
 {
   fprintf (fp,
 	   "set title 't = %.2f'\n"
-             "p [-10:5][-1:1]'-' u 1:(2*$2/.05) w l lc 3 t 'num' , airy(x) t'Airy(x)' \n", t);
+             "p [-10:5][-1:1]'-' u 1:(2*$2/.005) w l lc 3 t 'num' , airy(x) t'Airy(x)' \n", t);
   foreach()
     fprintf (fp, "%g %g \n", (x-t)/pow((t>0?t/2:1e-4),1./3),eta[]*pow(t/2,1./3) );
   fprintf (fp, "e\n\n");
@@ -117,14 +115,15 @@ void plot_profile (double t, FILE * fp)
     fprintf (fp, "e\n\n");
     fflush (fp);
 }
-
 #endif
 
+#if gnuX
 event profiles (t += 1) {
   static FILE * fp = popen ("gnuplot 2> /dev/null", "w");
   plot_profile (t, fp);
   fprintf (stderr, "%g %f\n", t, interpolate (eta, 17.3, 0.));
 }
+#endif
 
 event gnuplot (t = end) {
   FILE * fp = popen ("gnuplot", "w");
@@ -145,22 +144,15 @@ Gauge gauges[] = {
   {"WG200", 200},
   {"WG250", 250},
   {"WG300", 300},
+  {"WG400", 400},
   {NULL}
 };
 /**
 
-There is now a bug 
-
-`warning: could not conserve barotropic flux at -14.4336,0,3
-
-[Detaching after vfork from child process 630414]
-64 /home/basilisk-src/basilisk/src/hessenberg.h: No such file or directory.
-src/hessenberg.h:64:error: Program received signal SIGFPE, Arithmetic exception``
-
+ 
 */
-event output (t += 1; t <= 180) //350
+event output (t += 1; t <= 600) //350
   output_gauges (gauges, {eta});
-
 
 /**
 
@@ -186,9 +178,20 @@ event output (t += 1; t <= 180) //350
 
 ## Results
 
+Plot of jauges 
+ 
+~~~gnuplot  plot timeseries
+ p[]\
+ 'WG300' u 1:2 w l,\
+ 'WG400' u 1:2 w l 
+~~~
+
+
 Comparison of theoretical Airy solution and numerical timeseries in $x=50,...300$ for $t$ rescaled.
 
 ~~~gnuplot Comparison of theoretical and numerical timeseries
+ d13=2**(1./3)
+ # d13=1
  p[-5:10]\
  'WG50' u (($1-50)/(50**(1./3))):($2*(50**(1./3))) not ,\
  'WG100' u (($1-100)/(100**(1./3))):($2*(100**(1./3))) w l not,\
@@ -196,10 +199,13 @@ Comparison of theoretical Airy solution and numerical timeseries in $x=50,...300
  'WG200' u (($1-200)/(200**(1./3))):($2*(200**(1./3))) w l not,\
  'WG250' u (($1-250)/(250**(1./3))):($2*(250**(1./3))) w l not,\
  'WG300' u (($1-300)/(300**(1./3))):($2*(300**(1./3))) w l not,\
- 0.5*0.05*1.2599*airy(-1.2599*x) t'Analytical Airy solution'
+ 'WG400' u (($1-300)/(400**(1./3))):($2*(400**(1./3))) w l not,\
+ 0.5*0.005*d13*airy(-d13*x) t'Analytical Airy solution'
+
+~~~
 
  
-~~~
+
 
 ## Links
  * [Popinet (2019)](/Bibliography#popinet2019)  from [bar.c](/src/test/bar.c) test case

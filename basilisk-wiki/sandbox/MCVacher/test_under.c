@@ -36,15 +36,15 @@ FILE * fpmax;
 
 int main()
 {
-  Re=7;                    // rho_1*U0*R_d/mu1
+  Re=30;                    // rho_1*U0*R_d/mu1
   rhob=1./1000.;           // air/water
   mub= 0.000018/0.001;     // air/water
-  box_ratio=0.05;          // R_d/L0
+  box_ratio=0.1;          // R_d/L0
     
-  L0=1; 
+  L0=0.4; 
   R_d=box_ratio*L0; 
   
-  U0=10;
+  U0=2;
   
   u.n[top] = neumann(0);
   p[top] = dirichlet(0);
@@ -57,7 +57,7 @@ int main()
   
   origin (-L0/2.,0.);
   
-  rho1 = 1000.;
+  rho1 = 1;
   rho2 = rhob*rho1;
   
   mu1 = rho1*U0*R_d/Re;

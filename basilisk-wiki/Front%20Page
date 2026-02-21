@@ -41,6 +41,17 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{wang2026,
+  title={Cavitation bubble near a wall: Sensitivity to modeling conditions},
+  author={Wang, Bo and Yang, Zhidian and Roman{\`o}, Francesco},
+  journal={Technische Mechanik-European Journal of Engineering Mechanics},
+  volume={46},
+  number={1},
+  pages={66--77},
+  year={2026},
+  pdf={https://journals.ub.ovgu.de/index.php/techmech/article/download/2326/2337}
+}
+
 @hal{scapin2025b, hal-05466359}
 
 @article{mou2026,
@@ -66,13 +77,4 @@ journal={Journal of Fluid Mechanics},
 author={Gai, Guodong and Plouraboué, Franck and Wachs, Anthony}, 
 year={2026}, 
 pages={A50}}
-
-@article{patel2026, 
-title={Direct numerical simulations of non-coalescing floating bubbles: geometry and self-organisation}, 
-volume={1026}, 
-DOI={10.1017/jfm.2025.11003}, 
-journal={Journal of Fluid Mechanics}, 
-author={Patel, Kuntal and Zhu, Xiaojue}, 
-year={2026}, 
-pages={A19}}
 ~~~

@@ -5,7 +5,7 @@ Une vague se propage en eau peu profonde de profondeur constante et arrive sur u
 "how many seas must a white dove sail before she sleeps in the sand?"
 
 Pour répondre à la question:
-Résolution de Saint Venant simple en 1D avec topographie 
+résolution de Saint Venant simple en 1D avec topographie 
 $$
  \left\{\begin{array}{l}
          \partial_t h+\partial_x Q=0\\
@@ -69,7 +69,8 @@ int main()
     G = 1;
     N = 1024; 
     a=0.125;
-    tmax=300;	
+    tmax=300;
+    DT=HUGE;
     run();
     }
 /**
@@ -102,6 +103,7 @@ p[][-.1:1.5]'vals.txt' u 1:($2+$4+$5*c) i 0 t't=0' w l linec 3,\
 
 * [https://basilisk.fr/sandbox/M1EMN/Exemples/slope.c]()
 * [https://basilisk.fr/sandbox/M1EMN/Exemples/slope_inc.c]()
+* [Solitary wave run-up on a plane beach](/src/test/beach.c)
 
 plus fort: 
 
