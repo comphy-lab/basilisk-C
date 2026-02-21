@@ -246,6 +246,7 @@ See also the [GPU Benchmarks](/src/grid/gpu/Benchmarks.md).
 * [Redistancing of a perturbed distance field](redistance-ellipse.c)
 * [Einstein summation](einstein_sum.c)
 * [Macros](macro.c)
+* [Very simple harmonic analysis](harmonic.c)
 
 ## Unmaintained
 

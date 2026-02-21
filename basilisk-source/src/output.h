@@ -1154,10 +1154,13 @@ void dump (const char * file = "dump",
   strcpy (name, file);
   if (!unbuffered)
     strcat (name, "~");
-  FILE * fh = fopen (name, "w");
-  if (fh == NULL) {
-    perror (name);
-    exit (1);    
+  FILE * fh = NULL;
+  if (pid() == 0) {
+    fh = fopen (name, "w");
+    if (fh == NULL) {
+      perror (name);
+      exit (1);
+    }
   }
 
   scalar * dlist = dump_list (list, zero);
@@ -1172,15 +1175,27 @@ void dump (const char * file = "dump",
   MPI_Barrier (MPI_COMM_WORLD);
 #endif
 
-  if (pid() == 0)
+  if (pid() == 0) {
     dump_header (fh, &header, slist);
+    fflush (fh);
+  }
   
+  MPI_Barrier (MPI_COMM_WORLD);
+
+  if (pid() != 0) {
+    fh = fopen (name, "r+");
+    if (fh == NULL) {
+      perror (name);
+      exit (1);
+    }
+  }
+
   scalar index = {-1};
   
   index = new scalar;
   z_indexing (index, false);
-  int cell_size = sizeof(unsigned) + header.len*sizeof(double);
-  int sizeofheader = sizeof(header) + 4*sizeof(double);
+  long cell_size = sizeof(unsigned) + header.len*sizeof(double);
+  long sizeofheader = sizeof(header) + 4*sizeof(double);
   for (scalar s in slist)
     sizeofheader += sizeof(unsigned) + sizeof(char)*strlen(s.name);
   long pos = pid() ? 0 : sizeofheader;
@@ -1323,8 +1338,8 @@ bool restore (const char * file = "dump",
 
 #if MULTIGRID_MPI
   long cell_size = sizeof(unsigned) + header.len*sizeof(double);
-  long offset = pid()*((1 << dimension*(header.depth + 1)) - 1)/
-    ((1 << dimension) - 1)*cell_size;
+  long offset = pid()*((1L << dimension*(header.depth + 1)) - 1)/
+    ((1L << dimension) - 1)*cell_size;
   if (fseek (fp, offset, SEEK_CUR) < 0) {
     perror ("restore(): error while seeking");
     exit (1);

@@ -37,16 +37,17 @@
 
   char * url (char * s, char * baseurl)
   {
-    static char s1[256];
+    static char s1[512];
     if (s[0] == '/') {
       // assert (strlen(baseurl) + strlen(s) + 1) < 256;
       char * root = getenv ("DOCUMENT_ROOT");
       if (root && s[strlen(root)] == '/' && !strncmp (root, s, strlen(root)))
 	s += strlen(root);
-      strcat (strcpy (s1, baseurl), s);
+      strcpy (s1, baseurl);
+      strncat (s1, s, 500 - strlen(baseurl));
     }
     else
-      strcpy (s1, s);
+      strncpy (s1, s, 500);
     if (ext) {
       char page[strlen(s1) + strlen (".page") + 1];
       strcpy (page, s1);

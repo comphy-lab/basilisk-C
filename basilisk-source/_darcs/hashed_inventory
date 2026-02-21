@@ -1,4 +1,4 @@
-pristine:5690c669a357f8e9ef8386819bb1ad3ad383f1a6f442a6e119da66a61a189a53
+pristine:fdfb4d723e81e6c537cf990bd74d609ca0de3dcc646e7b3f84c44654871029db
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -603,3 +603,18 @@ Stephane Popinet <popinet@basilisk.fr>**20260219155914
  Ignore-this: 501a6a7e7057719e2e42830a525657b1001a157262b80527902361d20d9e389b438cc646fd83f936
 ] 
 hash: 0000100163-919db8b86658d248c340350034d1f20ee6433627d82ee69f430d40eb424b1ea4
+[Fixed buffer overflow for URLs longer than 500 characters
+Stephane Popinet <popinet@basilisk.fr>**20260220092500
+ Ignore-this: 8abb2049fe92afc29854285702b6994f
+] 
+hash: 0000003587-0c9539f5e00e90163e25d776a4f47cef31c8e1de8687481b3392ad0bcdf92f86
+[Very simple harmonic analysis test case
+Stephane Popinet <popinet@basilisk.fr>**20260220110942
+ Ignore-this: e04c49e9dec71623dc3f477e13cf95a1
+] 
+hash: 0000002944-8796676a9810a14c90172a9e6dd3c72d1c4871d3def208120dd1d7e12d66cb1d
+[Fix for integer overflow when dumping large multigrid simulations
+Andres Castillo Castellanos <andres.castillo.castellanos@gmail.com>**20260220131228
+ Ignore-this: eed690d179b02fb37cd5f0a3bbbef99d
+] 
+hash: 0000001579-98ac86d52255fe75bb10ae7349fb6382d9a24236796293c6253a008f1eebceda

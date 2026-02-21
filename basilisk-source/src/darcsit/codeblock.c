@@ -634,16 +634,17 @@ goto find_rule; \
 
   char * url (char * s, char * baseurl)
   {
-    static char s1[256];
+    static char s1[512];
     if (s[0] == '/') {
       // assert (strlen(baseurl) + strlen(s) + 1) < 256;
       char * root = getenv ("DOCUMENT_ROOT");
       if (root && s[strlen(root)] == '/' && !strncmp (root, s, strlen(root)))
 	s += strlen(root);
-      strcat (strcpy (s1, baseurl), s);
+      strcpy (s1, baseurl);
+      strncat (s1, s, 500 - strlen(baseurl));
     }
     else
-      strcpy (s1, s);
+      strncpy (s1, s, 500);
     if (ext) {
       char page[strlen(s1) + strlen (".page") + 1];
       strcpy (page, s1);
@@ -718,8 +719,8 @@ goto find_rule; \
   #define nonspace(s) { while (strchr(" \t\v\n\f", *s)) s++; }
   #define space(s) { while (!strchr(" \t\v\n\f", *s)) s++; }
   static void comment(yyscan_t scanner);
-#line 722 "lex.yy.c"
 #line 723 "lex.yy.c"
+#line 724 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -997,10 +998,10 @@ YY_DECL
 		}
 
 	{
-#line 132 "codeblock.lex"
+#line 133 "codeblock.lex"
 
 
-#line 1004 "lex.yy.c"
+#line 1005 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1066,7 +1067,7 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 134 "codeblock.lex"
+#line 135 "codeblock.lex"
 {
   // code line numbers
   output_s ("<span id=");
@@ -1081,39 +1082,39 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 146 "codeblock.lex"
+#line 147 "codeblock.lex"
 {
   yyextra->incode = 0; echo();
 }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 150 "codeblock.lex"
+#line 151 "codeblock.lex"
 {
   yyextra->incode = 1; echo();
 }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 154 "codeblock.lex"
+#line 155 "codeblock.lex"
 {
   yyextra->incode = 1; echo();
 }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 158 "codeblock.lex"
+#line 159 "codeblock.lex"
 {
   yyextra->incode = 0; echo();
 }
 	YY_BREAK
 case 6:
-#line 163 "codeblock.lex"
-case 7:
 #line 164 "codeblock.lex"
+case 7:
+#line 165 "codeblock.lex"
 case 8:
 YY_RULE_SETUP
-#line 164 "codeblock.lex"
+#line 165 "codeblock.lex"
 {
   if (!INCODE())
     REJECT;
@@ -1151,11 +1152,11 @@ YY_RULE_SETUP
 }
 	YY_BREAK
 case 9:
-#line 201 "codeblock.lex"
+#line 202 "codeblock.lex"
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 201 "codeblock.lex"
+#line 202 "codeblock.lex"
 {
   if (!INCODE() || yyextra->scope > 0)
     REJECT;
@@ -1239,21 +1240,21 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 282 "codeblock.lex"
+#line 283 "codeblock.lex"
 {
   echo(); // quoted character
 }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 286 "codeblock.lex"
+#line 287 "codeblock.lex"
 {
   echo(); // quoted character in HTML
 }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 290 "codeblock.lex"
+#line 291 "codeblock.lex"
 {
   echo();
   yyextra->scope++;
@@ -1261,7 +1262,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 295 "codeblock.lex"
+#line 296 "codeblock.lex"
 {
   echo();
   yyextra->scope--;
@@ -1273,11 +1274,11 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 /* rule 15 can match eol */
-#line 305 "codeblock.lex"
+#line 306 "codeblock.lex"
 case 16:
 /* rule 16 can match eol */
 YY_RULE_SETUP
-#line 305 "codeblock.lex"
+#line 306 "codeblock.lex"
 {
   // URL
   yytext[strlen(yytext) - 1] = '\0';
@@ -1291,7 +1292,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 316 "codeblock.lex"
+#line 317 "codeblock.lex"
 {
   if (!INCODE())
     REJECT;
@@ -1302,7 +1303,7 @@ YY_RULE_SETUP
 case 18:
 /* rule 18 can match eol */
 YY_RULE_SETUP
-#line 323 "codeblock.lex"
+#line 324 "codeblock.lex"
 {
   if (!INCODE())
     REJECT;
@@ -1333,7 +1334,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 351 "codeblock.lex"
+#line 352 "codeblock.lex"
 {
   output_s ("<span class=\"dt\">");
   echo();
@@ -1342,7 +1343,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 357 "codeblock.lex"
+#line 358 "codeblock.lex"
 {
   if (!INCODE())
     REJECT;
@@ -1353,7 +1354,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 365 "codeblock.lex"
+#line 366 "codeblock.lex"
 {
   if (!INCODE())
     REJECT;
@@ -1363,31 +1364,31 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 372 "codeblock.lex"
+#line 373 "codeblock.lex"
 echo();
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 373 "codeblock.lex"
+#line 374 "codeblock.lex"
 echo();
 	YY_BREAK
 case 24:
 /* rule 24 can match eol */
 YY_RULE_SETUP
-#line 374 "codeblock.lex"
+#line 375 "codeblock.lex"
 echo();
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 375 "codeblock.lex"
+#line 376 "codeblock.lex"
 { echo(); /* STRING_LITERAL */ }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 377 "codeblock.lex"
+#line 378 "codeblock.lex"
 ECHO;
 	YY_BREAK
-#line 1391 "lex.yy.c"
+#line 1392 "lex.yy.c"
 			case YY_STATE_EOF(INITIAL):
 				yyterminate();
 
@@ -2532,7 +2533,7 @@ static void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 377 "codeblock.lex"
+#line 378 "codeblock.lex"
 
 
 static void comment(yyscan_t scanner)

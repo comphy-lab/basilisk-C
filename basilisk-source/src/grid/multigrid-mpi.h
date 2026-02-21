@@ -232,9 +232,9 @@ double z_indexing (scalar index, bool leaves)
 {
   long i;
   if (leaves)
-    i = pid()*(1 << dimension*depth());
+    i = pid()*(1L << (dimension*depth()));
   else
-    i = pid()*((1 << dimension*(depth() + 1)) - 1)/((1 << dimension) - 1);
+    i = pid()*((1L << (dimension*(depth() + 1))) - 1)/((1L << dimension) - 1);
   foreach_cell() {
     if (!leaves || is_leaf(cell))
       index[] = i++;
