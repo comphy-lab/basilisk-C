@@ -190,8 +190,8 @@ void vertical_remapping_2 (scalar hprec, scalar hnew, scalar * tracers2,bool pre
       double ft=0.;
       double lambdat=HUGE;
     nvar=1;
-    my_remap_perso (&npos, &npos, &nvar, &ndof, zpos, znew, fdat, fnew,
-		&edge_meth, &cell_meth, &cell_lim, &fb,&lambdab,&ft,&lambdat);
+    my_remap_c (npos, npos, zpos, znew, fdat, fnew,
+		fb, lambdab, ft, lambdat);
 
     double compens=0.;
     foreach_layer() {

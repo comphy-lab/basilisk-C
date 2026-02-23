@@ -1,300 +1,273 @@
 /**
-# Film Boiling
+# Film boiling
 
-The film boiling configuration consists in a superheated
-solid wall, covered by a thin vapor layer, which is
-perturbed by the phase change phenomena releasing bubbles.
-The simulation setup used here was inspired by [Welch and
-Wilson, 2000](#welch2000volume). The domain is initialized
-with a uniform constant temperature equal to the saturation
-value. The bottom wall is maintained at a specific
-superheating temperature, causing the vapor layer to
-expand and leading to the departure of bubbles, which
-rise the liquid column unil the breakup with the free
-surface.
+The film boiling configuration consists in a superheated solid wall, covered by
+a thin vapor layer, which is perturbed by the phase change phenomena releasing
+bubbles. The domain is initialized with a uniform constant temperature equal to
+the saturation value. The bottom wall is maintained at a specific superheating
+temperature, causing the vapor layer to expand and the perturbation triggers
+Rayleigh-Taylor instability, leading to the formation, rising, and detachment of
+the bubble. Notably, this test case combines the boiling model with embedded
+boundaries and AXI metrics.
 
-![Evolution of the temperature field and the gas-liquid interface](filmboiling/movie.mp4)(width="800" height="600")
+![Evolution of the temperature (left) and the velocity field (right)](filmboiling/movie.mp4)
 */
 
-/**
-## Phase change setup
-
-We do not use the Stefan flow shifting procedure. The
-volume fraction source term is divided by the density of
-the gas phase. We compute the interface gradients just
-in gas-phase, and we use the same velocity used for the
-volume fraction also for the tracers in phase 2: *TG*.
-Defining the variable *WELCH* you can use the setup
-described in the [paper](#welch2000volume).
-*/
-
-#define BOILING_SETUP
-#define SOLVE_GASONLY
-
-/**
-## Simulation setup
-
-We use the centered solver with the evaporation source term.
-The velocity potential method is adopted to obtain a
-divergece-free velocity extension for the VOF advection.
-The temperature-gradient phase change model is employed,
-since just the temperature field has to be solved.
-*/
-
-#if POTENTIAL
-# include "navier-stokes/centered-evaporation.h"
-# include "navier-stokes/velocity-potential.h"
-#else
-# include "navier-stokes/velocity-jump.h"
-#endif
+#include "embed.h"
+#include "axi.h"
+#include "navier-stokes/low-mach.h"
 #include "two-phase.h"
 #include "tension.h"
 #include "reduced.h"
-#include "evaporation.h"
-#include "temperature-gradient.h"
-#include "tag.h"
+#include "boiling.h"
 #include "view.h"
 
 /**
-The characteristic length of the problem is the most
-dangerous Taylor wavelength, defined as:
-$$
-  \lambda_0 = 2\pi
-  \left(
-  \dfrac{3\sigma}{(\rho_l - \rho_g)g}
-  \right)^{1/2}
-$$
+Outflow boundary conditions at the top of the liquid column, while no-slip
+condition on the surface of the solid wall. Symmetry elsewhere. */
 
-Then, we declare variables necessary for the temperature
-gradient model, the maximum level of refinement, and the
-temperature of the solid wall.
-*/
+u.n[left] = dirichlet (0.);
+u.t[left] = dirichlet (0.);
+p[left] = neumann (0.);
 
-double wavelength = 0.0786844;
-int maxlevel = 8;
-
-double lambda1, lambda2, cp1, cp2, dhev, TIntVal;
-double TL0, TG0, Twall, Tsat, gas_vol0, width;
+u.n[right] = neumann (0.);
+u.t[right] = neumann (0.);
+p[right] = dirichlet (0.);
 
 /**
-We set the boundary conditions for velocity, pressure
-and temperature at the bottom, which is considered as
-as superheated solid wall. The velocity potential *ps*
-boundary conditions are set in order to be coherent with
-the pressure boundary conditions.
-*/
+We multiply by `cs` in order to limit the number of cells on the solid
+(embed) phase. */
 
-#if POTENTIAL
-u.n[bottom] = dirichlet (0.);
-u.t[bottom] = dirichlet (0.);
-p[bottom] = neumann (0.);
-ps[bottom] = neumann (0.);
+double Twall, Tsat;
+T[left] = dirichlet (cs[]*Twall);
 
-u.n[top] = neumann (0.);
-u.t[top] = neumann (0.);
-p[top] = dirichlet (0.);
-ps[top] = dirichlet (0.);
-#else
-u1.n[bottom] = dirichlet (0.);
-u1.t[bottom] = dirichlet (0.);
-u2.n[bottom] = dirichlet (0.);
-u2.t[bottom] = dirichlet (0.);
-p[bottom] = neumann (0.);
-ps[bottom] = neumann (0.);
-pg[bottom] = neumann (0.);
-
-u1.n[top] = neumann (0.);
-u1.t[top] = neumann (0.);
-u2.n[top] = neumann (0.);
-u2.t[top] = neumann (0.);
-p[top] = dirichlet (0.);
-ps[top] = dirichlet (0.);
-pg[top] = dirichlet (0.);
-#endif
-
-f[bottom] = dirichlet (0.);
-TG[bottom] = dirichlet (Twall);
-TL[bottom] = dirichlet (Twall);
+int maxlevel, minlevel = 6;
+double lambdaw, gasvolume0;
 
 int main (void) {
-  /**
-  We set the values of the material properties of the
-  fluids. */
-
   rho1 = 200., rho2 = 5.;
-#ifdef WELCH
   mu1 = 0.1, mu2 = 0.005;
-#else
-  mu1 = 0.01, mu2 = 0.005;
-#endif
   lambda1 = 40., lambda2 = 1.;
   cp1 = 400., cp2 = 200.;
-#ifdef WELCH
-  dhev = 1.e4;
-#else
-  dhev = 1.e5;
-#endif
+  dhev = 1e+4;
 
-  /**
-  We set the initial and wall temperatures. */
-
-  Tsat = 500., Twall = 506.;
-  TL0 = Tsat, TG0 = Tsat, TIntVal = Tsat;
-
-  /**
-  We set the surface tension coefficient, and we
-  apply the gravity force using the [reduced.h](/src/reduced.h)
-  approach. */
+  Tsat = 1., Twall = Tsat + 5.;
+  TIntVal = TG0 = TL0 = Tsat;
 
   f.sigma = 0.1;
-  G.y = -9.81;
+  G.x = -9.81;
+  lambdaw = 2.*pi*sqrt (3.*f.sigma / (fabs (G.x)*(rho1 - rho2)));
 
-  /**
-  The dimensions of the problems are a function of the
-  wavelength. In principle, the vapor bubbles, should
-  be positioned in a squared pattern separated by a 
-  distance equivalent to $\lambda_0$. */
+  nv = 1;
+  pcm.consistent = true;
 
-  size (3.*wavelength);
-  init_grid (1 << maxlevel);
-  run();
+  TOLERANCE = 1.e-6 [*];
+  size (lambdaw);
+  for (maxlevel = 6; maxlevel <= 8; maxlevel++) {
+    init_grid (1 << maxlevel);
+    run();
+  }
 }
 
-/**
-We initialize the volume fraction field and the temperature
-field accordingly. The amount of gas in the domain at the
-beginning of the simulation is stored.
-*/
-
-#define sin(x,y)(y-wavelength/128*(4+cos(2*pi*x/wavelength)))
+#define wave(x,y) lambdaw/128.*(4. + cos(2.*pi*y/lambdaw))
 
 event init (i = 0) {
-  width = 0.5*wavelength;
-  mask (x > width ? right : none);
-  fraction (f, sin(x,y));
-#ifndef WELCH
+  solid (cs, fs, -(y - 0.5*lambdaw));
+  fractions_cleanup (cs, fs);
+  fraction (f, x - wave(x,y));
   foreach()
-    f[] = (y > 2./3.*L0) ? 0. : f[];
+    f[] = y <= lambdaw ? f[] : 0.;
+#if defined(AXI) && defined(EMBED)
+  cm_update (cm, cs, fs);
+  fm_update (fm, cs, fs);
+  restriction ({cs,fs,cm,fm});
 #endif
-  foreach() {
-    TL[] = TL0*f[];
-    TG[] = TG0*(1. - f[]);
-    T[]  = TL[] + TG[];
-  }
 
-  foreach (reduction(+:gas_vol0))
-    gas_vol0 += (1. - f[])*dv();
+  scalar TL = liq->T, TG = gas->T;
+  foreach() {
+    double xmax = wave(x,y);
+    TG[] = clamp (Twall - x/xmax*(Twall - Tsat), Tsat, Twall)*(1. - f[]);
+    TL[] = TL0*f[];
+    TG[] *= (cs[] != 0.);
+    TL[] *= (cs[] != 0.);
+    T[] = TL[] + TG[];
+  }
+  copy_bcs ({TL,TG}, T);
+
+  gasvolume0 = 0.;
+  foreach (reduction(+:gasvolume0))
+    gasvolume0 += (1. - f[])*dv();
 }
 
 /**
-We write in the stdout the simulation time, the amount of
-gas in the domain, the Nusselt number from this simulation:
-$$
-  Nu = \dfrac{\lambda_0}{w \left(T_{wall}-T_{sat}\right)}
-  \int_{0}^{w}
-  \left.\dfrac{\partial T}{\partial y}\right\vert_{y=0} dw
-$$
-and the Nusselt number from the Berenson correlation:
-$$
-  Nu_B = 0.425
-  \left(
-  \dfrac{\rho_g(\rho_l-\rho_g)g\Delta h_{ev}}
-  {\lambda_g \mu_g (T_{wall}-T_{sat})}
-  \right)^{1/4} (\lambda_0)^{3/4}
-$$
-*/
+We adapt according to the interface position, the temperature, and velocity
+field.  The simulation does not work if the interface is not maintained at the
+maximum level of refinement. It would be nice to try and go deeper in this
+problem. */
 
-event logfile (i++) {
-  double gas_vol = 0.;
-  foreach (reduction(+:gas_vol))
-    gas_vol += (1. - f[])*dv();
+event adapt (i++) {
+#if 1
+  vector gf[];
+  gradients ({f}, {gf});
+  scalar mgf[];
+  foreach()
+    mgf[] = norm (gf);
+  double mgfmax = statsf (mgf).max;
+  foreach()
+    mgf[] /= mgfmax;
 
+  adapt_wavelet ({mgf,T,u.x,u.y}, {1e-2,1e-2,1e-1,1e-1}, maxlevel, maxlevel);
+#else
+  adapt_wavelet_leave_interface ({T,u.x,u.y}, {f},
+      (double[]){1e-2,1e-2,1e-2}, maxlevel, minlevel, 1);
+#endif
+
+#if defined(AXI) && defined(EMBED)
+  cm_update (cm, cs, fs);
+  fm_update (fm, cs, fs);
+  restriction ({cs,fs,cm,fm});
+#endif
+}
+
+/**
+## Post-processing
+
+Printing the interface at a specific time. */
+
+event facets (t = 0.32) {
+#if _MPI
+  char name[80];
+  sprintf (name, "facets-pid-%d", pid());
+  FILE * fp = fopen (name, "w");
+
+  scalar ff[];
+  foreach()
+    ff[] = cm[] ? f[] : 0.;
+  output_facets (ff, fp);
+  fclose (fp);
+
+  MPI_Barrier (MPI_COMM_WORLD);
+
+  if (pid() == 0) {
+    char command[80];
+    sprintf (command, "cat facets-pid-* > facets-%d && rm facets-pid-*",
+        maxlevel);
+    system (command);
+  }
+#else
+  char name[80];
+  sprintf (name, "facets-%d", maxlevel);
+  FILE * fp = fopen (name, "w");
+
+  scalar ff[];
+  foreach()
+    ff[] = cm[] ? f[] : 0.;
+  output_facets (ff, fp);
+
+  fclose (fp);
+#endif
+}
+
+/**
+Using MPI, we can verify the distribution of the cells among the different
+processors. */
+
+#if _MPI
+scalar pid[];
+event pids (i++) {
+  foreach()
+    pid[] = pid();
+}
+#endif
+
+/**
+We compute and write the space-averaged Nusselt number and the normalize gas
+volume in time. */
+
+event logfile (t += 0.001) {
+  double gasvolume = 0.;
+  foreach (reduction(+:gasvolume))
+    gasvolume += (1. - f[])*dv();
+
+  scalar TL = liq->T, TG = gas->T;
   foreach()
     T[] = TL[] + TG[];
+  boundary ({T}); // foreach_boudary() does not trigger automatic bc
 
+  double ld2 = sqrt (f.sigma/(rho1 - rho2)/fabs (G.x));
   double Nu = 0.;
-  foreach_boundary (bottom, reduction(+:Nu)) {
-    T[0,-1] = 2.*Twall - T[];
-    Nu += (T[] - T[0,-1]);
-  }
-  Nu *= -wavelength/(Twall - Tsat)/width;
+  foreach_boundary (left, reduction(+:Nu))
+    Nu += (T[] - T[-1,0])*cm[];
+  Nu *= -ld2*2./(Twall - Tsat)/sq (0.5*lambdaw);
 
-  double NuB = 0.425*pow((rho2*(rho1 - rho2)*9.81*dhev)
-      /(lambda2*mu2*(Twall - Tsat)), 1./4.)*pow(wavelength, 3./4.);
-
-  fprintf (stdout, "%f %f %f %f\n", t, gas_vol / gas_vol0, Nu, NuB);
-  fflush (stdout);
+  fprintf (stderr, "level %d %g %g %g\n", maxlevel, t,
+      gasvolume / gasvolume0, Nu), fflush (stderr);
 }
 
 /**
-We remove small bubbles formed during the breakups that are
-not important for the process under investigation, but that
-give some problems during the solution of the diffusion
-part of the temperature equation. */
+We write a movie with the evolution of the interface position, the temperature,
+and the velocity fields. */
 
-event remove_droplets (i++) {
-  remove_droplets (f, threshold=F_ERR, bubbles=true);
-}
-
-/**
-We output a movie with the evolution of the temperature
-field and the volume fraction facets. */
-
-event movie (t += 0.01; t <= 6) {
-  clear();
-  view (ty = -0.5);
-  draw_vof ("f", lw = 1.5);
-  squares ("T", min = Tsat, max = Twall,
-      map=blue_white_red, linear = true);
-  mirror ({1,0}) {
-    draw_vof ("f", lw = 1.5);
-    squares ("T", min = Tsat, max = Twall,
-        map=blue_white_red, linear = true);
+event movie (t += 0.002; t <= 0.35) {
+  if (maxlevel == 8) {
+    scalar ff[];
+    foreach()
+      ff[] = cm[] ? f[] : 0.;
+    clear();
+    view (ty = -0.5, psi=-pi/2.);
+    draw_vof ("cs", "fs", filled = -1, fc = {1.,1.,1.});
+    draw_vof ("ff", lw = 2.);
+    squares ("T", min = Tsat, max = Twall);
+    mirror ({0.,1.}) {
+      draw_vof ("cs", "fs", filled = -1, fc = {1.,1.,1.});
+      draw_vof ("ff", lw = 2.);
+      squares ("(u.x^2 + u.y^2)^0.5", spread = -1);
+    }
+    save ("movie.mp4");
   }
-  save ("movie.mp4");
 }
 
 /**
 ## Results
 
-We compare the evolution of the Nusselt number obtained
-from the simulation with the Berenson correlation.
-A displacement is expected since the correlation describes
-a 3D system, while the simulation is 2D.
+~~~gnuplot Convergence of the interface shape
+set term push
+set size ratio -1
+unset xtics
+unset ytics
+unset border
 
-~~~gnuplot Evolution of the Nusselt number
-set yr[0:60]
-
-set xlabel "t [s]"
-set ylabel "Nu [-]"
-
-p "out" u 1:3 w l t "Results", "out" u 1:4 w l t "Berenson"
+plot "facets-6" u (-$2):($1) w l lw 1.2 lc -1 dt 3 t "LEVEL 6", \
+     "facets-7" u (-$2):($1) w l lw 1.2 lc -1 dt 2 t "LEVEL 7", \
+     "facets-8" u (-$2):($1) w l lw 1.2 lc -1 dt 1 t "LEVEL 8", \
+     "facets-6" u ($2):($1)  w l lw 1.2 lc -1 dt 3 notitle, \
+     "facets-7" u ($2):($1)  w l lw 1.2 lc -1 dt 2 notitle, \
+     "facets-8" u ($2):($1)  w l lw 1.2 lc -1 dt 1 notitle
+set term pop
 ~~~
 
-The amount of gas phase volume fraction increases according
-to the phase change. The discontinuities correspond to the
-bubbles release.
-
-~~~gnuplot Evolution of gas volume fraction
+~~~gnuplot Evolution of the space-averaged Nusselt number in time
 reset
-set xlabel "t [s]"
-set ylabel "gas volume fraction [-]"
+set xlabel "time [s]"
+set ylabel "<Nu> [-]"
+set grid
+set xr[0:0.35]
+#set yr[0:10]
 
-p "out" u 1:2 w l t "volume fraction"
+plot "<grep 'level 6' log" u 3:5 w l lw 1.2 lc -1 dt 3 t "LEVEL 6", \
+     "<grep 'level 7' log" u 3:5 w l lw 1.2 lc -1 dt 2 t "LEVEL 7", \
+     "<grep 'level 8' log" u 3:5 w l lw 1.2 lc -1 dt 1 t "LEVEL 8"
 ~~~
 
-## References
+~~~gnuplot Evolution of the normalized gas volume in time
+reset
+set xlabel "time [s]"
+set ylabel "V_g / V_g^0 [-]"
+set grid
+set key left top
 
-~~~bib
-@article{welch2000volume,
-  title={A volume of fluid based method for fluid flows with phase change},
-  author={Welch, Samuel WJ and Wilson, John},
-  journal={Journal of computational physics},
-  volume={160},
-  number={2},
-  pages={662--682},
-  year={2000},
-  publisher={Elsevier}
-}
+plot "<grep 'level 6' log" u 3:4 w l lw 1.2 lc -1 dt 3 t "LEVEL 6", \
+     "<grep 'level 7' log" u 3:4 w l lw 1.2 lc -1 dt 2 t "LEVEL 7", \
+     "<grep 'level 8' log" u 3:4 w l lw 1.2 lc -1 dt 1 t "LEVEL 8"
 ~~~
 */

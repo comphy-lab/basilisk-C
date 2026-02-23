@@ -12,6 +12,10 @@ event phasechange (i++) {
   foreach() {
     fl[] = f[];
     fg[] = 1. - f[];
+#if EMBED
+    fl[] *= cs[];
+    fg[] *= cs[];
+#endif
   }
 
   face vector fsl[], fsg[];

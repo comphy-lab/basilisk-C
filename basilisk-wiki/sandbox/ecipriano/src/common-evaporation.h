@@ -173,7 +173,7 @@ void shift_field (scalar fts, scalar f, int dir) {
       if (dir == 1) {
         int count = 0;
         foreach_neighbor (1) {
-          if (f[] > 1.-F_ERR) // Number of pure-liquid cells close to the interfacial cell
+          if (f[] > 1.-F_ERR && cm[]) // Number of pure-liquid cells close to the interfacial cell
             count ++;
         }
         avg[] = count;
@@ -181,7 +181,7 @@ void shift_field (scalar fts, scalar f, int dir) {
       else {
         int count = 0;
         foreach_neighbor (1) {
-          if (f[] < F_ERR) // Number of pure-gas cells close to the interfacial cell
+          if (f[] < F_ERR && cm[]) // Number of pure-gas cells close to the interfacial cell
             count ++;
         }
         avg[] = count;
@@ -199,7 +199,7 @@ void shift_field (scalar fts, scalar f, int dir) {
   // Compute m
   foreach() {
     if (dir == 1) {
-      if (f[] > 1.-F_ERR) { // Move toward pure-liquid
+      if (f[] > 1.-F_ERR && cm[]) { // Move toward pure-liquid
         double val = 0.;
         foreach_neighbor (1) {
           if (f[] > F_ERR && f[] < 1. - F_ERR && avg[] > 0) {
@@ -210,7 +210,7 @@ void shift_field (scalar fts, scalar f, int dir) {
       }
     }
     else {
-      if (f[] < F_ERR) { // Move toward pure-gas
+      if (f[] < F_ERR && cm[]) { // Move toward pure-gas
         double val = 0.;
         foreach_neighbor (1) {
           if (f[] > F_ERR && f[] < 1. - F_ERR && avg[] > 0) {
