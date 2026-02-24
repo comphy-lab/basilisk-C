@@ -116,7 +116,7 @@ event adapt (i++) {
   foreach()
     mgf[] /= mgfmax;
 
-  adapt_wavelet ({mgf,T,u.x,u.y}, {1e-2,1e-2,1e-1,1e-1}, maxlevel, maxlevel);
+  adapt_wavelet ({mgf,T,u.x,u.y}, {1e-2,1e-2,1e-2,1e-2}, maxlevel, minlevel);
 #else
   adapt_wavelet_leave_interface ({T,u.x,u.y}, {f},
       (double[]){1e-2,1e-2,1e-2}, maxlevel, minlevel, 1);

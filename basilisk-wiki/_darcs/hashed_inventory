@@ -1,4 +1,4 @@
-pristine:3d07738df9554124a55e393d6c0a5de8aff527dce7b5e4f3de7088e2aab0b9f2
+pristine:d80c196fc80229d3649b8ed30b2252b7dee814692947770f09cb190c4447fa69
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -5968,3 +5968,33 @@ Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260222225246
  Ignore-this: 4b01e3a815bc843f54b17539641a43bf
 ] 
 hash: 0000001037-277908757eff39a65cec153fa491fb530a3aaf36065c7eef4d5c5bf86cdcc723
+[dimension OK 
+pyl <pyl@ccr.jussieu.fr>**20260223102226
+ Ignore-this: 3a4f8d519b4318b3cf0710b169dedd0bcb6b1b7454de51d46c6d90ab95586b7a5b1e60ed3d93ea06
+] 
+hash: 0000000791-2193844da2b6dce9b0f1b1aaa88bae8a65e15979597f24412b9260ef72e9f7a1
+[Adapt
+ecipriano <edoardo.cip@gmail.com>**20260223112244
+ Ignore-this: 5509bf854497fe4ca16b1f3dca9d6df76d1b59ea44ee2216d8df70d840055f157bb3f066ab4b0287
+] 
+hash: 0000000358-d869baf99667b013334ac66c436e572c393e1d635389fffb95b8a4881a0c6ad4
+[Removed redundant calculations of edge values
+Stephane Popinet <popinet@basilisk.fr>**20260223155154
+ Ignore-this: d6bad4df4de2906a4ddd7deff40a0f26
+] 
+hash: 0000009107-fe2f410f51190aa9bc2af49774ad7ef334069a60612d78473e34f180d0a85127
+[Do not use pointers (for compatibility with GPUs)
+Stephane Popinet <popinet@basilisk.fr>**20260223160516
+ Ignore-this: a6dcca892b6b260efcf605ba954845ea
+] 
+hash: 0000004411-d490165f46c26a801031b10ef33ba7f6559a5ce6fe3bf203d50827ff6fdc184e
+[Do not use pow() if multiplications are enough
+Stephane Popinet <popinet@basilisk.fr>**20260223162230
+ Ignore-this: cb713f03484bd47518ad6671baca36e1
+] 
+hash: 0000001744-a67cf6341ff07ca322e05e02d34e24db207a2855bacd39a0d5b1fffd252573ec
+[OK
+pyl <pyl@ccr.jussieu.fr>**20260223171102
+ Ignore-this: 1ae21a4022d25221ddf32d0053f1012763fa635ced35bf0fbff995cc7d7138373c2ffa1f53c8911
+] 
+hash: 0000000695-6912a90d0013f62efc5b94f6c33a4e29823032089ca37e3af7a8c9364122159f

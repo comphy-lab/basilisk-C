@@ -6,7 +6,7 @@
  
 This problem is a mix of Vauclin (saturated/ unsaturated) and Todd Bear (River topology).
 
- The river full of water imbibes the soil which is at first unsaturated.
+ The river, full of water, imbibes the soil which is at first unsaturated.
  As time evolves, saturation (i.e. $p>0$) arises.
  A water table is generated at the bottom over the impervious soil in $y=0$. The thickness of the porous media is $H_d$.
  
@@ -16,7 +16,7 @@ We model this with Darcy unsaturated theory.
    v =- \beta(p)  (\frac{\partial p }{\partial y } - 1 )$$
 $\beta$ is proportional to the permeability or the conductivity  and is function of the pressure $p$.
 
-Conservation of water is
+Conservation of water without dimension is
  $C(p) \frac{\partial h}{\partial t }+\frac{\partial u}{\partial x }+\frac{\partial v}{\partial y }=0$
  so that we have to solve an unsteady non linear diffusion problem:
 $$C(p) \frac{\partial h}{\partial t } =
@@ -88,7 +88,7 @@ p[bottom]= neumann(1);
  */
 bid river;
 u.t[river] = neumann(0);
-p[river] =dirichlet(Hd-y) ;
+p[river] = dirichlet(Hd-y) ;
 
 int main()
 {
@@ -97,6 +97,7 @@ int main()
     X0=0;
     init_grid (1 << level);
     tmax = 15;
+    DT = HUGE;
     run();
 }
 /**
@@ -176,7 +177,7 @@ event pressurevelocities (i++; t<tmax)
      
      */
     foreach_face()
-    u.x[] = (- beta.x[]*face_gradient_x (p, 0) + beta.x[]*g.x[]);
+        u.x[] = (- beta.x[]*face_gradient_x (p, 0) + beta.x[]*g.x[]);
     boundary ((scalar *){u});
  /** Hydro head */
     foreach(){

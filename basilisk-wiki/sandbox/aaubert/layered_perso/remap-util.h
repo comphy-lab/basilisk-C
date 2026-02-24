@@ -14,28 +14,11 @@ double minmodremap (double a, double b) {
     fabs(a) < fabs(b) ? a : b;
 }
 
-static void remap1 (double matrix_left[4][4], double b_left[4],
-		    double matrix_right[4][4], double b_right[4],
-		    const double * xpos, const double * fdat,
-		    int k,
-		    double ** matrix_coeff)
+static void remap_central (double s_left, double s_right,
+			   int npos, const double xpos[npos], const double fdat[npos],
+			   int k,
+			   double matrix_coeff[npos-1][3])
 {
-  double coeff_left[4] = {0.,0.,0.,0.};
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      coeff_left[i] += matrix_left[i][j]*b_left[j];
-
-  double coeff_right[4] = {0.,0.,0.,0.};
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      coeff_right[i] += matrix_right[i][j]*b_right[j];
-
-  double s_left = coeff_left[3];  //left dzeta=0
-  double s_right = coeff_right[3];
-
-  for (int i = 0; i < 3; i++)
-    s_right += coeff_right[i];   //right dzeta=1
-
   double xk = xpos[k], dx = xpos[k+1] - xk;
   if ((fdat[k+1] - fdat[k])*(fdat[k] - fdat[k-1]) < 0.) {
     s_left = fdat[k];
@@ -64,8 +47,8 @@ static void remap1 (double matrix_left[4][4], double b_left[4],
     coeff[1] = 0.;
     coeff[2] = fdat[k];
   }
-  else if ((coeff[0]!=0.) && (-coeff[1]/(2.*coeff[0]) > 1.e-10) && (-coeff[1]/(2.*coeff[0]) < 1. - 1.e-10)) {
-    if (-coeff[1]/(2.*coeff[0]) < 0.5)
+  else if (coeff[0] != 0. && - coeff[1]/(2.*coeff[0]) > 1.e-10 && -coeff[1]/(2.*coeff[0]) < 1. - 1.e-10) {
+    if (- coeff[1]/(2.*coeff[0]) < 0.5)
       s_right = 3.*fdat[k] - 2.*s_left;
     else
       s_left = 3.*fdat[k] - 2.*s_right;
@@ -74,43 +57,26 @@ static void remap1 (double matrix_left[4][4], double b_left[4],
     coeff[1] = 6.*fdat[k] - 2.*s_right - 4.*s_left;
     coeff[2] = s_left;
 
-    if ((s_left + s_right != 0.) && (fabs(s_left - s_right)/fabs(s_left + s_right) < 1e-3)) {
+    if (s_left + s_right != 0. && fabs(s_left - s_right)/fabs(s_left + s_right) < 1e-3) {
       coeff[0] = 0.;
       coeff[1] = 0.;
       coeff[2] = fdat[k];
     }
   }
 
-  matrix_coeff[0][k] = coeff[0]/sq(dx);
-  matrix_coeff[1][k] = (coeff[1] - 2.*coeff[0]*xk/dx)/dx;
-  matrix_coeff[2][k] = coeff[2] - xk*(coeff[1] - coeff[0]*xk/dx)/dx;
+  matrix_coeff[k][0] = coeff[0]/sq(dx);
+  matrix_coeff[k][1] = (coeff[1] - 2.*coeff[0]*xk/dx)/dx;
+  matrix_coeff[k][2] = coeff[2] - xk*(coeff[1] - coeff[0]*xk/dx)/dx;
 }
 
-static void set_matrix (double matrix[4][4], double b[4],
-			const double * xpos, const double * fdat,
-			int k, int shift)
-{
-  double xk = xpos[k], dx = xpos[k+1] - xk;
-  k += shift;
-  for (int i = 0; i < 4; i++) {
-    double dzetam1 = (xpos[i+k-2] - xk)/dx;
-    double dzeta0 = (xpos[i+k-1] - xk)/dx;
-    for (int j = 0; j < 4; j++)
-      matrix[i][j] = 1./(4. - j)*(pow(dzeta0, 4.-j) - pow(dzetam1, 4.-j));
-  }
-
-  for (int i = 0; i < 4; i++)
-    b[i] = (xpos[k-1+i] - xpos[k-2+i])*fdat[k-2+i]/dx;
-}
-
-static void remap3 (const double * xpos, const double * fdat, int k,
+static void remap3 (int npos, const double xpos[npos], const double fdat[npos], int k,
 		    double matrix[3][3], double s_left, double s_right,
-		    double ** matrix_coeff)
+		    double matrix_coeff[npos-1][3])
 {
   for (int j = 0; j < 3; j++)
     matrix[0][j] = 1./(3. - j);  //dzeta1=1 and dzeta0=0
 
-  //we only need to solve for the linear system, not the all invert matrix
+  //we only need to solve for the linear system, not the invert the whole matrix
   assert (smatrix_inverse (3, matrix, 1e-30) > 1e-20);
 
   double b[3];
@@ -124,37 +90,17 @@ static void remap3 (const double * xpos, const double * fdat, int k,
       coeff[i] += matrix[i][j]*b[j];
 
   double xk = xpos[k], dx = xpos[k+1] - xk;
-  matrix_coeff[0][k] = coeff[0]/sq(dx);
-  matrix_coeff[1][k] = (coeff[1] - 2.*coeff[0]*xk/dx)/dx;
-  matrix_coeff[2][k] = coeff[2] - xk*(coeff[1] - coeff[0]*xk/dx)/dx;
+  matrix_coeff[k][0] = coeff[0]/sq(dx);
+  matrix_coeff[k][1] = (coeff[1] - 2.*coeff[0]*xk/dx)/dx;
+  matrix_coeff[k][2] = coeff[2] - xk*(coeff[1] - coeff[0]*xk/dx)/dx;
 }
 
-static void remap_bottom (const double * xpos, const double * fdat,
+static void remap_bottom (double s_right,
+			  int npos, const double xpos[npos], const double fdat[npos],
 			  double f_b, double lambda_b,
-			  double ** matrix_coeff)
+			  double matrix_coeff[npos-1][3])
 {
   const int k = 0;
-      
-  double matrix_right[4][4];
-  double b_right[4];
-  set_matrix (matrix_right, b_right, xpos, fdat, k, 1);
-  matrix_right[0][0]=0.;  //take into account the boundary condition
-  matrix_right[0][1]=0.;  //instead of the integral at the layer -1
-  matrix_right[0][2]=lambda_b;  //at this position, dzeta=0
-  matrix_right[0][3]=1.;
-  b_right[0]=f_b;
-  assert (smatrix_inverse (4, matrix_right, 1.e-30) > 1.e-20);
-      
-  double coeff_right[4]={0.,0.,0.,0.};
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      coeff_right[i] += matrix_right[i][j]*b_right[j];
-
-  double s_right = coeff_right[3];
-  double s_left = f_b;
-
-  for (int i = 0; i < 3; i++)
-    s_right += coeff_right[i];   //right dzeta=1
 
   double matrix[3][3];
   matrix[1][0] = 0.;       //left condition
@@ -165,61 +111,29 @@ static void remap_bottom (const double * xpos, const double * fdat,
   matrix[2][1] = 1.;
   matrix[2][2] = 1.;
 
-  remap3 (xpos, fdat, k, matrix, s_left, s_right, matrix_coeff);
+  remap3 (npos, xpos, fdat, k, matrix, f_b, s_right, matrix_coeff);
 }
 
-static void remap_top (const double * xpos, const double * fdat, int k,
+static void remap_top (double s_left,
+		       int npos, const double xpos[npos], const double fdat[npos], int k,
 		       double f_t, double lambda_t,
-		       double ** matrix_coeff)
+		       double matrix_coeff[npos-1][3])
 {
-  double matrix_left[4][4];
-  double b_left[4];
-  set_matrix (matrix_left, b_left, xpos, fdat, k, 0);
-  //neumann condition at the top
-  //at this position, dzeta=1
-  matrix_left[3][0] = 1. + 3.*lambda_t;
-  matrix_left[3][1] = 1. + 2.*lambda_t;
-  matrix_left[3][2] = 1. + lambda_t;
-  matrix_left[3][3] = 1.;
-  b_left[3] = f_t;
-  assert (smatrix_inverse (4, matrix_left, 1.e-30) > 1.e-20);
-      
-  double coeff_left[4]={0.,0.,0.,0.};
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      coeff_left[i] += matrix_left[i][j]*b_left[j];
-
-  double s_left = coeff_left[3];  //left dzeta=0
-  double s_right = f_t;  
-
   double matrix[3][3];
-  matrix[1][0] = 0.;       //left condition
+  matrix[1][0] = 0.;               //left condition
   matrix[1][1] = 0.;
   matrix[1][2] = 1.;
 
-  matrix[2][0] = 1. + 2.*lambda_t;       //right condition
+  matrix[2][0] = 1. + 2.*lambda_t; //right condition
   matrix[2][1] = 1. + lambda_t;
   matrix[2][2] = 1.;
 
-  remap3 (xpos, fdat, k, matrix, s_left, s_right, matrix_coeff);
-}
-
-static void remap_abottom (double matrix_left[4][4], double b_left[4],
-			   const double * xpos, const double * fdat, int k, int shift,
-			   double f_b, double lambda_b)
-{
-  set_matrix (matrix_left, b_left, xpos, fdat, k, shift);
-  double dzetab = (xpos[k-1+3*shift] - xpos[k])/(xpos[k+1] - xpos[k]);
-  matrix_left[3*shift][0] = cube(dzetab) + 3.*sq(dzetab)*lambda_b;  //take into account the boundary condition
-  matrix_left[3*shift][1] = sq(dzetab) + 2.*dzetab*lambda_b;  //instead of the integral at the layer -1
-  matrix_left[3*shift][2] = dzetab + lambda_b;  //at this position, dzeta=(x_0-x_1)/(x_2-x_1)
-  matrix_left[3*shift][3] = 1.;
-  b_left[3*shift] = f_b;
+  remap3 (npos, xpos, fdat, k, matrix, s_left, f_t, matrix_coeff);
 }
 
 void my_remap_c (int npos, int nnew,
-		 const double * xpos, const double * xnew,
-		 const double * fdat, double * fnew,
+		 const double xpos[npos], const double xnew[nnew],
+		 const double fdat[npos], double fnew[nnew],
 		 double f_b, double lambda_b, double f_t, double lambda_t)
 {
   
@@ -227,7 +141,7 @@ void my_remap_c (int npos, int nnew,
   //     top Navier with coefficient f_t, lambda_t
 
   // this matrix contains all the coefficients of the polynomial in the different intervals
-  double ** matrix_coeff= (double **) matrix_new (3, npos-1, sizeof (double));
+  double matrix_coeff[npos - 1][3];
 
   /**  
   We first start by reconstructing the polynom on each interval. For
@@ -382,31 +296,52 @@ void my_remap_c (int npos, int nnew,
   Note that the different limiters will break the continuity of the
   reconstruction. */
 
-  for (int k = 0; k < npos - 1; k++) {
-    if (k == 0) //bottom boundary condition
-      remap_bottom (xpos, fdat, f_b, lambda_b, matrix_coeff);
-    else if (k == npos-2) //top boundary condition
-      remap_top (xpos, fdat, npos - 2, f_t, lambda_t, matrix_coeff);
-    else {
-      double matrix_left[4][4], b_left[4];
-      double matrix_right[4][4], b_right[4];
-      if (k == 1) { //boundary condition change the left edge value
-	remap_abottom (matrix_left, b_left, xpos, fdat, k, 0, f_b, lambda_b);	
-	set_matrix (matrix_right, b_right, xpos, fdat, k, 1);
-      }
-      else if (k == npos-3) { //top boundary condition
-	set_matrix (matrix_left, b_left, xpos, fdat, k, 0);
-	remap_abottom (matrix_right, b_right, xpos, fdat, k, 1, f_t, lambda_t);
-      }
-      else {
-	set_matrix (matrix_left, b_left, xpos, fdat, k, 0);
-	set_matrix (matrix_right, b_right, xpos, fdat, k, 1);
-      }
-      assert (smatrix_inverse (4, matrix_left, 1.e-30) > 1.e-20);
-      assert (smatrix_inverse (4, matrix_right, 1.e-30) > 1.e-20);
-      remap1 (matrix_left, b_left, matrix_right, b_right, xpos, fdat, k, matrix_coeff);
+  double s_left;
+  for (int k = 0; k < npos - 2; k++) {
+    double s_right, matrix[4][4], b[4];
+
+    double xk = xpos[k], dx = xpos[k+1] - xk;
+    for (int i = 0; i < 4; i++) {
+      double dzeta1 = (xpos[i+k-1] - xk)/dx, dz1n = dzeta1;
+      double dzeta0 = (xpos[i+k] - xk)/dx, dz0n = dzeta0;
+      for (int j = 3; j >= 0; j--, dz1n *= dzeta1, dz0n *= dzeta0)
+	matrix[i][j] = 1./(4. - j)*(dz0n - dz1n);
+      b[i] = (xpos[k+i] - xpos[k-1+i])*fdat[k-1+i]/dx;
     }
+    
+    if (k == 0) { // bottom boundary condition
+      matrix[0][0] = 0.;  // take into account the boundary condition
+      matrix[0][1] = 0.;  // instead of the integral at the layer -1
+      matrix[0][2] = lambda_b;  // at this position, dzeta=0
+      matrix[0][3] = 1.;
+      b[0] = f_b;
+    }
+    else if (k == npos - 3) { // top boundary condition
+      double dzetab = (xpos[k+2] - xk)/dx;
+      matrix[3][0] = cube(dzetab) + 3.*sq(dzetab)*lambda_t;  // take into account the boundary condition
+      matrix[3][1] = sq(dzetab) + 2.*dzetab*lambda_t;  // instead of the integral at the layer -1
+      matrix[3][2] = dzetab + lambda_t;  // at this position, dzeta=(x_0-x_1)/(x_2-x_1)
+      matrix[3][3] = 1.;
+      b[3] = f_t;
+    }
+      
+    assert (smatrix_inverse (4, matrix, 1.e-30) > 1.e-20);
+    double coeff[4] = {0.,0.,0.,0.};
+    for (int i = 0; i < 4; i++)
+      for (int j = 0; j < 4; j++)
+	coeff[i] += matrix[i][j]*b[j];
+    s_right = coeff[3];
+    for (int i = 0; i < 3; i++)
+      s_right += coeff[i];   //right dzeta=1
+
+    if (k == 0)
+      remap_bottom (s_right, npos, xpos, fdat, f_b, lambda_b, matrix_coeff);
+    else
+      remap_central (s_left, s_right, npos, xpos, fdat, k, matrix_coeff);
+    
+    s_left = s_right;    
   }
+  remap_top (s_left, npos, xpos, fdat, npos - 2, f_t, lambda_t, matrix_coeff);
 
   /**  
   We now need to compute the mean value on the new interval using the
@@ -423,25 +358,20 @@ void my_remap_c (int npos, int nnew,
   while ((inew < nnew - 1) && (xcur < xmax)) {
     if (ipos < npos - 1 && xpos[ipos + 1] <= xcur)
       ipos++;
-    if (xpos[ipos + 1] < xnew[inew + 1]) {
-      for (int i = 0; i < 3; i++)
-	fnew[inew] += matrix_coeff[i][ipos]/(3. - i)*(pow(xpos[ipos+1], 3. - i) - pow(xcur, 3. - i));
-      xcur = xpos[++ipos];
-    }
-    else {
-      for (int i = 0; i < 3; i++)
-	fnew[inew] += matrix_coeff[i][ipos]/(3. - i)*(pow(xnew[inew+1], 3. - i) - pow(xcur, 3. - i));
-      xcur = xnew[++inew];
-    }
+    int j = ipos, jn = inew;
+    double x1 = xpos[ipos + 1] < xnew[inew + 1] ? xpos[++ipos] : xnew[++inew];
+    double xcurn = xcur, xpn = x1;
+    for (int i = 2; i >= 0; i--, xcurn *= xcur, xpn *= x1)
+      fnew[jn] += matrix_coeff[j][i]/(3. - i)*(xpn - xcurn);
+    xcur = x1;
     if (ipos >= npos-1 && inew < nnew-1) {
       //if xnew[nnew-1]>xpos[npos-1], we need to finish with the last information that we have
-      for (int i = 0; i < 3; i++)
-        fnew[inew] += matrix_coeff[i][ipos-1]/(3. - i)*(pow(xnew[inew+1], 3. - i) - pow(xcur, 3.  -i));
+      double xcurn = xcur, x1 = xnew[inew+1], xpn = x1;
+      for (int i = 2; i >= 0; i--, xcurn *= xcur, xpn *= x1)
+        fnew[inew] += matrix_coeff[ipos-1][i]/(3. - i)*(xpn - xcurn);
       xcur = xnew[++inew];
     }
   }
-
-  matrix_free (matrix_coeff);
 
   for (int k = 0; k < nnew - 1; k++)
     fnew[k] /= xnew[k+1] - xnew[k];

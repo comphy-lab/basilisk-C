@@ -63,11 +63,11 @@ void comparison (double (* f) (double),
 
   int Nremap = 100; // number of remap
   for (int n = 0; n < Nremap; n++) {
-    int edge_meth = p3e_method, cell_meth = ppm_method;
     my_remap_c (nposinit, nposend, zinit, zend, init_pc, end_pc,
 		f_b, lambda_b, f_t, lambda_t);
     my_remap_c (nposend, nposinit, zend, zinit, end_pc, init_pc,
 		f_b, lambda_b, f_t, lambda_t);
+    int edge_meth = p3e_method, cell_meth = ppm_method;
     my_remap (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_pf, end_pf,
 	      &edge_meth, &cell_meth, &cell_lim);
     my_remap (&nposend, &nposinit, &ndof, &nvar, zend, zinit, end_pf, init_pf,
