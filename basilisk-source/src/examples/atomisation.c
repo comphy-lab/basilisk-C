@@ -192,7 +192,7 @@ event droplets (t += 0.1)
   double v[n];
   coord b[n];
   for (int j = 0; j < n; j++)
-    v[j] = b[j].x = b[j].y = b[j].z = 0.;
+    v[j] = 0., b[j].x = b[j].y = b[j].z = 0.;
   foreach (serial)
     if (m[] > 0) {
       int j = m[] - 1;

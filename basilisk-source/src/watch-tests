@@ -5,17 +5,40 @@ function progress()
     echo `find . -name pass | wc -l` passed
     echo
     echo `find . -name pid.*tst | wc -l` running
-    for f in $(find . -name tspid\.tst); do
+    for f in $(find . -name tspid\.*tst); do
 	id=$(head -n1 $f)
 	SANDBOX=$(tail -n1 $f)
-	echo -n -e ${f%%tspid\.tst}" $SANDBOX "
+	echo -n -e ${f%%tspid\.*tst}" $SANDBOX "
 	ssh -o 'ControlPath ~/.ssh/controlmasters/%r@%h:%p' -o 'ControlMaster auto' -o 'ControlPersist 1m' \
 	    $SANDBOX "test -f /tmp/$id/progress && ( sed 's/\\r/\\n/g' /tmp/$id/progress | tail -n 1 ) || echo waiting"
+	if [ "$1" = "sync" ]; then
+	    rsync -arz $SANDBOX:/tmp/$id/ ${f%%tspid\.*tst}
+	fi
     done | column -t
     echo
     echo `find . -name fail | wc -l` failed
     find . -name fail
 }
 
+sync=no
+POSITIONAL_ARGS=()
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -s|--sync)
+      sync="sync"
+      shift # past argument
+      ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1") # save positional arg
+      shift # past argument
+      ;;
+  esac
+done
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
 export -f progress
-watch -n 10 -x bash -c progress
+watch -n 10 -x bash -c "progress $sync"

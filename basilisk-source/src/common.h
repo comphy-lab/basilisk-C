@@ -404,16 +404,30 @@ const scalar zeroc[] = 0.;
 
 // matrices
 
-void * matrix_new (int n, int p, size_t size)
+void matrix_inverse3 (double m[3][3])
 {
-  void ** m = qmalloc (n, void *);
-  char * a = qmalloc (n*p*size, char);
-  for (int i = 0; i < n; i++)
-    m[i] = a + i*p*size;
-  return m;
+  double det = (m[0][0]*(m[1][1]*m[2][2] - m[2][1]*m[1][2]) - 
+		m[0][1]*(m[1][0]*m[2][2] - m[2][0]*m[1][2]) + 
+		m[0][2]*(m[1][0]*m[2][1] - m[2][0]*m[1][1]));
+  assert (det);
+  double m00 = m[0][0];
+  m[0][0] = (m[1][1]*m[2][2] - m[1][2]*m[2][1])/det;
+  double m01 = m[0][1];
+  m[0][1] = (m[2][1]*m[0][2] - m[0][1]*m[2][2])/det;
+  double m02 = m[0][2];
+  m[0][2] = (m01*m[1][2] - m[1][1]*m[0][2])/det;
+  double m10 = m[1][0];
+  m[1][0] = (m[1][2]*m[2][0] - m[1][0]*m[2][2])/det;
+  double m11 = m[1][1];
+  m[1][1] = (m00*m[2][2] - m[2][0]*m02)/det;
+  m[1][2] = (m10*m02 - m00*m[1][2])/det;
+  double m20 = m[2][0];
+  m[2][0] = (m10*m[2][1] - m[2][0]*m11)/det;
+  m[2][1] = (m20*m01 - m00*m[2][1])/det; 
+  m[2][2] = (m00*m11 - m01*m10)/det;
 }
 
-double matrix_inverse (double ** m, int n, double pivmin)
+double smatrix_inverse (int n, double m[n][n], double pivmin)
 {
   int indxc[n], indxr[n], ipiv[n];
   int i, icol = 0, irow = 0, j, k, l, ll;
@@ -462,6 +476,20 @@ double matrix_inverse (double ** m, int n, double pivmin)
 	swap (double, m[k][indxr[l]], m[k][indxc[l]]);
   }
   return minpiv;
+}
+
+void * matrix_new (int n, int p, size_t size)
+{
+  void ** m = qmalloc (n, void *);
+  char * a = qmalloc (n*p*size, char);
+  for (int i = 0; i < n; i++)
+    m[i] = a + i*p*size;
+  return m;
+}
+
+double matrix_inverse (double ** m, int n, double pivmin)
+{
+  return smatrix_inverse (n, (double (*)[n])m[0], pivmin);
 }
 
 void matrix_free (void * m)

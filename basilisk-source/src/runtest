@@ -1,5 +1,4 @@
 #!/bin/sh
-
 FILE="$1"
 test="${FILE%.*}"
 ext="${FILE##*.}"
@@ -39,7 +38,9 @@ for opt in $CFLAGS; do
 done
 
 case $OSTYPE in
-    *darwin*) ;; # gdb is (often) broken on Apple OSX
+    *darwin*) # gdb is (often) broken on Apple OSX
+	set -m # enable job control
+        ;;
     *)
 	if test -z "$GDB"; then
 	    GDB=`which gdb`
@@ -57,9 +58,19 @@ script()
 
     pass=true
     rm -f $log log-* stencil stencil-* fine fine-* coarse coarse-*
-    tail -f --pid=$$ --retry display.html 2> /dev/null | grep -o 'http://.*:[0-9]*' &
-    tail -f --pid=$$ --retry $log 2> /dev/null | grep -E '.*:[0-9]*:.*(warning|error).*:' &
-    retail=$!
+    case $OSTYPE in
+	*darwin*)
+	    (tail -F display.html 2> /dev/null | grep -o 'http://.*:[0-9]*') &
+	    retail1=$!
+	    (tail -F $log 2> /dev/null | grep -E '.*:[0-9]*:.*(warning|error).*:') &
+	    retail2=$!	    
+	    ;;
+	*)
+	    tail -f --pid=$$ --retry display.html 2> /dev/null | grep -o 'http://.*:[0-9]*' &
+	    tail -f --pid=$$ --retry $log 2> /dev/null | grep -E '.*:[0-9]*:.*(warning|error).*:' &
+	    retail=$!
+	    ;;
+    esac
     if test -n "$EXEC" -o -z "$GDB"; then
 	if ! $EXEC ./$test 2> $log > $out; then
 	    pass=false
@@ -85,7 +96,17 @@ script()
 	fi
 	rm -f gdb.log
     fi
-    kill $retail
+    case $OSTYPE in
+	*darwin*)
+	    # SIGINT to avoid [Terminated] output:
+	    # https://stackoverflow.com/questions/81520/how-to-suppress-terminated-message-after-killing-in-bash
+	    kill -INT -- -$retail1
+	    kill -INT -- -$retail2
+	    ;;
+	*)
+	    kill $retail
+	    ;;
+    esac
     
     if test -f log-1; then
 	mv -f $log log-0

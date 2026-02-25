@@ -9,13 +9,13 @@ typedef struct {
   coord o;
 #if dimension == 2 /* y = a[0]*x^2 + a[1]*x + a[2] */
   coord m;
-  double ** M, rhs[3], a[3];
+  double M[3][3], rhs[3], a[3];
 #else /* 3D z = a[0]*x^2 + a[1]*y^2 + a[2]*x*y + a[3]*x + a[4]*y + a[5] */
   double t[3][3];
 # ifdef NP
-  double ** M, rhs[NP*NP], a[NP*NP];
+  double M[NP*NP][NP*NP], rhs[NP*NP], a[NP*NP];
 # else
-  double ** M, rhs[6], a[6];
+  double M[6][6], rhs[6], a[6];
 # endif
 #endif /* 3D */
 } ParabolaFit;
@@ -62,7 +62,6 @@ static void parabola_fit_init (ParabolaFit * p, coord o, coord m)
   int n = 6;
 # endif
 #endif /* 3D */
-  p->M = (double **) matrix_new (n, n, sizeof(double));  
   for (int i = 0; i < n; i++) {
     for (int j = 0; j < n; j++)
       p->M[i][j] = 0.;
@@ -116,7 +115,7 @@ static double parabola_fit_solve (ParabolaFit * p)
   p->M[0][1] = p->M[1][0];
   p->M[0][2] = p->M[2][0] = p->M[1][1];
   p->M[1][2] = p->M[2][1];
-  double pivmin = matrix_inverse (p->M, 3, 1e-10);
+  double pivmin = smatrix_inverse (3, p->M, 1e-10);
   if (pivmin) {
     p->a[0] = p->M[0][0]*p->rhs[0] + p->M[0][1]*p->rhs[1] + p->M[0][2]*p->rhs[2];
     p->a[1] = p->M[1][0]*p->rhs[0] + p->M[1][1]*p->rhs[1] + p->M[1][2]*p->rhs[2];
@@ -125,7 +124,7 @@ static double parabola_fit_solve (ParabolaFit * p)
     p->a[0] = p->a[1] = 0.;
 #else /* 3D */
 # ifdef NP
-  double pivmin = matrix_inverse (p->M, NP*NP, 1e-10);
+  double pivmin = smatrix_inverse (NP*NP, p->M, 1e-10);
   if (pivmin)
     for (int i = 0; i < NP*NP; i++) {
       p->a[i] = 0.;
@@ -143,7 +142,7 @@ static double parabola_fit_solve (ParabolaFit * p)
   for (int i = 1; i < 6; i++)
     for (int j = 0; j < i; j++)
       p->M[i][j] = p->M[j][i];
-  double pivmin = matrix_inverse (p->M, 6, 1e-10);
+  double pivmin = smatrix_inverse (6, p->M, 1e-10);
   if (pivmin)
     for (int i = 0; i < 6; i++) {
       p->a[i] = 0.;
@@ -155,7 +154,6 @@ static double parabola_fit_solve (ParabolaFit * p)
       p->a[i] = 0.;
 # endif // !NP
 #endif /* 3D */  
-  matrix_free (p->M);
   return pivmin;
 }
 

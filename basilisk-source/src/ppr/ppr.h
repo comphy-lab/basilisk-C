@@ -32,6 +32,6 @@
 #define bcon_slope 402
 
 void my_remap (int * npos, int * nnew, int * nvar, int * ndof,
-	       double * xpos, double * xnew,
+	       const double * xpos, const double * xnew,
 	       double * fdat, double * fnew,
 	       int * edge_meth, int * cell_meth, int * cell_lim);

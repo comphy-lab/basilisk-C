@@ -128,7 +128,7 @@ event logfile (i += 10)
   energy (&PE, &KE);
   if (i == 0)
     rpe0 = rpe;
-  fprintf (stderr, "%g %g %.12g %.12g %.12g %.12g %.12g %d\n", t, dt,
+  fprintf (stderr, "%g %g %.12g %.12g %.12g %.12g %.6g %d\n", t, dt,
 	   rpe - rpe0, rpe0, rho0*PE, rho0*KE,
 	   t > tn ? (rpe - rpen)/(t - tn)/L0 : 0.,
 #if NH	   

@@ -1,4 +1,4 @@
-pristine:fdfb4d723e81e6c537cf990bd74d609ca0de3dcc646e7b3f84c44654871029db
+pristine:ed34cdc3555cd36a03142b632c99eb2d62bd1bee906d4c2bc92a04c5d0efb990
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -618,3 +618,33 @@ Andres Castillo Castellanos <andres.castillo.castellanos@gmail.com>**20260220131
  Ignore-this: eed690d179b02fb37cd5f0a3bbbef99d
 ] 
 hash: 0000001579-98ac86d52255fe75bb10ae7349fb6382d9a24236796293c6253a008f1eebceda
+[Fix runtest for macos
+Edoardo Cipriano <edoardo.cipriano@polimi.it>**20260213223938
+ Ignore-this: 6048b5a6ad58b23236f97979eb56f5d977353072609718d08735f9e140cb7649384bf22614d56e57
+] 
+hash: 0000001292-a7aa89e51a84d5b6d31742d5de3c77426d1fd653e868a9a92de87e2452f0604b
+[OSX-specific shell commands do not use bash extensions
+Stephane Popinet <popinet@basilisk.fr>**20260214132415
+ Ignore-this: d148f270b0940d0234f7ca93889a968d
+] 
+hash: 0000001955-3f5f1434f20af4cc5f5b490a8c201b933fa7120daddea93dd62d367d414a8d4a
+[watch-tests can also synchronize
+Stephane Popinet <popinet@basilisk.fr>**20260219090537
+ Ignore-this: f8a1d1d4fb2a82e2d5719e5b0e044f2d
+] 
+hash: 0000000996-b56bb2c6ef57e6e3687b20951fea1718d2042b3465e77d9e01053c79c2513d42
+[The interpreter allows the declaration of undefined array dimensions
+Stephane Popinet <popinet@basilisk.fr>**20260224112031
+ Ignore-this: bbb0bc689eb4d96e32446a8a650b55e1
+] 
+hash: 0000000696-478a61b35e19131af702cdf9d6f2f7e41b04f93257e3ed7aaf9a325226f5b436
+[Matrix inversion without pointers
+Stephane Popinet <popinet@basilisk.fr>**20260224112319
+ Ignore-this: a9c36bee870a1308b032741a1d5a2428
+] 
+hash: 0000002601-effb508d24dd9336aca8b34342fa34d27639ca0c183c0f50f7a2bb4b2b07e4aa
+[Changed reference for lock.c
+Stephane Popinet <popinet@basilisk.fr>**20260224122958
+ Ignore-this: f2ddc3ffe2821b47b32a7ec4222b3a2ee5d31d3d6f0bb35a7faf08db17d750fe634ddf8e742ad00e
+] 
+hash: 0000017108-a49585b3b49f451b0aae63d7459fe0711e27387ce71a0e0b72f08f1e0edbcb7a

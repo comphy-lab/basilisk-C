@@ -1348,8 +1348,10 @@ static Ast * get_array_dimensions (Ast * direct_declarator, int symbol, Dimensio
       s = run (nelem, stack);
       if (!s)
 	return message (NULL, nelem, "undefined array size '%s'\n", warning_verbosity, stack);
+#if 0      
       if (value_flags (s) & unset)
 	return message (NULL, nelem, "array size '%s' not set\n", warning_verbosity, stack);
+#endif
     }
     else if (ast_schema (direct_declarator->parent, symbol,
 			 1, token_symbol (']')) ||
@@ -1843,7 +1845,7 @@ Value * value_from_type (Ast * n, Ast * type, Dimensions * d, Ast * initializer,
 
   Value * v;
   if (d->dimension) {
-    assert (d->dimension[0] >= 0);
+    //    assert (d->dimension[0] >= 0);
     d->size *= type_size (d->pointer, type, stack);
     for (int * i = d->dimension; *i >= 0; i++)
       d->pointer++; 
