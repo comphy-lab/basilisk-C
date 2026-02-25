@@ -1,4 +1,4 @@
-pristine:d80c196fc80229d3649b8ed30b2252b7dee814692947770f09cb190c4447fa69
+pristine:26c74af5bb8948bcde7e7d913fe1c7d5a5393058158f0758d95d77ba132d06e8
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -5998,3 +5998,38 @@ pyl <pyl@ccr.jussieu.fr>**20260223171102
  Ignore-this: 1ae21a4022d25221ddf32d0053f1012763fa635ced35bf0fbff995cc7d7138373c2ffa1f53c8911
 ] 
 hash: 0000000695-6912a90d0013f62efc5b94f6c33a4e29823032089ca37e3af7a8c9364122159f
+[Use 3x3 matrix inversion
+Stephane Popinet <popinet@basilisk.fr>**20260224113524
+ Ignore-this: 2d5424d3eecfedee72c92b395039da50
+] 
+hash: 0000000349-3d912a8d09c04aa500a3728dbe0eb26c9222e4ccddd91da57b81f4e69481e3d6
+[Do not skip warnings
+Stephane Popinet <popinet@basilisk.fr>**20260224114317
+ Ignore-this: 480e807a4c71a0b592a0aae7a5d89ac0
+] 
+hash: 0000001472-4f553c8949b6ed4b10e6d2e0e16e326919ded8c4da885391c0c438e4b89fd2d2
+[Warning fixed
+Stephane Popinet <popinet@basilisk.fr>**20260224122451
+ Ignore-this: 5239f8fd6405f95690f8d93dc0641ac2f9fbc7886a1d44481b79148fb2e58dbdfd68708c70ff2b0a
+] 
+hash: 0000000260-975f808522542d159e3540619f78066fdd3f1df2c188c875049e04bd35ace98d
+[More references
+Stephane Popinet <popinet@basilisk.fr>**20260224154301
+ Ignore-this: d6c26abc60c1e920d47cf9d68eb8163c
+] 
+hash: 0000002694-8a0364e147bacf7a37fb1959107b46380a4439f734870df112ee9340b400f17a
+[Update of BMM information
+Tianyang <hantianyang@ucas.ac.cn>**20260224170536
+ Ignore-this: 31af80382c007b8093d31858100093e57cfbfbedfc943b9c9c4dc183a82d8ffd42835ff5ab8b088d
+] 
+hash: 0000000329-32cf8ee266a2e5e90cd622153f1288b25ef9d583e6659a7837d3bbe5e28b3993
+[Update of BMM video description
+Tianyang <hantianyang@ucas.ac.cn>**20260224171050
+ Ignore-this: a136dbba7569cebb8a10303518183f81cadc1063e4ada9eabd355df83e63166693ef3a5208fbcc60
+] 
+hash: 0000000771-426e1f8d77a93c855707531e281c32dddd74ad90dc3d0c5439e2c10b8eeffedf
+[Update of BMM video description
+Tianyang <hantianyang@ucas.ac.cn>**20260224171155
+ Ignore-this: aceddd072bde35ba964b7cb90cc4dbbdc65a3219c2124a6b18df11071c3f94bf9594fb481abd1f7e
+] 
+hash: 0000000272-a24bfb06297f33a5013e57c9e370cd7ff8419ef7b9e3ba6ec32d844c918935d9

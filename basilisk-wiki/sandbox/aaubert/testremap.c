@@ -110,21 +110,21 @@ int main()
 
   /**
   ~~~gnuplot Polynomial
-  plot "log" skip 17 index 0 using 2:3 title "init" with boxes fc 'gray', \
-       "" skip 17 index 0 using 2:4 title "remap C" lc 'red', \
-       "" skip 17 index 0 using 2:5 title "remap Fortran" lc 'black' pt 6
+  plot "log" index 0 using 2:3 title "init" with boxes fc 'gray', \
+       "" index 0 using 2:4 title "remap C" lc 'red', \
+       "" index 0 using 2:5 title "remap Fortran" lc 'black' pt 6
   ~~~
 
   ~~~gnuplot Piecewise constant
-  plot "log" skip 17 index 1 using 2:3 title "init" with boxes fc 'gray', \
-       "" skip 17 index 1 using 2:4 title "remap C" lc 'red', \
-       "" skip 17 index 1 using 2:5 title "remap Fortran" lc 'black' pt 6
+  plot "log" index 1 using 2:3 title "init" with boxes fc 'gray', \
+       "" index 1 using 2:4 title "remap C" lc 'red', \
+       "" index 1 using 2:5 title "remap Fortran" lc 'black' pt 6
   ~~~
 
   ~~~gnuplot Sum of Gaussians
-  plot "log" skip 17 index 2 using 2:3 title "init" with boxes fc 'gray', \
-       "" skip 17 index 2 using 2:4 title "remap C" lc 'red', \
-       "" skip 17 index 2 using 2:5 title "remap Fortran" lc 'black' pt 6
+  plot "log" index 2 using 2:3 title "init" with boxes fc 'gray', \
+       "" index 2 using 2:4 title "remap C" lc 'red', \
+       "" index 2 using 2:5 title "remap Fortran" lc 'black' pt 6
   ~~~
   */
 }

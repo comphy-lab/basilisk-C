@@ -76,8 +76,7 @@ static void remap3 (int npos, const double xpos[npos], const double fdat[npos], 
   for (int j = 0; j < 3; j++)
     matrix[0][j] = 1./(3. - j);  //dzeta1=1 and dzeta0=0
 
-  //we only need to solve for the linear system, not the invert the whole matrix
-  assert (smatrix_inverse (3, matrix, 1e-30) > 1e-20);
+  matrix_inverse3 (matrix);
 
   double b[3];
   b[0] = fdat[k];
@@ -296,7 +295,7 @@ void my_remap_c (int npos, int nnew,
   Note that the different limiters will break the continuity of the
   reconstruction. */
 
-  double s_left;
+  double s_left = 0;
   for (int k = 0; k < npos - 2; k++) {
     double s_right, matrix[4][4], b[4];
 

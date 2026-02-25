@@ -106,6 +106,50 @@ keywords = {Droplet impacts, Superhydrophobic surface, Rapid rebound}}
 ### 2025
 
 ~~~bib
+@article{parik2025,
+  title={On the threshold of drop fragmentation under impulsive acceleration},
+  author={Parik, Aditya and Truscott, Tadd T and Dutta, Som},
+  journal={Journal of Fluid Mechanics},
+  volume={1019},
+  pages={A1},
+  year={2025},
+  publisher={Cambridge University Press}
+}
+
+@article{shao2025,
+  title={Wave breaking characteristics around a wedge-shaped bow: High-fidelity simulation of water--air--bubble mixed flow},
+  author={Shao, Yuming and Song, Bowei and Wang, Jianhua and Wang, Wentao and Wan, Decheng},
+  journal={Physics of Fluids},
+  volume={37},
+  number={7},
+  year={2025},
+  publisher={AIP Publishing}
+}
+
+@inproceedings{shi2025,
+  title={Regular Wave Run-Up and Air Entrainment Around a Circular Cylinder Based on Adaptive Cartesian Grids},
+  author={Shi, Mengdi and Liu, Jiaying and Zhao, Weiwen and Wan, Decheng},
+  booktitle={ISOPE International Ocean and Polar Engineering Conference},
+  pages={ISOPE--I},
+  year={2025},
+  organization={ISOPE}
+}
+
+@article{krimans2025,
+  title = {Simulation of the high Mach number motion for bubble collapse in a compressible Euler fluid using Basilisk},
+  author = {Krimans, Daniels and Ruuth, Steven J. and Putterman, Seth},
+  journal = {Phys. Rev. E},
+  volume = {112},
+  issue = {6},
+  pages = {065107},
+  numpages = {19},
+  year = {2025},
+  month = {Dec},
+  publisher = {American Physical Society},
+  doi = {10.1103/19vc-d3vd},
+  url = {https://link.aps.org/doi/10.1103/19vc-d3vd}
+}
+
 @article{zhong2025,
 author = {Zhong, Wenyuan and Song, Zhiwei and Qin, Yongkang and Chao, Youchuang and Ding, Zijing},
 title = {Interface Dynamics of Droplet Impact onto a Viscoelastic Liquid Pool},
@@ -635,6 +679,26 @@ pages={A6}
 ### 2024
 
 ~~~bib
+@article{shao2024,
+  title={Numerical investigations of breaking waves and air entrainment induced by a shallowly submerged hydrofoil},
+  author={Shao, Yuming and Wang, Wentao and Wan, Decheng and Wang, Jianhua},
+  journal={Ocean Engineering},
+  volume={312},
+  pages={119026},
+  year={2024},
+  publisher={Elsevier}
+}
+
+@article{cherdantsev2024,
+  title={Fast droplets impacting liquid layer under a small angle: a numerical analysis of experimental observations},
+  author={Cherdantsev, Andrey and Vozhakov, Ivan},
+  journal={International Journal of Multiphase Flow},
+  volume={175},
+  pages={104810},
+  year={2024},
+  publisher={Elsevier}
+}
+
 @article{hidman2024,
   title={How surface modifications enhance vertical falling film evaporation},
   author={Hidman, Niklas and {\AA}kesj{\"o}, Anders and Gourdon, Mathias and Jongsma, Alfred and Str{\"o}m, Henrik and Sardina, Gaetano and Sasic, Srdjan},
@@ -1567,6 +1631,16 @@ pdf = {https://www.sciencedirect.com/science/article/pii/S0021999122009287/pdfft
 ### 2022
 
 ~~~bib
+@article{gao2022,
+  title={Effect of phase change on jet atomization: a direct numerical simulation study},
+  author={Gao, Xinxin and Chen, Jianye and Qiu, Yinan and Ding, Yue and Xie, Junlong},
+  journal={Journal of Fluid Mechanics},
+  volume={935},
+  pages={A16},
+  year={2022},
+  publisher={Cambridge University Press}
+}
+
 @article{Cheng2022,
 title = {An immersed boundary/multi-relaxation time lattice {B}oltzmann method on adaptive octree grids for the particle-resolved simulation of particle-laden flows},
 journal = {Journal of Computational Physics},
