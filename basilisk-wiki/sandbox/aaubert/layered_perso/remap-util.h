@@ -103,7 +103,7 @@ static void remap_bottom (double s_right,
 
   double matrix[3][3];
   matrix[1][0] = 0.;       //left condition
-  matrix[1][1] = lambda_b;
+  matrix[1][1] = lambda_b/(xpos[k+1] - xpos[k]);
   matrix[1][2] = 1.;
 
   matrix[2][0] = 1.;       //right condition
@@ -123,8 +123,8 @@ static void remap_top (double s_left,
   matrix[1][1] = 0.;
   matrix[1][2] = 1.;
 
-  matrix[2][0] = 1. + 2.*lambda_t; //right condition
-  matrix[2][1] = 1. + lambda_t;
+  matrix[2][0] = 1. + 2.*lambda_t/(xpos[k+1] - xpos[k]); //right condition
+  matrix[2][1] = 1. + lambda_t/(xpos[k+1] - xpos[k]);
   matrix[2][2] = 1.;
 
   remap3 (npos, xpos, fdat, k, matrix, s_left, f_t, matrix_coeff);
@@ -311,15 +311,15 @@ void my_remap_c (int npos, int nnew,
     if (k == 0) { // bottom boundary condition
       matrix[0][0] = 0.;  // take into account the boundary condition
       matrix[0][1] = 0.;  // instead of the integral at the layer -1
-      matrix[0][2] = lambda_b;  // at this position, dzeta=0
+      matrix[0][2] = lambda_b/dx;  // at this position, dzeta=0
       matrix[0][3] = 1.;
       b[0] = f_b;
     }
     else if (k == npos - 3) { // top boundary condition
       double dzetab = (xpos[k+2] - xk)/dx;
-      matrix[3][0] = cube(dzetab) + 3.*sq(dzetab)*lambda_t;  // take into account the boundary condition
-      matrix[3][1] = sq(dzetab) + 2.*dzetab*lambda_t;  // instead of the integral at the layer -1
-      matrix[3][2] = dzetab + lambda_t;  // at this position, dzeta=(x_0-x_1)/(x_2-x_1)
+      matrix[3][0] = cube(dzetab) + 3.*sq(dzetab)*lambda_t/dx;  // take into account the boundary condition
+      matrix[3][1] = sq(dzetab) + 2.*dzetab*lambda_t/dx;  // instead of the integral at the layer -1
+      matrix[3][2] = dzetab + lambda_t/dx;  // at this position, dzeta=(x_0-x_1)/(x_2-x_1)
       matrix[3][3] = 1.;
       b[3] = f_t;
     }

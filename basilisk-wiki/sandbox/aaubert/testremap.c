@@ -107,6 +107,10 @@ int main()
   comparison (sum_gaussian,
 	      nposinit, nposend, zinit, zend,
 	      0., 0., 0., HUGE, mono_limit);
+  
+  comparison (polynomial,
+	      nposinit, nposend, zinit, zend,
+	      40., 3., 80., -1., null_limit);
 
   /**
   ~~~gnuplot Polynomial
@@ -125,6 +129,12 @@ int main()
   plot "log" index 2 using 2:3 title "init" with boxes fc 'gray', \
        "" index 2 using 2:4 title "remap C" lc 'red', \
        "" index 2 using 2:5 title "remap Fortran" lc 'black' pt 6
+  ~~~
+  
+  ~~~gnuplot Polynomial Robin condition
+  plot "log" index 3 using 2:3 title "init" with boxes fc 'gray', \
+       "" index 3 using 2:4 title "remap C" lc 'red', \
+       "" index 3 using 2:5 title "remap Fortran" lc 'black' pt 6
   ~~~
   */
 }
