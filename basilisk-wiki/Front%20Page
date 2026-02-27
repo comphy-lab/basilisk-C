@@ -41,6 +41,17 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{Huang2026, 
+title={Bubble-burst-induced Puddle Jumping and Jet Printing}, 
+volume={17}, 
+DOI={10.1038/s41467-026-69512-y}, 
+journal={Nature Communications}, 
+author={Huang, Wenge and Lori, Mohammad Shamsodini and Yang, Anchenyi and Zhuang, Kai and Cheng, Yuanhao and Chen, Mojun and Sun, Chao and Ming, Tingzhen and Cui, Huachen and Cheng, Jiangtao}, 
+year={2026}, 
+pages={1818},
+pdf={https://doi.org/10.1038/s41467-026-69512-y}
+}
+
 @article{wang2026,
   title={Cavitation bubble near a wall: Sensitivity to modeling conditions},
   author={Wang, Bo and Yang, Zhidian and Roman{\`o}, Francesco},
@@ -69,12 +80,4 @@ See also the [POM Gallery]().
   url = {https://link.aps.org/doi/10.1103/sdqh-kfcq}
 }
 
-@article{gai2026, 
-title={Capturing the motion of a pair of elastic capsules in a shear flow: emergent nonlinear hydrodynamic ordering}, 
-volume={1026}, 
-DOI={10.1017/jfm.2025.11054}, 
-journal={Journal of Fluid Mechanics}, 
-author={Gai, Guodong and Plouraboué, Franck and Wachs, Anthony}, 
-year={2026}, 
-pages={A50}}
 ~~~

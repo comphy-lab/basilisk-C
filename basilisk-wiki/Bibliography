@@ -8,6 +8,26 @@ own papers if they use Basilisk. See also [src/references.bib]() for older refer
 ### 2026
 
 ~~~bib
+@article{huang2026, 
+title={Bubble-burst-induced Puddle Jumping and Jet Printing}, 
+volume={17}, 
+DOI={10.1038/s41467-026-69512-y}, 
+journal={Nature Communications}, 
+author={Huang, Wenge and Lori, Mohammad Shamsodini and Yang, Anchenyi and Zhuang, Kai and Cheng, Yuanhao and Chen, Mojun and Sun, Chao and Ming, Tingzhen and Cui, Huachen and Cheng, Jiangtao}, 
+year={2026}, 
+pages={1818},
+pdf={https://doi.org/10.1038/s41467-026-69512-y}
+}
+
+@article{gai2026,
+title={Capturing the motion of a pair of elastic capsules in a shear flow: emergent nonlinear hydrodynamic ordering},
+volume={1026},
+DOI={10.1017/jfm.2025.11054},
+journal={Journal of Fluid Mechanics},
+author={Gai, Guodong and Plouraboué, Franck and Wachs, Anthony},
+year={2026},
+pages={A50}}
+
 @article{boswell2026,
 title={Applying direct numerical simulations to investigate wave forcing against a vertical wall},
 journal={Applied Ocean Research},

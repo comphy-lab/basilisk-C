@@ -28,6 +28,9 @@ Updated on june 2025
  - [Fingering instability (?)](/sandbox/fpicella/microswimmer_tHree_forces/fingering.c). Orientation is frozen.
  - [Plumes of bioconvection.](/sandbox/fpicella/microswimmer_tHree_forces/plumes_x_periodic.c). Primary instability from _hydrodynamic screening_?
 
+### SuperHydroPhobic Surfaces.
+ -[Rigid cylinder placed in a gas bubble under fluid flow](/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c). Plastron dynamics
+
 ### Miscellaneous
 
  - [A very concise darcs tutorial](/sandbox/fpicella/short_darcs_tutorial.c).

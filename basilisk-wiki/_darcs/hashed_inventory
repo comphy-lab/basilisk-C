@@ -1,4 +1,4 @@
-pristine:ac0df559f838af1af65f0e0775fb6dff4471017410017e615df826703c7ce81d
+pristine:3314f52840dc1b9e575b884695d4af5a721f9bbf1f9d2391c2790feacc21eb13
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -6043,3 +6043,23 @@ antoine.aubert <antoine.aubert@polytechnique.edu>**20260225090023
  Ignore-this: 9f0ae7283a2b5b58ea82cb345d3d965c0fed9afff5bebc05dbc71b4349733786857588973f5c0772
 ] 
 hash: 0000000640-ff1793995361d5d8e0b635e7c372694d394aecb6e35c5eb0932bd36a4c07bd56
+[Add a paper
+WengeHuang <hwenge@vt.edu>**20260226114702
+ Ignore-this: 886e29e344893a29360bb1d6f3818cbadc9b4155f650e79123ed20e740858f2f515b22c552127c74
+] 
+hash: 0000000976-bc503f48aed9cf0b286e6a6f9d62e4ceb5b3f373a1ee090e8536b611b50be47c
+[Add a paper
+WengeHuang <hwenge@vt.edu>**20260226114820
+ Ignore-this: 61c0a41e3f5642bdc50ff460469339903ffec57a8ec8f02cdced98398c2a405a010dc7aed3686c9b
+] 
+hash: 0000000625-01836d117274277a3b62e77fcc64c8e48817fdeb97cb5aed21ba2ce686ea0374
+[Do not forget to move references when you modify the front page!
+Stephane Popinet <popinet@basilisk.fr>**20260226124000
+ Ignore-this: b8996ad96503e3a381be4c799c85f341e8d3b6f4c231a71c5b15f8acf2b11c222f537a8787ea4972
+] 
+hash: 0000000630-950e7db402509ace1766bcb696f2ad69347795d9b92d5a103fbca69a052b94a3
+[Added cylinder plastron case on my readme.
+francesco.picella@sorbonne-universite.fr**20260226155251
+ Ignore-this: 46187e6df876ec6307979ae9fddea063
+] 
+hash: 0000000360-56370678c9306d458f837d04d872bb2c721f8da5c2b856a2e733178ed3bede42
