@@ -1,0 +1,6 @@
+Welcome to my Sandbox :)
+
+You can find the code I use for my graduation project here.
+I am modelling the Stratified Inclined Duct (SID) experiment including Stokes particles.
+
+The code for the SID without particles can be found here: [froude.c](froude.c). The Froude number is calculated to measure the stability of the flow.

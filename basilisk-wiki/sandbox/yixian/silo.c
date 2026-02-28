@@ -1,5 +1,5 @@
 /**
- # we solve a case of 2D silo with orifice at the bottom by using the poisson equation
+# we solve a case of 2D silo with orifice at the bottom by using the poisson equation
  $$
  \nabla^2 c = 0
  $$
@@ -23,7 +23,7 @@ c[bottom] =  fabs(x)<= W/2. ? dirichlet(0): neumann(0);
 c[right]  =  neumann(0);
 c[left]   =  neumann(0);
 /**
- ## Parameters
+## Parameters
  The size of the domain `L0`.
  $0<x<L0$ $0<y<L0$
  */
@@ -69,13 +69,13 @@ int main() {
 
 
 /**
- ##Run
+##Run
  Then compile and run:
  
  ~~~bash
  qcc -O2 -Wall -o silo silo.c -lm; ./silo
  ~~~
- ##Results
+##Results
  
  
  ~~~gnuplot  3D plot of analycal solution and numerical solution
@@ -91,7 +91,7 @@ sp 'Fcsilo.txt'
  sp 'Fcsilo.txt'
  ~~~
 
- ##Bibliography
+## Bibliography
  
  Version 1: 4 december 2015/ 14:58
  */

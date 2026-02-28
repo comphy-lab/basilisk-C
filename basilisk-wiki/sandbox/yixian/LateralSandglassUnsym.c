@@ -4,7 +4,7 @@ We propose an implementation of the Jop Pouliquen Forterre µ(I) rheology for th
 Like the case with an orifice at the bottom. We find that the flow through the lateral orifice alse follows the Beverloo-Hagen discharge law in a pure 2D case.
 And finally we add the influence of a moderate friction of the front and back wall to simulate a 3D case
  
- # Code
+# Code
  Includes and definitions
  */
 

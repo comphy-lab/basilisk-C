@@ -41,6 +41,18 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{caraccio2026,
+  title = {Multiphase modeling of anisotropic biomass particle pyrolysis accounting for particle deformation and coupled gas-phase dynamics},
+  journal = {Chemical Engineering Journal},
+  volume = {531},
+  pages = {174297},
+  year = {2026},
+  month={March},
+  issn = {1385-8947},
+  doi = {https://doi.org/10.1016/j.cej.2026.174297},
+  author = {Riccardo Caraccio and Edoardo Cipriano and Alessio Frassoldati and Tiziano Faravelli},
+}
+
 @article{Huang2026, 
 title={Bubble-burst-induced Puddle Jumping and Jet Printing}, 
 volume={17}, 
@@ -64,20 +76,4 @@ pdf={https://doi.org/10.1038/s41467-026-69512-y}
 }
 
 @hal{scapin2025b, hal-05466359}
-
-@article{mou2026,
-  title = {Singular jets and entrapments from compound drop impact},
-  author = {Mou, Zeyang and Zheng, Zheng and Jian, Zhen and Antonini, Carlo and Josserand, Christophe and Thoraval, Marie-Jean},
-  journal = {Phys. Rev. Fluids},
-  volume = {11},
-  issue = {1},
-  pages = {013602},
-  numpages = {16},
-  year = {2026},
-  month = {January},
-  publisher = {American Physical Society},
-  doi = {10.1103/sdqh-kfcq},
-  url = {https://link.aps.org/doi/10.1103/sdqh-kfcq}
-}
-
 ~~~
