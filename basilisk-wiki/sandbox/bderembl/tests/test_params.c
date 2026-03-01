@@ -7,9 +7,9 @@ The 3 key steps in main are (i) param declaration, (ii) adding parameters,
 (iii) cleanup.
 
 ~~~literatec
-params = array_new();
+init_param ();
 add_param ("N", &N, "int");
-array_free (params);
+cleanup_param ();
 ~~~
 
 */
@@ -27,7 +27,7 @@ int main(int argc,char* argv[]) {
 /**
    The type of parameters that we can read in a namelist are "int", "double", and "array"
 */
-  params = array_new();
+  init_param();
   add_param ("N", &N, "int");
   add_param ("nu", &nu, "double");
   add_param ("dh", &dh[0], "array");
@@ -54,5 +54,5 @@ int main(int argc,char* argv[]) {
 /**
    Free the params variable
 */
-  array_free (params);
+  cleanup_param ();
 }

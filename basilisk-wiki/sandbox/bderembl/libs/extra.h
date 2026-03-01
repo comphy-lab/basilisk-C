@@ -100,6 +100,22 @@ void add_param(char * name, void * ptr,  char * type, int len = 0)
 
 }
 
+// I prefer not to put these 2 in an event because the declaration must be done
+// before run(). (same rule for cleanup for simplicity)
+void init_param()
+{
+params = array_new();
+}
+
+void cleanup_param()
+{
+  ParamItem * d2 = params->p;
+  for (int i = 0; i < params->len/sizeof(ParamItem); i++, d2++) { // loop over parameters
+    free(d2->name);
+    free(d2->type);
+  }
+  array_free (params);
+}
 
 
 void read_params(char* path2file)
