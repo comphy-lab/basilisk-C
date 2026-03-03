@@ -1,5 +1,5 @@
 /** 
- # Properties and functions for non newtonian flows */
+# Properties and functions for non newtonian flows */
 
 /*For Bingham*/
 double tauy = 0.0;
@@ -18,7 +18,7 @@ double kappa = 0.4;
 double taille_sable = 0.01;
 double ll = 0.0;
 
-
+/* up to now constante slope, to be changed */
 double slope = 0.25;
 
 
@@ -33,6 +33,10 @@ double shear(Point point, scalar s, scalar h, int layer, int layercoef){
   }
   else if(layercoef==nl-1){
   	shear = (s[0,0,layer]-s[0,0,layer-1])/(0.5*(h[0,0,layer]+h[0,0,layer-1]));
+  }
+  
+  else if(layercoef==-1){
+    shear = 2.*s[0,0,0]/h[0,0,0];
   }
    
   return shear;

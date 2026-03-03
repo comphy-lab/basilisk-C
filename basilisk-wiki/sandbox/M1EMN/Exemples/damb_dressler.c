@@ -126,7 +126,7 @@ p [-2:3][0:1] 'out' u 1:(($5==.5)||($5==1)||($5==1.5)? $2 :NaN)w p, h(x,.5),h(x,
  
 ~~~
 
-using the Dressler 1952 solution for velocities $u$ ans $h$:
+using the Dressler 1952 solution for velocities $u$ and $h$:
 $$
 u(x,t)= 2./3*(1+x/t)+C_fF_1(x,t)t
 $$
@@ -146,7 +146,7 @@ p[-2:4][0:2] 'out' u 1:(($5==.5)||($5==1)||($5==1.5)? $3 :NaN)w p, u(x,.5),u(x,1
  
 ~~~
 
- ~~~gnuplot  result for h, comparison between computation in red and Dressler theory blue and green   
+ ~~~gnuplot  Result for h, comparison between computation in red and Dressler theory blue and green. Note: the Dressler is absolutely not good near the front.   
 set xlabel "x"
 h(x,t)=(((x-0)<-t)+((x-0)>-t)*(2./3*(1-(x-0)/(2*t)))**2)*(((x-0)<2*t))
 c(x,t) =  sqrt(h(x,t)) +0.05*F2t(x,t)
@@ -156,18 +156,24 @@ hd(x,t)=c(x,t)*c(x,t)*((x-0)<2*t)
 p[-2:4][0:2] 'out' u 1:(($5==.5)||($5==1)||($5==1.5)? $2 :NaN)w p, hd(x,.5),hd(x,1.),hd(x,1.5) 
  
 ~~~       
-    
  
-    
-#Links
+# Approximate solution of Chanson  2006 
+
+See Chanson, implicit relation linking time en velocity in the turbulent front
+ $$\frac{x_s-x_U}{h_0} = \frac{gh_0}{2 C_fU^2} (1 - \frac{U}{2 c_0})^4$$
  
-see the same
+and 
+ $$ \frac{1}{9}(2c_0-\frac{x_U}{t})^2 \simeq  \sqrt{(2 C_f/g)  U^2 (x_s-x_U)}$$ 
+ 
+# Links
+ 
+This example 
   [with friction](/sandbox/M1EMN/Exemples/damb_dressler.c)
  and  see non viscous dam break with [standard C](/sandbox/M1EMN/Exemples/svb.c) 
 and with [Basilisk](/sandbox/M1EMN/Exemples/damb.c)
  
  
-#Bibliographie
+# Bibliography
  
 * [Lagrée P-Y](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/MFEnv.pdf)
 "Equations de Saint Venant et application, Ecoulements en milieux naturels" Cours MSF12, M1 UPMC
