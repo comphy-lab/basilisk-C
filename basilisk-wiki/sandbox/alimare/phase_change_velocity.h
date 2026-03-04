@@ -28,34 +28,10 @@ formulation.
 scalar Teq[];
 
 
-#ifndef ANISO // if the user defines ANISO, then he wants to use standard
+//#ifndef ANISO // if the user defines ANISO, then he wants to use standard
 // anisotropic function, else he has to define its own fac1() function before
 // the <<#include "phase_change_velocity.h">>
-double fac1(coord n, double eps4){
-  if(eps4==0.)return 1.;
-  double sum = 0;
 
-  foreach_dimension()
-    sum += eps4*powf(n.x,4.); // taken from doi.org/10.1016/j.jcrysgro.2010.11.013
-                              // simple fourfold anisotropy.
-#if dimension ==2
-    double theta = atan2(n.y, n.x);
-  return 1.-15.*eps4*cos(4.*theta);
-#else // DIMENSION == 3 && ANISO != 0
-  return (1.-3.*eps4+4*eps4*sum);
-#endif
-}
-#endif // ifndef ANISO
-/**
-For the gradient calculation on the interface, we need the temperature on the
-interface $T_{\Gamma}$, which is defined either by :
-$$
- T_{\Gamma} = T_{m} - \epsilon_{\kappa} * \kappa - \epsilon_{v} v_{pc} = T_m -
-  \left(\overline{\epsilon_{\kappa}} * \kappa - \overline{\epsilon_{v}} 
-  v_{pc}\right)(1-0.5 cos(n \theta))
-$$
-which is the classical Gibbs-Thomson equation.
-*/
 
 /*double fac1(coord n, double eps4){
   if(eps4==0.)return 1.;
@@ -70,7 +46,36 @@ which is the classical Gibbs-Thomson equation.
 #else // DIMENSION == 3 && ANISO != 0
   return (1.-3.*eps4+4*eps4*sum);
 #endif
-}*/
+}
+#endif // ifndef ANISO*/
+
+
+
+/**
+For the gradient calculation on the interface, we need the temperature on the
+interface $T_{\Gamma}$, which is defined either by :
+$$
+ T_{\Gamma} = T_{m} - \epsilon_{\kappa} * \kappa - \epsilon_{v} v_{pc} = T_m -
+  \left(\overline{\epsilon_{\kappa}} * \kappa - \overline{\epsilon_{v}} 
+  v_{pc}\right)(1-0.5 cos(n \theta))
+$$
+which is the classical Gibbs-Thomson equation.
+*/
+
+double fac1(coord n, double eps4){
+  if(eps4==0.)return 1.;
+  double sum = 0;
+
+  foreach_dimension()
+    sum += eps4*powf(n.x,4.); // taken from doi.org/10.1016/j.jcrysgro.2010.11.013
+                              // simple fourfold anisotropy.
+#if dimension ==2
+    double theta = atan2(n.y, n.x);
+  return 1.-15.*eps4*cos(4.*theta);
+#else // DIMENSION == 3 && ANISO != 0
+  return (1.-3.*eps4+4*eps4*sum);
+#endif
+}
 
 
 double Temp_GT(Point point, double epsK, double epsV, vector vpc,
@@ -204,9 +209,11 @@ gradient in the other phase.
     foreach_dimension()
       v_pc.x[]  = 0.; 
 
+
   foreach()
     if(interfacial(point, cs))
       foreach_dimension()
         v_pc.x[]     =  (lambda[1]*gtr2.x[] - lambda[0]*gtr.x[])/L_H;
   boundary((scalar *){v_pc});
 }
+

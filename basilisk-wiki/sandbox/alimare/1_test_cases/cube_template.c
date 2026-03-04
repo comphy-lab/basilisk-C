@@ -412,7 +412,7 @@ event LS_advection(i++,last){
   restriction((scalar *){uf});  
 }
 
-event interface2(t+=0.1,last; t<0.8){
+event interface2(t+=0.1,last; t<0.5){
   output_facets (cs, stdout);
 }
 

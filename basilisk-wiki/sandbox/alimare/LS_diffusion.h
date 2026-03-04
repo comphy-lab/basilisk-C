@@ -93,7 +93,7 @@ event tracer_diffusion(i++){
     TS = TS,
     TL = TL,
     vpcf = vpcf,
-    itredist = 3,
+    itredist = 10,
     s_clean = 1.e-10,
     NB_width = NB_width,
     curve = curve

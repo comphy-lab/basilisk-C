@@ -1,4 +1,3 @@
-
 /**
 # Time-implicit discretisation of reaction--diffusion equations
 
@@ -48,68 +47,58 @@ struct Diffusion {
 };
 
 trace
-mgstats diffusion (struct Diffusion p)
+mgstats diffusion (scalar f, double dt,
+		               face vector D = {{-1}},  // default 1
+		               scalar r = {-1},         // default 0
+		               scalar beta = {-1},      // default 0
+		               scalar theta = {-1})     // default 1
 {
-
-  /**
-  If *dt* is zero we don't do anything. */
-
-  if (p.dt == 0.) {
+  if (dt == 0.) {
     mgstats s = {0};
     return s;
   }
 
-  /**
-  We define $f$ and $r$ for convenience. */
+  scalar ar = automatic (r);
 
-  scalar f = p.f, r = automatic (p.r);
+  // theta_idt = -theta/dt (or -1/dt if theta not provided)
+  const scalar idt[] = -1./dt;
+  //(const) scalar theta_idt = theta.i >= 0 ? theta : idt;
+  scalar theta_idt[];
 
-  /**
-  We define a (possibly constant) field equal to $\theta/dt$. */
-
-  const scalar idt[] = - 1./p.dt;
-  (const) scalar theta_idt = p.theta.i ? p.theta : idt;
-  
-  if (p.theta.i) {
-    scalar theta_idt = p.theta;
+  if (theta.i >= 0) {
     foreach()
-      theta_idt[] *= idt[];
+      theta_idt[] = theta[] * idt[];
+  } else {
+    foreach()
+      theta_idt[] = idt[];
   }
+  boundary ({theta_idt});
 
-  /**
-  We use `r` to store the r.h.s. of the Poisson--Helmholtz solver. */
-
-  if (p.r.i)
+  if (r.i >= 0)
     foreach()
-      r[] = theta_idt[]*f[] - r[];
-  else // r was not passed by the user
+      ar[] = theta_idt[]*f[] - ar[];
+  else
     foreach()
-      r[] = theta_idt[]*f[];
+      ar[] = theta_idt[]*f[];
 #if EMBED
   foreach()
-    r[] *= cs[];
-#endif // EMBED
-  boundary ({r});
-
-  /**
-  If $\beta$ is provided, we use it to store the diagonal term $\lambda$. */
+    ar[] *= cs[];
+#endif 
+  boundary ({ar});
 
   scalar lambda[];
   foreach()
     lambda[] = theta_idt[];
-  if (p.beta.i) {
-    scalar beta = p.beta;
+  if (beta.i >= 0) {
     foreach()
       lambda[] += beta[];
   }
+
 #if EMBED
   foreach()
     lambda[] *= cs[];
-#endif // EMBED
+#endif 
   boundary ({lambda});
 
-  /**
-  Finally we solve the system. */
-
-  return poisson (f, r, p.D, lambda);
+  return poisson (f, ar, D, lambda);
 }

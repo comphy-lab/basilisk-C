@@ -404,12 +404,14 @@ vpcr is the solution to the bilinear interpolation of vpc on face centroids.
       embed_geometry (point, &b, &n);
 
       // Boundary condition at time t
-      bool dirichlet = true;
+   /*   bool dirichlet = true;
       double ab = (TL.boundary[embed] (point, point, TL, &dirichlet));
       assert (dirichlet);
 
       //TL[] = dirichlet_extrapolate (point, TL, n, b, ab, dirichlet);
-            TL[] = embed_extrapolate (point, TL, cs, n, b, ab);
+            TL[] = embed_extrapolate (point, TL, cs, n, b, ab);*/
+      double ab = T_eq;
+      TL[] = embed_extrapolate (point, TL, cs, n, b, ab);
 
     }
     if(cs[] <=0. && csm1[]>0.){

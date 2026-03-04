@@ -278,7 +278,7 @@ This event is the core the of the hybrid level-set/embedded boundary.
 */
 event velocity(i++){
   
-  double lambda1 = lambda[0], lambda2 = lambda[1]; 
+  //double lambda1 = lambda[0], lambda2 = lambda[1]; 
   /*advection_LS(
   dist,
   latent_heat,

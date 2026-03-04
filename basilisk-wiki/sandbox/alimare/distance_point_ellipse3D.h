@@ -9,7 +9,7 @@ Here, the result is the signed distance.
 
 
 
-#include "../popinet/distance_point_ellipse.h"
+#include "distance_point_ellipse.h"
 
 static double RobustLength3D (double v0, double v1, double v2)
 {

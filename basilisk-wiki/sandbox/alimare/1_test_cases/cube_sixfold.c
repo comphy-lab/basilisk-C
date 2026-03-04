@@ -160,7 +160,7 @@ int main() {
   TS[embed] = dirichlet(T_eq + Temp_GT(point, epsK, epsV, vpc, curve, fs, cs, eps4));
 
   double theta = atan2(0.5,0.5);
-
+  (void) theta;
   origin(-L0/2., -L0/2.);
   init_grid (1 << 8);
   run();

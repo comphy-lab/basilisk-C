@@ -69,20 +69,8 @@ Previous state of cs is saved into csm1
   boundary ({dist});
   restriction({dist});
 
-  LS_reinit(dist = dist, dt = 0.5 * L0/(1 << grid->maxdepth), it_max = itredist);
-
-//  LS_reinit((struct LS_reinit){
-//   .dist   = dist,
-//   .dt     = dt,
-//   .it_max = itredist
-// });
-
-  // LS_reinit((struct LSreinit){
-  //   .dist = dist,
-  //   .it_max = itredist
-  // });
+  LS_reinit(dist = dist, dt = 0.2 * L0/(1 << grid->maxdepth), it_max = itredist);
   
-
 /**
 We remove the overshoots that we might create with reinitialization.
 */
@@ -111,6 +99,26 @@ update_tracer() that can be found in this [page](../ghigo/myembed.h). The
 basic idea is very similar to what can be found in the Dirichlet boundary
 condition calculation in `embed.h`.
 */
+// #if 1
+//   foreach() {
+//     if (cs[] > 0. && csm1[] <= 0.) { // Emerged cells
+//       assert(cs[
+  
+
+// /**
+// We remove the overshoots that we might create with reinitialization.
+// */
+//   foreach(){
+//     dist[] = clamp(dist[], -1.05*NB_width, 1.05*NB_width);
+//   }
+//   bounda]!=1.); // cell shouldn't be full
+//       if (cs[] >= 1.)
+//     continue; 
+//      coord o = {0.,0.};
+//       TL[] = embed_extrapolate_ls (point, TL, cs, o, false);
+//     }
+//   }
+
 #if 1
   foreach() {
     if (cs[] > 0. && csm1[] <= 0.) { // Emerged cells

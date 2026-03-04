@@ -42,8 +42,9 @@ void thinningIteration1(scalar c, bool * modif){
   }
   boundary({cp});
   restriction({cp});
-
-  foreach(){
+  
+  int modif_local = 0;
+  foreach(reduction(max:modif_local)){
     int p0 = (int) cp[ -1, -1];
     int p1 = (int) cp[ -1,  0];
     int p2 = (int) cp[ -1,  1];
@@ -72,15 +73,17 @@ void thinningIteration1(scalar c, bool * modif){
         int c3 = ( p1 | p2 | (1-p4)) & p3;
         if(c3 == 0) {
           c[] = 0; 
-          * modif = 1;
+          modif_local = 1;
         }
       }
     }
   }
+  *modif = modif_local;
   boundary({c});
   restriction({c});
 }
 
+int modif_local_2 = 0;
 void thinningIteration2(scalar c, bool * modif){
   scalar cp[];
 
@@ -93,7 +96,7 @@ void thinningIteration2(scalar c, bool * modif){
   boundary({cp});
   restriction({cp});
 
-  foreach(){
+  foreach(reduction(max:modif_local_2)){
     int p0 = (int) cp[ -1, -1];
     int p1 = (int) cp[ -1,  0];
     int p2 = (int) cp[ -1,  1];
@@ -122,11 +125,12 @@ void thinningIteration2(scalar c, bool * modif){
         int c3 = ( p5 | p6 | (1-p0)) & p7;
         if(c3 == 0) {
           c[] = 0; 
-          * modif = 1;
+          modif_local_2 = 1;
         }
       }
     }
   }
+  *modif = modif_local_2;
   boundary({c});
   restriction({c});
 }
@@ -971,7 +975,7 @@ void thinning3D(struct thinningStruct p){
 /**
 
 */
-      foreach(){
+      foreach(reduction(min:noChange)){
         if(tag[]){
           c[] = 0.;
           noChange = false;

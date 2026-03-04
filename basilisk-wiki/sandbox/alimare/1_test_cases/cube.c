@@ -168,7 +168,7 @@ event interface2(t+=0.01,last){
   output_facets (cs, stdout);
 }
 
-event movies (t+=0.01; t<0.25)
+event movies (t+=0.01; t<0.1)
 {
   boundary({TL,TS});
   scalar visu[];

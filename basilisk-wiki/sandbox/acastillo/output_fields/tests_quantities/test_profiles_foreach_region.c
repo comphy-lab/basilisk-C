@@ -41,7 +41,7 @@ p "profiles.asc" u 5:1 title "Average", "profiles_favre.asc" u 5:1 title "Weight
 
 #define MAXLEVEL 9  
 #define D0 L0
-#include "acastillo/output_fields/profiles_foreach_region.h"
+#include "acastillo/output_fields/profiles/profiles_foreach_region.h"
 #include "view.h"
 
 double rho1 = 3; 

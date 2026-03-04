@@ -132,13 +132,6 @@ fprintf(stderr,"recons_speed %f seconds\n", end - start);
 
 event stability(i++){
   double lambda1 = lambda[0], lambda2 = lambda[1]; 
-  // LS_speed(
-  // dist,latent_heat,cs,fs,TS,TL,T_eq,
-  // vpc,vpcf,lambda1,lambda2,
-  // epsK,epsV,eps4,deltat=DT_LS,
-  // itrecons = itrecons,tolrecons = tolrecons,
-  // NB_width
-  // );
 
   LS_speed(
     dist, latent_heat, cs, fs, TS, TL, T_eq,
@@ -157,6 +150,6 @@ event stability(i++){
   dt = DT3;
 #else // navier stokes
   //dtmax = timestep_LS(vpcf,DT,dist,NB_width);
-  DT = timestep_LS(vpcf,DT,dist,NB_width);
+ DT = timestep_LS(vpcf,DT,dist,NB_width);
 #endif
 }
