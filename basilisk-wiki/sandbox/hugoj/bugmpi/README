@@ -1,0 +1,6 @@
+This folder gather code that was failing because of a mpi error.
+The problem was that the reduction operation when computing the average over the horizontal
+wasnt properly handled in the case when the code was run with mpi.
+
+To test again the code:
+make

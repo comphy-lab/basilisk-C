@@ -15,7 +15,7 @@ double tauc = 0.0 ;
 
 /* For turbulent viscous */
 double kappa = 0.4;
-double taille_sable = 0.01;
+double rugo = 0.01;
 double ll = 0.0;
 
 /* up to now constante slope, to be changed */
@@ -83,7 +83,7 @@ double Nuturbulent(Point point, scalar s, scalar h, int layer){
 	}
 	_y = _y + 0.5*h[0,0,layer];
 
-	ll = kappa*(_y+taille_sable)*sqrt(1-(_y));
+	ll = kappa*(_y+rugo)*sqrt(1-(_y));
 	nu_eq = shear(point,s,h,layer,layer)*ll*ll;
   return nu_eq;
 }

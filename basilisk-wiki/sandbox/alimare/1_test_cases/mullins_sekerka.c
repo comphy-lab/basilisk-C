@@ -49,8 +49,6 @@ plot 'log0' u 1:2  w p pt 7 lc 'blue'  t '32x32', \
   f2(x) t ftitle(a2,b2,c2) lc 'red',\
   f3(x) t ftitle(a3,b3,c3) lc 'black'
 ~~~
-
-
 */
 
 #define DOUBLE_EMBED 1
@@ -80,6 +78,7 @@ plot 'log0' u 1:2  w p pt 7 lc 'blue'  t '32x32', \
 
 #include "../level_set.h"
 #include "../LS_advection.h"
+#include "../LS_speed.h"
 #include "view.h"
 
 #define T_eq          0.
@@ -101,27 +100,28 @@ double T0(double x,double y, double V, double t){
   return -1+exp(-V*(y-V*t));
 }
 
-double TL_inf(double x, double y, 
-  double V, double t, double A, int n, double L0){
+// double TL_inf(double x, double y, 
+//   double V, double t, double A, int n, double L0){
 
-  double ystar = y - A*cos(2.*n*Pi*x*L0);
-  if(ystar>V*t)
-    return -1+exp(-V*(ystar-V*t));
-  else
-    return 0.;
-}
+//   double ystar = y - A*cos(2.*n*Pi*x*L0);
+//   if(ystar>V*t)
+//     return -1 +exp(-V*t_nd*(ystar - V*t));//(-V*(ystar-V*t));
+   
+//   else
+//     return 0.;
+// }
 
 
 /**
 Setup of the physical parameters + level_set variables
 */
-scalar TL[], TS[], dist[];
-vector vpc[],vpcf[];
+// scalar TL[], TS[], dist[];
+// vector vpc[],vpcf[];
 
-scalar * tracers   = {TL};
-scalar * tracers2  = {TS};
-scalar * level_set = {dist};
-face vector muv[];
+// scalar * tracers   = {TL};
+// scalar * tracers2  = {TS};
+// scalar * level_set = {dist};
+// face vector muv[];
 mgstats mgT;
 scalar grad1[], grad2[];
 double DT2;
@@ -138,22 +138,39 @@ int aniso = 1;
 int     nb_cell_NB =  1 << 3 ;  // number of cells for the NB
 double  NB_width ;              // length of the NB
 
-double s_clean = 1.e-10; // used for fraction cleaning
+//double s_clean = 1.e-10; // used for fraction cleaning
 
   
 mgstats mg1,mg2;
 
-scalar curve[];
+//scalar curve[];
 TL[embed] = dirichlet(T_eq + Temp_GT(point, epsK, epsV, vpc, curve, fs, cs, aniso));
 TS[embed] = dirichlet(T_eq + Temp_GT(point, epsK, epsV, vpc, curve, fs, cs, aniso));
 
 
+//#define V  1.
+double V = 1.;
+double t0 = 0.;
+double t_nd = 1.;
+//#define t0 0.
 
-#define V  1.
-#define t0 0.
-double A; 
+
+
+// double V = 1.;
+// double t0 = 0.;
+double A ; 
 double DomainSize;
 int n;
+double TL_inf(double x, double y, 
+  double V, double t, double A, int n, double L0){
+
+  double ystar = y - A*cos(2.*n*Pi*x*L0);
+  if(ystar>V*t)
+    return -1 +exp(-V*t_nd*(ystar - V*t));//(-V*(ystar-V*t));
+   
+  else
+    return 0.;
+}
 
 
 TL[top]    = dirichlet(TL_inf(x,y,V,t-t0,A,2,DomainSize)); 
@@ -312,10 +329,13 @@ event velocity(i++){
 
   double lambda1 = lambda[0], lambda2 = lambda[1]; 
   LS_speed(
-  dist,latent_heat,cs,fs,TS,TL,T_eq,
-  vpc,vpcf,lambda1,lambda2,
-  epsK,epsV,aniso,deltat=0.45*L0/(1<<MAXLEVEL),
-  itrecons = 60,tolrecons = 1.e-12
+    dist, latent_heat, cs, fs, TS, TL, T_eq,
+    vpc, vpcf, lambda1, lambda2,
+    epsK, epsV, eps4,
+    0.45*L0/(1<<MAXLEVEL),
+    60,
+    1.e-10,
+    NB_width
   );
   double DT3 = timestep_LS(vpcf,DT2,dist,NB_width);
   tnext = t+DT3;
@@ -342,25 +362,19 @@ event tracer_diffusion(i++){
 This event is the core the of the hybrid level-set/embedded boundary.
 */
 event LS_advection(i++,last){
-  double lambda1 = lambda[0], lambda2 = lambda[1];
-  advection_LS(
-  dist,
-  latent_heat,
-  cs,fs,
-  TS,TL,
-  T_eq,
-  vpc,vpcf,
-  lambda1,lambda2,
-  epsK,epsV,aniso,
-  curve,
-  &k_loop,
-  deltat = 0.45*L0 / (1 << grid->maxdepth),
-  itredist = 10,
-  tolredist = 3.e-3,
-  itrecons = 60,
-  tolrecons = 1.e-12,
-  s_clean = 1.e-10,
-  NB_width);
+
+    advection_LS (
+    dist = dist,
+    cs = cs,
+    fs = fs,
+    TS = TS,
+    TL = TL,
+    vpcf = vpcf,
+    itredist = 3,
+    s_clean = 1.e-10,
+    NB_width = NB_width,
+    curve = curve
+  );
 
   foreach_face(){
     uf.x[] = 0.;
@@ -435,42 +449,3 @@ event adapt (i++, last) {
 }
 #endif
 
-
-
-/**
-
-
-~~~bib
-
-@Article{Mullins1964,
-  author        = {Mullins, William W and Sekerka, RF},
-  title         = {Stability of a planar interface during solidification of a dilute binary alloy},
-  journal       = {Journal of applied physics},
-  year          = {1964},
-  volume        = {35},
-  number        = {2},
-  pages         = {444--451},
-  publisher     = {AIP},
-}
-
-@Article{Almgren1993,
-  author        = {R. Almgren},
-  title         = {Variational Algorithms and Pattern Formation in Dendritic Solidification},
-  year          = {1993},
-  volume        = {106},
-  pages         = {337-354},
-  issn          = {0021-9991},
-  doi           = {10.1006/jcph.1993.1112},
-}
-
-@article{chen_simple_1997,
-  title = {A simple level set method for solving {Stefan} problems},
-  volume = {135},
-  number = {1},
-  journal = {Journal of Computational Physics},
-  author = {Chen, S and Merriman, B and Osher, S and Smereka, P},
-  year = {1997},
-  pages = {8--29}
-}
-~~~
-*/
