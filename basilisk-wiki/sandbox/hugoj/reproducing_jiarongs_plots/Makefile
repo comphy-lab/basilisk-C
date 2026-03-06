@@ -23,7 +23,7 @@
 CFLAGS += -O2 -I$(DOCUMENT_ROOT)/sandbox 
 CFLAGS += -disable-dimensions # skip dimensions check for now
 
-field_PM.tst: field_PMmpi.tst
+all: field_PM/F_kxky field_PMmpi/F_kxky field_PM.tst field_PMmpi.tst
 
 # Jiarong's way of compiling
 # field_PM/field_PM: field_PM.c
@@ -35,10 +35,27 @@ field_PM.tst: field_PMmpi.tst
 # 	CC99='mpicc -std=c99' qcc $(CFLAGS)-autolink -DPARAVIEW=0 -O2 -g -Wall -o field_PM/field_PM field_PM.c -I$(BASILISK) -L${BASILISK}/gl -lfb_tiny -lgfortran -L${BASILISK}/ppr -lppr -lm
 
 
+field_PM/F_kxky: F_kxky kx ky
+	mkdir -p field_PM
+	mkdir -p field_PM/surface
+	mkdir -p field_PM/field
+	cp F_kxky kx ky ./field_PM
+
+field_PMmpi/F_kxky: F_kxky kx ky
+	mkdir -p field_PMmpi
+	mkdir -p field_PMmpi/surface
+	mkdir -p field_PMmpi/field
+	cp F_kxky kx ky ./field_PMmpi
+
+
+#field_PM.c: F_kxky kx ky
+	#mkdir -p field_PM
+	
 field_PMmpi.c: field_PM.c
 	ln -sf field_PM.c field_PMmpi.c
-
+	
 field_PMmpi.tst: CC = mpicc -D_MPI=16
+
 
 
 include $(BASILISK)/Makefile.defs

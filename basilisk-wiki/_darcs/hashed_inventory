@@ -1,4 +1,4 @@
-pristine:f1e3d28e923232bbad90e247ea5fd83eba8f620dd9f49791aef2f4e7f75497cd
+pristine:a586cc2975ebedf5dda52090b6a17b9f8171c9718776d16d0de5a9b88c0fdfb2
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -6313,3 +6313,63 @@ Tianyang <hantianyang@ucas.ac.cn>**20260304224909
  Ignore-this: 17c62edb299dd316bbced9c0c9d3cf62ccc2f63a8519d7406e1e0ff0b311166595283192eb25b531
 ] 
 hash: 0000000228-cea3d7b3c0b669b113334f113c6e4b837fa178c0c8f70cd51104bd2800395e0f
+[wave
+haouche <ilies.haouche2000@gmail.com>**20260305022858
+ Ignore-this: ccbd6ed36ce7aab3de7f122cce5b1fb47160749bac3b5c65fab6b00d77b1237337ffad9eaeadbd68
+] 
+hash: 0000000256-aeb60b652722d1d25ebce4e23db51977196ce2e6e51639f62907baae080d841a
+[+plot title
+Fanshuo**20260305073645
+ Ignore-this: 39b4215377d0b79f34bc8612dc0b91c47f8569eb55f78caf08ddf6edaccc21671ff87aa31021f565
+] 
+hash: 0000000315-db0faf31eecdbb657b398e2bdf66d5750944d70518246a3a6ab92609b12a0e0b
+[proper input parameters in case no arg is provided
+hugo.jacquet.work@gmail.com**20260305081344
+ Ignore-this: aa4485790ee7c69461f746fc39ed4ef0
+] 
+hash: 0000002690-51fed3df00b53f407025f410f85658950c3c21f5b3084c969e396380ea4dffe9
+[added: python file to generate ini fields
+hugo.jacquet.work@gmail.com**20260305081501
+ Ignore-this: d322876e9745aa72ab860e8f0bc22671
+] 
+hash: 0000010088-7cd33585e6c79eff4ba1e0b703121484e46a628da9b8978825091588cfcb7ca9
+[fix: kx ky are 1D, and makefile cleanup
+hugo.jacquet.work@gmail.com**20260305083144
+ Ignore-this: 344407eeeb119057c3f3879dd9424a70
+] 
+hash: 0000019633-9c79d26f937b0a9f6e670bfecd351e47a8284b3813241b03daccc1b29c1592ed
+[putting back writefield()
+hugo.jacquet.work@gmail.com**20260305084020
+ Ignore-this: fcc6a410c8261f4c567fc9398e63305a
+] 
+hash: 0000000365-93b3756a41c1d42af30551e1a568291d1de38722bee9463c8a71031909672203
+[New test case for Robin boundary conditions and remapping
+Stephane Popinet <popinet@basilisk.fr>**20260305094318
+ Ignore-this: f6db0528eacbee16c2766952bd80c99b
+] 
+hash: 0000001947-8897d81740ab41d2c2eee611ebc914ac021f6840fb059aaf6a4d83f021652e19
+[typo
+pyl <pyl@ccr.jussieu.fr>**20260305105703
+ Ignore-this: a0523796025ed776941cb7a4cc21dcced6fce6295bbda29fd56ba461e56183720f4a4fde57a20f3a
+] 
+hash: 0000001912-17c2a13e5fa5b89ef4b55187a117af2a74fc2b6c5443ab4ab824bc6a9d2d8b92
+[+
+Fanshuo**20260305125611
+ Ignore-this: ee77ea935ce39e1525a1f4f37e32268bb018c8cacb7ee251f347be18f045e5f6179e5668126c2650
+] 
+hash: 0000001704-d6596367ebce01dcedef16c447c87d201a07c95de48c82c0dacf541c75f54288
+[typos
+pyl <pyl@ccr.jussieu.fr>**20260305141205
+ Ignore-this: 71bd7df8c7ad07d564f3637876b0b8f1989f0941cc566edbce3182ec0bde8c1fd844c777386fdb59
+] 
+hash: 0000003601-535639c538f0f273798e5393f7347c4f04c88fb169ee536520812e6b4575a721
+[second plot
+pyl <pyl@ccr.jussieu.fr>**20260305151925
+ Ignore-this: b467155bb608d1a94fa42fa1bbd7ec3bd3438ac311887645fe46028744cadd4003c7c592427f5ec
+] 
+hash: 0000004537-76a4d124c794e52474199ef02ee9cf9fbcd069d976bcbcaeaedf59a54674b3c5
+[OK
+pyl <pyl@ccr.jussieu.fr>**20260305152710
+ Ignore-this: 9bc913dce096333ba86bf33dfd796e8fcb25e486255d035dff8c82899aecd15956ffebe12620c1b5
+] 
+hash: 0000000252-949593f5b269cb82b6053dfa26b027e0387b5f727b2e8fb181a725e4373d908a

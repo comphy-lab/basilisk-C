@@ -25,13 +25,25 @@ double gpe_base = 0; // gauge of potential energy
 /* double ETAE = 0.1; // refinement criteria for eta */
 /* int MAXLEVEL = 8; // max level of refinement in adapt_wavelet function */
 /* int MINLEVEL = 6; // min level */
-double TEND = 50.; // t end
+
+double TEND = 200.; // t end
 int NLAYER = 10; // number of layers
-int LEVEL_data = 7;
+int LEVEL_data = 5;
 
 #include "./spectrum.h" // Used for new input method (the spectrum info)
 
 char file_out[20] = "out.nc";         // file name of output
+// # Parameter value
+// NLAYER=15
+// LEVEL=10
+// TEND=200
+// nu=0.000025
+// RAND=2
+// L0=200
+// Lp=40
+// Htheta=0.503
+// # Initial field info
+// FIELD=P0.02
 
 /** Function for writing fields at time t.
 */
@@ -78,32 +90,53 @@ int writefields (double t, const char *suffix) {
   return 0;
 }
 
+// # Parameter value
+// NLAYER=15
+// LEVEL=10
+// TEND=200
+// nu=0.000025
+// RAND=2
+// L0=200
+// Lp=40
+// Htheta=0.503
+// # Initial field info
+// FIELD=P0.02
+
+
 int main(int argc, char * argv[])
 {
   if (argc > 1)
     NLAYER = atoi(argv[1]); // # of layers
+  else
+    NLAYER = 15;
   if (argc > 2)
     LEVEL_data = atoi(argv[2]); // Horizontal resolution
+  else
+    LEVEL_data = 5;
   if (argc > 3)
     TEND = atof(argv[3]); // End time
+  else
+    TEND = 10.;
   if (argc > 4)
     nu = atof(argv[4]); // Viscosity for vertical diffusion
   else
-    nu = 0.;
+    nu = 0.000025; //0.;
   if (argc > 5) 
     RANDOM = atoi(argv[5]); // An integer to seed the random number generator (don't use 0 or 1)
+  else
+    RANDOM = 2;
   if (argc > 6)
     L0 = atof(argv[6]); // Box size (not necessarily related to peak wave number)
   else
-    L0 = 50.;
+    L0 = 200.; //50.;
   if (argc > 7) 
-    kp_ = 2.*pi/atof(argv[7]); // Peak wavelength 
+    kp_ = atof(argv[7]); // Peak wavelength 
   else 
-    kp_ = 2.*pi/(L0/5.); // By default it is 1/5 boxsize
+    kp_ = 2.*pi/40.; //2.*pi/(L0/5.); // By default it is 1/5 boxsize
   if (argc > 8)
     theta_H = atof(argv[8]); // Numerical parameter to dump fast barotropic modes
   else
-    theta_H = 0.5;
+    theta_H = 0.503; //0.5;
   origin (-L0/2., -L0/2.);
   periodic (right);
   periodic (top);

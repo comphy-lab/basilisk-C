@@ -253,7 +253,7 @@ event output (t = end)
 }
 
 /**
-##Velocity ans shear profile
+## Result: Velocity and shear profile
 
 ~~~gnuplot Velocity and shear profiles for Bingham flow (N = 32, nl = 32)
  set xlabel "y"

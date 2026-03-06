@@ -48,6 +48,7 @@ These cases combine physics and numerical modeling to better understand fluid sy
 * [Heat equation](Other_examples/heat_equation.c)
 * [Rising bubble](Other_examples/rising_bubble.c)
 * [Taylor bubble](Other_examples/taylor_bubble.c)
+* [Interface Perturbation Analysis](Other_examples/oscillation.c)
 
 ### Soluble surfactants
 * [Course of soluble surfactants and Marangoni effects](Course of insoluble/soluble surfactants and Marangoni effects)
