@@ -6,7 +6,6 @@ A non-exhaustive list of papers about/using Basilisk. Please add your
 own papers if they use Basilisk. See also [src/references.bib]() for older references.
 
 ### 2026
-
 ~~~bib
 @article{mou2026,
   title = {Singular jets and entrapments from compound drop impact},
@@ -136,6 +135,18 @@ url = {https://www.sciencedirect.com/science/article/pii/S0021979725030784},
 author = {Jinyang Wang and Feifei Jia and Xiaoyun Peng and Peng Zhang and Kai Sun and Tianyou Wang},
 keywords = {Droplet impacts, Superhydrophobic surface, Rapid rebound}}
 
+@article{harris2026,
+title={Bouncing to coalescence transition for droplet impact onto moving liquid pools},
+author={Daniel M. Harris and Luke F.L. Alventosa and Oliver Sand and Eli Silver and Arman Mohammadi and Thomas C. Sykes and Alfonso A. Castrejon-Pita and Radu Cimpeanu},
+journal={Journal of Fluid Mechanics},
+volume={1030},
+number={A16},
+pages={},
+year={2026},
+publisher={},
+doi={10.1017/jfm.2026.11232},
+url={https://doi.org/10.1017/jfm.2026.11232}
+}
 ~~~
 
 ### 2025
@@ -708,6 +719,19 @@ pages={A6}
   year={2025},
   publisher={Cambridge University Press},
   doi={10.1017/jfm.2025.10582}
+}
+
+@article{holroyd2025,
+  title={Nonlinear estimators for the observation and stabilization of falling liquid films},
+  author={Holroyd, O.A. and Cimpeanu, R. and Gomes, S.N.},
+  journal={Proceedings of the Royal Society A},
+  volume={481},
+  number={2327},
+  pages={},
+  year={2025},
+  publisher={},
+  doi={10.1098/rspa.2025.0539},
+  url={https://doi.org/10.1098/rspa.2025.0539},
 }
 ~~~
 

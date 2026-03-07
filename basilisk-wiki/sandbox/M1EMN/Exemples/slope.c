@@ -79,6 +79,7 @@ int main()
     L0 = 60.;
     G = 1;
     N = 1024; 
+    DT = HUGE;
     a=0.01;
     alpha= 1./(25);
     tmax=150;	

@@ -17,9 +17,9 @@ plot 'log' u 1:($2*2.) w l t ''
 #include "two-phase-clsvof.h"
 #include "integral.h"
 
-const double tend = 12;
-const double We = 5.;
-const double Re = 100;
+const double tend = 28;
+const double We = 2.;
+const double Re = 50;
 const int maxlevel = 10;
 
 double dmin0;
@@ -35,7 +35,7 @@ int main()
   L0 = 5.;
   X0 = - L0/2.;
   //Y0 = - L0/2. - 1.;
-  Y0 = -L0 + 0.4;
+  Y0 = -L0 + 0.1;
   const scalar sigma[] = 1./We;
   d.sigmaf = sigma;
 
@@ -72,13 +72,13 @@ event movies (i += 30; t <= tend)
 
 scalar dmin[];
 
-event logfile (i = 100; i += 5)
+event logfile (i++)
 {
   
   scalar dmin[];
   foreach ()
     dmin[] = y*(1.-f[]);
-  double dmintmp = Y0 + L0 - statsf(dmin).max;
+  double dmintmp = 0.1-statsf(dmin).max;
   
 
   fprintf (stderr, "%g %g\n", t, dmintmp );

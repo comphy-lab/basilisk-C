@@ -62,7 +62,8 @@ int main() {
   L0 = 20.;
   G = 1;
   N = 512;
-  tmax=50;
+  tmax = 50;
+  DT = 0.05;
   
   double FF[4]={ .2 , .4 , 0.65  , 2};  // loop on Froude
   
@@ -113,7 +114,7 @@ To compile and  plot gnuplot at the end :
 
 ## Plots
  
-Plot of free surface and comparison with the nalaytical linearized solution : 
+Plot of free surface and comparison with the analytical linearized solution : 
 $$h = 1 + \frac{z_b(x)}{Fr^2-1}$$
  
  
@@ -164,7 +165,7 @@ In this case, the water depth presents a hump, flowx is decelerated over the bum
 
 
 
-##Bibliography
+## Bibliography
  
 * [Lagrée P-Y](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/MFEnv.pdf)
 "Equations de Saint Venant et application, Ecoulements en milieux naturels" Cours MSF12, M1 UPMC

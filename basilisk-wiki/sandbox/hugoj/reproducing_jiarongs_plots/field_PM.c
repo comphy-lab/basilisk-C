@@ -2,7 +2,7 @@
 # Field scale wave breaking (multilayer solver)
 */
 
-// #include "grid/multigrid.h"
+#include "grid/multigrid.h"
 // #include "view.h"
 #include "layered/hydro.h"
 //#include "layered/hydro_test.h"
