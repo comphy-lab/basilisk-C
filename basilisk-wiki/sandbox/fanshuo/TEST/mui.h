@@ -39,7 +39,7 @@ double shear(Point point, scalar s, scalar h, int layer, int layercoef){
     shear = 2.*s[0,0,0]/h[0,0,0];
   }
    
-  return shear;
+  return fabs(shear);
 }
 
 /*

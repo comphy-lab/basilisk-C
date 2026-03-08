@@ -123,7 +123,7 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
   \end{aligned}
   $$
   */
-
+/*
   double den = h[]*sq(h[] + h[0,0,1]) 
     + 2.*lambda_b*(3.*h[]*h[0,0,1] + 2.*sq(h[]) + sq(h[0,0,1]));
   b[0] = h[] + 2.*dt*nueq[0]*(1./(h[] + h[0,0,1]) +
@@ -136,6 +136,7 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
     b[0] += c[0];
     rhs[0] +=  (- c[0]*h[] - nueq[0]*dt) * dst;
   }
+*/
 
   //fprintf (stdout, "diffusion checkinit %g %g %g %g %g %g %g %g %g %g %g\n", t, x, y, dt, s[], a[nl-1], b[nl-1], rhs[nl-1], c[0], b[0], rhs[0] );
 /**
@@ -149,8 +150,8 @@ $$
 The coefficient "2" in $b_0$ comes from the linear interpolation $u[-1]=-u[0]$ (to have $s_b$=0). The $\nu_{-1/2}$ is a function of shear at bottom, which is computed with first-order appriximation $\frac{\partial u}{\partial y}\vert_b=2*u_0/h[0]$. (see also mui.h)
 */
   
-//  c[0] = -(nueq[0]+nueq[1])*dt/(h[0,0,0]+h[0,0,1]);
-//  b[0] = h[0,0,0] - c[0] + 2.*Nueq(point,s,h,-1)*dt/h[0,0,0];
+  c[0] = -(nueq[0]+nueq[1])*dt/(h[0,0,0]+h[0,0,1]);
+  b[0] = h[0,0,0] - c[0] + 2.*Nueq(point,s,h,-1)*dt/h[0,0,0];
   /**
   We can now solve the tridiagonal system using the [Thomas
   algorithm](https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm). */

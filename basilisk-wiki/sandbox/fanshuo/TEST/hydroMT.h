@@ -46,7 +46,7 @@ in which case the tracers list is empty). */
 #include "utils.h"
 scalar zb[], eta, h;
 vector u;
-double G = 1., dry = 1e-12, CFL_H = 1e40;
+double G = 1., dry = 1e-6, CFL_H = 1e40;
 double (* gradient) (double, double, double) = minmod2;
 
 scalar * tracers = NULL;

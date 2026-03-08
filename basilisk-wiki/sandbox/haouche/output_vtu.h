@@ -1,4 +1,8 @@
 /**
+I would like to thank Anil Kumar and Yashika Dhote for this helpful file.
+*/
+
+/**
 # output_pvtu_ascii
 This function writes one XML file which allows to read the *.vtu files generated
 by output_vtu_ascii_foreach(serial, noauto) when used in MPI. Tested in (quad- and oct-)trees

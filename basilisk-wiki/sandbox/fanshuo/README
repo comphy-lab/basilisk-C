@@ -1,9 +1,12 @@
-#Intro
+# Intro
 Hi, I'm Fanshuo MA. I'm interested in [Granular Material](https://en.wikipedia.org/wiki/Granular_material) .\
 Many thanks to [authors](/src/AUTHORS) and the others who make contributions to this community, which allows me to catch the essential functions of this program.
 
-#Topic
-Subjets on granular behaviour are listed below :
+# Topic
 
-* [Rheology of Granular Flow]
-* [Avalanche Front of complex flow(Bagnold,...)]
+Subjets on Non-Newtonian $2D$ flow behaviours are listed below :
+
+* [Chute flow over inclined plane with various rheologies](/sandbox/fanshuo/TEST/).\
+(Bingham, $\mu(I)$, cohesive granular, turbulent with Prandtl mixing length)
+* [Avalanche of fluides](/sandbox/fanshuo/TEST/).
+* [Collpase of masse, considering different rheologies](/sandbox/fanshuo/TEST/).
