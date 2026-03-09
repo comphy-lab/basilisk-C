@@ -1,0 +1,3883 @@
+1 patch for repository https://basilisk.fr/basilisk:
+
+patch 0501e1e60f3645e454c593a1ac5304dff8be168a
+Author: TianLong
+Date:   Sun Mar  8 11:03:46 CET 2026
+  * Compatibility with my solid boundaries
+
+New patches:
+
+[Compatibility with my solid boundaries
+TianLong**20260308100346
+ Ignore-this: 5578e79530838ad69212a82bcb3e16a4af2aec25bf8a9dd55ae6b21e3a85ed9aaa75213108d9baaf
+] hunk ./src/grid/cartesian-common.h 3
++#if  USE_MY_SOLID
++extern bool IS_SOLID_x, IS_SOLID_y;
++#endif
++
+hunk ./src/grid/cartesian-common.h 274
++#if USE_MY_SOLID
++bool imposeSolidBoundaryCartesian(scalar * list, int level, int idim)
++{
++  bool is_imposed = false;
++  if(level < depth())
++  {
++    return is_imposed;
++  }
++  disable_fpe (FE_DIVBYZERO|FE_INVALID);
++  scalar *scalars = NULL;
++  vector *vectors = NULL, *faces = NULL;
++  for (scalar s in list)
++  {
++    if (!is_constant(s))
++    {
++      if (s.v.x.i == s.i)
++      {
++        if (s.face)
++          faces = vectors_add(faces, s.v);
++        else
++          vectors = vectors_add(vectors, s.v);
++      }
++      else if (s.v.x.i < 0 && s.boundary[0])
++        scalars = list_add(scalars, s);
++    }
++  }
++
++  for(scalar s in scalars)
++  {
++    if(idim == 1)
++    {
++      if (s.boundarySolid_x)
++      {
++        is_imposed = true;
++        s.boundarySolid_x(s, idim);
++      }
++    }
++    else if(idim == 2)
++    {
++      if (s.boundarySolid_y)
++      {
++        is_imposed = true;
++        s.boundarySolid_y(s, idim);
++      }
++    }
++  }
++
++  for (vector v in vectors)
++  {
++    if(idim == 1)
++    {
++      if (v.x.boundarySolid_x)
++      {
++        is_imposed = true;
++        v.x.boundarySolid_x(v.x, idim);
++      }
++    }
++    else if(idim == 2)
++    {
++      if (v.y.boundarySolid_y)
++      {
++        is_imposed = true;
++        v.y.boundarySolid_y(v.y, idim);
++      }
++    }
++  }
++
++  for (vector vf in faces)
++  {
++    if(idim == 1)
++    {
++      if (vf.x.boundarySolid_x)
++      {
++        is_imposed = true;
++        vf.x.boundarySolid_x(vf.x, idim);
++      }
++    }
++    else if(idim == 2)
++    {
++      if (vf.y.boundarySolid_y)
++      {
++        is_imposed = true;
++        vf.y.boundarySolid_y(vf.y, idim);
++      }
++    }
++  }
++
++  free (scalars);
++  free (vectors);
++  free (faces);
++  enable_fpe (FE_DIVBYZERO|FE_INVALID);
++
++  return is_imposed;
++}
++
++#endif
+hunk ./src/grid/cartesian-common.h 374
++#if USE_MY_SOLID
++  int depth = l < 0 ? depth() : l;
++  int idim = 0;
++  foreach_dimension()
++  {
++    idim++;
++    if(IS_SOLID_x)
++    {
++      bool is_solidbc_imposed = imposeSolidBoundaryCartesian(list, depth, idim);
++      if (is_solidbc_imposed)
++      {
++        boundary_iterate(level, list, l);
++      }
++    }
++  }
++#endif
+hunk ./src/grid/tree-common.h 12
++#if  USE_MY_SOLID
++extern bool IS_SOLID_x, IS_SOLID_y;
++#endif
++
+hunk ./src/grid/tree-common.h 492
++#if USE_MY_SOLID
++//fixme: with foreach_dimension(), the part of obtaining 
++//scalars, vectors and faces is wrong
++bool imposeSolidBoundaryTree(scalar * list, int level, int idim)
++{
++  bool is_imposed = false;
++  if(level < depth() || depth() < grid->maxdepth)
++  {
++    return is_imposed;
++  }
++  disable_fpe_for_mpi();
++  scalar *scalars = NULL;
++  vector *vectors = NULL, *faces = NULL;
++  for (scalar s in list)
++  {
++    if (!is_constant(s) && s.refine != no_restriction)
++    {
++      if (s.v.x.i == s.i)
++      {
++        if (s.face)
++          faces = vectors_add(faces, s.v);
++        else
++          vectors = vectors_add(vectors, s.v);
++      }
++      else if (s.v.x.i < 0 && s.boundary[0])
++        scalars = list_add(scalars, s);
++    }
++  }
++
++  for(scalar s in scalars)
++  {
++    if(idim == 1)
++    {
++      if(s.boundarySolid_x)
++      {
++        is_imposed = true;
++        s.boundarySolid_x(s, idim);
++      }
++    }
++    else if(idim == 2)
++    {
++      if(s.boundarySolid_y)
++      {
++        is_imposed = true;
++        s.boundarySolid_y(s, idim);
++      }
++    }
++  }
++
++  for (vector v in vectors)
++  {
++    if(idim == 1)
++    {
++      if (v.x.boundarySolid_x)
++      {
++        is_imposed = true;
++        v.x.boundarySolid_x(v.x, idim);
++      }
++    }
++    else if(idim == 2)
++    {
++      if (v.y.boundarySolid_y)
++      {
++        is_imposed = true;
++        v.y.boundarySolid_y(v.y, idim);
++      }
++    }
++  }
++
++  for (vector vf in faces)
++  {
++    if(idim == 1)
++    {
++      if (vf.x.boundarySolid_x)
++      {
++        is_imposed = true;
++        vf.x.boundarySolid_x(vf.x, idim);
++      }
++    }
++    else if(idim == 2)
++    {
++      if (vf.y.boundarySolid_y)
++      {
++        is_imposed = true;
++        vf.y.boundarySolid_y(vf.y, idim);
++      }
++    }
++  }
++
++  free (scalars);
++  free (vectors);
++  free (faces);
++  enable_fpe_for_mpi();
++
++  return is_imposed;
++}
++
++#endif
+hunk ./src/grid/tree-common.h 597
++#if USE_MY_SOLID
++    int idim = 0;
++    foreach_dimension()
++    {
++      idim ++;
++      if(IS_SOLID_x)
++      {
++        bool is_solidbc_imposed = imposeSolidBoundaryTree(list, depth, idim);
++        if(is_solidbc_imposed)
++        {
++          boundary_iterate (level, list, depth);
++        }
++      }
++    }
++#endif
+hunk ./src/grid/tree-common.h 634
++#if USE_MY_SOLID
++    int idim = 0;
++    foreach_dimension()
++    {
++      idim ++;
++      if(IS_SOLID_x)
++      {
++        bool is_solidbc_imposed = imposeSolidBoundaryTree(list2, depth, idim);
++        if(is_solidbc_imposed)
++        {
++          boundary_iterate (restriction, list2, depth);
++        }
++      }
++    }
++#endif
+hunk ./src/grid/tree-common.h 688
++#if USE_MY_SOLID
++    int idim = 0;
++    foreach_dimension()
++    {
++      idim ++;
++      if(IS_SOLID_x)
++      {
++        bool is_solidbc_imposed = imposeSolidBoundaryTree(list, depth, idim);
++        if (is_solidbc_imposed)
++        {
++          boundary_iterate(level, list, depth);
++        }
++      }
++    }
++#endif
+hunk ./src/grid/tree-common.h 790
+-
+
+Context:
+
+[Optimisation of boundary conditions for "full trees"
+Stephane Popinet <popinet@basilisk.fr>**20160430152306
+ Ignore-this: b2c6052480beec93ce4ada2e146ba93c
+ 
+ Full trees are trees with the same resolution as a regular Cartesian
+ grid. In this case restrictions on coarser levels are not
+ necessary. Performance gains are significant in particular for MPI
+ and/or Poisson solves.
+] 
+[Cosmetics
+Stephane Popinet <popinet@basilisk.fr>**20150902114425
+ Ignore-this: b79e10e345e025a113db170a4bfd43e5
+] 
+[Grid size is stored rather than recomputed
+Stephane Popinet <popinet@basilisk.fr>**20160419095119
+ Ignore-this: e63a5464f3b3e856c4a7a22dbd14104
+] 
+[Rename quadtree to tree everywhere
+Stephane Popinet <popinet@basilisk.fr>**20160417123915
+ Ignore-this: c5da271686c08e7d4f6f7b9b971987d6
+ 
+ This reflects the fact that the tree implementation is (almost)
+ dimension-independent.
+] 
+[Level of refinement image for 'reversed' test
+Stephane Popinet <popinet@basilisk.fr>**20140113123930
+ Ignore-this: adddc33a155086d805eda245425ca78c
+] 
+[Compressible scheme in 3D and explosion test case
+Stephane Popinet <popinet@basilisk.fr>**20150412160642
+ Ignore-this: 64c3d7cedb211653f987af7415e69da8
+] 
+[Link to explosion test case
+Stephane Popinet <popinet@basilisk.fr>**20140303194913
+ Ignore-this: 232c4e11d43664d78187e1a0f677eec4
+] 
+[dump()/restore() header includes depth
+Stephane Popinet <popinet@basilisk.fr>**20150912124046
+ Ignore-this: ab6e5346867cd3b2828bcbbf7bc13658
+] 
+[Bug fix for foreach_halo()
+Stephane Popinet <popinet@basilisk.fr>**20151213142859
+ Ignore-this: a5e4ede11a7451d6798030ee92158094
+] 
+[Optional Jacobi relaxation for Poisson and viscosity
+Stephane Popinet <popinet@basilisk.fr>**20151215104022
+ Ignore-this: 1c4f10122d478bbb57253c5280aaa2c9
+] 
+[Phase inversion example (REVIEW)
+Stephane Popinet <popinet@basilisk.fr>**20151208085725
+ Ignore-this: e6f41fe2cc1b4b0abcf739a4d791c9a3
+] 
+[restriction() is now a method
+Stephane Popinet <popinet@basilisk.fr>**20160417115739
+ Ignore-this: c64440648e82174943bf831f8768e7e0
+ 
+ It does something only on multigrids, as trees apply boundary
+ conditions on all levels by default.
+] 
+[Do not use restriction halos anymore
+Stephane Popinet <popinet@basilisk.fr>**20160416142404
+ Ignore-this: 53881e6a879b4615fbdc361c4e88b1f8
+] 
+[Scaling results on Occigen in 3D rather than Curie in 2D
+Stephane Popinet <popinet@basilisk.fr>**20150902082313
+ Ignore-this: 92ca330b91b5985b732945698d7ab664
+] 
+[Improved docs
+Stephane Popinet <popinet@basilisk.fr>**20150213082752
+ Ignore-this: 66732a5361c51424ee5626d430d1e731
+] 
+[Safety checks for mpi-laplacian benchmark
+Stephane Popinet <popinet@basilisk.fr>**20150813144335
+ Ignore-this: dd252b6401b68318e682affa06542624
+] 
+[mpi-laplacian reference results on occigen
+Stephane Popinet <popinet@basilisk.fr>**20150810152653
+ Ignore-this: d6a5ea4eb0eb60c857d5544de9cc493e
+] 
+[mpi_laplacian limits the runtime
+Stephane Popinet <popinet@basilisk.fr>**20150811072704
+ Ignore-this: c41c55f3588d41750424a2f8ab860226
+] 
+[mpi-laplacian does multiple loops
+Stephane Popinet <popinet@basilisk.fr>**20150122142859
+ Ignore-this: c459734c04748de887641ccb22d3d56a
+] 
+[Updated mpi-laplacian and results on Curie
+Stephane Popinet <popinet@basilisk.fr>**20150217145657
+ Ignore-this: 8f884f5d94a43d6613e85c50dd4f877
+] 
+[Optimisation and cleanup of load-balancing
+Stephane Popinet <popinet@basilisk.fr>**20160402084812
+ Ignore-this: b431c4406ef758d7557f364dbedc3d3d
+] 
+[Minor optimizations of load-balancing
+Stephane Popinet <popinet@basilisk.fr>**20160402133749
+ Ignore-this: 4583efd8531c0d8efb43c770c7cff7bf
+] 
+[Updated MPI and load-balancing test cases
+Stephane Popinet <popinet@basilisk.fr>**20160406145318
+ Ignore-this: e45ee134164369a3d1bcfbf0ae303c38
+] 
+[Use one layer of boundary ghost cells by default on quadtrees
+Stephane Popinet <popinet@basilisk.fr>**20151113085018
+ Ignore-this: 1b00ca80b179888e159aba601b47065d
+] 
+[Fix for restriction of face vector fields on masked domains
+Stephane Popinet <popinet@basilisk.fr>**20151104133640
+ Ignore-this: 3d4467999967babde46a89daf0cfdc12
+] 
+[Updated test references for new N-ordering
+Stephane Popinet <popinet@basilisk.fr>**20160206162612
+ Ignore-this: 415f0e024223c4626c566c9763772bc4
+] 
+[Option to control leaf MPI balancing
+Stephane Popinet <popinet@basilisk.fr>**20160402184532
+ Ignore-this: feed990395341463a6db453b5692a0bc
+] 
+[Option to control the minimum number of elements per MPI process
+Stephane Popinet <popinet@basilisk.fr>**20160402165309
+ Ignore-this: 801d91d3d1b9e9978692fb647afe995a
+] 
+[Parallel bump2D test case
+Stephane Popinet <popinet@basilisk.fr>**20160326101452
+ Ignore-this: b22aff965194d37eeb216a9fbae39e55
+] 
+[Load-balancing does not need check_pid()
+Stephane Popinet <popinet@basilisk.fr>**20160401095130
+ Ignore-this: d9b909f91469a5d3a754bb02ebf62f6e
+] 
+[Performance statistics are collected in the 'perf' structure
+Stephane Popinet <popinet@basilisk.fr>**20160402140129
+ Ignore-this: c65fcf64ef64d2d67704667d04269f73
+] 
+[Restart option for the tsunami example
+Stephane Popinet <popinet@basilisk.fr>**20141002140811
+ Ignore-this: f18ddb05ef64d2cf2fceb8a150e87beb
+] 
+[Tsunami example uses spherical coordinates
+Stephane Popinet <popinet@basilisk.fr>**20140925103407
+ Ignore-this: bebc833b208c915236f498f4c9de4f06
+] 
+[2D atomisation works with load-balancing and face velocity/quadtree checks
+Stephane Popinet <popinet@basilisk.fr>**20160401091823
+ Ignore-this: f346b613583ca17a3775b44878022508
+] 
+[Atomisation example
+Stephane Popinet <popinet@basilisk.fr>**20160217162740
+ Ignore-this: 6c870bf530253b4fd57c33d51b75586
+] 
+[check_pid() and co are turned off by default
+Stephane Popinet <popinet@basilisk.fr>**20160331134238
+ Ignore-this: 983453d2e28fff328e175c3c499887e8
+ 
+ They can be turned back on by defining DEBUGCOND in quadtree-mpi.h
+] 
+[Load-balancing works for 2D atomisation on 1536 cores!
+Stephane Popinet <popinet@basilisk.fr>**20160331111802
+ Ignore-this: ef507d08dfc1ffc8958e4418a306b7c
+] 
+[Generalised local_prolongation() function to 3D
+Stephane Popinet <popinet@basilisk.fr>**20160326100113
+ Ignore-this: 783782b5b7d428fd79479a96eda7e845
+] 
+[Robust 3D MPI requires several tricks
+Stephane Popinet <popinet@basilisk.fr>**20160326101220
+ Ignore-this: 8ef4894d3a43d0116fabf8198ecf4edb
+ 
+ Prolongation needs to be turned off for boundary conditions and cell
+ coarsening needs to be recursive.
+] 
+[Load-balancing does not rely on 'nans' anymore
+Stephane Popinet <popinet@basilisk.fr>**20160320183808
+ Ignore-this: 5af422f84bf4750cd9128b93217762dd
+] 
+[Cleanup of new load-balancing implementation
+Stephane Popinet <popinet@basilisk.fr>**20160319134925
+ Ignore-this: b35b5ae5255f1566b8882ee30910209b
+] 
+[Yet another version of load-balancing... (but this one really works!)
+Stephane Popinet <popinet@basilisk.fr>**20160319112200
+ Ignore-this: 8c43de3defc437d6782f9f8cfea8d42c
+] 
+[Load-balancing works without trick for Saint-Venant (REVIEW)
+Stephane Popinet <popinet@basilisk.fr>**20160219131324
+ Ignore-this: 1599e65c8e5b0f332c92e4e2b1fb147a
+] 
+[Other fixes for load-balancing (REVIEW)
+Stephane Popinet <popinet@basilisk.fr>**20160220181541
+ Ignore-this: 8f73bf872765ca93b20dce95443fde01
+] 
+[Load-balancing works with rborder (REVIEW)
+Stephane Popinet <popinet@basilisk.fr>**20160214114617
+ Ignore-this: 4c37ea2281940b59b9178a7a5071fd7e
+] 
+[Load balancing (it doesn't stop)
+Stephane Popinet <popinet@basilisk.fr>**20160212101810
+ Ignore-this: 8b7d38e949b21039501a88f14b10a1c8
+] 
+[Load-balancing (always)
+Stephane Popinet <popinet@basilisk.fr>**20160211171605
+ Ignore-this: 1a05db90d8c6677b75db7aa6c9136875
+] 
+[Load-balancing works!
+Stephane Popinet <popinet@basilisk.fr>**20160212163613
+ Ignore-this: 649120637b1e9e679833c2ddc0e6c861
+] 
+[Load-balancing (youkaidi youkaida)
+Stephane Popinet <popinet@basilisk.fr>**20160212154639
+ Ignore-this: 9a6588eee87e42dd2e8ba7d4c4dd9e9d
+] 
+[Fix for traversal of non-local vertices
+Stephane Popinet <popinet@basilisk.fr>**20160206152159
+ Ignore-this: 453ad341e6f99283b5ffb670e3313efe
+] 
+[Load-balancing (again) (REVIEW)
+Stephane Popinet <popinet@basilisk.fr>**20160211105839
+ Ignore-this: 750594d36eb56f7c40b4149081b33d67
+] 
+[Load-balancing 3 (REVIEW)
+Stephane Popinet <popinet@basilisk.fr>**20160129180817
+ Ignore-this: b6f03e4dc12a916ae280db834c1a8046
+] 
+[Load-balancing 2 (REVIEW)
+Stephane Popinet <popinet@basilisk.fr>**20160122095459
+ Ignore-this: bc709f603a9c766e6b27b3d6f7e5190e
+] 
+[output_gfs()/input_gfs(), dump()/restore() now work for multigrids
+Stephane Popinet <popinet@basilisk.fr>**20150912075625
+ Ignore-this: ccdbbbd8de0a1efbf43a37d1d354a00e
+] 
+[Minor improvement for stencil debugging
+Stephane Popinet <popinet@basilisk.fr>**20151127150131
+ Ignore-this: 5820bcfe6db756ec49efb8a84f926c87
+] 
+[MPI buffers are named for debugging
+Stephane Popinet <popinet@basilisk.fr>**20151214194334
+ Ignore-this: 1fb479c0de48c7e445f4e604672c1da5
+] 
+[Fix for incorrect buffering when using MPI_Isend()
+Stephane Popinet <popinet@basilisk.fr>**20151216123908
+ Ignore-this: b891c776ade91eeefec652ceb377271b
+] 
+[Dynamic load-balancing (REVIEW)
+Stephane Popinet <popinet@basilisk.fr>**20160107170641
+ Ignore-this: b55b76ea74450adee81b2d24ead9b2dd
+] 
+[Removed useless remote_leaf cell tag
+Stephane Popinet <popinet@basilisk.fr>**20160112075659
+ Ignore-this: 13a6836b9f956d7b16818cc0cb026431
+] 
+[Fix for MPI refinement dependency
+Stephane Popinet <popinet@basilisk.fr>**20151218091629
+ Ignore-this: ac4e644dea7ee7b4c9459cedd814cbd5
+] 
+[Pressure BC for Navier-Stokes use acceleration rather than velocity
+Stephane Popinet <popinet@basilisk.fr>**20151207140653
+ Ignore-this: 7506022c8c871438aa7ccb6f527ba5da
+] 
+[Boundary conditions for 5x5 stencils on quad/octrees
+Stephane Popinet <popinet@basilisk.fr>**20151104124655
+ Ignore-this: e5cd0bd845a24637338a93dc3d9ef4c8
+] 
+[Cosmetics for bitrees
+Stephane Popinet <popinet@basilisk.fr>**20150811110744
+ Ignore-this: 1b9ee4fa0194e2e7e62d4c7c1bc67835
+] 
+[Boundary conditions for vector and face fields on octrees
+Stephane Popinet <popinet@basilisk.fr>**20150901184159
+ Ignore-this: cf0f9b20f49428e49f19d06a432abb2c
+] 
+[Balanced surface tension on quad/octrees
+Stephane Popinet <popinet@basilisk.fr>**20151130211735
+ Ignore-this: 5739cadb48b4a1bd64379356f906cb19
+] 
+[Curvature on octrees
+Stephane Popinet <popinet@basilisk.fr>**20151120182449
+ Ignore-this: 3d68a027daf6c69255793c17750ee564
+] 
+[Fix for periodic BCs on vector fields on octrees
+Stephane Popinet <popinet@basilisk.fr>**20150901095743
+ Ignore-this: 2446c698cfa2c01cc9c669f9ed60aa7a
+] 
+[output_gfs() works in parallel
+Stephane Popinet <popinet@basilisk.fr>**20150901144226
+ Ignore-this: 90798dfc45de182cac5003ce0a43ab29
+] 
+[Scalars are properly typed (they are not just int's)
+Stephane Popinet <popinet@basilisk.fr>**20150811104850
+ Ignore-this: 15d07c3236b7101e69131f47f2a76e22
+] 
+[Minor fixes for FPEs on OSX
+Stephane Popinet <popinet@basilisk.fr>**20150227141035
+ Ignore-this: 80f84f826b712357502daa6c601d512f
+] 
+[fix SIGFPE signals for OSX
+Geoffroy Kirstetter <geoffroy.kirstetter@gmail.com>**20150224124922
+ Ignore-this: 87118dea5352c035d0260c8a17629429
+] 
+[System-of-conservation laws now work in 3D
+Stephane Popinet <popinet@basilisk.fr>**20150412160543
+ Ignore-this: e2c00b480b643d88706b7a8b4c995e60
+] 
+[Fixed right/left mixup in conservation.h
+Jose-Maria Fullana <fullana@ida.upmc.fr>**20140221100702
+ Ignore-this: 713de9a2719880aba9f444121c18bb04
+] 
+[Tangential/normal BC should also work with multigrid3D
+Stephane Popinet <popinet@basilisk.fr>**20150710081414
+ Ignore-this: 1eb46ade4f6c6935305f4977a6f60db
+] 
+[Curvature test case
+Stephane Popinet <popinet@basilisk.fr>**20151111155556
+ Ignore-this: 9d25014b55df2eb13e707290ee3d365
+] 
+[face vector refinement in 3D
+Stephane Popinet <popinet@basilisk.fr>**20150831155606
+ Ignore-this: a192112cf139d6f09da18901740bbd7c
+] 
+[Metric for the all-Mach solver
+Stephane Popinet <popinet@basilisk.fr>**20150706131437
+ Ignore-this: e80cfd31cb1adc54fe325eb415e525ba
+] 
+[Test case for 3D poisson solver with refinement
+Stephane Popinet <popinet@basilisk.fr>**20150813102422
+ Ignore-this: 381b7c8e0103e99e97024f316ca6e9f
+] 
+[Minor fix for test plots
+Stephane Popinet <s.popinet@gmail.com>**20130228050247
+ Ignore-this: 4686254fdbec4a989654829be98d9af0
+] 
+[Multigrid solver needs the global depth in parallel
+Stephane Popinet <popinet@basilisk.fr>**20150813093159
+ Ignore-this: cd80f650cfbbc64bb2fd3db672fcf6
+] 
+[Minor typos
+Stephane Popinet <popinet@basilisk.fr>**20141119143436
+ Ignore-this: 669bf4026322f714cb486fc40029429f
+] 
+[Definition of foreach_edge() and foreach_neighbor() for multigrid3D
+Stephane Popinet <popinet@basilisk.fr>**20151113095027
+ Ignore-this: 518e7e01ef68f931ec840745bf0d8c65
+] 
+[Parabola fitting for curvature in 3D
+Stephane Popinet <popinet@basilisk.fr>**20151111190257
+ Ignore-this: ed8539ef20a51bb163d2f483b3596cd9
+] 
+["Mixed heights" parabola fit curvature
+Stephane Popinet <popinet@basilisk.fr>**20151109104219
+ Ignore-this: 6516716dba91c24e94ab5adb9f244557
+] 
+[Simplified output_ppm() in parallel, using a collective communication
+Stephane Popinet <popinet@basilisk.fr>**20150226104103
+ Ignore-this: 903362215c4a795a2bd4a77412432d78
+] 
+[Fix for timestep and stability
+Stephane Popinet <popinet@basilisk.fr>**20150623125742
+ Ignore-this: 5e42fcf8d6f25431187000b30eb92607
+] 
+[dump() works in parallel
+Stephane Popinet <popinet@basilisk.fr>**20150814083743
+ Ignore-this: d1cd2a94df4e5273a27b0a1209e2b231
+] 
+[Dump/restore functions save the time
+Stephane Popinet <popinet@basilisk.fr>**20150710141212
+ Ignore-this: 4f8cdf103293c046a5a3e5e6608e1b40
+] 
+[Consistent height functions
+Stephane Popinet <popinet@basilisk.fr>**20151108110032
+ Ignore-this: 5b5b7e93c1a10950df21b9517ee1afe2
+] 
+[Preliminary HF-curvature implementation in 3D
+Stephane Popinet <popinet@basilisk.fr>**20150902071142
+ Ignore-this: fd8ba72ab19957b260e7345961970432
+] 
+[Cosmetics
+Stephane Popinet <popinet@basilisk.fr>**20151006142021
+ Ignore-this: 6deb2039be48532ad16c74af36755169
+] 
+[Added JCP reference for Green-Naghdi
+Stephane Popinet <popinet@basilisk.fr>**20150921144107
+ Ignore-this: 9757f72a31c07b984db7cafb58f7f81f
+] 
+[Fixed round-off error for VOF volume computation
+Stephane Popinet <popinet@basilisk.fr>**20151124155932
+ Ignore-this: a167a828894d00f6cf55d97331bcec47
+] 
+[Volume fraction initialisation in 3D
+Stephane Popinet <popinet@basilisk.fr>**20150827091927
+ Ignore-this: d06aa44d29090ebde3ca63342a6bac34
+] 
+[Lego boundaries are only coarsened if the shape of the boundary is not affected
+Stephane Popinet <popinet@basilisk.fr>**20150412171847
+ Ignore-this: baf82c732db85fc1b3133a56b5f03b8f
+] 
+[qcc supports nested foreach_child() loops
+Stephane Popinet <popinet@basilisk.fr>**20150810132448
+ Ignore-this: f041cdaec62982cdeafaa2a61fb718fd
+] 
+[Optimisation of cache sizes for quadtrees
+Stephane Popinet <popinet@basilisk.fr>**20150810160353
+ Ignore-this: 20e9cf1cc65c44696e913ce89ce54b6e
+] 
+[Standard I/O file pointers are opened "on demand" for parallel programs
+Stephane Popinet <popinet@basilisk.fr>**20150813143248
+ Ignore-this: 535e8ac203ec6369a9ae14b192ead923
+] 
+[Fixed minor memory leaks
+Stephane Popinet <popinet@basilisk.fr>**20150813093942
+ Ignore-this: 7e5db211c70d9bf72112a7e13b8599b0
+] 
+[Fix for events with mixed t and i
+Stephane Popinet <popinet@basilisk.fr>**20140711120059
+ Ignore-this: aaf8e699dce9dd91c09b2b6676d593e6
+] 
+[Options for controlling the output of MTRACE
+Stephane Popinet <popinet@basilisk.fr>**20150812213940
+ Ignore-this: eb0b32ba3f733711b7e02d7a4c202e98
+] 
+[Memory tracing
+Stephane Popinet <popinet@basilisk.fr>**20150811132536
+ Ignore-this: 707fe03d31bf9f59b27907fc84c7f35f
+] 
+[MPI does not require a global depth
+Stephane Popinet <popinet@basilisk.fr>**20150812213908
+ Ignore-this: 7a59cdac2381356de272ca898a872a4a
+ 
+ The maximum depth of bordering cells is sufficient.
+] 
+[Bitree is implemented using the generic tree
+Stephane Popinet <popinet@basilisk.fr>**20150811084656
+ Ignore-this: e549a4e13655b1b0d746e8851e6d4471
+] 
+[Make sure that foreach_leaf() only traverses local cells
+Stephane Popinet <popinet@basilisk.fr>**20150809144807
+ Ignore-this: 38055dfc7b252c60f50f699c50d6bc0e
+] 
+[Use foreach_neighbor()/foreach_child() (almost) everywhere
+Stephane Popinet <popinet@basilisk.fr>**20150810154309
+ Ignore-this: 7e41daf86e7785337333b6d7193453d5
+] 
+[Simplified (and more robust) tree boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20150805182430
+ Ignore-this: 27fa6e70cfc478364685780639a133eb
+] 
+[Implicit Saint-Venant is well-balanced on quadtrees
+Stephane Popinet <popinet@basilisk.fr>**20150623132019
+ Ignore-this: 1d673fe919141aaef06646f291eceede
+] 
+[Fix for dependencies on assembly files
+Stephane Popinet <popinet@basilisk.fr>**20140502110922
+ Ignore-this: a0fca73ed5fc57d0da21669c1de5aeef
+] 
+[Fix for old-style dependencies
+Stephane Popinet <popinet@basilisk.fr>**20140407103914
+ Ignore-this: c9615c628d10ec82a2d94b62753a6f72
+] 
+[Link to implicit SV in docs
+Stephane Popinet <popinet@basilisk.fr>**20150601173631
+ Ignore-this: 3d4b519fba8accf662ae783b72267255
+] 
+[The all-Mach/Saint-Venant solver now works for wetting-drying.
+Stephane Popinet <popinet@basilisk.fr>**20150609155241
+ Ignore-this: 36c77fc57cc2c0222730d558526a0a5f
+] 
+[Various fixes for the all Mach solver
+Stephane Popinet <popinet@basilisk.fr>**20150608155439
+ Ignore-this: 87251cce5eb2334ba12ea46362982413
+] 
+[Link to compressible gas dynamics solver
+Stephane Popinet <popinet@basilisk.fr>**20140303195814
+ Ignore-this: cca227c0f93dc91e5a778948111b1069
+] 
+[3D VOF
+Stephane Popinet <popinet@basilisk.fr>**20150710164249
+ Ignore-this: 402db08bfee3e82c4e4023f6e661bab6
+] 
+[mpi_boundary_refine() only refines cells with local neighbors
+Stephane Popinet <popinet@basilisk.fr>**20150810152543
+ Ignore-this: 7ad46851f86027e21f6f58892dc3d28d
+] 
+[Octree implementation
+Stephane Popinet <popinet@basilisk.fr>**20150710141534
+ Ignore-this: a7b35e27b198963907249af035a1f95
+] 
+[Poisson equation works in 3D
+Stephane Popinet <popinet@basilisk.fr>**20150412160905
+ Ignore-this: a15799a90ce906dd8cc34425480ed580
+] 
+[New "all Mach" solver. Implicit Saint-Venant is a particular case.
+Stephane Popinet <popinet@basilisk.fr>**20150608102402
+ Ignore-this: 68bb8aac363f9a0283be5aba2bb60eca
+] 
+[First version of implicit Saint-Venant solver
+Stephane Popinet <popinet@basilisk.fr>**20150601173227
+ Ignore-this: 3583c524f3d52110f6c25ecc00923806
+ 
+ Flat-bottom only for the moment.
+] 
+[Simplified metric implementation
+Stephane Popinet <popinet@basilisk.fr>**20150501175908
+ Ignore-this: 15c6ca1f2a075cadcec15c7b6545621f
+] 
+[Axisymmetric Poiseuille flow
+Stephane Popinet <popinet@basilisk.fr>**20150501085417
+ Ignore-this: a674ca6ab8cdcbb2ef7c7f0a709c0c38
+] 
+[Axisymmetric rising bubble test case
+Stephane Popinet <popinet@basilisk.fr>**20150501085446
+ Ignore-this: 5ac46d04f3faa4ca09f3fd459a176560
+] 
+[added link to sourceforge page
+Stephane Popinet <popinet@basilisk.fr>**20130705034330
+ Ignore-this: 81253b91a75d82f727fc0c5894d18f54
+] 
+[added 1D arterial flow to Jose's contributions
+Stephane Popinet <popinet@basilisk.fr>**20131221163945
+ Ignore-this: 92b9acf29b8ca286fb5177131601ac08
+] 
+[Added Jose's contributions
+Stephane Popinet <popinet@basilisk.fr>**20131113194750
+ Ignore-this: 938361d2329c17efc8e41541b30c1f08
+] 
+[Added link
+Stephane Popinet <popinet@basilisk.fr>**20131107144410
+ Ignore-this: c7f69fa355303f4aadf3c34857567921
+] 
+[Added Jose as contributor
+Stephane Popinet <popinet@basilisk.fr>**20131107144312
+ Ignore-this: 1c1ba42f1b8daab2eac33f74836f74a0
+] 
+[New utility ppm2gif and automatic pipe closure
+Stephane Popinet <popinet@basilisk.fr>**20150415090551
+ Ignore-this: 8690e29ba90b07e2190ce805bf24528c
+] 
+[Simplified animated gif generation for life.c
+Stephane Popinet <popinet@basilisk.fr>**20140412143008
+ Ignore-this: e3e235d05ae4aa0d5386f34b406d12a5
+] 
+[Link to 2D turbulence example
+Stephane Popinet <popinet@basilisk.fr>**20140414094410
+ Ignore-this: e04cb02ea04cd1f00dfb88f90c36ea2c
+] 
+[Added link to test cases
+Stephane Popinet <popinet@basilisk.fr>**20140413065051
+ Ignore-this: a47acae3f6772b9d84021a6cbbb6f89a
+] 
+[Link from examples to running test cases
+Stephane Popinet <popinet@basilisk.fr>**20140208170443
+ Ignore-this: f233edf6f4564d98f138b41b1dabc16
+] 
+[Rising bubble test case (and generalisation of surface tension/acceleration)
+Stephane Popinet <popinet@basilisk.fr>**20150428090647
+ Ignore-this: dda54192d0d2519bd2c9260e2e23e011
+] 
+[Minor fixes for surface tension
+Stephane Popinet <popinet@basilisk.fr>**20140910084723
+ Ignore-this: c825f2bd181c9b3d370e3b503db231c6
+] 
+[Taylor-Green vortex test case
+Stephane Popinet <popinet@basilisk.fr>**20150414194958
+ Ignore-this: 553cf0d0bd6951e354cc03ad77d18651
+] 
+[Improved BCG advection scheme
+Stephane Popinet <popinet@basilisk.fr>**20150415090535
+ Ignore-this: deeda716896dfb489f76c6d69ada710
+] 
+[Improved adaptivity when combining multiple fields
+Stephane Popinet <popinet@basilisk.fr>**20150326154050
+ Ignore-this: 4a422e8a3fd1a5ba1220d7ccb30ffee9
+] 
+[Axisymmetric viscous terms
+Stephane Popinet <popinet@basilisk.fr>**20150429144240
+ Ignore-this: c82a1823254efe854fd1f9301561626a
+] 
+[Navier-Stokes solver now works in 3D
+Stephane Popinet <popinet@basilisk.fr>**20150427191331
+ Ignore-this: 2c2b978c5a6d9296dd3ad734443e7199
+] 
+[3D multigrid implementation
+Stephane Popinet <popinet@basilisk.fr>**20150413084138
+ Ignore-this: 6010dc5bec2b220df11e041efac8bcf
+] 
+[Octree works with MPI
+Stephane Popinet <popinet@basilisk.fr>**20150806150938
+ Ignore-this: 2da5d7bb5338660419a1da60195acf00
+] 
+[Reverted checksuming of source files
+Stephane Popinet <popinet@basilisk.fr>**20140428124856
+ Ignore-this: 7e2ab55a9431d93225f4780c44d07cb0
+ 
+ This was breaking the dependency checking on header files.
+] 
+[Cosmetics for debye test case
+Stephane Popinet <popinet@basilisk.fr>**20140610172115
+ Ignore-this: e12f18650fc91d381a34af895e0d5a83
+] 
+[Cosmetic changes for debye.c
+Stephane Popinet <popinet@basilisk.fr>**20140602072223
+ Ignore-this: 21bdab2fd63c6c9da720b3255c618364
+] 
+[debye.c doc enlarged
+jose.lopez.herrera.s@gmail.com**20140529193342
+ Ignore-this: 5f5c80359d538a8d9f3fd6ead03bd047
+] 
+[Simplified debye.c doc
+Stephane Popinet <popinet@basilisk.fr>**20140528154403
+ Ignore-this: f3e9ade8de9f9f0087d26781f2855d2
+] 
+[Analytical curves added to debye.plot
+Jose Lopez-Herrera <jose.lopez.herrera.s@gmail.com>**20140520142711
+ Ignore-this: cbe644bd899e791a339232020123dad3
+] 
+[docs added to debye.c
+Jose Lopez-Herrera <jose.lopez.herrera.s@gmail.com>**20140520143336
+ Ignore-this: e5f756f0ce362a4ec2bdcc3e6068ac42
+] 
+[One-dimensional grids are now truly one-dimensional
+Stephane Popinet <popinet@basilisk.fr>**20150412161010
+ Ignore-this: ccb2ff0c97a4522aeaec11260ed6ad23
+ 
+ And as a consequence many generic functions have been made
+ dimension-independent (i.e. they should also work in 3D).
+] 
+[Fixed rotation of lists of vector components
+Stephane Popinet <popinet@basilisk.fr>**20131207092435
+ Ignore-this: 47c271f49a327d1291514c8931a411b1
+] 
+[Utility function to compute vorticity
+Stephane Popinet <popinet@basilisk.fr>**20140304200118
+ Ignore-this: b3e08b82b708106bbaa04a9ef27f8e0f
+] 
+[Modernised 'atmosphere' solver
+Stephane Popinet <popinet@basilisk.fr>**20140310141627
+ Ignore-this: 44fa9678378732eeda319ba8b09cd043
+] 
+[Bug fix for BCs in "atmosphere" solver
+Stephane Popinet <popinet@basilisk.fr>**20130726030711
+ Ignore-this: c68a418291ef23c364d3d43ab467ace7
+] 
+[Fixes for changes in multigrid interface
+Stephane Popinet <popinet@basilisk.fr>**20140715120253
+ Ignore-this: 334c2bc5c0da404793d16be7bde3ceab
+] 
+[Optimised locate() function on quadtrees
+Stephane Popinet <popinet@basilisk.fr>**20150312083325
+ Ignore-this: d9518236cbb6ce22d4869454c3a8880c
+] 
+[Parallel output_ppm() function
+Stephane Popinet <popinet@basilisk.fr>**20150208183056
+ Ignore-this: 3eb7c340b80f5db222123191dc5ac69a
+] 
+[output_ppm() uses ImageMagick to optionally support many bitmap formats
+Stephane Popinet <popinet@basilisk.fr>**20140107172206
+ Ignore-this: 831546b20ab8d433b782b104cbfe8157
+] 
+[Fix for parallel refinement of face vector fields
+Stephane Popinet <popinet@basilisk.fr>**20150314170116
+ Ignore-this: 75ddfdcf1362ad25140182eb35676fab
+] 
+[Documentation for axisymmetric advection test case
+Stephane Popinet <popinet@basilisk.fr>**20140926064819
+ Ignore-this: 6dcd61c731d52833db87f0f013e628f3
+] 
+[Various bug fixes for MPI
+Stephane Popinet <popinet@basilisk.fr>**20150227150849
+ Ignore-this: 602d81c14ab769649e9652592524155c
+] 
+[New 'none' keyword for mask()
+Stephane Popinet <popinet@basilisk.fr>**20150407091152
+ Ignore-this: a6fe8b2f84f169b75af04524ca0422e4
+] 
+[Test case: shock reflection by a cylinder
+Stephane Popinet <popinet@basilisk.fr>**20150330160629
+ Ignore-this: 6a8e6b5e0ec128df2e2ec99d0a3e850a
+] 
+[Preprocessor support for 3 dimensions
+Stephane Popinet <popinet@basilisk.fr>**20150409161505
+ Ignore-this: 7c2091ff6265ed57a05df0a363184775
+] 
+[Bug fix for functions with optional/named arguments
+Stephane Popinet <popinet@basilisk.fr>**20131104130701
+ Ignore-this: 945a9c33e1bfe1a71db937651ec32b52
+] 
+[Fix for lists of constant fields
+Stephane Popinet <popinet@basilisk.fr>**20140516155736
+ Ignore-this: 2bba2c287c61b583d71148fcbc355bbb
+] 
+[Fix for 'last_point' declaration
+Stephane Popinet <popinet@basilisk.fr>**20141213175724
+ Ignore-this: ebd66a2d1f4e22d135f6940dd6c6cd38
+] 
+[Fix for 32 bits overflow of array sizes
+Stephane Popinet <popinet@basilisk.fr>**20141201084529
+ Ignore-this: e6d7511837a0707fb63473e1f3e4cd20
+] 
+[Restricted scope of non-constant fields
+Stephane Popinet <popinet@basilisk.fr>**20150311122539
+ Ignore-this: 5b944ee59e301a77fb579f07563387c9
+] 
+[New variables are set to not (const)
+Stephane Popinet <popinet@basilisk.fr>**20140307144013
+ Ignore-this: 8ae991bfbbe9f98240f37796b0aa6ef3
+] 
+[Support for expansion of foreach_dimension() in macros
+Stephane Popinet <popinet@basilisk.fr>**20150408092331
+ Ignore-this: b529755c084737acd9182a369a780ea6
+] 
+[Periodic boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20150401143135
+ Ignore-this: cbd87ba290f001c1489d34592609d0bb
+] 
+[Fix for corner traversal in grid/multigrid
+Stephane Popinet <popinet@basilisk.fr>**20141214152533
+ Ignore-this: 6d79cf777224806089c8c384e9c21c2b
+] 
+[Fixed bitree for new implementation of quadtree-common.h
+Stephane Popinet <popinet@basilisk.fr>**20150312131446
+ Ignore-this: b13a783d74723d39913ba8faeb8c7ea4
+] 
+[New benchmark for quadtree MPI Poisson solver
+Stephane Popinet <popinet@basilisk.fr>**20140515121523
+ Ignore-this: 3ffaa7d6b96d8f2f2418120d95434042
+] 
+[Von Karman vortex street example
+Stephane Popinet <popinet@basilisk.fr>**20150330160013
+ Ignore-this: 181f6ffa120ee2c1aea0e8f98ca71199
+] 
+[Doc fixes for madsen example
+Stephane Popinet <popinet@basilisk.fr>**20141119170030
+ Ignore-this: 92518ee541b24c4f0a21e60bbd6853de
+] 
+[Shoaling waves example
+Stephane Popinet <popinet@basilisk.fr>**20140716102038
+ Ignore-this: b48c333153eaae36db4fc646c570a29
+] 
+[Breakup into solitons example
+Stephane Popinet <popinet@basilisk.fr>**20141119143352
+ Ignore-this: 6e2f57917dfa2dc80148e52d667240ef
+] 
+[Fix for terrain and MPI
+Stephane Popinet <popinet@basilisk.fr>**20150208203833
+ Ignore-this: 46065ff60dd603f06e4b11459a868cd0
+] 
+[Fix for broken OpenMP reductions
+Stephane Popinet <popinet@basilisk.fr>**20140505101235
+ Ignore-this: dc50f9abf735ae415dfde8ae75c1ab84
+] 
+[General "Lego" boundaries
+Stephane Popinet <popinet@basilisk.fr>**20150325132730
+ Ignore-this: 3529e3123ba346b4b500c2a3a89c00c5
+] 
+[Bug fix for multigrid trash() method
+Stephane Popinet <popinet@basilisk.fr>**20131206094621
+ Ignore-this: 55ad76b68e13620d84169af5eda1f1b5
+] 
+[Cartesian1D and multigrid tolerate points located "just" outside
+Stephane Popinet <popinet@basilisk.fr>**20140417185039
+ Ignore-this: af2b394be3a529c0378c8e69e69ba369
+] 
+[Removed obsolete saint-venant2.h tests
+Stephane Popinet <popinet@basilisk.fr>**20140502085023
+ Ignore-this: fbd7da24012c14bc61652b4e8b9b9fb9
+] 
+[Removed NZ locale from gnuplot files
+Stephane Popinet <popinet@basilisk.fr>**20140204083353
+ Ignore-this: 4829e5b09355e5215a9efa8e752f0b1b
+] 
+[Multigrid uses two ghost layers for 5x5 stencil
+Stephane Popinet <popinet@basilisk.fr>**20140902133741
+ Ignore-this: 6e4f6e94ec0d492b14d908032f11cc9e
+] 
+[Variable viscosity implementation uses the discrete stress tensor
+Stephane Popinet <popinet@basilisk.fr>**20140925160243
+ Ignore-this: 9671fc4434ef8b43e6fc8f4ef3455182
+] 
+[Implicit viscosity solver takes timestep into account
+Stephane Popinet <popinet@basilisk.fr>**20140107110927
+ Ignore-this: 80afb902073feefdbe670db66047e875
+] 
+[Various fixes for multiple river inflows
+Stephane Popinet <popinet@basilisk.fr>**20150109133326
+ Ignore-this: 962325a184246e97789bce5e401b0b21
+] 
+[discharge + testcase 
+Geoffroy Kirstetter <geoffroy.kirstetter@gmail.com>**20150105085704
+ Ignore-this: f58c97bee0c3eb4436953a262e2249c8
+] 
+[Quadtrees use simple memory pools
+Stephane Popinet <popinet@basilisk.fr>**20150216133915
+ Ignore-this: 3e8b800dbe239e25d157cc1e47210de6
+ 
+ This improves performances for the mpi-laplacian parallel benchmark
+ quite a bit. It may also be more generally useful i.e. to minimise
+ memory fragmentation in adaptive simulations.
+] 
+[Improved debugging output
+Stephane Popinet <popinet@basilisk.fr>**20150216130754
+ Ignore-this: 2db7e7b0237f3649f3d0f3317cbc2bde
+] 
+[Several bug fixes for face vector fields in parallel
+Stephane Popinet <popinet@basilisk.fr>**20150310174644
+ Ignore-this: 388660f90ea447b62e66e529d33a1278
+] 
+[Non-blocking receives
+Stephane Popinet <popinet@basilisk.fr>**20150213103036
+ Ignore-this: c9bd891b1ae8b45f7d3ff911c6d61dbc
+ 
+ This seems to improve performance a bit (see curie/ results for 14 levels)
+] 
+[Parallel outputs
+Stephane Popinet <popinet@basilisk.fr>**20150311134940
+ Ignore-this: ca6cf1b55f8c21de7ed49fe6b58a3de5
+] 
+[Support for performance tracing with Paraver
+Stephane Popinet <popinet@basilisk.fr>**20150305211035
+ Ignore-this: 8c8cdf82a4d88871b1570a82424ecc93
+] 
+[Events registration does inheritance
+Stephane Popinet <popinet@basilisk.fr>**20140416153408
+ Ignore-this: 220713fb6aec6bf9ce56c4074ddeeb2e
+] 
+[Centered Navier-Stokes solver works in MPI
+Stephane Popinet <popinet@basilisk.fr>**20150311135240
+ Ignore-this: 73e0c53a7b41f839ffef125c5fe0b94a
+] 
+[Documentation for mpi-laplacian and results on Curie
+Stephane Popinet <popinet@basilisk.fr>**20150127093520
+ Ignore-this: fa268d44bbf5fdacdd5c56d381765d73
+] 
+[More bug fixes for MPI and new 'bump2Dp' test case
+Stephane Popinet <popinet@basilisk.fr>**20150227184933
+ Ignore-this: 2286e38f22e8db503b45d79ed9d0378
+] 
+[Coarsening and adaptivity with MPI
+Stephane Popinet <popinet@basilisk.fr>**20150226160350
+ Ignore-this: bc285f054fdd8a99f9b15e3f627183cf
+ 
+ The mesh synchronisation between processes has been modified with the
+ introduction of refinement and coarsening caches.
+] 
+[Simplified interface for refine_cell()
+Stephane Popinet <popinet@basilisk.fr>**20150121095228
+ Ignore-this: 835e12cf2dd9163fcb6c1c453f8e3cac
+] 
+[Dump/restore functions
+Stephane Popinet <popinet@basilisk.fr>**20141219174506
+ Ignore-this: dc8db7a35f2daa1ec669d1cb1206a92
+] 
+[Added MPI and memory stats to timer
+Stephane Popinet <popinet@basilisk.fr>**20141222095548
+ Ignore-this: 4231193ae55f18a22cad06d5924879fe
+] 
+[MPI boundary conditions for face vector fields
+Stephane Popinet <popinet@basilisk.fr>**20150211164023
+ Ignore-this: 6fd16960d506147f2d5efec79bfcd726
+] 
+[Moved signalling NaNs to common header file
+Stephane Popinet <popinet@basilisk.fr>**20141001065212
+ Ignore-this: ee86ad437bf009c84b95d1b9d3a9ae19
+] 
+[Improved portability for 32-bits systems
+Stephane Popinet <popinet@basilisk.fr>**20131002102201
+ Ignore-this: cd3f4a5a182ab80d25b732938940e2c3
+] 
+[Allow "FE_OVERFLOW" floating-point exception
+Stephane Popinet <popinet@basilisk.fr>**20140406123427
+ Ignore-this: d26b562b24e7c2e9ff719636644db63f
+] 
+[The codes conform strictly to the C99 standard
+Stephane Popinet <popinet@basilisk.fr>**20150113191622
+ Ignore-this: 7af416319886ba9afc12659156098c57
+] 
+[More fixes for line numbers in qcc
+Stephane Popinet <popinet@basilisk.fr>**20131118100603
+ Ignore-this: fbf75aa9aa150e9b410d970d9eec3c6b
+] 
+[Fix for memory leak in field names
+Stephane Popinet <popinet@basilisk.fr>**20140520074930
+ Ignore-this: 5a750cfcc975a5118047176d217788a
+] 
+[Fix for Okada and new attributes
+Stephane Popinet <popinet@basilisk.fr>**20140516170715
+ Ignore-this: a7886e22ece5f9a8cb8ada67807ad06
+] 
+[Fix for adaptive refinement of Okada faults
+Stephane Popinet <popinet@basilisk.fr>**20130731015328
+ Ignore-this: 9ed0504b094236a9b4486bd16b46da72
+] 
+[Fix for name clash of 'clone()'
+Stephane Popinet <popinet@basilisk.fr>**20140415145221
+ Ignore-this: b1a244b34e506391780b4d7d1d46fae
+] 
+[Terrain was not working with non-quadtree grids
+Stephane Popinet <popinet@basilisk.fr>**20140718081059
+ Ignore-this: f23980375ac786988ecbe1fc48a3b87
+] 
+[Simplified prolongation of face vectors
+Stephane Popinet <popinet@basilisk.fr>**20140924185659
+ Ignore-this: 66ce1cbc244ba3aa8bac210ff547d1ce
+] 
+[Face vector prolongation works with dynamic 5x5 stencil
+Stephane Popinet <popinet@basilisk.fr>**20140901132237
+ Ignore-this: aa99f4245fc8ad9c4b33a7c1bcba8100
+] 
+[New function input_gfs() can be used to restart simulations
+Stephane Popinet <popinet@basilisk.fr>**20141002144217
+ Ignore-this: adc5515cd8a869fd57c47801c33cad3a
+] 
+[Cleaner formatting of events when using '-events'
+Stephane Popinet <popinet@basilisk.fr>**20140212200837
+ Ignore-this: 798852c602163f593380a80f5ef01376
+] 
+[Growing arrays
+Stephane Popinet <popinet@basilisk.fr>**20141210154723
+ Ignore-this: 63fa1f7dea61706207d113f7f817ab68
+] 
+[Several fixes for parallel flux formulation
+Stephane Popinet <popinet@basilisk.fr>**20150207173831
+ Ignore-this: 904dddc1b8eef8212438739771e5d632
+] 
+[Fixed parallel halo restriction
+Stephane Popinet <popinet@basilisk.fr>**20150217095253
+ Ignore-this: a81db3332bf2eba0e6acdede3db9cede
+ 
+ Introducing "remote leaves" to properly take into account remote sub-domains.
+] 
+[Parallel implementation for boundary_flux()
+Stephane Popinet <popinet@basilisk.fr>**20150205171234
+ Ignore-this: 59d4ae68e4efc1735ce45ea34a9dce08
+] 
+[Removal of cells without neighbors for parallel subdomains
+Stephane Popinet <popinet@basilisk.fr>**20150203133621
+ Ignore-this: 61521e266e6d0174addd9203416d066
+] 
+[Replaced MPI_Probe with a message for mpi_boundary_match()
+Stephane Popinet <popinet@basilisk.fr>**20150217100432
+ Ignore-this: 298c06d4ffdb79cc1f169418b77acf83
+] 
+[Cleaned up new implicit send/receive parallel buffers implementation
+Stephane Popinet <popinet@basilisk.fr>**20150203084111
+ Ignore-this: dfe9c37ba678f0308a2326cdb9343541
+] 
+[1st parallel version without explicit send/receive buffer synchronisation
+Stephane Popinet <popinet@basilisk.fr>**20150202184658
+ Ignore-this: 15660da686acfd40e3a52e7393b93678
+ 
+ This still includes the old version for debugging purposes
+] 
+[Rolled back overlapping communications
+Stephane Popinet <popinet@basilisk.fr>**20150127104921
+ Ignore-this: 61bd9a8c26f6c39c7417cdbccc7485e1
+] 
+[Preliminary test of overlapping communications
+Stephane Popinet <popinet@basilisk.fr>**20150127104843
+ Ignore-this: 493988e24d5aca5f882f0e300e57f32b
+] 
+[More generic debug_mpi() function
+Stephane Popinet <popinet@basilisk.fr>**20150128095750
+ Ignore-this: 4050c8abbcfc5c5c6123477194e6fa8e
+] 
+[Improved memory management for removal of partially-filled quadtree layers
+Stephane Popinet <popinet@basilisk.fr>**20150118195446
+ Ignore-this: 867c72f84ba734118807055f6d638fb8
+] 
+[Children data memory is allocated once for all siblings
+Stephane Popinet <popinet@basilisk.fr>**20150118154843
+ Ignore-this: ee52b097a222cb3cadeca8225c6fa63c
+] 
+[Quadtree uses double pointer indirection for the cartesian pointer array
+Stephane Popinet <popinet@basilisk.fr>**20150116200121
+ Ignore-this: 3110fb344e634b2600fbf579a2e5dfd1
+] 
+[Quadtree parallelization does not copy common banches
+Stephane Popinet <popinet@basilisk.fr>**20150127105924
+ Ignore-this: 19341299b3ac393d03d12255ab45acf8
+ 
+ i.e. cells are owned by only one process. This greatly improves the scalability
+ of the restriction/Poisson solver.
+] 
+[Macro foreach_child_direction()
+Stephane Popinet <popinet@basilisk.fr>**20140509185716
+ Ignore-this: ce19e8de13fcd6c85408b7fd0a0b75b4
+] 
+[Adjacency matrix for MPI quadtree
+Stephane Popinet <popinet@basilisk.fr>**20150123164621
+ Ignore-this: 18a461c299d76664547bc6f066ff2052
+] 
+[Consistent treatment of inactive cells for parallel subdomains
+Stephane Popinet <popinet@basilisk.fr>**20150114153109
+ Ignore-this: 3a5921e963258e1d3b7b3cfc30e4d0bc
+] 
+[Optimisation of mpi_boundary_match()
+Stephane Popinet <popinet@basilisk.fr>**20150110182600
+ Ignore-this: 938a083c4a58c890b8dd6ca7dca23572
+ 
+ Only "border" cells are traversed i.e. this should scale as O(N)
+ rather than O(N^2).
+] 
+[Optimisation of MPI buffers
+Stephane Popinet <popinet@basilisk.fr>**20150109145642
+ Ignore-this: 91ce1dcfaf928ed6c79002d3da0fc422
+ 
+ We now use independent buffers for prolongation and restriction.
+] 
+[Checks for boundary conditions on levels
+Stephane Popinet <popinet@basilisk.fr>**20140504082355
+ Ignore-this: 8db374ed4345cc449c8ab7a37c03f7b3
+] 
+[Support for Paje trace generation
+Stephane Popinet <popinet@basilisk.fr>**20141223173650
+ Ignore-this: 11d2dc160c889a72635cbc955f2a3823
+] 
+[New 'mpi-laplacian' benchmark
+Stephane Popinet <popinet@basilisk.fr>**20141221163746
+ Ignore-this: c2044d15c9d94df10ed8e9605e1b95b8
+] 
+[Fix for restriction of non-doubles
+Stephane Popinet <popinet@basilisk.fr>**20141222095523
+ Ignore-this: a7b27523c247f74c223beb807203a814
+] 
+[foreach_send() for overlapping communications and calculations
+Stephane Popinet <popinet@basilisk.fr>**20141222154215
+ Ignore-this: 5086279e56fb55b9b18b67ad5e659da
+] 
+[Fixed leaking MPI_Requests
+Stephane Popinet <popinet@basilisk.fr>**20141221175215
+ Ignore-this: c030f3883a4d9e5a29dbb0146edf5a73
+] 
+[Optimised MPI neighbors
+Stephane Popinet <popinet@basilisk.fr>**20141214213226
+ Ignore-this: 9c3ac50b32d98298543977374d60cd60
+] 
+[Updated bitree for new grid structure
+Stephane Popinet <popinet@basilisk.fr>**20141119143420
+ Ignore-this: 2621b059f7df43d30f632db2345214ec
+] 
+[Improved MPI buffering
+Stephane Popinet <popinet@basilisk.fr>**20141215150037
+ Ignore-this: 5c3d8e961299f76b55dfadc889200f01
+] 
+[MPI profiling
+Stephane Popinet <popinet@basilisk.fr>**20141213180518
+ Ignore-this: 451b47b9d63b32b24fedf611bba3e7c7
+] 
+[Spherical coordinates
+Stephane Popinet <popinet@basilisk.fr>**20140926065529
+ Ignore-this: 13137c888e2e6e39100e865cb95044ff
+] 
+[Axisymmetric surface tension term
+Stephane Popinet <popinet@basilisk.fr>**20140921170623
+ Ignore-this: ce54e186486e1c338eb2f35e8a15b9e
+] 
+[Metric terms for the Saint-Venant solver.
+Stephane Popinet <popinet@basilisk.fr>**20140922181946
+ Ignore-this: b60ab0fe6d35e8968259547551cf4291
+] 
+[The predictor-corrector scheme allocates extra intermediate fields
+Stephane Popinet <popinet@basilisk.fr>**20140922151610
+ Ignore-this: 946a0258cf5af798bede5036e809dcc7
+] 
+[Optional source terms for Saint-Venant solver
+Stephane Popinet <popinet@basilisk.fr>**20140626125311
+ Ignore-this: cb5a9a748f46fa5bced243fcc81ff861
+] 
+["Circular dam break on a sphere" test case
+Stephane Popinet <popinet@basilisk.fr>**20140925135510
+ Ignore-this: 576b3be7e27a4fcf63190bdfec9e1627
+] 
+[Improved MPI buffering (receive)
+Stephane Popinet <popinet@basilisk.fr>**20141215150147
+ Ignore-this: ea94458d543a1dc4a82cddc45538c149
+] 
+[Parallel mesh refinement works (for refinement only)
+Stephane Popinet <popinet@basilisk.fr>**20141212145000
+ Ignore-this: 29a13b1020679c9c5befe0ca721f7794
+] 
+[Simplified valgrind/mpirun tests
+Stephane Popinet <popinet@basilisk.fr>**20140505090033
+ Ignore-this: 474663866b7014f05b5cf465fec4c5ff
+] 
+[Removed obsolete 'fghost' cell flag.
+Stephane Popinet <popinet@basilisk.fr>**20140901131006
+ Ignore-this: 1cbbc69bf3652bff28ad7a8cfa06fae0
+] 
+[Parallel mesh refinement
+Stephane Popinet <popinet@basilisk.fr>**20141205151606
+ Ignore-this: a414e7d539f45e1a56adf9b66b7f6355
+] 
+[Test case for restriction of face vectors
+Stephane Popinet <popinet@basilisk.fr>**20140828145348
+ Ignore-this: fae945afab3449bdb9f3aaa82c263047
+] 
+[Boundary conditions for 5x5 stencils
+Stephane Popinet <popinet@basilisk.fr>**20140901145649
+ Ignore-this: 2f704392ae80167fa56e9e860fcb5cc2
+] 
+[MPI test cases pass with dynamic quadtrees
+Stephane Popinet <popinet@basilisk.fr>**20140909081100
+ Ignore-this: df503c149a1e4f5e6185bcd07958296b
+ 
+ But deallocation is not done etc...
+] 
+[MPI fixes for merge with stable branch
+Stephane Popinet <popinet@basilisk.fr>**20140909083431
+ Ignore-this: dfafd4b81759e6a5d196e31d0a0bf6bd
+] 
+[Re-ordered VOF in N-S solver
+Stephane Popinet <popinet@basilisk.fr>**20140925172509
+ Ignore-this: e21e21bff2fec6c2e49d30b9e3b4819e
+] 
+[Documentation for surface tension test cases.
+Stephane Popinet <popinet@basilisk.fr>**20140909104348
+ Ignore-this: 8846d902b6a6a72f42adc3a8c4c64451
+] 
+[New function input_gfs()
+Stephane Popinet <popinet@basilisk.fr>**20141001124205
+ Ignore-this: 98248e5a63ee7192cf3092a67d4ded14
+] 
+[PGM import function
+Stephane Popinet <popinet@basilisk.fr>**20131203094236
+ Ignore-this: fda5cc9d7e119605e3cf15ba0783a1dd
+] 
+[Bug fix for gerris output
+Stephane Popinet <popinet@basilisk.fr>**20140718081028
+ Ignore-this: 66c730bb1c94cec75f5dd232ce7e17f3
+] 
+[Output for Gerris simulation format
+Stephane Popinet <popinet@basilisk.fr>**20140618172313
+ Ignore-this: c4816155591ed34f8341f4382b125f7
+] 
+[Links to VTK and facets outputs
+Stephane Popinet <popinet@basilisk.fr>**20140413071810
+ Ignore-this: 7a91b02c2cbf4bb86dcb42338427b84b
+] 
+[Fixed links to ouput functions
+Stephane Popinet <popinet@basilisk.fr>**20140311075151
+ Ignore-this: 13abb414ae9c4830f943bf99059058e4
+] 
+[Axisymmetric metric.
+Stephane Popinet <popinet@basilisk.fr>**20140918083752
+ Ignore-this: 66a1e5f94b3c7cd99dca124c1fe3bf90
+] 
+[Dirichlet boundary conditions for staggered vector fields
+Stephane Popinet <popinet@basilisk.fr>**20131104165449
+ Ignore-this: 33fc11ec983b4ed50fcad49c637e050
+] 
+[timestep() function now uses a face velocity field
+Stephane Popinet <popinet@basilisk.fr>**20131202122533
+ Ignore-this: 2acd7fcf98c8f5c74c61732241ab2e6f
+] 
+[New 'vertex' keyword
+Stephane Popinet <popinet@basilisk.fr>**20140213104247
+ Ignore-this: 47f8dffbc466fe4a961aad60b61ccbc6
+] 
+[MPI test cases work (with static quadtrees only).
+Stephane Popinet <popinet@basilisk.fr>**20140902091242
+ Ignore-this: d25cd0a06764a15a8e8333f3dd6da569
+] 
+[New function timer_elapsed()
+Stephane Popinet <popinet@basilisk.fr>**20140515164346
+ Ignore-this: c8100b11caf312c8c3bccf459ba7c82b
+] 
+[Merge with main branch
+Stephane Popinet <popinet@basilisk.fr>**20140902075355
+ Ignore-this: f54a8fe719d6d648a165f3b3f7721546
+] 
+[Support for extensible scalar attributes
+Stephane Popinet <popinet@basilisk.fr>**20140515222926
+ Ignore-this: e34ec21159743f4dd6dd4091de0faff5
+] 
+[Ohmic conduction flux and Debye test case
+Jose Lopez-Herrera <jose.lopez.herrera.s@gmail.com>**20140516155930
+ Ignore-this: 46b3d23f5f8c2f0203dafe7c1c963825
+] 
+[Fixed stream.h doc
+Stephane Popinet <popinet@basilisk.fr>**20140525194254
+ Ignore-this: 9fa1eb41349a8ca7cdb9d0393e78c209
+] 
+[Links to electrohydro
+Stephane Popinet <popinet@basilisk.fr>**20140528160208
+ Ignore-this: 5aeb1504f03ad195c2be416e803ec53a
+] 
+[AUTHORS and COPYING files
+Stephane Popinet <s.popinet@gmail.com>**20130630223651
+ Ignore-this: c24db5eb012b2d09a8082157ff6d3020
+] 
+[Added checksum for failed tests
+Stephane Popinet <popinet@basilisk.fr>**20140603082141
+ Ignore-this: f1e2d2e62b77f4f6bda832691d26bfcf
+] 
+[Error checks for ssh connections in runtest
+Stephane Popinet <popinet@basilisk.fr>**20140429104215
+ Ignore-this: ce282f68d94bf8821792f83c46ae0c33
+] 
+[Duplicate tsp processes are killed
+Stephane Popinet <popinet@basilisk.fr>**20140403165950
+ Ignore-this: 53fc5026cfbfdf4e267efd72877761ab
+] 
+[Cleanup tsp PID
+Stephane Popinet <popinet@basilisk.fr>**20140404070957
+ Ignore-this: d3bf74ab618ed0bfa73e1b03f9f72a63
+] 
+[Cosmetics
+Stephane Popinet <popinet@basilisk.fr>**20140625135105
+ Ignore-this: 1df174d83d0de65406c64d813e69936b
+] 
+[Binary tree implementation
+Stephane Popinet <popinet@basilisk.fr>**20140710145957
+ Ignore-this: f1b0be63d97b3bbac6ff36302c25273d
+] 
+[Improved memory usage of Green-Naghdi solver
+Stephane Popinet <popinet@basilisk.fr>**20140719172638
+ Ignore-this: c46c039c891b81d20f8ebe3a2b695230
+] 
+[Well-balancing for Green-Naghdi
+Stephane Popinet <popinet@basilisk.fr>**20140718095114
+ Ignore-this: bad0275d5eb789570371018895649c2e
+] 
+[Fixed graphics of bar.c
+Stephane Popinet <popinet@basilisk.fr>**20140711122921
+ Ignore-this: b76738f1973c285cd753f047b138bdeb
+] 
+[Doc fixes
+Stephane Popinet <popinet@basilisk.fr>**20140711075847
+ Ignore-this: 3a0f54cc67d24add8159fe56d0397827
+] 
+[Simplified residul functions for generic multigrid
+Stephane Popinet <popinet@basilisk.fr>**20140714092452
+ Ignore-this: c7c50d03c5928d020bb7984773155718
+] 
+[More statistics for multigrid solver
+Stephane Popinet <popinet@basilisk.fr>**20131204193535
+ Ignore-this: 1941fa930676da98fe559d37c99be323
+] 
+[Green-Naghdi should now work in 2D
+Stephane Popinet <popinet@basilisk.fr>**20140710150755
+ Ignore-this: 41157e9d7dd676d411705326d8342bbe
+] 
+[Even more doc fixes
+Stephane Popinet <popinet@basilisk.fr>**20140625170138
+ Ignore-this: 82782b0d0ffb7813e3621fd1543ba3d6
+] 
+[Solitary wave on a beach
+Stephane Popinet <popinet@basilisk.fr>**20140710094734
+ Ignore-this: d13b69a62b913552cf0b40a0be138d7f
+] 
+[Unified soliton formulations
+Stephane Popinet <popinet@basilisk.fr>**20140710100424
+ Ignore-this: c1469874c339b8cc1e00c35cf3524b5c
+] 
+[Reference file for bar test case
+Stephane Popinet <popinet@basilisk.fr>**20140715124541
+ Ignore-this: 24c28d784b721ddc6c244beaa92045e5
+] 
+[Cleanup of conical.c
+Stephane Popinet <popinet@basilisk.fr>**20140715132719
+ Ignore-this: 35d74e551f12ac80e19cf03ad838f649
+] 
+[Fixes for conical test case
+Stephane Popinet <popinet@basilisk.fr>**20140715123225
+ Ignore-this: 43da9a3713885eaea4a59c03558e6168
+] 
+[Conical island test case with GN
+Stephane Popinet <popinet@basilisk.fr>**20140715105108
+ Ignore-this: 20ce2e1b8af935be4ecd43ca7625cc76
+] 
+[Wave propagation over a bar
+Stephane Popinet <popinet@basilisk.fr>**20140710140403
+ Ignore-this: 958602bd6816a5fecad19bdaec6d4503
+] 
+[Documentation fixes
+Stephane Popinet <popinet@basilisk.fr>**20140703124432
+ Ignore-this: 3af2feb749297c0118c3e14734850b87
+] 
+[Topographic terms for Green-Naghdi
+Stephane Popinet <popinet@basilisk.fr>**20140703093613
+ Ignore-this: e11a0855159e632119e73861cc7d616d
+] 
+[added BCG 89 in biblio
+Stephane Popinet <popinet@basilisk.fr>**20131029161131
+ Ignore-this: ada959ea90c57c5576a6953463e071aa
+] 
+[Doc fix
+Stephane Popinet <popinet@basilisk.fr>**20140626194130
+ Ignore-this: 1ef81a8b9d39b3bb5e2bdb7dda211b59
+] 
+[Simpler formulation for the Green-Naghdi solver.
+Stephane Popinet <popinet@basilisk.fr>**20140626140035
+ Ignore-this: e87b0253dc84dacb055c9ce21f7caaf7
+ 
+ This is based on Bonneton et al, 2011 rather than Le Métayer et al,
+ 2010 and is just an additional source term for the Saint-Venant
+ solver.
+] 
+[More doc fixes
+Stephane Popinet <popinet@basilisk.fr>**20140625165651
+ Ignore-this: 804344e050649e98cc6e4c6c01fb506b
+] 
+[Doc fixes for Green-Naghdi
+Stephane Popinet <popinet@basilisk.fr>**20140625164614
+ Ignore-this: feea9d654c2e9dd7670c8082088594b0
+] 
+[Green-Naghdi solver
+Stephane Popinet <popinet@basilisk.fr>**20140625161626
+ Ignore-this: cd5affbb3e2dc0857443ec691699a75a
+] 
+[Solitary wave overtopping a seawall test case
+Stephane Popinet <popinet@basilisk.fr>**20140703095638
+ Ignore-this: a5cfa79d63cc034c4d4a2802f0ad8a6c
+] 
+[Added reference to Harlow 1965
+Stephane Popinet <popinet@basilisk.fr>**20131107183425
+ Ignore-this: 6cc14952fe6ec2804eef461f01fc7484
+] 
+[Undular bore test case
+Stephane Popinet <popinet@basilisk.fr>**20140625144221
+ Ignore-this: 528fd4b94edcd6ede337dad71e26f83a
+] 
+[Lake-at-rest test case for Green-Naghdi
+Stephane Popinet <popinet@basilisk.fr>**20140718082506
+ Ignore-this: 88a51dfaf2a71bee65874f274de2c253
+] 
+[Cosmetics
+Stephane Popinet <popinet@basilisk.fr>**20140509185908
+ Ignore-this: 8451e528ee11be40225b76f6860d23ae
+] 
+[runtest launches gdb/gnuplot when used with the -catch option
+Stephane Popinet <popinet@basilisk.fr>**20140509190111
+ Ignore-this: 92f3d5e092ca289492a7d61b12e8eaa9
+] 
+[Fix for .ctst .tst remote runs
+Stephane Popinet <popinet@basilisk.fr>**20140403151042
+ Ignore-this: 86f94f64e1fefbb7b960e3bb1749a08
+] 
+[runtest ignores time differences on remote host
+Stephane Popinet <popinet@basilisk.fr>**20140221100752
+ Ignore-this: e79c4dae11779796804dfe67e71df3c3
+] 
+[Literate C plugins kills multiple running instances
+Stephane Popinet <popinet@basilisk.fr>**20140402205729
+ Ignore-this: e45dc27a1440b7126b26087b339c4f56
+] 
+[1D multigrid works with new implementation
+Stephane Popinet <popinet@basilisk.fr>**20140901160924
+ Ignore-this: acccba68c5cce8bd27688ddf530a29fa
+] 
+[1D multigrid implementation
+Stephane Popinet <popinet@basilisk.fr>**20140625094212
+ Ignore-this: 16b43aeaaedbff11357e087a848ec4c8
+] 
+[Spurious currents test case
+Stephane Popinet <popinet@basilisk.fr>**20140908152521
+ Ignore-this: 549afdcd4b2d587b6905ad2ae23c7f1c
+] 
+[Surface tension documentation
+Stephane Popinet <popinet@basilisk.fr>**20140909141530
+ Ignore-this: 3dac6dd41a8bc759ad614d377c623f04
+] 
+[Fixed links for src/README
+Stephane Popinet <popinet@basilisk.fr>**20140219084055
+ Ignore-this: 7345bb0db2193d921147eb42ad516585
+] 
+[Restructured source code doc
+Stephane Popinet <popinet@basilisk.fr>**20140217153901
+ Ignore-this: c2921b0afa35215059969257fe149387
+] 
+[Documentation on running and creating test cases
+Stephane Popinet <popinet@basilisk.fr>**20140208165447
+ Ignore-this: 61c21c63f0cd601871dfcee7664149b3
+] 
+[Link to all tests
+Stephane Popinet <popinet@basilisk.fr>**20140208090938
+ Ignore-this: 6b598ec899eb2aa9a2c8f7c27787c66d
+] 
+[Link to conservation law solver
+Stephane Popinet <popinet@basilisk.fr>**20140208142945
+ Ignore-this: daa59c7f60b75db9afac45fae2dfb00a
+] 
+[Documentation for output functions
+Stephane Popinet <popinet@basilisk.fr>**20140217151929
+ Ignore-this: 9f9b453822cee380db36e1e2007fd29a
+] 
+[Tracers are defined at t - dt/2
+Stephane Popinet <popinet@basilisk.fr>**20140908173703
+ Ignore-this: a613ce8e49a045bb013ba6863074a3e9
+] 
+[Curvature is only defined on the interface.
+Stephane Popinet <popinet@basilisk.fr>**20140908153821
+ Ignore-this: f893c9904f07b19dba9e741c1df48b
+ 
+ Face values of the curvature (for surface tension) only use values on
+ the interface.
+] 
+[Surface tension and drop oscillation test case
+Stephane Popinet <popinet@basilisk.fr>**20140903081846
+ Ignore-this: ce71b6d1d0f46b9da245c29b302c3251
+] 
+[All test cases pass with the new 5x5 stencil implementation
+Stephane Popinet <popinet@basilisk.fr>**20140901090129
+ Ignore-this: 4e1384dbb9d4d472a15f61f98b530297
+] 
+[Pressure BCs are tricky when adapting the mesh
+Stephane Popinet <popinet@basilisk.fr>**20140307195625
+ Ignore-this: eac479d311fd5c0ff2fd6aae28dbd856
+] 
+[rt.ref had been removed by mistake
+Stephane Popinet <popinet@basilisk.fr>**20140214204821
+ Ignore-this: e0bbdf2c61cf9537bb3b553ec4dac81c
+] 
+[Minor fixes for test cases
+Stephane Popinet <popinet@basilisk.fr>**20140513203110
+ Ignore-this: 39e93fba173e689d294c4974269a1d4
+] 
+[Dynamic allocation works with 5x5 stencils
+Stephane Popinet <popinet@basilisk.fr>**20140515164451
+ Ignore-this: 108c04063666096a0e49d003cec72068
+] 
+[Updated reference files
+Stephane Popinet <popinet@basilisk.fr>**20140515172022
+ Ignore-this: 299b1a5652aa2f61f5e8a493b084cd2b
+] 
+[Tsunami benchmark results on heyward
+Stephane Popinet <popinet@basilisk.fr>**20140516194501
+ Ignore-this: 5bbdece2b76dc5317270f74f991f6d51
+] 
+[Added benchmark results for 'mesu'
+Stephane Popinet <popinet@basilisk.fr>**20140123175812
+ Ignore-this: 9b9f1e677a116740925f503c25f296d3
+] 
+[Parallel tsunami benchmark
+Stephane Popinet <popinet@basilisk.fr>**20130725011538
+ Ignore-this: 7b9eb2ffeded01a3aa1f80bc8d853925
+] 
+[Tsunami benchmark
+Stephane Popinet <popinet@basilisk.fr>**20130724021534
+ Ignore-this: 56ca71111202508624371a16ce94f058
+] 
+[Adaptation/wavelets use the prolongation method
+Stephane Popinet <popinet@basilisk.fr>**20140519170912
+ Ignore-this: 2c2af108ddc688b40740a4db0c25e46
+] 
+[Fix for prolongation/refinement in conservation.h
+Stephane Popinet <popinet@basilisk.fr>**20140515165745
+ Ignore-this: ee6a126230c9d1b90c5f46366e00e6d1
+] 
+[Fix for prolongation/refinement in Saint-Venant
+Stephane Popinet <popinet@basilisk.fr>**20140515170820
+ Ignore-this: e1e1d8589b1a79616ba45fe892d1e8c4
+] 
+[Replaced zero() with none()
+Stephane Popinet <popinet@basilisk.fr>**20140512162442
+ Ignore-this: d882824f0424297294bd11c4cef93c0f
+] 
+[VOF fractions computation for 4-siblings BCs
+Stephane Popinet <popinet@basilisk.fr>**20140512174111
+ Ignore-this: 74befbedba9d5b45c9c3e6ea523422fd
+] 
+[Boundary conditions for halo prolongation are applied on all cells at
+Stephane Popinet <popinet@basilisk.fr>**20140512174827
+ Ignore-this: 67b46009c209dbdd5ed411a40c9e8951
+ the target depth
+] 
+[Face traversal uses pre-computed flags rather than retest
+Stephane Popinet <popinet@basilisk.fr>**20140514190553
+ Ignore-this: a1f6f52fec5b076b4ce86c5b2552a6f6
+] 
+[MPI face traversal
+Stephane Popinet <popinet@basilisk.fr>**20140514145532
+ Ignore-this: c532c6fdce5ec92858ecb1db24412b7b
+] 
+[Fixed missing active leaves
+Stephane Popinet <popinet@basilisk.fr>**20140512174243
+ Ignore-this: a2d9cedbf7f1a662704270c39cda5e93
+] 
+[MPI boundaries (almost) work with 5x5 stencil
+Stephane Popinet <popinet@basilisk.fr>**20140513205619
+ Ignore-this: 816d136924604d20fe43ddbe55f148a7
+ 
+ The "almost" is because non-local halos cannot use 5x5 stencils yet.
+] 
+[Height functions implementation
+Stephane Popinet <popinet@basilisk.fr>**20140801093520
+ Ignore-this: 917ff942ed7fb31935da769839f36732
+] 
+[Implementation of "4 siblings" halos
+Stephane Popinet <popinet@basilisk.fr>**20140509192701
+ Ignore-this: 335b26665c030758a673e0a94485f308
+ 
+ Always uses halo formed by groups of 4 siblings. This gives 5x5
+ stencils but with the flexibility to choose the number of ghost
+ layers. It also simplifies refinement and prepares the ground for
+ simpler MPI parallelism.
+] 
+[Tests do not use TRASH by default
+Stephane Popinet <popinet@basilisk.fr>**20140110081421
+ Ignore-this: a4202635802a27239b4496b1933c6732
+] 
+[Simplified quadtree foreachs
+Stephane Popinet <popinet@basilisk.fr>**20140503185355
+ Ignore-this: 46aa3486ef8ebcbfedbdf2acf1e9dbeb
+] 
+[Fixes for merge of 5x5 stencil
+Stephane Popinet <popinet@basilisk.fr>**20140507073244
+ Ignore-this: a4ecc34e41eae6d6cbb0fdbc6ae687b5
+] 
+[Fix for merge with stable branch
+Stephane Popinet <popinet@basilisk.fr>**20140506085049
+ Ignore-this: 246cdf84e89eb8214d5cbc219527073f
+] 
+[Cleaned up refine_none/coarsen_none
+Stephane Popinet <popinet@basilisk.fr>**20140506083702
+ Ignore-this: 99aab6aa09f1ea9bf75da35a69a40dfb
+] 
+[Support for local/remote cells
+Stephane Popinet <popinet@basilisk.fr>**20140507063627
+ Ignore-this: 102f1c45558b11099cc6fdfd25ef949a
+] 
+[Index file for tests
+Stephane Popinet <popinet@basilisk.fr>**20140208085718
+ Ignore-this: 8eed93a2fcb4d11e79f46c89c778bf8a
+] 
+[Fix for ghost cells neighbors in mpi_partitioning()
+Stephane Popinet <popinet@basilisk.fr>**20140504095113
+ Ignore-this: 11fdd35b63869af4f597acd20ec69185
+] 
+[Portable MPI source code generation
+Stephane Popinet <popinet@basilisk.fr>**20140505125842
+ Ignore-this: 4444e7aa5b430d72e800cd91f8d733f6
+] 
+[New '-events' option for qcc
+Stephane Popinet <popinet@basilisk.fr>**20131202122451
+ Ignore-this: b1e0a21da46f39f087722b1e3489103a
+] 
+[Option to use shasum on macosx
+Stephane Popinet <popinet@basilisk.fr>**20140210142959
+ Ignore-this: fbce79f9ee473002eea7bf0ee102c2fc
+] 
+[qcc is compiled using standard CC (not CC99)
+Stephane Popinet <popinet@basilisk.fr>**20140504080833
+ Ignore-this: 487ac01b1486aa7d33f327c810bba3e5
+ 
+ This allows decoupling between target compiler (e.g. mpicc) and code
+ generation.
+] 
+[Fixed qsort() function call in kdt
+Stephane Popinet <popinet@basilisk.fr>**20130712083626
+ Ignore-this: 92c1588c5255983c877c6705c6a21ae3
+] 
+[Fix for portability of signaling nans
+Stephane Popinet <popinet@basilisk.fr>**20131030073841
+ Ignore-this: 33a5d8a70e896ec7ffdd4b49231f0ddc
+] 
+[Doc for setting up a Basilisk server
+Stephane Popinet <popinet@basilisk.fr>**20140331191658
+ Ignore-this: ddf04a7bbbdc3758af275e73dba1caf2
+] 
+[qcc is compiled with C99
+Stephane Popinet <popinet@basilisk.fr>**20140430110711
+ Ignore-this: e648ae6ece178e62a345c30b8311672a
+ 
+ Otherwise "NaNs" are not supported (because the GNU_SOURCE flag is not taken
+ into account).
+] 
+[MPI reduction operations
+Stephane Popinet <popinet@basilisk.fr>**20140504172655
+ Ignore-this: e4e9bf339206af8540341460d7611984
+] 
+[MPI parallel restriction
+Stephane Popinet <popinet@basilisk.fr>**20140503183438
+ Ignore-this: 715ce1786032297461a25916bed01d1c
+] 
+[Simplified foreach_level_or_leaf()
+Stephane Popinet <popinet@basilisk.fr>**20140503174603
+ Ignore-this: cc6f483702a527524e1d74782defb75d
+] 
+[Parallel Z-indexing
+Stephane Popinet <popinet@basilisk.fr>**20140504073208
+ Ignore-this: 63d1a18802423abbf00be1af286e7c55
+] 
+[Support for MPI tests
+Stephane Popinet <popinet@basilisk.fr>**20140503192250
+ Ignore-this: 5ed9cd3742c1692218fb06de935e65bb
+] 
+[Killing gdb also kills the child process
+Stephane Popinet <popinet@basilisk.fr>**20140412130225
+ Ignore-this: ac0f808dc1e8c18aaecfe8a8122c3b75
+] 
+[GDB is used to catch runtime error
+Stephane Popinet <popinet@basilisk.fr>**20140331163720
+ Ignore-this: e5baf2c52cd041de0f440a77e85423e3
+] 
+[Remote jobs timeout after 1 hour
+Stephane Popinet <popinet@basilisk.fr>**20140330155557
+ Ignore-this: 916b9855820d2bfcbe72ba629b865fdd
+] 
+[Makefile.defs checksums both test.c and test.s
+Stephane Popinet <popinet@basilisk.fr>**20140402202111
+ Ignore-this: 2ff53f9a1dd5d19a017a1b594172baaa
+] 
+[Cleanup of warnings within Makefile
+Stephane Popinet <popinet@basilisk.fr>**20140217100133
+ Ignore-this: c879f0fefeeb8d2ad6070937769d0219
+] 
+[Makefile.deps depends on Makefile.tests
+Stephane Popinet <popinet@basilisk.fr>**20140221103858
+ Ignore-this: d1a35ec41fc3d17d23ebe5e9effdf887
+] 
+[Fixes for Makefile.defs (for wiki)
+Stephane Popinet <popinet@basilisk.fr>**20140330153450
+ Ignore-this: 25df7be8fb32e9498bec78d98a859b5
+] 
+[Improved support for inlined gnuplot
+Stephane Popinet <popinet@basilisk.fr>**20140402093622
+ Ignore-this: 26e210e37eca45005ee827c539071460
+] 
+[Removed .chksum
+Stephane Popinet <popinet@basilisk.fr>**20140310103745
+ Ignore-this: 9cd97d6c0f364d76eb36955899f2e3e3
+ 
+ The idea was to avoid failed tests being rerun when nothing has changed in
+ the code, but this didn't take into account more complex dependencies such
+ as compilation flags etc...
+] 
+[Better error status reporting in runtest
+Stephane Popinet <popinet@basilisk.fr>**20140214205053
+ Ignore-this: 70d898e1b36690cbba8e154967415a8f
+] 
+[Support for gnuplot in Literate C pages
+Stephane Popinet <popinet@basilisk.fr>**20140401110118
+ Ignore-this: 14eb242c7590a78ef4536a60aa757fc
+] 
+[Various improvements to 'runtest'
+Stephane Popinet <popinet@basilisk.fr>**20140214182002
+ Ignore-this: 760dc9ff85844ad6c85abe2aee762bc4
+] 
+[Improved support for remote execution
+Stephane Popinet <popinet@basilisk.fr>**20140214144049
+ Ignore-this: 386f6a3e83edf3b1d85ee43ed3aa3ebc
+] 
+[Renamed 'dotest' 'runtest' to fix conflict with wiki
+Stephane Popinet <popinet@basilisk.fr>**20131122153825
+ Ignore-this: 623aaa29992291a43b31fb60a62a00eb
+] 
+[Re-using assembly files breaks depency checking
+Stephane Popinet <popinet@basilisk.fr>**20131015191417
+ Ignore-this: 8f934ce26f1d60fa5e199320144788e4
+] 
+[Fix for incompatible function name and dash
+Stephane Popinet <s.popinet@gmail.com>**20130923065636
+ Ignore-this: d7253eca090280afead12df0af978af9
+] 
+[Compilation reuses assembly file if found
+Stephane Popinet <popinet@basilisk.fr>**20131004194937
+ Ignore-this: dc02c6b66aa53b8de8ffe73556360438
+] 
+[Improved dotest
+Stephane Popinet <popinet@basilisk.fr>**20130806002404
+ Ignore-this: baa2bada4dd9759548f05c6b654fb101
+] 
+[Massive restructuring for preliminary MPI implementation
+Stephane Popinet <popinet@basilisk.fr>**20140502192517
+ Ignore-this: 78dce91bd2a176b292fb7a7e99d9df17
+] 
+[update_cache() is now a macro
+Stephane Popinet <popinet@basilisk.fr>**20140304185650
+ Ignore-this: e42e1e423020becda8ddc1667ee6eca0
+] 
+[Boundary conditions can access (const) fields
+Stephane Popinet <popinet@basilisk.fr>**20140307143853
+ Ignore-this: dfaf6c77f882dd6bbc46546746f75b63
+] 
+[Fixed parsing of homogeneous BCs
+Stephane Popinet <popinet@basilisk.fr>**20140109161748
+ Ignore-this: 410c4b19f96e2e83f74db16f31706451
+] 
+[Fix for incorrect source list length in bcg.h
+Stephane Popinet <popinet@basilisk.fr>**20140414092423
+ Ignore-this: d7df63ce005f75eafb9ffc697408017d
+] 
+[run() method can be used with or without grid initialisation
+Stephane Popinet <popinet@basilisk.fr>**20140429084415
+ Ignore-this: bf0640e321a755b5b353941bcb8cdf13
+] 
+[main() is wrapped with init_solver()/free_solver()
+Stephane Popinet <popinet@basilisk.fr>**20140415092102
+ Ignore-this: b93eb81165a90591aabb9e81937cf349
+] 
+[Fix for memory leak in automatic variables
+Stephane Popinet <popinet@basilisk.fr>**20140303144507
+ Ignore-this: bf95a83796e91bc1bab74bd16a4a7be3
+] 
+[Events are dynamically registered
+Stephane Popinet <popinet@basilisk.fr>**20140414180329
+ Ignore-this: eebd3bf28c19d464bb7100530edb9eec
+] 
+[Fix for repeated end events
+Stephane Popinet <popinet@basilisk.fr>**20131108191015
+ Ignore-this: 5f277e433d307662b3ac6cab4ee1645a
+] 
+[Time 't' and iteration 'i' are constants in events
+Stephane Popinet <popinet@basilisk.fr>**20131206094520
+ Ignore-this: 84cf714506811e5086df97c003517eea
+] 
+[MPI implementation for leaf cells only
+Stephane Popinet <popinet@basilisk.fr>**20140221133306
+ Ignore-this: 6dbd77b90e528c50f227b00d90271377
+] 
+[qcc compiles with C89
+Stephane Popinet <popinet@basilisk.fr>**20140304185250
+ Ignore-this: 55cb2af20135168560773f418320ac05
+] 
+[Fix for constant fields
+Stephane Popinet <popinet@basilisk.fr>**20131125180829
+ Ignore-this: 5a59652e875ae62375ce9405efa386b5
+] 
+[Fix for variable argument calls with structures
+Stephane Popinet <popinet@basilisk.fr>**20131204115414
+ Ignore-this: f72f1a4f4cafc7017e9f3a368551426a
+] 
+[Fix for function calls with optional parameters
+Stephane Popinet <popinet@basilisk.fr>**20131127182939
+ Ignore-this: 2178b11eb5878ddfa3128a993a32c0d
+] 
+[Limited support for function parameters shadowing global fields
+Stephane Popinet <popinet@basilisk.fr>**20131202190233
+ Ignore-this: c9972b650fab448fabb722bb6edc62f4
+] 
+[Minor fix for maybe constants
+Stephane Popinet <popinet@basilisk.fr>**20131206203624
+ Ignore-this: e8a80e101f7acde81c99edc22a413672
+] 
+[Restructured foreach_halo..() traversals
+Stephane Popinet <popinet@basilisk.fr>**20140304195713
+ Ignore-this: 52f2950f3580500cd5b43b50f577d05e
+] 
+[Preliminary mpi implementation
+Stephane Popinet <popinet@basilisk.fr>**20140220091910
+ Ignore-this: 13d6e99bcb73d2ac933e267cc6601c51
+] 
+[Changed char to int in Cell
+Stephane Popinet <s.popinet@gmail.com>**20130624225542
+ Ignore-this: 2d49398ecb1af01883663ae77568c22a
+ 
+ Architectures such as IBM power6 seem to be incredibly sensitive to
+ data alignement. This small change lead to a x10 speed improvement on
+ the power6!
+] 
+[First version of 5x5 stencil
+Stephane Popinet <popinet@basilisk.fr>**20140506201215
+ Ignore-this: ca34b9e91d75e86445d19224197543b0
+] 
+[Replaced _n with NN to avoid conflict with some system libraries
+Stephane Popinet <s.popinet@gmail.com>**20130708055811
+ Ignore-this: d6a07e71bceaa327e7e867765a881ed2
+] 
+[Fix for _XOPEN_SOURCE feature test macro
+Stephane Popinet <popinet@basilisk.fr>**20140415151554
+ Ignore-this: 96ec2b9ce35fce27d7115e02ea254501
+] 
+[Config file for Mac OSX
+Stephane Popinet <popinet@basilisk.fr>**20131030120825
+ Ignore-this: e5276a17d4b9eb78bb68eb4bb2a08ea8
+] 
+[Simplified homogeneous boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20140501131803
+ Ignore-this: c175bb8280dac16eee9f2b95d01feee2
+] 
+[Fix for scoping of 'for (scalar s...'
+Stephane Popinet <popinet@basilisk.fr>**20131129143633
+ Ignore-this: 97761d2db65df21b22230966cbef8b70
+] 
+[Proper indentation of documentation comments
+Stephane Popinet <popinet@basilisk.fr>**20140331100939
+ Ignore-this: fa51f37c32eefb62b3272c1348b09c31
+] 
+[doc for conservation of elevation
+popinet <s.popinet@gmail.com>**20130625005445
+ Ignore-this: 88e1970ebe4bd4aceed1a9b02269a228
+] 
+[CFL check for VOF scheme
+Stephane Popinet <popinet@basilisk.fr>**20131202122631
+ Ignore-this: bbb4e24e6f898fcac4060c38cbd286d6
+] 
+[Generalised source terms for BCG scheme
+Stephane Popinet <popinet@basilisk.fr>**20140107110019
+ Ignore-this: e4b9d2d700c06881050f0fae6fb48fa6
+] 
+[Use SVG images instead of PNG
+Stephane Popinet <popinet@basilisk.fr>**20140213084203
+ Ignore-this: 62af1eb8667c79d75b0489258826f325
+] 
+[Figure for square geometry
+Stephane Popinet <popinet@basilisk.fr>**20131126175501
+ Ignore-this: 5ab56ce95a9e3a45a2653ee046f93ea3
+] 
+[Fix for conservation.h with openmp
+Stephane Popinet <popinet@basilisk.fr>**20140218144514
+ Ignore-this: 9a41052f04c2bb58470955fbb6a404a4
+] 
+[Documentation fixes for compressible solver
+Stephane Popinet <popinet@basilisk.fr>**20140303194104
+ Ignore-this: b497988bd82dfe8f8e24d234ede61815
+] 
+[Formatting fixes for explosion.c
+Stephane Popinet <popinet@basilisk.fr>**20140303194403
+ Ignore-this: faffe2713deeec2718e8b0bc5791eff
+] 
+[Additional 'density term' for the diffusion solver
+Stephane Popinet <popinet@basilisk.fr>**20140304161719
+ Ignore-this: 277dd3602fc5fed03d19d7348450a8ac
+] 
+[misprint at vof.h corrected
+jose.lopez.herrera.s@gmail.com**20140307222504
+ Ignore-this: 64b765c318a7d288a05fd17df4b82823
+] 
+[Hook for diffusion of tracers
+Stephane Popinet <popinet@basilisk.fr>**20140328142949
+ Ignore-this: 48e26c25daa6dab3bae5138c3c99ac79
+] 
+[New list_print() function
+Stephane Popinet <popinet@basilisk.fr>**20140509185106
+ Ignore-this: b8d20c682e409d33fa6e69f03581e51c
+] 
+[Fields now have a name
+Stephane Popinet <popinet@basilisk.fr>**20131207092412
+ Ignore-this: ad07873a016f3e387cbe891d1468797c
+] 
+[Methods for new scalars need to be properly (re)initialised
+Stephane Popinet <popinet@basilisk.fr>**20131202122334
+ Ignore-this: aac1f2150afd6d3f837cb7babd7f10b9
+] 
+[Origin() and size() methods
+Stephane Popinet <popinet@basilisk.fr>**20140429101339
+ Ignore-this: 5fec02556bd949a5e704a2bc6d5f7689
+] 
+[Removed parameters() function
+Stephane Popinet <popinet@basilisk.fr>**20140207181854
+ Ignore-this: 3443a5615a6a42452fc27682767286af
+ 
+ Just set the parameters in main() instead.
+] 
+[Consistent pressure boundary conditions for N-S solver
+Stephane Popinet <popinet@basilisk.fr>**20140310101741
+ Ignore-this: 8741ca8fb159ffa8c0ea71ac31280ca5
+] 
+[Changed 'density' to 'properties' in NS/centered.h
+Stephane Popinet <popinet@basilisk.fr>**20140109161650
+ Ignore-this: 303e18c5c02e6e8478adfdcaeda14dda
+] 
+[Several bug fixes for constant fields
+Stephane Popinet <popinet@basilisk.fr>**20140307194718
+ Ignore-this: 51246e1c6eda1b284e095c4629252565
+] 
+[foreach_dimension() should not rotate ghost cell indices
+Stephane Popinet <popinet@basilisk.fr>**20131128103151
+ Ignore-this: 1507cb2f591dbefefc1300bedfd19500
+] 
+[Gnuplot figures are included directly in explosion.c
+Stephane Popinet <popinet@basilisk.fr>**20140401114527
+ Ignore-this: 1d7cad3a2ddb54159664324c7dc7e4e6
+] 
+[Explosion test case for compressible gas dynamics
+Jose-Maria Fullana <fullana@ida.upmc.fr>**20140303182304
+ Ignore-this: 82fa02cdcbb09cfa9844c9af4e279ef4
+] 
+[Changed 'speed' tests into standard tests
+Stephane Popinet <popinet@basilisk.fr>**20130925103028
+ Ignore-this: faf6e0cb5e8707dae19bf067a2438a34
+] 
+[Inlined gnuplot plots
+Stephane Popinet <popinet@basilisk.fr>**20140402202215
+ Ignore-this: 9af90d02efa1d062b3ca935a381da3c5
+] 
+[Fixed links to images for stream.c
+Stephane Popinet <popinet@basilisk.fr>**20140113084814
+ Ignore-this: a6032d951d3ca2a4ab1518458fe5d4b3
+] 
+[The tolerance for the projection is the relative change in volume
+Stephane Popinet <popinet@basilisk.fr>**20140213100845
+ Ignore-this: d640ea272a88fb5e6b2d4542c66f5306
+ 
+ This is identical to the tolerance used in Gerris. Note that this is in
+ practice much larger than the previous version.
+] 
+[Projection takes timestep into account
+Stephane Popinet <popinet@basilisk.fr>**20140107110525
+ Ignore-this: adef61ea69198726493619fe9f66e8e6
+] 
+[Multigrid solver needs restriction for BCs on quadtrees
+Stephane Popinet <popinet@basilisk.fr>**20131212155119
+ Ignore-this: 57324468c66d88af01b7a6d3181f4fd3
+ 
+ Otherwise using inconsistent coarse values when interpolating on the fine
+ mesh can break convergence.
+] 
+[Generalised multigrid solver to lists of fields
+Stephane Popinet <popinet@basilisk.fr>**20131129143607
+ Ignore-this: d5e4095dc7652fe7c61102b9bc527975
+] 
+[Minor fix for Poisson solver
+Stephane Popinet <popinet@basilisk.fr>**20131113141728
+ Ignore-this: 3366d76d6ac9168e589c561d15e4624b
+] 
+[Documentation for centered N-S solver
+Stephane Popinet <popinet@basilisk.fr>**20140107110627
+ Ignore-this: 1c63190b0a62d2c055d884a22ab90d27
+] 
+[Fixed Pena reference
+Stephane Popinet <popinet@basilisk.fr>**20131108192559
+ Ignore-this: eb8c1e7513f01a2089b1797ca7045e70
+] 
+[Added Pena et al to biblio.
+Stephane Popinet <popinet@basilisk.fr>**20131108181707
+ Ignore-this: e42c0fe45839fad3c0bae6abe3ee9870
+] 
+[Added Kurganov references
+Stephane Popinet <popinet@basilisk.fr>**20131022110954
+ Ignore-this: dc23b2bbaf45d87af995b1761650f640
+] 
+[The MAC N-S solver only deals with unit density
+Stephane Popinet <popinet@basilisk.fr>**20140107165536
+ Ignore-this: fa759682f10d3d855c0d0621c7431976
+ 
+ This is consistent with the treatment of viscous terms. For variable density
+ Navier-Stokes one should use the centered N-S solver.
+] 
+[Check for hydrostatic balance in Poiseuille test case
+Stephane Popinet <popinet@basilisk.fr>**20140109083039
+ Ignore-this: 3e8c5d1ca9a6f4a9d4e9262cda1c9269
+] 
+[Inlined gnuplot plots
+Stephane Popinet <popinet@basilisk.fr>**20140403071945
+ Ignore-this: f51e41e4e20510d59e4773b2c5bbc554
+] 
+[Inlined gnuplot plots
+Stephane Popinet <popinet@basilisk.fr>**20140403075438
+ Ignore-this: 25e4a038b944404a2e4bd4b2e57e9d03
+] 
+[New Ginzburg-Landau example
+Stephane Popinet <popinet@basilisk.fr>**20140413041947
+ Ignore-this: aa87304d0c243e390e3f17150771a72e
+] 
+[Index for examples
+Stephane Popinet <popinet@basilisk.fr>**20140207184725
+ Ignore-this: 9d23b783d0184d7529f4158d1893ea13
+] 
+[Updated doc: examples are now in subdirectories
+Stephane Popinet <popinet@basilisk.fr>**20130725025718
+ Ignore-this: e50b55c8ee4256f99274f36b2c8ee33e
+] 
+[Improved example README
+popinet <s.popinet@gmail.com>**20130627060332
+ Ignore-this: 6a53e625d48d38221b65eea15561a3c6
+] 
+[Fixed image table
+Stephane Popinet <popinet@basilisk.fr>**20140410150336
+ Ignore-this: 2ffb46e5c660c0ef51b6061416def566
+] 
+[Simplified turbulence example
+Stephane Popinet <popinet@basilisk.fr>**20140414082610
+ Ignore-this: f3869a940c34efac5fdaf07cb84f0140
+] 
+[Decaying turbulence example
+Stephane Popinet <popinet@basilisk.fr>**20140412151846
+ Ignore-this: f8efe0be345cf397ded93aa87566653
+] 
+[Python support for scalar creation/deletion
+Stephane Popinet <popinet@basilisk.fr>**20140428185935
+ Ignore-this: 4d232bae6edae19272bab577cef791c7
+] 
+[Cleanup of python interface
+Stephane Popinet <popinet@basilisk.fr>**20140428102929
+ Ignore-this: f1a67ea73ef3aa42bd1f4ab260877108
+] 
+[Tests and examples do not use the obsolete parameters() function
+Stephane Popinet <popinet@basilisk.fr>**20140208114937
+ Ignore-this: f670f90e5a0b613fc5406859f14b7871
+] 
+[Modernised 'atmosphere' solver
+Stephane Popinet <popinet@basilisk.fr>**20131011171300
+ Ignore-this: 6f96c2d41bde3c6c910449bcf68ee9d8
+] 
+[Documented bump2D1.c test case
+Stephane Popinet <popinet@basilisk.fr>**20131023092751
+ Ignore-this: 3644bf973fc4d2da96f2307856cf3cc5
+] 
+[1D arterial flow test case
+Jose-Maria Fullana <fullana@ida.upmc.fr>**20131221153534
+ Ignore-this: 478d9fde59063874a0fdc621ed94a16b
+] 
+[Simplified source/pressure gradient for centered NS solver
+Stephane Popinet <popinet@basilisk.fr>**20131212220927
+ Ignore-this: 303d8b2b98d2e5e6642bf3ea55da1766
+] 
+[Pressure/acceleration correction is required before solving for viscous terms
+Stephane Popinet <popinet@basilisk.fr>**20131212141836
+ Ignore-this: 9ffafe05b4dc47c5be48d552676b1e7f
+] 
+[Exponential filtering for timestep.h
+Stephane Popinet <popinet@basilisk.fr>**20131211141349
+ Ignore-this: feb65b1d195b6297502caf8c7d8e1f4e
+ 
+ This smoothes the (increases) of the timestep over 10 iterations.
+] 
+[Acceleration terms for centered N-S solver
+Stephane Popinet <popinet@basilisk.fr>**20131208140312
+ Ignore-this: e52d59db4bc2ad8c0777d04323c6f2cb
+] 
+[Rayleigh-Taylor instability test case
+Stephane Popinet <popinet@basilisk.fr>**20131203153548
+ Ignore-this: eb566b9cd311554c8116b384239fa7cd
+] 
+[Re-ordered the events for the generic run() loop
+Stephane Popinet <popinet@basilisk.fr>**20131204193518
+ Ignore-this: d20142c38fc63f268c7b16cac16f88f1
+] 
+[Optional debugging messages for events
+Stephane Popinet <popinet@basilisk.fr>**20131024093159
+ Ignore-this: c119290400494ef0fa4f3342a717d9d7
+] 
+[Minor improvement for life.c
+Stephane Popinet <popinet@basilisk.fr>**20131107145832
+ Ignore-this: da22b8ff3df22d0e55877c96861d9abd
+] 
+[Doc for Conway's game of life
+Stephane Popinet <popinet@basilisk.fr>**20131107140831
+ Ignore-this: 4ebe2deb9e29503c0a545f271c1e680f
+] 
+[Conways' game of life
+Jose-Maria Fullana <fullana@ida.upmc.fr>**20131107102152
+ Ignore-this: a9968fbeea38e863f575240b47d34eaa
+] 
+[Support for variable viscosity
+Stephane Popinet <popinet@basilisk.fr>**20131202165715
+ Ignore-this: 4728152b5d32cddbab35550cf43d0333
+] 
+[Velocity field is defined from streamfunction in test cases (to ensure exact non-divergence)
+Stephane Popinet <popinet@basilisk.fr>**20131120110952
+ Ignore-this: 4b32b1aeab8882a6cff7c20044f8ea85
+] 
+[Fix for timestep computation from events
+Stephane Popinet <popinet@basilisk.fr>**20131113185418
+ Ignore-this: 282fcf35c6fe491bad317478922afc74
+] 
+[Documentation for reversed VOF advection test case
+Stephane Popinet <popinet@basilisk.fr>**20131127171930
+ Ignore-this: 11f66e2a8d8f915b9286eaddcc26b617
+] 
+[Preliminary implementation of implicit viscosity
+Stephane Popinet <popinet@basilisk.fr>**20131130114255
+ Ignore-this: 94a5e049c15fd90f3c87e28f833b8b8
+] 
+[Support for explicit automatic variables
+Stephane Popinet <popinet@basilisk.fr>**20131129123313
+ Ignore-this: f8ebcb19e03caa76c6aa37942b4a3ecc
+] 
+[Fractions computation takes optional arguments
+Stephane Popinet <popinet@basilisk.fr>**20131128210547
+ Ignore-this: b81f3546cf1a8fe70a213e4341b7f54
+] 
+[Replaced 'staggered' with 'face'
+Stephane Popinet <popinet@basilisk.fr>**20131128203841
+ Ignore-this: 758be0330ae6bba939833a784273ef61
+] 
+[Replaced 'maybe const' with '(const)'
+Stephane Popinet <popinet@basilisk.fr>**20131114150117
+ Ignore-this: fbada1cae04196da9086fb302bf47171
+] 
+[Documentation for volume fraction tests
+Stephane Popinet <popinet@basilisk.fr>**20131127130901
+ Ignore-this: 64c4ca1a30978858879e032c95961b16
+] 
+[Documentation for the VOF advection scheme
+Stephane Popinet <popinet@basilisk.fr>**20131127153438
+ Ignore-this: 943ca497f34fa969a23f0f47e635cef3
+] 
+[Documentation for fractions.h
+Stephane Popinet <popinet@basilisk.fr>**20131126212312
+ Ignore-this: 775c7497bb096aeed4fb14402c9839ce
+] 
+[Added figure for MAC solver
+Stephane Popinet <popinet@basilisk.fr>**20131107203704
+ Ignore-this: b597ee1d643a6e078bdcb163c88a7497
+] 
+[Documentation for geometry.h
+Stephane Popinet <popinet@basilisk.fr>**20131126175951
+ Ignore-this: 99a6d550d10ca98cdc331d3deeef4f59
+] 
+[Lid-driven cavity test case uses both the centered and the MAC N-S solver
+Stephane Popinet <popinet@basilisk.fr>**20131129125203
+ Ignore-this: c576a5d9a375cfd1ed8c268a4a56719c
+] 
+[Minor fix for lid plot
+Stephane Popinet <s.popinet@gmail.com>**20130307024606
+ Ignore-this: fd2e763a7ad4c198ab5a08021e32dc28
+] 
+[Renamed navier-stokes1.h navier-stokes/mac.h
+Stephane Popinet <popinet@basilisk.fr>**20131015123724
+ Ignore-this: 497d74426a58616d5f154003ac49932b
+] 
+[Formatting fixes for lid example
+Stephane Popinet <popinet@basilisk.fr>**20131104170424
+ Ignore-this: 51ac069bb8e87b963295bb4fc673d9d7
+] 
+[Documented vortex.c
+Stephane Popinet <popinet@basilisk.fr>**20140110105357
+ Ignore-this: 6a702805126c8a6dc5f1bce4a12ce36e
+] 
+[documented stream.c
+Stephane Popinet <popinet@basilisk.fr>**20140110111440
+ Ignore-this: 709d2e92be28f5b70fbdabcb02a2feba
+] 
+[Cleanup of python interface
+Stephane Popinet <popinet@basilisk.fr>**20140418050232
+ Ignore-this: 4b105dcbf1dd0f1199036254eac8d298
+] 
+[Numpy interface to interpolation functions
+Stephane Popinet <popinet@basilisk.fr>**20140417185922
+ Ignore-this: 13b2fd4dd6da61cff197903b57005e7c
+] 
+[Python interface overloads = to set the field function
+Stephane Popinet <popinet@basilisk.fr>**20140415191047
+ Ignore-this: 23a97f9ffeac46058dae465f013a20d
+] 
+[Several fixes for the python module
+Stephane Popinet <popinet@basilisk.fr>**20140416134723
+ Ignore-this: fcd3874635993f2648f0ed2a06086b58
+] 
+[Support for python modules
+Stephane Popinet <popinet@basilisk.fr>**20140415145822
+ Ignore-this: 2d9a526d98b95c52740021123984e992
+] 
+[qcc recognises typedef tags
+Stephane Popinet <popinet@basilisk.fr>**20131126141228
+ Ignore-this: 824921b9808740dc4817995024942148
+] 
+[Adaptive VOF test cases
+Stephane Popinet <popinet@basilisk.fr>**20131122152853
+ Ignore-this: bda6a34e9b0f56fca076a2af5b7fd7a5
+] 
+[Simplified and generalised predictor/corrector scheme
+Stephane Popinet <popinet@basilisk.fr>**20131221144544
+ Ignore-this: 6d4d3d25f599e2fe19ffdf36bcd2b6eb
+] 
+[Documented generic conservation laws scheme
+Stephane Popinet <popinet@basilisk.fr>**20131022110110
+ Ignore-this: 6dbf9c9adb6db85ff479ea9619d8351c
+] 
+[Fix for adaptivity and multiply-refined cells (due to 2:1 constraint)
+Stephane Popinet <popinet@basilisk.fr>**20131122154841
+ Ignore-this: 8a0b5b712ea71fe5a3abf4cb55b54746
+] 
+[Updated ponds test case reference
+Stephane Popinet <popinet@basilisk.fr>**20130928115049
+ Ignore-this: ebc052b0c50468117adb11ad6d2d5429
+] 
+[Divergence-free refinement for staggered vectors
+Stephane Popinet <popinet@basilisk.fr>**20131105145509
+ Ignore-this: 4f654e53a34438c6475d24906c63734e
+] 
+[VOF is adaptive
+Stephane Popinet <popinet@basilisk.fr>**20131120110736
+ Ignore-this: 43e74a5530a4c7c11a9eee85ce35ae31
+] 
+[qcc can generate standalone C source file
+Stephane Popinet <popinet@basilisk.fr>**20140214144021
+ Ignore-this: b74785d286f9d00294f5acc3f128dfe2
+] 
+[qcc switches off optimization when '-catch' is on
+Stephane Popinet <popinet@basilisk.fr>**20131107141913
+ Ignore-this: 23271a19ed2c2ccf781e2e62b431595b
+] 
+[Support for boundary conditions for local fields
+Stephane Popinet <popinet@basilisk.fr>**20131128191252
+ Ignore-this: 168e23852df22d4f19da0f91d1988898
+] 
+[Fix for overloading boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20131104133733
+ Ignore-this: d8cd252bed4144451f3afd5acd83b9d0
+] 
+[Support for global constant fields
+Stephane Popinet <popinet@basilisk.fr>**20131113173528
+ Ignore-this: 83507af9cb14627a8a9001762ee4601d
+] 
+[Fix for line number reporting in qcc
+Stephane Popinet <popinet@basilisk.fr>**20131115150703
+ Ignore-this: 37625f1e8b0cd14cfeb896a9c926a277
+] 
+[Fix for line numbers in foreach_face() etc...
+Stephane Popinet <popinet@basilisk.fr>**20131113173535
+ Ignore-this: b87fd7e87f055bf1dd960ee7cdf5f2b9
+] 
+[Fixes for foreach_child()
+Stephane Popinet <popinet@basilisk.fr>**20131120110833
+ Ignore-this: 71db4685da02b73adf61a49814b7d511
+] 
+[Fix for Point function declarations in qcc
+Stephane Popinet <s.popinet@gmail.com>**20130606225610
+ Ignore-this: 867a8e04ea3d9eb2c22b0b551353c302
+] 
+[Centered Navier-Stokes solver
+Stephane Popinet <popinet@basilisk.fr>**20131127130804
+ Ignore-this: 101d1495daa3d558e009dad65a278dfb
+] 
+[Documented tracer.h
+Stephane Popinet <popinet@basilisk.fr>**20131029163751
+ Ignore-this: d950aecd871e81706507074358980d2
+] 
+[Doc for run.h
+Stephane Popinet <popinet@basilisk.fr>**20131107145531
+ Ignore-this: 86d9e03d6ee5e72f6f572991efef69e6
+] 
+[Documentation for MAC Navier-Stokes solver
+Stephane Popinet <popinet@basilisk.fr>**20131107164037
+ Ignore-this: 25cc9144ae12aab9dfb174d420a81eca
+] 
+[Generic time loop for advection and N-S solver
+Stephane Popinet <popinet@basilisk.fr>**20131105184421
+ Ignore-this: 249a386c128043f96dcc20b4fbfe7bd1
+] 
+[Brusselator: example of reaction-diffusion equation
+Jose-Maria Fullana <fullana@ida.upmc.fr>**20131113184347
+ Ignore-this: fbb7f25b1d7941dd980acf6bce7a0107
+] 
+[Mixed Youngs-Centered normal
+Stephane Popinet <popinet@basilisk.fr>**20131118165006
+ Ignore-this: bacb50e4c92dee01b98042e12d95abbc
+] 
+[Shifted origin of VOF cells
+Stephane Popinet <popinet@basilisk.fr>**20131118144940
+ Ignore-this: eff4a3785f4e31cf2c69999fd5148266
+] 
+[Fraction initialisation
+Stephane Popinet <popinet@basilisk.fr>**20131116120334
+ Ignore-this: f1148ff96bf3adca41a8a08af5a824b1
+] 
+[VOF alternates sweep directions
+Stephane Popinet <popinet@basilisk.fr>**20131115162246
+ Ignore-this: 3f32958bc487572894fba66ad9a3cbc3
+] 
+[Time-reversed advection test case for VOF
+Stephane Popinet <popinet@basilisk.fr>**20131114204151
+ Ignore-this: 8ea2a8bef00ed07c68322e7f02ad365b
+] 
+[Cleaned up 'trash'
+Stephane Popinet <popinet@basilisk.fr>**20131115175251
+ Ignore-this: 6f49e5cbbf8960b4326e34cfb386c906
+] 
+[Test case for staggered adaptivity
+Stephane Popinet <popinet@basilisk.fr>**20131031153548
+ Ignore-this: d01ba71bb71bfdf9f0b06fc772d39c83
+] 
+[Restructured 'foreach_dimension'
+Stephane Popinet <popinet@basilisk.fr>**20131115160328
+ Ignore-this: 5a3f3167e82a62cbd9bcd9b2d521736d
+] 
+[Generalised Poisson-Helmholtz solver
+Stephane Popinet <popinet@basilisk.fr>**20131113125032
+ Ignore-this: 47d737c29b3aadfaea30d38a01e43da
+] 
+[More robust foreach() nesting
+Stephane Popinet <popinet@basilisk.fr>**20131031215744
+ Ignore-this: edac22fee603d695fc2a795c265a1a7e
+] 
+[Generalised Poisson solver to Poisson-Helmholtz
+Stephane Popinet <popinet@basilisk.fr>**20131031213259
+ Ignore-this: c1e4d8cd8dca49cffc828841859d2625
+] 
+[Replace 'delta' (grid spacing) with 'Delta'
+Stephane Popinet <popinet@basilisk.fr>**20131007133109
+ Ignore-this: 29404d284d3610f10adfa24800ba683d
+] 
+[Added missing staggered keywords
+Stephane Popinet <popinet@basilisk.fr>**20131031193929
+ Ignore-this: 9ffcfa42d0e3ed84ee88fd64a5a7bc11
+] 
+[Fix for 'scalar [ ]' syntax
+Stephane Popinet <s.popinet@gmail.com>**20130620040934
+ Ignore-this: 67a27a37f18ed8200fae7b980cba4d28
+] 
+[Documented BCG scheme
+Stephane Popinet <popinet@basilisk.fr>**20131029181209
+ Ignore-this: 9118df20ddab1a4981ca10fb1f649528
+] 
+[Support for staggered boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20131031164416
+ Ignore-this: 7bc136233e5fd955ecaa4f606a20e9f1
+] 
+[Generic Poisson solver interface
+Stephane Popinet <popinet@basilisk.fr>**20131020190708
+ Ignore-this: 20d576714421cf6b2584e5596a3cbe6f
+] 
+[Documentation for the Poisson solvers
+popinet <popinet@basilisk.fr>**20131015164556
+ Ignore-this: ab7a8dee1e1d084be5a1cc25d84fca7
+] 
+[Documentation for Hele-Shaw flow solver
+Stephane Popinet <popinet@basilisk.fr>**20131015173600
+ Ignore-this: 55840da70d18075858563d2fabc42d9a
+] 
+[Hele-Shaw solver works with adaptivity
+Stephane Popinet <popinet@basilisk.fr>**20131013080640
+ Ignore-this: 2d85ac5933cd50c8da470743bd392e92
+] 
+[qcc trick for static FILE pointers
+Stephane Popinet <popinet@basilisk.fr>**20131011175913
+ Ignore-this: 3227de99b9b78310a24be190f71ba3fd
+] 
+[Test case for variable-resolution, variable-coefficients Poisson equation
+Stephane Popinet <popinet@basilisk.fr>**20131011193253
+ Ignore-this: 198fc0f6c1a558bfc8dab14701041259
+] 
+[Solver for systems of conservation laws works in 2D
+Stephane Popinet <popinet@basilisk.fr>**20131022085413
+ Ignore-this: 3afe3022851e9a73441277955f8d643d
+] 
+[Generalised MAC Navier-Stokes solver to variable density
+Stephane Popinet <popinet@basilisk.fr>**20131024144812
+ Ignore-this: d1da1cc355bdfbcd92b7258f5467a822
+] 
+[Documented advection solver
+Stephane Popinet <popinet@basilisk.fr>**20131029162941
+ Ignore-this: 6caedcbb36c9157b3d34076caa7d06e6
+] 
+[More flexible tracer advection
+Stephane Popinet <popinet@basilisk.fr>**20131024101448
+ Ignore-this: 3eb0a020791255d798be2e714799317
+] 
+[Simplified velocity from streamfunction
+Stephane Popinet <popinet@basilisk.fr>**20131015191421
+ Ignore-this: 1bb2f8b9d86db1ccbc1901ee2555ee7f
+] 
+[Documented the streamfunction--vorticity solver.
+Stephane Popinet <popinet@basilisk.fr>**20131015150642
+ Ignore-this: 91c382fcac38a4a8f0f8896c9337181a
+] 
+[Function for 'new staggered vector'
+Stephane Popinet <popinet@basilisk.fr>**20131102110424
+ Ignore-this: a7a4ca4a548ea51887e11ba5273ad81e
+] 
+['end' events
+Stephane Popinet <popinet@basilisk.fr>**20131105170456
+ Ignore-this: 57aac9032a0e0c4ff9b1c49517f28574
+] 
+[Simplified initial conditions for various solvers
+Stephane Popinet <popinet@basilisk.fr>**20131011171206
+ Ignore-this: a1026281bd954abb1c909ed5f49c6f3d
+] 
+[added references
+Stephane Popinet <s.popinet@gmail.com>**20130704003606
+ Ignore-this: ece8df73e8e77823aca94670c20e0a0e
+] 
+[bibtex references
+Stephane Popinet <s.popinet@gmail.com>**20130704001543
+ Ignore-this: 105ba9a34af43c91065d110c7c161def
+] 
+[Adaptive advection test case
+Stephane Popinet <popinet@basilisk.fr>**20131004082115
+ Ignore-this: 2e34f0834b68d9ac7fa78d07ab6400b8
+] 
+[Hele-Shaw flow solver and example
+Stephane Popinet <popinet@basilisk.fr>**20131010105651
+ Ignore-this: aa017040a7c064795c5f0a56780d5616
+] 
+[Multigrid solver for Poisson equation with variable coefficients
+Stephane Popinet <popinet@basilisk.fr>**20131009113501
+ Ignore-this: 9481a693e3fe451ed20c939563e10d62
+] 
+[Explicit initialisation of mgstats structure
+Stephane Popinet <popinet@basilisk.fr>**20131007143210
+ Ignore-this: 64068afad0b0679ad4e6459da2f429ad
+] 
+[Automatic homogeneous boundary conditions for Poisson solver
+Stephane Popinet <popinet@basilisk.fr>**20131009074922
+ Ignore-this: 34714edf0e6d3917faa6061035fa515e
+] 
+[Test case for Poisson equation with variable coefficients
+Stephane Popinet <popinet@basilisk.fr>**20131009100849
+ Ignore-this: 6de90f90fe63acd05147921c1932e9c
+] 
+[Much simplified streamfunction/vorticity Navier-Stokes solver
+Stephane Popinet <popinet@basilisk.fr>**20131010105655
+ Ignore-this: 3cb75c9a4ac44110be3f1980a36b2349
+] 
+[Further portability improvements for Event "arrays"
+Stephane Popinet <s.popinet@gmail.com>**20130619223724
+ Ignore-this: f75eb9275bf9eb1f4b49e37e0f142dfa
+] 
+[Streamfunction/vorticity Navier-Stokes solver (adaptive of course)
+Stephane Popinet <popinet@basilisk.fr>**20131006151020
+ Ignore-this: d0aa11b0528b387cf3af23976a2806e8
+] 
+[Generic Poisson solver and BCG scheme
+Stephane Popinet <popinet@basilisk.fr>**20131007124440
+ Ignore-this: faa9b94ee15549ada16a275f88f1db50
+] 
+[output_ppm() uses standard deviation to autoscale
+Stephane Popinet <s.popinet@gmail.com>**20130604064219
+ Ignore-this: b0ab7d26436f9ab0799c475237138d33
+] 
+[Adjusted precision of test cases references
+Stephane Popinet <s.popinet@gmail.com>**20130624233936
+ Ignore-this: a0c3430618f3104e66368d2ce45419b8
+] 
+[Initial VOF implementation
+Stephane Popinet <popinet@basilisk.fr>**20131114203604
+ Ignore-this: 658f79a3eca616a51e8a96c9a59f8564
+] 
+[VOF rotation test case
+Stephane Popinet <popinet@basilisk.fr>**20131116121707
+ Ignore-this: b3475e56b2a608d319cb57ec1ab00e54
+] 
+[Fractions from geometry
+Stephane Popinet <popinet@basilisk.fr>**20131116135406
+ Ignore-this: b392aae0f02228da0155ac34b681d9d2
+] 
+[Default for outputs is stdout
+Stephane Popinet <popinet@basilisk.fr>**20131120110757
+ Ignore-this: f925c311a0c5851c44086b5fd7b3481b
+] 
+[output_grd()
+Emily Lane <Emily.Lane@niwa.co.nz>**20130623224454
+ Ignore-this: b52ba47fd31bf164226407f0394e3589
+] 
+[Improved FPE debugging
+Stephane Popinet <popinet@basilisk.fr>**20140506175239
+ Ignore-this: 62e3377d43c79302041a234008fe540b
+] 
+[clarified tutorial for catching FPEs
+Stephane Popinet <popinet@basilisk.fr>**20130805235657
+ Ignore-this: f93683426c691f121087fc394a8e7ddd
+] 
+[Doc on tracking FPE
+Stephane Popinet <popinet@basilisk.fr>**20130710224057
+ Ignore-this: c20ea9be71fe8217d3e860ae774496a0
+] 
+[The advection scheme is adaptive
+Stephane Popinet <popinet@basilisk.fr>**20131004103928
+ Ignore-this: 5d67cc2e07afd5a4045e51aa5c69057c
+] 
+[Cleaned up boundary conditions in Navier-Stokes
+Stephane Popinet <popinet@basilisk.fr>**20130928132015
+ Ignore-this: c8f40a90a38a4468424549443fc28c0a
+] 
+[Generalisation of boundary_tangent() to quadtrees
+Stephane Popinet <popinet@basilisk.fr>**20130930194603
+ Ignore-this: b2e27749f8b9704ddd858df1cb69f1aa
+] 
+[Generalisation of foreach_vertex() to quadtrees.
+Stephane Popinet <popinet@basilisk.fr>**20130930085652
+ Ignore-this: ba09ff8715d5a539507dd99df72ac591
+] 
+[Some compilers (i.e. xlc) bug when combining C99 for loops and openmp
+Stephane Popinet <popinet@basilisk.fr>**20130724234507
+ Ignore-this: 1703b8bb6c9af1d5f4bf2944f2e7f96a
+] 
+[New method boundary_tangent()
+Stephane Popinet <popinet@basilisk.fr>**20130926133810
+ Ignore-this: 79076bbc51af2fd11f021429af0eb752
+] 
+[Updated ponds test case reference
+Stephane Popinet <popinet@basilisk.fr>**20130925113147
+ Ignore-this: 1e0e63ad9ae87f8c73a55e323846a063
+] 
+[Generalisation/simplification of Navier-Stokes solver using new iterator 
+Stephane Popinet <popinet@basilisk.fr>**20130928105458
+ Ignore-this: 94ae5a56e09bfc53c4807fd4e9167aac
+ foreach_vertex()
+] 
+[Fixed dimensioning of 'delta'
+Stephane Popinet <s.popinet@gmail.com>**20130703053118
+ Ignore-this: 4025b2cce824efcbf2c90cecc3ca137
+] 
+[Remote tests are run in the background
+Stephane Popinet <popinet@basilisk.fr>**20130711025412
+ Ignore-this: 36fb2182c5d66944d8b1848b50818a49
+] 
+[Tests live in their own directory
+Stephane Popinet <popinet@basilisk.fr>**20130710092221
+ Ignore-this: 42978581b4b924bf617aea2cf881757
+] 
+[Option to exclude .c files from tests
+Stephane Popinet <s.popinet@gmail.com>**20130627044953
+ Ignore-this: 97defaaa7b49bdc975d2d090cbbd404e
+] 
+[make ppm2mpeg executable
+Stephane Popinet <s.popinet@gmail.com>**20130702040812
+ Ignore-this: ee63d4186916d89a20532fe26709f1fe
+] 
+[Commented tsunami.plot
+Stephane Popinet <s.popinet@gmail.com>**20130701211737
+ Ignore-this: 1aacfb9ac0bc879aa0059c97f9221ca2
+] 
+[Added images to tsunami doc
+popinet <s.popinet@gmail.com>**20130628025603
+ Ignore-this: fe3826b9ad452cf48cdcd204b7373270
+] 
+[documented laplacian.c test case
+popinet <s.popinet@gmail.com>**20130702002055
+ Ignore-this: f954059f193306b36cf17a3420c19840
+] 
+[Minor plotting changes
+popinet <s.popinet@gmail.com>**20130702002123
+ Ignore-this: 66d63d3944b79b61a40530242092c2fb
+] 
+[Added movies
+popinet <s.popinet@gmail.com>**20130702035235
+ Ignore-this: 3926c88a92472d3076590e23eec813c7
+] 
+[Minor fix for lid-driven cavity plot
+Stephane Popinet <s.popinet@gmail.com>**20130702231139
+ Ignore-this: 56dce75166f38271e70d618246717636
+] 
+[documented lid-driven cavity test
+popinet <s.popinet@gmail.com>**20130702231058
+ Ignore-this: bf90de343029d2477e3296ea46482f3b
+] 
+[Makefile uses md5sum to check for changes in executables
+Stephane Popinet <popinet@basilisk.fr>**20130706043003
+ Ignore-this: f5d6f62a037b5af156ec432c3868499f
+ 
+ This allows ignoring changes in formatting, comments etc... and avoids
+ rebuilding/reruning the tests.
+ 
+] 
+[qcc enables FPE when _GNU_SOURCE is set
+Stephane Popinet <popinet@basilisk.fr>**20130705051745
+ Ignore-this: ab17be9149bf4fd46652162e119043a5
+] 
+[qcc does not process system header files
+Stephane Popinet <s.popinet@gmail.com>**20130621071158
+ Ignore-this: e09d753baa43c81bf49a224127b7223f
+] 
+[Checks for vanishing timestep
+Stephane Popinet <s.popinet@gmail.com>**20130510014412
+ Ignore-this: 3e91101cfe34e04e822f1a9cc988d056
+] 
+[New @def keyword for multiline macros
+Stephane Popinet <s.popinet@gmail.com>**20130620010103
+ Ignore-this: 5c0a3751a2642c8e720fa3137282bc4c
+] 
+[More portable script for generating Makefile.tests
+Stephane Popinet <s.popinet@gmail.com>**20130705033043
+ Ignore-this: 730de5821d2f151160b860413db2c6c4
+] 
+[Makefile.tests is required in src/
+Stephane Popinet <s.popinet@gmail.com>**20130627024541
+ Ignore-this: 646f9ae0a5e5b2f5a360071ab04cfd6a
+] 
+[Restructured/generalised Makefile.defs
+Stephane Popinet <s.popinet@gmail.com>**20130627001523
+ Ignore-this: 16548d4093aff435f7e77c20a7ae387
+] 
+[Dependencies fix
+Stephane Popinet <s.popinet@gmail.com>**20130523231529
+ Ignore-this: 9457124fc8a6ed1ca43244a16864498
+] 
+[Updated INSTALL and README
+Stephane Popinet <s.popinet@gmail.com>**20130607020031
+ Ignore-this: 89367bbc9d7bf3e9bb3c516ccdef44a9
+] 
+[qcc can create tag files
+Stephane Popinet <s.popinet@gmail.com>**20130618020904
+ Ignore-this: c1731022202e2c28b6fa02e1ac1774cb
+] 
+[Stricter code blocks syntax
+Stephane Popinet <s.popinet@gmail.com>**20130610054629
+ Ignore-this: d78193b152662ad1a216be9728de1418
+] 
+[Tsunami example documentation
+Stephane Popinet <s.popinet@gmail.com>**20130618061203
+ Ignore-this: a07415ad4fcf3c923e6aedcc8b1ed64
+] 
+[Option for iterative Okada fault reconstruction
+Stephane Popinet <s.popinet@gmail.com>**20130608211914
+ Ignore-this: 48dfb17f879ce79a2bed0a0892d7029b
+] 
+[Simplified syntax for functions with struct arguments
+Stephane Popinet <s.popinet@gmail.com>**20130527210648
+ Ignore-this: 4e28212d1e044855692e0d3eb860e7a6
+] 
+[Faults are dynamically refined in tsunami example
+Stephane Popinet <s.popinet@gmail.com>**20130607215820
+ Ignore-this: d0f54c7457c5691b60ed9942ab309494
+] 
+[Improved portability
+Stephane Popinet <s.popinet@gmail.com>**20130619051359
+ Ignore-this: c41b037b3b89745a6728afd5ee00b0b3
+ 
+ For fussy compilers such as xlc.
+] 
+[Option for dynamic of static memory allocation in quadtree
+Stephane Popinet <s.popinet@gmail.com>**20130608035020
+ Ignore-this: f88e12020ec79a09902a5f2f6d3052a2
+] 
+[Improved and simplified wavelet adaptivity
+Stephane Popinet <s.popinet@gmail.com>**20130607011322
+ Ignore-this: a54fbad5a792875c6c815882de533b86
+] 
+[Leaf cache
+Stephane Popinet <s.popinet@gmail.com>**20130607235148
+ Ignore-this: 5fb7414e05883f15a507563bc223246f
+] 
+[Dynamic data allocation for quadtree grid
+Stephane Popinet <s.popinet@gmail.com>**20130607215929
+ Ignore-this: 142d774bc5c40ae043824fcb43840b23
+] 
+[new doc format
+popinet <s.popinet@gmail.com>**20130613104959
+ Ignore-this: 1d4d67e39161b1686bc15634540d8559
+] 
+[doc for radiation BC and gauges
+popinet <s.popinet@gmail.com>**20130610051946
+ Ignore-this: ba0f510b8aade6aeb0d5d64ad2f8acf0
+] 
+[Various documentation fixes
+popinet <s.popinet@gmail.com>**20130610044633
+ Ignore-this: 74ababdc415cfda63b2d2f6ad01bf023
+] 
+[Improved documentation
+Stephane Popinet <s.popinet@gmail.com>**20130610021737
+ Ignore-this: bbcee349ff378b85a4d9a9ba1a019dfc
+] 
+[Portability improvements for the Portland compiler
+Stephane Popinet <s.popinet@gmail.com>**20130624011511
+ Ignore-this: 41cc97f35252b0604d52d7d4b4eb6292
+] 
+[Source code now lives in /src
+Stephane Popinet <popinet@users.sf.net>**20130609051709
+ Ignore-this: d1d6b34d31e9ea017410cd546f9726e8
+] 
+[Preliminary VTK export function
+Stephane Popinet <s.popinet@gmail.com>**20130523231404
+ Ignore-this: 3708769fce4a3ae32cdf8eca66b05854
+] 
+[Tide example
+Stephane Popinet <s.popinet@gmail.com>**20130604051846
+ Ignore-this: ad653b836daf4923bcd223d43fde5624
+] 
+[output_ppm() uses OpenMP parallelism
+Stephane Popinet <s.popinet@gmail.com>**20130604003009
+ Ignore-this: d7b82aed68e8e0f4e2d80768ab526667
+] 
+[Masking option for output_ppm()
+Stephane Popinet <s.popinet@gmail.com>**20130603232329
+ Ignore-this: 9473d8f653f6fc373de616a1247e42a9
+] 
+[Tide gauges plot for tsunami example
+Stephane Popinet <s.popinet@gmail.com>**20130531031047
+ Ignore-this: 3a67b07014f596a2bf049afc9e4a5fa6
+] 
+[Support for 'literate programming'
+Stephane Popinet <s.popinet@gmail.com>**20130610022313
+ Ignore-this: 476a686964a1de1b60295777925b7f9c
+] 
+[qcc processes include files in grid headers
+Stephane Popinet <popinet@users.sf.net>**20130420011733
+ Ignore-this: ccc1d53b915f1518cc0e828f2f3bee2b
+] 
+[qcc uses pre-processed file
+Stephane Popinet <s.popinet@gmail.com>**20130602094339
+ Ignore-this: c791886f8c9a83e7d9e36a565cee93f8
+] 
+[Configuration for the Intel compiler
+Stephane Popinet <s.popinet@gmail.com>**20130527030050
+ Ignore-this: 4b82c81295d683bdb82b723aaf6e0017
+] 
+[Events are named
+Stephane Popinet <s.popinet@gmail.com>**20130531045343
+ Ignore-this: 4418402da59486cfdc89b361de223b5c
+] 
+[Better error reporting for events
+Stephane Popinet <s.popinet@gmail.com>**20130501061034
+ Ignore-this: e7b7da2a404e401c2182a23b631fb75c
+] 
+[Wave gauges
+Stephane Popinet <s.popinet@gmail.com>**20130531022646
+ Ignore-this: 2ed6878a9b6a1e99e94ed18d9012c67c
+] 
+[Compiler support for assigments in function calls
+Stephane Popinet <s.popinet@gmail.com>**20130527050038
+ Ignore-this: 1bcc0e1327227b42696a8cab066ba04a
+] 
+[Okada fault model
+Stephane Popinet <s.popinet@gmail.com>**20130526234349
+ Ignore-this: 5762ed50e9418c5de6a3b261ad7fe0f8
+] 
+[New 'exe' target to separate compilation and runs
+Stephane Popinet <s.popinet@gmail.com>**20130619225104
+ Ignore-this: 22e6f3b82b1703490063fef55bcb72b2
+] 
+[interpolate() takes field staggering into account
+Stephane Popinet <popinet@basilisk.fr>**20130928093821
+ Ignore-this: 3b2e1f1585280f925ceb514ba78c9310
+] 
+[Saint-Venant solver uses auxilliary variable 'eta'
+Stephane Popinet <s.popinet@gmail.com>**20130531013755
+ Ignore-this: a2dda7d8d42dc2937c422c12fcea026a
+] 
+[Adaptivity for tsunami example
+Stephane Popinet <s.popinet@gmail.com>**20130527234335
+ Ignore-this: 3fb94fafc4af8a02ef48cf69dc93fa2
+] 
+[output_ppm()
+Stephane Popinet <s.popinet@gmail.com>**20130525055147
+ Ignore-this: 123d582f8154a41bd97209353cebfff6
+] 
+[Terrain works with openmp
+Stephane Popinet <s.popinet@gmail.com>**20130526233706
+ Ignore-this: 5764dc0a3915d85d56b4670f8f83f573
+] 
+[Generalised Makefile.defs
+Stephane Popinet <s.popinet@gmail.com>**20130526223804
+ Ignore-this: b448761828614196d2115bdbc5017da5
+] 
+[Tide gauges for tsunami example
+Stephane Popinet <s.popinet@gmail.com>**20130527011115
+ Ignore-this: ab19c896243aaaeb611e9de31da902f2
+] 
+[2004 tsunami example
+Stephane Popinet <s.popinet@gmail.com>**20130525060339
+ Ignore-this: f863bdde863916cd7f8153bb1d833e4b
+] 
+[Lake-at-rest for variable resolution
+Stephane Popinet <s.popinet@gmail.com>**20130529044909
+ Ignore-this: 6eaa8ed33f338b838d6f9ec0a2f0acb9
+] 
+[Lake-at-rest with an emerging island
+Stephane Popinet <s.popinet@gmail.com>**20130523072410
+ Ignore-this: f1abf8b1396d6376e2a503a2c7b87f4e
+] 
+[Conical island test case uses adaptivity with elevation reconstruction
+Stephane Popinet <s.popinet@gmail.com>**20130523232214
+ Ignore-this: e86fe4b0593b0f5b89c579ccd9287c5b
+] 
+[Balanced 2nd-order bathymetry reconstruction for Saint-Venant
+Stephane Popinet <s.popinet@gmail.com>**20130523081826
+ Ignore-this: 1667b94a44e1704dc78b62120f0fb85f
+] 
+[Terrain module works (water-depth conservation mode only)
+Stephane Popinet <s.popinet@gmail.com>**20130522012647
+ Ignore-this: e8b2d302ff05a8142772082fa90feb11
+] 
+[Clearer Makefile configuration
+Stephane Popinet <s.popinet@gmail.com>**20130516213701
+ Ignore-this: 56c6d24dc46106c3520d40eb62cc9d1b
+] 
+[Minor makefile improvements
+Stephane Popinet <s.popinet@gmail.com>**20130509022317
+ Ignore-this: 2fbf0741594c4d632c293a28a25f9e2b
+] 
+[Added etags in Makefile
+Stephane Popinet <s.popinet@gmail.com>**20130306231811
+ Ignore-this: 869210df071ece740905a196b0dc0392
+] 
+[Preliminary KDT terrain implementation
+Stephane Popinet <s.popinet@gmail.com>**20130517050626
+ Ignore-this: 773a50e0321b593a23671aee9c0775ec
+] 
+[Reformulation of generic predictor/corrector scheme
+Stephane Popinet <s.popinet@gmail.com>**20130521081405
+ Ignore-this: 35f785ad5a5e5fc53ad62d713f65ec79
+] 
+[Parallel reduction for foreach_face()
+Stephane Popinet <s.popinet@gmail.com>**20130517025951
+ Ignore-this: 921f787c302bc81104dcf020defa2e3a
+] 
+[Use a flux-form formulation for Saint-Venant (rather than tendencies)
+Stephane Popinet <s.popinet@gmail.com>**20130521045356
+ Ignore-this: 510f3aad72bea416bc94f6ca684ba831
+ 
+ The main reason for this change is that the flux-form formulation
+ parallelises easily, which is not the case for the previous
+ "tendencies" formulation which requires concurrent access to
+ tendencies. This is unfortunate since the tendencies formulation is
+ significantly simpler (in serial) and uses less memory.
+] 
+[New function foreach_child()
+Stephane Popinet <s.popinet@gmail.com>**20130513094147
+ Ignore-this: 4ca71728454f4b0562e4bc312f096a31
+] 
+[Runup on a conical island
+Stephane Popinet <s.popinet@gmail.com>**20130522082339
+ Ignore-this: d021c49f23545bb06345a728f5a92354
+] 
+[Generic predictor/corrector time-integration
+Stephane Popinet <s.popinet@gmail.com>**20130517012554
+ Ignore-this: c18ac61e3d4c0fa36e0189aed9966d
+] 
+[Solver for system of conservation laws uses a central-upwind formulation
+Stephane Popinet <s.popinet@gmail.com>**20130515003546
+ Ignore-this: 38ab1721042fec6eb9e63c09fc083a53
+] 
+[Generalised use of automatic variables
+Stephane Popinet <s.popinet@gmail.com>**20130516064412
+ Ignore-this: 82fb0d3400c36cdcc086d0f1bd4df14e
+] 
+[Automatic fields
+Stephane Popinet <s.popinet@gmail.com>**20130516024845
+ Ignore-this: 3309595a0de622577089f96a52fa5b95
+] 
+[Various fixes for dynamic field allocation
+Stephane Popinet <s.popinet@gmail.com>**20130515052456
+ Ignore-this: 931376ccbd162ffcab4eeb70a4236316
+] 
+[Dynamic scalar allocation
+Stephane Popinet <s.popinet@gmail.com>**20130514231828
+ Ignore-this: 6f78a99be79408169a05b9092aecff1a
+] 
+[Simplified list syntax
+Stephane Popinet <s.popinet@gmail.com>**20130512235516
+ Ignore-this: 9bf2bdfafaab2cac75390953468d142e
+] 
+[More flexible scalar lists
+Stephane Popinet <s.popinet@gmail.com>**20130511134406
+ Ignore-this: 6924e578708087e62620da3e67957b6c
+] 
+[Syntax for scalar methods
+Stephane Popinet <s.popinet@gmail.com>**20130513021458
+ Ignore-this: d6c607f6a3f8f75152637eebb8f0e9c7
+] 
+[Simplified treatment of identifiers in qcc
+Stephane Popinet <s.popinet@gmail.com>**20130513041426
+ Ignore-this: 9be7ad1417250a8c7a81bb8273c2ca61
+] 
+[Fixed cloning
+Stephane Popinet <s.popinet@gmail.com>**20130513054728
+ Ignore-this: c498462d3883fdc870bfc21d9c2cb8c3
+] 
+[Preliminary implementation of generic solver for conservation laws
+Stephane Popinet <s.popinet@gmail.com>**20130513120552
+ Ignore-this: 6fcd790462bbd13f82407400ba1a329a
+] 
+[gradient() method for scalars
+Stephane Popinet <s.popinet@gmail.com>**20130511134349
+ Ignore-this: 7281cee7e01b2155851337f962bb8fba
+] 
+[New and updated test cases
+Stephane Popinet <s.popinet@gmail.com>**20130511083322
+ Ignore-this: 8496028272384c0680397350849a2607
+] 
+[Saint-Venant solver uses depth and speed as primary variables
+Stephane Popinet <s.popinet@gmail.com>**20130510035928
+ Ignore-this: e770ee7161020516a18201ee09e787ee
+ 
+ ..rather than momentum. This is much more robust when wetting/drying.
+] 
+[Fixed boundary conditions for predictor/corrector in Saint-Venant
+Stephane Popinet <s.popinet@gmail.com>**20130508234724
+ Ignore-this: f7f9a1351c7bcf9898bd9be75a3bac8
+] 
+[New 'hump' test case
+Stephane Popinet <s.popinet@gmail.com>**20130509044353
+ Ignore-this: 851dfa215ad11f2d9633ea69ad065d2a
+] 
+[Removed DX, delta is the dimensional cell size
+Stephane Popinet <s.popinet@gmail.com>**20130509044809
+ Ignore-this: 40f426c0c8d57781391ff4eb1d7d4075
+] 
+[Fixes for drying in Kurganov's Saint-Venant solver
+Stephane Popinet <s.popinet@gmail.com>**20130416045648
+ Ignore-this: dd7cb421d4a4fb2635e12bd99ade8385
+] 
+[Balancing for fine/coarse Saint-Venant
+Stephane Popinet <s.popinet@gmail.com>**20130508220932
+ Ignore-this: ca011906496284a11c421de4c912b9ac
+] 
+[Option to catch FPEs and display debugging info
+Stephane Popinet <s.popinet@gmail.com>**20130505233550
+ Ignore-this: c5ad78db916b5a7f2df30fd7b5891d4
+] 
+[New multigrid method boundary_restriction()
+Stephane Popinet <s.popinet@gmail.com>**20130502091101
+ Ignore-this: 32ffee830c2822d22f15ab3e777d20bc
+] 
+[Improved adaptation for Saint-Venant solver
+Stephane Popinet <s.popinet@gmail.com>**20130502075302
+ Ignore-this: 3aa5cc8e65ab4872e2293d44ea890324
+] 
+[Lake-at-rest test case
+Stephane Popinet <s.popinet@gmail.com>**20130506043018
+ Ignore-this: 62f3d5590db119cd72522f2cb3f5826b
+] 
+[trash() method
+Stephane Popinet <s.popinet@gmail.com>**20130502060811
+ Ignore-this: 6ca999fcf8d7d8dd2853194a9b77ce7a
+] 
+[Various minor fixes
+Stephane Popinet <s.popinet@gmail.com>**20130502013849
+ Ignore-this: 780626a8ac39277a44d11cb59752a49
+] 
+[Fixed dependency generation
+Stephane Popinet <s.popinet@gmail.com>**20130501221451
+ Ignore-this: 50a39a85740ed089f00eb7966d5c05c1
+] 
+[Scalar lists "polymorphism" for boundary()
+Stephane Popinet <s.popinet@gmail.com>**20130501121607
+ Ignore-this: 2d56fa89e642fc841f2e99226fd4a1fa
+] 
+[Introduced methods for each grid class
+Stephane Popinet <s.popinet@gmail.com>**20130501034706
+ Ignore-this: d3913decab541e6baea1dba1b1c216a0
+] 
+[Do not traverse coarse/fine faces
+Stephane Popinet <s.popinet@gmail.com>**20130429040026
+ Ignore-this: 11c38b791bee3678edc63ffdd0d2690e
+] 
+[locate() returns status in point
+Stephane Popinet <s.popinet@gmail.com>**20130429131702
+ Ignore-this: cd39196534cff764136b58f68535f03e
+] 
+[More fixes for boundary corners
+Stephane Popinet <s.popinet@gmail.com>**20130502023446
+ Ignore-this: f958064d88642deb760d4bd6c82a1ba0
+] 
+[Updated tests
+Stephane Popinet <s.popinet@gmail.com>**20130501052750
+ Ignore-this: 569e2772a97291ba41e461eba18e395d
+] 
+[Various fixes for corner boundaries
+Stephane Popinet <s.popinet@gmail.com>**20130501044628
+ Ignore-this: 27a79ec610d0daff8dbad5e88ff345e9
+] 
+[Boundary conditions for halos
+Stephane Popinet <s.popinet@gmail.com>**20130430051025
+ Ignore-this: 2b8b816bf5ec5d3487ae41dc2f0b3ac7
+] 
+[Support NaN-trapping of uninitialised data
+Stephane Popinet <s.popinet@gmail.com>**20130501035252
+ Ignore-this: 1b17c032cb2df0063a4024a9f94f0aad
+] 
+[qplot supports "-e" option of gnuplot
+Stephane Popinet <s.popinet@gmail.com>**20130308041243
+ Ignore-this: 373afa9be9f40b068fa12d09727683df
+] 
+[New 'bump2D' adaptive Saint-Venant test case
+Stephane Popinet <s.popinet@gmail.com>**20130428205403
+ Ignore-this: ca8323c290db71b4c81e2a3b4e47a22b
+] 
+[Per-variable 'refine' method + wavelet refinement/coarsening fix
+Stephane Popinet <s.popinet@gmail.com>**20130430051615
+ Ignore-this: 86c7e8b9ffd06473e682db6ff920073
+] 
+[qcc option to track FPE
+Stephane Popinet <s.popinet@gmail.com>**20130428205831
+ Ignore-this: de21727a881d1a71647d4126da8d4ab0
+] 
+[Restructured boundary conditions
+Stephane Popinet <s.popinet@gmail.com>**20130428114539
+ Ignore-this: eef24f21f906875a3d4a96248fac89e9
+] 
+[Fix for order of vector indices
+Stephane Popinet <s.popinet@gmail.com>**20130303035742
+ Ignore-this: d38e49f2cba45a94f38923a8c9b10e59
+] 
+[Linear interpolation option for output_field()
+Stephane Popinet <s.popinet@gmail.com>**20130428003019
+ Ignore-this: 86740710c8a50212a25363f43c2c736b
+] 
+[Traversal of 'corner' boundary cells
+Stephane Popinet <s.popinet@gmail.com>**20130428013203
+ Ignore-this: 94cb1ab8220c9a7dcfacc9bdcd1a0ba8
+] 
+[Uses 'restriction' halos (together with 'interpolation' halos)
+Stephane Popinet <s.popinet@gmail.com>**20130427082723
+ Ignore-this: 63567f6c08aeb677f1610cf457b3f44
+] 
+[neighbor() works within foreach_dimension()
+Stephane Popinet <s.popinet@gmail.com>**20130426070824
+ Ignore-this: 440d1ed45b3c102f60237b8812dde4c6
+] 
+[foreach_fine_to_coarse() and foreach_level() use caches in quadtree
+Stephane Popinet <s.popinet@gmail.com>**20130427023745
+ Ignore-this: e8c72254b7fd22905d66ee11279635e5
+] 
+[Removed halo flags
+Stephane Popinet <s.popinet@gmail.com>**20130426061112
+ Ignore-this: 121e123e409068cdafb5144a929c3ae6
+] 
+[Bug fix for boundary flux traversal
+Stephane Popinet <s.popinet@gmail.com>**20130426023648
+ Ignore-this: 1f599967fcbee1a930299bfcf34a56d8
+] 
+[Cache for halo cells
+Stephane Popinet <s.popinet@gmail.com>**20130426045549
+ Ignore-this: 7b765e36f98af0f9653c2a7d3717d58
+] 
+[quadtree cache is properly resized
+Stephane Popinet <s.popinet@gmail.com>**20130411002149
+ Ignore-this: 2da9414449b04fb1026ae1c35074d9ff
+] 
+[Refinement functions use lists of variables
+Stephane Popinet <s.popinet@gmail.com>**20130424000447
+ Ignore-this: 87be7ee666f06ba1b810834bd5cc2051
+] 
+[Fix for wavelet refinement
+Stephane Popinet <s.popinet@gmail.com>**20130307034744
+ Ignore-this: d717a3254a3771b3df2361285e1d8394
+] 
+[New macros is_leaf(), is_active(), is_halo()
+Stephane Popinet <s.popinet@gmail.com>**20130424091656
+ Ignore-this: 3bc6692094868e018f604a4de399479a
+] 
+[Variable declarations in "Point" functions
+Stephane Popinet <s.popinet@gmail.com>**20130423052640
+ Ignore-this: 81ab0151547201b28730687779e67aa0
+] 
+[Conservative interpolations
+Stephane Popinet <s.popinet@gmail.com>**20130307024322
+ Ignore-this: e3093465048ec2c837f2617d619aeb2d
+] 
+[x,y coordinates are set properly for boundaries
+Stephane Popinet <popinet@users.sf.net>**20130423003057
+ Ignore-this: b970053bc88003d33752b307008b6c6a
+] 
+[Reductions don't like structures
+Stephane Popinet <s.popinet@gmail.com>**20130308083821
+ Ignore-this: 1b1f26ffac1a90e421b006b2ce2126a8
+] 
+[Advection solver uses new flux formulation
+Stephane Popinet <s.popinet@gmail.com>**20130422075057
+ Ignore-this: db0245791c67fd3764810304cae83fb6
+] 
+[Fixed bcs for rotation test
+Stephane Popinet <s.popinet@gmail.com>**20130411004228
+ Ignore-this: 6a6db27836081a32f03b7c295fc8a58
+] 
+['circle' test case uses new flux formulation
+Stephane Popinet <popinet@users.sf.net>**20130422234126
+ Ignore-this: 98a22f843e75cb5857cacdc50de61725
+] 
+[Renamed event_action as event
+Stephane Popinet <s.popinet@gmail.com>**20130307024551
+ Ignore-this: 66c407a73d07330644c6d2add7359c13
+] 
+[Fix for line numbers in events array
+Stephane Popinet <s.popinet@gmail.com>**20130307054643
+ Ignore-this: 81519ad206260fe0a8b8c1ec5f580d0
+] 
+[Conservative laplacian discretisation for 'circle' test
+Stephane Popinet <popinet@users.sf.net>**20130310045312
+ Ignore-this: 3fd61d13351961a06bec1fa8ed57a909
+ 
+ This restores the second-order convergence rate for the solution but
+ degrades the convergence rate for the residual (since the residual and
+ relaxation operators are not consistent anymore).
+] 
+[Various minor fixes
+Stephane Popinet <s.popinet@gmail.com>**20130418201602
+ Ignore-this: 522db1f0b0dd9eff398f8ab190e25251
+] 
+[Rotation test case
+Stephane Popinet <s.popinet@gmail.com>**20130307054710
+ Ignore-this: f222b66e1e8f1e9872dde2bbe4f4bb3
+] 
+[Advection test case uses normf() statsf()
+Stephane Popinet <s.popinet@gmail.com>**20130309032011
+ Ignore-this: bdd8a6397ca5425ac342cb4ccb0e8a52
+] 
+[Scalar and vector lists
+Stephane Popinet <s.popinet@gmail.com>**20130421091116
+ Ignore-this: ccc5aa567190e64d5ce9225e09a50d37
+] 
+[Restructured header files
+Stephane Popinet <s.popinet@gmail.com>**20130420054718
+ Ignore-this: 59a35e138d887041629f10a6271891e7
+] 
+[Added tolerance on how close events can be
+Stephane Popinet <s.popinet@gmail.com>**20130308041433
+ Ignore-this: f67c2a7553ec40ef42f8fc46fddfdca3
+] 
+[Function-style prototype for events
+Stephane Popinet <s.popinet@gmail.com>**20130418021540
+ Ignore-this: ca8f5527c1afc48bc08bc4b2fdb8411f
+] 
+[New utility output_cells()
+Stephane Popinet <s.popinet@gmail.com>**20130306232511
+ Ignore-this: a783fd24d93eefb4085774b4f043e84d
+] 
+['lid' example works with OpenMP
+Stephane Popinet <s.popinet@gmail.com>**20130302025405
+ Ignore-this: f782cd8a97278df8ffccecdfea345f27
+] 
+[Boundary conditions for variable-resolution Saint-Venant
+Stephane Popinet <s.popinet@gmail.com>**20130419081834
+ Ignore-this: 15bbfcca9fe5a5054a2a6d3147ee196a
+] 
+[New function foreach_face()
+Stephane Popinet <s.popinet@gmail.com>**20130419002621
+ Ignore-this: 74ad18b09710e0443d060d7a5f51aefe
+] 
+[coarsen() and refine() enforce 2:1 refinement
+Stephane Popinet <s.popinet@gmail.com>**20130306233110
+ Ignore-this: 9c3b9e7138a90a06720b6a7fc96e008f
+] 
+[Use dimensional gradients
+Stephane Popinet <s.popinet@gmail.com>**20130418024615
+ Ignore-this: e8b37eabefe52c7fb108170e5e734780
+] 
+[Wet/dry treatment for Saint-Venant
+Stephane Popinet <s.popinet@gmail.com>**20130415024831
+ Ignore-this: eb01da4086259612b44c99687507707c
+] 
+[2D Saint-Venant solver
+Stephane Popinet <s.popinet@gmail.com>**20130418013635
+ Ignore-this: f09d59966dae80a0c1da45589a69246c
+] 
+[New 'qplot' utility
+Stephane Popinet <s.popinet@gmail.com>**20130221044556
+ Ignore-this: 2475dc4d26d75209530e3abea8e2522b
+] 
+['new vector' allocation
+Stephane Popinet <s.popinet@gmail.com>**20130227005116
+ Ignore-this: 6e8e0b4cd21a7eb20142f251adea4706
+] 
+[Create 'dimension.h' in temporary directory
+Stephane Popinet <s.popinet@gmail.com>**20130227070058
+ Ignore-this: 6015d1d4fd7eb58cccb3a8a9152a747c
+] 
+[Arrays in functions
+Stephane Popinet <s.popinet@gmail.com>**20130412042559
+ Ignore-this: 3c7699f58b8bbbcedfa583924e0c86bf
+] 
+[Flexible boundary conditions
+Stephane Popinet <s.popinet@gmail.com>**20130411002051
+ Ignore-this: 73879f8f512ad067aefb0a21e466989b
+] 
+[Cosmetics for 'nonlinear'
+Stephane Popinet <s.popinet@gmail.com>**20130301050453
+ Ignore-this: 947cbda8f320d97dedced85cda2d9687
+] 
+[Support for multiple min|max reductions
+Stephane Popinet <popinet@users.sf.net>**20130302035719
+ Ignore-this: ef229fb7ab2d200282d4a5d07098a9ad
+] 
+[Adaptive advection example
+Stephane Popinet <s.popinet@gmail.com>**20130307042514
+ Ignore-this: 533f11f3845d0bc47f0f4beaaa627053
+] 
+[New utilities normf(), statsf()
+Stephane Popinet <s.popinet@gmail.com>**20130308041552
+ Ignore-this: 35a976f88a6e0af8a34f0f1146dd265d
+] 
+[Quadtree implementation uses a cache index
+Stephane Popinet <s.popinet@gmail.com>**20130409225255
+ Ignore-this: 18cdb3eda839f6f540e462cd4ec0f396
+ 
+ This speeds things up by a factor of two on regular Cartesian grids.
+] 
+[Workaround for lack of min|max reduction in OpenMP < 3.1
+Stephane Popinet <s.popinet@gmail.com>**20130302020747
+ Ignore-this: 55815cd5639e4a9493551f195282dc
+] 
+[OpenMP support for grid/multigrid.h (untested)
+Stephane Popinet <s.popinet@gmail.com>**20130301050430
+ Ignore-this: aa36ae72f766e1b41bc7944a0de9c4b1
+] 
+[slow/fast tests
+Stephane Popinet <popinet@users.sf.net>**20130302041823
+ Ignore-this: e31c1d018d7c06e25e1dd319a7d4dbab
+] 
+[1D Cartesian grid
+Stephane Popinet <s.popinet@gmail.com>**20130416060912
+ Ignore-this: 832d18377a30a799ee20e134c385b65e
+] 
+['Dry' lake test case
+Stephane Popinet <s.popinet@gmail.com>**20130417024023
+ Ignore-this: 80d7aaed5a2afcdb434782cebc9e5ada
+] 
+[New 'bump' test case
+Stephane Popinet <s.popinet@gmail.com>**20130417023124
+ Ignore-this: 73402e1a4e6fa73fdd6d1007eec2d7c
+] 
+[Saint-Venant solver
+Stephane Popinet <s.popinet@gmail.com>**20130414235751
+ Ignore-this: dd58580ad737c9ed37d031fc91f71112
+] 
+[Sign fix for saint-venant1.h
+Stephane Popinet <s.popinet@gmail.com>**20130417025323
+ Ignore-this: 3b4e99d9002a5e0602b3aabc39e67653
+] 
+[Choice of Riemann solvers for Saint-Venant
+Stephane Popinet <s.popinet@gmail.com>**20130416213949
+ Ignore-this: 6139b91cb24f33f0146940cf29f8951e
+] 
+['Parabola' test case for Saint-Venant solver
+Stephane Popinet <s.popinet@gmail.com>**20130416045842
+ Ignore-this: d7e15c3e734041f18d27a2ca4a0a80f9
+] 
+['Transcritical' test case for Saint-Venant
+Stephane Popinet <s.popinet@gmail.com>**20130415211344
+ Ignore-this: 358b08c9205b418bb7d96c9fc9629ec6
+] 
+[Timing summary uses total number of cells
+Stephane Popinet <s.popinet@gmail.com>**20130307025111
+ Ignore-this: e54a180c725d4caa7cc9834f9230ecb1
+] 
+[New functions timer_start()/print()
+Stephane Popinet <s.popinet@gmail.com>**20130302025305
+ Ignore-this: e4ab33ba7a97be28055c6e0c2b4ffaf7
+] 
+['advection' solver uses timers
+Stephane Popinet <popinet@users.sf.net>**20130302032537
+ Ignore-this: 41c32a4d3407ac853112db320aa72463
+] 
+[Workaround for missing min|max reduction in OpenMP < 3.1
+Stephane Popinet <s.popinet@gmail.com>**20130228084223
+ Ignore-this: 828eba0f12ecf435b2d3361886603082
+] 
+[OpenMP support for Cartesian grid
+Stephane Popinet <s.popinet@gmail.com>**20130228050224
+ Ignore-this: 4c8391b6592790576c18d84d86fa0601
+] 
+['atmosphere' and 'navier-stokes' solvers use events
+Stephane Popinet <s.popinet@gmail.com>**20130227070850
+ Ignore-this: d4c4daf755e82c0283e847bb6dad8e63
+] 
+[Added IMAX parameter
+Stephane Popinet <popinet@users.sf.net>**20130115231832
+ Ignore-this: ba2b5754845a4ee20dc244b58b636b4a
+] 
+[Fixed foreach_boundary() for quadtree
+Stephane Popinet <s.popinet@gmail.com>**20130418200010
+ Ignore-this: 3adb8c8e24cd5b5dd991fd9e6fb9d8ec
+] 
+['grid' is global
+Stephane Popinet <s.popinet@gmail.com>**20130227040114
+ Ignore-this: 8bb4588c7042c009c2644bdc3b49f694
+] 
+[Simplified mg_cycle() interface
+Stephane Popinet <s.popinet@gmail.com>**20130219025218
+ Ignore-this: 1cee09fbea1cbc7be58fe72e6f3c2dc
+] 
+[Renamed 'var' to 'scalar'
+Stephane Popinet <s.popinet@gmail.com>**20130227005104
+ Ignore-this: 5a37608ebc4e0030ef300114fea4fe00
+] 
+[New option to 'trash' variables not explicitly defined
+Stephane Popinet <s.popinet@gmail.com>**20130221044506
+ Ignore-this: 224a92007256fb5ba1a990ed54e6a103
+] 
+[Changed interface for restriction()
+Stephane Popinet <s.popinet@gmail.com>**20130221045314
+ Ignore-this: ae880d6dffec65a841d13e874c108220
+] 
+[foreach_dimension() uses vectors
+Stephane Popinet <s.popinet@gmail.com>**20130226235135
+ Ignore-this: b76ef527a99378794d3a3e5d8fd2dc03
+] 
+[Simplified array expressions
+Stephane Popinet <s.popinet@gmail.com>**20130226224650
+ Ignore-this: c3144631e5255af16c071df51fb17674
+] 
+[Halos for staggered variables
+Stephane Popinet <s.popinet@gmail.com>**20130220050502
+ Ignore-this: 33714fc10f2042001091fadedf15acf7
+] 
+[output_field() takes a size argument
+Stephane Popinet <s.popinet@gmail.com>**20130220050844
+ Ignore-this: 25acd9b8595af214508e4c8119bbac5e
+] 
+[Fixed scopes of foreach_dimension()
+Stephane Popinet <s.popinet@gmail.com>**20130226063930
+ Ignore-this: 7119d525a1732dcbab6e9e2905184c31
+] 
+[yylineno is unreliable
+Stephane Popinet <s.popinet@gmail.com>**20130226043408
+ Ignore-this: 7fa39b94b63db8e4e8b9d74cf36473b7
+] 
+[foreach_dimension()
+Stephane Popinet <s.popinet@gmail.com>**20130226043625
+ Ignore-this: b2da457a2b31e2b08c79840b959e971d
+] 
+[Simplification of BCG scheme
+Stephane Popinet <s.popinet@gmail.com>**20130225061249
+ Ignore-this: 5bcb83f7c2b689084dac7aa5b82e953b
+] 
+[Convergence for time-reversed advection
+Stephane Popinet <s.popinet@gmail.com>**20130225011537
+ Ignore-this: 3b198021e1f3dc4eccf53197ac9dff7b
+] 
+[Fix for BCG advection
+Stephane Popinet <s.popinet@gmail.com>**20130224225350
+ Ignore-this: 52a7426dc9147bf91145f539521aa761
+] 
+[New method grid::locate()
+Stephane Popinet <s.popinet@gmail.com>**20130219025135
+ Ignore-this: 44c05a0d2ed27638f72f90f7b7c2a410
+] 
+[Events
+Stephane Popinet <popinet@users.sf.net>**20130224043101
+ Ignore-this: d9c6cd2ea65192004dee37965f0ec4ff
+] 
+[v[...] syntax for qcc
+Stephane Popinet <s.popinet@gmail.com>**20130220051918
+ Ignore-this: 32e81e51c0bfd22e4ae3e0eeefae7bc1
+] 
+[C++-style 'new var' syntax
+Stephane Popinet <s.popinet@gmail.com>**20130218223507
+ Ignore-this: 67f814568cfbf79c3d7daabedb8edf5c
+] 
+[Removed foreach_redo() function for quadtree
+Stephane Popinet <popinet@users.sf.net>**20130129104755
+ Ignore-this: 20dd46817459c4d3cf44f50b1240c05e
+ 
+ This did accelerate things but only when everything fitted in cache.
+] 
+[New function foreach_redo() in quadtree
+Stephane Popinet <popinet@users.sf.net>**20130129054134
+ Ignore-this: 9cd02d70abb1ff219bfc42b5d650e060
+ 
+ Does not seem to improve things much for the 'laplacian' test
+ case. Maybe at low enough resolutions. This could mean that cache
+ behaviour dominates.
+] 
+[Fix for line numbers by qcc
+Stephane Popinet <s.popinet@gmail.com>**20130221044534
+ Ignore-this: cb162f1779876b51f39b9d4498454459
+] 
+[qcc processes files in the correct order
+Stephane Popinet <s.popinet@gmail.com>**20130216211818
+ Ignore-this: 19ad0b9481de899965548035c1546356
+] 
+[Dependency generation for qcc
+Stephane Popinet <s.popinet@gmail.com>**20130215021821
+ Ignore-this: 9e1b46cda1dd6df94438356423571975
+] 
+['new var' syntax
+Stephane Popinet <s.popinet@gmail.com>**20130215010215
+ Ignore-this: 85be252bd3e40173d55be8cf771c2a07
+] 
+[Basic linear quadtree implementation
+Stephane Popinet <popinet@users.sf.net>**20130129105225
+ Ignore-this: d0f5cfa3d35375826f98af03bde32965
+ 
+ The cache behaviour (of the Z-grid ordering) is indeed better than
+ that of the cartesian quadtree implementation, however it does not
+ seem to be significantly faster (when everything fits in cache) and
+ neighbor access (for the Laplacian) is very slow.
+] 
+[Fixed line numbers for qcc
+Stephane Popinet <s.popinet@gmail.com>**20130219024923
+ Ignore-this: 63028408c8797574abde52a192230bd1
+] 
+[Advection solver uses events
+Stephane Popinet <popinet@users.sf.net>**20130224045925
+ Ignore-this: 1ddb73fe44f13f3edbf1e4df908f7ddd
+] 
+[New 'advection' test
+Stephane Popinet <s.popinet@gmail.com>**20130221044856
+ Ignore-this: caf074920d491164c031b08353fc861a
+] 
+[Slope limiting for BCG advection
+Stephane Popinet <s.popinet@gmail.com>**20130225014318
+ Ignore-this: 32af45c8ff60c5d0adc8870034a2971e
+] 
+[New 'advection' solver
+Stephane Popinet <s.popinet@gmail.com>**20130221044648
+ Ignore-this: f4b29c1d7921ea08ab8d9d51acd4209e
+] 
+[Restructured 'atmosphere' and 'navier-stokes' solvers
+Stephane Popinet <s.popinet@gmail.com>**20130216212103
+ Ignore-this: 72746a670e3e031aa1f9ae596c7e422e
+] 
+[Updated Runge-Kutta interface
+Stephane Popinet <s.popinet@gmail.com>**20130122053907
+ Ignore-this: 43f92d2d8218b9943acf4a86a9c3b1fc
+] 
+[Various improvements for endfor
+Stephane Popinet <s.popinet@gmail.com>**20130214212229
+ Ignore-this: 99c59eb7be9896c162c1faf26d75ec2e
+] 
+[Navier-Stokes solvers and lid-driven cavity example
+Stephane Popinet <s.popinet@gmail.com>**20130214063321
+ Ignore-this: 12162b8bae2b5fba75adeada2ed8d577
+] 
+[Improved endfor and syntax
+Stephane Popinet <s.popinet@gmail.com>**20130214070540
+ Ignore-this: a0e98074ce3f81258ba510cefe7519c9
+] 
+[Generic multigrid cycle
+Stephane Popinet <s.popinet@gmail.com>**20130123002318
+ Ignore-this: 7eabbeb38fd89d9a55d8abddb86e74f4
+] 
+[Added elementary 'sum' operation to 'Laplacian' speed test
+Stephane Popinet <popinet@users.sf.net>**20130129035951
+ Ignore-this: 12b3f891172d0ca0881dcb4f5daa5254
+] 
+[Trick to turn off extended precision
+Stephane Popinet <popinet@users.sf.net>**20130201232005
+ Ignore-this: 49044eb37cf208de6a9b28b38436e14f
+] 
+[Bilinear interpolation onto regular grids
+Stephane Popinet <s.popinet@gmail.com>**20130212212414
+ Ignore-this: 180734b40ab4e3d455ef91cbe1a62580
+] 
+[Speed of Laplacian test case
+Stephane Popinet <s.popinet@gmail.com>**20130123050048
+ Ignore-this: 720657da423d1782a023ce8de2202b0d
+] 
+[Variable refinement for Poisson solver
+Stephane Popinet <s.popinet@gmail.com>**20130122235201
+ Ignore-this: ce61243eab62a462002fa23d06a7c72
+] 
+[Poisson solver and test case matches Gerris
+Stephane Popinet <s.popinet@gmail.com>**20130122110017
+ Ignore-this: 568f378a5777b9ac69ed80d4c6a1b582
+] 
+[Used endfor everywhere
+Stephane Popinet <s.popinet@gmail.com>**20130122045355
+ Ignore-this: d0b88a4507544cfcf4888933815d1663
+] 
+[New 'endfor' script
+Stephane Popinet <s.popinet@gmail.com>**20130121221430
+ Ignore-this: db21e969ca232d71599342d288835e70
+] 
+[Speed test for poisson
+Stephane Popinet <s.popinet@gmail.com>**20130121195818
+ Ignore-this: 58a3cacbc022799929784b1b57ed8ade
+] 
+["Multigrid" grid now works with the Poisson solver
+Stephane Popinet <s.popinet@gmail.com>**20130121112930
+ Ignore-this: b0153339d6364fedf40da4e54c2cf80a
+] 
+[Multigrid Poisson solver
+Stephane Popinet <s.popinet@gmail.com>**20130121105400
+ Ignore-this: aaa11b6430e17c933222745a404f08b4
+] 
+[Generic makefile rules for test cases
+Stephane Popinet <s.popinet@gmail.com>**20130121034430
+ Ignore-this: 10bfd28b9129bfb37f14d25ed6c8aad1
+] 
+[2nd-order Runge-Kutta test case
+Stephane Popinet <s.popinet@gmail.com>**20130121023212
+ Ignore-this: 47329f2542805fc79394d1e0f2a30827
+] 
+[Restructured interface and added support for Point functions
+Stephane Popinet <s.popinet@gmail.com>**20130121003151
+ Ignore-this: 5d9a4f03fb4bca31be24e5b4ec497b86
+] 
+[Runge-Kutta time integration
+Stephane Popinet <s.popinet@gmail.com>**20130119221752
+ Ignore-this: 5683afe0d073e59498cb2aac55b15b51
+] 
+[Unified initial refinement
+Stephane Popinet <s.popinet@gmail.com>**20130120204211
+ Ignore-this: 39ba929046491597b3e70a2fbe66670
+] 
+[Refinement
+Stephane Popinet <s.popinet@gmail.com>**20130120200426
+ Ignore-this: ddd92aa4edf5e4522a2c3715347cf00e
+] 
+[Restructured quadtree
+Stephane Popinet <s.popinet@gmail.com>**20130120032634
+ Ignore-this: d7d4e6ca43cbf0ce0355a791654349a3
+] 
+[Small fixes
+Stephane Popinet <s.popinet@gmail.com>**20130119230310
+ Ignore-this: 63c0257dbe9d22c61ca8a5f7530dbdb5
+] 
+[Test cases cleanup
+Stephane Popinet <s.popinet@gmail.com>**20130119212549
+ Ignore-this: 811b835ebf1766be5d1b99bbbddd50ec
+] 
+[Halo update
+Stephane Popinet <s.popinet@gmail.com>**20130119120946
+ Ignore-this: af421f6ac8b9dfea6258768aaadad03c
+] 
+[Halo speed test
+Stephane Popinet <popinet@users.sf.net>**20130119091945
+ Ignore-this: e8ac4a7dd6df8b1730b1312747c0c8dd
+] 
+[Capillary wave test case
+Stephane Popinet <popinet@basilisk.fr>**20140903163415
+ Ignore-this: c3b35f073a08d7d7855e006559c24ea6
+] 
+[Halo test case
+Stephane Popinet <popinet@users.sf.net>**20130119041233
+ Ignore-this: eb41205fa8e0790d4d4d5daeb4771ce2
+] 
+[Wavelet coarsening
+Stephane Popinet <s.popinet@gmail.com>**20130118050623
+ Ignore-this: 9379212a6476279983b098953db7c4b
+] 
+[More consistent structures
+Stephane Popinet <popinet@users.sf.net>**20130117081518
+ Ignore-this: 8c76914257b86a8e4e1fa75e83a5e387
+] 
+[Generic boundaries for quadtrees
+Stephane Popinet <popinet@users.sf.net>**20130117052728
+ Ignore-this: 9467874c7adfc9e3f1a81cdb6fff740f
+] 
+[Added a 'flags' field
+Stephane Popinet <popinet@users.sf.net>**20130116110042
+ Ignore-this: 205a7b34c7af3f92c28187706dded448
+ 
+ This simple change resulted in a 10% performance hit for the
+ atmosphere test case. Possibly due to cache miss weirdness.
+] 
+[Generalised number of ghost layers
+Stephane Popinet <popinet@users.sf.net>**20130116201811
+ Ignore-this: 4536f371e66610d91511a03ba8658fd5
+] 
+[Generic boundary conditions (Cartesian only for now)
+Stephane Popinet <popinet@users.sf.net>**20130117021626
+ Ignore-this: 32b86bf89dea3823c4f7e14c4b70ed91
+] 
+[Quadtree leaf traversal
+Stephane Popinet <popinet@users.sf.net>**20130116120502
+ Ignore-this: b15141dd14bbd2120290fb60c8f29ee6
+ 
+ This incurs a ~18% speed penalty for the (cartesian) 'nonlinear' test.
+] 
+[New macro foreach_condition()
+Stephane Popinet <popinet@users.sf.net>**20130116065012
+ Ignore-this: 59ce763055b21e994ad9fcc2471ec5c0
+] 
+[Generalisation of coarse/fine operators
+Stephane Popinet <popinet@users.sf.net>**20130116065357
+ Ignore-this: 6a2d39b66eb630f955dad98befcd0b86
+] 
+[Generalised iteration macros
+Stephane Popinet <popinet@users.sf.net>**20130116021633
+ Ignore-this: 4f3edb3af2df40e7988adb8d10702b49
+] 
+[Optimised querying of neighbors at finest level for quadtree
+Stephane Popinet <popinet@users.sf.net>**20130114223236
+ Ignore-this: 132955a7f940cfb3641be63e702cc976
+ 
+ This speed things up by ~80%
+] 
+[Rolled back level storage
+Stephane Popinet <popinet@users.sf.net>**20130114222032
+ Ignore-this: a8592f3290a247cc30dd9ed1ecf874c5
+] 
+[Store the cell level in linear quadtree
+Stephane Popinet <popinet@users.sf.net>**20130114221639
+ Ignore-this: ec27b6d872dd121687579214e774442
+ 
+ This speed things up by about 30%
+] 
+[First implementation of "multigrid" quadtree
+Stephane Popinet <popinet@users.sf.net>**20130115232038
+ Ignore-this: 738ab0f0a1ed9355c50ab326c1a63bef
+] 
+[Advection test
+Stephane Popinet <popinet@users.sf.net>**20130115014417
+ Ignore-this: ec23b7a5af87a47a64e2e1cc6955466b
+] 
+[Linear quadtree version for atmosphere
+Stephane Popinet <popinet@users.sf.net>**20130114212947
+ Ignore-this: 740caed9b84603dfbccd026bc3025fd0
+] 
+[Stencils for ke and psi
+Stephane Popinet <popinet@users.sf.net>**20130113235831
+ Ignore-this: d15f0a8525936fd577428082964c741e
+] 
+[Initial quadtree implementation
+Stephane Popinet <popinet@users.sf.net>**20130114103015
+ Ignore-this: 831835c8c83cde121e41ab2df6b1ed38
+] 
+[Moved boundary conditions in separate file
+Stephane Popinet <popinet@users.sf.net>**20130113230801
+ Ignore-this: 86e796cfd601da535f134212ab680c90
+] 
+[Generic loops
+Stephane Popinet <popinet@users.sf.net>**20130113224350
+ Ignore-this: 8cfdec7653935666952a03a0b2347248
+] 
+[Use local stencils
+Stephane Popinet <popinet@users.sf.net>**20130113213718
+ Ignore-this: 8b3b94c09ee4fb8c1e4d0daedf18639f
+] 
+[More generic stencils
+Stephane Popinet <popinet@users.sf.net>**20130113202151
+ Ignore-this: afa5cd9fbed7cd3becf33a8dadf55c31
+] 
+[More generic implementation
+Stephane Popinet <popinet@users.sf.net>**20130113120745
+ Ignore-this: 24d1e53370163a5f1333fa8a8000fe18
+ 
+ A bit (20%) faster too.
+] 
+[Added timer
+Stephane Popinet <popinet@users.sf.net>**20130113100548
+ Ignore-this: df3501b60367f52351368c3c3d932f1e
+] 
+[Initial revision
+Stephane Popinet <popinet@users.sf.net>**20130113091922
+ Ignore-this: ae6a571c7cd91f3918178e3f6f94fb6c
+] 
+Patch bundle hash:
+ae319ed5ebc7cb6e52dd6fa47d6d509e79f1d698

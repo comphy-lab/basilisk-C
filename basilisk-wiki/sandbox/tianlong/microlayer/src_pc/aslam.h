@@ -14,7 +14,7 @@ a few cells across the interface, without covering the whole
 domain.
 */
 
-#include "mapregion.h"
+#include "imapregion.h"
 
 /**
 ## Constant Extrapolation

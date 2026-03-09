@@ -1,8 +1,8 @@
 /**
 # Disruption of an interface
 
-In this section, I present the code used to simulate the disruption of an interface.  
-For a step-by-step explanation, feel free to watch my video tutorial: [link here].
+In this section, I present the code used to simulate the disruption of an interface. 
+For a step-by-step explanation, feel free to watch my video tutorial: [Disruption of an interface](https://www.youtube.com/watch?v=yTQWNp18yuY).
 
 We start by including the necessary libraries:
 */

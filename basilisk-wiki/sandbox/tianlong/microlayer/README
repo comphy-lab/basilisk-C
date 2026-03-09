@@ -1,1 +1,22 @@
-Hello, here the code for simulating a microlayer with a resolved microlayer and conjugate heat transfer is provided. It is developed based on the phase-change model from [Edoardo's Sandbox](/sandbox/ecipriano/README). The ghost fluid method and conjugate heat transfer have been incorporated. Currently, these codes are not compatible with the latest version of Basilisk; the version used is from April 2023.
+Hello, here the code for simulating a microlayer with a resolved microlayer and conjugate heat transfer is provided. It is developed based on the phase-change model from [Edoardo's Sandbox](/sandbox/ecipriano/README). The ghost fluid method and conjugate heat transfer have been incorporated. 
+
+## Installation
+
+Currently, these codes are not compatible with the latest version of Basilisk; the version used is from April 2023. You can download this version of Basilisk using darcs:
+
+~~~bash
+darcs clone https://basilisk.fr/basilisk --tag='release 23-06-28' --repo-name basilisk-tianlong
+~~~
+
+After cloning, you should apply a patch with modifications to the grid that allows the compatibility with my description of solid boundaries:
+
+~~~bash
+cd basilisk-tianlong/src
+darcs apply solid.patch
+~~~
+
+Finally, procced with classic basilisk compilation:
+
+~~~bash
+make
+~~~
