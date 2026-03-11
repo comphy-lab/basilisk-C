@@ -63,10 +63,10 @@ void comparison (double (* f) (double),
 
   int Nremap = 100; // number of remap
   for (int n = 0; n < Nremap; n++) {
-    my_remap_c (nposinit, nposend, zinit, zend, init_pc, end_pc,
-		f_b, lambda_b, f_t, lambda_t);
-    my_remap_c (nposend, nposinit, zend, zinit, end_pc, init_pc,
-		f_b, lambda_b, f_t, lambda_t);
+    remap_c (nposinit, nposend, zinit, zend, init_pc, end_pc,
+             f_b, lambda_b, 0, f_t, lambda_t, 0, true);
+    remap_c (nposend, nposinit, zend, zinit, end_pc, init_pc,
+             f_b, lambda_b, 0, f_t, lambda_t, 0, true);
     int edge_meth = p3e_method, cell_meth = ppm_method;
     my_remap (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_pf, end_pf,
 	      &edge_meth, &cell_meth, &cell_lim);
@@ -107,10 +107,9 @@ int main()
   comparison (sum_gaussian,
 	      nposinit, nposend, zinit, zend,
 	      0., 0., 0., HUGE, mono_limit);
-  
   comparison (polynomial,
 	      nposinit, nposend, zinit, zend,
-	      40., 3., 80., -1., null_limit);
+	      40., - 3., 80., 1., null_limit);
 
   /**
   ~~~gnuplot Polynomial

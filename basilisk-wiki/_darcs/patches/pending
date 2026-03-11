@@ -42,6 +42,8 @@ rmdir ./sandbox/rulli/Geostrophic%20Adjustement
 rmdir ./sandbox/rvilliers
 rmdir ./sandbox/spertant
 rmdir ./sandbox/zied/culvert_flushing_friction/culvert
+rmdir ./sandbox/MCVacher/imp_jets
+addfile ./basilisk
 hunk ./sandbox/Kaustubh/Steel_Melting_Multi-Physics/Dissusion_only_melting 1
 -
 rmfile ./sandbox/Kaustubh/Steel_Melting_Multi-Physics/Dissusion_only_melting
@@ -60,7 +62,6 @@ hunk ./sandbox/Kaustubh/Readme 1
 -Codes to be uploaded soon !!!
 rmfile ./sandbox/Kaustubh/Readme
 rmdir ./sandbox/Kaustubh
-rmdir ./sandbox/MCVacher/imp_jets
 hunk ./sandbox/acastillo/frozen_waves/without_walls/Makefile 1
 -include $(BASILISK)/Makefile.defs
 -
@@ -1363,8 +1364,4 @@ hunk ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h 1
 -}
 rmfile ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h
 rmdir ./sandbox/acastillo/frozen_waves/without_walls
-hunk ./basilisk 1
--https://basilisk.fr/basilisk
-+
-rmfile ./basilisk
 }

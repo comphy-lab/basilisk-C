@@ -58,7 +58,7 @@ $$
 w = \frac{1}{u_{\max}} = \frac{2}{3 (1 + 2 \text{Uv})}
 $$
 For $\text{Uv} =$ 10 this gives $w \approx$ 0.0317 which is not far from the
-measured 0.0324. 
+measured 0.0323. 
 
 **Exercise**: show that a more accurate approximation (valid also for a finite-width very-viscous thread) is
 $$

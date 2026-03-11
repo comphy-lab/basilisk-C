@@ -45,7 +45,7 @@ int main()
   X0 = -.5;
   L0 = 1.5;
   G = 1.;
-  N = 256*4; 
+  N = 512*4; 
   nu = NU;
   nl = 64;
   
@@ -148,7 +148,7 @@ event update_eta (i++)
 /**
 save mass shape $h(x,t)$ */
 
-event output (t += 0.2;t<=T0)
+event output (t = {0, 0.0625, 0.25, 1, 4})
 {
     
   double zz = 0;
@@ -164,12 +164,48 @@ event output (t += 0.2;t<=T0)
  }
   
 /**
+
+
+
 # evolution of shape $h(x,t)$
+
+comparison with [1D kinematik wave for Bingham](https://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
+
+
 ~~~gnuplot 
 set xlabel "x"
 set ylabel "h(x,t)"
-p "out" u 1:2 w l t"0;0.2;0.4;...1"
+p [-0.4:1.][:1.6]"out" u 1:2 w l t"0;0.2;0.4;...1",\
+'../../../M1EMN/Exemples/bingham_collapse_noSV/shape-1.25.txt' t 'B=1.25 h, 1D model ' w l
 ~~~
+
+comparison with [https://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_ML.c]()
+
+
+
+~~~gnuplot 
+set xlabel "x"
+set ylabel "h(x,t)"
+p [-0.4:1.][:1.6]"out" u 1:2 w l t"0;0.2;0.4;...1",\
+'../../../M1EMN/Exemples/bingham_collapse_ML/shapeML-1.25.txt' t 'B=1.25 h, multilayer  model, fixed ration' w l
+~~~
+
+
+comparison with [https://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_NH.c]()
+
+strange, does not work???
+
+~~~gnuplot 
+set xlabel "x"
+set ylabel "h(x,t)"
+p [-0.4:1.][:1.6]"out" u 1:2 w l t"0;0.2;0.4;...1",\
+'../../../M1EMN/Exemples/bingham_collapse_NH/out' t 'B=1.25 h, multilayer Euler Lagrange model' w p
+~~~
+
+ 
+
+
+
 */
 
 
@@ -177,9 +213,25 @@ p "out" u 1:2 w l t"0;0.2;0.4;...1"
 
 
 
+/**
+# links
+
+[1D kinematik wave for Bingham](https://basilisk.fr/sandbox/M1EMN/Exemples/bingham_collapse_noSV.c)
 
 
 
+
+# Bibliography
+
+* Neil J. Balmforth, Richard V. Craster, Alison C. Rust, Roberto Sassi 
+["Viscoplastic flow over an inclined surface"](http://www.math.ubc.ca/~njb/Research/revslump.pdf),
+J. Non-Newtonian Fluid Mech. 139 (2006) 103–127
+* K.F. Liu, C.C. Mei, 
+"Slow spreading of Bingham fluid on an inclined plane", J. Fluid Mech. 207 (1989) 505–529. 
+ 
+
+
+*/
 
 
 

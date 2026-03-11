@@ -666,7 +666,7 @@ models. Feel free to add new ideas below.
 for plane shifting and explicit sources.
 1. The velocity field that transports the interface might be independent from
 those in `uflist`.
-1. Compatibility with [embed.h](/src/embed.h).
+1. Compatibility with [embed.h](/src/embed.h): the incompressible boiling model works with solid boundaries, see [filmboiling.c](../run/filmboiling.c). More complex cases with variable properties and diffusion corrections must be tested.
 1. Automatic transition from diffusion-driven to temperature-driven phase change -
 this is not so difficult for pure liquids, but it is really challenging for
 multicomponent systems.
