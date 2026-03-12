@@ -39,7 +39,8 @@ double shear(Point point, scalar s, scalar h, int layer, int layercoef){
     shear = 2.*s[0,0,0]/h[0,0,0];
   }
    
-  return fabs(shear);
+  //return fabs(shear);
+  return sqrt(sq(shear)+sq(0.1e-8));
 }
 
 /*
@@ -119,8 +120,9 @@ void regularization(Point point, scalar s, scalar h, double nueq[])
 	}
 
   for( l=0 ; l<nl;l++){
-  	if ( l<=nlc ) nueq[l] = Nueq(point,s,h,l);
-	  else nueq[l] = nueq[l-1];
+  	//if ( l<=nlc ) nueq[l] = Nueq(point,s,h,l);
+	 // else nueq[l] = nueq[l-1];
+    nueq[l] = Nueq(point,s,h,l);
 	}
 }
 
