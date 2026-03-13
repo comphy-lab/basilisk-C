@@ -27,6 +27,12 @@ case $ext in
     *)    log=log;  out=out; ref=ref; ;;
 esac
 
+if test -f $test.$ref; then
+    ref=$ref
+else
+    ref=ref
+fi
+
 case $CC in
     *-D_MPI=*) test -z "$EXEC" && EXEC="mpirun -np "`echo $CC | sed 's/.*-D_MPI=\([0-9]*\).*/\1/'`;
 esac
@@ -114,11 +120,6 @@ script()
     fi
     
     if $pass; then
-	if test -f $test.$ref; then
-	    ref=$ref
-	else
-	    ref=ref
-	fi
 	if test -f $test.$ref; then
             echo diff $log $test.$ref > fail
             diff $log $test.$ref >> fail && rm -f fail
@@ -518,7 +519,7 @@ if test -f $test.$ext && checksum $test.s $test.$ext; then
 	$GENSUM $src $test.s > $test.$ext
     fi
 # check sum for test.s in fail.tst
-elif ! test -f $test/fail.$ext || ! test -f $test/fail || ! checksum $test.s $test/fail.$ext; then
+elif ! test -f $test/fail.$ext || ! test -f $test/fail || ! checksum $test.s $test/fail.$ext || test $test/fail.$ext -ot $test.$ref; then
     if test -n "$SANDBOX" -a -f $test/pid.$ext; then
 	killchildren `cat $test/pid.$ext`
 	if test -f $test/tspid.$ext; then

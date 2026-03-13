@@ -197,12 +197,12 @@ int main()
 #endif
   G = 9.81;
   DT = 15. [0,1]; // Ilicak et al, 2012 use 10 sec
+  cell_lim = mono_limit;
 
   /**
   Vertical remapping uses a monotonic limiter to avoid creating new
   extrema in the temperature field. */
   
-  cell_lim = mono_limit;
   system ("rm -f plot-*.png"); // fixme: should not be necessary
   run();
 }

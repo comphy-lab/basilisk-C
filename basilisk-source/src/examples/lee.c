@@ -129,8 +129,10 @@ int main()
 
   nl = 100;
   N = 2048;
+#if USE_PPR  
   cell_lim = mono_limit;
-
+#endif
+  
   /**
   The maximum timestep is set to 100 seconds. The actual timestep is
   limited to about 5 seconds due to the CFL condition based on the

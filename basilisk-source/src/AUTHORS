@@ -1,3 +1,4 @@
+* Antoine Aubert: [Piecewise Polynomial Reconstruction in C](layered/remapc.h)
 * Francesco De Vita: [multi-layer Saint-Venant](multilayer.h)
 * Palas Kumar Farsoiya: [Henry's law](henry.h)
 * Nicolas Fintzi: [Einstein summation convention](/src/ast/einstein_sum.h)

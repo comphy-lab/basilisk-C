@@ -65,11 +65,9 @@ double myreturn2 (Point point, double expr)
 macro
 void withreturn (int i)
 {
-  if (i) {
+  if (i)
     fprintf (stderr, "i != 0\n");
-    return;
-  }
-  fprintf (stderr, "i == 0\n");  
+  return;
 }
 
 macro m1() {

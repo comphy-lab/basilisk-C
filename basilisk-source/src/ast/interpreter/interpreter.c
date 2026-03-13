@@ -1364,6 +1364,8 @@ static Ast * get_array_dimensions (Ast * direct_declarator, int symbol, Dimensio
     if (s) {
       bool error = false;
       d->dimension[nd] = value_int (s, &error, stack);
+      if (d->dimension[nd] < 0)
+        d->dimension[nd] = 0;
       d->size *= d->dimension[nd];
       if (error)
 	return NULL;
@@ -2735,15 +2737,17 @@ Value * ast_run_node (Ast * n, Stack * stack)
 		init_point_variables (stack);
 	      Ast * function_declaration = ast_child (function_definition, sym_function_declaration);
 	      run (function_declaration, stack);
-	      foreach_item (parameters, 2, parameter)
+              int arg = 0;
+	      foreach_item_r (parameters, sym_parameter_declaration, parameter) {
 		if (ast_schema (parameter, sym_parameter_declaration,
 				1, sym_declarator) &&
-		    !assign (parameter, run (parameter, stack), v[--narg], stack)) {
-		  d->scope--;
-		  ast_pop_scope (stack, function_definition->parent);
-		  restore_locals (stack, locals);
-		  return message (scope, parameter, "could not assign parameter '%s'\n", warning_verbosity, stack);
-		}
+                    !assign (parameter, run (parameter, stack), v[arg++], stack)) {
+                  d->scope--;
+                  ast_pop_scope (stack, function_definition->parent);
+                  restore_locals (stack, locals);
+                  return message (scope, parameter, "could not assign parameter '%s'\n", warning_verbosity, stack);
+                }
+              }
 	      d->scope--;
 	      // fixme: deal with ellipsis....
 	    }

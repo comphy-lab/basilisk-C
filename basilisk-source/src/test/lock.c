@@ -84,13 +84,12 @@ int main()
   size (64e3 [1]);
   N = 128;
   nl = 20;
-  cell_lim = mono_limit;
   G = 9.81;
   DT = 60 [0,1];
   nu = 1e-4;
-
+  cell_lim = mono_limit;
+  
   lambda_b[] = {HUGE}; // free slip
-
   
   run();
 }
@@ -126,9 +125,15 @@ event logfile (i += 10)
   double rpe = rho0*RPE();
   double PE, KE;
   energy (&PE, &KE);
+  double Tmin = HUGE, Tmax = - HUGE;
+  foreach (reduction(min:Tmin) reduction(max:Tmax))
+    foreach_layer() {
+      if (T[] > Tmax) Tmax = T[];    
+      if (T[] < Tmin) Tmin = T[];
+    }
   if (i == 0)
     rpe0 = rpe;
-  fprintf (stderr, "%g %g %.12g %.12g %.12g %.12g %.6g %d\n", t, dt,
+  fprintf (stderr, "%g %g %.12g %.12g %.12g %.12g %.6g %d %g %g\n", t, dt,
 	   rpe - rpe0, rpe0, rho0*PE, rho0*KE,
 	   t > tn ? (rpe - rpen)/(t - tn)/L0 : 0.,
 #if NH	   
@@ -136,7 +141,9 @@ event logfile (i += 10)
 #else
 	   mgH.i
 #endif
-	   );
+	   , Tmin, Tmax - 0.005);
+  assert (Tmin >= -1e-15);
+  assert (Tmax - 0.005 < 1e-15);
   rpen = rpe, tn = t;
 }
 

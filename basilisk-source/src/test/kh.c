@@ -95,8 +95,8 @@ int main()
   TOLERANCE = 1e-4;
   
   theta_H = 0.51;
-  cell_lim = mono_limit;
   DT = 0.03;
+  cell_lim = mono_limit;
 
   /**
   We use a slip boundary condition at the bottom, rather than the

@@ -73,6 +73,7 @@ Additional modules include:
   Model](http://gotm.net)
 * [Performance statistics](perfs.h)
 * [Calculation of the Reference Potential Energy](rpe.h)
+* [Piecewise Polynomial Reconstruction](remapc.h)
 
 ## References
 

@@ -1,4 +1,4 @@
-pristine:ed34cdc3555cd36a03142b632c99eb2d62bd1bee906d4c2bc92a04c5d0efb990
+pristine:7101701e7d890794e52306ba1c822c6b79d93fa02f2c306e4c7337ad5c8593db
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -648,3 +648,40 @@ Stephane Popinet <popinet@basilisk.fr>**20260224122958
  Ignore-this: f2ddc3ffe2821b47b32a7ec4222b3a2ee5d31d3d6f0bb35a7faf08db17d750fe634ddf8e742ad00e
 ] 
 hash: 0000017108-a49585b3b49f451b0aae63d7459fe0711e27387ce71a0e0b72f08f1e0edbcb7a
+[Return macros can only return at the end
+Stephane Popinet <popinet@basilisk.fr>**20260226171227
+ Ignore-this: 62bd5083a9419fe43eaddf26a9d3c23a
+ 
+ To avoid using 'goto' which is not supported on GPUs.
+] 
+hash: 0000005195-c61dabd18248eb953b5b2feed58925cbc408e33dd634c207dfd6ce175d7f9362
+['filter' is a reserved keyword in GLSL/GPUs.
+Stephane Popinet <popinet@basilisk.fr>**20260304125613
+ Ignore-this: a8e6d0923dce5cf26ecc70005f42db55
+] 
+hash: 0000000600-dbe8426aa13e23990d9815f5712b5aa592c4759ff2aa6154807146941f7807af
+[Fix for array dimensions in interpreter
+Stephane Popinet <popinet@basilisk.fr>**20260310152508
+ Ignore-this: 510c8b97814aedde29bd4d20862afa1e
+] 
+hash: 0000001582-640473b8ffb7713d25d3ad6fe33c532d19c103915b113b558625989f51be55d3
+[Piecewise Polynomial Reconstruction in C
+Antoine Aubert <antoine.aubert@polytechnique.edu>**20260310152720
+ Ignore-this: 567297244c8e2826e00a23e3c4dbcbe6
+] 
+hash: 0000029396-37f80e281180154f70b8ee193f62cc02fca7a54a31a5c7c9ecfbb35b07bb3c30
+[Tests are run again if reference file changes
+Stephane Popinet <popinet@basilisk.fr>**20260312155708
+ Ignore-this: ba4b79cc91bc16ffb9dd9ddabe7f12e0
+] 
+hash: 0000000596-4e0544e464b3a36cdaaacecd0a649ee2bdb416f1cb79b14a86e68f2f96ce682e
+[Updated references with C multilayer remapping
+Stephane Popinet <popinet@basilisk.fr>**20260312155939
+ Ignore-this: eb7aeb6e468a884ca8ccc5c6f2ce29a
+] 
+hash: 0001676959-56de720f234ac431c82d2408b82e5c82aee2888060b4ae916c72c87bbb47eea4
+[Vertical remapping uses the C implementation rather than the Fortran PPR library
+Stephane Popinet <popinet@basilisk.fr>**20260312161232
+ Ignore-this: 6ad4d8a917ab565d66db0b7c2fbec6a1
+] 
+hash: 0000006283-81acc0b7cf10313128a4cfaf1f2b1a5d62380ba15a4cf3c3f8647bfb8bfa4334

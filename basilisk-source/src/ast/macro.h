@@ -128,6 +128,9 @@ statements, which are inserted before the calling statement. In
 contrast with inlined macros, the type of the return value is
 automatically cast to the type given in the macro definition.
 
+Note that `return` must only appear as the last statement in the macro
+definition.
+
 ## Optional arguments
 
 Since macros share their syntax with that of functions, they can also
@@ -200,9 +203,9 @@ macros.*
 # Implementation */
 
 typedef struct {
-  Ast * statement, * arguments, * parameters, * call, * label, * initial, * scope;
+  Ast * statement, * arguments, * parameters, * call, * initial, * scope;
   Stack * sparameters;
-  int * returnindex;  
+  int * returnindex, label;
   bool nolineno, complex_call;
   int postmacros;
 } MacroReplacement;
@@ -473,40 +476,45 @@ static void replace_break (Ast * n, Ast * breaking, Ast * parent)
 static void replace_return (Ast * n, Stack * stack, void * data)
 {
   if (n->sym == sym_RETURN) {
+    Ast * a = ast_parent (n, sym_block_item);
+    while (a && ast_last_child (a->parent) == a) {
+      a = ast_parent (a, sym_compound_statement);
+      while (a->sym == sym_compound_statement)
+	a = a->parent;
+      if (a->sym == sym_function_definition)
+	break;
+      a = ast_parent (a, sym_block_item);
+    }
+    if (!a || a->sym != sym_function_definition) {
+      fprintf (stderr, "%s:%d: error: can only return at the end of a macro\n",
+	       ast_terminal (n)->file, ast_terminal (n)->line);
+      ast_print_tree (ast_parent (n, sym_function_definition), stderr, 0, 0, 12);
+      ast_print_tree (a, stderr, 0, 0, 3);
+      exit (1);
+    }
+
     Ast * expr = ast_schema (n->parent, sym_jump_statement,
 			     1, sym_expression);
-
-    n->sym = sym_GOTO;
-    free (ast_terminal (n)->start);
-    ast_terminal (n)->start = strdup ("goto");
     MacroReplacement * r = data;
-    if (!r->label) {
-      char rindex[25]; snprintf (rindex, 24, "_return_%d", (*r->returnindex)++);
-      r->label = NN(n, sym_generic_identifier,
-		    NA(n, sym_IDENTIFIER, rindex));
-    }
-    Ast * label = ast_copy (r->label);
-    ast_before (label, " ");
-    ast_set_line (label, ast_terminal (n), true);
-    if (expr) // 'return expr;' replaced with 'goto label;'
-      ast_set_child (n->parent, 1, label);
-    else // 'return;' replaced with 'goto label;'
-      ast_new_children (n->parent, n->parent->child[0], label, n->parent->child[1]);
-      
-    Ast * statement = ast_parent (n, sym_statement);
-    Ast * parent = statement->parent;
-    int index = ast_child_index (statement);
-
-    Ast * compound;
-    if (r->call->sym == sym_function_call) {
-      if (!expr) {
+    if (!expr) {
+      if (r->call->sym == sym_function_call) {
 	fprintf (stderr, "%s:%d: error: 'void' return value in a macro returning non-void\n",
 		 ast_terminal (n)->file, ast_terminal (n)->line);
 	exit (1);
       }
-      char * val = strdup (ast_terminal (ast_child(label, sym_IDENTIFIER))->start);
-      str_append (val, "val");
-      AstTerminal * open = NCB(parent, "{"), * close = NCB(parent, "}");
+      Ast * parent = ast_parent (n, sym_jump_statement);
+      parent->sym = sym_expression_statement;
+      ast_destroy (n);
+      parent->child[0] = parent->child[1];
+      parent->child[1] = NULL;
+      return;
+    }
+
+    if (r->label < 0)
+      r->label = (*r->returnindex)++;
+
+    if (r->call->sym == sym_function_call) {
+      char val[25]; snprintf (val, 24, "_return_%dval", r->label);
       Ast * assign = NN(n, sym_statement,
 			NN(n, sym_expression_statement,
 			   NN(n, sym_expression,
@@ -519,23 +527,11 @@ static void replace_return (Ast * n, Stack * stack, void * data)
 				    NCB(n, "=")),
 				 ast_child (expr, sym_assignment_expression))),	  
 			   NCB(n, ";")));
-      free (val);
-
-      compound = NN(parent, sym_statement,
-		    NN(parent, sym_compound_statement,
-		       open,
-		       NN(parent, sym_block_item_list,
-			  NN(parent, sym_block_item_list,
-			     NN(parent, sym_block_item,
-				assign)),
-			  NN(parent, sym_block_item,
-			     statement)),
-		       close));
+      Ast * statement = ast_parent (n, sym_statement);
+      Ast * parent = statement->parent;
+      int index = ast_child_index (statement);
+      ast_set_child (parent, index, assign);
     }
-    else
-      compound = statement;
-
-    ast_set_child (parent, index, compound);
   }
 }
 
@@ -653,7 +649,8 @@ void ast_macro_replacement (Ast * statement, Ast * initial, Stack * stack,
 				 0, sym_RETURN),
     .returnindex = return_macro_index,
     .postmacros = postmacros,
-    .scope = scope
+    .scope = scope,
+    .label = -1
   };
 
   if (r.parameters) {
@@ -746,22 +743,6 @@ void ast_macro_replacement (Ast * statement, Ast * initial, Stack * stack,
   ast_pop_scope (stack, copy);
 
   /**
-  Return label */
-  
-  if (r.label) {
-    ast_set_line (r.label, ast_right_terminal (copy), true);
-    ast_block_list_append (ast_schema (copy, sym_compound_statement,
-				       1, sym_block_item_list), sym_block_item,
-			   NN(copy, sym_statement,
-			      NN(copy, sym_labeled_statement,
-				 r.label,
-				 NCA(copy, ":"),
-				 NN(copy, sym_statement,
-				    NN(copy, sym_expression_statement,
-				       NCA(copy, ";"))))));
-  }
-  
-  /**
   Statement */
   
   if (statement->sym == sym_statement) {
@@ -829,8 +810,7 @@ void ast_macro_replacement (Ast * statement, Ast * initial, Stack * stack,
       This is a complex return macro. */
       
       assert (r.complex_call);
-      assert (r.label);
-      
+
       Ast * returntype = ast_schema (macro_definition, sym_function_definition,
 				     0, sym_function_declaration,
 				     0, sym_declaration_specifiers,
@@ -842,9 +822,14 @@ void ast_macro_replacement (Ast * statement, Ast * initial, Stack * stack,
 	exit (1);
       }
 
-      char * label = strdup (ast_terminal (ast_schema (r.label, sym_generic_identifier,
-						       0, sym_IDENTIFIER))->start);
-      str_append (label, "val");
+      if (r.label < 0.) {
+	AstTerminal * t = ast_left_terminal (macro_definition);
+	fprintf (stderr, "%s:%d: error: macro '%s' must return a value\n",
+		 t->file, t->line, ast_terminal (identifier)->start);
+	exit (1);
+      }
+      
+      char label[25]; snprintf (label, 24, "_return_%dval", r.label);
       AstTerminal * ilabel = NB(copy, sym_IDENTIFIER, label);
       ilabel->before = strdup (" ");
       Ast * declaration = NN(copy, sym_declaration,
@@ -893,8 +878,6 @@ void ast_macro_replacement (Ast * statement, Ast * initial, Stack * stack,
 			       close));
 	ast_set_child (gp, index, compound);
       }
-
-      free (label);
     }
   }
 }

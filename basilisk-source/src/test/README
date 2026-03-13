@@ -247,6 +247,8 @@ See also the [GPU Benchmarks](/src/grid/gpu/Benchmarks.md).
 * [Einstein summation](einstein_sum.c)
 * [Macros](macro.c)
 * [Very simple harmonic analysis](harmonic.c)
+* [Comparison between Fortran and C remapping](testremap.c)
+* [Test of Dirichlet, Robin and Neumann conditions when remapping](remap-robin.c)
 
 ## Unmaintained
 

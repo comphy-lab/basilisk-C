@@ -35,6 +35,7 @@ int main() {
   nl = 2;  
   breaking = 0.1;
   CFL_H = 0.5;
+  cell_lim = mono_limit;
 #endif
   run();
 }
