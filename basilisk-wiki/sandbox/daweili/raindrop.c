@@ -17,9 +17,9 @@ plot 'log' u 1:($2*2.) w l t ''
 #include "two-phase-clsvof.h"
 #include "integral.h"
 
-const double tend = 10.2;
+const double tend = 15;
 const double We = 5.;
-const double Re = 2000;
+const double Re = 1000;
 const int maxlevel = 11;
 
 double dmin0;
@@ -31,7 +31,7 @@ int main()
   periodic(right);
 
   dmin0 = 1.;
-  L0 = 5.;
+  L0 = 10.;
   X0 = - L0/2.;
   Y0 = - L0/2. - 1.;
   const scalar sigma[] = 1./We;
@@ -55,7 +55,7 @@ event acceleration (i++)
 
 event init (t = 0) {
   foreach()
-    d[] = - sq(y + 0.01*sin(2*pi*x/L0)) + sq(0.5);
+    d[] = - sq(y + 0.01*sin(2*pi*x/L0*2)) + sq(0.5);
 }
 
 event movies (i += 30; t <= tend)

@@ -334,7 +334,7 @@ event init(t=0){
   }
 
   dump();
-  exit(1);
+  //exit(1);
 }
 
 
