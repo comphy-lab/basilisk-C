@@ -11,6 +11,7 @@ examples)"*](/src/test/README#running-and-creating-test-cases-and-examples).
 * [The complex Ginzburg--Landau equation](ginzburg-landau.c)
 * [Distance field computation from a 3D model](distance.c)
 * [Wavelet transforms and filtering](wavelet.c)
+* [Viscous sublayer and log layer for turbulent flow in a channel](loglayer.c)
 
 ## Navier--Stokes
 

@@ -10,7 +10,7 @@ all: check
 
 fastcheck: brusselator.tst distance.tst ginzburg-landau.tst karman.tst \
 	life.tst madsen.tst tsunami.tst turbulence.tst wavelet.tst naca2414-starting.tst \
-	porous3D.tst yang.tst swasi.tst
+	porous3D.tst yang.tst swasi.tst loglayer.tst
 
 madsen-sv.c: madsen.c
 	ln -s madsen.c madsen-sv.c 
@@ -41,3 +41,6 @@ master.s: slave.o
 slave.o: $(QCC) slave.c ../slave.h Makefile
 	$(QCC) $(CFLAGS) -fno-common -D_OBJECT -c slave.c
 	objcopy -G slave_step -G slave_stop -G slave_interpolate slave.o
+
+# fixme: this runs much more slowly with -fopenmp
+loglayer.tst: CFLAGS = -O2

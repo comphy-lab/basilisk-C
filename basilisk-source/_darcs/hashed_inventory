@@ -1,4 +1,4 @@
-pristine:7101701e7d890794e52306ba1c822c6b79d93fa02f2c306e4c7337ad5c8593db
+pristine:6ba4d575ec7d0cc8e8952ac1202c7ddf66e2958e672d72bf056e114dafb257d4
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -685,3 +685,13 @@ Stephane Popinet <popinet@basilisk.fr>**20260312161232
  Ignore-this: 6ad4d8a917ab565d66db0b7c2fbec6a1
 ] 
 hash: 0000006283-81acc0b7cf10313128a4cfaf1f2b1a5d62380ba15a4cf3c3f8647bfb8bfa4334
+[Viscous sublayer and log layer for turbulent flow in a channel
+Stephane Popinet <popinet@basilisk.fr>**20260313153328
+ Ignore-this: 5ecf11ad6818d4ed0cd78c2f666ebed1
+] 
+hash: 0000005728-18ae7c920ba2dc1c08284555bf0f3774d1c8a5554660c4c5f678584a94580f75
+[Typo
+Stephane Popinet <popinet@basilisk.fr>**20260313153336
+ Ignore-this: 46dfd2098eacdf18e5f878e27dd6cb62
+] 
+hash: 0000000264-0ea3ba4464a83bd4ac92729dcb02fc64befec198ca23ed1779b274d259f0e029

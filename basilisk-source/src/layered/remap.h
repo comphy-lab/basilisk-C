@@ -9,7 +9,7 @@ Library](https://github.com/dengwirda/PPR) of Engwirda and Kelley to
 perform the remapping. The default settings are using the Parabolic
 Piecewise Method without limiting. 
 
-By default we use the [C PPR implementation](remapc.h) with
+By default we use the [C PPR implementation](remapc.h) without
 limiting. */
 
 #if USE_PPR
