@@ -293,6 +293,33 @@ y = data[:, 1]
 u_y = data[:, 3]
 
 # ============================================================
+# Simulation parameters
+# ============================================================
+
+Re = 10
+V_0 = 1
+rho = 1
+R_d = 0.01
+nu = V_0 * R_d / Re
+D = 2 * R_d
+
+# ============================================================
+# Define usable y/D range (avoid inlet & boundary)
+# ============================================================
+
+yD = y / D
+
+yD_min = 10    # avoid inlet
+yD_max = 40     # avoid external boundary
+
+mask = (yD >= yD_min) & (yD <= yD_max)
+
+x = x[mask]
+y = y[mask]
+u_y = u_y[mask]
+yD = yD[mask]
+
+# ============================================================
 # Build structured 2D matrix U_y[y,x]
 # ============================================================
 x_unique = np.unique(x)
@@ -317,7 +344,7 @@ for i, yi in enumerate(y_unique):
 
 eta_all = []
 f_all = []
-y_all = []
+yD_all = []
 
 for i, yi in enumerate(y_unique):
 
@@ -340,26 +367,17 @@ for i, yi in enumerate(y_unique):
 
     eta_all.extend(eta)
     f_all.extend(f)
-    y_all.extend([yi]*len(eta))
+    yD_all.extend([yi/D]*len(eta))
 
 eta_all = np.array(eta_all)
 f_all = np.array(f_all)
-y_all = np.array(y_all)
+yD_all = np.array(yD_all)
 
 # ============================================================
 # Theoretical profile: A y^{-1/3} sech²(B x / y^{2/3})
 # In similarity variables:
 # y^{1/3} v = A sech²(B eta)
 # ============================================================
-
-#Param sim.
-
-Re=10
-V_0=1
-rho=1
-R_d=0.01
-nu=V_0*R_d/Re
-
 
 J=rho*V_0**2*0.01
 alpha=0.8255*(J/(rho*nu**(1/2)))**(1/3)
@@ -370,34 +388,41 @@ B=alpha*1/(3*nu**(1/2)) #Theory
 A = 0.3 #best fit according to me ^^
 B = 7.1 #best fit according to me ^^
 
-
 eta_theory = np.linspace(-1, 1, 500)
 f_theory = A * (1 / np.cosh(B * eta_theory))**2
 
 # ============================================================
-# Plot
+# Gaussian comparison
 # ============================================================
 
+sigma = 0.12
+f_gauss = A * np.exp(-(eta_theory**2) / (2 * sigma**2))
+
+# ============================================================
+# Plot
+# ============================================================
 
 plt.figure(figsize=(7,6))
 
 sc = plt.scatter(
     eta_all,
     f_all,
-    c=y_all,
+    c=yD_all,
     cmap='viridis',
     s=5,
     alpha=0.6,
 )
 
-sc = plt.scatter(
+# symmetry
+plt.scatter(
     -eta_all,
     f_all,
-    c=y_all,
+    c=yD_all,
     cmap='viridis',
-    s=5,
-    alpha=1,
-    label='Numerical data'
+    vmin=yD_min,
+    vmax=yD_max,
+    s=6,
+    alpha=0.7
 )
 
 plt.plot(
@@ -408,6 +433,14 @@ plt.plot(
     label=r'Theory: $A\,\mathrm{sech}^2(B\eta)$'
 )
 
+plt.plot(
+    eta_theory,
+    f_gauss,
+    'k--',
+    linewidth=2,
+    label='Gaussian'
+)
+
 plt.xlabel(r'$\eta = \frac{x}{y^{2/3}}$')
 plt.ylabel(r'$y^{1/3} v(x,y)$')
 plt.xlim([-0.5,0.5])
@@ -416,7 +449,7 @@ plt.legend()
 plt.grid(True)
 
 cbar = plt.colorbar(sc)
-cbar.set_label(r'$\mathrm{Vertical~position~~~y/L}$')
+cbar.set_label(r'$\mathrm{Vertical~position~~~y/D}$')
 
 plt.tight_layout()
 plt.savefig('self_sim.png')
@@ -427,7 +460,5 @@ plt.savefig('self_sim.png')
 ## See also
 
 See also the axisymmetric case [here](/sandbox/MCVacher/schlichting_axi.c).
-
-
 
 */

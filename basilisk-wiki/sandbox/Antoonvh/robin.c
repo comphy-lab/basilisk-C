@@ -81,6 +81,7 @@ u[left]  = robin (alphaL, -betaL, gammaL); //Mind the sign!
 u[right] = robin (alphaR,  betaR, gammaR);
 
 int main() {
+  size (1[0]);
   init_grid (1 << 7);
   foreach()
     rhs[] = 1. - 2.*sq(x);
