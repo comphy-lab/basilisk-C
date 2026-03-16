@@ -339,4 +339,3 @@ void output_vtu_bin_foreach (scalar * list, vector * vlist, FILE * fp, bool line
   omp_set_num_threads(num_omp);
 #endif
 }
-

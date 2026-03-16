@@ -49,17 +49,18 @@ These cases combine physics and numerical modeling to better understand fluid sy
 * [Rising bubble](Other_examples/rising_bubble.c)
 * [Taylor bubble](Other_examples/taylor_bubble.c)
 * [Interface Perturbation Analysis](Other_examples/oscillation.c)
+* [Shear flow](Other_examples/shear_flow.c)
 
 ### Soluble surfactants
 * [Course of soluble surfactants and Marangoni effects](Course of insoluble/soluble surfactants and Marangoni effects)
 
 ## Post-processing
-* [output_vtu.h](output_vtu.h)
-* [vtknew_cell.h](vtknew_cell.h)
-* [extract.c](extract.c)
+* [output_vtu.h](Tools/output_vtu.h)
+* [vtknew_cell.h](Tools/vtknew_cell.h)
+* [extract.c](Tools/extract.c)
 
 ## MPI
-* [Brun.sh](Brun.sh)
+* [Brun.sh](Tools/Brun.sh)
 
 ## Contact
 

@@ -162,5 +162,3 @@ void output_vtk (scalar * list, FILE * fp)
 
    fflush (fp);
 }
-
-
