@@ -85,6 +85,21 @@ double neumann_homogeneous (double expr, Point point = point, scalar s = _s)
 }
 
 /**
+Navier/Robin boundary condition */
+
+static inline
+double navier (double expr, double lambda, Point point = point, scalar s = _s)
+{
+  return (Delta*expr + s[]*(lambda - Delta/2.))/(lambda + Delta/2.);
+}
+
+static inline
+double navier_homogeneous (double expr, double lambda, Point point = point, scalar s = _s)
+{
+  return s[]*(lambda - Delta/2.)/(lambda + Delta/2.);
+}
+
+/**
 Register functions on GPUs */
 
 #if _GPU

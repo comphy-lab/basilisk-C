@@ -224,7 +224,7 @@ remotely()
     fi
     mv -f ../_$src $chksum/$src
     if grep -q '#define _GPU 1' $chksum/$src; then
-	TSP="TS_SOCKET=/tmp/tsp-gpu tsp"
+	TSP="TS_SOCKET=/tmp/tsp-gpu tsp -S 1"
 	TIMEOUT="OMP_NUM_THREADS=1 DISPLAY=:0 $TIMEOUT"
     else
 	TSP=tsp

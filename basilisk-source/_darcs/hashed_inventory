@@ -1,4 +1,4 @@
-pristine:6ba4d575ec7d0cc8e8952ac1202c7ddf66e2958e672d72bf056e114dafb257d4
+pristine:5e3b0cfe787cae516c4d35faa1903c4ad6799b0932630a4d82389fb857005e5a
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -695,3 +695,23 @@ Stephane Popinet <popinet@basilisk.fr>**20260313153336
  Ignore-this: 46dfd2098eacdf18e5f878e27dd6cb62
 ] 
 hash: 0000000264-0ea3ba4464a83bd4ac92729dcb02fc64befec198ca23ed1779b274d259f0e029
+[Navier/Robin boundary condition
+Stephane Popinet <popinet@basilisk.fr>**20260316092751
+ Ignore-this: ea03262ca93f3e1a97a51d365fd37aab
+] 
+hash: 0000000560-a57fc36b54d87dd825604495224a58e6680522d3383e325bfd51d746a08e5ecc
+[Turbulent flow in a channel with a "wall model"
+Stephane Popinet <popinet@basilisk.fr>**20260316101515
+ Ignore-this: 4cc5bf740ac18e7ad63f47082eb5aeca
+] 
+hash: 0000021745-1a141f23e9c441fd202fafe9d0c2a819b9d191c884b329b6af18497a5c7a4b93
+[Only one job per GPU on a Basilisk server
+Stephane Popinet <popinet@basilisk.fr>**20260316132714
+ Ignore-this: f7c6e78202cad33b96c0932be2a33ba
+] 
+hash: 0000000243-e91523e319101e83bbb45b578d20e02a42d1f02a68d3760c93c2e1e0818ce41e
+[Fixed dimensions
+Stephane Popinet <popinet@basilisk.fr>**20260316153732
+ Ignore-this: dd45dcf761bff015631754d96581f7ea
+] 
+hash: 0000000664-396d05d5c0379849127591b44d41abaef41da1d5f1f9dd3963e10dfe1ddf08b4

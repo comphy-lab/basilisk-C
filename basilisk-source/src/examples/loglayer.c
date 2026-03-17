@@ -35,10 +35,10 @@ const double kappa = 0.41 [0];
 
 /**
 The numerical parameters are the minimum and maximum level of
-refinement. We need a large range of scales i.e. $2^{16} \approx
-O(10^5)$ to capture both the viscous sublayer and the log layer. */
+refinement. We need a large range of scales i.e. $2^{15} \approx
+O(10^4)$ to capture both the viscous sublayer and the log layer. */
 
-const int minlevel = 5, maxlevel = 16;
+const int minlevel = 5, maxlevel = 15;
 
 /**
 The timestep cannot be too large. The tolerance controls the accuracy
@@ -48,7 +48,6 @@ $2^\text{minlevel}$ grid points. */
 int main() {
   DT = 1 [0,1];
   N = 1 << minlevel;
-  TOLERANCE = 1e-4;
   run(); 
 }
 
@@ -61,21 +60,11 @@ scalar U[];
 U[left] = dirichlet(0);
 
 /**
-`Un` is just used to track convergence. */
-
-scalar Un[];
-
-event init (t = 0) {
-  foreach()
-    Un[] = U[];
-}
-
-/**
 ## Time integration 
 
 In this event we solve the diffusion equation
 $$
-\partial_x(D\partial_x U) + G = 0
+\partial_t  U = \partial_x(D\partial_x U) + G
 $$
 */
 
@@ -104,7 +93,7 @@ event integration (i++)
   the distance to the boundary. The mixing length $l$ is then defined
   as $\kappa x$ and the turbulent viscosity is
   $$
-  \nu_t = l^2 \partial_x U
+  \nu_t = l^2 |\partial_x U|
   $$
   The diffusion coefficient is the sum of the fluid and the turbulent
   viscosity. */
@@ -112,7 +101,7 @@ event integration (i++)
   face vector D[];
   foreach_face(x) {
     double l = kappa*x;
-    double nu_t = sq(l)*(U[] - U[-1])/Delta;
+    double nu_t = sq(l)*fabs (U[] - U[-1])/Delta;
     D.x[] = nu + nu_t;
   }
   mg = diffusion (U, dt, D, r = a);
@@ -124,33 +113,31 @@ event integration (i++)
 We do not adapt at every timestep to minimize adaptation noise. */
 
 event adapt (i += 10)
-  adapt_wavelet ({U}, {1e-4}, maxlevel, minlevel);  
+  adapt_wavelet ({U}, {1e-2}, maxlevel, minlevel);
 
 /**
-## Convergence
+## Convergence 
 
-If the change in $U$ between timesteps is small enough we stop the
-simulation. */
+400 timesteps are necessary/sufficient to reach a stationary
+solution. */
 
 event logfile (i++; i <= 400) {
-  double du = change (U, Un);
-  if (i > 0 && du < 1e-4)
-    return 1; /* stop */
-  fprintf (stderr, "%d %g %g %g %d\n", i, t, dt, du, mg.i);
+  printf ("%g %d %g\n", t, mg.i, perf.t);
 }
 
 /**
 ## Results
 
 We output the final velocity profile. The characteristic "friction
-velocity" is $u_\star = \sqrt{GL_0}$ where $L_0$ is the channel width. A
-characteristic length scale of the viscous sublayer is $y_\star = \nu/u_\star$. */
+velocity" is $u_\star = \sqrt{GL_0}$ where $L_0$ is the channel
+width. A characteristic length scale of the viscous sublayer is
+$y_\star = \nu/u_\star$. */
 
 event profile (t = end) {
-  printf ("\n");
+  fprintf (stderr, "\n");
   const double u_star = sqrt(G*L0), y_star = nu/u_star;
   foreach (serial)
-    printf ("%g %g %g %d\n", x/y_star, U[]/u_star, Delta/y_star, level);
+    fprintf (stderr, "%g %g %g %d\n", x/y_star, U[]/u_star, Delta/y_star, level);
 }
 
 /**
@@ -165,7 +152,7 @@ set logscale x
 u_plus(y) = (1./y - sqrt(4.*(y*kappa)**2 + 1.)/y + 2.*kappa*asinh(2.*y*kappa))/(2.*kappa**2)
 u_log(y) = 1./kappa*log(y) + (log(kappa) - 1 + log(4.))/kappa
 set key bottom right
-plot [:][0:21]'out' u 1:2 pt 6 t 'Numerical', \
+plot [:][0:21]'log' u 1:2 pt 7 t 'Numerical', \
      u_plus(x) t 'Full analytical solution' lw 2, \
      x t 'Viscous sublayer', \
      u_log(x) t 'Log layer'
@@ -176,10 +163,13 @@ it is indeed important as illustrated below.
 
 ~~~gnuplot Mesh size
 set ylabel '\Delta_+'
-# unset logscale x
 set logscale y
-plot 'out' u 1:3 w l t ''
+plot 'log' u 1:3 w l t ''
 ~~~
+
+## See also
+
+* [A more efficient version using a "wall model"](wall-model.c)
 
 ## References
 
