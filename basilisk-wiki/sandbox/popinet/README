@@ -38,13 +38,6 @@ journal={Journal of Computational Physics},
 year={2025}
 }
 
-@Article{yang2025,
-author={Yang, Rui and Liu, Zehua and Farsoiya, Palas and Popinet, Stéphane and Deike, Luc},
-title={Surfactants effects on gravity-capillary waves},
-journal={Journal of Fluid Mechanics},
-year={2025}
-}
-
 @Article{martin2025,
 author={Clara Martin-Blanco and Nicolo Scapin and Jiarong Wu and Stéphane Popinet and J. Thomas Farrar and Bertrand Chapron and Luc Deike},
 title={Kinematics of gravity-capillary waves above an evolving underwater current},
@@ -181,7 +174,9 @@ doi = {10.5194/gmd-11-4727-2018}
 ### Waves
 
 ~~~bib
-@hal{scapin2025b, hal-05466359}
+@hal{yang2026, hal-05554495}
+
+@hal{scapin2026, hal-05466359}
 
 @hal{wu2025, hal-05108994}
 

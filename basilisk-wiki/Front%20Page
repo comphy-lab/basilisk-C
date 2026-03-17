@@ -41,6 +41,8 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@hal{yang2026, hal-05554495}
+
 @article{caraccio2026,
   title = {Multiphase modeling of anisotropic biomass particle pyrolysis accounting for particle deformation and coupled gas-phase dynamics},
   journal = {Chemical Engineering Journal},
@@ -74,6 +76,4 @@ pdf={https://doi.org/10.1038/s41467-026-69512-y}
   year={2026},
   pdf={https://journals.ub.ovgu.de/index.php/techmech/article/download/2326/2337}
 }
-
-@hal{scapin2025b, hal-05466359}
 ~~~
