@@ -1,52 +1,44 @@
+/** 
+## Inclined free surface Poiseuille flow fluid with the layered solver
+An example of 2D free surface flow  over a inclined plate  is presented here.
+The configuration is periodic. 
+*/
 #define ML 1
-#define HYDRO 1
 
-
-
-#include "grid/multigrid1D.h"
-#if !ML
-# include "saint-venant.h"
-#else // ML
+# include "grid/multigrid1D.h"
+# if !ML
+#  include "saint-venant.h"
+# else // ML
 # include "layered/hydro.h"
-# define phi q
-# if !HYDRO
-#   include "layered/nh.h"
-# endif
-# include "layered/remap.h"
-# include "layered/perfs.h"
-#endif // ML
+//#  include "hydroMT.h" // need to be tested with  diffusionMT.h
+#  include "layered/remap.h"
+# endif // ML
 
 
-const double QL = 1., HR = 1., NU = 0.1, BA = 0.4, T0 = 10000;
-double Alpha;
-FILE *file1;
+const double HR = 1., NU = 0.1, T0 = 100;
+double slope;
+scalar uold[];
+//FILE *file;
+
 int main()
 {
-
   periodic(right);
  
-  Alpha = 0.349;  
+  slope = 0.359;  
   L0 = 1.;
-  G = 1;
-  N = 64; 
-  
+  G  = 1;
+  N  = 16; // no need to refine, the velocity varies only along the vertical direction
   nu = NU;
-  nl = 64; // going to 30 changes very little
-#if ML
-#if NOMETRIC
-  max_slope = 0.;
-#endif
-#if !HYDRO  
-  NITERMIN = 2;
-#endif
-#endif
+  nl = 64;
 
-  file1 = fopen("profil.dat", "w");
-  fclose(file1);
-
-  run();
+  // CFL_H = HUGE;
+  // DT = 0.5;
+   for (N = 8; N<= 32; N*= 2){
+    for (nl = 4; nl <= 256; nl *= 2)
+      run();
+    fprintf (stderr,"\n\n");
+  }
 }
-
 
 /**
 We initialise the topography and the initial thickness of each layer *h*. */
@@ -55,149 +47,183 @@ event init (i = 0)
 {
   foreach() {
     zb[] = 0.;
+    //zb[] = -(x-X0)*slope; //;
 #if !ML
     h[] = HR - zb[];
 #else
     foreach_layer()
       h[] = (HR)/nl;
 #endif
- 	eta[] = HR;  
+ 	//eta[] = HR;  
   }
 
+//Velocity initialization
+  foreach (){
+    uold[] = 0;  
+    //foreach_layer(){
+    //u.x[] = y/DT;
+  //}
+  }
+}
 
+#if !ML
+event acc (i++, t<=T0){
+  foreach () 
+    for (vector u in ul) {
+      u.x[] = u.x[] + G*sin(slope)*dt;
+  }
+}
+#else
+event acceleration (i++, t<=T0)
+{
+  foreach_face()
+    foreach_layer()
+      ha.x[] += G*sin(slope)*hf.x[]; 
+}
 
-//Mettre une vitesse initiale dans le domaine 
- foreach (serial) {
-	 foreach_layer(){
-          u.x[] = y/DT;
-	}
-    }
-
-
-  
-
-  /**
-  In the non-hydrostatic case, a boundary condition is required for
-  the non-hydrostatic pressure $\phi$ of each layer. */
-  
-#if !HYDRO && ML
-  phi[right] = dirichlet(0.);
 #endif
+
+#if 0
+/** We check for convergence. */
+event logfile (t += 0.1; t<=T0) {
+//event logfile (i++;t<=T0) {
+  double du = change (u.x,uold);
+    if (i > 10 && du < 1e-11)
+      return 1; /* stop */
 }
-
-event acc(i++){
-  foreach (serial) {
-	 foreach_layer(){
-          u.x[] = u.x[] + 1*sin(Alpha)*dt;
-     }
-  }
-}
-
-
-
-
-/**
-We check for convergence. */
-
-double uold,unew;
-
-event logfile (t=1;t += 0.1; t <= T0) {
-   unew = 0.;
-  foreach(){
-    unew = unew + u.x[0,0,nl-1];
-  }
-  if (i > 1 && fabs(unew-uold) < 1e-5)
-    return 1;
-  else uold = unew;
-}
-
+#endif
 
 /**
 ## Outputs
 
-We save profiles at regular intervals. */
+We save the velocity profile at regular intervals. */
+#define uan( z ) ( (G*sin(slope)/(2*nu) )*(2-z)*z)
 
-event profiles (t += 5;t<=T0)
+event profiles ( t = end )
 {
-  foreach (serial) {
+  if ( N == 16 && nl == 128 ){
+    foreach() {
+      double z = zb[];
 #if !ML
-    double H = h[];
+      for (int l = 0; l <= nl - 1; l++) {
+        vector u = ul[l]; 
+        fprintf (stdout,"%g %g %g %g %g %g\n", x, z, u.x[], uan( (z + h[]*layer[l]/2) ), dt, t);
+        z += h[]*layer[l];
+      }
 #else
-    double H = 0.;
-    foreach_layer()
-      H += h[];
+      foreach_layer(){
+        fprintf (stdout,"%g %g %g %g %g %g\n", x, z, u.x[], uan( (z + h[]/2) ), dt, t);
+        z += h[];
+
+      }
 #endif
-    fprintf (stderr, "%g %g %g\n", x, zb[] + H, zb[]);
+      fprintf (stdout,"\n \n");   
+    }
   }
-  fprintf (stderr, "\n\n");
 }
 
 /**
-For the hydrostatic case, we compute a diagnostic vertical velocity
-field `w`. Note that this needs to be done within this event because
-it relies on the fluxes `hu` and face heights `hf`, which are only
-defined temporarily in the [multilayer solver](hydro.h#update_eta). */
+We also compute the error between the numerical solution and the analytical solution   */
 
-#if HYDRO
-scalar w = {-1};
-
-event update_eta (i++)
+event error (t = end)
 {
-  if (w.i < 0)
-    w = new scalar[nl];
-  vertical_velocity (w, hu, hf);
-
-  /**
-  The layer interface values are averaged at the center of each
-  layer. */
-  
+  int i = 0;
   foreach() {
-    double wm = 0.;
-    foreach_layer() {
-      double w1 = w[];
-      w[] = (w1 + wm)/2.;
-      wm = w1;
+    if (i++ == N/2) {
+      double z = zb[];
+      double norm = 0, norm2 = 0, normax = 0; 
+    #if ML
+      foreach_layer() {
+        double e = fabs(u.x[] - uan ( (z + h[]/2.) ) );
+        norm += e*h[];
+        norm2 += sq(e)*h[];
+        normax = max( normax, e );
+        z += h[];
+      }
+    #else
+        for (int l = 0; l <= nl - 1; l++) {
+          vector u = ul[l]; 
+          double e = fabs(u.x[] - uan ( (z + h[]*layer[l]/2.) ));
+          norm += e*h[]*layer[l];
+          norm2 += sq(e)*h[]*layer[l];
+          normax = max( normax,e );
+          z += h[]*layer[l];
+        }
+    #endif
+      norm = norm/z;
+      norm2 = sqrt(norm2/z);
+      fprintf (stderr, "%d %d %g %g %g %g %g\n", N, nl, norm, norm2, normax, dt, t);
     }
   }
 }
-#endif // HYDRO
 
 /**
-We also save the velocity and non-hydrostatic pressure fields. */
-
-event output (t++)
-{
-  file1 = fopen ("profil.dat", "w");
-  foreach (serial) {
-    double z = zb[];
-#if HYDRO
-    printf ("%g %g %g\n", x, z, u.x[]);
-    foreach_layer() {
-      z += h[];
-      fprintf (file1,"%g %g %g\n", x, z, u.x[]);
-    }
-#elif // ML
-    printf ("%g %g %g %g %g\n", x, z, u.x[], w[], phi[]);
-    foreach_layer() {
-      z += h[];
-      printf ("%g %g %g %g %g\n", x, z, u.x[], w[], phi[]);
-    }
-#endif // ML
-    printf ("\n");
-    
-    fprintf (file1,"\n \n");   
-  }
-//#if HYDRO
-//  delete ({w});
-//#endif
-  printf ("# end = %g\n", t);
-  fclose(file1);
-}
-/**
-
-~~~gnuplot Velocity and stress profiles for flow
- set xlabel "y"
- set ylabel "u"
-p 'profil.dat' u 2:3 w lp t'U comp'
+# Results
+~~~gnuplot Velocity profiles for flow
+set key bottom right
+ set ylabel "z"
+ set xlabel "u"
+p 'out' u 3:2 w lp t'U computed', "" u 4:2 w l t 'U exact'
 ~~~
+
+# Convergence
+We track the value of the relative error on the velocity for various
+number of layers $\text{nl}$. The error decrease with 2nd ordrer precision.
+
+~~~gnuplot Variation of the relative error with number of layers, for different grid $N$.
+set key bottom left
+set xlabel 'nl'
+set ylabel 'Max |e|'
+set logscale
+#set format x "%.0e"
+set format y "%.2e"
+
+set xrange [2:512]
+set cbrange [1:2]
+set xtics 2,2,512
+
+set yrange [1e-6:1e-1]
+#set cbrange [1:2]
+#set xtics 1e-5,10,1e-1
+
+set grid ytics
+
+#set label 1 "N^{-1}" at 32,0.9*16**-1 font ',12' textcolor rgb 'red' offset 0,1
+set label 1 "N^{-2}" at 8,0.01*16**-2 font ',12' textcolor rgb 'purple' offset 0,1
+
+plot for [i=0:3] 'log' index i u 2:5 t "N=".columnhead(1) with lp lw 2 ps 1.5 lt i+2,\
+         [4:8<<2] 0.02*x**-2 t '' w l lw 2 lc rgb 'purple'
+
+         #[4:8<<2] 0.001*x**-1 t '' w l lw 2 lc rgb 'red', [4:8<<2] 0.001*x**-2 t '' w l lw 2 lc rgb 'purple'
+~~~
+
 */ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

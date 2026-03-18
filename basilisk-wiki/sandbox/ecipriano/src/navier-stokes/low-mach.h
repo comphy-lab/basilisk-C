@@ -35,7 +35,7 @@ gas-liquid interface, while `drhodt` considers density changes. */
 scalar drhodt[], * drhodtlist = NULL;
 scalar intexp[], * intexplist = NULL;
 
-bool no_advection_div = false;
+bool no_advection_div = false, closed = false;
 
 /**
 ## Projection Function
@@ -73,9 +73,21 @@ mgstats project_lowmach (face vector uf, scalar p,
   static int inv = 0;
   scalar intexp = intexplist[inv];
   scalar drhodt = drhodtlist[inv];
+
+  double volume = 0., intexpsum = 0., drhodtsum = 0.;
+  if (closed) {
+    foreach (reduction(+:volume) reduction(+:intexpsum) reduction(+:drhodtsum)) {
+      volume += dv();
+      intexpsum += intexp[]*dv();
+      drhodtsum += drhodt[]*dv();
+    }
+    intexpsum /= volume;
+    drhodtsum /= volume;
+  }
+
   foreach() {
-    div[] += intexp[]/dt;
-    div[] += drhodt[]/dt;
+    div[] += (intexp[] - intexpsum)/dt;
+    div[] += (drhodt[] - drhodtsum)/dt;
   }
   inv++;
   inv = (inv == nv) ? 0 : inv;

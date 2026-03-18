@@ -170,7 +170,7 @@ static void conjugate (void) {
 
     foreach_interfacial_plic (cw, F_ERR) {
       double bc = conjugate_dirichlet;
-      double intgrad = ebmgrad (point, TS, fl, fg, fsl, fsg, false, bc, false);
+      double intgrad = plic_gradient (point, TS, fl, fsl, bc, true, NULL);
       QSexp[] += lambda3*intgrad*dirac;
     }
   }

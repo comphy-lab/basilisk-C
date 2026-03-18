@@ -82,6 +82,10 @@ void intexp_explicit (scalar intexp, scalar f, scalar mEvapTot) {
       mEvapTot[]*(1./rhog[] - 1./rhol[])*dirac : 0.;
 }
 
+#ifndef vof_gradients
+# define vof_gradients true
+#endif
+
 static scalar * f_tracers = NULL;
 
 event defaults (i = 0) {

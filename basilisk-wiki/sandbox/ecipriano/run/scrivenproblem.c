@@ -82,7 +82,7 @@ u.n[right] = neumann (0.);
 u.t[right] = neumann (0.);
 p[right] = dirichlet (0.);
 
-double Tsat, Tbulk;
+double Tsat, Tbulk, Ja;
 T[top] = dirichlet (Tbulk);
 T[right] = dirichlet (Tbulk);
 T[left] = dirichlet (Tbulk);
@@ -97,6 +97,11 @@ int maxlevel, minlevel = 5;
 double R0 = 1.e-3;
 double betaGrowth = 3.32615013;
 double V0, tshift;
+double tend = 0.5;
+
+#ifndef JAKOB
+# define JAKOB 3
+#endif
 
 /**
 ### Initial Temperature
@@ -116,11 +121,36 @@ $$
 */
 
 #include <gsl/gsl_integration.h>
-#pragma autolink -lgsl -lgslcblas
+#include "fsolve.h"
 
 double intfun (double x, void * params) {
   double beta = *(double *) params;
   return exp(-sq(beta)*(pow(1. - x, -2.) - 2.*(1. - rho2/rho1)*x - 1 ));
+}
+
+void betafun (const double * xdata, double *fdata, void * params) {
+  double beta = xdata[0];
+
+  gsl_integration_workspace * w
+    = gsl_integration_workspace_alloc (1000);
+  double result, error;
+  gsl_function F;
+  F.function = &intfun;
+  F.params = &beta;
+  gsl_integration_qags (&F, 0., 1., 1.e-9, 1.e-5, 1000,
+                        w, &result, &error);
+  gsl_integration_workspace_free (w);
+
+  double deltaT = Tbulk - Tsat;
+  double lhs = rho1*cp1*deltaT/(rho2*(dhev + (cp1 - cp2)*deltaT));
+  double rhs = 2.*beta*beta*result;
+  fdata[0] = lhs - rhs;
+}
+
+int betafun_gsl (const gsl_vector * x, void * params, gsl_vector * f) {
+  double * xdata = x->data, * fdata = f->data;
+  betafun (xdata, fdata, params);
+  return GSL_SUCCESS;
 }
 
 double tempsol (double r, double R) {
@@ -135,6 +165,16 @@ double tempsol (double r, double R) {
                         w, &result, &error);
   gsl_integration_workspace_free (w);
   return Tbulk - 2.*sq(beta)*(rho2*(dhev + (cp1 - cp2)*(Tbulk - Tsat))/rho1/cp1)*result;
+}
+
+double beta_growth (double guess = 1.) {
+  Array * a = array_new();
+  array_append (a, &guess, sizeof (double));
+  fsolve (betafun_gsl, a, NULL);
+  double * unk = (double *)a->p;
+  double beta = unk[0];
+  array_free (a);
+  return beta;
 }
 
 int main (void) {
@@ -155,8 +195,9 @@ int main (void) {
   The initial bubble temperature and the interface temperature are set to the
   saturation value. The bulk liquid phase is superheated. */
 
-  Tbulk = 373.989, Tsat = 373., TIntVal = 373.;
-  TL0 = Tbulk, TG0 = TIntVal;
+  Ja = JAKOB;
+  Tsat = 373., Tbulk = Tsat + dhev*rho2*Ja/rho1/cp1;
+  TIntVal = Tsat, TL0 = Tbulk, TG0 = TIntVal;
 
   /**
   We solve two different sets of Navier--Stokes equations according with the
@@ -179,25 +220,24 @@ int main (void) {
   TOLERANCE = 1.e-6 [*];
 
   /**
+  We use a root-finding routine to obtain the growth constant as a function of
+  the material properties and the bubble dimension. */
+
+  betaGrowth = beta_growth();
+
+  /**
   We compute the time shifting factor (post-processing), since the bubble Radius
   at simulation time t=0 is not zero. */
 
   double alpha = lambda1/rho1/cp1;
   tshift = sq(R0/2./betaGrowth)/alpha;
-
-  /**
-  We define a list with the maximum time steps and the maximum levels of
-  refinement. */
-
-  double dtlist[] = {1.e-4, 5.e-5, 5.e-5, 5.e-5};
-  int mllist[] = {6, 7, 8, 9};
+  double Rf = 2e-3;
+  tend = Rf*Rf/(4.*betaGrowth*betaGrowth*alpha) - tshift;
 
   /**
   We run the simulation for different levels of refinement. */
 
-  for (int sim=0; sim<4; sim++) {
-    DT = dtlist[sim];
-    maxlevel = mllist[sim];
+  for (maxlevel = 6; maxlevel <= 9; maxlevel++) {
     init_grid (1 << maxlevel);
     run();
   }
@@ -262,7 +302,7 @@ double exact (double time) {
 
 We write the bubble radius and the analytic solution on a file. */
 
-event output (t += 0.005) {
+event output (t += tend / 100.) {
   scalar fg[];
   foreach()
     fg[] = 1. - f[];
@@ -286,7 +326,7 @@ event output (t += 0.005) {
 
 We output the total bubble volume in time (for testing). */
 
-event logger (t += 0.1) {
+event logger (t += tend / 5.) {
   double bubblevol = 0.;
   foreach(reduction(+:bubblevol))
     bubblevol += (1. - f[])*dv();
@@ -319,7 +359,7 @@ event profiles (t = end) {
 We write the animation with the evolution of the temperature field and the
 gas-liquid interface. */
 
-event movie (t += 0.01; t <= 0.5) {
+event movie (t += tend / 100.; t <= tend) {
   clear();
   view (ty = -0.5);
   draw_vof ("f", lw = 1.5);

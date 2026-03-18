@@ -1,7 +1,7 @@
 /**
 # Films do not break (on GPUs either)(Copy from fuster)
 
-![Inside distance function](df_rain_gpu/movie.mp4)(width="80%") 
+![Inside distance function](raindrop/movie.mp4)(width="80%") 
 
 ~~~gnuplot
 set ylabel 'Minimal distance'
@@ -17,9 +17,9 @@ plot 'log' u 1:($2*2.) w l t ''
 #include "two-phase-clsvof.h"
 #include "integral.h"
 
-const double tend = 15;
+const double tend = 15.;
 const double We = 5.;
-const double Re = 1000;
+const double Re = 10000;
 const int maxlevel = 11;
 
 double dmin0;
