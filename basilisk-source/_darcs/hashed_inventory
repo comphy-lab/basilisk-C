@@ -1,4 +1,4 @@
-pristine:5e3b0cfe787cae516c4d35faa1903c4ad6799b0932630a4d82389fb857005e5a
+pristine:b99479c99105cebac8ba5327f06755f82cedabe7d7739fd5af9af2b2299f9c8c
 Starting with inventory:
 0000556423-61e4ce5d667713b49ddde11728ab2b16194a2a83fd186acc20f2e78e4e9ebc1a
 [TAG release 25-02-26 (macros)
@@ -715,3 +715,8 @@ Stephane Popinet <popinet@basilisk.fr>**20260316153732
  Ignore-this: dd45dcf761bff015631754d96581f7ea
 ] 
 hash: 0000000664-396d05d5c0379849127591b44d41abaef41da1d5f1f9dd3963e10dfe1ddf08b4
+[Fixed queuing on GPUs
+Stephane Popinet <popinet@basilisk.fr>**20260317124840
+ Ignore-this: 8ab7cf0d09737723efd80c870e39dd9a
+] 
+hash: 0000000235-2fec279fa929da16792393d2e21225ee0bfc7733f1a1499b2d583199e143a81a
