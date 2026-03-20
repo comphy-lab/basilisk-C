@@ -1,7 +1,7 @@
 
 #define ML 1
 #define HYDRO 1
-#define MUI 1
+#define RHEOLOGY 1
 #define TURBULENT  1
 
 #include "grid/multigrid1D.h"

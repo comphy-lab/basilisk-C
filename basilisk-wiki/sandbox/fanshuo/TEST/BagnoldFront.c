@@ -1,7 +1,7 @@
 
 #define ML 1
 #define HYDRO 1
-#define MUI 1
+#define RHEOLOGY 1
 #define BAGNOLDDRY 1
 
 
@@ -270,7 +270,7 @@ The comparaison gives :
 ~~~gnuplot front propagates as a wave (Nx= = 256, nl = 64)
  set xlabel "X-Xf"
  set ylabel "H"
- p "profilfront.dat" u ($1*0.0339-9.4):($2/0.96) i 35 w l t"num solution","../anafront_theta21.dat" u ($1-0.9):($2) w l t"ana solution"
+ p "profilfront.dat" u ($1*0.0339-10.6):($2/0.96) i 35 w l t"num solution","../anafront_theta21.dat" u ($1-0.9):($2) w l t"ana solution"
 ~~~
 */
 /**

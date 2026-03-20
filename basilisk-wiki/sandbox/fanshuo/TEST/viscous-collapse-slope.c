@@ -9,7 +9,7 @@ the 1D theory is presented  [with shallow water](http://basilisk.fr/sandbox/M1EM
 Here we solve it using the Multilayer Shallow Water (Saint Venant Multi Couches) strategy of Audusse Sainte-Marie  et al 2011. See De Vita 2020 for details, this example is presented there as a test case.
  
  */
-#define ML 0
+#define ML 0 // works with saint-venant.h 
 
 # include "grid/multigrid1D.h"
 # if ML
@@ -21,7 +21,7 @@ Here we solve it using the Multilayer Shallow Water (Saint Venant Multi Couches)
 #  include "saint-venant.h"
 #endif //ML
 
-const double HR = 0.5, T0 = 100;
+const double HR = 0.5, T0 = 10000;
 double alpha, slope;  
 
 int main() {
@@ -30,7 +30,7 @@ int main() {
   G  = 1.;
   alpha = 0.5;
   slope = atan(-alpha);
-  N  = 128;
+  N  = 512;
   nl = 15;
   nu = 1.;
 
@@ -68,8 +68,8 @@ event init (i = 0) {
 
 /** we initialize *h* and *z*. */
   foreach(){
-    zb[] = 0.;
-    //zb[] = -(x-X0)*alpha; 
+    //zb[] = 0.;
+    zb[] = -(x-X0)*alpha; 
   #if !ML  
     h[] = (fabs(x)<HR );
   #else
@@ -80,6 +80,7 @@ event init (i = 0) {
   }
 }
 
+#if 0
 #if ML  
 event acceleration (i++, t<=T0)
 {
@@ -95,12 +96,12 @@ event acc (i++, t<=T0){
   }
 }
 #endif
-
+#endif
 /**
 ## Output
 We print the elevation and the stress. */
 
-event output (t += 10;  t <= T0) {
+event output (t += 100;  t <= T0) {
 #if !ML  
   vector u0 = ul[0];
   foreach()

@@ -37,6 +37,10 @@ $$
 s|_b = s_b + \lambda_b \partial_z s|_b
 $$ */
 
+#if RHEOLOGY 
+  #include "rheology.h"
+#endif 
+
 #if MUI 
   #include "mui.h"
 #endif 
@@ -64,6 +68,10 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
 
 #if MUI
   regularization(point, s, h, nueq);
+#endif
+  
+#if RHEOLOGY
+  regularization(point, s, h, nueq,D);
 #endif
 
   /**

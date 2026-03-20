@@ -415,6 +415,7 @@ void vorticityf3 (face vector u, vector omega) {
 ## Examples
 
 * [A Vortet knot](trefoil4.c)
+* [An elliptic instability](elliptic.c)
 
 ## To do
 

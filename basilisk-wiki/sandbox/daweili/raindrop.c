@@ -33,7 +33,7 @@ int main()
   dmin0 = 1.;
   L0 = 10.;
   X0 = - L0/2.;
-  Y0 = - L0/2. - 1.;
+  Y0 = - L0/2. - 3.;
   const scalar sigma[] = 1./We;
   d.sigmaf = sigma;
 

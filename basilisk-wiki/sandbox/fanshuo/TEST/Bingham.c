@@ -6,7 +6,7 @@ The configuration is periodic.
 
 #define ML 1
 #define HYDRO 1
-#define MUI 1
+#define RHEOLOGY 1
 #define BINGHAM 1
 
 #include "grid/multigrid1D.h"

@@ -1,5 +1,7 @@
+/**
 #   python Shallow Water with hydrostatic reconstruction for M1 TP 
 #   same as https://basilisk.fr/sandbox/M1EMN/PYTHON/svdbWB.c 
+#   note the nice table of graphs at the end
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -179,3 +181,4 @@ plt.subplots_adjust(
 plt.savefig("resultats_dambreak.pdf")
 plt.show()
 
+*/

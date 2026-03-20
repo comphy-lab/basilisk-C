@@ -1,0 +1,97 @@
+
+
+#include "grid/gpu/multigrid.h"
+#include "navier-stokes/centered.h"
+#include "two-phase-clsvof.h"
+#include "integral.h"
+
+const double tend = 15.;
+const double We = 5.;
+const double Re = 1000;
+const int maxlevel = 11;
+
+double dmin0;
+
+FILE * fp;
+
+int main()
+{
+  dimensions(nx = 1, ny = 4);
+  L0 = 10.;
+  periodic(right);
+  dmin0 = 1.;
+  X0 = -5.;
+  Y0 = -L0/2. - 1.  -L0*3;
+ 
+  
+  const scalar sigma[] = 1./We;
+  d.sigmaf = sigma;
+
+  fp = fopen("dmin.dat","w");
+  rho1 = 1, rho2 = 0.1;
+  mu1 = mu2 = 1./Re;
+
+  run();
+  
+  fclose(fp);
+}
+
+event acceleration (i++)
+{
+  foreach_face (y)
+    a.y[] -= 1.;
+}
+
+event init (t = 0) {
+  foreach()
+    d[] = - sq(y + 0.01*sin(2*pi*x/L0*2.)) + sq(0.5);
+}
+
+
+
+scalar dmin[];
+
+event logfile (i = 100; i += 5)
+{
+  foreach() {
+    dmin[] = nodata;
+    if (d[] > 0) {
+      double dx = (d[1] - d[-1])/2.;
+      double dy = (d[0,1] - d[0,-1])/2.;
+      double dn = sqrt(1. + sq(dx) + sq(dy));
+      double dxx = d[1] + d[-1] - 2.*d[];
+      double dyy = d[0,1] + d[0,-1] - 2.*d[];
+      double dxy = (d[1,1] - d[-1,1] - d[1,-1] + d[-1,-1])/4.;
+      // First fundamental form
+      double E = 1. + sq(dx), F = dx*dy, G = 1. + sq(dy);
+      // Second fundamental form (also noted L, M, N)
+      double e = dxx/dn, f = dxy/dn, g = dyy/dn;
+      // Gaussian curvature
+      double K = (e*g - f*f)/(E*G - F*F);
+      // Mean curvature
+      double H = (e*G - 2.*f*F + g*E)/(2.*(E*G - F*F));
+      // Principal curvatures
+      double /* k1 = H + sqrt(sq(H) - K),*/ k2 = H - sqrt(sq(H) - K);
+      if (k2 < - Delta) {
+	// Principal direction i.e. dy/dx
+	double lambda = - (f - k2*F)/(g - k2*G);
+	// the derivative cancels at (s,lambda*s)
+	double s = - (dx + lambda*dy)/(dxx + sq(lambda)*dyy + 2.*lambda*dxy);
+	// distance where the derivative cancels
+        if (y > 0.)
+	dmin[] = d[] + s*(dx + lambda*dy) + sq(s)/2.*(dxx + sq(lambda)*dyy + 2.*lambda*dxy);
+        else
+          dmin[]=L0;
+      }
+    }
+  }
+  
+  double dmintmp = statsf(dmin).min;
+  
+  if (dmintmp/dmin0 > 0.1) {
+    dmin0 = dmintmp;
+    fprintf (stderr, "%g %g\n", t, dmintmp );
+    fprintf (fp, "%g %g\n", t, dmintmp );
+  }
+  output_ppm (dmin, spread = -1, file = "dmin.mp4", n = 1024);
+}

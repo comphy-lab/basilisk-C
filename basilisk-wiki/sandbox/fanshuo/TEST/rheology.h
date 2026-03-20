@@ -1,17 +1,17 @@
 /** 
- # Properties and functions for non newtonian flows */
+# Properties and functions for non newtonian flows */
 
 /*For Bingham*/
 double tauy = 0.0;
 double mu = 1;
 
-/*For cohesive Bagnold*/
+/*For cohesive Bagnold and dry Bagnold*/
 double I0 = 0.3 [0];
 double mu0 = 0.1 [0];
 double deltamu = 0.26 [0];
 double dg = 0.4 [1];
 double rho = 1.0;
-double tauc = 0.0 ;
+double tauc = 0.0 ; // cohesive stress, =0 if BAGNOLDDRY
 
 
 /* For turbulent viscous */
@@ -41,8 +41,8 @@ double shear(Point point, scalar s, scalar h, int layer, int layercoef){
   else if(layercoef==-1){
     shear = 2.*s[0,0,0]/h[0,0,0];
   }
-  //return fabs(shear);
-  return sqrt(sq(shear)+sq(0.1e-8));   // Why?
+  return fabs(shear);
+  //return sqrt(sq(shear));   // Why?
 }
 
 /*
@@ -97,6 +97,15 @@ double Nueq(Point point, scalar s, scalar h, int layer){
   double ans=0;
 #if BAGNOLDDRY
   ans =  coeffFrotte(point,s,h,layer)*pressionHydro(point,h,layer)/shear(point,s,h,layer,layer);
+
+#elif BAGNOLDCOH
+  double term1 = 0.;
+  double term2 = 0.;
+  term1 = deltamu*dg*pow(rho*pressionHydro(point,h,layer),0.5)/I0;
+  term2 = (tauc+mu0*pressionHydro(point,h,layer))/shear(point,s,h,layer,layer);
+  
+  ans = term1 + term2;
+  
 #elif BINGHAM
     ans = mu + tauy/shear(point,s,h,layer,layer);
   
@@ -131,9 +140,9 @@ void regularization(Point point, scalar s, scalar h, double nueq[], double D)
   }
 
   for( l=0 ; l<nl;l++){
-    //if ( l<=nlc ) nueq[l] = Nueq(point,s,h,l);
-   // else nueq[l] = nueq[l-1];
-    nueq[l] = Nueq(point,s,h,l);
+    if ( l<=nlc ) nueq[l] = Nueq(point,s,h,l);
+    else nueq[l] = nueq[l-1];
+   // nueq[l] = Nueq(point,s,h,l);
   }
 
   // for(l=0 ; l<nl;l++){ // Potential former bilayer

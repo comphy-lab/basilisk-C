@@ -4,7 +4,7 @@ A 2D complex flow over a plate with a free surface is presented. The configurati
 
 #define ML 1
 #define HYDRO 1
-#define MUI 1
+#define RHEOLOGY 1
 #define BAGNOLDDRY 1
 
 #include "grid/multigrid1D.h"
@@ -209,7 +209,7 @@ event output (t = end)
 
 /**
 
-~~~gnuplot Velocity and shear profiles for Bingham flow
+~~~gnuplot Velocity and shear profiles for Bagnold flow
  set xlabel "y"
  set ylabel "u, shear"
  p "out" u 2:3 w p t'U computed', "out" u 2:4 w l t'Uexact', "" u 2:5 w p t"shear computed", "" u 2:6 w l t'shear exact'
