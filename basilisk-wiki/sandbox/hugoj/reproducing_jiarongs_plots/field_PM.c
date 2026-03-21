@@ -112,11 +112,11 @@ int main(int argc, char * argv[])
   if (argc > 2)
     LEVEL_data = atoi(argv[2]); // Horizontal resolution
   else
-    LEVEL_data = 5;
+    LEVEL_data = 10;
   if (argc > 3)
     TEND = atof(argv[3]); // End time
   else
-    TEND = 10.;
+    TEND = 150.;
   if (argc > 4)
     nu = atof(argv[4]); // Viscosity for vertical diffusion
   else
@@ -201,7 +201,7 @@ event init (i = 0)
     fprintf (stderr,"Done initialization!\n");
     dump("initial");
     char *suffix = "matrix";
-    writefields (t, suffix);
+    //writefields (t, suffix);
     create_nc({zb, h, u, w, eta}, file_out);
   }
   else {
@@ -210,7 +210,7 @@ event init (i = 0)
     dtmax = 0.01;
     dt = dtnext (dtmax);
     char *suffix = "matrix";
-    writefields (t, suffix);
+    //writefields (t, suffix);
   }
 }
 
@@ -309,10 +309,10 @@ event energy_before_remap (i+=10, last)
 /**
    Output 3-D field (not just the surface laye) if needed for Paraview visualization or other analyses. */
 
-event field_log (t=0; t+=10; t<=TEND) {
-  char *suffix = "matrix";
-  writefields (t, suffix);
-}
+// event field_log (t=0; t+=10; t<=TEND) {
+//   char *suffix = "matrix";
+//   writefields (t, suffix);
+// }
 
 // #if PARAVIEW
 // event paraview (t = 100; t += 0.2; t <= TEND) {
@@ -341,4 +341,5 @@ event regulardump (t = 0; t += 10; t < TEND) {
 
 event endrun (t = TEND) {
   dump();
+  write_nc();
 }

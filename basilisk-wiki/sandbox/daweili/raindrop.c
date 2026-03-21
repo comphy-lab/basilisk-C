@@ -19,7 +19,7 @@ plot 'log' u 1:($2*2.) w l t ''
 
 const double tend = 15.;
 const double We = 5.;
-const double Re = 10000;
+const double Re = 1000;
 const int maxlevel = 11;
 
 double dmin0;

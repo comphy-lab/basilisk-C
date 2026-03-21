@@ -35,7 +35,7 @@ kmod, F_kmod, kx, ky, F_kxky_tile = spectrum_gen_linear(shape, N_mode=N_mode, L=
 
 
 ''' Generate a grid in x-y to visualize random eta '''
-N_grid = 256; L = 200
+N_grid = 1024; L = 200
 x = np.linspace(-L/2,L/2,N_grid); y = np.linspace(-L/2,L/2,N_grid)
 x_tile, y_tile = np.meshgrid(x, y)
 kx_tile, ky_tile = np.meshgrid(kx,ky)
@@ -49,19 +49,20 @@ print('kpHs = %g' %(kp*np.std(eta_tile)*4))
 # plt.imshow(eta_tile, cmap='RdBu_r', vmax=eta_tile.max(), vmin=-eta_tile.max())
 
 fig, ax = plt.subplots(1,1,figsize = (7,5),constrained_layout=True,dpi=100)
-s=ax.pcolormesh(x,y,eta_tile, cmap='RdBu_r', vmax=eta_tile.max(), vmin=-eta_tile.max())
+s=ax.pcolormesh(x,y,eta_tile*kp, cmap='RdBu_r', vmax=eta_tile.max(), vmin=-eta_tile.max())
 ax.set_xlabel('x (m)')
 ax.set_ylabel('y (m)')
-plt.colorbar(s,ax=ax); 
+ax.set_title(r'$\eta k_p$')
+plt.colorbar(s,ax=ax)
 fig.savefig('eta_ini.png')
 
 deta = xr.DataArray(eta_tile, coords=[x, y], dims=["x", "y"])
 
-window = 'hann'
+window = None #'hann'
 nfactor = 4
 truncate = True
 detrend = None
-window_correction = True
+window_correction = False #True
 F_eta =  xrft.isotropic_power_spectrum(deta, dim=('x','y'), window=window, nfactor=nfactor, 
                                 truncate=truncate, detrend=detrend, window_correction=window_correction)
 
@@ -73,7 +74,7 @@ ax.set_xlim([10,1000])
 ax.set_xlabel('k*L')
 ax.set_ylabel(r'$\phi(k)*kp^3$')
 plt.legend()
-fig.savefig('initial_spectrum_k.svg')
+fig.savefig('initial_spectrum_k.png')
 
 kline = np.linspace(100,300)
 ax.plot(kline,kline**(-3)*2000, c='grey')

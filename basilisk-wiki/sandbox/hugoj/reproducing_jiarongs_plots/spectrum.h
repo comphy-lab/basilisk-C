@@ -85,12 +85,18 @@ void power_input() {
       }
     }
   }
+
+  // Broadcast lengths FIRST so all ranks know the sizes
+  MPI_Bcast(&length1D, 1, MPI_INT, root, MPI_COMM_WORLD);
+  MPI_Bcast(&length2D, 1, MPI_INT, root, MPI_COMM_WORLD);
+
   // Broadcast to other threads
   MPI_Bcast(&kx_, length1D, MPI_DOUBLE, root, MPI_COMM_WORLD);
   MPI_Bcast(&ky_, length1D+1, MPI_DOUBLE, root, MPI_COMM_WORLD);
   MPI_Bcast(&F_kxky_, length2D, MPI_DOUBLE, root, MPI_COMM_WORLD);
   MPI_Bcast(&omega, length2D, MPI_DOUBLE, root, MPI_COMM_WORLD);
   MPI_Bcast(&phase, length2D, MPI_DOUBLE, root, MPI_COMM_WORLD);
+
   // Make sure that the inputs are correct by printing them out
   /* char checkout[100]; */
   /* sprintf (checkout, "F-%d", pid()); */

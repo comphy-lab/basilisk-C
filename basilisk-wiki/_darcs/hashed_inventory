@@ -1,4 +1,4 @@
-pristine:b16bdb35d60e449c995d6c9e0534bb4eab9169109eba6e8db5514da516a13890
+pristine:d51518349eec767f40ceb249b368d0cdff090870d7003a45260b3dbb97f4cd78
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -7393,3 +7393,58 @@ dli <ms456753@gmail.com>**20260319162022
  Ignore-this: 34754dfa7674d8b49e419cf88e5d5e834d7ccd7214790a27f7fd49fe89d38f78d6703e289e0f686
 ] 
 hash: 0000000246-94067f5fa22629381872c8e073c01ac106b036e0244e969cdfa29b6fc0ff361e
+[correct parameters for the sim, fix mpi_bcast)
+hugo.jacquet.work@gmail.com**20260320072610
+ Ignore-this: dddbe648d5c0c1e3cfe33f1d065f7129
+] 
+hash: 0000004110-4d3e33c8d4b04fca9e3fdfea02b9e8644ffcf823843270404fa5fe08f131c443
+[added tests to verify azimuthal avg of spectrum
+hugo.jacquet.work@gmail.com**20260320072734
+ Ignore-this: 4b0e92ba0746a3be24b32be65fa52c16
+] 
+hash: 0000042878-686c087c5588fa878c87c17a358463ef1486c58cc544e88a6d2bff5e127fc077
+[better readme
+hugo.jacquet.work@gmail.com**20260320073434
+ Ignore-this: b099e11c9bd08c97caf21ca8dcacf691
+] 
+hash: 0000003044-b1d249ead650e657149ac0ad0363c66e617db287d288f2a19a91dd29b062d884
+[better readme
+hugo.jacquet.work@gmail.com**20260320075643
+ Ignore-this: e7aa7b51476707ebe68cc6afe932dbb
+] 
+hash: 0000001976-56059f829e98348a12764083d5b2173a15e746f4e6583eb02a47b910f6172d04
+[better readme
+hugo.jacquet.work@gmail.com**20260320075905
+ Ignore-this: d86927b7ba49abef836ebdec2d1080cd
+] 
+hash: 0000000509-59c012ea6737a1a02850a6c5f17c8305e40ddc6628836ce9aca511c7417a2aff
+[better readme
+hugo.jacquet.work@gmail.com**20260320080023
+ Ignore-this: 216cef602fafc1d271106552de0733e8
+] 
+hash: 0000000835-6cc0f759c088dd8f0be7037b8128d461336ff6c3f58048cd85ec45d37a951912
+[better readme
+hugo.jacquet.work@gmail.com**20260320080140
+ Ignore-this: 28bbf08425813dae513fe0553228be0f
+] 
+hash: 0000000231-f44bb4c1e1f1f2911b2fda3ae7bf54f514e0d3b48c3105dc8cebc7aa90271c14
+[better readme
+hugo.jacquet.work@gmail.com**20260320080237
+ Ignore-this: 62bc5829d90e5c05f5ecfd63c113d32b
+] 
+hash: 0000000239-0ee2de7a33dcdb6ee7fe6945d79c357a75674613e7a7eb31f0c6fec400465735
+[better readme
+hugo.jacquet.work@gmail.com**20260320080913
+ Ignore-this: fe51a4cc9eb1969f8951a3d7e002a563
+] 
+hash: 0000000836-f1e4970399405fe49dc5932b81df2fc110458c13615ba91ce74fa427a73e7933
+[better readme
+hugo.jacquet.work@gmail.com**20260320081104
+ Ignore-this: 412932c9a52565f94ec538f1d7f7434e
+] 
+hash: 0000000218-72255080fb80302afa3444a1592f3a81fec00ce5d319427f9d4d81240235f76b
+[t
+dli <ms456753@gmail.com>**20260320132500
+ Ignore-this: f5ca18add83a98f990d26768757012a06af851e98805f6ebe22ac47bbc26cfc9e6f9efc7592baff1
+] 
+hash: 0000000228-02a64c578ffc48ec659d0204b0bc59499ecfa79416c56cc95e4ca01ec2372e1a
