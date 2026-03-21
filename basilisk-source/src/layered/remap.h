@@ -65,7 +65,7 @@ the remapping (defined by *beta*). */
 trace
 void vertical_remapping (scalar h, scalar * tracers)
 {
-  int npos = nl + 1;
+  const int npos = nl + 1;
 #if USE_PPR
   int nvar = list_len(tracers), ndof = 1;
 #endif

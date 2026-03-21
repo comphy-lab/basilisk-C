@@ -21,7 +21,13 @@ robustness and a degree of realism even for this complex case. */
 #include "layered/nh.h"
 #include "layered/remap.h"
 #include "layered/perfs.h"
-#include "view.h"
+
+/**
+GPUs and bview are not compatible yet. */
+
+#if !_GPU
+# include "view.h"
+#endif
 
 /**
 The initial conditions are given by the wave steepness $ak$ and the
@@ -97,8 +103,11 @@ event init (i = 0)
 /**
 We add (an approximation of) horizontal viscosity. */
 
-event viscous_term (i++)
-  horizontal_diffusion ((scalar *){u}, nu, dt);
+event viscous_term (i++) {
+  foreach()
+    vertical_diffusion (point, h, w, dt, nu, 0., 0., 0.);
+  horizontal_diffusion ({u, w}, nu, dt);
+}
 
 /**
 We log the evolution of the kinetic and potential energies.
@@ -127,20 +136,27 @@ event logfile (i++; t <= 8.*T0)
 
 /**
 And generate the movie of the free surface (this is quite
-expensive). The movie is 45 seconds at 25 frames/second. */
+expensive). The movie is 45 seconds at 25 frames/second. 
+
+Since GPUs and bview are not compatible yet, we replace 3D with 2D
+outputs when running on GPUs. */
 
 event movie (t += 8.*T0/(45*25))
 {
+#if !_GPU  
   view (fov = 17.3106, quat = {0.475152,0.161235,0.235565,0.832313},
 	tx = -0.0221727, ty = -0.0140227, width = 1200, height = 768);
   char s[80];
   sprintf (s, "t = %.2f T0", t/T0);
   draw_string (s, size = 80);
   for (double x = -1; x <= 1; x++)
-    translate (x) {
+    translate (x)
       squares ("u29.x", linear = true, z = "eta", min = -0.15, max = 0.6);
-    }
   save ("movie.mp4");
+#else // _GPU
+  vector u = lookup_vector ("u29");
+  output_ppm (u.x, file = "movie.mp4", linear = true, min = -0.15, max = 0.6, n = 512);
+#endif // _GPU
 }
 
 /**
@@ -183,6 +199,25 @@ srun --mpi=pmi2 -K1 --resv-ports -n $SLURM_NTASKS $NAME 2> log > out
 
 The number of timesteps was 4159 and the runtime was 44 minutes with
 movie generation.
+
+On an RTX490 GPU the runtime was 13 minutes with the following
+[profiling output](/src/README.trace).
+
+~~~bash
+# Multigrid (GPU), 4148 steps, 778.988 CPU, 779.3 real, 3.49e+05 points.step/s, 514 var
+   calls    total     self   % total   function
+  358304   664.93   650.91     83.5%   relax_nh():/home/popinet/basilisk-current_0/src/layered/nh.h:223
+   15686   692.87    20.38      2.6%   mg_cycle():/home/popinet/basilisk-current_0/src/poisson.h:92
+    4149    17.25    14.65      1.9%   pressure():/home/popinet/basilisk-current_0/src/layered/hydro.h:456
+    4149    14.67    14.40      1.8%   vertical_remapping():/home/popinet/basilisk-current_0/src/layered/remap.h:158
+ 3401444    28.28    14.32      1.8%   setup_shader():/home/popinet/basilisk-current_0/src/grid/gpu/grid.h:1857
+    4149    17.17    14.17      1.8%   half_advection_0():/home/popinet/basilisk-current_0/src/layered/implicit.h:150
+     198    13.96    13.96      1.8%   load_shader():/home/popinet/basilisk-current_0/src/grid/gpu/grid.h:1106
+    4149    13.01    11.52      1.5%   acceleration_0():/home/popinet/basilisk-current_0/src/layered/implicit.h:207
+   15686     8.09     7.14      0.9%   residual_nh():/home/popinet/basilisk-current_0/src/layered/nh.h:299
+    4149     5.76     4.93      0.6%   viscous_term_1():breaking.gpu.c:106
+  132768     5.03     3.96      0.5%   relax_hydro():/home/popinet/basilisk-current_0/src/layered/implicit.h:104
+~~~
 
 ## References
 

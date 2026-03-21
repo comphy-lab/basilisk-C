@@ -51,13 +51,19 @@ Ast * implicit_type_cast (Ast * n, Stack * stack)
     return (Ast *) &ast_double;
 
   case sym_types:
-    if (ast_terminal (n->child[0]))
+    if (ast_terminal (n->child[0])) {
+      if (n->child[0]->sym == sym_TYPEDEF_NAME && !strcmp (ast_terminal (n->child[0])->start, "bool"))
+        return (Ast *) &ast_bool;
       return n->child[0];
+    }
     else
       return NULL;
 
   case sym_IDENTIFIER:
     if (n->parent->sym == sym_primary_expression) {
+      if (!strcmp (ast_terminal (n)->start, "true") ||
+          !strcmp (ast_terminal (n)->start, "false"))
+        return (Ast *) &ast_bool;
       Ast * ref = ast_identifier_declaration (stack, ast_terminal (n)->start);
       if (ref) {
 	AstDimensions dim = {0};
@@ -129,8 +135,13 @@ Ast * implicit_type_cast (Ast * n, Stack * stack)
     if (n->child[1]) {
       Ast * a = implicit_type_cast (n->child[0], stack);
       Ast * b = implicit_type_cast (n->child[2], stack);
-      if (a && b && a->sym != b->sym && (a->sym == sym_INT || b->sym == sym_BOOL))
-	type_cast (n->child[2], "int");
+      if (a && b && a->sym != b->sym) {
+        if (a->sym == sym_INT || b->sym == sym_BOOL)
+          type_cast (n->child[2], "int");
+        else if (a->sym == sym_BOOL) {
+          type_cast (n->child[2], "bool");
+        }
+      }
       return a;
     }
     break;
@@ -166,6 +177,7 @@ Ast * implicit_type_cast (Ast * n, Stack * stack)
 	str_prepend (ast_left_terminal (n->child[0])->before, "bool(");
 	ast_after (n->child[0], ")");
       }
+      implicit_type_cast (n->child[4], stack);
       return implicit_type_cast (n->child[2], stack);
     }
     break;
@@ -579,6 +591,21 @@ void kernel (Ast * n, Stack * stack, void * data)
     if (!identifier) break;
     AstTerminal * t = ast_terminal (identifier);
     if (!t) break;
+
+    /**
+    ## Assertions 
+    
+    We just remove 'qassert(...)' statements. */
+
+    if (!strcmp (t->start, "qassert")) {
+      Ast * parent = ast_parent (n, sym_expression);
+      assert (parent && parent->parent->sym == sym_expression_statement);
+      parent = parent->parent;
+      ast_destroy (parent->child[0]);
+      parent->child[0] = parent->child[1];
+      parent->child[1] = NULL;
+      break;
+    }    
     
     /**
     ## Field assignments 
@@ -702,7 +729,7 @@ static void postmacros (Ast * n, Stack * stack, void * data)
 {
   if (n->sym == sym_statement || n->sym == sym_function_call) {
     KernelData * d = data;
-    ast_macro_replacement (n, n, stack, d->nolineno, 1, false, &d->return_macro_index, d->macroscope);
+    ast_macro_replacement (n, n, stack, d->nolineno, 1, false, true, &d->return_macro_index, d->macroscope);
   }
 }
 

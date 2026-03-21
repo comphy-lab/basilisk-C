@@ -452,7 +452,7 @@ static void str_print_internal (const Ast * n, int sym, int real, File * file,
     [1,-1]`, `(2.*3 + 4.)[0,1]` etc. */
     
     if (n->sym == sym_array_access && n->child[2] &&
-	ast_evaluate_constant_expression (n->child[0]) < DBL_MAX)
+	ast_evaluate_constant_expression (n->child[0], NULL) < DBL_MAX)
       str_print_internal (n->child[0], sym, real, file, output, data);
 
     /**

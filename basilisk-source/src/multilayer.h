@@ -88,12 +88,9 @@ The lower, principal and upper diagonals are *a*, *b* and *c* respectively. */
 
 void vertical_viscosity (Point point, double h, vector * ul, double dt)
 {
-  if (nu == 0.)
-    return;
-  
-  double a[nl], b[nl], c[nl], rhs[nl];
-
-  foreach_dimension() {
+  if (nu) {
+    double a[nl], b[nl], c[nl], rhs[nl];
+    foreach_dimension() {
 
     /**
     The *rhs* of the tridiagonal system is $h_lu_l = h\mathrm{layer}_lu_l$. */
@@ -178,6 +175,7 @@ void vertical_viscosity (Point point, double h, vector * ul, double dt)
     for (l = nl - 2; l >= 0; l--) {
       u = ul[l];
       u.x[] = a[l] = (rhs[l] - c[l]*a[l+1])/b[l];
+    }
     }
   }
 }

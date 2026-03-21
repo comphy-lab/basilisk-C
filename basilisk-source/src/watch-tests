@@ -8,10 +8,10 @@ function progress()
     for f in $(find . -name tspid\.*tst); do
 	id=$(head -n1 $f)
 	SANDBOX=$(tail -n1 $f)
-	echo -n -e ${f%%tspid\.*tst}" $SANDBOX "
-	ssh -o 'ControlPath ~/.ssh/controlmasters/%r@%h:%p' -o 'ControlMaster auto' -o 'ControlPersist 1m' \
-	    $SANDBOX "test -f /tmp/$id/progress && ( sed 's/\\r/\\n/g' /tmp/$id/progress | tail -n 1 ) || echo waiting"
-	if [ "$1" = "sync" ]; then
+	status=$(ssh -o 'ControlPath ~/.ssh/controlmasters/%r@%h:%p' -o 'ControlMaster auto' -o 'ControlPersist 1m' \
+		     $SANDBOX "test -f /tmp/$id/progress && ( sed 's/\\r/\\n/g' /tmp/$id/progress | tail -n 1 ) || echo waiting")
+	echo -e ${f%%tspid\.*tst}" $SANDBOX " $status
+	if [ "$1" = "sync" ] && [ "$status" != "waiting" ]; then
 	    rsync -arz $SANDBOX:/tmp/$id/ ${f%%tspid\.*tst}
 	fi
     done | column -t

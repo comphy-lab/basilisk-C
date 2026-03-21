@@ -1176,7 +1176,7 @@ static double cube (double x) { return x*x*x; }
 Evaluates a constant (numerical) expression. Return DBL_MAX if the
 expression is not a constant. */
 
-double ast_evaluate_constant_expression (const Ast * n)
+double ast_evaluate_constant_expression (const Ast * n, Stack * stack)
 {
   if (!n)
     return DBL_MAX;
@@ -1186,67 +1186,82 @@ double ast_evaluate_constant_expression (const Ast * n)
   case sym_I_CONSTANT: case sym_F_CONSTANT: case sym_ENUMERATION_CONSTANT:
     return ast_terminal (n)->start ? atof (ast_terminal (n)->start) : 0.;
 
+  case sym_IDENTIFIER: {
+    assert (stack);
+    Ast * ref, * init;
+    if ((ref = ast_identifier_declaration (stack, ast_terminal (n)->start)) &&
+        ast_schema (ast_parent (ref, sym_declaration), sym_declaration,
+                    0, sym_declaration_specifiers,
+                    0, sym_type_qualifier,
+                    0, sym_CONST) &&
+        (init = ast_schema (ast_parent (ref, sym_init_declarator), sym_init_declarator,
+                            2, sym_initializer,
+                            0, sym_assignment_expression)))
+      return ast_evaluate_constant_expression (init, stack);
+    break;
+  }
+      
   case sym_constant:
-    return ast_evaluate_constant_expression (n->child[0]);
+    return ast_evaluate_constant_expression (n->child[0], stack);
 
   case sym_expression:
-    return ast_evaluate_constant_expression (ast_child (n, sym_assignment_expression));
+    return ast_evaluate_constant_expression (ast_child (n, sym_assignment_expression), stack);
     
   case sym_expression_error:
-    return ast_evaluate_constant_expression (n->child[0]);
+    return ast_evaluate_constant_expression (n->child[0], stack);
     
   case sym_primary_expression:
-    if (n->child[0]->sym == sym_constant)
-      return ast_evaluate_constant_expression (n->child[0]);
+    if (n->child[0]->sym == sym_constant || (stack && n->child[0]->sym == sym_IDENTIFIER))
+      return ast_evaluate_constant_expression (n->child[0], stack);    
     else if (n->child[1])
-      return ast_evaluate_constant_expression (n->child[1]);
+      return ast_evaluate_constant_expression (n->child[1], stack);
     break;
     
   case sym_assignment_expression:
     if (!n->child[1])
-      return ast_evaluate_constant_expression (n->child[0]);
+      return ast_evaluate_constant_expression (n->child[0], stack);
     break;
 
   case sym_postfix_expression:
     if (n->child[0]->sym == sym_primary_expression ||
 	n->child[0]->sym == sym_function_call ||
 	n->child[0]->sym == sym_array_access)
-      return ast_evaluate_constant_expression (n->child[0]);
+      return ast_evaluate_constant_expression (n->child[0], stack);
     break;
     
   case sym_cast_expression:
     if (n->child[0]->sym == sym_unary_expression)
-      return ast_evaluate_constant_expression (n->child[0]);
+      return ast_evaluate_constant_expression (n->child[0], stack);
     break;
     
   case sym_unary_expression:
     if (n->child[0]->sym == sym_postfix_expression)
-      return ast_evaluate_constant_expression (n->child[0]);
+      return ast_evaluate_constant_expression (n->child[0], stack);
     if (n->child[0]->sym == sym_unary_operator &&
 	strchr ("+-", ast_terminal (n->child[0]->child[0])->start[0])) {
-      double v = ast_evaluate_constant_expression (n->child[1]);
+      double v = ast_evaluate_constant_expression (n->child[1], stack);
       return v < DBL_MAX ? (ast_terminal (n->child[0]->child[0])->start[0] == '+' ? 1. : - 1.)*v : DBL_MAX;
     }
     break;
 
   case sym_conditional_expression: { // fixme not sure that this is correct
-    double cond = ast_evaluate_constant_expression (n->child[0]);
+    double cond = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return cond;
     if (cond == DBL_MAX)
       return DBL_MAX;
     if (cond)
-      return ast_evaluate_constant_expression (n->child[2]);
+      return ast_evaluate_constant_expression (n->child[2], stack);
     else
-      return ast_evaluate_constant_expression (n->child[4]);
+      return ast_evaluate_constant_expression (n->child[4], stack);
   }
 
   case sym_logical_or_expression: {
-    double v = ast_evaluate_constant_expression (n->child[0]);
+    double v = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return v;
     else {
-      double v1 = ast_evaluate_constant_expression (n->child[2]);
+      double v1 = ast_evaluate_constant_expression (n->child[2], stack);
       if (v < DBL_MAX && v1 < DBL_MAX)
 	return v || v1;
     }
@@ -1254,11 +1269,11 @@ double ast_evaluate_constant_expression (const Ast * n)
   }
     
   case sym_logical_and_expression: {
-    double v = ast_evaluate_constant_expression (n->child[0]);
+    double v = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return v;
     else {
-      double v1 = ast_evaluate_constant_expression (n->child[2]);
+      double v1 = ast_evaluate_constant_expression (n->child[2], stack);
       if (v < DBL_MAX && v1 < DBL_MAX)
 	return v && v1;
     }
@@ -1266,11 +1281,11 @@ double ast_evaluate_constant_expression (const Ast * n)
   }
     
   case sym_inclusive_or_expression: {
-    double v = ast_evaluate_constant_expression (n->child[0]);
+    double v = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return v;
     else {
-      double v1 = ast_evaluate_constant_expression (n->child[2]);
+      double v1 = ast_evaluate_constant_expression (n->child[2], stack);
       if (v < DBL_MAX && v1 < DBL_MAX)
 	return ((int) v) | ((int) v1);
     }
@@ -1278,11 +1293,11 @@ double ast_evaluate_constant_expression (const Ast * n)
   }
     
   case sym_exclusive_or_expression: {
-    double v = ast_evaluate_constant_expression (n->child[0]);
+    double v = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return v;
     else {
-      double v1 = ast_evaluate_constant_expression (n->child[2]);
+      double v1 = ast_evaluate_constant_expression (n->child[2], stack);
       if (v < DBL_MAX && v1 < DBL_MAX)
 	return ((int) v) ^ ((int) v1);
     }
@@ -1290,11 +1305,11 @@ double ast_evaluate_constant_expression (const Ast * n)
   }
     
   case sym_and_expression: {
-    double v = ast_evaluate_constant_expression (n->child[0]);
+    double v = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return v;
     else {
-      double v1 = ast_evaluate_constant_expression (n->child[2]);
+      double v1 = ast_evaluate_constant_expression (n->child[2], stack);
       if (v < DBL_MAX && v1 < DBL_MAX)
 	return ((int) v) & ((int) v1);
     }
@@ -1302,11 +1317,11 @@ double ast_evaluate_constant_expression (const Ast * n)
   }
 
   case sym_equality_expression: {
-    double v = ast_evaluate_constant_expression (n->child[0]);
+    double v = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return v;
     else {
-      double v1 = ast_evaluate_constant_expression (n->child[2]);
+      double v1 = ast_evaluate_constant_expression (n->child[2], stack);
       if (v < DBL_MAX && v1 < DBL_MAX) {
 	if (n->child[1]->sym == sym_EQ_OP)
 	  return v == v1;
@@ -1318,11 +1333,11 @@ double ast_evaluate_constant_expression (const Ast * n)
   }
     
   case sym_relational_expression: {
-    double v = ast_evaluate_constant_expression (n->child[0]);
+    double v = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return v;
     else if (v < DBL_MAX) {
-      double v1 = ast_evaluate_constant_expression (n->child[2]);
+      double v1 = ast_evaluate_constant_expression (n->child[2], stack);
       if (v1 < DBL_MAX) {
 	if (n->child[1]->sym == sym_LE_OP)
 	  return v <= v1;
@@ -1338,11 +1353,11 @@ double ast_evaluate_constant_expression (const Ast * n)
   }
 
   case sym_shift_expression: {
-    double v = ast_evaluate_constant_expression (n->child[0]);
+    double v = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return v;
     else {
-      double v1 = ast_evaluate_constant_expression (n->child[2]);
+      double v1 = ast_evaluate_constant_expression (n->child[2], stack);
       if (v < DBL_MAX && v1 < DBL_MAX) {
 	if (n->child[1]->sym == sym_LEFT_OP)
 	  return ((int) v) << ((int) v1);
@@ -1354,11 +1369,11 @@ double ast_evaluate_constant_expression (const Ast * n)
   }
       
   case sym_additive_expression: {
-    double v = ast_evaluate_constant_expression (n->child[0]);
+    double v = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return v;
     else {
-      double v1 = ast_evaluate_constant_expression (n->child[2]);
+      double v1 = ast_evaluate_constant_expression (n->child[2], stack);
       if (v < DBL_MAX && v1 < DBL_MAX) {
 	if (n->child[1]->sym == token_symbol('+'))
 	  return v + v1;
@@ -1370,11 +1385,11 @@ double ast_evaluate_constant_expression (const Ast * n)
   }
     
   case sym_multiplicative_expression: {
-    double v = ast_evaluate_constant_expression (n->child[0]);
+    double v = ast_evaluate_constant_expression (n->child[0], stack);
     if (!n->child[1])
       return v;
     else {
-      double v1 = ast_evaluate_constant_expression (n->child[2]);
+      double v1 = ast_evaluate_constant_expression (n->child[2], stack);
       if (v < DBL_MAX && v1 < DBL_MAX) {
 	if (n->child[1]->sym == token_symbol('*'))
 	  return v*v1;
@@ -1388,7 +1403,7 @@ double ast_evaluate_constant_expression (const Ast * n)
   }
 
   case sym_array_access:
-    return ast_evaluate_constant_expression (n->child[0]);
+    return ast_evaluate_constant_expression (n->child[0], stack);
 
 
   case sym_function_call: {
@@ -1411,7 +1426,7 @@ double ast_evaluate_constant_expression (const Ast * n)
       }, * i = funcs;
       for (; i->name; i++)
 	if (!strcmp (ast_terminal (name)->start, i->name)) {
-	  double arg = ast_evaluate_constant_expression (n->child[2]);
+	  double arg = ast_evaluate_constant_expression (n->child[2], stack);
 	  if (arg == DBL_MAX)
 	    return arg;
 	  return i->func (arg);
@@ -1422,7 +1437,7 @@ double ast_evaluate_constant_expression (const Ast * n)
 
   case sym_argument_expression_list:
   case sym_argument_expression_list_item:
-    return ast_evaluate_constant_expression (n->child[0]);    
+    return ast_evaluate_constant_expression (n->child[0], stack);    
     
   }
 
@@ -2335,7 +2350,7 @@ static void user_macros (Ast * n, Stack * stack, void * data)
 
   case sym_statement: case sym_function_call: {
     TranslateData * d = data;
-    ast_macro_replacement (n, n, stack, d->nolineno, 0, false, &d->return_macro_index, NULL);
+    ast_macro_replacement (n, n, stack, d->nolineno, 0, false, false, &d->return_macro_index, NULL);
     break;
   }
 
@@ -2435,7 +2450,7 @@ static void postmacros (Ast * n, Stack * stack, void * data)
   }
   else if (n->sym == sym_statement || n->sym == sym_function_call) {
     TranslateData * d = data;
-    ast_macro_replacement (n, n, stack, d->nolineno, 2, false, &d->return_macro_index, NULL);
+    ast_macro_replacement (n, n, stack, d->nolineno, 2, false, false, &d->return_macro_index, NULL);
   }
 }
 
@@ -3113,7 +3128,7 @@ static void translate (Ast * n, Stack * stack, void * data)
 						 NCB(list, ";"))))));
 	  ast_block_list_prepend (list, sym_block_item, point_variables);
 	  TranslateData * d = data;
-	  ast_macro_replacement (point_variables, point_variables, stack, d->nolineno, 0, false,
+	  ast_macro_replacement (point_variables, point_variables, stack, d->nolineno, 0, false, false,
 				 &d->return_macro_index, NULL);
 	}
       }
@@ -3262,7 +3277,7 @@ static void translate (Ast * n, Stack * stack, void * data)
 								 0, sym_MACRO), sym_statement);
 	foreach_item (point, 1, item)
 	  ast_block_list_prepend (list, sym_block_item, item->child[0]);
-	ast_macro_replacement (point_variables, point_variables, stack, d->nolineno, 0, false,
+	ast_macro_replacement (point_variables, point_variables, stack, d->nolineno, 0, false, false,
 			       &d->return_macro_index, NULL);
       }
     }
@@ -3980,7 +3995,7 @@ static void stencils (Ast * n, Stack * stack, void * data)
 
   case sym_function_call: case sym_statement: {
     TranslateData * d = data;
-    ast_macro_replacement (n, n, stack, d->nolineno, 0, false, &d->return_macro_index, NULL);
+    ast_macro_replacement (n, n, stack, d->nolineno, 0, false, false, &d->return_macro_index, NULL);
     break;
   }        
     

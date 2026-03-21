@@ -45,7 +45,6 @@
 [1,-1]  layered.c: '0.'
 [1,-1]  layered.c: 'U = 0.'
 [1,-1]  layered.c: '0.'
-[2,-1]  /src/multilayer.h: '0.'
 [2,-1]  /src/riemann.h: '*fh = 0.'
 [2,-1]  /src/saint-venant.h: '0.'
 [2,-1]  /src/saint-venant.h: 'Fh.x[] = 0.'

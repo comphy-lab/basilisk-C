@@ -34,7 +34,6 @@
 [1,-1]  /src/saint-venant.h: 's[] = 0.'
 [1,-1]  /src/utils.h: '0.'
 [2,-1]  /src/multilayer.h: 'nu = 0.'
-[2,-1]  /src/multilayer.h: '0.'
 [2,-1]  /src/riemann.h: '*fh = 0.'
 [2,-1]  /src/saint-venant.h: '0.'
 [2,-1]  /src/saint-venant.h: 'Fh.x[] = 0.'

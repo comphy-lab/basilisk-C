@@ -32,6 +32,34 @@ static
 void external_references (Ast * n, Stack * stack, Accelerator * a);
 
 static
+Ast * variable_array_size (Ast * n, Stack * stack)
+{
+  Ast * size = ast_schema (n, sym_direct_declarator,
+                           2, sym_assignment_expression);
+  if (size && ast_evaluate_constant_expression (size, stack) == DBL_MAX)
+    return size;
+  size = NULL;
+  Ast * scope = ast_push_declarations (n, stack);
+  if (n->child)
+    for (Ast ** c = n->child; *c && !size; c++)
+      size = variable_array_size (*c, stack);
+  ast_pop_scope (stack, scope);
+  return size;
+}
+
+Ast * ast_variable_array_size (Ast * n, Stack * stack)
+{
+  stack_push (stack, &(n->parent));
+  Ast * size = variable_array_size (n, stack);
+  ast_pop_scope (stack, n->parent);
+#if 0  
+  if (size)
+    ast_print_tree (size, stderr, 0, 0, -1);
+#endif
+  return size;
+}
+
+static
 void add_external_reference (const char * name, Stack * stack, Accelerator * a)
 {
   Ast * ref = ast_identifier_declaration (stack, name);
@@ -58,6 +86,7 @@ void add_external_reference (const char * name, Stack * stack, Accelerator * a)
 				       0, sym_generic_identifier,
 				       0, sym_IDENTIFIER)) &&
 	!strcmp (ast_terminal (def)->start, name)) {
+
       Accelerator b = *a;
       b.scope = definition;
       stack_push (stack, &definition);
@@ -65,9 +94,15 @@ void add_external_reference (const char * name, Stack * stack, Accelerator * a)
       ast_pop_scope (stack, definition);
       a->nonlocals = b.nonlocals;
       a->attributes = b.attributes;
-    }
 
-    stack_push (a->nonlocals, &ref);
+      /**
+      We only include functions which do not use variable array sizes. */
+      
+      if (!ast_variable_array_size (definition, stack))
+        stack_push (a->nonlocals, &ref);
+    }
+    else
+      stack_push (a->nonlocals, &ref);
   }
 }
 
@@ -211,6 +246,15 @@ char * add_reference (Ast * ref, char * references, Ast * scope, Stack * stack, 
 
   if (!attributes && !ast_parent (ref, sym_compound_statement) && !ast_parent (ref, sym_parameter_declaration))
     str_append (references, ",.global=1");
+
+  /**
+  Is this a constant? */
+
+  if (ast_find (ast_parent (ref, sym_declaration),
+		sym_declaration_specifiers,
+		0, sym_type_qualifier,
+		0, sym_CONST))
+    str_append (references, ",.constant=1");
   
   /**
   Assumes 'double *' are references to arrays with 'nl'

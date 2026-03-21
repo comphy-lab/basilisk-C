@@ -358,7 +358,7 @@ Ast * parent_expression (const Key * c)
 {
   Ast * n = c->parent;
   Ast * parent = ast_parent (n, sym_assignment_expression);
-  if (ast_evaluate_constant_expression (parent) < DBL_MAX) {
+  if (ast_evaluate_constant_expression (parent, NULL) < DBL_MAX) {
     if (ast_schema (ast_ancestor (parent, 2), sym_init_declarator,
 		    2, sym_initializer))
       n = ast_ancestor (parent, 2);
@@ -1790,7 +1790,7 @@ int compare_dimensions (const void * pa, const void * pb)
 static
 bool is_finite_constant (const Key * c)
 {
-  double val = ast_evaluate_constant_expression (c->parent);
+  double val = ast_evaluate_constant_expression (c->parent, NULL);
   return val > 1e-30 && val < 1e30 && val != 1234567890;
 }
 

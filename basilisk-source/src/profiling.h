@@ -15,6 +15,6 @@ event profiling_plot (i = 40) {
   if (getenv ("DISPLAY"))
     popen ("gnuplot -e 'set term x11 noraise noenhanced title profiling' "
 	   "$BASILISK/profiling.plot "
-	   "& read dummy; kill $!", "w");
+	   "& read dummy; kill $! 2> /dev/null", "w");
 }
 #endif

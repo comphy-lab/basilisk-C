@@ -427,7 +427,7 @@ void matrix_inverse3 (double m[3][3])
   m[2][2] = (m00*m11 - m01*m10)/det;
 }
 
-double smatrix_inverse (int n, double m[n][n], double pivmin)
+double smatrix_inverse (const int n, double m[n][n], double pivmin)
 {
   int indxc[n], indxr[n], ipiv[n];
   int i, icol = 0, irow = 0, j, k, l, ll;
@@ -455,10 +455,10 @@ double smatrix_inverse (int n, double m[n][n], double pivmin)
 	swap (double, m[irow][l], m[icol][l]);
     indxr[i] = irow;
     indxc[i] = icol;
-    if (fabs (m[icol][icol]) <= pivmin)
-      return 0.;
     if (fabs (m[icol][icol]) < minpiv)
       minpiv = fabs (m[icol][icol]);
+    if (minpiv < pivmin)
+      break;
     pivinv = 1.0/m[icol][icol];
     m[icol][icol] = 1.0;
     for (l = 0; l < n; l++) m[icol][l] *= pivinv;
@@ -470,12 +470,13 @@ double smatrix_inverse (int n, double m[n][n], double pivmin)
 	  m[ll][l] -= m[icol][l]*dum;
       }
   }
-  for (l = n - 1; l >= 0; l--) {
-    if (indxr[l] != indxc[l])
-      for (k = 0; k < n; k++)
-	swap (double, m[k][indxr[l]], m[k][indxc[l]]);
-  }
-  return minpiv;
+  if (minpiv >= pivmin)
+    for (l = n - 1; l >= 0; l--) {
+      if (indxr[l] != indxc[l])
+        for (k = 0; k < n; k++)
+          swap (double, m[k][indxr[l]], m[k][indxc[l]]);
+    }
+  return minpiv < pivmin ? 0. : minpiv;
 }
 
 void * matrix_new (int n, int p, size_t size)
