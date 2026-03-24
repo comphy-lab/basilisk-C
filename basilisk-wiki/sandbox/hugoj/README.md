@@ -11,12 +11,24 @@ mixing of the upper layers of the ocean.
 
 ## Physical systems
 
-WIP !
+### Breaking wave project
+
+* [Reproducing results from Jiarong's Wu 2023 paper](reproducing_jiarongs_plots/)
+
+* [Generating an initial spectra, with python or C code](specgen_py_vs_C/)
+
+* [How to correctly do the azimuthal integration of 2D
+spectrum](./verif_spectrum/verif_spectrum.py)
+
 
 ## Tests
 
-* [how to correctly do the azimuthal integration of 2D
-spectrum](./verif_spectrum/verif_spectrum.py)
+* [Using a namelist as input to a Basilisk simulation](test_read_param/main.c)
+
+* [Dumping netcdf (.nc files) from a Basilisk
+simulation, example on breaking.c](test_read_write_netcdf/README.md)
+
+* [Test of an interpolation method](test_interp/)
 
 ## Bugs
 

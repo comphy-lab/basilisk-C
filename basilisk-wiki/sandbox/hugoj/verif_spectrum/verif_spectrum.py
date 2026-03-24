@@ -265,7 +265,7 @@ def spectrum_gen_linear(shape, N_mode=32, N_power=5, L=200):
             L: physical domain size
             '''
     
-     '''# of modes for the uni-directional spectrum 
+    '''# of modes for the uni-directional spectrum 
         (doesn't matter as much because of interpolation anyway) '''
     N_kmod = 64; N_theta = 64 # Uniform grid in kmod and ktheta, can be finer than N_mode 
     thetam = 0 # midline direction
@@ -420,3 +420,4 @@ xrft: 0.140847
 jiarong (=griddata): 0.153773
 ```
 """
+

@@ -1,4 +1,4 @@
-pristine:28018897f9e4c1c326e9c3ad3a7d9eb18aaf3d3a2be34a71ca2abd281dd2aba7
+pristine:014f6f49219e32d91b8b3780dd223bef90bf564fe56f96e1464e8115a24aa0dc
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -7483,3 +7483,68 @@ dli <ms456753@gmail.com>**20260322184728
  Ignore-this: 5dc2dfbab4a48159034b02f723f3574032a30e2aa0c5aaec218b3fd5d2c7a3375daea6648b79e437
 ] 
 hash: 0000001740-31d2a765c2ac89e263d2533d17da8ba2e5958186fd150ac32a01345c1db8d24f
+[saving perfs is now ok
+hugo.jacquet.work@gmail.com**20260323085053
+ Ignore-this: ad8be28d7899a25e7aeaa56aca428883
+] 
+hash: 0000005754-0fc5dffadef3ae7dab9f67db7488316d14775dd7bb924495fd424dfa9cdff27a
+[add: post-process
+hugo.jacquet.work@gmail.com**20260323085402
+ Ignore-this: 1c80f928cf6bd4142b7d80c4242fc3e1
+] 
+hash: 0000037122-93eed03fdafc2e559ef7d9c78a926f2d32d26b69e267c7a544687a2debb9d4b8
+[test
+dli <ms456753@gmail.com>**20260323114904
+ Ignore-this: 6898a92039e3dc176b752fe5fbf2c5b3aa3a6b033dbb33edadf7196a38560d6c03b0983b6d684484
+] 
+hash: 0000002548-42f430d7944fb0ed99129278ddccdfe0bcc79f9cdba4ff953e22badbed77d6b8
+[test
+dli <ms456753@gmail.com>**20260323115412
+ Ignore-this: 83a85d6225bff946ebfaa6666a15aec782191e15cda18d9ccd951ecea59f340e97d81ee1d39bbd44
+] 
+hash: 0000000313-2fb8215169f3e7f47143691bec6ed2bd735dcea1ba99cc37143a16b41bea4f62
+[add: post-process, cleanup of verif_spectrum
+hugo.jacquet.work@gmail.com**20260323124849
+ Ignore-this: 73b87cdc9a901cf94af9a2fb42e64432
+] 
+hash: 0000148295-2aef37d91c024815d274254749fc76dca2d8e58e0cc68795304781e064c52144
+[resolved conflict
+hugo.jacquet.work@gmail.com**20260323125739
+ Ignore-this: 35066ce54f23b047592e04230a8ddd88
+] 
+hash: 0000005530-c8e2548e4fefd1f073315702330c55394b0c8989c472a679ad92d7682dba76df
+[rainwall
+dli <ms456753@gmail.com>**20260323125839
+ Ignore-this: 2176ff0b678d08619097649e68202eba432c460134e640f744086516146a2919596e0d3c16c88810
+] 
+hash: 0000003033-056615fa6431e9784af98c0b061bb925480cacb95232ae2429e2da6fd3abfad9
+[add: specgen_py_vs_C
+hugo.jacquet.work@gmail.com**20260323141844
+ Ignore-this: 495636482a5a4838790ab9acaf059c95
+] 
+hash: 0000047686-0dd3723525a18d1c827329cd366555eeabcf017a442476c59a18f24ea14dfaf9
+[add: test of my interpolation
+hugo.jacquet.work@gmail.com**20260323145418
+ Ignore-this: bea3bc60f3282c7745f0a8aaf0866183
+] 
+hash: 0000006185-cfd1dc8bf6517d7b3e28e5628745992829ce736c316b0694b0bdd2b76d61c4b7
+[add: test of read parameters from namelist
+hugo.jacquet.work@gmail.com**20260323145559
+ Ignore-this: eb95b70d078d4c66eb21bf1f1cc9f93
+] 
+hash: 0000001748-e37e55c0b0c3bdc0cb62bd00d812c8680cf127efd752476432f473de096a5eaa
+[add: test of read/write with netcdf lib
+hugo.jacquet.work@gmail.com**20260323150643
+ Ignore-this: 442467b6eef0197e3e6fcdbc8fef2ebb
+] 
+hash: 0000007029-1b2e66811189b55d28b5f7300ff77ceda956e8bec0bbb0e13196c6aa0eace939
+[added new code to the README
+hugo.jacquet.work@gmail.com**20260323151733
+ Ignore-this: f270e58552eae6c371516b43fbb1fe35
+] 
+hash: 0000000783-0dccabf8df12fc5d4bdd2cb1151f071374295b2f420a3c69700db56c3cde25f9
+[nodal poisson v2
+Bruno Deremble <bruno.deremble@cnrs.fr>**20260323170901
+ Ignore-this: 10b1b7682c508c5dc95c7d568156301f8bfa40c820b93cb5b0379156f2d662256ba3eb67ee25d682
+] 
+hash: 0000019084-0c4e0389a82bd40563b34c15de7a53da8200f01e755e43016f2c05204131c1c1

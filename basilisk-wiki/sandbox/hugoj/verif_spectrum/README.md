@@ -20,7 +20,7 @@ conda install -c conda-forge xarray xrft dask numpy_groupies
 ## Run the tests
 
 ```
-make
+python3 verif_spectrum.py
 ```
 
 ## Results
