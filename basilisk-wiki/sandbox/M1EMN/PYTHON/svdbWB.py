@@ -1,4 +1,4 @@
-/**
+#
 #   python Shallow Water with hydrostatic reconstruction for M1 TP 
 #   same as https://basilisk.fr/sandbox/M1EMN/PYTHON/svdbWB.c 
 #   note the nice table of graphs at the end
@@ -16,7 +16,7 @@ alpha = .1
 xbosse = 0.0
 xtas = -2
 
-times_to_save = np.arange(0, 64, 1)  # 
+times_to_save = np.arange(0, 64, 1) 
 saved_solutions = []
 saved_times = []
 
@@ -76,7 +76,7 @@ def FHLL2(ug, ud, hg, hd):
     return f2
 
 
-# initialisation
+# initialisation, x de 0 a n+1 soit n+2 points (n interieurs)
 for i in range(nx+2):
     x[i] = (i - nx/2) * dx
     if x[i] > xbosse:
@@ -101,17 +101,17 @@ while t <= tmax:
     ug[:] = u
 
     # reconstruction
-    for i in range(1, nx+1):
+    for i in range(1, nx+2):
         hid[i-1], hig[i] = reconsetat(hd[i-1], hg[i], dZ[i-1])
 
     # flux de h et q=hu
     cfl2 = 0
-    for i in range(1, nx+1):
+    for i in range(1, nx+2):
         fp[i] = FHLL1(ud[i-1], ug[i], hid[i-1], hig[i])
         fd[i] = FHLL2(ud[i-1], ug[i], hid[i-1], hig[i])
  
     # mise à jour de h et q=hu
-    for i in range(1, nx):
+    for i in range(1, nx+1):
 
         hn[i] = h[i] - dt*(fp[i+1]-fp[i])/dx
 
@@ -180,5 +180,3 @@ plt.subplots_adjust(
 )
 plt.savefig("resultats_dambreak.pdf")
 plt.show()
-
-*/

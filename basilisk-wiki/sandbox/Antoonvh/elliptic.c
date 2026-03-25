@@ -5,6 +5,9 @@ A dipolar vortex whose streamlines are elliptical can be subject to the so-calle
 
 ![Volumetric rendering of the $\lambda_2$ field. Side views are rendered from dumps in post processing](https://www.antoonvanhooft.nl/media/elliptical.mp4)(width=800px)
 
+## Setup
+
+We use an adaptive octree grid and a (the) fourth-order accurate flow solver without tracers. The movie is generated with volumetric rendering usng `bwatch`. Snapshots are als generated using `bview`, as a (more) simple alternative to interactive bview. 
 */
 #define RKORDER (3)
 #include "grid/octree.h"
@@ -14,6 +17,10 @@ scalar * tracers = NULL;
 #include "bwatch.h"
 #include "view.h"
 double ue = 1e-4, vis = 1.5e-3;
+
+/**
+The refinement criterion and viscosity can be tuned with command-line arguments.
+*/
 
 int main(int argc, char ** argv) {
   if (argc > 1)
@@ -29,7 +36,9 @@ int main(int argc, char ** argv) {
   nu = visc;
   run();
 }
-
+/**
+A Lamb-Chaplygin dipole is approximated by computing the flow field from a vector potential, such that the vorticity field matches the Lamb-dipole. This facilitates easy initialization in the tri-periodic domain.   
+*/
 double R = 1, k = 3.8317;
 double U = 1;
 
@@ -79,7 +88,9 @@ event init (t = 0) {
 }
 
 #define FUNC(x) (exp(-x) + x - 1)
-
+/**
+Dumpfiles are used to roate the camera around the box in post processing.
+*/
 event dumper (t = {7, 10, 15}) {
   vector uc[];
   face_to_vector (uc);
@@ -91,7 +102,11 @@ event dumper (t = {7, 10, 15}) {
   sprintf (fn, "dump_%d", (int)t);
   dump(fn);
 }
+/**
+## Visualization 
 
+The $\lambda_2$ field is renderd. 
+*/
 event mov (t = 7; t += 0.02) {
   static FILE * fp = popen ("ppm2mp4 elliptic.mp4", "w");
   vector uc[];
@@ -108,7 +123,10 @@ event mov (t = 7; t += 0.02) {
 	  cols = true, shading = 1, mval = 1e-3);
   store (fp);
   plain();
-#if 0  
+/**
+Optionally, the $\lambda_2$ volume can be colorcoded with the local vorticity vector (false color). This is a bit over the top...
+*/
+  #if 0  
   static FILE * fpc = popen ("ppm2mp4 elliptic_colors.mp4", "w");
   
   vector omg[];
@@ -128,13 +146,19 @@ event mov (t = 7; t += 0.02) {
   store (fpc);
   plain();
 #endif
-  
+/**
+### Non-interactive bview
+
+We can check the grid and solution "live" and without much renderding costs (unlike `bwatch`) using bview.
+*/
   isosurface ("l2", 2);
   cells();
   save ("iso_surf.mp4");
   save ("snapshot.png");
 }
-
+/**
+Adaptation for the 4th-order accurate solver is well tested with the `adapt_flow()` function.
+*/
 event adapt (i++)
   adapt_flow (ue, 99, 1);
 

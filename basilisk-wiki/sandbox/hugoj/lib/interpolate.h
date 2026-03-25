@@ -4,25 +4,6 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_interp2d.h>
-#include <gsl/gsl_spline2d.h>
-
-#include "constant.h"
-
-
-
-
-void cart2pol(double x, double y, double rho, double phi) {
-    rho = sqrt(x * x + y * y);
-    phi = atan2(y, x);
-}
-
-void pol2cart(double rho, double phi, double x, double y){
-    x = rho * cos(phi);
-    y = rho * sin(phi);
-}
-
 
 int find_index_closest(double arr[], int length, double target) {
   /*
@@ -98,6 +79,8 @@ double interp_lin(double x[], double y[], int Nx, int Ny, double xi, double yi, 
   double f10 = F[i1*Nx+j0];
   double f01 = F[i0*Nx+j1];
   double f00 = F[i0*Nx+j0];
+
+  
   
   // printf("j0 %d, j1 %d, i0 %d, i1 %d\n", j0, j1, i0, i1);
   // printf("dx %f, dy %f\n", dx, dy);
@@ -109,13 +92,4 @@ double interp_lin(double x[], double y[], int Nx, int Ny, double xi, double yi, 
       (1-dx/deltaX-dy/deltaY+ dx/deltaX*dy/deltaY) * f00 );
   
   return Fi;
-
-
-// WIP
-// double interp_gsl(double x[], double y[], int Nx, int Ny, double xi, double yi, double F[]):
-//   const gsl_interp2d_type *T = gsl_interp2d_bilinear;
-
-
-
-
 }

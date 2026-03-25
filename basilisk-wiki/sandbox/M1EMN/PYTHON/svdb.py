@@ -54,7 +54,7 @@ def sol_num(t) :
     for i in range(1,n+2):
       fp[i]=FR1(u[i-1],u[i],h[i-1],h[i])
       fd[i]=FR2(u[i-1],u[i],h[i-1],h[i])
-# avancee pour h, si h>0 avancee pour u      
+# avancee pour h, si h>0 avancee pour u de 1 a n     
     for i in range(1,n+1):
       hn=h[i]-dt*(fp[i+1]-fp[i])/dx;
       if(h[i]>0.):
@@ -64,7 +64,7 @@ def sol_num(t) :
       else:
         u[i]=0.
         h[i]=hn
-#condition de neumann en 0 et en n         
+#condition de neumann en 0 et en n : fantome en n+1        
     u[0]=u[1]
     h[0]=h[1]
     h[n+1]=h[n]
@@ -99,17 +99,16 @@ plt.show()
 #
 # attention si on relance le calcul, l'argument en temps est un incrément
 # car les valeurs de u et h ne sont pas mises à zéro dans la boucle
-# h3n=np.zeros(n+2)
-# h3n=sol_num(3)
-# h3e=sol_exact(x,3+3)
+h3n=np.zeros(n+2)
+h3n=sol_num(3)
+h3e=sol_exact(x,3+3)
 
-
-# plt.figure(figsize=(8,6))
-# plt.plot(x,h3n,'b',linestyle='--',label='num')
-# plt.plot(x,h3e,'r',label='exact')
-# plt.title('comparaison solution num et analytique probleme rupture barrage,t=3+3')
-# plt.xlabel('x')
-# plt.ylabel('h')
-# plt.grid()
-# plt.legend(loc='best')
-# plt.show()
+plt.figure(figsize=(8,6))
+plt.plot(x,h3n,'b',linestyle='--',label='num')
+plt.plot(x,h3e,'r',label='exact')
+plt.title('comparaison solution num et analytique probleme rupture barrage,t=3+3')
+plt.xlabel('x')
+plt.ylabel('h')
+plt.grid()
+plt.legend(loc='best')
+plt.show()

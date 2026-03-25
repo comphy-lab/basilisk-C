@@ -13,6 +13,13 @@ from matplotlib import pyplot as plt
 import xarray as xr
 
 from specgen import spectrum_PM, spectrum_gen_linear, eta_random
+
+# add libpy
+import os.path
+import sys
+dirname = os.path.dirname(__file__)
+filename = os.path.join(dirname, '../libpy/')
+sys.path.append( filename )
 from fftlib import get_spec_1D
 
 

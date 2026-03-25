@@ -1,3 +1,15 @@
+/**
+
+Test for my bilinear interpolation.
+
+Target is x^2+y^2 at x=y=0.5 so target = 0.5
+
+I test interpolating from a 2D grid to this target point.
+I build a grid x=y=[-1,1] with NxN points
+The grid has increasing number of points, which should result in increasing
+accuracy.
+**/
+
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>

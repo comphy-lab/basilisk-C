@@ -1,15 +1,17 @@
-# PYTHON_CONFIG = python3.10-config
-# PYTHON_INCLUDE = $(shell $(PYTHON_CONFIG) --includes)
-# PYTHON_LIBS = $(shell $(PYTHON_CONFIG) --ldflags)
 
-#exec=test_interp
-exec=test_interp_pol2cart
 
-all: $(exec)
-$(exec): $(exec).c interpolate.c
-	#$(CC) -o $(exec) $(exec).c interpolate.c $(PYTHON_INCLUDE) $(PYTHON_LIBS)
-	$(CC) -o $(exec) $(exec).c interpolate.c -lm
+all: test_interp test_interp_pol2cart
+
+
+test_interp: test_interp.c interpolate.c
+	gcc -o test_interp test_interp.c interpolate.c -lm
+	./test_interp
+
+test_interp_pol2cart: test_interp_pol2cart.c interpolate.c
+	gcc -o test_interp_pol2cart test_interp_pol2cart.c interpolate.c -lm
+	./test_interp_pol2cart
+
 
 clean:
-	rm -f $(exec)
+	rm -f test_interp test_interp_pol2cart
 

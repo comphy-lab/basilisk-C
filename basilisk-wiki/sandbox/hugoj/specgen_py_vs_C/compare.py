@@ -19,6 +19,12 @@ from scipy.interpolate import griddata
 import xarray as xr
 import xrft
 
+import os.path
+import sys
+# add libpy
+dirname = os.path.dirname(__file__)
+filename = os.path.join(dirname, '../libpy/')
+sys.path.append( filename )
 from fftlib import get_spec_1D
 
 L=200.
@@ -84,7 +90,7 @@ eta_py = np.zeros((N_grid,N_grid))
 for row in range(len(kx_py)):
     for col in range(len(ky_py)):
         index = row*len(kx_py) + col
-        index = col*len(kx_py) + row
+        #index = col*len(kx_py) + row
         datapy[row, col] = rawpy[index]
 for i in range(N_grid):
     for j in range(N_grid):

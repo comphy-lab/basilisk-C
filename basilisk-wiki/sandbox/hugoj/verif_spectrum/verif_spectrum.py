@@ -1,5 +1,4 @@
 """
-
 # Azimuthal integration of 2D spectrum
 
 The goals of this script are:
@@ -46,11 +45,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import xarray as xr
 import os.path
+import sys
 import time
 import xrft
 from scipy.fft import fft2, fftfreq
-
 from scipy.interpolate import griddata
+
+# add libpy
+dirname = os.path.dirname(__file__)
+filename = os.path.join(dirname, '../libpy/')
+sys.path.append( filename )
 from fftlib import *
 
 """

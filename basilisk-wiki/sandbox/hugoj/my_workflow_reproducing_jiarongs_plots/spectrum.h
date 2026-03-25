@@ -7,7 +7,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "interpolate.h"
+#include "hugoj/lib/interpolate.h"
 //#include <gsl/gsl_rng.h>
 
 #define PI 3.14159265358979323846
@@ -111,20 +111,20 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
   // r = gsl_rng_alloc (T);
 
 
-
+  // building kmod
   for (int i = 0; i < N_kmod; ++i) {
     spectrum.kmod[i] =
         2 * PI / L + 1.0 * i / (N_kmod - 1) * (1.41 * 100 * 2 - 2) * PI / L;
   }
+  // build Dtheta
   for (int i = 0; i < N_theta; ++i) {
     theta[i] = -0.5 * PI + 1.0 * i / (N_theta - 1) * PI;
     Dtheta[i] = fabs(pow(cos(theta[i] - thetam), N_power));
   }
-
   // Normalizing Dtheta
   dtheta = theta[1] - theta[0];
   for (int i = 0; i < N_theta - 1; ++i) {
-    sum = sum + dtheta * 0.5 * (Dtheta[i] + Dtheta[i+1]);
+    sum = sum + dtheta * 0.5 * (Dtheta[i] + Dtheta[i+1]); // trapezoid integ
   }
   for (int i = 0; i < N_theta; ++i) {
     Dtheta[i] = Dtheta[i] / sum;
@@ -170,7 +170,7 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
   srand(RANDOM); // We can seed it differently for different runs
   int index = 0;
   double kmod = 0;
-  double randnum;
+  //double randnum;
   for (int i=0; i<N_mode; i++) {
     for (int j=0; j<N_mode+1; j++) {
       index = j*N_mode + i;

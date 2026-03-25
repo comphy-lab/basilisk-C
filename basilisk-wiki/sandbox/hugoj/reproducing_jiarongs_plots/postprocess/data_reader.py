@@ -15,7 +15,7 @@ def read_data(filename: string, chunks='auto', dtype='float32'):
     """
     ds = xr.open_mfdataset(filename, chunks=chunks)
     zb = ds.zb[0,0,0].values
-    
+
     # building z and left side of z
     Nt, Nl, Ny, Nx = ds.w.shape
     z = np.zeros((Nt, Nl, Ny, Nx))
@@ -44,9 +44,6 @@ def read_data(filename: string, chunks='auto', dtype='float32'):
     ds = ds.assign_coords(coords)
     #ds = ds.rename({'u.z':'w'}) # this could be set in bderemble/netcdf_pas.h
     ds = ds.rename({'level':'zl', 'w':'u.z'})
-
-    # Dask performances
-    ds = ds.chunk({'time':5, 'x':64, 'y':64, 'zl':-1})
 
     # xgcm grid
     grid = build_grid(ds)

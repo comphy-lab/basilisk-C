@@ -22,7 +22,6 @@ Oceanography, 55(9), 1521–1534. https://doi.org/10.1175/JPO-D-25-0052.1
 import numpy as np
 import matplotlib.pyplot as plt
 import xarray as xr
-import os.path
 import time
 import xrft
 from scipy.fft import fft2, fftfreq
@@ -30,6 +29,13 @@ from scipy.fft import fft2, fftfreq
 from data_reader import read_data, build_grid
 from tools import *
 from diags import interpz, grad_velocities, vorticity, dissipation
+
+# add libpy
+import os.path
+import sys
+dirname = os.path.dirname(__file__)
+filename = os.path.join(dirname, '../../libpy/')
+sys.path.append( filename )
 from fftlib import *
 
 
@@ -64,7 +70,7 @@ print("Tp",Tp)
 print("--------------------\n")
 
 
-if False:
+if True:
     print("* Surface elevation, spectra")
 
     """
@@ -72,7 +78,7 @@ if False:
     """
 
     # opening file
-    ds, grid = read_data(filename)
+    ds, grid = read_data(filename, chunks=None)
     fig, ax = plt.subplots(1,1,figsize = (7,5),constrained_layout=True,dpi=dpi)
     s=ax.pcolormesh(ds.x, ds.y, ds.eta.isel(time=-1)*kp, cmap='Greys_r', vmin=-0.15, vmax=0.3)
     ax.set_xlabel('X (m)')
@@ -104,7 +110,7 @@ if False:
     """
     Verification of Parceval equalities
     """
-    if False:
+    if True:
         it = -1
         print("\n* Validation of the perceval theorem")
         print("timestep = %d" %it)
@@ -204,7 +210,7 @@ if False:
 ## Profiles
 """
 
-if True:
+if False:
     print("* Profiles")
         
     time_ =  120 # s

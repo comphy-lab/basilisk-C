@@ -1,0 +1,42 @@
+# ============================================================
+# Configuration file for the multi_layer model using Basilisk
+#
+#
+#
+#
+# ============================================================
+#
+# INITIAL CONDITION
+#
+P = 0.02        # energy level
+coeff_kpL0 = 10 # kpL0 = coeff_kpL0 * pi
+N_mode = 32     # number of nodes
+N_power = 5     # directional spreading coeff
+# shape of the initial spectrum
+# -1: read file init_spectrum
+# 1: PM
+# 2: JONSWAP (not yet coded)
+F_shape = 1
+
+#
+# DOMAIN DEFINITION
+#
+N_grid = 6   # 1024=10 2^N_grid, number of x and y gridpoints
+L = 200.0    # (m) domain size
+N_layer = 30 # number of layers
+h0 = 40.0    # =2pi/kp, depth of water (m)
+
+#
+# RUN PARAMETERS
+#
+tend = 5.0  # 200 (s) time to end the simu
+dtout = 5.0 # 20 (s) dt for output in netcdf
+restart = 0 # whether to restart from restart.nc
+
+
+#
+# SOLVER PARAMETERS
+#
+nu0 = 0.000025 # m2 s-2 Viscosity for vertical diffusion
+RANDOM = 6     # random integer (>1) for random number generator
+thetaH = 0.5   # theta_h for dumping fast barotropic modes
