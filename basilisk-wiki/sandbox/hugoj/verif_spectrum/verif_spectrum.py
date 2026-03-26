@@ -341,7 +341,7 @@ t = 0
 eta_tile, phase_tile = eta_random(t, kx_tile, ky_tile, F_kxky_tile, x_tile, y_tile)
 print('kpHs = %g' %(kp*np.std(eta_tile)*4))
 
-
+print('var eta = %f' %(np.sum(eta_tile**2)/N_grid**2))
 # different method to compute omnidir spec
 
 # 1) geostrokit
@@ -418,6 +418,7 @@ var from azimuthal_integral = 1.038498
 PART 2
 >Computing spectra from synthetic eta field
 kpHs = 0.246694
+var eta = 0.154155
 variances check
 geostrokit: 0.154155
 xrft: 0.140847

@@ -125,6 +125,8 @@ event mov (t = 7; t += 0.02) {
   plain();
 /**
 Optionally, the $\lambda_2$ volume can be colorcoded with the local vorticity vector (false color). This is a bit over the top...
+
+![Volumetric rendering of the $\lambda_2$ field, where the field is color-coded according to the vorticity field direction](https://antoonvanhooft.nl/media/elliptical_colors.mp4)(width=800px)
 */
   #if 0  
   static FILE * fpc = popen ("ppm2mp4 elliptic_colors.mp4", "w");

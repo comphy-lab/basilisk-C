@@ -45,6 +45,7 @@ var from azimuthal_integral = 1.038498
 PART 2
 >Computing spectra from synthetic eta field
 kpHs = 0.246694
+var eta = 0.154155
 variances check
 geostrokit: 0.154155
 xrft: 0.140847

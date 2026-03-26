@@ -27,7 +27,7 @@ def azimuthal_integral(spec_2D, Delta, all_kr=False):
     spec_1D: array [(nz,) nkr] 1d spectra
     '''
     
-    print('import is ok')
+    #print('import is ok')
 
     nd = spec_2D.ndim
     if nd == 2:
@@ -50,7 +50,6 @@ def azimuthal_integral(spec_2D, Delta, all_kr=False):
         
         # the loop is missing the value at K=0:
         # add it with all_kr option
-    plt.show()
     return kr, spec_1D.squeeze()
 
 

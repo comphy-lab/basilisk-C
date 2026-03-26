@@ -19,7 +19,7 @@ plot 'log' u 1:($2*2.) w l t ''
 
 const double tend = 12;
 const double We = 5.;
-const double Re = 100;
+const double Re = 1000.;
 const int maxlevel = 11;
 
 double dmin0;
@@ -35,7 +35,7 @@ int main()
   L0 = 5.;
   X0 = - L0/2.;
   //Y0 = - L0/2. - 1.;
-  Y0 = -L0 + 0.1;
+  Y0 = -L0 + 0.1 ;
   const scalar sigma[] = 1./We;
   d.sigmaf = sigma;
 

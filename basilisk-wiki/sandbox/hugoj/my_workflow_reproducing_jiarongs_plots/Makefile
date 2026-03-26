@@ -1,22 +1,49 @@
-CFLAGS += -O2 -I$(DOCUMENT_ROOT)/sandbox 
-
+CFLAGS += -I$(DOCUMENT_ROOT)/sandbox #-O2
 CFLAGS += -disable-dimensions # skip dimensions check for now
-LIBS += -lgsl
+#LIBS += -lgsl
 
 EXEC=ml_breaking
 NAMELIST=namelist
+INI=gen_ini
+
+CFLAGS += -DUSE_PPR=1
+
+all: initial_condition 
+
+sim: ${EXEC}/${NAMELIST}.toml ${EXEC}.tst ${EXEC}/plots
+
+sim.gpu: ${EXEC}.gpu/${NAMELIST}.toml ${EXEC}.gpu.tst ${EXEC}.gpu/plots
+
+${EXEC}.tst: CC = mpicc -D_MPI=16
+
+initial_condition: ${INI}/${NAMELIST}.toml ${INI}.tst ${INI}/plots
+
+namelist: ${INI}/${NAMELIST}.toml ${EXEC}/${NAMELIST}.toml
 
 
-all: gen_ini/${NAMELIST}.toml gen_ini.tst gen_ini/plots
+${INI}/${NAMELIST}.toml: ${NAMELIST}.toml 
+	mkdir -p ${INI}
+	ln -sf ../${NAMELIST}.toml ${INI}/
 
+${EXEC}/${NAMELIST}.toml: ${NAMELIST}.toml 
+	mkdir -p ${EXEC}
+	ln -sf ../${NAMELIST}.toml ${EXEC}/
+	ln -sf ../${INI}/F_kxky ${EXEC}/
+	ln -sf ../${INI}/ky ${EXEC}/
+	ln -sf ../${INI}/kx ${EXEC}/
+	ln -sf ../${INI}/omega ${EXEC}/
+	ln -sf ../${INI}/phase ${EXEC}/
 
-gen_ini/${NAMELIST}.toml: ${NAMELIST}.toml 
-	mkdir -p gen_ini
-	cp ${NAMELIST}.toml gen_ini/
+${EXEC}.gpu/${NAMELIST}.toml: ${NAMELIST}.toml 
+	mkdir -p ${EXEC}.gpu
+	ln -sf ../${NAMELIST}.toml ${EXEC}.gpu/
+	ln -sf ../${INI}/F_kxky ${EXEC}.gpu/
+	ln -sf ../${INI}/ky ${EXEC}.gpu/
+	ln -sf ../${INI}/kx ${EXEC}.gpu/
+	ln -sf ../${INI}/omega ${EXEC}.gpu/
+	ln -sf ../${INI}/phase ${EXEC}.gpu/
 
-	
-
-
+_${EXEC}.c: CFLAGS += -D_MPI=1
 
 
 

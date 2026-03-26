@@ -50,6 +50,14 @@ int main(int argc, char *argv[]){
   FILE *fptr3 = fopen("ky", "wb");
   fwrite(spectrum.ky, sizeof(double), N_mode+1, fptr3);
   fclose(fptr3);
+
+  FILE *fptr4 = fopen("omega", "wb");
+  fwrite(spectrum.omega, sizeof(double), N_mode*(N_mode+1), fptr4);
+  fclose(fptr4);
+
+  FILE *fptr5 = fopen("phase", "wb");
+  fwrite(spectrum.phase, sizeof(double), N_mode*(N_mode+1), fptr5);
+  fclose(fptr5);
   
 }
 
@@ -77,6 +85,7 @@ s=ax.pcolormesh(kx,ky,datapy.T, shading='nearest', vmin=0,vmax=3)
 ax.set_xlabel('kx')
 ax.set_ylabel('ky')
 plt.colorbar(s,ax=ax)
+fig.savefig('F_kxky.png')
 ~~~
 
 **/
