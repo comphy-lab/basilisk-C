@@ -299,24 +299,6 @@ event logfile (i++) {
     fflush(stderr);
 }
 
-/**
-   wall friction
-   $$\frac{du}{dt} = \frac{-2 \mu_w p u}{W ||u||}$$
-   equation with discretization:
-   $$\frac{u^{n+1}-u^n}{\delta t} = \frac{-2 \mu_w p u^{n+1}}{W ||u^n||} $$
-*/
-
-
-/**
-event friction (i++) {
-    foreach() {
-            double m = 2. * muwall * dt * p[] / WDOMAIN;
-            double U = norm(u);
-            foreach_dimension()
-                u.x[] = U > 0 ? max(U - m, 0) * u.x[] / U : 0;
-    }
-}
- */
 
 event interface (t = 2. ; t+=1. ; t<= tmax) {
 #if dimension == 2
