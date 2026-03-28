@@ -40,10 +40,10 @@ from diags import interpz, grad_velocities, vorticity, dissipation
 """
 ## General parameters
 """
-
 # My data
-filename="/home/jacqhugo/basilisk/wiki/sandbox/hugoj/reproducing_jiarongs_plots/N10_P0.02_L15/out.nc"
-#filename="/home/jacqhugo/basilisk/wiki/sandbox/hugoj/reproducing_jiarongs_plots/N10_P0.02_L30/out.nc"
+#filename="/home/jacqhugo/basilisk/wiki/sandbox/hugoj/reproducing_jiarongs_plots/N10_P0.02_L15/out.nc"
+#filename="/home/jacqhugo/basilisk/wiki/sandbox/hugoj/my_workflow_reproducing_jiarongs_plots/N10_L15_P0.02/out.nc"
+filename="/home/jacqhugo/basilisk/wiki/sandbox/hugoj/my_workflow_reproducing_jiarongs_plots/using_pprf90/out.nc"
 # getting back Jiarong's data
 Jpath = "data_Jiarong/"
 save_nc = './data.nc'
@@ -142,7 +142,7 @@ if True:
         
         F_150 = jspectrum_integration(ds.eta[it].values, L0, N, CHECK=True)
     
-    if False:
+    if True:
         print('Evolution of wave energy <eta**2> ')
         for k in range(len(ds.eta.time)):
             print(f"t = {ds.time[k].values}, {np.sum(ds.eta[k].values**2)/N**2} m^2")
@@ -156,14 +156,14 @@ if True:
     s_eta2D = xrft.xrft.cross_spectrum(ds.eta, ds.eta,dim=('x','y'))
     # 2) geostrokit
     f_eta = np.zeros((len(ds.eta.time),N//2-1))
-    for k in range(len(at_t)):
-        fr, f_eta[k] = get_spec_1D(ds.eta.sel(time=at_t[k]).values, ds.eta.sel(time=at_t[k]).values, Delta=L/N)
+    for k in range(len(ds.eta.time)):
+        fr, f_eta[k] = get_spec_1D(ds.eta[k].values, ds.eta[k].values, Delta=L/N)
     # 3) Jiarong's code
     wavenumber = 2*np.pi*np.fft.fftfreq(n=N,d=L0/N)
     jiarong_k = wavenumber[0:int(N/2)]
-    f_eta_jiarong = np.zeros((len(at_t),len(jiarong_k)))
-    for k in range(len(at_t)):
-        f_eta_jiarong[k] = jspectrum_integration(ds.eta.sel(time=at_t[k]).values, L0, N, CHECK=False)
+    f_eta_jiarong = np.zeros((len(ds.eta.time),len(jiarong_k)))
+    for k in range(len(ds.eta.time)):
+        f_eta_jiarong[k] = jspectrum_integration(ds.eta[k].values, L0, N, CHECK=False)
 
 
 
@@ -189,10 +189,10 @@ if True:
         fig, ax = plt.subplots(1,1,figsize = (3,3),constrained_layout=True,dpi=dpi)
         ax.loglog(jiarong_k*L0, (f_eta_jiarong[k])*kp**3,
                 c='gray',
-                label="Jiarong code only")
+                label="My c code, Jiarong py")
         ax.loglog(fr*2*np.pi*L0, (f_eta[k]/(2*np.pi))*kp**3,
                 c='b', ls='--',
-                  label='Jiarong C code, my py code') # using geostrokit
+                  label='my code code only') # using geostrokit
         ax.loglog(Js[k][:,0],Js[k][:,1], c='r', ls='-', label="Jiarong's paper")
         ax.set_title(r'$w_p t=$'+str(int(wp*at_t[k])))
         ax.set_ylim([1e-7,1e-2])
@@ -208,7 +208,7 @@ if True:
 ## Profiles
 """
 
-if False:
+if True:
     print("* Profiles")
         
     time_ =  120 # s

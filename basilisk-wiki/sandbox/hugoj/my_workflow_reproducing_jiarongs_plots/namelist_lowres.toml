@@ -21,7 +21,7 @@ F_shape = 1
 #
 # DOMAIN DEFINITION
 #
-N_grid = 8   # 1024=10 2^N_grid, number of x and y gridpoints
+N_grid = 6   # 1024=10 2^N_grid, number of x and y gridpoints
 L = 200.0    # (m) domain size
 N_layer = 15 # number of layers
 h0 = 40.0    # =2pi/kp, depth of water (m)

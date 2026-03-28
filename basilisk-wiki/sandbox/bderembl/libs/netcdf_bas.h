@@ -105,16 +105,15 @@ void create_nc(scalar * list_out, char* file_out)
    /* Define the dimensions. The record dimension is defined to have
     * unlimited length - it can grow as needed. In this example it is
     * the time dimension.*/
-#if _MPI
-   int npx = Dimensions.x;
-   int npy = Dimensions.y;
-#else
-   int npx = 1;
-   int npy = 1;
-#endif
    int Nloc = (1 << depth());
+   int npx = Dimensions.x;
    int Nx = Nloc*npx;
+#if dimension > 1
+   int npy = Dimensions.y;
    int Ny = Nloc*npy;
+#else
+   int Ny = 1;
+#endif
 
    if ((nc_err = nc_def_dim(ncid, REC_NAME, NC_UNLIMITED, &rec_dimid)))
       ERR(nc_err);
@@ -148,39 +147,36 @@ void create_nc(scalar * list_out, char* file_out)
       the netCDF variables. Both of the netCDF variables we are
       creating share the same four dimensions. In C, the
       unlimited dimension must come first on the list of dimids. */
-
+   
    /* Define the netCDF variables */
    int nvarout = 0;
    for (scalar s in nc_scalar_list){
-        int nl_loc = _attribute[s.i].block;
-
-        if (nl_loc == 1){ // store 1-layer variables without layer dimension
-          int dimids[3];
-          int NDIMS = 3;
-          dimids[0] = rec_dimid;
-          dimids[1] = y_dimid;
-          dimids[2] = x_dimid;
-          
-          if ((nc_err = nc_def_var(ncid, s.name, NC_FLOAT, NDIMS,
-                                   dimids, &nc_varid[nvarout])))
-         ERR(nc_err);
-
-        } else {
-
-        int dimids[4];
-        int NDIMS = 4;
-        dimids[0] = rec_dimid;
-        dimids[1] = lvl_dimid;
-        dimids[2] = y_dimid;
-        dimids[3] = x_dimid;
-
+     int nl_loc = _attribute[s.i].block;
+     if (nl_loc == 1){ // store 1-layer variables without layer dimension
+       int dimids[3];
+       int NDIMS = 3;
+       dimids[0] = rec_dimid;
+       dimids[1] = y_dimid;
+       dimids[2] = x_dimid;
+       
        if ((nc_err = nc_def_var(ncid, s.name, NC_FLOAT, NDIMS,
                                 dimids, &nc_varid[nvarout])))
          ERR(nc_err);
-
-        }
-
-       nvarout += 1;
+       
+     } else {
+       
+       int dimids[4];
+       int NDIMS = 4;
+       dimids[0] = rec_dimid;
+       dimids[1] = lvl_dimid;
+       dimids[2] = y_dimid;
+       dimids[3] = x_dimid;
+       
+       if ((nc_err = nc_def_var(ncid, s.name, NC_FLOAT, NDIMS,
+                                dimids, &nc_varid[nvarout])))
+         ERR(nc_err);
+     }
+     nvarout += 1;
    }
    
    /* /\* Assign units attributes to the netCDF variables. *\/ */
@@ -196,11 +192,12 @@ void create_nc(scalar * list_out, char* file_out)
       ERR(nc_err);
 
    /*  write coordinates*/
-   float yc[Ny], xc[Nx];
+   float xc[Nx];
    double Delta = L0*1.0/Nx;
    for (int i = 0; i < Nx; i++)
      xc[i] = X0 + (i + 0.5)*Delta;
-   
+
+   float yc[Ny];
    for (int i = 0; i < Ny; i++)
       yc[i] = Y0 + (i + 0.5)*Delta;
 
@@ -210,7 +207,6 @@ void create_nc(scalar * list_out, char* file_out)
 
    if ((nc_err = nc_put_var_float(ncid, lvl_varid, &zc[0])))
       ERR(nc_err);
-
    if ((nc_err = nc_put_var_float(ncid, y_varid, &yc[0])))
       ERR(nc_err);
    if ((nc_err = nc_put_var_float(ncid, x_varid, &xc[0])))
@@ -233,16 +229,15 @@ We use write_nc to dump a snapshot in the netcdf file at time t.
 
 void write_nc() {
 
-#if _MPI
-   int npx = Dimensions.x;
-   int npy = Dimensions.y;
-#else
-   int npx = 1;
-   int npy = 1;
-#endif
    int Nloc = (1 << depth());
+   int npx = Dimensions.x;
    int Nx = Nloc*npx;
+#if dimension > 1
+   int npy = Dimensions.y;
    int Ny = Nloc*npy;
+#else
+   int Ny = 1;
+#endif
 
 
   bool nc_linear_interp = false;
@@ -363,16 +358,16 @@ void read_nc(scalar * list_in, char* file_in, bool read_time = false)
   char varname[NC_MAX_NAME+1];
   int *dimids = NULL;
 
-#if _MPI
-  int npx = Dimensions.x;
-  int npy = Dimensions.y;
+   int Nloc = (1 << depth());
+   int npx = Dimensions.x;
+   int Nx = Nloc*npx;
+#if dimension > 1
+   int npy = Dimensions.y;
+   int Ny = Nloc*npy;
 #else
-  int npx = 1;
-  int npy = 1;
+   int Ny = 1;
+//   int _J = 0; // does not work
 #endif
-  int Nloc = (1 << depth());
-  int Nx = Nloc*npx;
-  int Ny = Nloc*npy;
 
   float * field = (float *)malloc(Ny*Nx*nl*sizeof(float));
 
@@ -421,8 +416,11 @@ void read_nc(scalar * list_in, char* file_in, bool read_time = false)
             ERR(nc_err);
 
           foreach(noauto)
+#if dimension > 1
             s[] = field[Nx*_J + _I];
-
+#else
+            s[] = field[_I]; // would like to use _J = 0 but does not work in 1D
+#endif
         } else { // layer
 
           size_t start[4], count[4];
@@ -442,7 +440,11 @@ void read_nc(scalar * list_in, char* file_in, bool read_time = false)
           // I  recreate a foreach_layer in case LAYER = 0
           for (_layer = 0; _layer < nl; _layer++){
             foreach(noauto){
+#if dimension > 1
               s[] = field[Ny*Nx*_layer + Nx*_J + _I];
+#else
+              s[] = field[Nx*_layer + _I];// would like to use _J = 0 but does not work in 1D
+#endif
             }
           }
           _layer = 0;

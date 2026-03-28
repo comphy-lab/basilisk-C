@@ -1,20 +1,6 @@
-'''
-This file gather diagnostics for a Basilisk simulation.
-
-References (and associated codes): 
-
-Popinet, S. (2020). A vertically-Lagrangian, non-hydrostatic, multilayer model 
-for multiscale free-surface flows. Journal of Computational Physics, 418, 
-109609. https://doi.org/10.1016/j.jcp.2020.109609
-
-Wu, J., Popinet, S., & Deike, L. (2023). Breaking wave field statistics with a 
-multi-layer model. Journal of Fluid Mechanics, 968, A12. 
-https://doi.org/10.1017/jfm.2023.522
-
-Wu, J., Popinet, S., Chapron, B., Farrar, J. T., & Deike, L. (2025). Turbulence
-and Energy Dissipation from Wave Breaking. Journal of Physical Oceanography, 
-55(9), 1521‑1534. https://doi.org/10.1175/JPO-D-25-0052.1
-'''
+"""
+# Diagnostics for multilayer simulation
+"""
 
 import numpy as np
 import gc
@@ -24,6 +10,13 @@ from scipy.interpolate import interp1d
 def grad_velocities(ds, grid):
     '''
     Computes the gradient of velocities from a velocity field named u.x u.y u.z
+    
+    INPUTS:
+        ds: xr.Dataset
+        grid: xgcm grid
+    OUTPUTS:
+        ds: xr.Dataset, the updated dataset
+        update: bool, whether the dataset has been modified or not
     '''
     if 'dudx' not in ds.keys():
         update=True
@@ -67,6 +60,13 @@ def grad_velocities(ds, grid):
 def vorticity(ds, grid):   
     '''
     Computes vorticity (squared) from a velocity field named u.x u.y u.z and a xgcm grid
+
+    INPUTS:
+        ds: xr.Dataset
+        grid: xgcm grid
+    OUTPUTS:
+        ds: xr.Dataset, the updated dataset
+        update: bool, whether the dataset has been modified or not
     '''
     if 'dudx' not in ds.keys():
         raise Exception('Compute gradient first !')
@@ -86,6 +86,13 @@ def vorticity(ds, grid):
 def dissipation(ds, grid):
     '''
     Computes dissipation from a velocity field named u.x u.y u.z and a xgcm grid
+
+    INPUTS:
+        ds: xr.Dataset
+        grid: xgcm grid
+    OUTPUTS:
+        ds: xr.Dataset, the updated dataset
+        update: bool, whether the dataset has been modified or not
     '''
     if 'dudx' not in ds.keys():
         raise Exception('Compute gradient first !')
@@ -133,10 +140,36 @@ def dissipation(ds, grid):
 #
 
 def interp_profile(z_prof, data_prof, znew, fill_value):
-    """Interpolate a single profile. z_prof and data_prof are 1D numpy arrays."""
+    '''
+        Interpolate a single profile. z_prof and data_prof are 1D numpy arrays.
+    INPUTS:
+        z_prof: 
+        data_prof:
+        znew:
+        fill_value:
+    OUTPUTS:
+        numpy array
+    '''
     return np.interp(znew, z_prof, data_prof, left=fill_value, right=fill_value)
 
 def interpz(z, data, znew, fill_value):
+    '''
+        Wrapper of 'interp_profile' for a // use with xarray/dask.
+        Interpolate data, located at points z on points znew.
+        The fill_value is used when znew is out the range of z.
+
+        z and data are typically 4D with dimensions such as [t,level,y,x].
+
+    INPUTS:
+        z: xr.DataArray, N-dimensions array of the position of data 
+        data: xr.DataArray, N-dimensions array of the data to interpolate
+        znew: numpy array, 1D array position to interpolate data on
+    OUTPUTS:
+        xr.DataArray: the data variable interpolated at znew.
+
+    NOTE:
+        This function doesnt trigger compilation.
+    '''
     return xr.apply_ufunc(
         interp_profile,
         z, data,                                        # both (time, y, x, zl)

@@ -1,7 +1,8 @@
 /**
- # Flow in a Sandglass / Hourglass / Silo with a bottom orifice
+# Flow in a Sandglass / Hourglass / Silo with a bottom orifice
  We propose an implementation of the I-gradient nonlocal rheology proposed by Bouzid et al. for the flow in a silo with a bottom orifice.
- # Code
+ 
+# Code
  Includes and definitions
  */
 #include "grid/multigrid.h"
@@ -268,9 +269,9 @@ event debit (t += 0.05; t <= tmax ) {
 
 
 /**
- #to run
+# to run
  
- ~~~bash
+~~~bash
  qcc  -g -O2 -o granular_bottom_Igradient granular_bottom_Igradient.c -lm
  ./granular_bottom_Igradient > vol
 ~~~
@@ -278,15 +279,14 @@ event debit (t += 0.05; t <= tmax ) {
 Plot of vertical velocity at time 2
  
 ~~~gnuplot 
-
  reset
  set pm3d map
  set pm3d; set palette rgbformulae 22,13,-31;
  splot 'field-2.txt' u 1:2:(abs($6)*$3) with pm3d notitle
  set label "Vy" at graph 0.45, 0.85 font ",24" front
- set terminal postscript color enhanced
- set output "t2vy.eps"
- replot
+# set terminal postscript color enhanced
+# set output "t2vy.eps"
+# replot
 ~~~  
 Plot of pressure at time 2
  
@@ -298,8 +298,8 @@ Plot of pressure at time 2
  splot 'field-2.txt' u 1:2:(abs($4)**$3) with pm3d notitle
  set label "pressure" at graph 0.45, 0.85 font ",24" front
  set terminal postscript color enhanced
- set output "t2p.eps"
- replot
+# set output "t2p.eps"
+# replot
  ~~~
  
  Plot of viscosity at time 2
@@ -318,7 +318,7 @@ Plot of pressure at time 2
  ~~~
  
 
- #Bibliography
+# Bibliography
  
  * Y. Zhou PhD
  

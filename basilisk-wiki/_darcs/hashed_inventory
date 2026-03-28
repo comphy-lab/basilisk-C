@@ -1,4 +1,4 @@
-pristine:3d89233ff1c4014e479687b4867f74ab5a7f371673dce836a387a885b281cfc7
+pristine:b1be9858f71e2cdbc1f25bedb0611a1c492d53bcc8465ea8ef339686a70dd2a0
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -7763,3 +7763,63 @@ dli <ms456753@gmail.com>**20260326131538
  Ignore-this: 89738f20a4fb97786e7c085a349092ce0eff23a4736668502d70248099d51282da59939d50febb11
 ] 
 hash: 0000000302-cb81dfe1353bb4377173245bd65d54efaee5ef3c14c54b581536ba8993315d51
+[add: postprocess for my workflow
+hugo.jacquet.work@gmail.com**20260327071611
+ Ignore-this: 5e01c397ca8c3b2aecbf3b4e50fff52d
+] 
+hash: 0000022067-eb11e577b0f903125b863e1b3592017e5f93d4b0c18cdd04f062937f494e00bc
+[main code
+hugo.jacquet.work@gmail.com**20260327071719
+ Ignore-this: 4fe0557d7e43c66654cee2a903558eef
+] 
+hash: 0000009761-4f519bfd58fdb82bde4d829685b3a081d1559a17b8028b2382e5e3110d855416
+[moved common py code to common folder, description of function
+hugo.jacquet.work@gmail.com**20260327075843
+ Ignore-this: 96ac3058134430be865b8f0458fca6b2
+] 
+hash: 0000012090-61fa6a9cf5a662c7f1e8f2eb317a31904befed7e511ddf69e8bd5d2fa4c01f12
+[comparison pprC pprf90
+hugo.jacquet.work@gmail.com**20260327080115
+ Ignore-this: eca8bffe51eb321cdcdbccd29a170a91
+] 
+hash: 0000001261-036d923b2bb11a18933628e46a24f9626d72ffdc8ce61ab10ab4bfedc90c25fd
+[add back files to libpy
+hugo.jacquet.work@gmail.com**20260327080240
+ Ignore-this: 80cda14de6efc0aba67c8ec9e98d6a6d
+] 
+hash: 0000011590-880c6b38b038abbf67b782ce3c9f055adfc6871d599ee79f06f57832371f99c6
+[better Makefile
+hugo.jacquet.work@gmail.com**20260327095910
+ Ignore-this: aa31184c632ec865faf6ed2f3adb8d82
+] 
+hash: 0000010681-4c362d0b2bc5b46ed3eeabbb6373423ea142dbf40037d228be4ecafec39bc97f
+[typo
+pyl <pyl@ccr.jussieu.fr>**20260327105259
+ Ignore-this: 637205b29d6ac6c6582572ef20f72e7f6de4fd5ffd9e25b5a84a24030dc663e3abfcfccfbb2aaf26
+] 
+hash: 0000000962-17d34d7430441d39fdc802b1c61711a0afe5e1258d83a3e26f3ec69e7d04a960
+[Creating my sandbox
+rforte <riccardo.forte@tu-darmstadt.de>**20260327115304
+ Ignore-this: 9d1a27c35f2aa2ac3122cfc0b9383eebe37925de06c45d55bf26df3a40a35a9ed6a976aa2c97cc0b
+] 
+hash: 0000000275-5022cd2d97d702f9a150d08abcbfc9ce247a3196ec71db0ac849fdc46973e732
+[Create airblast file
+rforte <riccardo.forte@tu-darmstadt.de>**20260327120431
+ Ignore-this: 38b2a1f98d2299fbfe77abffa83cb7827d5567d5b5b0aed0760bb30385653635416aab98486b1152
+] 
+hash: 0000000252-a79b56cc1c6d235e78d419884bc3c9c059c58161618ac213a2c3120aa9b03189
+[add: plot for enstrophy comparison
+hugo.jacquet.work@gmail.com**20260327150912
+ Ignore-this: fc55b07cbe9b33bdcdc8e9e9bdff9eaf
+] 
+hash: 0000001831-962a9b0b339d45db4351dd5457159a5beddd19f63d9481a1f85030762733667d
+[First Draft
+rforte <riccardo.forte@tu-darmstadt.de>**20260327160735
+ Ignore-this: 1c01476a6cc4d84949e098f4af81041d20666fd8e8f82da724c52a7e9d1f7ccc3edf0a70374e92cc
+] 
+hash: 0000011077-36f44eb88bfa9892887252ace4306c6afe27f718d7be10488b9c582e5faccbe6
+[netcdf in 1d
+Bruno Deremble <bruno.deremble@cnrs.fr>**20260327162008
+ Ignore-this: 98ae6b41c073b78038baff24e99581d3a309b30b122064e8ea26c57ac6b14ef323570cabde591077
+] 
+hash: 0000003711-78390750d7990c62feecbca7a639ecf78e4387e63e3a44a806c210be71cb2cdb

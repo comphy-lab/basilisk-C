@@ -21,7 +21,7 @@ F_shape = 1
 #
 # DOMAIN DEFINITION
 #
-N_grid = 8   # 1024=10 2^N_grid, number of x and y gridpoints
+N_grid = 10   # 1024=10 2^N_grid, number of x and y gridpoints
 L = 200.0    # (m) domain size
 N_layer = 15 # number of layers
 h0 = 40.0    # =2pi/kp, depth of water (m)
@@ -29,9 +29,9 @@ h0 = 40.0    # =2pi/kp, depth of water (m)
 #
 # RUN PARAMETERS
 #
-tend = 150.0 # 200 (s) time to end the simu
+tend = 150.0  # 200 (s) time to end the simu
 dtout = 20.0 # 20 (s) dt for output in netcdf
-restart = 0  # whether to restart from restart.nc
+restart = 0 # whether to restart from restart.nc
 
 
 #
