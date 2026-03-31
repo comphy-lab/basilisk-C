@@ -59,14 +59,16 @@ all: ${EXEC}.tst
 
 # We want to run on local machine
 
-# > link ini files 
-${EXEC}/${NAMELIST}.toml ${EXEC}_pprf90/${NAMELIST}.toml ${EXEC}.gpu/${NAMELIST}.toml: ${NAMELIST}.toml
-	$(setup_exec_dir)
+
 
 # > ppr_C, mpirun
 ${EXEC}.tst: _prep_lowres
-${EXEX}.tst: ${EXEC}/${NAMELIST}.toml
+${EXEC}.tst: ${EXEC}/${NAMELIST}.toml
 ${EXEC}.tst: CC = mpicc -D_MPI=16
+
+# > link ini files 
+${EXEC}/${NAMELIST}.toml ${EXEC}_pprf90/${NAMELIST}.toml ${EXEC}.gpu/${NAMELIST}.toml: ${NAMELIST}.toml
+	$(setup_exec_dir)
 
 # > ppr_f90, mpirun
 ${EXEC}_pprf90.c: ${EXEC}.c
