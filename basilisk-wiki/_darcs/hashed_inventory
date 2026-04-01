@@ -1,4 +1,4 @@
-pristine:097d53c1863a4edbb5cf720f513b57caf2c08841796472f07ee9492edb280f2f
+pristine:8f5d7b9146dff7da327b2ea4f52a551610714626fc8a9dc9b67d82e0d995ba3f
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -7913,3 +7913,53 @@ zaleski <stephane.zaleski@gmail.com>**20260330125929
  Ignore-this: 7000a482014f43a8897851992d71ce67c61eeef56f69652875c618c626f0aba3f25008435fffd87a
 ] 
 hash: 0000000657-0822d52ec4a781f4740aa26e9ad4eaf9e772d20510befe7705289750c6c9570d
+[add: convection with multilayer
+hugo.jacquet.work@gmail.com**20260331123417
+ Ignore-this: 2555525807d5bb2931811c1ad15ff3eb
+] 
+hash: 0000011659-80f9262809e1cadb5c9d2eac04cb854cf6a3fb4a772ad2c0362480d74a0b0c57
+[u.n[top] correction
+rforte <riccardo.forte@tu-darmstadt.de>**20260331135754
+ Ignore-this: e8876ddb22331f683a76d4716f38b57b2ceeea7b7ea139fe94487bb5e5a44040fdc8886075ad792a
+] 
+hash: 0000000294-aea6c4db093a1c1dc546f55f0fa2db1102943151422fc0fa117d29e7b9b6ab5b
+[New Code
+rforte <riccardo.forte@tu-darmstadt.de>**20260331135908
+ Ignore-this: d71059e3add236bbd0c0c6422793a2a814e64d4d89be735f6cec6e4109edbfbfe0456cdd8826a129
+] 
+hash: 0000000253-bce615c9a3a6f5f79e11835c2d9562fdc90bc5ff5b446e55d3cac10a5dec30ff
+[Just code
+rforte <riccardo.forte@tu-darmstadt.de>**20260331141140
+ Ignore-this: ede9640fc3043f7c0a221d3366530f1f9cf83e275d03399be67e4f3f5362f165e96d96d5198f2543
+] 
+hash: 0000010980-70c4290bf530dafe518c34635152768b48e3e506a46eb96e4dff6c20cca0b5dd
+[Bug report: Basilisk parse error when using typedef with enum
+Gidon Bauer <g.bauer@itv.rwth-aachen.de>**20260331142528
+ Ignore-this: 5b26dee8dc5094aff802fae3f16313d09676c681831db26966e75475789a961e34d1df5136b4e291
+] 
+hash: 0000000308-514c975d4132d5c32b94dc41f2c4ca6180660b3e400dc00bba6f6c38221d33d9
+[Bug fixed
+Stephane Popinet <popinet@basilisk.fr>**20260331143601
+ Ignore-this: 9b806b1aa4d2fab66b141289fcf707cc42ef4cbc56731a653933b2c74ff645735ccc9fe1847ef62b
+] 
+hash: 0000000362-64463cbe1d66e2da71f7b47049b8d1d178a6e5c34c8addb4267e7d0ca2e7747b
+[Creation
+rforte <riccardo.forte@tu-darmstadt.de>**20260331143710
+ Ignore-this: 84e026c79330bfcfc576dc788b03df238ba1ee97b2f69d795e055cf6d9792a9de0471505d1da4010
+] 
+hash: 0000005885-7152b5cd7038f75cda94f799fe35eb2e96209d748ccfe25debcf04fa0f5bb427
+[Add the code for the typedef-enum bug report
+Gidon Bauer <g.bauer@itv.rwth-aachen.de>**20260331143937
+ Ignore-this: 320fb7ac9c9c2e47476dab244de2b747aae2d8ca9978f87c3e32ef57f78a9abe353c0839c402b0a2
+] 
+hash: 0000001201-34b90b49a3af2e30fa200169e5cbc2e3cfedbb8122cbec9f1362f03be1558c4e
+[Code correction, but still no explanation 
+rforte <riccardo.forte@tu-darmstadt.de>**20260331144226
+ Ignore-this: 74ac6edcf1f6544c414bda6ca38b6555e70e238e7e5c285c559a02172a0fa3489ac0feef12561cdf
+] 
+hash: 0000006714-46b4ca272f6950de4a300342131be90e0dbb37cd835d4fecee5224fe7c684b1e
+[Update of BMM information
+Tianyang <hantianyang@ucas.ac.cn>**20260331225455
+ Ignore-this: 428437b4115e26f9156e4a5c94884f57a34f8800b502eecac2cc69639c3f5f3d3c2eda91c5ecf1f
+] 
+hash: 0000000326-bf68b0fb2e4447a348f5b6b1410bdd67c55461a9d0019cc5596193b90d98acd0

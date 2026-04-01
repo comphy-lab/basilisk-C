@@ -99,7 +99,7 @@ pf[right]  = dirichlet(0.);
 f[right]  = (uf.n[] > 0. ? neumann(0.) : dirichlet(0.));
 
 // Top   
-u.n[top]  = neumann(0.);
+u.n[top]  = (uf.n[] > 0. ? neumann(0.) : dirichlet(0.));
 u.t[top]  = neumann(0.);
 u.r[top]  = neumann(0.);
 
