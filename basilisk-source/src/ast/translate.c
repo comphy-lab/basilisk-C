@@ -2468,6 +2468,77 @@ enum {
   fnowarning = 1 << 4  
 };
 
+static void boundary_functions (Ast * array, Ast * assign, Ast * scope, Stack * stack, void * data)
+{
+  TranslateData * d = data;
+  d->boundary = array;
+  assert (array->sym == sym_array_access && assign->sym == sym_assignment_expression);
+  AstTerminal * t = ast_left_terminal (assign);
+  char * before = t->before;
+  t->before = NULL;
+  char ind[20];
+  Ast * boundary = boundary_function (ast_child (assign, sym_assignment_expression),
+                                      stack, data, before, ind);
+  char * bc = ast_str_append (array->child[2], NULL);
+  char * scalar = ast_str_append (array->child[0], NULL);
+  char * set = set_boundary (array, ind);
+  if (scope->sym == sym_boundary_definition)
+    ast_replace_child (scope->parent, 0, boundary);
+  else
+    ast_block_list_insert_before (scope, boundary);
+  
+  Ast * homogeneous = ast_copy (boundary);
+  if (!homogeneize (homogeneous, stack))
+    ast_destroy (homogeneous);
+  else {
+
+    /**
+    If the functions contain homogeneous boundary conditions, we
+    expand postmacros. */
+	  
+    stack_push (stack, &homogeneous);
+    ast_traverse (boundary, stack, postmacros, data);
+    ast_traverse (homogeneous, stack, postmacros, data);
+    ast_pop_scope (stack, homogeneous);
+
+    Ast * func = ast_find (homogeneous, sym_IDENTIFIER);
+    str_append (ast_terminal (func)->start, "_homogeneous");
+    str_append (set, "_homogeneous\n");
+    ast_block_list_insert_before (scope, homogeneous);
+  }
+
+  /**
+  If the function uses other scalars, we create the boundary stencil. */
+
+  Ast * copy = ast_copy (boundary);
+  Ast * stencil = ast_stencil (copy, false, false, false);
+  if (!stencil)
+    ast_destroy (copy);
+  else {
+    Ast * type = ast_find (stencil, sym_DOUBLE);
+    type->sym = sym_VOID; strcpy (ast_terminal (type)->start, "void");
+    Ast * identifier = ast_find (stencil, sym_IDENTIFIER);
+    str_prepend (ast_terminal (identifier)->start, "_stencil");
+    ast_block_list_insert_before (scope, stencil);
+    str_append (set,
+                ",_attribute[", scalar, ".i].boundary_stencil[", bc,
+                "]=_stencil_boundary", ind, ";");
+  }
+
+  str_append (set, ";\n");
+  
+  Ast * expr = ast_parse_expression (set, ast_get_root (array));
+  free (set); free (scalar); free (bc);
+  if (scope->sym == sym_boundary_definition)
+    compound_append (d->last_events, NN(scope, sym_statement, expr));
+  else {
+    Ast * parent = ast_ancestor (assign, 2);
+    assert (parent->sym == sym_expression_statement);
+    ast_replace_child (parent, 0, ast_child (expr, sym_expression));
+    ast_destroy (expr);
+  }
+}
+
 static void global_boundaries_and_stencils (Ast * n, Stack * stack, void * data)
 {
   switch (n->sym) {
@@ -2560,47 +2631,8 @@ static void global_boundaries_and_stencils (Ast * n, Stack * stack, void * data)
 	    ast_typedef_name (ast_expression_type (n->child[0]->child[0],
 						   stack, false))) &&
 	   (!strcmp (typename, "vector") ||
-	    !strcmp (typename, "face vector")))) {
-	AstTerminal * t = ast_left_terminal (assign);
-	char * before = t->before;
-	t->before = NULL;
-	char ind[20];
-	TranslateData * d = data;
-	d->boundary = n;
-	Ast * boundary =
-	  boundary_function (ast_child (assign, sym_assignment_expression),
-			     stack, data, before, ind);
-	char * set = set_boundary (n, ind);
-	ast_block_list_insert_before (scope, boundary);
-	
-	Ast * homogeneous = ast_copy (boundary);
-	if (!homogeneize (homogeneous, stack)) {
-	  ast_destroy (homogeneous);
-	  str_append (set, ";\n");
-	}
-	else {
-
-	  /**
-	  If the functions contain homogeneous boundary conditions, we
-	  expand postmacros. */
-	  
-	  stack_push (stack, &homogeneous);
-	  ast_traverse (boundary, stack, postmacros, data);
-	  ast_traverse (homogeneous, stack, postmacros, data);
-	  ast_pop_scope (stack, homogeneous);
-
-	  Ast * func = ast_find (homogeneous, sym_IDENTIFIER);
-	  str_append (ast_terminal (func)->start, "_homogeneous");
-	  str_append (set, "_homogeneous;\n");
-	  ast_block_list_insert_before (scope, homogeneous);
-	}	
-	Ast * expr = ast_parse_expression (set, ast_get_root (n));
-	free (set);
-	Ast * parent = ast_ancestor (assign, 2);
-	assert (parent->sym == sym_expression_statement);
-	ast_replace_child (parent, 0, ast_child (expr, sym_expression));
-	ast_destroy (expr);
-      }
+	    !strcmp (typename, "face vector"))))
+        boundary_functions (n, assign, scope, stack, data);
     }
     break;
   }
@@ -2609,48 +2641,14 @@ static void global_boundaries_and_stencils (Ast * n, Stack * stack, void * data)
   ## Global boundary conditions */
     
   case sym_boundary_definition: {
-    Ast * expr = ast_schema (n, sym_boundary_definition,
-			     0, sym_assignment_expression,
-			     2, sym_assignment_expression);
+    Ast * assign = ast_schema (n, sym_boundary_definition,
+			     0, sym_assignment_expression);
     Ast * array = ast_find (n, sym_array_access);
-    if (expr && array) {
-      AstTerminal * t = ast_left_terminal (n);
-      char * before = t->before;
-      t->before = NULL;
+    if (assign && array) {
       set_boundary_component (ast_schema (array->child[0],
 					  sym_postfix_expression,
 					  2, sym_member_identifier));
-      char ind[20];
-      TranslateData * d = data;
-      d->boundary = array;      
-      Ast * boundary = boundary_function (expr, stack, data, before, ind);
-      char * set = set_boundary (array, ind);
-      ast_replace_child (n->parent, 0, boundary);
-      
-      Ast * homogeneous = ast_copy (boundary);
-      if (!homogeneize (homogeneous, stack)) {
-	ast_destroy (homogeneous);
-	str_append (set, ";\n");
-      }
-      else {
-
-	/**
-	If the functions contain homogeneous boundary conditions, we
-	expand postmacros. */
-	
-	stack_push (stack, &homogeneous);
-	ast_traverse (boundary, stack, postmacros, data);
-	ast_traverse (homogeneous, stack, postmacros, data);
-	ast_pop_scope (stack, homogeneous);
-
-	Ast * func = ast_find (homogeneous, sym_IDENTIFIER);
-	str_append (ast_terminal (func)->start, "_homogeneous");
-	str_append (set, "_homogeneous;\n");
-	ast_block_list_insert_after (n, homogeneous);
-      }
-      Ast * expr = ast_parse_expression (set, ast_get_root (n));
-      compound_append (d->last_events, NN(n, sym_statement, expr));
-      free (set);
+      boundary_functions (array, assign, n, stack, data);
     }
     break;
   }

@@ -242,10 +242,11 @@ void check_stencil (ForeachData * loop)
 	/**
 	If the field is write-accessed, we add it to the 'dirty'
 	list. */
-	
-	loop->dirty = list_append (loop->dirty, s);
+
+        if (!list_lookup (loop->dirty, s))
+          loop->dirty = list_append (loop->dirty, s);
 	for (scalar d in baseblock)
-	  if (scalar_depends_from (d, s))
+	  if (scalar_depends_from (d, s) && !list_lookup (loop->dirty, d))
 	    loop->dirty = list_append (loop->dirty, d);
       }
     }

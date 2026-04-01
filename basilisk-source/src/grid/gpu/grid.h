@@ -1725,11 +1725,38 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
 			      External * externals,
 			      const char * kernel)
 {
+  /**
+  We will directly apply boundary conditions to fields marked 'dirty'
+  by automatic stencils. */
+  
+  apply_bc_list = loop->dirty;
+  for (scalar s in loop->dirty) {
+    
+    /**
+    We also apply boundary stencils so that input/output are also set
+    properly for boundary conditions which may use external fields. */
+  
+    for (int b = 0; b < nboundary; b++)
+      if (s.boundary_stencil[b])
+        s.boundary_stencil[b] ((Point){0}, (Point){0}, s, NULL);
+
+    /**
+    We make sure all fields marked dirty are also outputs. */
+
+    if (!s.output)
+      s.output = true;
+  }
+
   for (scalar s in baseblock)
     s.gpu.index = 0;
   int index = 1;
   for (scalar s in baseblock)
     if ((s.input || s.output) && !s.gpu.index) {
+#if PRINTBOUNDARY
+      fprintf (stderr, "%s:%d: %s:%s%s index: %d\n",
+               loop->fname, loop->line, 
+               s.name, s.input ? " input" : "", s.output ? " output" : "", index);
+#endif
       if (s.v.x.i == -1) // scalar
 	s.gpu.index = index++;
       else { // vector
@@ -1740,12 +1767,16 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
       }
     }
   for (scalar s in loop->dirty) {
+#if PRINTBOUNDARY
+    fprintf (stderr, "%s:%d: dirty: %s:%s%s index: %d\n",
+             loop->fname, loop->line, 
+             s.name, s.input ? " input" : "", s.output ? " output" : "", s.gpu.index);
+#endif
     s.boundary_left   = s.boundary[left];
     s.boundary_right  = s.boundary[right];
     s.boundary_top    = s.boundary[top];
     s.boundary_bottom = s.boundary[bottom];
   }
-  apply_bc_list = loop->dirty;
   
   /**
   ## Allocate reduction fields */

@@ -10,7 +10,7 @@ all: check
 
 fastcheck: brusselator.tst distance.tst ginzburg-landau.tst karman.tst \
 	life.tst madsen.tst tsunami.tst turbulence.tst wavelet.tst naca2414-starting.tst \
-	porous3D.tst yang.tst swasi.tst loglayer.tst wall-model.tst
+	porous3D.tst yang.tst swasi.tst loglayer.tst wall-model.tst shoal-ml.gpu.tst
 
 madsen-sv.c: madsen.c
 	ln -s madsen.c madsen-sv.c 

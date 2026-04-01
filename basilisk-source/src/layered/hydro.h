@@ -47,7 +47,12 @@ in which case the tracers list is empty). */
 
 scalar zb[], eta, h;
 vector u;
-double G = 1., dry = 1e-12, CFL_H = 1e40;
+double G = 1., CFL_H = 1e40;
+#if SINGLE_PRECISION
+double dry = 1e-6;
+#else
+double dry = 1e-12;
+#endif
 double (* gradient) (double, double, double) = minmod2;
 
 scalar * tracers = NULL, eta_r;

@@ -41,9 +41,13 @@ double myfunc5 (double x)
   return x*x;
 }
 
+attribute {
+  double u;
+}
+
 void myfunc6 (Point point, scalar s)
 {
-  s[] = v.x[];
+  s[] = v.x[]*v.x.u;
 }
 
 double vv = 3;

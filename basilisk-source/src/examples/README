@@ -40,7 +40,7 @@ examples)"*](/src/test/README#running-and-creating-test-cases-and-examples).
 * [Tidally-induced internal lee waves](lee.c)
 * [Periodic wave propagation over an ellipsoidal shoal](shoal.c)
 * [Periodic wave propagation over an ellipsoidal shoal (multilayer
-  solver)](shoal-ml.c)
+  solver)](shoal-ml.gpu.c)
 * [3D breaking Stokes wave (multilayer solver)](breaking.c)
 * [Transcritical flow over a bump](gaussian-ns.c)
 * [A Shallow Water Analogue for the Standing Accretion Shock

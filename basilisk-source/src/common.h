@@ -144,9 +144,11 @@ typedef struct {
 #endif
 } ivec;
 typedef double (* BoundaryFunc) (Point, Point, scalar, bool *);
+typedef void (* BoundaryStencilFunc) (Point, Point, scalar, void *);
 typedef struct {
   BoundaryFunc * boundary;
   BoundaryFunc * boundary_homogeneous;
+  BoundaryStencilFunc * boundary_stencil;
   double (* gradient)              (double, double, double);
   void   (* delete)                (scalar);
   char * name;
