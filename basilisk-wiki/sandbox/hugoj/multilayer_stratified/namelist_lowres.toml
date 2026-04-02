@@ -10,7 +10,7 @@
 #
 rho0 = 1025.0   # [kg.m-3] reference density
 strat = 0.00002 # s^2
-Ts = 20         # °C
+Ts = 20.0       # °C
 cp = 4.2e3      # [J.kg-1.K-1] heat capacity water
 betaT = 2e-4    # Linear equation of state: drho = betaT*(T0-T) (Vallis 2.4)
 #
@@ -18,14 +18,14 @@ betaT = 2e-4    # Linear equation of state: drho = betaT*(T0-T) (Vallis 2.4)
 #
 N_grid = 6   # 1024=10 2^N_grid, number of x and y gridpoints
 L = 200.0    # (m) domain size
-N_layer = 15 # number of layers
+N_layer = 30 # number of layers
 h0 = 40.0    # =2pi/kp, depth of water (m)
 
 #
 # RUN PARAMETERS
 #
-tend = 200.0 # (s) time to end the simu
-dtout = 5.0  # (s) dt for output in netcdf
+tend = 20.0 # (s) time to end the simu
+dtout = 2.0 # (s) dt for output in netcdf
 
 #
 # SOLVER PARAMETERS

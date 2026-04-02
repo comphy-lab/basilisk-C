@@ -1,5 +1,5 @@
 #
-# Resolution des equations de Saint Venant instionnaires non visqueuses sur fond plat
+# Resolution des equations de Saint-Venant instationnaires non visqueuses sur fond plat
 # Solution de la rupture de barrage
 # http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/code_C_saintvenant.pdf
 # https://basilisk.fr/sandbox/M1EMN/Exemples/svdb.c
@@ -7,24 +7,22 @@
 #
 # trucs de python
 import numpy as np
-import scipy.sparse as sp
-import math
 import matplotlib.pylab as plt
 #parametres 
 n    = 400
 xmin = -8.
 xmax = 8.
 L=abs(xmax-xmin)
-dx   = L/n
-dt=dx*.25
+dx = L/n
+dt = dx*.25
 # tableau des x, de 0 a n+1 soit n+2 points (n interieurs)
-x=np.zeros(n+2)
+x = np.zeros(n+2)
 for i in range(n+2):
   x[i]=(i-n/2)*dx
 
 # hauteur initiale: retenue d'eau h=1 pour x<0; h=0 pour x>0
-  u=np.zeros(n+2)
-  h=np.zeros(n+2)
+  u = np.zeros(n+2)
+  h = np.zeros(n+2)
   for i in range(n+2):
       h[i]=1*(x[i]<0)
 # definition du flux numerique pour la hauteur
@@ -37,18 +35,18 @@ def FR2(ug, ud, hg, hd):
   c=max(abs(ug)+np.sqrt(hg),abs(ud)+np.sqrt(ud))
   return (ug*ug*hg + hg*hg/2. + ud*ud*hd + hd*hd/2.)*0.5 - c*(hd*ud-hg*ug)*0.5
 
+t = 0
+fp = np.zeros(n+2)
+fd = np.zeros(n+2)
 # definition de l'avancee au temps t
 def sol_num(t) :
 
-  fp=np.zeros(n+2)
-  fd=np.zeros(n+2)
   nt=int(t/dt)
-  t=0
-
+  
 # boucle en temps
   for k in range(nt):
     t=t+dt
-# pour chaque x, calcul des flux mis dasn un tableau 
+# pour chaque x, calcul des flux mis dans un tableau 
 # le cacul est pour h[1] a h[n] et pour u[1] a u[n]
 # de 1 a n+1
     for i in range(1,n+2):

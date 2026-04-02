@@ -29,7 +29,6 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
-* [Basilisk C parse error with typedef-enum](typedef-enum.c)
 * [Incompatible arguments in _stencil_function with pre-defined input values](args-stencil.c)
 * [Default boundary conditions do not work for face vector fields in MPI](bc_face_vector.c)
 * [Boundary conditions on a single component of a vector field are incorrect on trees](bc_vector.c)
@@ -98,6 +97,7 @@ mistakes.
 
 The bugs below should be fixed in the most recent release.
 
+* [Basilisk C parse error with typedef-enum](typedef-enum.c) [01/04/26](/src/?changes=20260401165542)
 * [Memory leak in solve.h](memory_leak_solve.c) [26/02/26](/src/?changes=20260226171227)
 * [Dumps are mangled when using 3D multigrid over a certain level](dump_integer_overflow.c) [20/02/26](/src/?changes=20260220131228)
 * [Multiple successive reductions are incorrect in MPI](multired.c) [21/01/26](/src/?changes=20260121101432)

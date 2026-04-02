@@ -1,4 +1,4 @@
-pristine:8f5d7b9146dff7da327b2ea4f52a551610714626fc8a9dc9b67d82e0d995ba3f
+pristine:1845dfb5202a3ebab82c16b38fb80646a1193627a5360752358dee09f6d053e9
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -7963,3 +7963,33 @@ Tianyang <hantianyang@ucas.ac.cn>**20260331225455
  Ignore-this: 428437b4115e26f9156e4a5c94884f57a34f8800b502eecac2cc69639c3f5f3d3c2eda91c5ecf1f
 ] 
 hash: 0000000326-bf68b0fb2e4447a348f5b6b1410bdd67c55461a9d0019cc5596193b90d98acd0
+[typos
+pyl <pyl@ccr.jussieu.fr>**20260401075425
+ Ignore-this: c32b4843642ce40687f33b0f26a3e8656f8c1bf6a58d9f299963c13baadfb723c3ad0aeb5d3cfdab
+] 
+hash: 0000001082-06415cec18b7845a474c6e3cf10379da296031873aec234b91bc07d24a9fb2c6
+[add to Makefile: profiling
+hugo.jacquet.work@gmail.com**20260401152534
+ Ignore-this: cfa755bda3871b1c5275ad2b773971aa
+] 
+hash: 0000000805-4467556b0c729b4e9f439dc6f334eb5ec12a32cd1a7ad693e8c644c3f2e18f95
+[temp fix: create_nc with explicit scalar type casting for u
+hugo.jacquet.work@gmail.com**20260401152639
+ Ignore-this: 50a41c7f270ce9dabd217cbe320830b1
+] 
+hash: 0000000320-baf1451293b391fb527596484eacadf0a11f53b880108f6990caa58e2b23c09b
+[diag now works in 1D and 2D
+hugo.jacquet.work@gmail.com**20260401153549
+ Ignore-this: 5dcc3a8f1a410e2c3db5a6e2e84561f5
+] 
+hash: 0000000334-e3c254475e3e850578fdb291b3c600090e53b3179973fdec3f8d05ef703a815c
+[update config
+hugo.jacquet.work@gmail.com**20260401153724
+ Ignore-this: a12c86dd2c1a6c1738e294e28b507f53
+] 
+hash: 0000001146-0fab616dd3603fd6e5845820198e3a285a63722cfa2929d78593b1b5ff9b7bfe
+[Bug fixed
+Stephane Popinet <popinet@basilisk.fr>**20260401170048
+ Ignore-this: 536a2477351fcd8dfd0c0cf136950756e668823b006fe2b849d655fde26b3944fec3b93382898ac
+] 
+hash: 0000000387-1d016828553f30e726f2c2743a35b3a9080ba59bc3fb279bc226e715870237a8

@@ -184,7 +184,7 @@ event init(i =  0) {
       z += h[]/2.;
     }
   }
-  create_nc({zb, h, u, w, eta, T}, file_out);
+  create_nc((scalar *){zb, h, u, w, eta, T}, file_out);
   fprintf (stderr,"Done initialization!\n");
 
 }
@@ -213,7 +213,11 @@ event output(t = 0.; t<= tend+1e-10; t+=dtout){
 event compute_horizontal_avg (t+=dt_mean; t<=tend+1e-10){
   foreach(reduction(+:T_profile[:nl]))
     foreach_layer(){
+    #if dimension==1
       T_profile[point.l] += T[] / N;// (N*N); // * dt / dt_mean;
+    #else
+      T_profile[point.l] += T[] / (N*N);
+    #endif
     }
 }
 

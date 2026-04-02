@@ -1,6 +1,10 @@
-CFLAGS += -I$(DOCUMENT_ROOT)/sandbox #-O2
+CFLAGS += -I$(DOCUMENT_ROOT)/sandbox
 CFLAGS += -disable-dimensions # skip dimensions check for now
-#LIBS += -lgsl
+CFLAGS := $(filter-out -g, $(CFLAGS)) # remove debug mode
+CFLAGS += -O2 # compilation optmisation
+
+CFLAGS += -DTRACE=2 	# toggle tracing
+#CFLAGS += -DMTRACE=1 # memory profiling
 
 EXEC=ml_convection
 NAMELIST=namelist
@@ -23,11 +27,12 @@ ${EXEC}/${NAMELIST}.toml ${EXEC}.gpu/${NAMELIST}.toml: ${NAMELIST}.toml
 # > ppr_C, mpirun
 ${EXEC}.tst: _prep_lowres
 ${EXEC}.tst: ${EXEC}/${NAMELIST}.toml
-${EXEC}.tst: CC = mpicc -D_MPI=16
+#${EXEC}.tst: CC = mpicc -D_MPI=16
 
 # > gpu (ppr_C)
 # dont forget the env variables to select nvidia gpu !
 # __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia make ml_convection.gpu.tst
+# nohup __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia make ml_convection.gpu.tst > nohup.out 2>&1 &
 ${EXEC}.gpu.c: ${EXEC}.c
 	ln -sf ${EXEC}.c ${EXEC}.gpu.c
 ${EXEC}.gpu.tst: _prep_midres
