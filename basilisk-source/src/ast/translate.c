@@ -70,6 +70,8 @@ int ast_identifier_parse_type (Stack * stack, const char * identifier, bool call
 
 Ast * ast_is_typedef (const Ast * identifier)
 {
+  if (identifier->parent->sym == sym_enumeration_constant)
+    return NULL;
   const Ast * declaration = identifier;
   while (declaration && declaration->sym != sym_declaration)
     declaration = declaration->parent;
