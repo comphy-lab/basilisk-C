@@ -66,7 +66,7 @@ which leads to the solution of the linear system coded below. */
 static void remap_robin (double s_r,
                          double f,
                          double f_b, double lambda_b,
-                         double C[3]) // fixme: does not work on GPUs if function
+                         double C[3])
 {
   double a = - lambda_b, s = - a + (a - 1.)/3. + 1/2. [0];
   double M[3][3] = {
