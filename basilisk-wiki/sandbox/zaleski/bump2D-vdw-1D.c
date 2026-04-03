@@ -3,12 +3,12 @@
 
 This test case is a restriction to 1D of [bump2D-vdw.c]() for debugging purposes 
 
-Also see [centralscheme.h]() , [burgers1D.c]()
+Also see [centralscheme.h]() , [burgers1D.c]()  [arakawa.h]()
 */
 
-#include "grid/cartesian1D.h"
+#include "grid/cartesian1D.h",
 #include "vdw.h"
-#include "centralscheme.h"
+
 
 /**
 We start with initial conditions
