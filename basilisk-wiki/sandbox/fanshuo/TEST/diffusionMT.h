@@ -121,11 +121,11 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
   condition gives
   $$
   \begin{aligned}
-  b_0 & = h_0 + 2 \Delta t D \left( \frac{1}{h_0 + h_1} + \frac{h^2_1 + 3
+  b_0 & = h_0 + 2 \Delta t \left( \frac{D_0+D_1}{2(h_0 + h_1)} + D_0\frac{h^2_1 + 3
   h_0 h_1 + 3 h^2_0}{\det} \right),\\
-  c_0 & = - 2 \Delta t D \left( \frac{1}{h_0 + h_1} + \frac{h^2_0}{\det}
+  c_0 & = - 2 \Delta t \left( \frac{D_0+D_1}{2(h_0 + h_1)} + \frac{D_0 h^2_0}{\det}
   \right),\\
-  \text{rhs}_0 & = (hs_0)^{\star} + 2 \Delta t D s_b  \frac{h^2_1 + 3 h_0
+  \text{rhs}_0 & = (hs_0)^{\star} + 2 \Delta t D_0 s_b  \frac{h^2_1 + 3 h_0
   h_1 + 2 h^2_0}{\det},\\
   \det & = h_0 (h_0 + h_1)^2  + 2\lambda (3\,h_0 h_1 + 2\,h_0^2 + h_1^2),
   \end{aligned}
@@ -134,9 +134,9 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
 /*
   double den = h[]*sq(h[] + h[0,0,1]) 
     + 2.*lambda_b*(3.*h[]*h[0,0,1] + 2.*sq(h[]) + sq(h[0,0,1]));
-  b[0] = h[] + 2.*dt*nueq[0]*(1./(h[] + h[0,0,1]) +
-			  (sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 3.*sq(h[]))/den);
-  c[0] = - 2.*dt*nueq[0]*(1./(h[] + h[0,0,1]) + sq(h[])/den);
+  b[0] = h[] + 2.*dt*((nueq[0]+nueq[1])/(h[] + h[0,0,1])/2. +
+			  nueq[0]*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 3.*sq(h[]))/den);
+  c[0] = - 2.*dt*((nueq[0]+nueq[1])/(h[] + h[0,0,1])/2. + nueq[0]*sq(h[])/den);
 
   rhs[0] += 2.*dt*nueq[0]*s_b*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 2.*sq(h[0]))/den;
 
@@ -146,7 +146,6 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
   }
 */
 
-  //fprintf (stdout, "diffusion checkinit %g %g %g %g %g %g %g %g %g %g %g\n", t, x, y, dt, s[], a[nl-1], b[nl-1], rhs[nl-1], c[0], b[0], rhs[0] );
 /**
 Meanwhile, for the reason of simplicty, we compute the value of $c[0]$, $b[0]$, $rhs[0]$ when no-slip boundary condition is imposed ($s_b=0$, $\lambda=0$), using first-order discretisation. To apply this, one should first comment the code above conserning $b_0, c_0, rhs_0$.
 $$

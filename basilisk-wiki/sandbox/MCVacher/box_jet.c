@@ -1,5 +1,5 @@
 /**
-# Low Reynolds jet confined in a box
+# Low Reynolds jet confined in a box (bottom aspiration)
 
 This simulation models a 2D planar jet confined inside a rectangular box. A low Reynolds instability of the jet takes place, reaching a limit cycle.
 */

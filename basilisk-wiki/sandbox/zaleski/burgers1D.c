@@ -8,15 +8,24 @@ $$
 with a sine-wave initial condition $u(x,0) = \sin(2\pi x)$, which produces
 a shock at time $t_s = 1/(2\pi) \approx 0.159$.
 
-See [centralscheme.h]() and  [arakawa.h]()  for the time integration scheme.
+See [centralscheme.h](), [arakawa.h]() and [midpoint-skew-symmetric.h]()
+for the time integration schemes.
+
+This version ([midpoint-skew-symmetric.h]() ) uses a midpoint skew symmetric scheme. The midpoint is obtained by iterations, in this case four iterations are used.  With four iterations as below the energy has an escursion $E_k(t) - E_k(0)$ of $10^{-7}$. 
+With one iteration the energy has an excursion of $4 10^{-5}$. 
+With the explicit skew-symmetric scheme  [arakawa.h]() the energy has an excursion of $10^{-4}$. 
+
 */
 
 #include "grid/cartesian1D.h"
 // #include "centralscheme.h"
-#include "arakawa.h"
+
+#define NITER 4
+#include "midpoint-skew-symmetric.h"
+
+//#include "arakawa.h"
 
 #define LEVEL 8
-
 
 int main()
 {
@@ -47,7 +56,6 @@ event outputfile (t <= 0.5; t += 0.05)
   fprintf (stdout, "\n\n");
 }
 
-
 event energy (i++)
 {
   double ke = -0.25;
@@ -70,29 +78,27 @@ set key top left
 plot for [i=0:4] 'out' index i u 1:2 w l t sprintf("t = %3.1f", i*0.05)
 ~~~
 
-
-
-
-**Aftershock formation** 
-
-~~~gnuplot Evolution of the Burgers field.
+~~~gnuplot Evolution of the Burgers field after shock formation.
 set key top left
 plot for [i=5:9:2] 'out' index i u 1:2 w l t sprintf("t = %3.1f", i*0.05)
 ~~~
 
+The **kinetic energy** $E_K = \int_0^{L_0} \frac{u^2}2 dx$ is plotted.
 
-The kinetic energy $E_K = \int_0^{L_0} \frac{u^2}2 dx$ is plotted. 
+~~~gnuplot Kinetic energy as a function of time.
+set grid
+plot 'energy' u 1:2 w l t "E_k(t) - E_k(0)"
+~~~
 
-~~~gnuplot Kinetic energy as a function of time. 
-
+~~~gnuplot Kinetic energy at early times.
+set xrange [0:0.05]
 plot 'energy' u 1:2 w l t "E_k"
 ~~~
 
-
-The kinetic energy $E_K = \int_0^{L_0} \frac{u^2}2 dx$ is plotted. 
-
-~~~gnuplot Kinetic energy as a function of time. 
-set xrange [x=0:0.005] 
-plot 'energy' u 1:2 w l t "E_k"
+~~~gnuplot Evolution of the residual
+set key top left
+plot for [i=0:500:200] 'residual' index i u 1:2 w l t sprintf("t = %3.1f", i*0.05)
 ~~~
+
+
 */

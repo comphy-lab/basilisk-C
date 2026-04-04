@@ -137,7 +137,7 @@ event res_save (t += 0.005; t <= 15){
 
   char name[80];
   
-  sprintf (name, "interface-%d.txt", isave1);
+  sprintf (name, "interface_cap-%d.txt", isave1);
   FILE * fpfacet = fopen(name, "w");
   output_facets (f, fpfacet);
   fclose(fpfacet);
@@ -213,7 +213,7 @@ Consequently we have:
 
 $$\eta_0(t) = \eta_0(0)\exp(-\lambda_1 t)$$
 
-**Note :** For non-linear effect, one can check *Denner, "Frequency dispersion of small-amplitude capillary waves in viscous fluids", Phys. Rev. E, 2016* 
+**Note :** For non-linear effect, one can check *Denner, "Frequency dispersion of small-amplitude capillary waves in viscous fluids", Phys. Rev. E, 2016* and this test case : [Capillary wave](https://basilisk.fr/src/test/capwave.c).
 
 ~~~pythonplot Comparison with theory
 import matplotlib.pyplot as plt
@@ -227,7 +227,7 @@ from scipy.signal import find_peaks
 l_x_surf_app=[]
 l_y_surf_app=[]
 
-listeFichiersTxt_1=sorted(gb.glob('interface'+'*.txt'),key=str.casefold) 
+listeFichiersTxt_1=sorted(gb.glob('interface_cap-'+'*.txt'),key=str.casefold) 
 listeFichiersTxt_1.sort(key=lambda f: int(re.search(r'\d+', f).group()))
 
 ###############################################
@@ -279,8 +279,7 @@ lamb=2*nu*k_m**2
 
 plt.figure()
 plt.plot(x_peaks,y_peaks,'r*',label='Num.')
-plt.plot(x,[0.02*np.exp(-lamb*elem) for elem in x],label='Theory')
-plt.plot(x,[0.02*np.exp(-1.7*lamb*elem) for elem in x],label='1.7*Theory')
+plt.plot(x,[0.021*np.exp(-lamb*elem) for elem in x],label='Theory')
 plt.legend()
 plt.savefig('decreasing.png')
 ~~~
@@ -288,7 +287,7 @@ plt.savefig('decreasing.png')
 */
 
 /**
-There is a prefactor, I don't know why... I should probably dig into this test case [Capillary wave](https://basilisk.fr/src/test/capwave.c).
+
 
 We have the theoretical pulsation of the sloshing mode (in the case of capillary forces):
 

@@ -12,7 +12,9 @@ This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I
 
 * [High Reynolds jet in an open channel impinging on a solid surface](box_jet_long.c)
 
-* [Low Reynolds jet confined in a box](box_jet.c)
+* [Low Reynolds jet confined in a box (bottom aspiration)](box_jet.c)
+
+* [Low Reynolds jet confined in a box (top outlet)](box_jet_2.c)
 
 * [Low Reynolds impinging planar jets](imp_jets.c)
 

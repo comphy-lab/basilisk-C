@@ -1,7 +1,8 @@
 /**
-# Title
+# Low Reynolds jet confined in a box (top outlet)
 
-Bla bla
+We perform a DNS of a jet confined into a box with a top outlet. The case is inspired from  *A. Maurel et al., Physical Review E 54, 3643 (1996)*.
+
 */
 
 #include "grid/multigrid.h"
@@ -25,14 +26,15 @@ face vector muv[];
 
 int main() {
 
-    // Flow parameters
-  Re      = 60;      // Reynolds number
-  R_d     = 0.02;   // Jet radius
+  // Flow parameters (Re=80 and R_d=0.03 works also well
+  Re      = 53;      // Reynolds number 
+  R_d     = 0.015;   // Jet radius 
   L0      = 1.;      // Box size
   U0      = 1.;      // Inlet velocity
   
   TOLERANCE = 1e-3 [*];
 
+  
   
   // Boundary conditions
   
@@ -53,7 +55,7 @@ int main() {
   u.t[right] = dirichlet(0.);
   
   // Grid initialization
-  N=128;  
+  N=256;  
   origin (-L0/2, 0);
   init_grid(N);
   
@@ -71,25 +73,17 @@ int main() {
 }
 
 /**
-Viscosity definition: $\mu = U_0 \times R_d / Re$ inside the fluid.
+Viscosity definition: $\mu = U_0 \times 2R_d / Re$ inside the fluid.
 */
 event properties (i++)
 {
   foreach_face() {
-    muv.x[] = fm.x[]*U0*R_d/Re;
+    muv.x[] = fm.x[]*U0*2*R_d/Re;
   }
 }
 
-/**
-Initialization: domain extents and embedded ceiling.
-*/
 event init (t = 0) {
-
-  if (!restore("restart")) {
     fprintf(stderr, "Starting new simulation.\n");
-  } else {
-    fprintf(stderr, "Restarting from previous dump\n");
-  }
 }
 
 event logfile (i++) {
