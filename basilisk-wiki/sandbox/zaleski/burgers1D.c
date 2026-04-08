@@ -30,7 +30,7 @@ With the explicit skew-symmetric scheme  [arakawa.h]() the energy has an excursi
 int main()
 {
   origin (-0.5);
-  // periodic (right);
+  periodic (right);
   init_grid (1 << LEVEL);
   DT = 1e-3;
   run();
@@ -39,7 +39,7 @@ int main()
 event init (i = 0)
 {
   foreach()
-    u[] = sin(2.*pi*x/L0);
+    u[] = cos(2.*pi*x/L0);
 }
 
 event logfile (i++)
@@ -75,12 +75,12 @@ The sine wave steepens and forms a shock near $t_s = 1/(2\pi) \approx 0.159$.
 
 ~~~gnuplot Evolution of the Burgers field.
 set key top left
-plot for [i=0:4] 'out' index i u 1:2 w l t sprintf("t = %3.1f", i*0.05)
+plot for [i=0:4] 'out' index i u 1:2 w l t sprintf("t = %4.2f", i*0.05)
 ~~~
 
 ~~~gnuplot Evolution of the Burgers field after shock formation.
 set key top left
-plot for [i=5:9:2] 'out' index i u 1:2 w l t sprintf("t = %3.1f", i*0.05)
+plot for [i=5:9:2] 'out' index i u 1:2 w l t sprintf("t = %4.2f", i*0.05)
 ~~~
 
 The **kinetic energy** $E_K = \int_0^{L_0} \frac{u^2}2 dx$ is plotted.

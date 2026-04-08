@@ -27,7 +27,7 @@ int main()
 event init (i = 0)
 {
   foreach()
-    u[] = sin(2.*pi*x);
+    u[] = cos(2.*pi*x);
 }
 
 event logfile (i++)
