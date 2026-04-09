@@ -179,7 +179,7 @@ trace void output_vtkhdf(scalar *list, vector *vlist, char *name = "domain.vtkhd
 
   // Populate and write the connectivity dataset
   long *topo_dset;
-  populate_topo_dset(&topo_dset, num_cells_loc, offset_ids, count, offset, per_mask, marker);
+  populate_topo_dset_vtkhdf(&topo_dset, num_cells_loc, offset_ids, count, offset, per_mask, marker);
   write_dataset(group_id, count, offset, "Connectivity", num_ids, num_ids_loc, 1, topo_dset, H5T_NATIVE_LONG, HDF5_CHUNKED, chunk_size, compression_level);
   free(topo_dset);  
 
@@ -235,6 +235,7 @@ trace void output_vtkhdf(scalar *list, vector *vlist, char *name = "domain.vtkhd
 #include "output_vtkhdf_slice.h"
 #endif
 #include "output_vtkhdf_box.h"
+#include "output_vtkhdf_facets.h"
 
 /** ## postamble: delete macros */
 #undef shortcut_slice

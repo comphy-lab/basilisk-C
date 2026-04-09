@@ -26,6 +26,7 @@ set key right outside
 */
 
 vector u[];
+#include "run.h"
 #include "tracer-particles.h"
 #include "view.h"
 #include "scatter2.h"

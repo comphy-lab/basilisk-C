@@ -472,7 +472,7 @@ herr_t create_attribute(hid_t group_id, const char *attrname_version, const int 
 }
 
 /** ### write_simple_dataset(): Helper for small 1D datasets */
-herr_t write_simple_dataset(hid_t group_id, const char *dataset_name, const int *data, const hsize_t *dims) {
+herr_t write_simple_dataset(hid_t group_id, const char *dataset_name, const long *data, const hsize_t *dims) {
   hid_t space_id, dataset_id;
   herr_t status;
 

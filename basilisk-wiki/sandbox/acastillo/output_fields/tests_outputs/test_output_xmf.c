@@ -16,7 +16,7 @@ data = test_output_xmf.print_xdmf_info('domain.xmf')
 */
 
 #include "acastillo/output_fields/xdmf/output_xdmf.h"
-#define MAXLEVEL 4
+#define MAXLEVEL 8
 #define ASPECTRATIO 8
 #define r2 (sq(x) + sq(y))
 

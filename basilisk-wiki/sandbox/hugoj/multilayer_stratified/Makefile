@@ -27,7 +27,7 @@ ${EXEC}/${NAMELIST}.toml ${EXEC}.gpu/${NAMELIST}.toml: ${NAMELIST}.toml
 # > ppr_C, mpirun
 ${EXEC}.tst: _prep_lowres
 ${EXEC}.tst: ${EXEC}/${NAMELIST}.toml
-#${EXEC}.tst: CC = mpicc -D_MPI=16
+${EXEC}.tst: CC = mpicc -D_MPI=16
 
 # > gpu (ppr_C)
 # dont forget the env variables to select nvidia gpu !

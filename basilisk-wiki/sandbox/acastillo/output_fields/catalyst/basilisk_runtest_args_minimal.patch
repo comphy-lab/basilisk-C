@@ -1,0 +1,11 @@
+--- runtest
++++ runtest
+@@ -73,7 +73,7 @@
+ 	    ;;
+     esac
+     if test -n "$EXEC" -o -z "$GDB"; then
+-	if ! $EXEC ./$test 2> $log > $out; then
++	if ! $EXEC ./$test $ARGS 2> $log > $out; then
+ 	    pass=false
+ 	    if test "$EXEC" = " " -a -f core -a -n "$GDB"; then
+ 		cat $log

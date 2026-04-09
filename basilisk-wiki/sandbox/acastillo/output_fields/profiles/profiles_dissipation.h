@@ -1,7 +1,7 @@
 double average_dissipation_plane(vector u, scalar w, double *mean_grad, double *mean_grad_sq, double *mean_strain_sq, double hprof, coord box[2], coord nsamples)
 {
   #if dimension == 2
-    int len1 = 4, len2 = 7;
+    int len1 = 4, len2 = 4;
   #else
     int len1 = 9, len2 = 7;
   #endif
@@ -20,7 +20,7 @@ double average_dissipation_plane(vector u, scalar w, double *mean_grad, double *
     dvdx = (u.y[1]   - u.y[-1]  )/(2.*Delta);
     dudy = (u.x[0,1] - u.x[0,-1])/(2.*Delta);
     dvdy = (u.y[0,1] - u.y[0,-1])/(2.*Delta);
-    
+
     #if dimension == 3
       double dwdx, dwdy, dudz, dvdz, dwdz;
       dwdx = (u.z[1]     - u.z[-1]    )/(2.*Delta);
@@ -67,7 +67,7 @@ double average_dissipation_plane(vector u, scalar w, double *mean_grad, double *
       mean_grad_sq[8] += sq(dwdz) * weight;
     #endif
 
-    mean_strain_sq[0] += S2 * weight;
+    mean_strain_sq[0] += (mu(f[])/rhov[]) * S2 * weight;
     mean_strain_sq[1] += sq(Sxx) * weight;
     mean_strain_sq[2] += sq(Sxy) * weight;
     mean_strain_sq[3] += sq(Syy) * weight;
@@ -93,12 +93,12 @@ void profile_dissipation_foreach_region(vector v, PROFILE_PARAMS) {
 
   double deltahn = (hmax - hmin) / ((double)n - 0.99999999);
   #if dimension == 2
-    int len1 = 4, len2 = 7;
+    int len1 = 4, len2 = 4;
   #else
     int len1 = 9, len2 = 7;
   #endif
 
-  FILE *fp = NULL; 
+  FILE *fp = NULL;
   if (pid() == 0) {
     fp = fopen(filename, mode);
     if (fp == NULL) { perror(filename); exit(1); }
@@ -114,13 +114,13 @@ void profile_dissipation_foreach_region(vector v, PROFILE_PARAMS) {
 
   int iprof = 0;
   double hprof = hmin;
-  
+
   // Iterate over different y-coordinates (in 2D) or z-coordinates (in 3D)
   while (hprof <= hmax) {
     SETUP_PROFILE_PLANE(hprof)
 
     // Calculate averages for the current region
-    
+
     double mean_grad[len1], mean_grad_sq[len1], mean_strain_sq[len2];
     memset(mean_grad,      0, sizeof(mean_grad));
     memset(mean_grad_sq,   0, sizeof(mean_grad_sq));

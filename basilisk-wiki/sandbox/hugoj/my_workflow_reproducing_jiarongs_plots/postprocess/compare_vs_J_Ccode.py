@@ -105,7 +105,7 @@ if False:
 """
 ## Average profiles
 """
-if False:
+if True:
     print('\nProfiles ')
     time_=120 # s
     clrs = ['b','g','orange']
@@ -143,7 +143,7 @@ if False:
     ax[0].set_xlabel('<u> (m/s)')
     ax[1].set_xlabel('<enstrophy>')
     ax[2].set_xlabel('<diss>')
-    ax[1].set_title(f'time = {time_} s ($w_p t=$'+str(int(wp*time_))+')')
+    ax[1].set_title(fr'time = {time_} s ($\omega_p t=$'+str(int(wp*time_))+')')
     for axe in ax:
         axe.legend(frameon=False)
         axe.set_ylim([-10,0])
@@ -154,7 +154,7 @@ if False:
 """
 ## Enstrophy differences between PPR lib and remapc.c
 """
-if True:
+if False:
     print('\nEnstrophy maps ')
     time_ = 120 # s
     atz = -9. #m

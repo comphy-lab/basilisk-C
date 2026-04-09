@@ -15,8 +15,8 @@ data = test_output_vtkhdf.print_vtkhdf_info('domain.hdf')
 
 */
 
-#include "acastillo/output_fields/vtkhdf/output_vtkhdf_box.h"
-#define MAXLEVEL 4
+#include "acastillo/output_fields/vtkhdf/output_vtkhdf.h"
+#define MAXLEVEL 8
 #define ASPECTRATIO 8
 #define r2 (sq(x) + sq(y))
 

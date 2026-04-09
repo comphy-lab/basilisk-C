@@ -130,7 +130,7 @@ trace void output_vtkhdf_slice(scalar *list, vector *vlist, char *name, coord n 
 
   // Populate and write the connectivity dataset
   long *topo_dset;
-  populate_topo_dset_slice(&topo_dset, num_cells_loc, offset_ids, count, offset, per_mask, marker, n, _alpha);
+  populate_topo_dset_slice_vtkhdf(&topo_dset, num_cells_loc, offset_ids, count, offset, per_mask, marker, n, _alpha);
   write_dataset(group_id, count, offset, "Connectivity", num_ids, num_ids_loc, 1, topo_dset, H5T_NATIVE_LONG, HDF5_CHUNKED, chunk_size, compression_level);
   free(topo_dset);  
 

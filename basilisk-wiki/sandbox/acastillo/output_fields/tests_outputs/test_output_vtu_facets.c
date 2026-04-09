@@ -15,7 +15,7 @@ data = test_output_vtu.print_vtu_info('Interface.vtu')
 
 */
 
-#define MAXLEVEL 5
+#define MAXLEVEL 8
 #define ASPECTRATIO 8
 vector h[];
 

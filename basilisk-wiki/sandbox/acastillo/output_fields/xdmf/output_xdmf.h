@@ -83,8 +83,9 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int mode = HD
   hsize_t count[2];  // Hyperslab selection parameters
   hsize_t offset[2]; // Offset for hyperslab
 
-  char name[111];                  // Buffer for file name construction
-  sprintf(name, "%s.h5", subname); // Construct the HDF5 file name
+  // Construct the HDF5 file name
+  char name[260];  // Buffer for file name construction
+  snprintf(name, sizeof(name), "%s.h5", subname); 
 
   // Define a scalar mask for periodic conditions
   scalar per_mask[];
@@ -120,7 +121,7 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int mode = HD
 
   // Populate and write the topology dataset
   long *topo_dset;
-  populate_topo_dset(&topo_dset, num_cells_loc, offset_cells, count, offset, per_mask, marker);
+  populate_topo_dset_xdmf(&topo_dset, num_cells_loc, offset_cells, count, offset, per_mask, marker);
   write_dataset(file_id, count, offset, "/Topology", num_cells, num_cells_loc, pow(2, dimension), topo_dset, H5T_NATIVE_LONG, mode, chunk_size, compression_level);
   free(topo_dset);
 
@@ -174,3 +175,5 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int mode = HD
 #if dimension > 2
 #include "output_xdmf_slice.h"
 #endif
+#include "output_xdmf_box.h"
+#include "output_xdmf_facets.h"

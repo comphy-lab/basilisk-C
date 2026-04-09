@@ -10,6 +10,7 @@ Description : *soon*
 #include "reduced.h"
 #include "navier-stokes/perfs.h"
 #include "tracer.h"
+#include "tag.h"
 
 double h;
 double h_2;
@@ -35,9 +36,9 @@ int main() {
   rho1=1000;
   mu1 = 0.1;
   mu2 = 0.01*mu1;
-  U0=0.6;
+  U0=0.5;
   h=0.15;
-  h_2=0.1;
+  h_2=0.05;
 
   TOLERANCE = 1e-3 [*];
 
@@ -76,12 +77,16 @@ event logfile (i++) {
   fprintf (fpmax, "%d %g \n", i, t);
 }
 
+event remove_droplets (i++) {
+  remove_droplets (f, threshold=0.05, bubbles=true);
+}
+
 event profile (t = end) {
   printf ("-----END-----\n");
 }
 
 int isave1 = 1;
-event res_save (t += 1; t <= 20) {
+event res_save (t += 0.5; t <= 10) {
   char name[80];
   
   sprintf (name, "interface-%d.txt", isave1);
@@ -95,7 +100,7 @@ event res_save (t += 1; t <= 20) {
 /**
 To visualize both the surface and the jet, we can follow lagrangian trajectories using a passive tracer. We generate videos:
 */
-event ppm_output (t = 0; t += 0.05; t <= 20) {
+event ppm_output (t = 0; t += 0.02; t <= 10) {
   char name[80];
   sprintf (name, "f.mp4");
   output_ppm (f, file = name, n = 512, min = 0, max = 1, linear = true);

@@ -1,4 +1,4 @@
-pristine:7ad0abfe012b9550d3f0731854e6bf77e3c15e45286dc58d75c87a11dd1fd888
+pristine:c62f082ded11ab17d40d0887639130bdc8a1f12f570a110a52b5ddad9e355fd9
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -8248,3 +8248,123 @@ mvacher <marc.cordelle.vacher@gmail.com>**20260407155433
  Ignore-this: 1f5099d95ce096eff4a2bf001339bc6499a029427975864c38f5af75c9c2dfc65ab067f79f617d6a
 ] 
 hash: 0000003899-ac9c29aa185d9c1ec27ed3088dda973a6fb6c485e8b744d16d3e63c913a2c990
+[Include scalar, flux and dissipation profiles
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260303164357
+ Ignore-this: e02493605251cba3832c4f15eca6135d0cdca2a80495fef2cd501f461c0a860d013590b356af691b
+] 
+hash: 0008806569-cc2c9378d1d4f4f31d429a7e5326afe573b651b3539ffc6b1d2d219314028018
+[Resolve pull conflict in profiles headers
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260408080524
+ Ignore-this: 7bb81c13f9e090f1591ffba2041c02e67202df67ef8353ad85aeb1f2c9011e187ef3f3da2df5c734
+] 
+hash: 0000010353-5904de1f3dc5a2d91f6c78a184276a3e80f2273e8b1faa812ef6326552226058
+[Fix memset, snprintf buffer size, and long* type in helpers
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260408080925
+ Ignore-this: fa93adc122162763b2fafa03907d31735d325e0fc61fc01d6d91a58a362bb1a9956a1e59b64240bf
+] 
+hash: 0000001679-778e962da54acd4d61eced3a1f3be0e5dc4cfe64a0b37e0e0d2e3e756445c251
+[increase velocity
+mvacher <marc.cordelle.vacher@gmail.com>**20260408084514
+ Ignore-this: 187a96ddf5cb2044f85a35e8a1f7193e099c28fd135c40cc312cdcfcb6e6e055e9d1a4b512aafcdb
+] 
+hash: 0000000237-39ed82ec22a0781ce0f954f30ad478fac2d9554b19e90878acd00d918e2e50e3
+[cleaning and try
+mvacher <marc.cordelle.vacher@gmail.com>**20260408085134
+ Ignore-this: 19df9d73911efead42944a79d4c94c72d8ac12e62b7ec980cccbe84965b535aa75b67ff5b9acb8a2
+] 
+hash: 0000002779-94ec091ddb6d539eee4d9c322f6b0d5e32d21dc6e6dea6a4f2f128d03eb3ed7e
+[change time
+mvacher <marc.cordelle.vacher@gmail.com>**20260408092639
+ Ignore-this: 2c7780c7b1f8df49140f693f75aa7fa6bdfb42ba22e9a36ead6fb3787f78faa4c237e28d402d9a39
+] 
+hash: 0000000422-7de0a2d4f889ac3d39631e247055a837cd54476670b98894f3a5eaa21280888e
+[constructing geometry
+mvacher <marc.cordelle.vacher@gmail.com>**20260408092743
+ Ignore-this: 138e1443586cfd9814f8e137b6b5df9d9da2527e3a7ed293a9d746aa3a1a5a251dcce4b99c2a552b
+] 
+hash: 0000001341-08b827c89d8e606bb474d3d9e50ecb4ed0c79ce5159d0ce8609bf0bc510a7249
+[working case
+mvacher <marc.cordelle.vacher@gmail.com>**20260408095618
+ Ignore-this: 309b6451719cdbfe275e5d3f9904723f8be04f2fa5d600bd1fd7d95f1642d634a3421eeba6654e6f
+] 
+hash: 0000001744-4488d2e3032c8ead44952e7879a03fc0a8491c9aa88edce2aa0809196bdf41c3
+[lower amplitude and other changes
+mvacher <marc.cordelle.vacher@gmail.com>**20260408111740
+ Ignore-this: c2f5b052814ef0ced4972494b4638319b6391e8253913646aef9bd838017c0af459111f24036d6e5
+] 
+hash: 0000000969-2230ca6cf1735a5cb976fe83422f3425157909263c2a3faf4416107fc619c066
+[remove_droplets
+mvacher <marc.cordelle.vacher@gmail.com>**20260408112201
+ Ignore-this: 3e05d3559948119d4cce4b8c6ca3b7bbc04acdbc73550cb13c0855844a5d3d9f3ede3eb9f8662d3a
+] 
+hash: 0000000432-16e684db12047ff751823adbfafb9135d37a3b4b6c1437b06c0c9193f388dd1d
+[Missing run.h
+Stephane Popinet <popinet@basilisk.fr>**20260408113234
+ Ignore-this: 18f12084fe2cd39c2cb1c461f50768aa5d94ca489551aeeae4b48c0a0bdca9b44b88d8aa1a68d6b3
+] 
+hash: 0000000218-9d27b1428686bf6616cccb8bfef4a2ed17cd8c12c90953273bef8c7589e119a3
+[Added reference
+Stephane Popinet <popinet@basilisk.fr>**20260408113415
+ Ignore-this: deb16724e31a6b860ad5e01b065df65e9ef8eddeeeed08c2c40bb73dac13b515425bc28969349489
+] 
+hash: 0000000322-610d63b3cc6578137ecb2d95ed3bbb931ada18d43d987d800689ba79c108a8ba
+[Renamed Makefile
+Stephane Popinet <popinet@basilisk.fr>**20260408115323
+ Ignore-this: da238635b824e3a220034830371e1891edae3a953250edb5b319329ca29001b66d07d4ac1a0b957f
+] 
+hash: 0000000302-e1b52573a40e591f2a814b0c22b28c809c5fcc81bf4f08935c4bebc5a01bc4d0
+[can't make it slosh
+mvacher <marc.cordelle.vacher@gmail.com>**20260408115834
+ Ignore-this: 714b8fc8314c6be20e89706c66ce290fffbc8dabe8ee7a7831777055acf09dc6643c0039943c9a94
+] 
+hash: 0000000239-39ebfa5c78c4d033b2e013af58be73739e3b87c4fb10d80a81293ba84911a297
+[last modif' for the day
+mvacher <marc.cordelle.vacher@gmail.com>**20260408120130
+ Ignore-this: 548beb4a1d8ed57469366a10d7aa0af1fdc9857162717d9942d8a7b52223bc64e92163e5b8d7ef30
+] 
+hash: 0000000516-f20bd76af1d8db6b2532f45e29b36f95f39406ea96b49a8635a801d051985ef4
+[descriptions
+hugo.jacquet.work@gmail.com**20260408120756
+ Ignore-this: e52b7354bef7d381bc1f0ad02993e661
+] 
+hash: 0000005135-7263e547c1a694824849829591f9042f51cb01ad0eebfe802602ebf63a676df3
+[Added: dimensions (WIP), flux (compute and plot)
+hugo.jacquet.work@gmail.com**20260408120919
+ Ignore-this: 548bff5c16e45b8f5eda96c1cd0ab47
+] 
+hash: 0000006120-4341f8277f7c7e440450070804785050ac353458a87f84ecd0b1b27a62825a14
+[Small fixes
+hugo.jacquet.work@gmail.com**20260408121135
+ Ignore-this: 63fe3e1160c017e5a2590ce0967abb77
+] 
+hash: 0000002473-55c5eee814f8c1294deb4e9c863af716b84894eb62b7cfb8574b78912c893954
+[changed some boolean in postprocess
+hugo.jacquet.work@gmail.com**20260408121209
+ Ignore-this: cec03995343dc4697c7ce9d44a95022f
+] 
+hash: 0000000731-4b3c32acee0f033b23cd43d9a43860a7e1b5528816e4546920b8a173decdae52
+[added: lib/spectrum.h
+hugo.jacquet.work@gmail.com**20260408122128
+ Ignore-this: 5bef6e1217fc6ac20a7b45f212534b0d
+] 
+hash: 0000012609-d58ac3a3dec9dab6b1936505d2e5d3bd94c468cc9ef40409b069d7e559496603
+[Consolidating functions
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260408143801
+ Ignore-this: 4edee00dd51a82202ac5d95a8de71bc02d03ff094ccfd980d4d369ef0a4014b32580a0664553aae6
+] 
+hash: 0000052677-4297b6546bce95319dd1ca7fdce5fc3b40b3963021675b2bb389e54d3e1ba7ff
+[Consolidating functions
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260408145236
+ Ignore-this: bb7241ebff1d63f8caa91b0fc81b709d471940db2a485cd7c1dd65d1ff1519cf4795f062d87835d7
+] 
+hash: 0000014458-30bd85de29a29b68d9d5792870767186374cbec968a2e9b6437ed5b78b0629d7
+[Consolidating functions
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260408145859
+ Ignore-this: f0f1efb29e456f35cbfb357397dde83b6b5926044c334f25ddcaa18c411508273018a9819186d841
+] 
+hash: 0000013070-aab48e3bd926f246a7ed69e63360ca47566fabcc624f9f91fba0e6d3647bb1c9
+[Last one
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260408173253
+ Ignore-this: 4b3185e828321ca90136dd86af73c04816aa474d0624148461d47effe73893e927dd222d642d15b5
+] 
+hash: 0000029126-7bc21278e3d06270e309e68c3e17a1052dba20ced9e64deae2bb1028c7d3f6d0

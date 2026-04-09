@@ -10,7 +10,7 @@ double average_product_plane(scalar *list1, scalar *list2, scalar w, double *ave
     sample_count++;
     double weight = (w.i != unity.i) ? w[] : 1.;
     total_weight += weight;
-    
+
     int k = 0;
     scalar s1, s2;
     for (s1, s2 in list1, list2){
@@ -39,7 +39,7 @@ void profile_product_foreach_region(scalar *list1 = all, scalar *list2 = all, PR
 
   double deltahn = (hmax - hmin) / ((double)n - 0.99999999);
   FILE *fp = NULL;
-  
+
   if (pid() == 0) {
     fp = fopen(filename, mode);
     if (fp == NULL) { perror(filename); exit(1); }

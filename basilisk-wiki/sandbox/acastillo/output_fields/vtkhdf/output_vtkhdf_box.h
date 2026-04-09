@@ -141,7 +141,7 @@ trace void output_vtkhdf_box(scalar *list, vector *vlist, char *name = "domain.v
 
   // Populate and write the points dataset
   double *points_dset;
-  populate_points_dset_box(vertex_needed, marker, &points_dset, num_points_loc, offset_points, count, offset);
+  populate_points_dset_box_vtkhdf(vertex_needed, marker, &points_dset, num_points_loc, offset_points, count, offset);
   write_dataset(group_id, count, offset, "Points", num_points, num_points_loc, 3, points_dset, H5T_NATIVE_DOUBLE, HDF5_CHUNKED, chunk_size, compression_level);
   free(points_dset);
 
@@ -153,7 +153,7 @@ trace void output_vtkhdf_box(scalar *list, vector *vlist, char *name = "domain.v
 
   // Populate and write the connectivity dataset
   long *topo_dset;
-  populate_topo_dset(&topo_dset, num_cells_loc, offset_ids, count, offset, cell_mask, marker);
+  populate_topo_dset_vtkhdf(&topo_dset, num_cells_loc, offset_ids, count, offset, cell_mask, marker);
   write_dataset(group_id, count, offset, "Connectivity", num_ids, num_ids_loc, 1, topo_dset, H5T_NATIVE_LONG, HDF5_CHUNKED, chunk_size, compression_level);
   free(topo_dset);  
 
