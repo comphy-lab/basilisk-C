@@ -1,0 +1,24 @@
+# Hangpeng Jiang
+
+I am a PhD student in the Department of Mechanical Engineering at The University of Tokyo. My research interests include multiphase flow, surfactant transport, and combustion modeling.
+
+This sandbox contains a sharp-interface surfactant transport algorithm, mainly implemented based on the preprint by [Z. Xue (2025)](https://doi.org/10.48550/arXiv.2507.09680).
+
+This work was completed with substantial help from [E. Cipriano](https://basilisk.fr/sandbox/ecipriano/), [R. Caraccio](https://basilisk.fr/sandbox/rcaraccio/), and [Z. Xue](https://basilisk.fr/sandbox/zhan/).
+
+More content is coming soon.
+
+# Benchmarks
+
+* [A surfactant-laden expanding quarter circle](quarterbubble.c)
+* [A surfactant-laden expanding quarter droplet](quarterdrop.c)
+
+# Header files
+
+* [vof-surfactant.h](surfactant/vof-surfactant.h)
+* [two-phase-surfactant.h](surfactant/two-phase-surfactant.h)
+* [surfactant-transport.h](surfactant/surfactant-transport.h)
+
+# Contact
+
+* Email: hjiang@g.ecc.u-tokyo.ac.jp

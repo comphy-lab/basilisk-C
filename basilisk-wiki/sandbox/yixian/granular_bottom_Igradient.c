@@ -284,10 +284,12 @@ Plot of vertical velocity at time 2
  set pm3d; set palette rgbformulae 22,13,-31;
  splot 'field-2.txt' u 1:2:(abs($6)*$3) with pm3d notitle
  set label "Vy" at graph 0.45, 0.85 font ",24" front
-# set terminal postscript color enhanced
-# set output "t2vy.eps"
-# replot
+
 ~~~  
+ set terminal postscript color enhanced
+set output "t2vy.eps"
+replot
+
 Plot of pressure at time 2
  
 ~~~gnuplot 
@@ -298,11 +300,13 @@ Plot of pressure at time 2
  splot 'field-2.txt' u 1:2:(abs($4)**$3) with pm3d notitle
  set label "pressure" at graph 0.45, 0.85 font ",24" front
  set terminal postscript color enhanced
-# set output "t2p.eps"
-# replot
  ~~~
  
- Plot of viscosity at time 2
+set output "t2p.eps"
+replot
+
+
+Plot of viscosity at time 2
  
 ~~~gnuplot 
 
@@ -312,11 +316,14 @@ Plot of pressure at time 2
  set pm3d; set palette rgbformulae 22,13,-31;
  set label "Viscosity" at graph 0.45, 0.85 font ",24" front
  splot 'field-2.txt' u 1:2:(abs($14)**$3) with pm3d notitle
- set terminal postscript color enhanced
+~~~
+
+set terminal postscript color enhanced
  set output "t2eta.eps"
  replot
- ~~~
- 
+
+
+
 
 # Bibliography
  
