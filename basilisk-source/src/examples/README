@@ -48,6 +48,8 @@ examples)"*](/src/test/README#running-and-creating-test-cases-and-examples).
 * [The Gulf Stream](gulf-stream.c)
 * [The Global Oceanic Circulation](global.c)
 * [Global tides](global-tides.c)
+* [The Held & Suarez climate model](held-suarez.c)
+* [Post-processing for the Held & Suarez example](held-suarez-postproc.c)
 
 ## Python interface
 

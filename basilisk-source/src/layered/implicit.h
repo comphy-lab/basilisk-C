@@ -21,7 +21,7 @@ stored in `mgH`. */
 
 #include "poisson.h"
 
-mgstats mgH;
+mgstats mgH = { .minlevel = 1 };
 double theta_H = 0.5;
 
 #define IMPLICIT_H 1
@@ -99,7 +99,7 @@ static void relax_hydro (scalar * ql, scalar * rhsl, int lev, void * data)
       diagonalize (eta)
 	d -= alpha.x[0]*a_baro (eta, 0) - alpha.x[1]*a_baro (eta, 1);
     }
-    eta[] = n/d;
+    eta[] = d ? n/d : 0;
   }
 }
 
@@ -216,7 +216,7 @@ event pressure (i++)
 {
   mgH = mg_solve ({eta_r}, {rhs_eta}, residual_hydro, relax_hydro, &alpha_eta,
 		  res = res_eta.i >= 0 ? (scalar *){res_eta} : NULL,
-		  nrelax = 4, minlevel = 1,
+		  nrelax = 4, minlevel = mgH.minlevel,
 		  tolerance = TOLERANCE);
   delete ({rhs_eta, alpha_eta});
 

@@ -1,4 +1,4 @@
-pristine:f8490ad1e5c6d5ae85c8df09ef72ad261464ae78453c9b9da559430b8fce013c
+pristine:32a1a47e6874151fa50079e42c652de71c427c796da111015cf2d2c683dfd247
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -51,3 +51,38 @@ Stephane Popinet <popinet@basilisk.fr>**20260402101400
  Ignore-this: 94445b16ca4fe7dd99c733c0bce161125e3661873223becb9addd2a726aac3a90543a7ed225afa65
 ] 
 hash: 0000000319-ead0736f3556594df3ad1152eefd785780afcf18974298ab1367374ec3742483
+[Restrictions on rectangular domains on GPUs
+Stephane Popinet <popinet@basilisk.fr>**20260403085144
+ Ignore-this: f38f50e59c0a3b53e2d0bc5b9d7ff0213a3b627d6f940173688945d710597185ef260e0936930c88
+] 
+hash: 0000002152-f38a6507a19936178a05a6bc5bbfc9d4fdfaba35c41e7b0d0bcc95859c57b234
+[Colormaps return a brown color for unknown/NaN values
+Stephane Popinet <popinet@basilisk.fr>**20260410105942
+ Ignore-this: 1be9620cc32eccd34979257168ef8c2ce21835834569806a0f9eef41925b4ec6abe8f42c5aaf7038
+] 
+hash: 0000000351-897208aedf075684715fa79f47293d1ff1c0071735596c58924f4e5f59bc37fd
+[Watch-tests does not transfer auxilliary files
+Stephane Popinet <popinet@basilisk.fr>**20260410110028
+ Ignore-this: a50ccb3015057585dc2e8cfca5e074ebec9b58ede2442ac35ac6cc3c8561445f02f3595aec73841a
+] 
+hash: 0000000348-63627f4263f944967cc9317271a65f24d15a2801e1e0c69c960fc1b716fb9804
+[Avoid divide by zero for rigid lid configurations with "drying"
+Stephane Popinet <popinet@basilisk.fr>**20260410120310
+ Ignore-this: ca0588506249278bc6eb0cacfcdfa6179a8b82b359b6ec139c5815fd553ce38c96f5ea742d882f27
+] 
+hash: 0000000294-855a55f2d1cfdfd331ce892d398b81e711a9b5ef186c79ace3bc6ceb90aecd66
+[The number of workgroups on GPUs was incorrect for odd aspect ratios
+Stephane Popinet <popinet@basilisk.fr>**20260410153032
+ Ignore-this: d6a8fa456595d28e9d5f08aa9f88f67defa28e89fb800ec47e1fed321ac9e621cdaab578faa8854f
+] 
+hash: 0000000780-b831febf9ea67fc9e60ebc033b8c259458a8963d70a8b01e61305b7b2d9b5e44
+[Option to control the minimum level of the implicit free-surface multigrid
+Stephane Popinet <popinet@basilisk.fr>**20260410163427
+ Ignore-this: 26daf8edb3eefa5fbe3b954d0a1a73c7854b01b79627345d5e63de693922278c5ec09c7b25951dbf
+] 
+hash: 0000000706-a9fd43dfa4f55b831ebaf4db6e4b4a3aae0c6cc96b6b94dc57a6b782c4cc3bc3
+[The Held-Suarez climate model
+Stephane Popinet <popinet@basilisk.fr>**20260410163627
+ Ignore-this: c4097ca2883bc5dfbc9a808c3b17f3424c1ed2089e0fcdf5783e3a2013901d3d7496b5a35c0eaaad
+] 
+hash: 0000020159-a9f9bb2987f219ce414e5c5ea343b05a8c7dacc34a31d4d769e9c831e21acfbe

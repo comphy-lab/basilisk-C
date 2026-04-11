@@ -323,7 +323,8 @@ Color colormap_color (double cmap[NCMAP][3],
     i = val*(NCMAP - 1);
     coef = val*(NCMAP - 1) - i;
   }
-  assert (i >= 0 && i < NCMAP - 1);
+  if (i < 0 || i >= NCMAP - 1)
+    return (Color){99,55,43}; // brown is an error
   unsigned char * c1 = (unsigned char *) &c;
   for (int j = 0; j < 3; j++)
     c1[j] = 255*(cmap[i][j]*(1. - coef) + cmap[i + 1][j]*coef);

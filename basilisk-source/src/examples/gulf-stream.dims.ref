@@ -126,6 +126,7 @@
 [1]  /src/layered/hydro.h: '0.'
 [1]  /src/layered/hydro.h: '0.'
 [1]  /src/layered/implicit.h: 'eta[] = 0.'
+[1]  /src/layered/implicit.h: '0'
 [1]  /src/layered/implicit.h: 'maxres = 0.'
 [1]  /src/layered/implicit.h: 'alpha_eta.x[] = 0.'
 [1]  /src/layered/implicit.h: 'alpha_eta.y[] = 0.'

@@ -1567,22 +1567,23 @@ static Shader * compile_shader (ForeachData * loop,
   GLuint ng[2], nwg[2];
   int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
   int * dims = &Dimensions.x;
-  if (loop->face || loop->vertex) {
-    for (int i = 0; i < 2; i++)
+  if (loop->face || loop->vertex)
+    for (int i = 0; i < 2; i++) {
       if (Nl*dims[1-i] > NWG[i]) {
 	nwg[i] = NWG[i] + 1;
 	ng[i] = Nl*dims[1-i]/NWG[i];
-	assert (nwg[i]*ng[i] >= Nl*dims[1-i] + 1);
       }
       else {
 	nwg[i] = Nl*dims[1-i] + 1;
 	ng[i] = 1;
       }
-  }
+      assert (nwg[i]*ng[i] >= Nl*dims[1-i] + 1);
+    }
   else
     for (int i = 0; i < 2; i++) {
-      nwg[i] = Nl*dims[1-i] > NWG[i] ? NWG[i] : Nl*dims[1-i];
+      nwg[i] = Nl < NWG[i] ? Nl : NWG[i];
       ng[i] = Nl*dims[1-i]/nwg[i];
+      assert (nwg[i]*ng[i] == Nl*dims[1-i]);
     }
  
   char * shader = build_shader (merged, loop, region, nwg);

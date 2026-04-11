@@ -209,6 +209,7 @@ make -k gpu-tests
 * [A range of GPU tests](gpu.c)
 * [Layers](layers.c)
 * [Reductions on GPUs](gpu-reduce.c)
+* [Restrictions on rectangular domains](restriction1.c)
 * [Non-linear geostrophic adjustment](nonlinear.c)
 * [Time-reversed advection in a vortex](advection.c)
 * [Saint-Venant bump](bump2D-gpu.c)

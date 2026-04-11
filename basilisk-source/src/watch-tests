@@ -12,7 +12,7 @@ function progress()
 		     $SANDBOX "test -f /tmp/$id/progress && ( sed 's/\\r/\\n/g' /tmp/$id/progress | tail -n 1 ) || echo waiting")
 	echo -e ${f%%tspid\.*tst}" $SANDBOX " $status
 	if [ "$1" = "sync" ] && [ "$status" != "waiting" ]; then
-	    rsync -arz $SANDBOX:/tmp/$id/ ${f%%tspid\.*tst}
+	    rsync -arz --exclude=$id* $SANDBOX:/tmp/$id/ ${f%%tspid\.*tst}
 	fi
     done | column -t
     echo
