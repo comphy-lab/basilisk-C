@@ -1075,7 +1075,8 @@ waves},
                   parallel systems (invited talk)},
   year =	 2012,
   booktitle =	 {Weather and Climate Prediction on Next Generation
-                  Supercomputers, Exeter, UK, 22-25 October}
+                  Supercomputers, Exeter, UK, 22-25 October},
+  pdf =          {newton.pdf}
 }
 
 @InProceedings{shui2012,

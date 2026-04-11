@@ -1,4 +1,4 @@
-pristine:75bd88337127dda8d41044cc46f7c66a0203e3c8d7618b178d8f50c1aa2c0bb5
+pristine:851991f004f34d734adbbe3d32ec3ab5d269efb009dea1e8ea458524684774be
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -8418,3 +8418,118 @@ ananth_narayan <am24d038@smail.iitm.ac.in>**20260409212957
  Ignore-this: ba955f0e61abdb5eb194e55ba8c07a50fd93cf0c93329eb96b3c8d510858f935bef83a518fb88a14
 ] 
 hash: 0000000343-ea9d5f601212e9ef53d180b595dd9457127a54cd7940d95ec154cc81a777830b
+[put slosh_parabola in README
+mvacher <marc.cordelle.vacher@gmail.com>**20260410072843
+ Ignore-this: 396d602b9a548ab4cd4c2671aff80cbd845cbfedc2b4aa3a855cd5dc2587872fa25dcd774c392e2d
+] 
+hash: 0000000276-1f9b206a487888edb15320ca0ce1c630743992bb631803808f6d6e9fdf544c15
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20260410094918
+ Ignore-this: de0d4304a17b5faf6e7e720f02e32c7aad101e4f39d62ed3cbe92f71ddaf3c996b0869b8bcc781e4
+] 
+hash: 0000000580-2ce2327a739cf2c2ca8c5dee3c5bb516af1bbce86dcc842401883fca371c672c
+[Creation
+mvacher <marc.cordelle.vacher@gmail.com>**20260410095126
+ Ignore-this: 146b20eb0b37fc4c744dfca1aa052ae5a16ae8c6d3c0c9a69da736aca8fc721d64ca110d0a790896
+] 
+hash: 0000002304-56f7f27f08a49c75bc4d723241ba477005916896202a74cc9829c5ed8260e2e8
+[Rolled back
+Stephane Popinet <popinet@basilisk.fr>**20260410112348
+ Ignore-this: c52872220a99d4055b6b85b024707aef1085db7a2c3b70dbd09442109434ffa455f0d2611d380238
+] 
+hash: 0000001771-fb2ceb783aa46e209a4f6c60882b93d66a0775fbbc3854b1a68d35b7a846b997
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20260410112410
+ Ignore-this: b1965adf5a9796aae7785d57bb5f4d7d5af087ec547e3439642356932fd9ce34f92572735f06c4d4
+] 
+hash: 0000000248-cef05431e3224a88eca57ba916131ee72f661e392ef953413d6c7830ddc20fdf
+[wedge geometry
+mvacher <marc.cordelle.vacher@gmail.com>**20260410113842
+ Ignore-this: aaa341f388da32de3ea5fc3caae5452e679f70236c44f93187739551daf9d99e00b80ff0ec7019f5
+] 
+hash: 0000001161-ba6f384966b40035dcd72200aa97eff80901b5bafca4660fcc2b5065ed40f49a
+[parameters
+mvacher <marc.cordelle.vacher@gmail.com>**20260410115011
+ Ignore-this: d046f9efda5c2df2906c75fc679706e9b90c8141b957fcd026c91bec7f6deaa6fc421a003b82f198
+] 
+hash: 0000001001-387646f80f0ace36f409446d3990122629a1c0246c2fd1553df293685276b3f1
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20260410115920
+ Ignore-this: 2fd2e0e2f1fca9284eff4262295f8e83fac98221aa9b5b6563fc12a818354ff7d6e194567fb2032
+] 
+hash: 0000000471-6ee87d01a3fa5669c0f90be0fe0039fe3ec81e4cdfe7668c9137cfd8ebe51fa3
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20260410120736
+ Ignore-this: 12c6198326f3cf2f164c60dadbd4e03e976587e1afa4f847304d804cc0a807d24af17dc6629798b0
+] 
+hash: 0000000295-766528e999c3dae73e19506de18455d4ba6ba68e7bbefcd407548707d57414f0
+[time modification
+mvacher <marc.cordelle.vacher@gmail.com>**20260410121002
+ Ignore-this: 8e22765939141463751b331093a9a3384e0815a840a31bc45a27fd31e31d41e5b6296afc49e057d5
+] 
+hash: 0000000631-c803575edbd756fb8190a0aa326900477910322d3bbfb980b8b0293729a32214
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20260410123121
+ Ignore-this: 2d81f8666c182506c0b49e7d7ca95d23a0b3a651bd102e1d68a915fabafaf17c4a9a5cf38b976eb3
+] 
+hash: 0000000786-13abd69bcdedf1a778034e610d1babf57aee0d198708b61118b81f3b14b4c301
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20260410123157
+ Ignore-this: 9bbb2fee630eb035653837f70fa4f0616ed14a0844736cfd10ba116c854d5ebd87f1b99de2fa342d
+] 
+hash: 0000000202-a50e9d466a23c1f1a79d23b554c32cc714bb73abc2bdc4c8f0d4b89ecee86a53
+[run
+mvacher <marc.cordelle.vacher@gmail.com>**20260410123223
+ Ignore-this: 2b71c1b238f40105eeaaa3fcbcf2ff1a73af6a492cdfc041291e4ac08526f273d32d4567359eee56
+] 
+hash: 0000000201-91844ccd58e45e4f00e68fef3ad4fcbc4db84dcb98e5de7e1d0635dbbbc134a5
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20260410124454
+ Ignore-this: a01ecef1f3a11381a172dc8a710d292a439cf2303257fa99b56e6dafde113ed27be2d504ab0e87f6
+] 
+hash: 0000000201-8f8aa69fa607922e6d5a2d2cbd4e2062be6f7aaa8ed19f282f5c29dc72590690
+[New bug
+Stephane Popinet <popinet@basilisk.fr>**20260410134855
+ Ignore-this: 1dc905935250e6de56b6859e5ef0725a50453868d636dbf2023cb37f094462d9fb654453bd6b9bc6
+] 
+hash: 0000000238-00df526130aaecba5b5a27506cdfab1777f71a9e7813e3cd948455e59049b692
+[New bug
+Stephane Popinet <popinet@basilisk.fr>**20260410135032
+ Ignore-this: d85cfaeda30062673de74d979d7124f0bed2f21c3d10b39ae8723af2e56402a3175ee0aaeb5416f8
+] 
+hash: 0000000432-cecdb9b42ce4c77d3a4458d4de1301c5695d6221e336e5d1b960730dbbdec3b8
+[Added PDF
+Stephane Popinet <popinet@basilisk.fr>**20260410151400
+ Ignore-this: 2a34032f2d1b41d9f23334190379761d017c49be03eed3e4d16d704af7c47ec53fa7cfa9869c8247
+] 
+hash: 0000000353-dbef1d59a2a52cc6614605f9147593fea78a251265f49bc28aa61acf6311c7c8
+[New family of cases, gas bubbles and liquid droplets.
+fpicella <francesco.picella@sorbonne-universite.fr>**20260410153940
+ Ignore-this: e0fd286877e4305f87df0f93bad08998b3fc8111f6b509c22cd58cf9fa3419e02f0179465281ceff
+] 
+hash: 0000003108-49d5e868fe0ce9db199503cb0a9a39cbeb60708fc6ec55b34fe9eaa2fa1907da
+[New family of cases of gas bubbles impacting liquid interfaces.
+fpicella <francesco.picella@sorbonne-universite.fr>**20260410154759
+ Ignore-this: cb69f281a3a1d01334f067a4483dd931682bcc154fef90974c0fc9161a96bce3b421066a1afbcbb1
+] 
+hash: 0000001589-94342287fe50a622ff8adbb6c48156c6f887df3c3517f7e15e5ca99c8b4817b8
+[bubble-to-droplet case added within my readme file
+fpicella <francesco.picella@sorbonne-universite.fr>**20260410155109
+ Ignore-this: a95596071e2b9059aeda639510b4ded15d77098230cc8599098efeb73caba695ed7bcc08e73c0cfc
+] 
+hash: 0000000753-5ce3608d9fc674013405bd0b8a6604fc43e6b7fc431369f42e5230a6dbfc469e
+[Not a bug
+Stephane Popinet <popinet@basilisk.fr>**20260410193534
+ Ignore-this: f2923abb0fcf93b2cadc352bc0c262b2f85e7be8d693b39a9abf5a8a5e3df09f1f69960dbe93ce85
+] 
+hash: 0000000469-2ffef569aec7420d9f21482f241c2b4b5a70b1a02d2589739610c6aa544d0afb
+[Not a bug
+Stephane Popinet <popinet@basilisk.fr>**20260410193747
+ Ignore-this: d8a608563b54b0f31d514620ff7cb4764eefa4aaaab506fdf88f5f6e90e9fa65622e88c6af5fcbf9
+] 
+hash: 0000000319-d16cde5cdb6588e019ac3c15762dc592a392d7ab6d66be638bc71b0f51722d98
+[Indeed there is an error
+Stephane Popinet <popinet@basilisk.fr>**20260410193911
+ Ignore-this: 70e224bcf0442a7b3de19ec8bbb01cdfceb622e26158a91eb55e5f00606f84e6e0dbed029ce0a802
+] 
+hash: 0000000310-57e6fbbe7750383ac999e1e2327fcf6757812cb95ad2808cb39385e754a12c58

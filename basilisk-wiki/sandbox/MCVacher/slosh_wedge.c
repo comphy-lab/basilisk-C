@@ -1,36 +1,32 @@
 /**
-# Sloshing in a parabolic container (NS)
+# Sloshing in a 90° wedge
 
-DNS of the Saint-Venant version of [parabola.c](https://basilisk.fr/src/test/parabola.c). Here the parabola is not as large as in the Saint-Venant case (shallow water hypothesis : $h_0 << \lambda$, not really valid here). However, the linear water profile seems to be still quite valid.
+We reproduce the sloshing case in a 90° wedge, which resolution is in Lamb's book (*Hydrodynamics*, §258).
 
 ## Simulation
 */
-
 #include "embed.h"
 #include "navier-stokes/centered.h"
 #include "two-phase.h" 
 #include "reduced.h"
 #include "navier-stokes/perfs.h"
 #include "tag.h"
-//#include "harmonic.h"
 
 double h;
 double h_1;
-double amp;
 
-FILE * fpmax; //
+FILE * fpmax; 
 
 int main() {
 
-  L0=1; //size of the box
+  L0=1; 
   rho2 = 1.3;
   rho1=1000;
   mu1 = 0.05;
   mu2 = 0*mu1;
-  h=0.31;
-  amp=0.8;
+  h=0.5;
   
-  h_1=0.12; //size of the perturbation
+  h_1=0.12; 
 
   TOLERANCE = 1e-3 [*];
   
@@ -52,8 +48,8 @@ int main() {
 }
 
 event init (t = 0) {
-  fraction (f, intersection(h_1*x+h-y,-(x/amp)*(x/amp)+y-0.02));
-  solid (cs, fs, -(x/amp)*(x/amp)+y-0.02);
+  fraction (f, intersection(h_1*x+h-y,-fabs(x)+y-0.2));
+  solid (cs, fs, -fabs(x)+y-0.2);
 }
 
 event logfile (i++) { 
@@ -70,7 +66,7 @@ event profile (t = end) {
 }
 
 int isave1 = 1;
-event res_save (t += 0.02; t <= 10){
+event res_save (t += 0.02; t <= 25){
 
   char name[80];
   
@@ -82,9 +78,7 @@ event res_save (t += 0.02; t <= 10){
   isave1++;
 }
 
-event ppm_output (t = 0; t += 0.02; t <= 10) {
-
-  //Note for me : do some tracers only for the water
+event ppm_output (t = 0; t += 0.02; t <= 25) {
   
   char name[80];
   sprintf (name, "f.mp4");
@@ -92,15 +86,15 @@ event ppm_output (t = 0; t += 0.02; t <= 10) {
   
   char name_u_x[80];
   sprintf (name_u_x, "u_x.mp4");
-  output_ppm (u.x, file = name_u_x, n = 512, min = -0.3, max = 0.3, linear = true);
+  output_ppm (u.x, file = name_u_x, n = 512, min = -0.8, max = 0.8, linear = true);
   
   char name_u_y[80];
   sprintf (name_u_y, "u_y.mp4");
-  output_ppm (u.y, file = name_u_y, n = 512,min = -0.3, max = 0.3, linear = true);
+  output_ppm (u.y, file = name_u_y, n = 512,min = -1, max = 1, linear = true);
 }
 
 /**
-![Waves](slosh_parabola/f.mp4)
-![Vertical velocity](slosh_parabola/u_y.mp4)
-![Horizontal velocity](slosh_parabola/u_x.mp4)
+![Waves](slosh_wedge/f.mp4)
+![Vertical velocity](slosh_wedge/u_y.mp4)
+![Horizontal velocity](slosh_wedge/u_x.mp4)
 */

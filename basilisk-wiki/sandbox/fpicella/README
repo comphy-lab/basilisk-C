@@ -29,7 +29,10 @@ Updated on june 2025
  - [Plumes of bioconvection.](/sandbox/fpicella/microswimmer_tHree_forces/plumes_x_periodic.c). Primary instability from _hydrodynamic screening_?
 
 ### SuperHydroPhobic Surfaces.
- -[Rigid cylinder placed in a gas bubble under fluid flow](/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c). Plastron dynamics
+ - [Rigid cylinder placed in a gas bubble under fluid flow](/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c). Plastron dynamics
+
+### Gas bubbles generating liquid droplets.
+ - [Single gas bubble, rising in a quiescent bath, impacting a free-interface and generating a liquid droplet](rising_bubble_to_droplet/axi_rising_bubble_to_droplet.c)
 
 ### Miscellaneous
 

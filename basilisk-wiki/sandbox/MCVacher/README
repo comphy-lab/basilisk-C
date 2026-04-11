@@ -30,6 +30,8 @@ This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I
 
 * [Capillary sloshing](slosh_dissipation_cap.c)
 
+* [Sloshing in a 90° wedge](slosh_wedge.c)
+
 ## Other
 
 * [Gravity current (Huppert)](gravity_current.c)

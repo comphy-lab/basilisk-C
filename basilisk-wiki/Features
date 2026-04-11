@@ -1,0 +1,23 @@
+Feature                 Gerris                  Basilisk
+------------------      ------                  -------------------------------------------------------------
+1D                      no                      yes
+2D                      yes                     yes
+3D                      yes                     yes
+Solids                  yes                     [Lego](Basilisk C#complex-domains) (not MPI-parallel yet)
+Geometry                flexible                [flexible](Basilisk C#complex-domains) (not MPI-parallel yet)
+OpenMP support          no                      yes
+MPI support             yes                     [yes](src/Tips#parallel-runs-with-mpi)
+Periodic BC             yes                     [yes](Basilisk C#periodic-boundaries) (not MPI-parallel or adaptive yet)
+Saint-Venant            yes                     [yes](src/saint-venant.h)
+Serre--Green--Naghdi    no                      [yes](src/green-naghdi.h)
+Navier--Stokes          yes                     [yes](src/navier-stokes/centered.h)
+Conservation laws       no                      [yes](src/conservation.h)
+Compressible fluids     no                      [yes](src/compressible.h)
+Volume-Of-Fluid         yes                     [yes](src/vof.h)
+Height functions        yes                     [yes](src/heights.h)
+Surface tension         yes                     [yes](src/tension.h)
+Metric                  yes                     [in progress](src/README#general-orthogonal-coordinates)
+
+## See also
+
+* [Compatibility matrix](src/COMPATIBILITY)

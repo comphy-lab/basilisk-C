@@ -160,6 +160,7 @@ The bugs below should be fixed in the most recent release.
 
 # Not bugs
 
+* [No warning for Point point =](pointpoint.c)
 * [Macros are incompatible with utils.h or run.h](macro_utils_h.c)
 * [bump2D-gpu run in to error "> # 15 shaders"](http://www.basilisk.fr/src/test/bump2D-gpu.c)
 * [We can't change the date of the final `event` during the run](bug_end_time.c)
