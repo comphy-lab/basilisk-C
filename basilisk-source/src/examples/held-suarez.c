@@ -293,10 +293,14 @@ int main()
   TOLERANCE = 0.1;
 
   /**
-  Vertical remapping uses monotonic limiting. Note sure whether this
-  is required. */
+  The solution is sensitive to limiting in the vertical remapping,
+  probably due to the changes this induces in the top and bottom
+  boundary conditions. Using monotonic limiting leads to higher
+  stratospheric temperature variance, as well as the appearance of an
+  "equatorial soliton". Results closer to the reference numerical
+  results are obtained without limiting. */
   
-  cell_lim = mono_limit;
+  //  cell_lim = mono_limit;
   
   run();
 
@@ -443,6 +447,40 @@ again 68 years per day (ypd). The time per degree of freedom decreases
 to 5 nanoseconds for 512 x 256 ($\approx$ 15 ypd) and to 3.6
 nanoseconds for 1024 x 512 ($\approx$ 2.6 ypd).
 
+For `N = 246` profiling gives the following:
+
+~~~bash
+calls    total     self   % total   function
+      19     0.05     0.04     23.6%   advect():/src/layered/hydro.h:405
+      19     0.04     0.04     22.7%   acceleration_0():/src/layered/implicit.h:207
+      19     0.02     0.02     13.7%   vertical_remapping():/src/layered/remap.h:158
+     630     0.02     0.02     12.6%   relax_hydro():/src/layered/implicit.h:104
+      34     0.04     0.01      8.8%   mg_cycle():/src/poisson.h:92
+    4962     0.01     0.01      7.4%   setup_shader():/src/grid/gpu/grid.h:1950
+      38     0.00     0.00      1.8%   gpu_reduction():/src/utils.h:143
+      19     0.00     0.00      1.2%   gpu_reduction():/src/utils.h:171
+      19     0.01     0.00      1.1%   logfile():held-suarez.gpu.c:330
+      19     0.00     0.00      1.1%   face_fields():/src/layered/hydro.h:292
+~~~
+
+For `N = 1024`:
+
+~~~bash
+calls    total     self   % total   function
+      19     0.36     0.36     43.0%   vertical_remapping():/src/layered/remap.h:158
+      19     0.17     0.17     20.7%   acceleration_0():/src/layered/implicit.h:207
+      19     0.08     0.07      8.9%   advect():/src/layered/hydro.h:405
+      38     0.09     0.05      6.2%   mg_cycle():/src/poisson.h:92
+     966     0.04     0.03      4.0%   relax_hydro():/src/layered/implicit.h:104
+      19     0.11     0.02      2.8%   pressure():/src/layered/hydro.h:462
+      19     0.02     0.02      2.4%   face_fields():/src/layered/hydro.h:292
+      19     0.02     0.02      2.3%   acceleration_2():/src/layered/dr.h:76
+      19     0.12     0.02      2.3%   pressure_0():/src/layered/implicit.h:252
+    5884     0.02     0.02      2.1%   setup_shader():/src/grid/gpu/grid.h:1950
+      19     0.01     0.01      1.4%   set_eta():held-suarez.gpu.c:256
+      19     0.01     0.01      1.4%   acceleration_1():/src/layered/coriolis.h:64
+~~~
+
 ## Todo
 
 * Cubed sphere global coordinates would be good.
@@ -459,10 +497,7 @@ nanoseconds for 1024 x 512 ($\approx$ 2.6 ypd).
 * Using `z` as name for vertical coordinate is confusing.
 * The dimension of the vertical coordinate should not be a length, as
   imposed by [/src/layered/hydro.h](/src/layered/hydro.h#175).
-* There is a strange "equatorial solitary wave" clearly visible in the
-  [movie of surface pressure](held-suarez/eta_r.mp4).
-* Vertical remapping takes about 60% of computing time, which
-  could/should be optimised.
+* Vertical remapping could/should be optimised.
 
 ## See also
 

@@ -1,4 +1,4 @@
-pristine:32a1a47e6874151fa50079e42c652de71c427c796da111015cf2d2c683dfd247
+pristine:ab79312ac55cc3f45f1a40724efcc904438c2e38e75002deea3cf6d7eac7fd72
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -86,3 +86,18 @@ Stephane Popinet <popinet@basilisk.fr>**20260410163627
  Ignore-this: c4097ca2883bc5dfbc9a808c3b17f3424c1ed2089e0fcdf5783e3a2013901d3d7496b5a35c0eaaad
 ] 
 hash: 0000020159-a9f9bb2987f219ce414e5c5ea343b05a8c7dacc34a31d4d769e9c831e21acfbe
+[Profiling statistics for Held-Suarez
+Stephane Popinet <popinet@basilisk.fr>**20260411103444
+ Ignore-this: 35b7570b09790b0d4fcc9b301996239b810eede762f09984905afcc829277a990b86146eaf73112a
+] 
+hash: 0000002357-646c28efc14ef60025f2d95569e7d86c6a0eb5232bb1af72c452e8f3d3389a49
+[Better results without limiting.
+Stephane Popinet <popinet@basilisk.fr>**20260411124919
+ Ignore-this: 38e99342d6647af3de1312fbf9a5ba512b63746bd1acdc72a2e3ecfa84208ba72b19a118064acf50
+] 
+hash: 0000000953-03faac6247462603502181fafa198115fa68549c7a2082b97ab6c699ac69a696
+[PNGs are OK (more compact) for colored mapped fields
+Stephane Popinet <popinet@basilisk.fr>**20260411130636
+ Ignore-this: c7f60de021854081f927e388a33021ec9de0989439f52fe64e46c244ca0ceb7d1fb8a455d585a771
+] 
+hash: 0000001275-cd6cdab68f7558a5c133a25c8f218e38ed054cc50d20f1cbed2ab99bfc0bfcf9

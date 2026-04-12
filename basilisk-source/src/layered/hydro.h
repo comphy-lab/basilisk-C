@@ -297,6 +297,7 @@ event face_fields (i++, last)
 The function below approximates the advection terms using estimates of
 the face fluxes $h\mathbf{u}$ and face heights $h_f$. */
 
+trace
 void advect (scalar * tracers, face vector hu, face vector hf, double dt)
 {
 

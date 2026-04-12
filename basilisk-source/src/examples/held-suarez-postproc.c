@@ -10,9 +10,8 @@ winds at the surface reach -8 m/s at $\pm$ 15 degrees latitude, the
 mid-latitude westerlies 8 m/s at $\pm$ 45 degrees. The jet streams in
 the upper troposphere reach 30 m/s.
 
-~~~gnuplot Time-averaged zonal velocity
-set term svg enhanced size 640,400 font ",9"
-set pm3d map
+~~~gnuplot Time-averaged zonal velocity {width="640px"}
+set term png enhanced size 1280,800 font ",18"
 set pm3d map interpolate 4,4 at b
 unset key
 # jet colormap
@@ -23,10 +22,11 @@ set contour base
 set cntrparam levels incremental -12,4,32
 set cbrange [-12:32]
 set cntrlabel onecolor
-set cntrlabel font ",7"
+set cntrlabel font ",14"
 set xtics -90,30,90
 set xlabel 'Latitude'
 set ylabel 'Altitude'
+set output 'zonal_velocity.png'
 splot [-90:90][0:1]'out' index 'zonal velocity' u 1:($2/19.):3 lt 3 lc rgb "#000000", \
      '' index 'zonal velocity' u 1:($2/19.):3 w labels
 ~~~
@@ -40,7 +40,7 @@ presented in slide 27 (left) is the *potential* temperature, not the
 temperature, which explains the difference in the stratosphere
 compared to the graph on slide 27 (right) from Ringler et al, 2000.
 
-~~~gnuplot Time-averaged zonal temperature variance
+~~~gnuplot Time-averaged zonal temperature variance {width="640px"}
 set cbrange [*:*]
 set cntrparam levels incremental 5,5,40
 set cbrange [0:40]
@@ -49,25 +49,29 @@ Kappa = 2./7. # R/cp
 P0 = 101300.
 Ps(z) = P0 - (z)
 PI(i) = (Ps(P0*(i + 0.5)/nl)/P0)**Kappa
+set output 'zonal_variance.png'
 splot [-90:90][0:1]'out' index 'zonal variance' u 1:($2/19.):($3*PI($2)**2) lt 3 lc rgb "#000000", \
      '' index 'zonal variance' u 1:($2/19.):($3*PI($2)**2) w labels
 ~~~
 
 So do the time-averaged zonal temperature and zonal potential temperature.
 
-~~~gnuplot Time-averaged zonal temperature
+~~~gnuplot Time-averaged zonal temperature {width="640px"}
 set cbrange [*:*]
 set cntrparam levels incremental 190,5,305
 set cbrange [190:305]
+set output 'zonal_temperature.png'
 splot [-90:90][0:1]'out' index 'zonal temperature' u 1:($2/19.):($3*PI($2)) lt 3 lc rgb "#000000", \
      '' index 'zonal temperature' u 1:($2/19.):($3*PI($2)) w labels
 ~~~
 
 ~~~gnuplot Time-averaged zonal potential temperature
+set term svg enhanced size 640,400 font ",9"
 set cntrparam levels incremental 270,5,350
 set cbrange [*:*]
 unset surface
 unset colorbox
+set cntrlabel font ",7"
 splot [-90:90][0:1]'out' index 'zonal temperature' u 1:($2/19.):3 lt 3 lc rgb "#000000", \
      '' index 'zonal temperature' u 1:($2/19.):3 w labels
 ~~~
