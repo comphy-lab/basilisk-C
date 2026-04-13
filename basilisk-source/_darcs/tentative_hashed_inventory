@@ -1,0 +1,103 @@
+pristine:ab79312ac55cc3f45f1a40724efcc904438c2e38e75002deea3cf6d7eac7fd72
+Starting with inventory:
+0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
+[TAG release-remapc-gpu
+Stephane Popinet <popinet@basilisk.fr>**20260320103428
+ Ignore-this: 8443914476a67b1f4c60f3ea3a21f583
+] 
+hash: 0000025217-45d5a28d176e59303e33809a3933c937114aa20041ce8c1450ca8b9aeb24c2e4
+[Minor fix for perfs.h
+Stephane Popinet <popinet@basilisk.fr>**20260320131419
+ Ignore-this: 8b03e2c08794ad616914e1e8c10653de
+] 
+hash: 0000000580-48dba09aaad305939b1b2873c5f319542696f6c6628b39eaa3e782fa1fc90bca
+[Input/output needs to be set also for fields used in boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20260324181429
+ Ignore-this: 350b96d6e443c5bca8c6e9bf1085163602cab68387b4dd5002a527d6789cd1fa1fc2068642c7587e
+] 
+hash: 0000010594-594601125eb3acba15a58aeefebb4fc9a0c6801d2f1a26ffa7e51a4a4b858de4
+[Automatic stencils need to properly manage declarations when calling point functions
+Stephane Popinet <popinet@basilisk.fr>**20260325140954
+ Ignore-this: 2ea2d271f37ac1d31c5fdc18c9216875557df8654b1040a1a6afb934a00d7a572c47fbd19579212d
+] 
+hash: 0000001739-c23e7bf9ee1696aa9967f949ca1eaf9e1b1f2f41d815ef655b6aecb0b1727dce
+[The multilayer shoal example runs on GPUs
+Stephane Popinet <popinet@basilisk.fr>**20260331135055
+ Ignore-this: 39bec7df463e68fa2086d693863be6ff18e419ce56b4bf149722a534551eb467ebede14d38cdedbf
+] 
+hash: 0000000449-8cfdc96d01b0deba356d2dbe9be4b0f50aff9b7aa26ef1dbb16a06f778766958
+[Meshlabserver needs a display
+Stephane Popinet <popinet@basilisk.fr>**20260331135128
+ Ignore-this: 8739d5e916659aa4ea9a26236a505ad98e3e6a958af6d3d9b2c9c56cd8f4303d4295153cf3d15620
+] 
+hash: 0000000331-0b73a07e3fe66e02ed497cb29c24ec2fcb891286103d9c3598b8993bf59540b4
+[In single precision (e.g. on GPUs) 'dry' must be larger
+Stephane Popinet <popinet@basilisk.fr>**20260331135201
+ Ignore-this: 3986cba1f63d27c0513bc84a6bccaa344afd48b47e81ec77c450503b79e52292d80373dd1e676fff
+] 
+hash: 0000001215-42898342ee65b3f3f285a2a8016eca775513bb3ba69635461de8ca64f14fd83b
+[Updated references
+Stephane Popinet <popinet@basilisk.fr>**20260331135951
+ Ignore-this: 220073facf71e596d3b34d9c6d4c0799ecdfaa9b977b368a332321e453262e6e36af17f1cfbc7db3
+] 
+hash: 0000000875-ae6f93c3bf942401d532b893349810eb662d86931c78fa7995ce0446a3f3b5fe
+[Enumeration constants are not typedefs
+Stephane Popinet <popinet@basilisk.fr>**20260401165542
+ Ignore-this: a5acd49c98f2f31c756c88e02c700dc0e2a909b21894c23e15119a303519b46028aafd054fd03067
+] 
+hash: 0000000299-da07b8e223a6704e7c52f2ca8e5f5884a0891a7001ca7be6bc18be91b4d04974
+[Minor doc fix
+Stephane Popinet <popinet@basilisk.fr>**20260402101400
+ Ignore-this: 94445b16ca4fe7dd99c733c0bce161125e3661873223becb9addd2a726aac3a90543a7ed225afa65
+] 
+hash: 0000000319-ead0736f3556594df3ad1152eefd785780afcf18974298ab1367374ec3742483
+[Restrictions on rectangular domains on GPUs
+Stephane Popinet <popinet@basilisk.fr>**20260403085144
+ Ignore-this: f38f50e59c0a3b53e2d0bc5b9d7ff0213a3b627d6f940173688945d710597185ef260e0936930c88
+] 
+hash: 0000002152-f38a6507a19936178a05a6bc5bbfc9d4fdfaba35c41e7b0d0bcc95859c57b234
+[Colormaps return a brown color for unknown/NaN values
+Stephane Popinet <popinet@basilisk.fr>**20260410105942
+ Ignore-this: 1be9620cc32eccd34979257168ef8c2ce21835834569806a0f9eef41925b4ec6abe8f42c5aaf7038
+] 
+hash: 0000000351-897208aedf075684715fa79f47293d1ff1c0071735596c58924f4e5f59bc37fd
+[Watch-tests does not transfer auxilliary files
+Stephane Popinet <popinet@basilisk.fr>**20260410110028
+ Ignore-this: a50ccb3015057585dc2e8cfca5e074ebec9b58ede2442ac35ac6cc3c8561445f02f3595aec73841a
+] 
+hash: 0000000348-63627f4263f944967cc9317271a65f24d15a2801e1e0c69c960fc1b716fb9804
+[Avoid divide by zero for rigid lid configurations with "drying"
+Stephane Popinet <popinet@basilisk.fr>**20260410120310
+ Ignore-this: ca0588506249278bc6eb0cacfcdfa6179a8b82b359b6ec139c5815fd553ce38c96f5ea742d882f27
+] 
+hash: 0000000294-855a55f2d1cfdfd331ce892d398b81e711a9b5ef186c79ace3bc6ceb90aecd66
+[The number of workgroups on GPUs was incorrect for odd aspect ratios
+Stephane Popinet <popinet@basilisk.fr>**20260410153032
+ Ignore-this: d6a8fa456595d28e9d5f08aa9f88f67defa28e89fb800ec47e1fed321ac9e621cdaab578faa8854f
+] 
+hash: 0000000780-b831febf9ea67fc9e60ebc033b8c259458a8963d70a8b01e61305b7b2d9b5e44
+[Option to control the minimum level of the implicit free-surface multigrid
+Stephane Popinet <popinet@basilisk.fr>**20260410163427
+ Ignore-this: 26daf8edb3eefa5fbe3b954d0a1a73c7854b01b79627345d5e63de693922278c5ec09c7b25951dbf
+] 
+hash: 0000000706-a9fd43dfa4f55b831ebaf4db6e4b4a3aae0c6cc96b6b94dc57a6b782c4cc3bc3
+[The Held-Suarez climate model
+Stephane Popinet <popinet@basilisk.fr>**20260410163627
+ Ignore-this: c4097ca2883bc5dfbc9a808c3b17f3424c1ed2089e0fcdf5783e3a2013901d3d7496b5a35c0eaaad
+] 
+hash: 0000020159-a9f9bb2987f219ce414e5c5ea343b05a8c7dacc34a31d4d769e9c831e21acfbe
+[Profiling statistics for Held-Suarez
+Stephane Popinet <popinet@basilisk.fr>**20260411103444
+ Ignore-this: 35b7570b09790b0d4fcc9b301996239b810eede762f09984905afcc829277a990b86146eaf73112a
+] 
+hash: 0000002357-646c28efc14ef60025f2d95569e7d86c6a0eb5232bb1af72c452e8f3d3389a49
+[Better results without limiting.
+Stephane Popinet <popinet@basilisk.fr>**20260411124919
+ Ignore-this: 38e99342d6647af3de1312fbf9a5ba512b63746bd1acdc72a2e3ecfa84208ba72b19a118064acf50
+] 
+hash: 0000000953-03faac6247462603502181fafa198115fa68549c7a2082b97ab6c699ac69a696
+[PNGs are OK (more compact) for colored mapped fields
+Stephane Popinet <popinet@basilisk.fr>**20260411130636
+ Ignore-this: c7f60de021854081f927e388a33021ec9de0989439f52fe64e46c244ca0ceb7d1fb8a455d585a771
+] 
+hash: 0000001275-cd6cdab68f7558a5c133a25c8f218e38ed054cc50d20f1cbed2ab99bfc0bfcf9
