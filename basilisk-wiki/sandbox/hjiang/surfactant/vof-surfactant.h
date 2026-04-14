@@ -1,11 +1,4 @@
 /**
-## <span style="color:#cc0000">Tips</span>
-
-- <span style="color:#cc0000">Mainly adapted from `src/vof.h`.</span>
-- <span style="color:#cc0000">Added `vof_advection_surfactant()` for surfactant transport. As you can find at the end of the file. </span>
-*/
-
-/**
 # Volume-Of-Fluid advection
 
 We want to approximate the solution of the advection equations
@@ -378,27 +371,18 @@ void vof_advection(scalar *interfaces, int i)
   }
 }
 
-/**
-## Functions for the direction-split advection of volume fraction and surfactant concentration.
-*/
-
-/**
-This file includes the main functions used for surfactant transport.
-*/
-
-face vector upc1[]; //Backup velocity for phase change problem (coming soon).
-scalar *transport_list; // 
+#include "surfactant-transport.h"
+face vector upc1[];
+scalar *transport_list;
 SurfTransInfo st;
-
-//#ifndef SURFACE
+#ifndef SURFACE
 //#  include "surfactant/surface.h"
-//extern Surface *sur;
-//extern int NSS;
-//#else
-
+extern Surface *sur;
+extern int NSS;
+#else
 scalar surfactant[];
 //scalar A[], B[], C[], D[], E[], F[], G[], H[];
-//#endif
+#endif
 
 void vof_advection_surfactant(scalar *interfaces, int i, bool phasechange = false)
 {
@@ -450,53 +434,39 @@ void vof_advection_surfactant(scalar *interfaces, int i, bool phasechange = fals
     for (d = 0; d < dimension; d++) {
       int dim = (i + d) % dimension;
 
-    /**
-    We need to store the volume fraction before advection,
-    in order to calucate surface area*/
       scalar cold[];
       foreach ()
         cold[] = c[];
-    /**
-    Here comes the vof advection*/
+
       sweep[dim](c, cc, tcl);
 
-    /**
-    The transported surface area is stored in the structure `st`.
-    */
       compute_area_flux_consistent(cold, c, phasechange ? upc1 : uf, dim, &st);
-//#ifndef SURFACE
-//      surface_site_to_mass(sur, c);
-//      advect_surfactant_consistent(transport_list, phasechange ? upc1 : uf, dim, &st);
-//      surface_mass_to_site(sur, c);
-//#else
+#ifndef SURFACE
+      surface_site_to_mass(sur, c);
+      advect_surfactant_consistent(transport_list, phasechange ? upc1 : uf, dim, &st);
+      surface_mass_to_site(sur, c);
+#else
       scalar *transport_list_local = {surfactant};
       // scalar *transport_list_local = {A, B, C, D, E, F};
-    /**
-    Here we calculate the tranported mass throught surface area*/
       advect_surfactant_consistent(transport_list_local, phasechange ? upc1 : uf, dim, &st);
-//#endif
+#endif
     }
     delete (tcl), free(tcl);
   }
 }
 
-    /**
-    Initialization of the structure `st`*/
 event init(i = 0)
 {
-//#ifndef SURFACE
-//  transport_list = sur->YSList;
-//  surftrans_init(&st, transport_list);
-//#else
+#ifndef SURFACE
+  transport_list = sur->YSList;
+  surftrans_init(&st, transport_list);
+#else
   scalar *transport_list_local = {surfactant};
   // scalar *transport_list_local = {A, B, C, D, E, F};
   surftrans_init(&st, transport_list_local);
-//#endif
+#endif
 }
 
-    /**
-    Free allocated memory.
-    */
 event cleanup(t = end) { surftrans_destroy(&st); }
 
 event vof(i++) { vof_advection_surfactant(interfaces, i, phasechange = false); }

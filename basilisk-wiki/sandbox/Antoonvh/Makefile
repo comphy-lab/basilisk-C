@@ -66,3 +66,5 @@ color_cube.tst: CFLAGS += -fopenmp
 heating.tst: CFLAGS += -fopenmp
 
 impinging2.tst: CFLAGS += -fopenmp
+
+aneurysm.tst: CFLAGS += -llapack -lblas -lgfortran -LAntoonvh/lapack/lapack-3.10.0

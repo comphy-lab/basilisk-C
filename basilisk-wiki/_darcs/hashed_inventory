@@ -1,4 +1,4 @@
-pristine:bb96542b37822749ffbf4c62348c37b32e0d047b83d97ace865f150dcd91ba8d
+pristine:3adcbb761500b6d94e89d698375b7709a4378681b1dd319538293e4d63ee58bf
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -8548,3 +8548,155 @@ Antoonvh <j.a.v.hooft@gmail.com>**20260411182900
  Ignore-this: 7d5e22d0fc601d3bcd587b1d4070540d33e5e38149bb6adec43ed58ce9a28e25be5e20e8f2c20495
 ] 
 hash: 0000000382-3cc16c8c714423301dd828d77cad14ce559d603eaab204d8a1dbd32013070701
+[Change my email
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413031404
+ Ignore-this: 9ce552aacfdcf9933a64242ff31eb6259a088d01b0a0c3d26cc1316ebfaf6afcbba2a9007875f971
+] 
+hash: 0000000273-964dd0fef5f1b8b4b5c2ef27028ea57f18b88264ab41e4e8daa002e7477bc981
+[add new file
+cvermelle**20260413071708
+ Ignore-this: 76ad2157dd5e9fb604ef9fd8e36275efe64858b6a08371e0b69e6925dedcff7bd9587aac73910333
+] 
+hash: 0000000225-28947fbd15ab07b578641c99066832550874a17c93d4bf8ca0b18bd5374150b9
+[new file + first code 
+cvermelle**20260413081336
+ Ignore-this: f035d858e6c5d0e0fd33ec1b75e9ef7884c698fe046e3ef5a8cf6e12d19a489951a8784ca2498c0
+] 
+hash: 0000003571-aec6480499b71bfd216c3dfb2d538ebe41fe390ede489f372bee2f5196decaaa
+[Removed quarterdrop.c, add more description and gnuplot code for quarterbubble
+hjiang@g.ecc.u-tokyo.ac.jp**20260410054019
+ Ignore-this: 5452cc0438f3bc46ae78ac073c8fb8eeff430fbbb5434872c8e4cb9c496ba9e53f4a7c3df801ba1f
+] 
+hash: 0000006580-32fa445ef164ca7268ba56192d91da225f3f04bf975fb25374f4c2ff1d7b449d
+[Add makefile 
+hjiang@g.ecc.u-tokyo.ac.jp**20260410054430
+ Ignore-this: 79858a3656c73bf765ffe7e35bb2f383cd99abaec3991f2f49456baaf643e48dc3a231982d8295ab
+] 
+hash: 0000000393-cc2f1466f24fa4c6fafd34a0b5073f1ea5179e3c7c73b86f8bd00563cb588c43
+[comment unnecessary flags
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413092525
+ Ignore-this: 7060bd803f3ef49a8e69ef6f1b7a566fefce7c4f33108b246f81284ce7c4d7a768a2dc625bf2ca96
+] 
+hash: 0000000303-1107e9df07bc14d1c0083c01263a7a699cc36027c71e15486d72ff10275c1254
+[revise the correct path of header files
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413092841
+ Ignore-this: 474b9ed2845184f83df66d9422ebfae8f5a60edabba62a657d48c0d1f7f74833b1269ab318b49cd6
+] 
+hash: 0000000300-b3746f69737fac81fccd946fc00f4d2c8f85289a690083e8a4c82214b7cc9824
+[revise the correct path of header files
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413092925
+ Ignore-this: b515b54749aa8db49b5db53450bb7b37bb10926c98db07763f790cfe33f4a4cdb7c89df10847c6b2
+] 
+hash: 0000000330-47d98dce5986a86a28b24b64817d023811e40719876ddd31889a16ecb2b3d954
+[add adapt_wavelet_leave_interface.h
+hjiang@g.ecc.u-tokyo.ac.jp**20260413093013
+ Ignore-this: 638952f3dc7e20493be1d4212ce3f2e502431c76ef365ef1b0b13a23a1cab1df10fdb7ac03519cd2
+] 
+hash: 0000005496-9b956cf001b696fd495e878663ad465e5b80872b35e4c5e656591e27a350b11d
+[Now the figures are online
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413094506
+ Ignore-this: 7ba0f35c448f1ae8724cc3aea2d73b2b2370b0822961302ce590021726ec202bfc0d953cc57fb783
+] 
+hash: 0000001480-a0fd369067cdd7b3930102d0b23faa2d1e2643f26337b3195fac39f90294b346
+[Movie is online
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413095944
+ Ignore-this: f104ec663c54b9f0799b35fee0a5c06c6f650b2f3bf54144b3ccb794f9cb7c2e63eecbd314223585
+] 
+hash: 0000000247-ee23a9851cbb9334dda045a4d59a1bbcd0014a0d784b93bac6e99642d4a992aa
+[Axisymmetric rising bubble. One-way interaction with stokes and inertial particles.
+fpicella <francesco.picella@sorbonne-universite.fr>**20260413101301
+ Ignore-this: a83c02969db5afeb9f92c9b2037b5ddf13c858478a9fea059919692f2d267da30c807d96943cdb90
+] 
+hash: 0000004592-6cfc6316e8375b014be4fc9fe594105222b351b55a20d1d6a00706e07db6dc2a
+[Show the video
+ecipriano <edoardo.cip@gmail.com>**20260413102341
+ Ignore-this: ff229158240d6fe424a47fb2973797d833435cdb53f3e04b7aef2a25ed33ea0b90f0dfd5655fec8c
+] 
+hash: 0000000283-fd5d72f6d29555d5fdbde98c4182089ac7f95356696dd1bed3f529d9d0cb8c29
+[Removed Makefile
+hjiang@g.ecc.u-tokyo.ac.jp**20260413122449
+ Ignore-this: ffcaecfc46af3e91226c2c08b76d3970cdc0fe4c1f4b7b3053b407082e988de3a3baf7c1ddd60bac
+ Add Benchmark star.c
+ The src file surfactant-transport.h and vof-surfactant.h is now updated together with the main project.
+] 
+hash: 0000032563-992c6c28fa163eaeb5cc6f1366325fe7f55d675efbcc4cc1ed671c46b6f040a5
+[remove makefile 
+hjiang@g.ecc.u-tokyo.ac.jp**20260413123244
+ Ignore-this: 6e9b9054820d10e420880456ff1828e31239961834d2ddfacb3fec4a0bf60cad00af7174afe6b55a
+] 
+hash: 0000000395-eae67e85ec61d6a127bed78bf14838644b3b290996e8cae0946305cdcdd5717b
+[Correct the right header files path
+hjiang@g.ecc.u-tokyo.ac.jp**20260413133146
+ Ignore-this: 1905782492e7a0e2e9ff20ee6f1a3b54932d0f82fb36be92a1f49d298341bef6ebde00f541d39e10
+] 
+hash: 0000000753-c2e1fe5c83220b4379048c3dd0d5e224dfe7e661b5ec1c55d432994b21b7e733
+[Code for gnuplot
+hjiang@g.ecc.u-tokyo.ac.jp**20260413133538
+ Ignore-this: 8c3dcfc27836e72e9bcb68aa4b6e3f89c9eb9ac2a8444997023c76848a27217a10439c5fa8885afc
+] 
+hash: 0000000438-2a6fbf8d85cef319f7ea32bcf3d51c5a75b0dfa2cef6ad40f79c6de728a0919f
+[Revise the path
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413134019
+ Ignore-this: 7786c29d9ca4a4f67640348e497b555ed491922275f8e674bfc2c1cf7a6bba026208bc13a87dd6e4
+] 
+hash: 0000000301-c7cd2526124e21a2a699b7ebfc18f986d7cb5e4cc87544bfa6b9471b451ca1eb
+[added page for code mesh study including inertial particles
+JulesR <e.relyveld@gmail.com>**20260413134354
+ Ignore-this: 70c0951556f4ea2115e0622bfff4beab6d5886cfd777aabbe02e61a700a5b69c8df809ae739a9f4
+] 
+hash: 0000008788-b4b7c55d0d3dd9382a8d3c635e416bbf49ef13950de34a961c88c0c452b51c63
+[added link to code for mesh study
+JulesR <e.relyveld@gmail.com>**20260413135705
+ Ignore-this: 1eb760b35e98ef2709b2af903dabfac47d2f89bcb70c3d161e7bb8a7aa8dacc70394ef4c74b7dd94
+] 
+hash: 0000000466-caa4ade551d8c944994aa836d57fc1df6e5525e2615f05fec0287ff371221e7c
+[Bechmark star is online now (TODO: case description needed)
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413141126
+ Ignore-this: a67c234df6b6754e58e12c8bcee8e0d5dd6d6f8347a345c88958a7ee99db89ee5b245fe048eece1a
+] 
+hash: 0000002474-38a606d813f4ae06e4625a94f7b1cd2d758177015fd43051dc5b3579bd1913d2
+[Update homepage with star.c
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413141322
+ Ignore-this: 139d5eff5ca654ca1d2a2437a39de9e6e46235658a9301c02212cfa71d0c7d9f27e003c2258e6ae6
+] 
+hash: 0000000257-16c46007bd23f872690b97f8127ec1aac83f7f0f69b95b79994a8a50881900ed
+[added comments to code for mesh study
+JulesR <e.relyveld@gmail.com>**20260413142000
+ Ignore-this: af8b4ec3928e80bd66f147b9ca62c763156dede92a3fb953930e3d46f9f9f3f9efe1cbba74bf5297
+] 
+hash: 0000003700-ae756ae6c9f58ca1b78c35f4799f4fb5f9934b7d00ef22d0af9dd98a8f6311b6
+[Modified file
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260413143008
+ Ignore-this: 61312430c9cf04b4e422b3ca563d8c5a49db11c53054dc29113ca187d5c5965c754690ea4dabcf2
+] 
+hash: 0000001677-450eff82daac274ff4c1a961f963baef9729f33c22bf1670d21458517af7d7aa
+[reverting back to old code
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260413143058
+ Ignore-this: 88f17972115ebf84bb9ee4aa7f2f46bce3719ee03af19a60f812e4be24bc8db0a80534683c787741
+] 
+hash: 0000001691-c1f851d94f48d39dc933badb3900c3085b44146085507009a85c585689efb514
+[Code from Dr. Edo for better visualization
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413144650
+ Ignore-this: 931e0c87ee3529be4c782dfbd28bcc623ba8d001203a97401c801731552c203fe424d5fa24f996cd
+] 
+hash: 0000000422-60ee948e186dfd430d37f431ca79167b8740894ee24f6559f3d4837c662e1da2
+[Code from Dr.Edo for better visualization.
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260413145104
+ Ignore-this: 6b610815eaff4bb2f13ef26ae254ceb1d16c3f3e310daaea48f34bf9cb44450379cbbb96fb989192
+] 
+hash: 0000000409-4c2c87d961a92394ce24cdcfddf5883f48c2cebb657fe2c5b7ffc63ca0cc0662
+[Eulerian update 
+j.a.v.hooft@gmail.com**20260413195002
+ Ignore-this: 74547e6dd433574ba0615f28abe9f58c2123629d334481286b2ff9f55fd63162e4a0fd74f03bd98f
+] 
+hash: 0000004539-ad3d92bdd8d8491b2a449ca4e7c354125865378e90bf03b818b75a3f90d7b318
+[bug
+j.a.v.hooft@gmail.com**20260413195419
+ Ignore-this: 3366cf359103becb4ff113be198634cdd924518ed8cf1400ce7ef74cfa113b4f807a33477cdfe1a4
+] 
+hash: 0000000479-543835d7458942ff5ffed8d81217adad489aac687e220599aceb24ee531eac62
+[copy recipe for fpm.tst
+Antoonvh <j.a.v.hooft@gmail.com>**20260413195715
+ Ignore-this: d3af56b4c251c840d3a60fdde6e251c784e96ef5d369c569d8613e6b1383d4b82b065624031f0ae5
+] 
+hash: 0000000292-02bd8adb02e4cc5cd6c53221ef1fd3ac5bdbbd1179680482aaac29527c217ed2

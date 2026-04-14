@@ -6,3 +6,6 @@
 * [Diffusion equation + Self-Similar Solution (ML)](verifDiff-ML.c)
 * [Growth of a reactive wall](adsorption.c)
 * [Buoyant plume](plume_buoyant.c) (artistic)
+
+## PhD:
+* [Buoyant plume axi](buoyant_plume_axi.c)

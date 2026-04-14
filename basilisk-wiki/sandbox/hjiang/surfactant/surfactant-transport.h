@@ -1,16 +1,10 @@
-/**
-# Main macros
-*/
-
 #ifndef SURFACTANT_TRANSPORT_H
 #define SURFACTANT_TRANSPORT_H
 
-/* Suggested by Z.Xue, option II is set as defualt */
 #ifndef OPTION_II
 #  define OPTION_II
 #endif
 
-/* Test, do not change */
 #ifndef BYAOLD
 #  define BYAOLD
 #endif
@@ -19,14 +13,18 @@
 #  define DEBUG 0
 #endif
 
-/* Same value as F_ERR */
 #ifndef S_ERR
 #  define S_ERR 0.
 #endif
 
-/**
-# Computation of the direction-split stretching term.
-*/
+#ifndef JAMES
+#  define JAMES
+#endif
+
+#ifndef MASS_BALANCED
+#  undef MASS_BALANCED
+#endif
+
 double stretching_velocity_split(Point point, double A, coord n, face vector uf, int dim)
 {
   if (A <= 0.) return 0.;
@@ -52,18 +50,17 @@ double stretching_velocity_split(Point point, double A, coord n, face vector uf,
     S_split += (y > 0.) ? 0.5 * (uf.y[] / (fm.y[] + SEPS) + uf.y[0, 1] / (fm.y[0, 1] + SEPS)) / y : dvdy;
 #endif
   }
+
   return A * S_split;
 }
 
 /**
-## Function `facets()` with a less strict criterion
+## Function [facets] with a less strict determination criteria
 
-The original `facets()` function provided by Basilisk uses the criterion
-
-`fabs(n.y) > 1.e-4`
-
-which may cause problems for the species transport method of Xue et al.
-Here, a less strict criterion is used.
+The original function [facets] provided by BASILISK use a criteria
+                      (fabs (n.y) > 1.e-4),
+which will cause problem for species transport method of Xue et al.
+Here we use a less strict determination criteria.
 */
 
 #if dimension <= 2
@@ -73,7 +70,8 @@ int facets_surfactant(coord n, double alpha, coord p[2])
   for (double s = -0.5; s <= 0.5; s += 1.)
     foreach_dimension()
     {
-      if (fabs(n.y) > 1.e-30 && i < 2) {
+      //      if (fabs(n.y) > 1.e-30 && i < 2) {
+      if (fabs(n.y) > 0. && i < 2) {
         double a = (alpha - s * n.x) / n.y;
         if (a >= -0.5 && a <= 0.5) {
           p[i].x = s;
@@ -136,13 +134,6 @@ double plane_area_center_surfactant(coord m, double alpha, coord *p)
   return sqrt(ax * ax + ay * ay);
 }
 #endif
-
-/**
-## Data structure for interfacial fluxes
-
-This structure stores the geometric information and the left/right fluxes
-associated with one interfacial segment during the surfactant transport step.
-*/
 
 typedef struct {
   double x, y;
@@ -262,30 +253,15 @@ void surfactant_clean_SurfTransInfo(Point point, SurfTransInfo *st)
   }
 }
 
-/**
-## Store geometric information for surfactant transport
-
-This function stores the geometric information associated with the old and
-advected interfaces for the surfactant transport step.
-
-For each interfacial cell, it computes and stores:
-
-* the interfacial segment length/area,
-* the interface normal,
-* the interface center,
-* the two segment endpoints,
-* the direction-split stretching contribution.
-
-The information is stored in the `SurfTransInfo` structure `st`.
-*/
-
+// #if 0
 void surfactant_store_info(scalar cold, scalar cstar, face vector uf, int dim, SurfTransInfo *st)
 {
   int localn = 0;
+  foreach (serial)
+    if ((cold[] > S_ERR && cold[] < 1. - S_ERR) || (cstar[] > S_ERR && cstar[] < 1. - S_ERR)) localn++;
+
   foreach () {
     surfactant_clean_SurfTransInfo(point, st);
-
-    if ((cold[] > S_ERR && cold[] < 1. - S_ERR) || (cstar[] > S_ERR && cstar[] < 1. - S_ERR)) localn++;
 
     if (cold[] > S_ERR && cold[] < 1. - S_ERR) {
       coord nold = interface_normal(point, cold), pold;
@@ -334,19 +310,85 @@ void surfactant_store_info(scalar cold, scalar cstar, face vector uf, int dim, S
   boundary((scalar *){
     st->nold.x, st->nold.y, st->nstar.x, st->nstar.y, st->p0.x, st->p0.y, st->p1.x, st->p1.y, st->pctr.x, st->pctr.y});
 }
+// #endif
 
-/**
-## Comparison function for sorting flux items
+#if 0
+void surfactant_store_info(scalar cold, scalar cstar, face vector uf, int dim, SurfTransInfo *st)
+{
+  int localn = 0;
+  foreach () {
+    surfactant_clean_SurfTransInfo(point, st);
 
-This function is used to sort `FluxItem` entries first according to their
-transverse coordinate and then according to their streamwise coordinate.
+    if ((cold[] > S_ERR && cold[] < 1. - S_ERR) || (cstar[] > S_ERR && cstar[] < 1. - S_ERR)) localn++;
 
-A tolerance proportional to the grid size is used when comparing the
-transverse coordinate.
-*/
+    if (cold[] > S_ERR && cold[] < 1. - S_ERR) {
+      coord nold = interface_normal(point, cold);
+      double alpha_old = plane_alpha(cold[], nold);
 
-foreach_dimension() 
-int compare_x(const void *a, const void *b)
+      foreach_dimension() st->nold.x[] = nold.x;
+
+      coord p[2];
+      p[0].x = p[0].y = p[1].x = p[1].y = 0.;
+
+      if (facets_surfactant(nold, alpha_old, p) == 2) {
+        foreach_dimension()
+        {
+          st->p0.x[] = p[0].x;
+          st->p1.x[] = p[1].x;
+        }
+
+        double xm = 0.5 * (p[0].x + p[1].x);
+        double ym = 0.5 * (p[0].y + p[1].y);
+
+        st->pctr.x[] = x + xm * Delta;
+        st->pctr.y[] = y + ym * Delta;
+
+        st->segment[] = sqrt(sq(p[1].x - p[0].x) + sq(p[1].y - p[0].y)) * Delta;
+        st->Aold[] = st->segment[];
+#  if AXI
+        st->Aold[] *= y + ym * Delta;
+#  endif
+      }
+      else {
+        fprintf(
+          stderr, "WARNING old facets = %d at x = %.12e y = %.12e\n", facets_surfactant(nold, alpha_old, p), x, y);
+      }
+
+      st->Sdt[] = stretching_velocity_split(point, st->Aold[], nold, uf, dim) * dt;
+    }
+
+    if (cstar[] > S_ERR && cstar[] < 1. - S_ERR) {
+      coord nstar = interface_normal(point, cstar);
+      double alpha_star = plane_alpha(cstar[], nstar);
+
+      foreach_dimension() st->nstar.x[] = nstar.x;
+
+      coord pstar[2];
+      pstar[0].x = pstar[0].y = pstar[1].x = pstar[1].y = 0.;
+
+      if (facets_surfactant(nstar, alpha_star, pstar) == 2) {
+        st->Astar[] = sqrt(sq(pstar[1].x - pstar[0].x) + sq(pstar[1].y - pstar[0].y)) * Delta;
+#  if AXI
+        double ymstar = 0.5 * (pstar[0].y + pstar[1].y);
+        st->Astar[] *= y + ymstar * Delta;
+#  endif
+      }
+      else {
+        fprintf(stderr, "WARNING new facets = %d at x = %.12e y = %.12e\n", facets_surfactant(nstar, alpha_star, pstar),
+          x, y);
+      }
+    }
+  }
+
+  st->n = localn;
+
+  boundary((scalar *){st->segment, st->Aold, st->Astar, st->Sdt});
+  boundary((scalar *){
+    st->nold.x, st->nold.y, st->nstar.x, st->nstar.y, st->p0.x, st->p0.y, st->p1.x, st->p1.y, st->pctr.x, st->pctr.y});
+}
+#endif
+
+foreach_dimension() int compare_x(const void *a, const void *b)
 {
   const FluxItem *sa = a;
   const FluxItem *fb = b;
@@ -354,25 +396,6 @@ int compare_x(const void *a, const void *b)
   return (sa->x < fb->x) ? -1 : 1;
 }
 
-/**
-## Compute a consistent interfacial area flux
-
-This function computes a consistent flux of interfacial area for the
-direction-split surfactant transport step.
-
-It first stores the geometric information associated with the old interface
-`cold` and the advected interface `cstar`, then builds a list of
-interfacial cells and computes the left/right area fluxes along the current
-sweep direction.
-
-The fluxes are determined so that the variation of interfacial area is
-consistent with the stretching contribution stored in `st->Sdt`.
-
-In MPI mode, the interfacial-cell information is gathered from all
-processes, the fluxes are computed globally, and the resulting values are
-scattered back to the local process. The final fluxes are stored in
-`st->phi`.
-*/
 void compute_area_flux_consistent(scalar cold, scalar cstar, face vector uf, int dim, SurfTransInfo *st)
 {
   boundary((scalar *){cold, cstar, uf});
@@ -535,20 +558,7 @@ void compute_area_flux_consistent(scalar cold, scalar cstar, face vector uf, int
   boundary((scalar *){st->phi});
 }
 
-/**
-## Reconstruct the interfacial surfactant gradient
-
-This function reconstructs the tangential gradient of each surfactant field
-on the interface.
-
-For each interfacial cell, a local weighted least-squares reconstruction is
-performed using neighboring interfacial cells. The full gradient is first
-estimated from the neighboring interface-center values, and its normal
-component is then removed so that only the tangential component is retained.
-
-The reconstructed gradients are stored in `st->sgrads`.
-*/
-//#if 0
+#ifndef JAMES
 void reconstruct_surfactant_gradient(scalar *surfactants, SurfTransInfo *st)
 {
   int ii = 0;
@@ -575,11 +585,11 @@ void reconstruct_surfactant_gradient(scalar *surfactants, SurfTransInfo *st)
           if (st->segment[] > 1.e-6 * L0 / (1 << grid->maxdepth)) {
             double abs_pnbr_x = st->pctr.x[];
             double abs_pnbr_y = st->pctr.y[];
-#if AXI
+#  if AXI
             double w = st->Aold[] / Delta;
-#else
+#  else
             double w = st->segment[] / Delta;
-#endif
+#  endif
             double dx = abs_pnbr_x - abs_pctr_x;
             double dy = abs_pnbr_y - abs_pctr_y;
             double dS = surfactant[] - ctr_val;
@@ -613,29 +623,400 @@ void reconstruct_surfactant_gradient(scalar *surfactants, SurfTransInfo *st)
     boundary((scalar *){sg});
   }
 }
-//#endif
 
-/**
-## Advect surfactant consistently with the interfacial area flux
+#else
 
-This function advects the surfactant fields consistently with the
-direction-split interfacial area flux stored in `st->phi`.
+#  if 0
+void reconstruct_surfactant_gradient(scalar *surfactants, SurfTransInfo *st)
+{
+  int ii = 0;
+  for (scalar surfactant in surfactants) {
+    vector sg = st->sgrads[ii++];
 
-It first reconstructs the tangential surfactant gradients on the interface.
-For each surfactant field, the corresponding surfactant flux is then
-computed on faces from the upwind interfacial segment, taking into account
-the reconstructed tangential distribution along the interface.
+    foreach () {
+      foreach_dimension() sg.x[] = 0.;
 
-Finally, the surfactant concentration is updated in each interfacial cell
-from the old surfactant mass and the net surfactant flux, using the new
-interfacial area.
-*/
+      if (st->segment[] <= 0.) continue;
+
+      coord nctr = {st->nold.x[], st->nold.y[]};
+      coord tctr = {-nctr.y, nctr.x};
+      normalize(&tctr);
+
+      double w1 = -1., w2 = -1.;
+      double x1 = 0., y1 = 0., G1 = 0.;
+      double x2 = 0., y2 = 0., G2 = 0.;
+
+      foreach_neighbor(1)
+      {
+        if (point.i == 0 && point.j == 0) continue;
+
+        if (st->segment[] <= 0.) continue;
+
+#  if AXI
+        double w = st->Aold[];
+#  else
+        double w = st->segment[];
+#  endif
+
+        double xn = st->pctr.x[];
+        double yn = st->pctr.y[];
+        double Gn = surfactant[];
+
+        if (w > w1) {
+          w2 = w1, x2 = x1, y2 = y1, G2 = G1;
+          w1 = w, x1 = xn, y1 = yn, G1 = Gn;
+        }
+        else if (w > w2) {
+          w2 = w, x2 = xn, y2 = yn, G2 = Gn;
+        }
+      }
+
+      if (w1 > 0. && w2 > 0.) {
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double ds = sqrt(sq(dx) + sq(dy));
+
+        if (ds > SEPS) {
+          double tx = dx / ds;
+          double ty = dy / ds;
+
+          if (tx * tctr.x + ty * tctr.y < 0.) {
+            double tmp;
+
+            tmp = x1;
+            x1 = x2;
+            x2 = tmp;
+            tmp = y1;
+            y1 = y2;
+            y2 = tmp;
+            tmp = G1;
+            G1 = G2;
+            G2 = tmp;
+
+            dx = x2 - x1;
+            dy = y2 - y1;
+            tx = dx / ds;
+            ty = dy / ds;
+          }
+
+          double Gs = (G2 - G1) / ds;
+
+          sg.x[] = Gs * tx;
+          sg.y[] = Gs * ty;
+        }
+      }
+    }
+
+    boundary((scalar *){sg});
+  }
+}
+#  endif
+
+//#  if 0
+void reconstruct_surfactant_gradient(scalar *surfactants, SurfTransInfo *st)
+{
+  int ii = 0;
+  for (scalar surfactant in surfactants) {
+    vector sg = st->sgrads[ii++];
+
+    foreach () {
+      foreach_dimension() sg.x[] = 0.;
+
+      if (st->segment[] <= 0.) continue;
+
+      coord nctr = {st->nold.x[], st->nold.y[]};
+      coord tctr = {-nctr.y, nctr.x};
+      normalize(&tctr);
+
+      double w1 = -1., w2 = -1.;
+      double x1 = 0., y1 = 0., G1 = 0.;
+      double x2 = 0., y2 = 0., G2 = 0.;
+      int found = 0;
+
+      if (st->segment[1, 0] > 0.) {
+#    if AXI
+        double w = st->Aold[1, 0];
+#    else
+        double w = st->segment[1, 0];
+#    endif
+        w1 = w;
+        x1 = st->pctr.x[1, 0];
+        y1 = st->pctr.y[1, 0];
+        G1 = surfactant[1, 0];
+        found = 1;
+      }
+
+      if (st->segment[-1, 0] > 0.) {
+#    if AXI
+        double w = st->Aold[-1, 0];
+#    else
+        double w = st->segment[-1, 0];
+#    endif
+        double xn = st->pctr.x[-1, 0], yn = st->pctr.y[-1, 0], Gn = surfactant[-1, 0];
+        if (w > w1) {
+          w2 = w1;
+          x2 = x1;
+          y2 = y1;
+          G2 = G1;
+          w1 = w;
+          x1 = xn;
+          y1 = yn;
+          G1 = Gn;
+        }
+        else if (w > w2) {
+          w2 = w;
+          x2 = xn;
+          y2 = yn;
+          G2 = Gn;
+        }
+        found = (w2 > 0.) ? 2 : 1;
+      }
+
+      if (st->segment[0, 1] > 0.) {
+#    if AXI
+        double w = st->Aold[0, 1];
+#    else
+        double w = st->segment[0, 1];
+#    endif
+        double xn = st->pctr.x[0, 1], yn = st->pctr.y[0, 1], Gn = surfactant[0, 1];
+        if (found == 0) {
+          w1 = w;
+          x1 = xn;
+          y1 = yn;
+          G1 = Gn;
+          found = 1;
+        }
+        else if (!(fabs(xn - x1) <= SEPS && fabs(yn - y1) <= SEPS)) {
+          if (w > w1) {
+            w2 = w1;
+            x2 = x1;
+            y2 = y1;
+            G2 = G1;
+            w1 = w;
+            x1 = xn;
+            y1 = yn;
+            G1 = Gn;
+          }
+          else if (w > w2) {
+            w2 = w;
+            x2 = xn;
+            y2 = yn;
+            G2 = Gn;
+          }
+          found = (w2 > 0.) ? 2 : 1;
+        }
+      }
+
+      if (st->segment[0, -1] > 0.) {
+#    if AXI
+        double w = st->Aold[0, -1];
+#    else
+        double w = st->segment[0, -1];
+#    endif
+        double xn = st->pctr.x[0, -1], yn = st->pctr.y[0, -1], Gn = surfactant[0, -1];
+        bool dup1 = (found >= 1 && fabs(xn - x1) <= SEPS && fabs(yn - y1) <= SEPS);
+        bool dup2 = (found >= 2 && fabs(xn - x2) <= SEPS && fabs(yn - y2) <= SEPS);
+        if (!dup1 && !dup2) {
+          if (found == 0) {
+            w1 = w;
+            x1 = xn;
+            y1 = yn;
+            G1 = Gn;
+            found = 1;
+          }
+          else if (w > w1) {
+            w2 = w1;
+            x2 = x1;
+            y2 = y1;
+            G2 = G1;
+            w1 = w;
+            x1 = xn;
+            y1 = yn;
+            G1 = Gn;
+          }
+          else if (w > w2) {
+            w2 = w;
+            x2 = xn;
+            y2 = yn;
+            G2 = Gn;
+          }
+          found = (w2 > 0.) ? 2 : found;
+        }
+      }
+
+      if (found < 2 && st->segment[1, 1] > 0.) {
+#    if AXI
+        double w = st->Aold[1, 1];
+#    else
+        double w = st->segment[1, 1];
+#    endif
+        double xn = st->pctr.x[1, 1], yn = st->pctr.y[1, 1], Gn = surfactant[1, 1];
+        bool dup1 = (found >= 1 && fabs(xn - x1) <= SEPS && fabs(yn - y1) <= SEPS);
+        bool dup2 = (found >= 2 && fabs(xn - x2) <= SEPS && fabs(yn - y2) <= SEPS);
+        if (!dup1 && !dup2) {
+          if (found == 0) {
+            w1 = w;
+            x1 = xn;
+            y1 = yn;
+            G1 = Gn;
+            found = 1;
+          }
+          else if (w > w1) {
+            w2 = w1;
+            x2 = x1;
+            y2 = y1;
+            G2 = G1;
+            w1 = w;
+            x1 = xn;
+            y1 = yn;
+            G1 = Gn;
+          }
+          else if (w > w2) {
+            w2 = w;
+            x2 = xn;
+            y2 = yn;
+            G2 = Gn;
+          }
+          found = (w2 > 0.) ? 2 : found;
+        }
+      }
+
+      if (found < 2 && st->segment[1, -1] > 0.) {
+#    if AXI
+        double w = st->Aold[1, -1];
+#    else
+        double w = st->segment[1, -1];
+#    endif
+        double xn = st->pctr.x[1, -1], yn = st->pctr.y[1, -1], Gn = surfactant[1, -1];
+        bool dup1 = (found >= 1 && fabs(xn - x1) <= SEPS && fabs(yn - y1) <= SEPS);
+        bool dup2 = (found >= 2 && fabs(xn - x2) <= SEPS && fabs(yn - y2) <= SEPS);
+        if (!dup1 && !dup2) {
+          if (w > w1) {
+            w2 = w1;
+            x2 = x1;
+            y2 = y1;
+            G2 = G1;
+            w1 = w;
+            x1 = xn;
+            y1 = yn;
+            G1 = Gn;
+          }
+          else if (w > w2) {
+            w2 = w;
+            x2 = xn;
+            y2 = yn;
+            G2 = Gn;
+          }
+          found = (w2 > 0.) ? 2 : found;
+        }
+      }
+
+      if (found < 2 && st->segment[-1, 1] > 0.) {
+#    if AXI
+        double w = st->Aold[-1, 1];
+#    else
+        double w = st->segment[-1, 1];
+#    endif
+        double xn = st->pctr.x[-1, 1], yn = st->pctr.y[-1, 1], Gn = surfactant[-1, 1];
+        bool dup1 = (found >= 1 && fabs(xn - x1) <= SEPS && fabs(yn - y1) <= SEPS);
+        bool dup2 = (found >= 2 && fabs(xn - x2) <= SEPS && fabs(yn - y2) <= SEPS);
+        if (!dup1 && !dup2) {
+          if (w > w1) {
+            w2 = w1;
+            x2 = x1;
+            y2 = y1;
+            G2 = G1;
+            w1 = w;
+            x1 = xn;
+            y1 = yn;
+            G1 = Gn;
+          }
+          else if (w > w2) {
+            w2 = w;
+            x2 = xn;
+            y2 = yn;
+            G2 = Gn;
+          }
+          found = (w2 > 0.) ? 2 : found;
+        }
+      }
+
+      if (found < 2 && st->segment[-1, -1] > 0.) {
+#    if AXI
+        double w = st->Aold[-1, -1];
+#    else
+        double w = st->segment[-1, -1];
+#    endif
+        double xn = st->pctr.x[-1, -1], yn = st->pctr.y[-1, -1], Gn = surfactant[-1, -1];
+        bool dup1 = (found >= 1 && fabs(xn - x1) <= SEPS && fabs(yn - y1) <= SEPS);
+        bool dup2 = (found >= 2 && fabs(xn - x2) <= SEPS && fabs(yn - y2) <= SEPS);
+        if (!dup1 && !dup2) {
+          if (w > w1) {
+            w2 = w1;
+            x2 = x1;
+            y2 = y1;
+            G2 = G1;
+            w1 = w;
+            x1 = xn;
+            y1 = yn;
+            G1 = Gn;
+          }
+          else if (w > w2) {
+            w2 = w;
+            x2 = xn;
+            y2 = yn;
+            G2 = Gn;
+          }
+          found = (w2 > 0.) ? 2 : found;
+        }
+      }
+
+      if (w1 > 0. && w2 > 0.) {
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        double ds = sqrt(sq(dx) + sq(dy));
+
+        if (ds > SEPS) {
+          double tx = dx / ds;
+          double ty = dy / ds;
+
+          if (tx * tctr.x + ty * tctr.y < 0.) {
+            double tmp;
+            tmp = x1;
+            x1 = x2;
+            x2 = tmp;
+            tmp = y1;
+            y1 = y2;
+            y2 = tmp;
+            tmp = G1;
+            G1 = G2;
+            G2 = tmp;
+
+            dx = x2 - x1;
+            dy = y2 - y1;
+            tx = dx / ds;
+            ty = dy / ds;
+          }
+
+          double Gs = (G2 - G1) / ds;
+          sg.x[] = Gs * tx;
+          sg.y[] = Gs * ty;
+        }
+      }
+    }
+
+    boundary((scalar *){sg});
+  }
+}
+//#  endif
+#endif
+
 void advect_surfactant_consistent(scalar *surfactants, face vector uf, int dim, SurfTransInfo *st)
 {
   // return unnormalized face nmoral n1, surface area segment, surfactant gradient sgrad
   reconstruct_surfactant_gradient(surfactants, st);
 
-  // double lengthMin = 1.e-25 * L0 / (1 << grid->maxdepth);
+  // double lengthMin = 1.e-10 * L0 / (1 << grid->maxdepth);
   double lengthMin = 0.;
 
   int ii = 0;
@@ -743,6 +1124,7 @@ void advect_surfactant_consistent(scalar *surfactants, face vector uf, int dim, 
             psi_val = fabs(P_end - P_start);
 #endif
             psi.x[] = (st->phi.x[] > 0.) ? psi_val : -psi_val;
+            psi.x[] *= surfactant[up] > 0. ? 1. : 0.;
           }
         }
       }
@@ -785,6 +1167,7 @@ void advect_surfactant_consistent(scalar *surfactants, face vector uf, int dim, 
             area_tot = st->segment[0, up];
 #endif
             double G_s = sg.x[0, up] * t_v.x + sg.y[0, up] * t_v.y;
+            // double G_s = 0.;
 #if AXI
             double S_scal = st->segment[0, up] / fabs(dr);
             double geom = (2.0 / 3.0) * (sq(r1) + r1 * r0 + sq(r0)) / (r1 + r0);
@@ -846,11 +1229,18 @@ void advect_surfactant_consistent(scalar *surfactants, face vector uf, int dim, 
             psi_val = fabs(P_end - P_start);
 #endif
             psi.y[] = (st->phi.y[] > 0.) ? psi_val : -psi_val;
+            psi.y[] *= surfactant[0, up] > 0. ? 1. : 0.;
           }
         }
       }
     }
     boundary((scalar *){psi});
+
+#ifdef MASS_BALANCED
+    double mold = 0., mstar = 0.;
+    foreach (reduction(+ : mold))
+      if (st->segment[] > 0.) mold += surfactant[] * st->Aold[];
+#endif
 
     foreach () {
       if (st->Astar[] > lengthMin) {
@@ -863,7 +1253,8 @@ void advect_surfactant_consistent(scalar *surfactants, face vector uf, int dim, 
         double Astar = 0.;
 
 #ifdef OPTION_II
-        double area_net = dim == 0 ? st->phi.x[] - st->phi.x[1] : st->phi.y[] - st->phi.y[0, 1];
+        double area_net = dim == 0 ? st->phi.x[] * (fabs(psi.x[]) > 0.) - st->phi.x[1] * (fabs(psi.x[1]) > 0.)
+                                   : st->phi.y[] * (fabs(psi.y[]) > 0.) - st->phi.y[0, 1] * (fabs(psi.y[0, 1]) > 0.);
         Astar = st->Aold[] + area_net + st->Sdt[];
 #else
         Astar = st->Astar[];
@@ -873,22 +1264,18 @@ void advect_surfactant_consistent(scalar *surfactants, face vector uf, int dim, 
       else
         surfactant[] = 0.;
     }
+
+#ifdef MASS_BALANCED
+    foreach (reduction(+ : mstar)) {
+      if (st->Astar[] > lengthMin) {
+        mstar += surfactant[] * st->Astar[];
+      }
+    }
+
+    foreach ()
+      surfactant[] *= mold / mstar;
+#endif
     boundary({surfactant});
   }
 }
 #endif
-
-/**
-## References
-~~~bib
-@misc{xue2025,
-  title={A sharp and conservative method for modeling interfacial flows with insoluble surfactants in the framework of a geometric volume-of-fluid approach},
-  author={Zhong-Han Xue and Jacques Magnaudet and Jie Zhang},
-  year={2025},
-  eprint={2507.09680},
-  archivePrefix={arXiv},
-  primaryClass={physics.flu-dyn},
-  url={https://arxiv.org/abs/2507.09680}
-}
-~~~
-*/

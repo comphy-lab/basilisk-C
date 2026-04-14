@@ -10,7 +10,7 @@ The imposed velocity field corresponds to a purely expansive flow,
 
 $\mathbf{u} = K(x-x_c,\, y-y_c)$,
 
-so that the drop expands self-similarly in time. In this case, the
+so that the drop expands in time. In this case, the
 interfacial area increases continuously, and the surfactant concentration
 decreases accordingly. The exact solution is
 
@@ -27,9 +27,19 @@ concentration against the exact solution at different grid resolutions.
 #define F_ERR 1.e-6
 #define S_ERR 1.e-6
 
+/**
+
+Please feel free to comment this line out the for AXI and 2D cases.
+*/
 #include "axi.h"
 #include "navier-stokes/centered.h"
 #include "surfactant/vof-surfactant.h"
+
+/**
+
+Although surface tension is not considered in this case,
+we still include tension.h for constraining time step.
+*/
 #include "tension.h"
 #include "surfactant/adapt_wavelet_leave_interface.h"
 #include "view.h"
@@ -37,9 +47,8 @@ concentration against the exact solution at different grid resolutions.
 /**
 ### Boundary Conditions
 
-Open (outflow) boundary conditions are imposed on every boundary, since the
-droplet is initialized in the center of the domain. The same boundary conditions
-are copied in other velocity and pressure fields used by the phase change model.
+Open (outflow) boundary conditions are imposed on top and right boundary, since the
+droplet is initialized in the bottom left of the domain.
 */
 
 double density = 1.0;
@@ -86,17 +95,13 @@ event init(t = 0)
     surfactant[] = (c[] > F_ERR && c[] < 1. - F_ERR) ? density : 0.0;
   }
   boundary({surfactant});
-  // foreach () {
-  //   A[] = (c[] > F_ERR && c[] < 1. - F_ERR) ? density : 0.0;
-  // }
-  //boundary({A});
 }
 
 /**
 ## Prescribed expansive velocity field
 
 A linear expansive velocity field is imposed so that the interface expands
-self-similarly in time. 
+self-similarly in time.
 */
 
 double K = 1.;
@@ -119,7 +124,6 @@ event stability(i++)
 
 #if TREE
 event adapt(i++) { adapt_wavelet_leave_interface({surfactant}, {c}, (double[]){1.e-3}, maxlevel, minlevel = 2, 1); }
-// event adapt(i++) { adapt_wavelet_leave_interface({A}, {c}, (double[]){1.e-3}, maxlevel, minlevel = 2, 1); }
 //
 #endif
 
@@ -135,7 +139,6 @@ double exact(double time) { return exp(-time); }
 #endif
 
 event output(t += 0.1)
-// event output(i++)
 {
   char name[80];
   sprintf(name, "OutputData-%d", maxlevel);
@@ -164,98 +167,118 @@ event output(t += 0.1)
 
   double surfactantAvg = surfactantsum / Atot;
   double L1 = fabs(surfactantAvg - exact(t)) / exact(t);
-  double L8 = max(fabs(surfactantMax - exact(t)) / exact(t), fabs(surfactantMin - exact(t)) / exact(t));
+  double Linf = max(fabs(surfactantMax - exact(t)) / exact(t), fabs(surfactantMin - exact(t)) / exact(t));
 
   static FILE *fp = fopen(name, "w");
   fprintf(fp, "%.12f %.12f %.12f %.12f %.12f %.12f %.12f\n", t, exact(t), surfactantAvg, L1, surfactantMax,
-    surfactantMin, L8);
+    surfactantMin, Linf);
   fflush(fp);
 }
 
-// #if 0
 event movie(t += 0.01)
 {
-  clear();
-  draw_vof("c", lw = 1.5);
-  squares("surfactant", min = 0., max = statsf(surfactant).max, linear = false, cbar = true, pos = {-0.75, -0.75},
-    lc = {1.0, 1.0, 1.0});
-  box();
-  save("surfactant.mp4");
+  if (maxlevel == 7) {
+    clear();
+    view(tx = -0.5, ty = -0.5);
+    squares("(c[] > 1e-10 && c[] < 1.-1e-10) ? surfactant : nodata",
+        min = 0., max = density);
+    draw_vof("c", lw = 1.5, lc = {255, 255, 255});
+    box();
+    save("surfactant.mp4");
+  }
 }
-// #endif
 
 event end(t = 0.7);
 
-/** 
+/**
+## Results
+*/
 
-~~~gnuplot
+/**
+![Movie](quarterbubble/surfactant.mp4)
 
+~~~gnuplot Average vs Analytic
+reset
+
+set xlabel "Time [s]" font ",28" offset 0,-2
+set ylabel "Surfactant concentration" font ",28" offset -3,0
+
+set xtics font ",22"
+set ytics font ",22"
+set key font ",16"
+
+#set border linewidth 2
+#set tics linewidth 2
+#set grid linewidth 1.5
+
+set size ratio 0.75
+set tmargin 3
+set bmargin 7
+set lmargin 5
+set rmargin 3
+
+plot "OutputData-7" u 1:2 w l lw 3 title "Analytic", \
+     "OutputData-5" u 1:3 w p ps 1 title "LEVEL 5", \
+     "OutputData-6" u 1:3 w p ps 1 title "LEVEL 6", \
+     "OutputData-7" u 1:3 w p ps 1 title "LEVEL 7"
+
+~~~
+
+~~~gnuplot Relative Errors
 reset
 
 stats "OutputData-5" using 4 nooutput name "L1_LEVEL5"
 stats "OutputData-6" using 4 nooutput name "L1_LEVEL6"
 stats "OutputData-7" using 4 nooutput name "L1_LEVEL7"
-##stats "OutputData-8" using 4 nooutput name "L1_LEVEL8"
-##stats "OutputData-9" using 4 nooutput name "L1_LEVEL9"
-##stats "OutputData-10" using 4 nooutput name "L1_LEVEL10"
 
-stats "OutputData-5" using 7 nooutput name "L8_LEVEL5"
-stats "OutputData-6" using 7 nooutput name "L8_LEVEL6"
-stats "OutputData-7" using 7 nooutput name "L8_LEVEL7"
-##stats "OutputData-8" using 7 nooutput name "L8_LEVEL8"
-##stats "OutputData-9" using 7 nooutput name "L8_LEVEL9"
-##stats "OutputData-10" using 7 nooutput name "L8_LEVEL10"
+stats "OutputData-5" using 7 nooutput name "Linf_LEVEL5"
+stats "OutputData-6" using 7 nooutput name "Linf_LEVEL6"
+stats "OutputData-7" using 7 nooutput name "Linf_LEVEL7"
 
-set print "Errors_L1_L8.csv"
-
-print sprintf ("%d %.12f %.12f", 2**5, L1_LEVEL5_mean, L8_LEVEL5_mean)
-print sprintf ("%d %.12f %.12f", 2**6, L1_LEVEL6_mean, L8_LEVEL6_mean)
-print sprintf ("%d %.12f %.12f", 2**7, L1_LEVEL7_mean, L8_LEVEL7_mean)
-##print sprintf ("%d %.12f %.12f", 2**8, L1_LEVEL8_mean, L8_LEVEL8_mean)
-##print sprintf ("%d %.12f %.12f", 2**9, L1_LEVEL9_mean, L8_LEVEL9_mean)
-##print sprintf ("%d %.12f %.12f", 2**10, L1_LEVEL10_mean, L8_LEVEL10_mean)
-
+set print "Errors_L1_Linf.csv"
+print sprintf("%d %.12f %.12f", 2**5, L1_LEVEL5_mean, Linf_LEVEL5_mean)
+print sprintf("%d %.12f %.12f", 2**6, L1_LEVEL6_mean, Linf_LEVEL6_mean)
+print sprintf("%d %.12f %.12f", 2**7, L1_LEVEL7_mean, Linf_LEVEL7_mean)
 unset print
 
 reset
-set xlabel "N" font ", 28" offset 0,-2
-set ylabel "Error" font ", 28" offset -5,0
+set xlabel "N" font ",28" offset 0,-2
+set ylabel "Error" font ",28" offset -5,0
 
 set xtics font ",22"
 set ytics font ",22"
-set key font ",22"
+set key font ",16"
 
-set border lw 2
-set tics lw 2
-set grid lw 1.5
+#set border linewidth 2
+#set tics linewidth 2
+#set grid linewidth 1.5
 
 set logscale x 2
 set logscale y
 set format y "10^{%L}"
-#set xtics ("2^{4}" 2**4, "2^{5}" 2**5, "2^{6}" 2**6, "2^{7}" 2**7, "2^{8}" 2**8)
 
-set xr[2**4:2**8]
-set yr[10**-6:10**-2]
+set xr [2**4:2**8]
+set yr [10**-6:10**-2]
 set size ratio 0.75
-set grid
 
 set tmargin 3
 set bmargin 8
 set lmargin 8
 set rmargin 3
 
-f(x) = a*x**-b
-fit f(x) "Errors_L1_L8.csv" u 1:2 via a,b
+f(x) = a*x**(-b)
+fit f(x) "Errors_L1_Linf.csv" u 1:2 via a,b
 
-f1(x) = a1*x**-b1
-fit f1(x) "Errors_L1_L8.csv" u 1:3 via a1,b1
+f1(x) = a1*x**(-b1)
+fit f1(x) "Errors_L1_Linf.csv" u 1:3 via a1,b1
 
-ftitle(a,b) = sprintf("%.3f*x^{%4.2f}", a, -b)
+ftitle(a,b) = sprintf("%.3f*x^{-%4.2f}", a, b)
 
-plot "Errors_L1_L8.csv" u 1:2 w p ps 3 title "L^1", \
-     "Errors_L1_L8.csv" u 1:3 w p ps 3 title "L^{inf}", \
-     f(x) w l lw 3 title ftitle(a, b), \
-     f1(x) w l lw 3 title ftitle(a1, b1)
+plot "Errors_L1_Linf.csv" u 1:2 w p ps 1 title "L^1", \
+     "Errors_L1_Linf.csv" u 1:3 w p ps 1 title "L^{inf}", \
+     f(x) w l lw 3 title ftitle(a,b), \
+     f1(x) w l lw 3 title ftitle(a1,b1)
 
 ~~~
+
 */

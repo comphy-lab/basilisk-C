@@ -11,7 +11,7 @@ More content is coming soon.
 # Benchmarks
 
 * [A surfactant-laden expanding quarter circle](quarterbubble.c)
-* [A surfactant-laden expanding quarter droplet](quarterdrop.c)
+* [A surfactant-laden expanding star](star.c)
 
 # Header files
 
@@ -21,4 +21,4 @@ More content is coming soon.
 
 # Contact
 
-* Email: hjiang@g.ecc.u-tokyo.ac.jp
+* Email: hjiang@mesl.t.u-tokyo.ac.jp
