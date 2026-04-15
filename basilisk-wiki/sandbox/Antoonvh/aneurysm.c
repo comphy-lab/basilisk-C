@@ -30,8 +30,7 @@ The statistics also include initially seeded particles. These are not flushed.
 #include "view.h"
 #include "scatter2.h"
 #include "tracer.h"
-#include "fpm.h"
-double D = 0.1;
+#include "fpm_ref.h"
 scalar age[], * tracers = {age};
 face vector muc[];
 Particles Lag;
@@ -55,10 +54,11 @@ u.t[embed] = dirichlet(0.);
 
 int maxlevel = 8;
 int ref_level = 5;
+double D = 0.1; //to  be redetermined
+
 int main() {
-  
   L0 = 5;
-  D = L0/(1<<ref_level);
+  D = L0/(1 << ref_level);
   X0 = Y0  = -L0/2;
   mu = muc;
   N = 1 << maxlevel;
@@ -72,14 +72,14 @@ event properties (i++) {
 }
 
 event init (t = 0) {
-    vertex scalar phi[];
+  vertex scalar phi[];
     foreach_vertex()
       phi[] = exp(-sq(x)) + 1 - fabs(y);
     fractions(phi, cs, fs);
     multigrid_restriction ({cs, fs});
     Lag = new_tracer_particles(0);
     foreach_level(ref_level) {
-      if (cs[] > 0.51) {
+      if (cs[] > 0.51) { // center is fluid
 	particle p;
 	p.x = x;
 	p.y = y;
@@ -89,35 +89,44 @@ event init (t = 0) {
       }
     }
 }
-
+/**
+## Particle inlet
+   
+To prevent biasses in our Lagrangian analysis we attempt a
+"randomized" particle seeding at the inlet, that respects a minimum
+distance between particles.
+ */
 event injections (t += 0.01) {
+  // Randomly check a few locations at the inlet
   double yp = -1 +  + (1 + noise())*D;
   while (yp < 1) {
-    scalar ref[];
-    foreach_cell_all()
-      ref[] = 0;
-    //multigrid_restriction({ref});
     particle p;
-    p.x = X0 + 0.1;
+    p.x = X0 + 1e-2;
     p.y = yp;
-    yp += (1 + noise())*D;
     p.tag = (long int)100*t;
-    set_a_particle_attributes (&p);
     int index[2];
     double dist[2];
-    assign_particles (Lag, ref);
+    scalar ref[];
+    ref.prolongation = ref_prolongation;
+    ref.restriction = ref_restriction; 
+    foreach_cell_all()
+      ref[] = field_v(NULL);
+     assign_particles (Lag, ref);
+    boundary({ref});
     
     ref_outdated = false;
-    find_nearest_particles ({p.x, p.y, 0}, 1, Lag, index, dist = dist, reference = ref, level = 3);
-    
+    find_nearest_particles ({p.x, p.y, 0}, 1, Lag, index, dist = dist,
+			    reference = ref, level = 3);
+    free_scalar_data(ref);
+   
+    // Check nearest particle distance.
     if (dist[0] > sq(D)) {
-    
+      set_a_particle_attributes (&p);
       add_particle (p, Lag);
-      	
     }
+    yp += (1 + noise())*D;
   }
   particle_boundary(Lag);
-  
 }
 
 #define OUTFLOW_COND (x > X0 + 99*L0/100.)
@@ -132,7 +141,6 @@ event particle_outflow (i++) {
     }
   }
   remove_particles (Lag, OUTFLOW_COND);
-  
 }
 
 event log_data (t += 0.1) {
@@ -142,7 +150,6 @@ event log_data (t += 0.1) {
     nt++;
     tt += t - (double)p().tag/100.;
   }
-  
   if (na)
     printf ("%g %d %g %d %g\n", t, na, ta/na, nt, tt/nt);
 }

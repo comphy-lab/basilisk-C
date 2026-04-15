@@ -1,34 +1,29 @@
 /**
+# Vertical diffusion
 
-This code is for variable viscosity for multiphase multilayer. Below is the same code and comments as [/sandbox/fanshuo/TEST/diffusionMT.h](/sandbox/fanshuo/TEST/diffusionMT.h), with some minor changes.
+This is similar to [https://basilisk.fr/src/layered/diffusion.h](), but
+adapted to a two-phase layered model. The layerwise kinematic viscosity
+$D \equiv \nu_l$ is allowed to vary with the layer, and the implicit solve
+is written for the layer momentum $\rho_l h_l s_l$.
 
-The changes were:
+The interface stress uses the dynamic viscosity
+$$
+\mu_l = \rho_l \nu_l
+$$
+with the code using the neighbouring-layer combination
+$(\mu_l + \mu_{l+1})$ or $(\mu_l + \mu_{l-1})$ in the tridiagonal
+coefficients.
 
-1. removed [mui.h]
-
-2. define nueq from 0 to nl-1 instead of from 1 to nl-1
-
-3. add the setting of values for nueq
-
-# Vertical diffusion (modified version taking into account variable viscosity $\mu(I)$ i.e non newtonian diffusion)
- This is similar to [https://basilisk.fr/src/layered/diffusion.h](), but the
- definition of viscosity initially constant $D$ is changed in $(D_{l}+D_{l+1})/2$ or
- in $(D_{l}+D_{l-1})/2$ thereafter.
-  
- These values are  function
- of shear
- $$D \rightarrow\nu_{eq}(\frac{\partial u}{\partial z},\nu)$$ the later `nu_eq(shear,nu)` is defined in [mui.h].
-
-
-We consider the vertical diffusion of a tracer $s$ with a diffusion
-coefficient $D$ for the multilayer solver. Here, the coefficient $D$
-is not necessarily constant and varies according to the layers.
+We consider the vertical diffusion of a tracer/velocity $s$ for the
+multilayer solver. The kinematic viscosity $D$ is prescribed per layer,
+while the implicit operator uses the corresponding dynamic viscosity
+$\mu_l = \rho_l D_l$.
 
 For stability, we discretise the vertical diffusion equation implicitly as
 $$
-\frac{(hs_l)^{n + 1} - (hs_l)^{\star}}{\Delta t} =
-\left( D_{l + 1 / 2} \frac{s_{l + 1} - s_l}{h_{l + 1 / 2}} -
-D_{l - 1 / 2}\frac{s_l - s_{l - 1}}{h_{l - 1 / 2}} \right)^{n + 1}
+\frac{(\rho_l h_l s_l)^{n + 1} - (\rho_l h_l s_l)^{\star}}{\Delta t} =
+\left( \mu_{l + 1 / 2} \frac{s_{l + 1} - s_l}{h_{l + 1 / 2}} -
+\mu_{l - 1 / 2}\frac{s_l - s_{l - 1}}{h_{l - 1 / 2}} \right)^{n + 1}
 $$
 which can be expressed as the linear system
 $$
@@ -53,45 +48,47 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
 {
   double a[nl], b[nl], c[nl], rhs[nl];
   double nueq[nl];
+  double mueq[nl];
 
   /**
-  The *rhs* of the tridiagonal system is $h_l s_l$. */
+  The *rhs* of the tridiagonal system is $\rho_l h_l s_l$. */
       
   foreach_layer()
-    rhs[point.l] = s[]*h[];
+    rhs[point.l] = rho(point.l)*s[]*h[];
 
   //fprintf (stdout, "diffusion check %g %g %g %g %g %g %g\n", t, x, y, dt, h[], s[], rhs[point.l] );
 
-/** Regularisation for the nueq */
+/** Layerwise kinematic viscosity and the corresponding
+dynamic viscosity $\mu_l = \rho_l \nu_l$. */
   for (int l = 0; l < nl; l++) nueq[l] = D;
-  
   //#if TWOPHASE
   foreach_layer(){
     if(point.l<NL) 
        nueq[point.l] = D;
     else
-       nueq[point.l] = D*0.1;
+       nueq[point.l] = D*0.0;
+    mueq[point.l] = rho(point.l)*nueq[point.l];
   }
 
 
   /**
   The lower, principal and upper diagonals $a$, $b$ and $c$ are given by
   $$
-  a_{l > 0} = - \left( \frac{D_{l - 1 / 2} \Delta t}{h_{l - 1 / 2}} \right)^{n + 1}
+  a_{l > 0} = - \left( \frac{\mu_{l - 1 / 2} \Delta t}{h_{l - 1 / 2}} \right)^{n + 1}
   $$
   $$
-  c_{l < \mathrm{nl} - 1} = - \left( \frac{D_{l + 1 / 2} \Delta t}{h_{l + 1 / 2}}
+  c_{l < \mathrm{nl} - 1} = - \left( \frac{\mu_{l + 1 / 2} \Delta t}{h_{l + 1 / 2}}
   \right)^{n + 1}
   $$
   $$
-  b_{0 < l < \mathrm{nl} - 1} = h_l^{n + 1} - a_l - c_l
+  b_{0 < l < \mathrm{nl} - 1} = \rho_l h_l^{n + 1} - a_l - c_l
   $$
   */
 
   for (int l = 1; l < nl - 1; l++) {
-    a[l] = - (nueq[l]+nueq[l-1])*dt/(h[0,0,l-1] + h[0,0,l]);
-    c[l] = - (nueq[l]+nueq[l+1])*dt/(h[0,0,l] + h[0,0,l+1]);
-    b[l] = h[0,0,l] - a[l] - c[l];
+    a[l] = - (mueq[l] + mueq[l-1])*dt/(h[0,0,l-1] + h[0,0,l]);
+    c[l] = - (mueq[l] + mueq[l+1])*dt/(h[0,0,l] + h[0,0,l+1]);
+    b[l] = rho(l)*h[0,0,l] - a[l] - c[l];
     //fprintf (stdout, "diffusion check1 %g %g %g %d %g %g %g\n", t, x, y, l, a[l], b[l], c[l] );
   }
     
@@ -108,24 +105,24 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
   $$
   $$
   \mathrm{rhs}_{\mathrm{nl} - 1} = 
-  (hs)_{\mathrm{nl} - 1}^{\star} + D \Delta t \dot{s}_t
+  (\rho hs)_{\mathrm{nl} - 1}^{\star} + \mu \Delta t \dot{s}_t
   $$
   */
 
-  a[nl-1] = - (nueq[nl-1]+nueq[nl-2])*dt/(h[0,0,nl-2] + h[0,0,nl-1]);
-  b[nl-1] = h[0,0,nl-1] - a[nl-1];
-  rhs[nl-1] += nueq[nl-1]*dt*dst;
+  a[nl-1] = - (mueq[nl-1] + mueq[nl-2])*dt/(h[0,0,nl-2] + h[0,0,nl-1]);
+  b[nl-1] = rho(nl - 1)*h[0,0,nl-1] - a[nl-1];
+  rhs[nl-1] += mueq[nl-1]*dt*dst;
 
   /**
   For the bottom layer a third-order discretisation of the Navier slip
   condition gives
   $$
   \begin{aligned}
-  b_0 & = h_0 + 2 \Delta t D \left( \frac{1}{h_0 + h_1} + \frac{h^2_1 + 3
+  b_0 & = \rho_0 h_0 + 2 \Delta t \mu_0 \left( \frac{1}{h_0 + h_1} + \frac{h^2_1 + 3
   h_0 h_1 + 3 h^2_0}{\det} \right),\\
-  c_0 & = - 2 \Delta t D \left( \frac{1}{h_0 + h_1} + \frac{h^2_0}{\det}
+  c_0 & = - 2 \Delta t \mu_0 \left( \frac{1}{h_0 + h_1} + \frac{h^2_0}{\det}
   \right),\\
-  \text{rhs}_0 & = (hs_0)^{\star} + 2 \Delta t D s_b  \frac{h^2_1 + 3 h_0
+  \text{rhs}_0 & = (\rho hs_0)^{\star} + 2 \Delta t \mu_0 s_b  \frac{h^2_1 + 3 h_0
   h_1 + 2 h^2_0}{\det},\\
   \det & = h_0 (h_0 + h_1)^2  + 2\lambda (3\,h_0 h_1 + 2\,h_0^2 + h_1^2),
   \end{aligned}
@@ -134,15 +131,15 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
 
   double den = h[]*sq(h[] + h[0,0,1]) 
     + 2.*lambda_b*(3.*h[]*h[0,0,1] + 2.*sq(h[]) + sq(h[0,0,1]));
-  b[0] = h[] + 2.*dt*nueq[0]*(1./(h[] + h[0,0,1]) +
+  b[0] = rho(0)*h[] + 2.*dt*mueq[0]*(1./(h[] + h[0,0,1]) +
 			  (sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 3.*sq(h[]))/den);
-  c[0] = - 2.*dt*nueq[0]*(1./(h[] + h[0,0,1]) + sq(h[])/den);
+  c[0] = - 2.*dt*mueq[0]*(1./(h[] + h[0,0,1]) + sq(h[])/den);
 
-  rhs[0] += 2.*dt*nueq[0]*s_b*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 2.*sq(h[0]))/den;
+  rhs[0] += 2.*dt*mueq[0]*s_b*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 2.*sq(h[0]))/den;
 
   if (nl == 1) {
     b[0] += c[0];
-    rhs[0] +=  (- c[0]*h[] - nueq[0]*dt) * dst;
+    rhs[0] +=  (- c[0]*h[] - mueq[0]*dt) * dst;
   }
   //fprintf (stdout, "diffusion checkinit %g %g %g %g %g %g %g %g %g %g %g\n", t, x, y, dt, s[], a[nl-1], b[nl-1], rhs[nl-1], c[0], b[0], rhs[0] );
 

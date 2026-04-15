@@ -154,6 +154,19 @@ url={https://doi.org/10.1017/jfm.2026.11232}
 ### 2025
 
 ~~~bib
+@article{mobaseri2025,
+author = {Anahita Mobaseri  and Satish Kumar  and Xiang Cheng },
+title = {Maximum spreading of impacting shear-thinning and shear-thickening drops},
+journal = {Proceedings of the National Academy of Sciences},
+volume = {122},
+number = {22},
+pages = {e2500163122},
+year = {2025},
+month = {April},
+doi = {10.1073/pnas.2500163122},
+URL = {https://www.pnas.org/doi/abs/10.1073/pnas.2500163122},
+eprint = {https://www.pnas.org/doi/pdf/10.1073/pnas.2500163122}}
+
 @article{parik2025,
   title={On the threshold of drop fragmentation under impulsive acceleration},
   author={Parik, Aditya and Truscott, Tadd T and Dutta, Som},

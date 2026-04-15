@@ -119,10 +119,10 @@ void ref_coarsen (Point point, scalar s) {
 }
 
 void free_scalar_data (scalar s) {
-  foreach_cell_all() {
+  foreach_cell() {
     fflush(stdout);
-    if (!is_prolongation(cell) && s[] != 0) {
-      fflush (stdout);
+    if (!is_prolongation(cell) && s[] != 0 ) {
+      fflush(stdout);
       free(pointer_v(s[]));
       pointer_v(s[]) = NULL;
     }
