@@ -1,4 +1,4 @@
-pristine:ab79312ac55cc3f45f1a40724efcc904438c2e38e75002deea3cf6d7eac7fd72
+pristine:d7169b35243d806789f81f2070625821adf031b7f9f8f310b49436e9cb4557fa
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -101,3 +101,8 @@ Stephane Popinet <popinet@basilisk.fr>**20260411130636
  Ignore-this: c7f60de021854081f927e388a33021ec9de0989439f52fe64e46c244ca0ceb7d1fb8a455d585a771
 ] 
 hash: 0000001275-cd6cdab68f7558a5c133a25c8f218e38ed054cc50d20f1cbed2ab99bfc0bfcf9
+[Restore on tree grids and MPI crashed on undefined fields
+Stephane Popinet <popinet@basilisk.fr>**20260415151613
+ Ignore-this: d9b70a4fceda4f1ff71c6e3ae21ec5ca20beb1ec2c670213cf61b5a0d23808e7bd112b6049faf77
+] 
+hash: 0000000568-cbd703ef0e91f0ada86f5fe8d8aaf70f9a262ef9048593056e9f7f241c986150

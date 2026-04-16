@@ -304,7 +304,7 @@ void input_gfs (FILE * fp = stdin,
     if (!is_constant(s))
       s.dirty = true;
   for (scalar s in input)
-    if (!is_constant(s))
+    if (s.i != INT_MAX && !is_constant(s))
       s.dirty = true;
 
   free (input);

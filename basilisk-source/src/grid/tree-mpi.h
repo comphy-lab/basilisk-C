@@ -1407,9 +1407,14 @@ void restore_mpi (FILE * fp, scalar * list1)
   }
 
   flag_border_cells();
-
-  mpi_boundary_update (list);
+  
+  scalar * clean = NULL;
+  for (scalar s in list)
+    if (s.i != INT_MAX)
+      clean = list_append (clean, s);
   free (list);
+  mpi_boundary_update (clean);
+  free (clean);
 }
 
 /**
