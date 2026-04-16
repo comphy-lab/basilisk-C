@@ -41,7 +41,6 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 * [adaptivity, embed and two-phase](bugEmbed.c)
 * [foreach_boundary MPI](foreach_boundary_MPI.c)
 * [foreach_boundary ghost undeclared](foreach_boundary.c)
-* [Errors when restarting simulations](atomisation_NoEdit.c)
 * [Manually setting the density - bug?](bug_karman_rho.c)
 * [No results when running examples/bubble.c?](bubble_no_results.c)
 * [Bug? - mu in examples/porous3D.c](porous3D_mu.c)
@@ -97,6 +96,7 @@ mistakes.
 
 The bugs below should be fixed in the most recent release.
 
+* [Errors when restarting simulations](atomisation_NoEdit.c) [15/04/26](/src/?changes=20260415151613)
 * [Basilisk C parse error with typedef-enum](typedef-enum.c) [01/04/26](/src/?changes=20260401165542)
 * [Memory leak in solve.h](memory_leak_solve.c) [26/02/26](/src/?changes=20260226171227)
 * [Dumps are mangled when using 3D multigrid over a certain level](dump_integer_overflow.c) [20/02/26](/src/?changes=20260220131228)

@@ -5,8 +5,6 @@ Hi, I'm [Francesco](https://sites.google.com/view/francescopicella), and I'm act
 
 For this reason, I'm re-adapting [Arthur Ghigo](/sandbox/ghigo/src/) implementation of moving embedded boundaries.
 
-Updated on june 2025
-
 ## Forces/Torques on a moving embedded boundary
 - A variation of classic [couette](/src/test/couette.c), but computing torques [couette_torque](test/couette_torque.c)
 
@@ -34,7 +32,8 @@ Updated on june 2025
 ### Gas bubbles generating liquid droplets.
  - [Single gas bubble, rising in a quiescent bath, impacting a free-interface and generating a liquid droplet](rising_bubble_to_droplet/axi_rising_bubble_to_droplet.c)
 
-### Miscellaneous
+### Miscellaneous and Pedagogy
 
  - [A very concise darcs tutorial](/sandbox/fpicella/short_darcs_tutorial.c).
  - [A very concise basilisk tutorial. 1D advection-diffusion problem](/sandbox/fpicella/1D_Nikhill/1D_advection_diffusion.c)
+ - [Plane Couette flow. Setting up a simple embed simulation and extracting velocity profiles](/sandbox/fpicella/pedagogy/plane_couette_embed_instrumented.c)

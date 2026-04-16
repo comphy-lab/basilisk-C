@@ -71,6 +71,14 @@ How print the boundary values
       fprintf (stderr, "%g %g %g\n", x + i*Δ, y, s[i]);
 ~~~
 
+When boundary conditions are imposed in 3D problems, it is necessary
+to know the correspondence between the Cartesian directions and the **t**
+and **r** directions used in Basilisk. The figure below may help to
+identify this correspondence.
+
+![Cartesian correspondence to t and r](cartesian2rt.svg){width="25%"}
+
+
 ## Bugs
 
 To report bugs go to the [basilisk bugs page](/sandbox/bugs/README).

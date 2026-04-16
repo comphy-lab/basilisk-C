@@ -1,4 +1,4 @@
-pristine:239d4850f90ec18db6bc54c9aed4120729cd81b9bff4a1273cbf674e736ca485
+pristine:1b547582283000c4c3dadd5afc6f20d074ba78c076db895b88d5b302574099e3
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -8735,3 +8735,48 @@ ryang**20260414190039
  Ignore-this: e3ef031ad30eb6cc93a6a9b868356dc7ccf5e6b0c5444caaa7675e851ff0e69b459cc59ce3c22bc3
 ] 
 hash: 0000005775-260e36ca5219b16520ea5dfa476f67dc91cb0e129559998d59fa20e9d1efbafe
+[New contribution to de FAQ
+J.M. Lopez-Herrera <jmlopez@us.es>**20260415084638
+ Ignore-this: d91b1449184cc35f54b9fdc37d63d63a
+] 
+hash: 0000216271-278253d62926a0412aa69d3210acf8a98851ab60c321bea4f09e6d562633719d
+[The figure was a bit large
+jmlopezherrera <jmlopezherrera@gmail.com>**20260415085712
+ Ignore-this: 1775cb9807210ae1dc8f33bd1fcf513600480f27e4406878ad37dedf15a648491145a6f0edcd4575
+] 
+hash: 0000000350-6d333217d08f616d85d33c5047b94bdc5ce9c8f9422b2fac2c4bcd21b4094f8f
+[Added a pedagogical test case for plane couette flow with embedded boundaries
+fpicella <francesco.picella@sorbonne-universite.fr>**20260415112125
+ Ignore-this: 43c09d4e5de27f7b9ca2ac7ba4cea3714feb8659248941f54f7ee4ec1b5d00848c2df9d82fd1f885
+] 
+hash: 0000006612-ca7630e0f699e1e7aae888237eee4e252b6218da5b2ed7d7aaeedde652e2c15b
+[Adapted for png pictures available online
+fpicella <francesco.picella@sorbonne-universite.fr>**20260415114102
+ Ignore-this: b06a8666d3114ab6ac8909acfb128081e7318226b5331380b5a29fea7709dbbe565561b6457ea2a7
+] 
+hash: 0000000941-6a167dad168fff7612f85382560d50f9b6878610d37579aeda41a01ec28d9368
+[Bug fixed
+Stephane Popinet <popinet@basilisk.fr>**20260415153038
+ Ignore-this: 9b65d425be76cfcafb5fd458ef9db102767c8f469918b6ff8bb6ec2f6e958489b55b770e218f6520
+] 
+hash: 0000000387-15298a1c0cf00bca14c0bb1f329649e5e6f33e18aaca3e92dd58e3a18e4e1d18
+[Added a new _pedagogy_ case
+fpicella <francesco.picella@sorbonne-universite.fr>**20260415153808
+ Ignore-this: c5c833c49a5b40fb254d23a578547d58ea965e5854fa9e6a6607a28547929a05bbb570e9222d3d9e
+] 
+hash: 0000000528-dbe0ffe2f07b877f35cc56ae2495dcac755dc039b3fc5126fea4b1c9b9c057f3
+[Published
+Stephane Popinet <popinet@basilisk.fr>**20260415173238
+ Ignore-this: e01e1740921ff04b56b9613e0fc1552398dd3fbcd3ffcf36d6084f7bdb1e7bb3c34bdfbf2154986b
+] 
+hash: 0000000652-0671234e38cedb4e068933e3516f6f1482c7c08173a087983b9493cc7aeecec1
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20260415173647
+ Ignore-this: 74617cc04eb35518988204316a9af2823883a0cdb34b2a6de8b47a498c94c806f09cd4d4d03477f3
+] 
+hash: 0000000578-d44e6d509c5f02d86191600ca748f4c3c1fe7369f924ee3ccdd15a4ba285a859
+[Published
+Stephane Popinet <popinet@basilisk.fr>**20260415173655
+ Ignore-this: 6ffb267e699e512a03089137167358ea0d3ddd2a5561bc88e76031a18c462e57f0dbf78b64e33bba
+] 
+hash: 0000000704-9f7eea35b073ee2d30a948353f09c2834f362d9c612481a815d176efb05a6f91

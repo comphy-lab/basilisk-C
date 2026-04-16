@@ -45,13 +45,6 @@ journal={Journal of Fluid Mechanics},
 year={2025}
 }
 
-@Article{fullana2024,
-  author = 	 {Tomas Fullana and Yash Kulkarni and Mathis Fricke and Stéphane Popinet and Shahriar Afkhami and Dieter Bothe and Stéphane Zaleski},
-  title = 	 {A consistent treatment of dynamic contact angles in the sharp-interface framework with the generalized {N}avier boundary condition},
-  journal = 	 {Journal of Fluid Mechanics},
-  year = 	 {2024}
-}
-
 @Article{deoclecio2025,
   author = 	 {Deoclecio, Lucas and Thompson, Roney and Popinet, Stéphane and Soares, Edson},
   title = 	 {Bubble rise and interfacial coalescence initiation in elasto-viscoplastic materials},
@@ -667,6 +660,8 @@ url={https://doi.org/10.1017/jfm.2017.543}
 ### Microfluidics
 
 ~~~bib
+@hal{fullana2026, hal-05591630}
+
 @hal{fullana2020, hal-02953610}
 
 @Article{dziedzic2018,

@@ -7,6 +7,17 @@ own papers if they use Basilisk. See also [src/references.bib]() for older refer
 
 ### 2026
 ~~~bib
+@article{wang2026b,
+  title={Cavitation bubble near a wall: Sensitivity to modeling conditions},
+  author={Wang, Bo and Yang, Zhidian and Roman{\`o}, Francesco},
+  journal={Technische Mechanik-European Journal of Engineering Mechanics},
+  volume={46},
+  number={1},
+  pages={66--77},
+  year={2026},
+  pdf={https://journals.ub.ovgu.de/index.php/techmech/article/download/2326/2337}
+}
+
 @article{mou2026,
   title = {Singular jets and entrapments from compound drop impact},
   author = {Mou, Zeyang and Zheng, Zheng and Jian, Zhen and Antonini, Carlo and Josserand, Christophe and Thoraval, Marie-Jean},

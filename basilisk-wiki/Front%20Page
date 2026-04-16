@@ -41,6 +41,8 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@hal{fullana2026, hal-05591630}
+
 @hal{yang2026, hal-05554495}
 
 @article{caraccio2026,
@@ -55,7 +57,7 @@ See also the [POM Gallery]().
   author = {Riccardo Caraccio and Edoardo Cipriano and Alessio Frassoldati and Tiziano Faravelli},
 }
 
-@article{Huang2026, 
+@article{huang2026, 
 title={Bubble-burst-induced Puddle Jumping and Jet Printing}, 
 volume={17}, 
 DOI={10.1038/s41467-026-69512-y}, 
@@ -64,16 +66,5 @@ author={Huang, Wenge and Lori, Mohammad Shamsodini and Yang, Anchenyi and Zhuang
 year={2026}, 
 pages={1818},
 pdf={https://doi.org/10.1038/s41467-026-69512-y}
-}
-
-@article{wang2026,
-  title={Cavitation bubble near a wall: Sensitivity to modeling conditions},
-  author={Wang, Bo and Yang, Zhidian and Roman{\`o}, Francesco},
-  journal={Technische Mechanik-European Journal of Engineering Mechanics},
-  volume={46},
-  number={1},
-  pages={66--77},
-  year={2026},
-  pdf={https://journals.ub.ovgu.de/index.php/techmech/article/download/2326/2337}
 }
 ~~~
