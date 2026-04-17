@@ -1,4 +1,4 @@
-pristine:1b547582283000c4c3dadd5afc6f20d074ba78c076db895b88d5b302574099e3
+pristine:1b1fbcd7e9d8f8a1886c6d2ac9b2e7139220448f98b93651494d2aacb6cbcd5a
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -8780,3 +8780,103 @@ Stephane Popinet <popinet@basilisk.fr>**20260415173655
  Ignore-this: 6ffb267e699e512a03089137167358ea0d3ddd2a5561bc88e76031a18c462e57f0dbf78b64e33bba
 ] 
 hash: 0000000704-9f7eea35b073ee2d30a948353f09c2834f362d9c612481a815d176efb05a6f91
+[Update of the DOI of Xue's paper
+hjiang <hjiang@mesl.t.u-tokyo.ac.jp>**20260416032118
+ Ignore-this: 6ca1d0610aaff61dd7ae5aba76d8554887f4787135170f3146d701a669225cd1b3508c61cd7983ec
+] 
+hash: 0000000564-be1058c90be5416c907b4cf42163721ef8cc507d9b061b7367eb5f3d8b5e06ed
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20260416072940
+ Ignore-this: ca0aa28341bbafbb27148514122736864dadae2d88ca5d3e124cbb7f7a79a08228530be7d921437
+] 
+hash: 0000000370-89e1fdb530dbe4fb1e2e0c9b462e891ba1cc0e4a00caef0e55c9bd454230c433
+[New example
+Stephane Popinet <popinet@basilisk.fr>**20260416073012
+ Ignore-this: d78139b1c8e5a812a1b7026a1fdcd3f7648f292324f336da06bca5e919e6bafd2dcde89c1a190e8e
+] 
+hash: 0000000497-2acc2ac6ca5bad1598b302ce8c7fe6669a03c0198e84d5edb86df1b1ceddf968
+[More legend
+Stephane Popinet <popinet@basilisk.fr>**20260416100518
+ Ignore-this: dbfaf98b6ca43612e2fbe3c7f5330f9c85efd8377c0f545fa379cff3bb1b8de63f8a298dc1039dc1
+] 
+hash: 0000000594-fad67733e3fb196a970fcfe819eefc41b74a016e4348fb9dce943c4822f7fb89
+[more doc
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260416103119
+ Ignore-this: 13318cd576e74730278aa599e6452a58
+] 
+hash: 0000000940-f20986ec0689a5be6719103fb6b0986cc0348459e58c8b06f18f62c773886361
+[added postprocess code for data from Jiarong
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260416103230
+ Ignore-this: b75cede600f308e23a2ea49432ec2b22
+] 
+hash: 0000001735-3db5756f94ba85d0fedb57dd3d13fbad23e0945be93805cdad037d7c6df2c2bb
+[update README
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260416104041
+ Ignore-this: b17e7aa0d8d7d66ed5ac7955f69f64db
+] 
+hash: 0000000621-33139819412b2ef8a35a3cfa5b7f8288224cf22cf8e22e81d29412c3b054968a
+[added breaking and stratification case
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260416104108
+ Ignore-this: ebbf54939ae123d3054f5f4c765d6311
+] 
+hash: 0000014687-350fde1688a2a4fa16dcc1638e339552d5d2cc97c56fdf761daf470816376cff
+[added example on misuse of Point point = locate()
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260416104132
+ Ignore-this: d48bfa1c535e1c3a3ab6000996bc177e
+] 
+hash: 0000003014-a41c87fe1df22e927fda6cbbdc56b2e267de0519247b19df5a3b44e4451a5872
+[added another convection case
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260416104206
+ Ignore-this: 62286b924450f8ee7ddeb4dd4223c407
+] 
+hash: 0000000249-d6198e2398146db2c9aa06d3237584328016b3d1c55b8ce07b0cc9f009eea544
+[added three new testcases which compares the current and a patched version of the multilayer model in challenging numerical conditions
+oystelan@gmail.com**20260416124751
+ Ignore-this: cc55057a5694d5d73357429722098b0d
+] 
+hash: 0000327327-76f8730fc4f0c145ced055c1f7753b2b11ce2868a6c33f1bca9e2141b1975863
+[added simple test for setting dimension of array
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260416134743
+ Ignore-this: c7dae9537fb145c27b0dd05b036f0f49
+] 
+hash: 0000001161-2e8ea4fc01c2ee8daac7f843e927beb93e334c680465d7a65ed4e23e6fdb4504
+[working on adding dimensions to ml_convection
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260416135709
+ Ignore-this: ff4639fe07101da403a8a77036288ffa
+] 
+hash: 0000008733-7d6dae9b4dd8773ddca1c304de531e8cde53a0dea2b42433b53b6003da5681bc
+[added simple test for setting dimension of array
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260416142127
+ Ignore-this: 83c5025c76f2962ab67d167c41e0e638
+] 
+hash: 0000004009-472f1975e25d9a25914c5c0e1bfc02b781741299115e73f5b2e6fac1e3aae916
+[using foreach_layer
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260416142450
+ Ignore-this: 6ce7a5d5c6c61d92353a66456995496a
+] 
+hash: 0000000805-b084de3353de66f9bc164f9cb892306dfc7c0afda880615aacff6f970f03f4d5
+[No inheritance of dimension from scalar to array
+hugoj <hugo.jacquet.work@gmail.com>**20260416143115
+ Ignore-this: ad277e2b93708f9610424965dc94c464a4104b0b5cc79808567f0a6813b3e929da97d896d7821ea0
+] 
+hash: 0000000347-8c2f7c07a775ba70c68aa9ed9c1e015f61688deff90718f9a1515d878f4e3d25
+[Better without the memory leak
+Stephane Popinet <popinet@basilisk.fr>**20260416144354
+ Ignore-this: bb5adf58a111193aea31460b59fb6ed07e8a6edca37ea56145f5b34e966da5d38fb48df16716724
+] 
+hash: 0000001230-4487649c925def0cc4a63ab36a82c30f489f600f93bd3bd96423436f689badbb
+[Better with the error
+Stephane Popinet <popinet@basilisk.fr>**20260416144433
+ Ignore-this: a23e0f87acac2bd052d9ea8c8c47c37475c874a27258263c183a99a8e2e04b0c6430ccede537ef9c
+] 
+hash: 0000000391-c42ecbc0fa5756c3595dfeadfa2c2d9a833432d88eaa6522ea4411781c7f8ef2
+[Re0
+dli <ms456753@gmail.com>**20260416162105
+ Ignore-this: 9a7cf0a14c90bbb9f9c368cf0411b900c16d48642c7c7c0022b5edf8cd4d20b7996e631c16358d3f
+] 
+hash: 0000000372-7b34310003a778cd5c96f1f5f7462799222bd1bbea3d38d85168687397d40c85
+[new
+dli <ms456753@gmail.com>**20260416162607
+ Ignore-this: 5bf4dd16959d5e85f03c055542455bf2e72350b694c3e9c3383dec17b51f8d35da8f978be4c450bf
+] 
+hash: 0000000893-cf886929f734fc806a38ed84cfd2dbb8b8aaea27974480be41d75c7b153bc167

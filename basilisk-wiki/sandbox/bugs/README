@@ -29,6 +29,7 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
+* [No inheritance of dimension from scalar to array](https://basilisk.fr/sandbox/hugoj/bug_dimension_of_array/main.c)
 * [Incompatible arguments in _stencil_function with pre-defined input values](args-stencil.c)
 * [Default boundary conditions do not work for face vector fields in MPI](bc_face_vector.c)
 * [Boundary conditions on a single component of a vector field are incorrect on trees](bc_vector.c)

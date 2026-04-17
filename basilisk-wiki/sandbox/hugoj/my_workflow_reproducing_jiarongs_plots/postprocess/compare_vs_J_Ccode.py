@@ -16,6 +16,8 @@ filename = os.path.join(dirname, '../../libpy/')
 sys.path.append( filename )
 from fftlib import *
 from diags import interpz
+from data_reader import build_grid
+from diags import grad_velocities, vorticity, dissipation
 
 """
 ## Some parameters
@@ -50,14 +52,25 @@ Js_0 = np.loadtxt(Jpath+'2023_fig3c_0.txt',skiprows=1,delimiter=",")
 Js_20 = np.loadtxt(Jpath+'2023_fig3c_25.txt',skiprows=1,delimiter=",")
 Js_100 = np.loadtxt(Jpath+'2023_fig3c_124.txt',skiprows=1,delimiter=",")
 Js_120 = np.loadtxt(Jpath+'2023_fig3c_149.txt',skiprows=1,delimiter=",")
+J_nc = xr.open_dataset(Jpath+"field120.nc") # <- from Jiarong's mail
 Js = [Js_0, Js_20, Js_100, Js_120]
 at_t = [0, 20, 100, 120]
 
+# here we adapt the data from Jiarong
+J_nc = J_nc.rename({'ux':'u.x','uy':'u.y','uz':'u.z',
+                    'x_g':'x_l','y_g':'y_l','zl_g':'zl_l',
+                    't':'time'})
+Jgrid = build_grid(J_nc)
+J_nc = J_nc.assign_coords(time=("time", [120.0]))
+J_nc, update = grad_velocities(J_nc, Jgrid)
+J_nc, update = vorticity(J_nc, Jgrid)
+J_nc, update = dissipation(J_nc, Jgrid)
 
 # We build a dict, easier to process
 d_data = {"Hugo_pprC":xr.open_mfdataset([pathH_C+file for file in ([filedata]+file_grads+file_omeg+file_diss)]),
           "Hugo_pprf90":xr.open_mfdataset([pathH_f+file for file in ([filedata]+file_grads+file_omeg+file_diss)]),
-          "Jiarong":xr.open_mfdataset([fileJ] + [pathJ+file for file in (file_grads+file_omeg+file_diss)])}
+          "Jiarong":xr.open_mfdataset([fileJ] + [pathJ+file for file in (file_grads+file_omeg+file_diss)]),
+          "Jiarong_nc":J_nc}
 
 
 """
@@ -108,16 +121,18 @@ if False:
 if True:
     print('\nProfiles ')
     time_=120 # s
-    clrs = ['b','g','orange']
+    clrs = ['b','g','orange','purple']
     # Jiarong's data
     Jux_lagr = np.loadtxt(Jpath+'2025_fig7a_layer.txt',skiprows=1,delimiter=",")
     Jens_lagr = np.loadtxt(Jpath+'2025_fig7b_layer.txt',skiprows=1,delimiter=",")
     Jdiss_lagr = np.loadtxt(Jpath+'2025_fig7c_layer.txt',skiprows=1,delimiter=",")
 
     fig, ax = plt.subplots(1,3,figsize = (9,3),constrained_layout=True,dpi=dpi)
+    # plots from paper
     ax[0].plot(Jux_lagr[:,0], Jux_lagr[:,1], c='gray', label='paper', marker='x', markerfacecolor='None')
     ax[1].semilogx(Jens_lagr[:,0], Jens_lagr[:,1], c='gray', label='paper', marker='x', markerfacecolor='None')
     ax[2].semilogx(Jdiss_lagr[:,0], Jdiss_lagr[:,1], c='gray', label='paper', marker='x', markerfacecolor='None' )
+
 
     for k,name in enumerate(d_data.keys()):
         ds1=d_data[name].sel(time=time_)

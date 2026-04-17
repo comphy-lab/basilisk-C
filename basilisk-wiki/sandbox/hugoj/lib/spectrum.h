@@ -3,6 +3,8 @@
  Original code : Jiarong Wu,
  https://github.com/jiarong-wu/multilayer_breaking/blob/main/specgen/specgen.py
 
+g_ has to be defined before #include spectrum.h !
+
 */
 #include <math.h>
 #include <stdio.h>

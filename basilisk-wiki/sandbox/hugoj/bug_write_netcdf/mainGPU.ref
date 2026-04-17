@@ -1,0 +1,10 @@
+eta mainGPU.c:38: GLSL: error: unknown function 'fprintf'
+mainGPU.c:37: warning: foreach() done on CPU (see GLSL errors above)
+i=0, j=0, 0.000000
+u.x i=0, j=0, 0.000000
+u.y i=0, j=0, 0.000000
+eta mainGPU.c:58: GLSL: error: unknown function 'fprintf'
+mainGPU.c:57: warning: foreach() done on CPU (see GLSL errors above)
+i=0, j=0, -1.000000
+u.x i=0, j=0, 1.000000
+u.y i=0, j=0, 2.000000

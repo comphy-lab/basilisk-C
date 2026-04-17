@@ -16,16 +16,16 @@ betaT = 2e-4    # Linear equation of state: drho = betaT*(T0-T) (Vallis 2.4)
 #
 # DOMAIN DEFINITION
 #
-N_grid = 7   # 1024=10 2^N_grid, number of x and y gridpoints
+N_grid = 6   # 1024=10 2^N_grid, number of x and y gridpoints
 L = 50.0     # (m) domain size
-N_layer = 60 # number of layers
+N_layer = 15 # number of layers
 h0 = 100.0   # =2pi/kp, depth of water (m)
 
 #
 # RUN PARAMETERS
 #
-tend = 3600.0 # (s) time to end the simu
-dtout = 60.0  # (s) dt for output in netcdf
+tend = 1.0  # (s) time to end the simu
+dtout = 1.0 # (s) dt for output in netcdf
 
 #
 # SOLVER PARAMETERS

@@ -28,7 +28,7 @@ If you want to find out more about Basilisk see:
 
 ## Picture of the month
 
-![[Three-dimensional elliptic instability](sandbox/Antoonvh/elliptic.c) by [Antoon van Hooft](sandbox/Antoonvh/README)](https://www.antoonvanhooft.nl/media/elliptical.mp4){width="80%"}
+![[The Held & Suarez climate model: Surface temperature evolution. Dark red is 40$^\circ$C and dark blue -9$^\circ$C. The domain spans 360 degrees of longitude and $\pm$ 75 degrees of latitude.](/src/examples/held-suarez.c)](/src/examples/held-suarez/theta0-short.mp4){width="80%"}
 
 See also the [POM Gallery]().
 

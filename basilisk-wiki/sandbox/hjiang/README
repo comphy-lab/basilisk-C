@@ -2,7 +2,7 @@
 
 I am a PhD student in the Department of Mechanical Engineering at The University of Tokyo. My research interests include multiphase flow, surfactant transport, and combustion modeling.
 
-This sandbox contains a sharp-interface surfactant transport algorithm, mainly implemented based on the preprint by [Z. Xue (2025)](https://doi.org/10.48550/arXiv.2507.09680).
+This sandbox contains a sharp-interface surfactant transport algorithm, mainly implemented based on the work by [Z. Xue (2026)](https://doi.org/10.1016/j.jcp.2026.114936).
 
 This work was completed with substantial help from [E. Cipriano](https://basilisk.fr/sandbox/ecipriano/), [R. Caraccio](https://basilisk.fr/sandbox/rcaraccio/), and [Z. Xue](https://basilisk.fr/sandbox/zhan/).
 

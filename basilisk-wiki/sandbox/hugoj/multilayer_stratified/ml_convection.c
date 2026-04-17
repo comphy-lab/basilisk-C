@@ -31,7 +31,7 @@ USAGE
 #include "layered/hydro.h"
 #include "layered/nh.h"
 #include "layered/remap.h"
-#include "layered/diffusion.h"
+//#include "layered/diffusion.h"
 #include "layered/perfs.h"
 #include "bderembl/libs/extra.h"      // parameters from namlist
 #include "bderembl/libs/netcdf_bas.h" // read/write netcdf files
@@ -69,30 +69,30 @@ double Ts = 20. [0,0,1];              // [K] Surface temperature (arbitrary)
 // -> Forcing
 double qt = 100. [-2,-1,0,1];         // [W.m-2] Heat flux
 // -> Domain definition
-int N_grid = 5 [0];                   // 2^N_grid : number of x and y gridpoints
+int N_grid = 5;                   // 2^N_grid : number of x and y gridpoints
 double L = 200.0 [1];                 // domain size
-int N_layer = 2 [0];                  // number of layers
+int N_layer = 5;                  // number of layers
 double h0 = 1.0 [1];                  // depth of water
 // -> Runtime parameters
 int restart = 0 [0];                  // 1: restart, 0: no restart
 double tend = 2.0 [0,1];              // end time of simulation
 // -> saving outputs
 double dtout = 2.0 [0,1];             // dt for output in netcdf
+double smalltime = 1e-10 [0,1];             // (s) small time increment
 int pad = 4 [0];                      // number of 0-padding for ouput files
 int nout = 1 [0];                     // number of the outfile
 char fileout[100];                    // name of outfile
 // -> physical properties
-double nu0 = 0.00025 [1,-2,0,0,1];    // Viscosity for vertical diffusion
+double nu0 = 0.00025 [2,-1];    // Viscosity for vertical diffusion
 double thetaH = 0.5 [0];              // theta_h for dumping fast barotropic modes
 // -> stratification related
 double rho0 = 1025. [-3,0,0,0,1];     // [kg.m-3] reference density
 double cp = 4.2e3 [0,0,-1,1,-1];      // [J.kg-1.K-1] heat capacity water
 double betaT = 2e-4 [0,0,-1];         // [K-1] Thermal expansion coeff for water
-double D = 1.5e-5 [2,-1];             // [m2.s-1] Scalar vertical diffusion coeff
+double Dtemp = 1.5e-5 [2,-1];         // [m2.s-1] Scalar vertical diffusion coeff
 double T0 = 20. [0,0,1];              // [°C] Reference temperature
 double Trand = 0.1 [0,0,1];           // [°C] Random temperature perturbution
 const double g_ = 9.81 [1,-2];        // [m.s-2] Gravity
-const double nodim = 1. [0];
 #define drho(T) (betaT*(T0-T))        // Linear equation of state: drho = betaT*(T0-T) (Vallis 2.4)
 #define Tini(z) strat/(g_*betaT)*z + Ts
 
@@ -135,8 +135,9 @@ int main(int argc, char *argv[])
   add_param("qt", &qt, "double");
   add_param("dt_mean", &dt_mean, "double");
   
-  show_dimension (u);
-  dimensional (T_profile, T0);
+  // show_dimension (u);
+  //dimensional (T_profile[0], T0);
+  //dimensional (W_profile[0], L/dt);
 
   // Search for the configuration file with a given path or read params.in
   if (argc == 2)
@@ -161,11 +162,13 @@ int main(int argc, char *argv[])
   origin (-L0/2., -L0/2.);
   
   //periodic (right);
-  
-  periodic (top);
+  #if dimension==2
+    periodic (top);
+  #endif
   periodic (left);
 
   // T profile
+  // TODO: how to make T_profile inherite the dimension of T ?
   T_profile = (double*)calloc(nl, sizeof(double));
   W_profile = (double*)calloc(nl, sizeof(double));
   Tflx_profile = (double*)calloc(nl, sizeof(double));
@@ -175,11 +178,14 @@ int main(int argc, char *argv[])
   fclose(fp2);
 
   fprintf (stderr, "Read in parameters!\n");
+  
+
   run();
   
 }
 
 event init(i =  0) {
+  // reset({T},0.);
   geometric_beta (0., true); // if !=0, varying layer thickness
   // step 1: set eta and h
   foreach() {
@@ -188,49 +194,67 @@ event init(i =  0) {
     double H = - zb[];
     
     foreach_layer() {
-      h[] = H/nl;
+      h[] = H*beta[point.l]/nl;
     } 
   }
-  
-  // step 2: remap
-  vertical_remapping (h, tracers);
-  // step 3: set currents
+
+  reset({T},0.);
+  // step 2: set currents
   foreach() {
     double z = zb[];
+    dimensional (T[]==Trand);
     foreach_layer() {
       z += h[]/2.;
-      u.x[] = 0.;
-      u.y[] = 0.;
+      foreach_dimension(){
+        u.x[] = 0.;
+      }
       w[] = 0.;
-      T[] = Tini(z) - Trand + (rand() / (RAND_MAX+1.0) * 2 * Trand) ;
+      // T[] = Tini(z) - Trand + (rand() / (RAND_MAX+1.0) * 2 * Trand) ;
+      //T[] = Tini(z) + Trand * (rand() / (RAND_MAX+1.0) * 2.0 - 1.0) ;
+      //T[] = Tini(z) + Trand * noise() ;
+      T[] = Trand * noise() ;
       //T[] = T0(z);
       z += h[]/2.;
     }
   }
-  #if dimension==1
-    create_nc((scalar *){zb, h, u.x, w, eta, T}, file_out);
-  #else
-    create_nc((scalar *){zb, h, u.x, u.y, w, eta, T}, file_out);
-  #endif
   
-  fprintf (stderr,"Done initialization!\n");
+  // initializing diag arrays
+  //T_profile[0] = Trand; // <- this passes the dimensional analysis
+  //dimensional (T_profile[0] == Trand); // <- this doesnt
+  // for (int i=0; i<nl; ++i) {
+  //   T_profile[i] = Trand*0.;
+  //   Tflx_profile[i] = Trand*L0/DT*0.;
+  //   W_profile[i] = L0/DT*0.;
+  // }
+  
+  show_dimension (T);
+  
+  // original version, bug for now (currents writes = 0)
+  create_nc({zb, h, u.x, u.y, w, eta, T}, file_out);
 
+  // temporary fix
+  // #if dimension==1
+  //   create_nc((scalar *){zb, h, u.x, w, eta, T}, file_out);
+  // #else
+  //   create_nc((scalar *){zb, h, u.x, u.y, w, eta, T}, file_out);
+  // #endif
+  // fprintf (stderr,"Done initialization!\n");
 }
 
 // vertical diffusion on T
 // This implements a heat flux at the surface
-event viscous_term (i++)
-{
-  foreach()
-    vertical_diffusion (point, h, T, dt, D, qt/(D*rho0*cp), 0., 0.);
-    //TODO: change s_b for the value at bottom of stratification, instead of
-    //      this 0.°C that is cooling down the fluid.
-}
+// event viscous_term (i++)
+// {
+//   foreach()
+//     vertical_diffusion (point, h, T, dt, D, qt/(D*rho0*cp), 0., 0.);
+//     //TODO: change s_b for the value at bottom of stratification, instead of
+//     //      this 0.°C that is cooling down the fluid.
+// }
 
 // Writing a 4D netcdf file
-event output(t = 0.; t<= tend+1e-10; t+=dtout){
-  write_nc();
-}
+// event output(t = 0.; t<= tend+smalltime; t+=dtout){
+//   write_nc();
+// }
 
 
 
@@ -278,53 +302,50 @@ int write_profile(char* name, double* profile, FILE* fp){
 
 
 // This event compute layer average of T, w
-event compute_horizontal_avg (t+=dt_mean; t<=tend+1e-10){
+event compute_horizontal_avg (t+=dt_mean; t<=tend+smalltime){
+  // foreach(reduction(+:T_profile[:nl]))
+  //   foreach_layer(){
+  //   #if dimension==1
+  //     T_profile[point.l] += T[] / N;// (N*N); // * dt / dt_mean;
+  //   #else
+  //     T_profile[point.l] = T_profile[point.l] + T[] ; // / (N*N);
+  //   #endif
+  //   }
   T_profile = h_avg(T, T_profile);
-  W_profile = h_avg(w, W_profile);
+  show_dimension (T_profile[0]);
+  show_dimension (W_profile[0]);
+  //W_profile = h_avg(w, W_profile);
 }
 
-event compute_flx_wT(t+=dt_mean, t<=tend+1e-10){
-  foreach(reduction(+:Tflx_profile[:nl]))
-    foreach_layer(){
-    #if dimension==1
-      Tflx_profile[point.l] += ((w[]-W_profile[point.l])*(T[]-T_profile[point.l])) / N;
-    #else
-      Tflx_profile[point.l] += ((w[]-W_profile[point.l])*(T[]-T_profile[point.l])) / (N*N);
-    #endif
-  }
-}
+// event compute_flx_wT(t+=dt_mean, t<=tend+1e-10){
+//   foreach(reduction(+:Tflx_profile[:nl]))
+//     foreach_layer(){
+//     #if dimension==1
+//       Tflx_profile[point.l] += ((w[]-W_profile[point.l])*(T[]-T_profile[point.l])) / N;
+//     #else
+//       Tflx_profile[point.l] += ((w[]-W_profile[point.l])*(T[]-T_profile[point.l])) / (N*N);
+//     #endif
+//   }
+// }
 
 
 // This even writes to a file the layer average
-event write_diag(t=0., t+=dt_mean){
-    // main worker is writing the file
-    // if (pid()==0) {
-    //   fp  = fopen("T_profile.dat","a");
-    //   if (fp == NULL){
-    //     fprintf(stderr, "Error opening file T_profile.dat");
-    //     return 2;
-    //   }
-    //   for (int i=0; i<nl; ++i) {
-    //     fprintf (fp, "%f %d %g\n", t, i, T_profile[i]);
-    //   }
-    //   fprintf(fp,"\n");
-    //   fclose(fp);
-    // }
-    write_profile("T_profile.dat", T_profile, fp1);
-    write_profile("Tflx_profile.dat", Tflx_profile, fp2);
-
-    // Reset the profile for all workers
-    for (int i=0; i<nl; ++i) {
-      T_profile[i] = 0.0;
-      Tflx_profile[i] = 0.0;
-    }
-}
+// event write_diag(t=0., t+=dt_mean){
+//     write_profile("T_profile.dat", T_profile, fp1);
+//     write_profile("Tflx_profile.dat", Tflx_profile, fp2);
+//
+//     // Reset the profile for all workers
+//     for (int i=0; i<nl; ++i) {
+//       T_profile[i] = 0.0;
+//       Tflx_profile[i] = 0.0;
+//     }
+// }
 
 
-event cleanup(t=end){
-  free(T_profile);
-  free(Tflx_profile);
-}
+// event cleanup(t=end){
+//   free(T_profile);
+//   free(Tflx_profile);
+// }
 
 /**
 Results: plots
