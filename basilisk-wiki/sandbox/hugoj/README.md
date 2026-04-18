@@ -29,7 +29,7 @@ mixing of the upper layers of the ocean.
 
 * WIP [Generate a synthetic wave field for a Basilisk multilayer simulation](./example_PM_spectrum/ml_breaking.c)
 
-* WIP [Comparison on the generating an synthetic initial spectra, with python or
+* [Comparison on the generatation of a synthetic initial spectra, with python or
 C code](specgen_py_vs_C/)
 
 * [How to correctly do the azimuthal integration of 2D
@@ -50,6 +50,10 @@ simulation, example on breaking.c](test_read_write_netcdf/README.md)
 * [SOLVED: reduction operator using MPI](./bugmpi/ml_breaking_simple.c)
 
 * [SOLVED: Point point locate() on GPU](./bug_write_netcdf/main.c)
+
+* WIP [Setting dimension of array doesnt pass the dimension checkup](./bug_dimension_of_array/main.c)
+
+* TODO Passing vector to scalar list show strange behavior
 
 ## Contact
 

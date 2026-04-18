@@ -72,7 +72,7 @@ double spectrum_Gaussian(double G, double span, double kp, double kmod) {
 }
 
 T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
-                               double kp) 
+                               double kp, double thetam=0.) 
 {
 
   /* The function to generate a kx-ky spectrum based on uni-directional
@@ -84,11 +84,14 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
                     headerfile.
             N_power: directional spectrum spreading coefficient
             L: physical domain size
+            P: energy of the wave field (dimension=velocity)
+            kp: peak wavenumber
+            thetam: midline direction (rad, positive anticlockwise, along x = 0.)
   */
 
   int N_kmod = 64; // Uniform grid in kmod and ktheta, can be finer than N_mode
   int N_theta = 64;
-  double thetam = 0.0; // midline direction
+  //double thetam = 0.0; // midline direction
   double theta[N_theta];
   double dtheta;
   double Dtheta[N_theta];               // for directional spectrum
@@ -99,21 +102,11 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
 
   T_Spectrum spectrum;
   spectrum.N_mode = N_mode;
-  //spectrum.kmod = (double *)malloc(N_kmod * sizeof(double));
   spectrum.kx = (double *)malloc(N_mode * sizeof(double));
   spectrum.ky = (double *)malloc((N_mode + 1) * sizeof(double));  
-  //spectrum.F_kmod = (double *)malloc(N_kmod * sizeof(double));
   spectrum.F_kxky = (double *)malloc(N_mode * (N_mode + 1) * sizeof(double));
   spectrum.phase = (double *)malloc(N_mode * (N_mode + 1) * sizeof(double));
   spectrum.omega = (double *)malloc(N_mode * (N_mode + 1) * sizeof(double));
-
-  // Random gene declaration
-  // const gsl_rng_type * T;
-  // gsl_rng * r;
-  // gsl_rng_env_setup();
-  // T = gsl_rng_default;
-  // r = gsl_rng_alloc (T);
-
 
   // building kmod
   for (int i = 0; i < N_kmod; ++i) {
@@ -136,17 +129,14 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
   }
 
   // Pick the spectrum shape : for now PM only
-  // TO DO: add more shapes ?
+  // TODO: add more shapes ?
   for (int i = 0; i < N_kmod; ++i) {
-    //spectrum.F_kmod[i] = spectrum_PM(P, kp, spectrum.kmod[i]);
     F_kmod[i] = spectrum_PM(P, kp, kmod[i]);
   }
   for (int ik = 0; ik < N_kmod; ++ik) {
     for (int itt = 0; itt < N_theta; ++itt) {
       F_kmodtheta[ik * N_kmod + itt] =
-          //spectrum.F_kmod[ik] * Dtheta[itt] / spectrum.kmod[ik];
           F_kmod[ik] * Dtheta[itt] / kmod[ik];
-      //printf("F_kmodtheta (ik=%d,itt=%d) = %f\n", ik,itt,F_kmodtheta[ik * N_kmod + itt]);
       // Notice the normalize by kmod !
     }
   }
@@ -168,7 +158,6 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
       cart2pol(spectrum.kx[ix], spectrum.ky[iy], &rho, &phi);
       // then interp at these coords
       spectrum.F_kxky[ix * N_mode + iy] = interp_lin(
-        //spectrum.kmod, theta, N_kmod, N_theta, rho, phi, F_kmodtheta);
         kmod, theta, N_kmod, N_theta, rho, phi, F_kmodtheta);
 
     }
@@ -179,24 +168,14 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
   srand(RANDOM); // We can seed it differently for different runs
   int index = 0;
   double k = 0;
-  //double randnum;
   for (int i=0; i<N_mode; i++) {
     for (int j=0; j<N_mode+1; j++) {
       index = j*N_mode + i;
       k = sqrt(sq(spectrum.kx[i]) + sq(spectrum.ky[j]));
-      spectrum.omega[index] = sqrt(g_*k);
-      
-      // randnum =  gsl_rng_uniform (r)*2.*PI;
-      // spectrum.phase[index] = randnum;
-
-      spectrum.phase[index] = randInRange (0, 2.*PI);
-      //printf(" random number = %f\n", spectrum.phase[index]);
+      spectrum.omega[index] = sqrt(g_*k); // we use linear dispersion relation 
+      spectrum.phase[index] = randInRange (0, 2.*PI); // random phase in [0,2pi]
     }
   }
-
-  // Clear mem of random gen
-  //gsl_rng_free (r);
-
   return spectrum;
 }
 

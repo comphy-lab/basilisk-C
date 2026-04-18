@@ -211,6 +211,8 @@ void create_nc(scalar * list_out, char* file_out)
       ERR(nc_err);
    if ((nc_err = nc_put_var_float(ncid, x_varid, &xc[0])))
       ERR(nc_err);
+  
+  nc_rec = -1;
 
    /* Close the file. */
    if ((nc_err = nc_close(ncid)))

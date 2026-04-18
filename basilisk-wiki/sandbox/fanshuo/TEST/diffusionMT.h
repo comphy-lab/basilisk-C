@@ -186,7 +186,7 @@ i.e. $\dot{\mathbf{u}}_t = 0$, $\mathbf{\lambda}_b = 0$, $\mathbf{u}_b
 = 0$. */
 
 double nu = 0.;
-(const) vector lambda_b[] = {0,0,0}, dut[] = {0,0,0}, u_b[] = {0,0,0};
+(const) vector lambda_b[] = {-0.1,0,0}, dut[] = {0,0,0}, u_b[] = {0,0,0};
 
 /**
 In the [layered solver](hydro.h), vertical viscosity is applied to the

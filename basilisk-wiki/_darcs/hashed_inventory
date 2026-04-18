@@ -1,4 +1,4 @@
-pristine:1b1fbcd7e9d8f8a1886c6d2ac9b2e7139220448f98b93651494d2aacb6cbcd5a
+pristine:0982750bfa4440d4c3f8c68d953f5996a1f187a5f81c21b29f97b838e55ec869
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -8880,3 +8880,48 @@ dli <ms456753@gmail.com>**20260416162607
  Ignore-this: 5bf4dd16959d5e85f03c055542455bf2e72350b694c3e9c3383dec17b51f8d35da8f978be4c450bf
 ] 
 hash: 0000000893-cf886929f734fc806a38ed84cfd2dbb8b8aaea27974480be41d75c7b153bc167
+[better frontpage Readme
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260417071131
+ Ignore-this: 5d72be934ff1bd42a3c65436dd5127a8
+] 
+hash: 0000000531-49c7bc73d53a0fe1fb053e3dd95ec3160ef6a299d00de6a9a42adb3062ec48e2
+[reset nc_rec to -1 to allow for multiple netcdf file creation
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260417085130
+ Ignore-this: 375321ab6f3862939aa0e67c26a0a046
+] 
+hash: 0000000236-4295faff650a3a2659baee495a01043dd029a38537faf195cca10a0c741f8b83
+[clearer func name
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260417092915
+ Ignore-this: 4e7126734b6ef94dcd75963919016b6f
+] 
+hash: 0000000470-4cb267b38dc1250ab0f2700d0a053f2e3be0d429e18bbe3576967cfe4a60e3a6
+[added a parameter to chose direction of spectrum, and cleanup
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260417093501
+ Ignore-this: 58c919a8178204ee4f08256b3b78887b
+] 
+hash: 0000002266-f9ce22496090014aacb83bcc690fe15a584cc74b18b77a8e5cd2a2d6a48ada9b
+[added: investigation of layer average operator under linear synthetic wave field
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260417093510
+ Ignore-this: 578b196f3b8755e9d5fe2cf62b526e60
+] 
+hash: 0000005956-6c1e3e04f459418a58e304566e97e609393917797a9c875efa679b5f12f3d0fa
+[added option to generate monochromatic, stokes and synthetic waves
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260417152700
+ Ignore-this: 8cec2e98b6383517052c172d79b6f700
+] 
+hash: 0000009002-7ae90b4e481932b1865d67db84f4bcceae93fa20c3451e092d2c2594e68cc91a
+[try a negative lambda_b
+Fanshuo**20260417153833
+ Ignore-this: 62e86fa28485e4858e7f05168dedcca57395d9ce998d74abea0487447748134c5d0276f5c9a315ef
+] 
+hash: 0000000338-ff053e91e877ed71257d1428defb2d9ee00487308f7183ea8c4d373d6e94381d
+[Creating trw repository.
+Boyuan <boyuan.yu@mail.mcgill.ca>**20260417172447
+ Ignore-this: 7b181372bc9ff9354525727ac0f304bf25dddf07821295ad176fb73a41443ec036d4b55de16fb447
+] 
+hash: 0000000293-b7adf894a627e54c7a6e48a18d0d4244d823c782b43ed867cb459d9b62ba2071
+[Added iterative particle tracking and parametric study
+fpicella <francesco.picella@sorbonne-universite.fr>**20260417185454
+ Ignore-this: c47e80f805d928f5e02238dfca3a99044290e2bc7fc81a772669d9ef4b6164ea70d6bb6eaf7ffa83
+] 
+hash: 0000008410-dafec774b88d63cc304a5973c6a28b6c799b009607ac411ad0e2adda09bedcd3
