@@ -32,6 +32,10 @@ system. We chose to impose a Neumann condition on the free-surface i.e.
 $$
 \partial_z s |_t = \dot{s}_t
 $$
+or a Navier slip condition on the top i.e.
+$$
+s\vert_t = s_t + \lambda_t \partial_z s\vert_b
+$$
 and a Navier slip condition on the bottom i.e.
 $$
 s|_b = s_b + \lambda_b \partial_z s|_b
@@ -39,14 +43,11 @@ $$ */
 
 #if RHEOLOGY 
   #include "rheology.h"
-#endif 
+#else 
+double nu = 0.;
+#endif
 
-#if MUI 
-  #include "mui.h"
-#endif 
-
-void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
-			 double dst, double s_b, double lambda_b)
+void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D, double dst, double s_b, double lambda_b, double s_t, double lambda_t)
 {
   double a[nl], b[nl], c[nl], rhs[nl];
   double nueq[nl];
@@ -66,9 +67,7 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
 /** Regularisation for the nueq */
   for (int l = 1; l < nl; l++) nueq[l] = D;
 
-#if MUI
-  regularization(point, s, h, nueq);
-#endif
+
   
 #if RHEOLOGY
   regularization(point, s, h, nueq,D);
@@ -111,11 +110,26 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
   (hs)_{\mathrm{nl} - 1}^{\star} + D \Delta t \dot{s}_t
   $$
   */
-
+/*
   a[nl-1] = - (nueq[nl-1]+nueq[nl-2])*dt/(h[0,0,nl-2] + h[0,0,nl-1]);
   b[nl-1] = h[0,0,nl-1] - a[nl-1];
   rhs[nl-1] += nueq[nl-1]*dt*dst;
+*/
+/**
+We can also set a third-order Navier slip condition for flow surface
+$$
+s\vert_t = s_t + \lambda_t \partial_z s\vert_b
+$$
+this yields the following diagonal coefficient and right hand side value
+*/
+double den = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2]) 
+    - 2.*lambda_t*(3.*h[0,0,nl-1]*h[0,0,nl-2] + 2.*sq(h[0,0,nl-1]) + sq(h[0,0,nl-2]));
+  b[nl-1] = h[0,0,nl-1] + 2.*dt*nueq[0]*(1./(h[0,0,nl-1] + h[0,0,nl-2]) +
+			  (sq(h[0,0,nl-2]) + 3.*h[0,0,nl-1]*h[0,0,nl-2] + 3.*sq(h[0,0,nl-1]))/den);
+  a[nl-1] = - 2.*dt*nueq[0]*(1./(h[0,0,nl-1] + h[0,0,nl-2]) + sq(h[0,0,nl-1])/den);
 
+  rhs[nl-1] += 2.*dt*nueq[0]*s_t*(sq(h[0,0,nl-2]) + 3.*h[0,0,nl-2]*h[0,0,nl-1] + 2.*sq(h[0,0,nl-1]))/den;
+  
   /**
   For the bottom layer a third-order discretisation of the Navier slip
   condition gives
@@ -131,8 +145,8 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
   \end{aligned}
   $$
   */
-/*
-  double den = h[]*sq(h[] + h[0,0,1]) 
+
+  den = h[]*sq(h[] + h[0,0,1]) 
     + 2.*lambda_b*(3.*h[]*h[0,0,1] + 2.*sq(h[]) + sq(h[0,0,1]));
   b[0] = h[] + 2.*dt*((nueq[0]+nueq[1])/(h[] + h[0,0,1])/2. +
 			  nueq[0]*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 3.*sq(h[]))/den);
@@ -144,7 +158,7 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
     b[0] += c[0];
     rhs[0] +=  (- c[0]*h[] - nueq[0]*dt) * dst;
   }
-*/
+
 
 /**
 Meanwhile, for the reason of simplicty, we compute the value of $c[0]$, $b[0]$, $rhs[0]$ when no-slip boundary condition is imposed ($s_b=0$, $\lambda=0$), using first-order discretisation. To apply this, one should first comment the code above conserning $b_0, c_0, rhs_0$.
@@ -156,9 +170,10 @@ b_0 &= h_0 -c_0 + 2\frac{\nu_{-1/2}\Delta t}{h_{-1/2}}
 $$
 The coefficient "2" in $b_0$ comes from the linear interpolation $u[-1]=-u[0]$ (to have $s_b$=0). The $\nu_{-1/2}$ is a function of shear at bottom, which is computed with first-order appriximation $\frac{\partial u}{\partial y}\vert_b=2*u_0/h[0]$. (see also mui.h)
 */
-  
+ /* 
   c[0] = -(nueq[0]+nueq[1])*dt/(h[0,0,0]+h[0,0,1]);
   b[0] = h[0,0,0] - c[0] + 2.*Nueq(point,s,h,-1)*dt/h[0,0,0];
+  */
   /**
   We can now solve the tridiagonal system using the [Thomas
   algorithm](https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm). */
@@ -183,10 +198,11 @@ The coefficient "2" in $b_0$ comes from the linear interpolation $u[-1]=-u[0]$ (
 By default the viscosity is zero and we impose free-slip on the
 free-surface and no-slip on the bottom boundary
 i.e. $\dot{\mathbf{u}}_t = 0$, $\mathbf{\lambda}_b = 0$, $\mathbf{u}_b
-= 0$. */
+= 0$, $\mathbf{u_t}=0$, $\mathbf{\lambda_t}=0$. */
 
-double nu = 0.;
+
 (const) vector lambda_b[] = {-0.1,0,0}, dut[] = {0,0,0}, u_b[] = {0,0,0};
+(const) vector lambda_t[] = {-0.0,0,0},u_t[] = {0.0,0,0};
 
 /**
 In the [layered solver](hydro.h), vertical viscosity is applied to the
@@ -207,7 +223,7 @@ event viscous_term (i++,last)
 	  u.x[] += dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);
       foreach_dimension()
 	vertical_diffusion (point, h, u.x, dt, nu,
-			    dut.x[], u_b.x[], lambda_b.x[]);
+			    dut.x[], u_b.x[], lambda_b.x[], u_t.x[], lambda_t.x[]);
       foreach_layer()
 	foreach_dimension()
 	  u.x[] -= dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);

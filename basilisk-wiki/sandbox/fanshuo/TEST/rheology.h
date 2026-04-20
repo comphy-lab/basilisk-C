@@ -1,6 +1,9 @@
 /** 
 # Properties and functions for non newtonian flows */
 
+
+/* For Poiseuille*/
+double nu = 0.;
 /*For Bingham*/
 double tauy = 0.0;
 double mu = 1;
@@ -112,7 +115,7 @@ double Nueq(Point point, scalar s, scalar h, int layer){
 #elif TURBULENT
   ans = Nuturbulent(point,  s, h, layer);
 #else 
-  ans = D;
+  ans = nu;
 #endif
 
   return ans;
