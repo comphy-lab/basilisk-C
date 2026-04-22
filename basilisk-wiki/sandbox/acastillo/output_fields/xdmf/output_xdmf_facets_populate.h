@@ -2,6 +2,7 @@
 #define OUTPUT_XDMF_FACETS_POPULATE_H
 
 #ifdef HAVE_HDF5
+#include "acastillo/output_fields/output_common_helpers_facets.h"
 
 /** ### Populate points_dset for facets in xdmf (interleaved) */
 trace
@@ -28,7 +29,7 @@ void populate_points_dset_facets_xdmf(scalar c, double **points_dset, long num_p
     if (c[] > 1e-6 && c[] < 1. - 1e-6)
     #endif
     {
-      shortcut_facets // we cycle if cell is not at the interface
+      shortcut_facets; // we cycle if cell is not at the interface
       coord _p = {x, y, z};
       for (int i = 0; i < m; i++){
         long ii = iverts * 3;
@@ -87,7 +88,7 @@ void populate_topo_dset_facets_xdmf(scalar c, long **topo_dset, long topo_size, 
     if (c[] > 1e-6 && c[] < 1. - 1e-6)
     #endif
     {
-      shortcut_facets 
+      shortcut_facets; 
       if (m > 0) {
         (*topo_dset)[idata++] = type;
         (*topo_dset)[idata++] = m;
@@ -122,7 +123,7 @@ void populate_scalar_dset_facets_xdmf(scalar c, scalar s, double *scalar_dset, l
     if (c[] > 1e-6 && c[] < 1. - 1e-6)
     #endif
     {
-      shortcut_facets // we cycle if cell is not at the interface
+      shortcut_facets; // we cycle if cell is not at the interface
       if (m > 0){
         scalar_dset[ifacet] = s[];
         ifacet++;

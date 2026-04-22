@@ -179,6 +179,7 @@ void initialize_marker_slice(vertex scalar marker, hsize_t *offset, coord n = {0
 #endif // HAVE_HDF5
 
 #include "acastillo/output_fields/output_common_helpers_data.h"
+#include "acastillo/output_fields/output_common_helpers_facets.h"
 #include "acastillo/output_fields/output_common_helpers_populate.h"
 
 #endif // OUTPUT_COMMON_HELPERS_H

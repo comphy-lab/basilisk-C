@@ -2,6 +2,7 @@
 #define OUTPUT_VTKHDF_FACETS_POPULATE_H
 
 #ifdef HAVE_HDF5
+#include "acastillo/output_fields/output_common_helpers_facets.h"
 
 /** ### Populate points_dset for facets in vtkhdf (interleaved) */
 trace

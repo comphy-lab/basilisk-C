@@ -22,7 +22,7 @@ height. The non-hydrostatic pressure $\phi_k$ and vertical velocity
 $w_k$ can be added using [the non-hydrostatic extension](nh.h). See
 also the [general introduction](README).
 
-![Definition of the $n$ layers.](../figures/layers.svg){ width="60%" 
+![Definition of the $n$ layers.](../figures/layers.svg){ width="60%" }
 
 ## Fields and parameters
 
@@ -44,12 +44,18 @@ in which case the tracers list is empty). */
 #define BGHOSTS 2
 #define LAYERS 1
 #include "utils.h"
-double slope;
+
 scalar zb[], eta, h;
 vector u;
-double G = 1., dry = 1e-12, CFL_H = 1e40;
+double G = 1., CFL_H = 1e40;
+#if SINGLE_PRECISION
+double dry = 1e-6;
+#else
+double dry = 1e-12;
+#endif
 double (* gradient) (double, double, double) = minmod2;
-scalar * tracers = NULL;
+
+scalar * tracers = NULL, eta_r;
 bool linearised = false;
 
 /**
@@ -91,8 +97,9 @@ event defaults0 (i = 0)
 #if TREE
   h.refine = h.prolongation = refine_linear;
   h.restriction = restriction_volume_average;
+  h.dirty = true;
 #endif
-  eta = new scalar;
+  eta_r = eta = new scalar;
   reset ({h, zb}, 0.);
 
   /**
@@ -103,9 +110,12 @@ event defaults0 (i = 0)
 #if TREE
   zb.refine = zb.prolongation = refine_linear;
   zb.restriction = restriction_volume_average;
+  zb.dirty = true;
   eta.prolongation = refine_linear;
   eta.refine  = refine_eta;
   eta.restriction = restriction_eta;
+  eta.depends = list_copy ({zb,h});
+  eta.dirty = true;
 #endif // TREE
 }
 
@@ -143,6 +153,7 @@ event defaults (i = 0)
 #if TREE
     s.refine = s.prolongation = refine_linear;
     s.restriction = restriction_volume_average;
+    s.dirty = true;
 #endif
   }
 
@@ -203,14 +214,15 @@ event face_fields (i++, last)
   The (CFL-limited) timestep is also computed by this function. A
   difficulty is that the prediction step below also requires an
   estimated timestep (the `pdt` variable below). The timestep at the
-  previous iteration is used as estimate. For the initial timestep a
-  "sufficiently small" value is used. */
-  
-  static double pdt = 1e-6;
+  previous iteration is used as estimate. */
+
+  static double pdt = 0.;
   foreach_face (reduction (min:dtmax)) {
-    double ax = a_baro (eta, 0);
+    double ax = a_baro (eta_r, 0);
     double H = 0., um = 0.;
+    double Hr = 0., Hl = 0.;
     foreach_layer() {
+      Hr += h[], Hl += h[-1];
 
       /**
       The face velocity is computed as the height-weighted average of
@@ -221,14 +233,27 @@ event face_fields (i++, last)
       hu.x[] = hl > 0. || hr > 0. ? (hl*u.x[-1] + hr*u.x[])/(hl + hr) : 0.;
 
       /**
-      The face height is computed using a variant of the
-      [BCG](/src/bcg.h) scheme. */
-      
-      double hff, un = pdt*(hu.x[] + pdt*ax)/Delta, a = sign(un);
-      int i = - (a + 1.)/2.;
-      double g = h.gradient ? h.gradient (h[i-1], h[i], h[i+1])/Delta :
-	(h[i+1] - h[i-1])/(2.*Delta);
-      hff = h[i] + a*(1. - a*un)*g*Delta/2.;
+      If the left or central cell are dry, we consider a "step-like"
+      bathymetry and define the face height as the water level above
+      the step. */
+
+      double hff;
+      if (Hl <= dry)
+	hff = fmax (fmin (zb[] + Hr - zb[-1], h[]), 0.);
+      else if (Hr <= dry)
+	hff = fmax (fmin (zb[-1] + Hl - zb[], h[-1]), 0.);
+      else {
+
+	/**
+	In the default case, the face height is computed using a variant of the
+	[BCG](/src/bcg.h) scheme. */
+
+	double un = pdt*hu.x[]/Delta, a = sign(un);
+	int i = - (a + 1.)/2.;
+	double g = h.gradient ? h.gradient (h[i-1], h[i], h[i+1])/Delta :
+	  (h[i+1] - h[i-1])/(2.*Delta);
+	hff = h[i] + a*(1. - a*un)*g*Delta/2.;
+      }
       hf.x[] = fm.x[]*hff;
 
       /**
@@ -272,6 +297,7 @@ event face_fields (i++, last)
 The function below approximates the advection terms using estimates of
 the face fluxes $h\mathbf{u}$ and face heights $h_f$. */
 
+trace
 void advect (scalar * tracers, face vector hu, face vector hf, double dt)
 {
 
@@ -299,9 +325,11 @@ void advect (scalar * tracers, face vector hu, face vector hf, double dt)
       if (hul != hu.x[]) {
 	if (point.l < nl - 1)
 	  hu.x[0,0,1] += hu.x[] - hul;
+#if !_GPU
 	else if (nl > 1)
-	  fprintf (stderr, "warning: could not conserve barotropic flux "
-		   "at %g,%g,%d\n", x, y, point.l);
+	  fprintf (stderr, "src/layered/hydro.h:%d: warning: could not conserve barotropic flux "
+		   "at %g,%g,%d\n", LINENO, x, y, point.l);
+#endif
 	hu.x[] = hul;
       }
     }
@@ -359,10 +387,12 @@ void advect (scalar * tracers, face vector hu, face vector hf, double dt)
       double h1 = h[];
       foreach_dimension()
 	h1 += dt*(hu.x[] - hu.x[1])/(Delta*cm[]);
+#if !_GPU
       if (h1 < - dry)
-	fprintf (stderr, "warning: h1 = %g < - 1e-12 at %g,%g,%d,%g\n",
-		 h1, x, y, _layer, t);
-      h[] = fmax(h1, 0.);
+	fprintf (stderr, "src/layered/hydro.h:%d: warning: h1 = %g < - 1e-12 at %g,%g,%d,%g\n",
+		 LINENO, h1, x, y, _layer, t);
+#endif
+      h[] = max(h1, 0.);
       if (h1 < dry) {
 	for (scalar f in tracers)
 	  f[] = 0.;
@@ -384,7 +414,7 @@ event half_advection (i++, last);
 /**
 Vertical diffusion (including viscosity) is added by this code. */
 
-#include "./diffusionF.h"
+#include "diffusionMT.h"
 
 /**
 ## Accelerations 
@@ -432,8 +462,7 @@ event pressure (i++, last)
 }
   
 /**
-Finally the free-surface height $\eta$ is updated and the boundary
-conditions are applied. */
+Finally the free-surface height $\eta$ is updated. */
 
 event update_eta (i++, last)
 {
@@ -465,7 +494,7 @@ must be freed at the end of the run. */
    
 event cleanup (t = end, last)
 {
-  delete ({eta, h, u});
+  delete ({eta, eta_r, h, u});
   free (tracers), tracers = NULL;
 }
 
@@ -650,13 +679,13 @@ double segment_flux (coord segment[2], double * flux, scalar h, vector u)
   normalize (&m);
   for (int l = 0; l < nl; l++)
     flux[l] = 0.;
-  foreach_segment (segment, p) {
+  foreach_segment (segment, p, reduction(+:flux[:nl])) {
     double dl = 0.;
     foreach_dimension() {
       double dp = (p[1].x - p[0].x)*Delta/Delta_x*(fm.y[] + fm.y[0,1])/2.;
       dl += sq(dp);
     }
-    dl = sqrt (dl);    
+    dl = sqrt (dl);
     for (int i = 0; i < 2; i++) {
       coord a = p[i];
       foreach_layer()
@@ -666,10 +695,6 @@ double segment_flux (coord segment[2], double * flux, scalar h, vector u)
 	 m.y*interpolate_linear (point, u.y, a.x, a.y, 0.));
     }
   }
-  // reduction
-#if _MPI
-  MPI_Allreduce (MPI_IN_PLACE, flux, nl, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
-#endif
   double tot = 0.;
   for (int l = 0; l < nl; l++)
     tot += flux[l];

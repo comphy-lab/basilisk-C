@@ -12,28 +12,41 @@
 
 
 
-#define g_ 9.81
+//#define g_ 9.81
+double g_=9.81;
 
 #ifndef WAVE
     #define WAVE 0 // default is to produce monochromatic wave
 #endif
 
 // General parameters
+double L = 200.0;         // Size of the domain
+double h0 = 100.0;        // depth of water
+double kp;                // peak wavelength
 
-double P = 0.02;
-int N_mode = 32;
-int N_power = 5;
-double L = 200.0;
-double kp;
-double h0 = 40.0;        // depth of water
+// Solver parameters
+int N_grid = 6;           // Number of cells
+int N_layer = 30;         // Number of layers
+char ncname[20] = "out";  // file name of output
 
-double * list_thetam;
-double thetam=0.;
-int Nthetam = 4;
+// Stokes wave parameters
+double ak = 0.33;
 
-int N_grid = 6;
-int N_layer = 15;
-char ncname[20] = "out";         // file name of output
+// Stynthetic field parameters
+double P = 0.02;          // Energy level
+int N_mode = 32;          // Number of modes
+int N_power = 5;          // power exponent of cos^n
+double thetam=0.;         // default direction 
+int Nthetam = 4;          // number of direction (dir=i/Nthetam for i in
+                          //                                [0,Nthetam])
+
+// Initial conditions generation
+#if WAVE<2
+#include "hugoj/lib/common_waves.h"
+#elif WAVE==2
+#include "hugoj/lib/spectrum.h" 
+#endif
+
 
 int main(){
   
@@ -48,19 +61,10 @@ int main(){
   periodic (top);
   periodic (left);
 
-  
-
-    
-  
-  
-  // // loop through the thetam values
-  // for (int kt=0; kt<Nthetam; ++kt){
-  //   thetam = list_thetam[kt];
-  //   fprintf(stderr, "run loop, thetam=%f\n", thetam);
-  //   snprintf(ncname, sizeof(ncname), "out_%d.nc", kt);
-  run();
-  
+  run(); 
 }
+
+
 
 event init(i =  0) {
   
@@ -70,7 +74,24 @@ event init(i =  0) {
   #if WAVE == 0
   
   snprintf(ncname, sizeof(ncname), "monoc.nc");
-  
+  double a = 1.;
+  double k = 2*pi/L;
+  geometric_beta (1./3., true);
+  foreach() {
+    zb[] = - h0;
+    double H = wave_monolin(0, x, a, k) - zb[];
+    double z = zb[];
+    foreach_layer() {
+      h[] = H*beta[point.l];
+      z += h[]/2.;
+      // u.x[] = a*omega*exp(k*z)*sin(k*x);
+      // w[] = a*omega*exp(k*z)*cos(k*x);
+      u.x[] = u_x_monolin(0, x, z, a, k);
+      w[] = u_y_monolin(0, x, z, a, k);
+      eta[] += h[];
+      z += h[]/2.;
+    }
+  }
   create_nc({zb, h, u, w, eta}, ncname);
   write_nc();
 
@@ -78,21 +99,21 @@ event init(i =  0) {
   ## Stokes wave
   */
   #elif WAVE == 1
-  #include "examples/test/stokes.h"
+  
   snprintf(ncname, sizeof(ncname), "stokes.nc");
-
-  double a = 0.25;
+  kp=2*pi/L;
   foreach() {
-    zb[] = - 0.5 + a*sin(k_/2.*y);
-    double H = wave(x, 0) - zb[];
-    double z = zb[];
-    foreach_layer() {
-      h[] = H*beta[point.l];
-      z += h[]/2.;
-      u.x[] = u_x(x, z);
-      w[] = u_y(x, z);
-      z += h[]/2.;
-    }
+     zb[] = - h0;
+     double H = wave_stokes(x, 0, ak, kp, h0) - zb[];
+     double z = zb[];
+     foreach_layer() {
+       h[] = H*beta[point.l];
+       z += h[]/2.;
+       u.x[] = u_x_stokes(x, z, ak, kp, h0);
+       w[] = u_y_stokes(x, z, ak, kp, h0);
+       z += h[]/2.;
+       eta[] += h[];
+     }
   }
   create_nc({zb, h, u, w, eta}, ncname);
   write_nc();
@@ -101,11 +122,11 @@ event init(i =  0) {
   ## Synthetic wave field (4 directions)
   */
   #elif WAVE == 2
-  #include "hugoj/lib/spectrum.h" // Initial conditions generation
+  
 
   kp=10*PI/L;
   // initialise thetam list 
-  list_thetam = (double*)calloc(Nthetam, sizeof(double));
+  double list_thetam = (double*)calloc(Nthetam, sizeof(double));
   for (int i=0; i<Nthetam; ++i){
     list_thetam[i] = i*PI;
   }
@@ -151,8 +172,8 @@ event init(i =  0) {
   }
   
   #else
-    fprintf(stderr, "the chosen wave flag should be 0 or 1 or 2, it is WAVE");
-    return 2;
+  fprintf(stderr, "the chosen wave flag should be 0 or 1 or 2, it is WAVE");
+  return 2;
   #endif
   return 1;
 }

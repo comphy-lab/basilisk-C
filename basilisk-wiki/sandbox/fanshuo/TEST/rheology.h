@@ -44,8 +44,8 @@ double shear(Point point, scalar s, scalar h, int layer, int layercoef){
   else if(layercoef==-1){
     shear = 2.*s[0,0,0]/h[0,0,0];
   }
-  return fabs(shear);
-  //return sqrt(sq(shear));   // Why?
+  //return fabs(shear);
+  return sqrt(sq(shear) + .1e-8);   // Why?
 }
 
 /*
@@ -143,9 +143,10 @@ void regularization(Point point, scalar s, scalar h, double nueq[], double D)
   }
 
   for( l=0 ; l<nl;l++){
-    if ( l<=nlc ) nueq[l] = Nueq(point,s,h,l);
-    else nueq[l] = nueq[l-1];
-   // nueq[l] = Nueq(point,s,h,l);
+    //if ( l<=nlc ) nueq[l] = Nueq(point,s,h,l);
+   // else nueq[l] = nueq[l-1];
+    nueq[l] = Nueq(point,s,h,l);
+   
   }
 
   // for(l=0 ; l<nl;l++){ // Potential former bilayer

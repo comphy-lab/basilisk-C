@@ -122,6 +122,7 @@ s\vert_t = s_t + \lambda_t \partial_z s\vert_b
 $$
 this yields the following diagonal coefficient and right hand side value
 */
+ 
 double den = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2]) 
     - 2.*lambda_t*(3.*h[0,0,nl-1]*h[0,0,nl-2] + 2.*sq(h[0,0,nl-1]) + sq(h[0,0,nl-2]));
   b[nl-1] = h[0,0,nl-1] + 2.*dt*nueq[0]*(1./(h[0,0,nl-1] + h[0,0,nl-2]) +
@@ -129,7 +130,7 @@ double den = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2])
   a[nl-1] = - 2.*dt*nueq[0]*(1./(h[0,0,nl-1] + h[0,0,nl-2]) + sq(h[0,0,nl-1])/den);
 
   rhs[nl-1] += 2.*dt*nueq[0]*s_t*(sq(h[0,0,nl-2]) + 3.*h[0,0,nl-2]*h[0,0,nl-1] + 2.*sq(h[0,0,nl-1]))/den;
-  
+
   /**
   For the bottom layer a third-order discretisation of the Navier slip
   condition gives
@@ -146,7 +147,7 @@ double den = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2])
   $$
   */
 
-  den = h[]*sq(h[] + h[0,0,1]) 
+ den = h[]*sq(h[] + h[0,0,1]) 
     + 2.*lambda_b*(3.*h[]*h[0,0,1] + 2.*sq(h[]) + sq(h[0,0,1]));
   b[0] = h[] + 2.*dt*((nueq[0]+nueq[1])/(h[] + h[0,0,1])/2. +
 			  nueq[0]*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 3.*sq(h[]))/den);
@@ -159,6 +160,8 @@ double den = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2])
     rhs[0] +=  (- c[0]*h[] - nueq[0]*dt) * dst;
   }
 
+  
+ 
 
 /**
 Meanwhile, for the reason of simplicty, we compute the value of $c[0]$, $b[0]$, $rhs[0]$ when no-slip boundary condition is imposed ($s_b=0$, $\lambda=0$), using first-order discretisation. To apply this, one should first comment the code above conserning $b_0, c_0, rhs_0$.

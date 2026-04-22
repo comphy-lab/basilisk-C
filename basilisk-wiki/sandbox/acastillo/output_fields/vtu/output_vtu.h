@@ -189,9 +189,4 @@ void output_pvtu(scalar *list, vector *vlist, char *subname)
 #include "output_vtu_facets.h"
 #include "output_vtu_box.h"
 
-/** ## postamble: delete macros */
-#undef shortcut_slice
-#undef shortcut_facets
-#undef mfacets
-
 #endif

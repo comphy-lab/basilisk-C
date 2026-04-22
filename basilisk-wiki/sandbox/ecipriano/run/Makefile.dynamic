@@ -1,0 +1,85 @@
+# Static contact angle models
+STAT1 = -DDYNAMIC_ANGLE=0 -DSLIP_LENGTH=0
+STAT2 = -DDYNAMIC_ANGLE=0 -DSLIP_LENGTH=HALF_GRID_SIZE
+STAT3 = -DDYNAMIC_ANGLE=0 -DSLIP_LENGTH=HALF_COARSE_SIZE
+
+# Dynamic contact angle models
+DYN1 = -DDYNAMIC_ANGLE=1 -DTHETA_LEGENDRE=1 -DLOUT=10e-6 -DLIN=1e-9 -DSLIP_LENGTH=0
+DYN2 = -DDYNAMIC_ANGLE=1 -DTHETA_LEGENDRE=1 -DLOUT=HALF_GRID_SIZE -DLIN=1e-9 -DSLIP_LENGTH=0
+DYN3 = -DDYNAMIC_ANGLE=1 -DTHETA_LEGENDRE=1 -DLOUT=HALF_GRID_SIZE -DLIN=1e-9 -DSLIP_LENGTH=HALF_GRID_SIZE
+DYN4 = -DDYNAMIC_ANGLE=1 -DTHETA_AFKHAMI=1 -DLOUT=0.02 -DLIN=HALF_GRID_SIZE -DSLIP_LENGTH=HALF_GRID_SIZE
+
+# Withdrawing plate
+plate-stat1.c: dynamic.c
+	ln -s dynamic.c plate-stat1.c
+plate-stat1.s: CFLAGS += $(STAT1)
+plate-stat1.tst: CFLAGS += $(STAT1)
+
+plate-stat2.c: dynamic.c
+	ln -s dynamic.c plate-stat2.c
+plate-stat2.s: CFLAGS += $(STAT2)
+plate-stat2.tst: CFLAGS += $(STAT2)
+
+plate-stat3.c: dynamic.c
+	ln -s dynamic.c plate-stat3.c
+plate-stat3.s: CFLAGS += $(STAT3)
+plate-stat3.tst: CFLAGS += $(STAT3)
+
+plate-dyn1.c: dynamic.c
+	ln -s dynamic.c plate-dyn1.c
+plate-dyn1.s: CFLAGS += $(DYN1)
+plate-dyn1.tst: CFLAGS += $(DYN1)
+plate-dyn1.c: dynamic.c
+
+plate-dyn2.c: dynamic.c
+	ln -s dynamic.c plate-dyn2.c
+plate-dyn2.s: CFLAGS += $(DYN2)
+plate-dyn2.tst: CFLAGS += $(DYN2)
+
+plate-dyn3.c: dynamic.c
+	ln -s dynamic.c plate-dyn3.c
+plate-dyn3.s: CFLAGS += $(DYN3)
+plate-dyn3.tst: CFLAGS += $(DYN3)
+
+plate-dyn4.c: dynamic.c
+	ln -s dynamic.c plate-dyn4.c
+plate-dyn4.s: CFLAGS += $(DYN4)
+plate-dyn4.tst: CFLAGS += $(DYN4)
+
+# Sessile drop
+drop-stat1.c: dynamic.c
+	ln -s dynamic.c drop-stat1.c
+drop-stat1.s: CFLAGS += -DSESSILE=1 $(STAT1)
+drop-stat1.tst: CFLAGS += -DSESSILE=1 $(STAT1)
+
+drop-stat2.c: dynamic.c
+	ln -s dynamic.c drop-stat2.c
+drop-stat2.s: CFLAGS += -DSESSILE=1 $(STAT2)
+drop-stat2.tst: CFLAGS += -DSESSILE=1 $(STAT2)
+
+drop-stat3.c: dynamic.c
+	ln -s dynamic.c drop-stat3.c
+drop-stat3.s: CFLAGS += -DSESSILE=1 $(STAT3)
+drop-stat3.tst: CFLAGS += -DSESSILE=1 $(STAT3)
+
+drop-dyn1.c: dynamic.c
+	ln -s dynamic.c drop-dyn1.c
+drop-dyn1.s: CFLAGS += -DSESSILE=1 $(DYN1)
+drop-dyn1.tst: CFLAGS += -DSESSILE=1 $(DYN1)
+
+drop-dyn2.c: dynamic.c
+	ln -s dynamic.c drop-dyn2.c
+drop-dyn2.s: CFLAGS += -DSESSILE=1 $(DYN2)
+drop-dyn2.tst: CFLAGS += -DSESSILE=1 $(DYN2)
+
+drop-dyn3.c: dynamic.c
+	ln -s dynamic.c drop-dyn3.c
+drop-dyn3.s: CFLAGS += -DSESSILE=1 $(DYN3)
+drop-dyn3.tst: CFLAGS += -DSESSILE=1 $(DYN3)
+
+drop-dyn4.c: dynamic.c
+	ln -s dynamic.c drop-dyn4.c
+drop-dyn4.s: CFLAGS += -DSESSILE=1 $(DYN4)
+drop-dyn4.tst: CFLAGS += -DSESSILE=1 $(DYN4)
+
+dynamic.tst: plate-stat2.tst plate-stat3.tst drop-stat1.tst drop-dyn4.tst
