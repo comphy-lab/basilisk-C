@@ -84,6 +84,14 @@ void output_ppm_gpu (OutputPPMGPU * display,
   if (fp || file || (fps && glfwGetTime() - display->frameStartTime > 1./fps)) {
 
     /**
+    Automatic boundary conditions seem to conflict with the
+    foreach_region() fragment shader loop below, so we apply them
+    manually if necessary. */
+    
+    if (linear)
+      boundary ({f});
+    
+    /**
     This code should be the same as
     [output_ppm](/src/output.h#output_ppm), from here ... */
     

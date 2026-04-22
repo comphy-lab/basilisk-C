@@ -2023,7 +2023,7 @@ static char * set_boundary (Ast * array, char * ind)
   char * scalar = ast_str_append (array->child[0], NULL);
   char * set = NULL;
   str_append (set,
-	      "_attribute[", scalar, ".i].dirty=1,",
+	      "set_dirty_stencil(", scalar, "),",
 	      "_attribute[", scalar, ".i].boundary[", bc,
 	      "]=_boundary", ind, ",",
 	      "_attribute[", scalar, ".i].boundary_homogeneous[", bc,

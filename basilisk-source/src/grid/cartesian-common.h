@@ -530,7 +530,7 @@ static scalar * list_add_depends (scalar * list, scalar s)
       return list;
   scalar * list1 = list;
   for (scalar d in _attribute[s.i].depends)
-    if (d.dirty)
+    if (!(d.stencil.bc & s_centered))
       list1 = list_add_depends (list1, d);
   return list_append (list1, s);
 }
@@ -546,11 +546,11 @@ void boundary_internal (scalar * list, const char * fname, int line)
   for (scalar s in list)
     if (!is_constant(s) && s.block > 0) {
       if (scalar_is_dirty (s)) {
-	if (s.face && s.dirty != 2)
+	if (s.face && !(s.stencil.bc & s_face))
 	  foreach_dimension()
 	    if (s.v.x.i == s.i)
 	      listf.x = list_add (listf.x, s), flux = true;
-	if (!is_constant(cm) && cm.dirty)
+	if (!is_constant(cm) && !(cm.stencil.bc & s_centered))
 	  listc = list_add_depends (listc, cm);
 	if (s.face != 2) // flux only
 	  listc = list_add_depends (listc, s);
@@ -585,7 +585,7 @@ void boundary_internal (scalar * list, const char * fname, int line)
 #endif
     boundary_level (listc, -1);
     for (scalar s in listc)
-      s.dirty = false;
+      s.stencil.bc |= s_centered;
     free (listc);
   }
 }
@@ -600,7 +600,8 @@ void cartesian_boundary_face (vectorl vl)
   scalar * listc = NULL;
   foreach_dimension()
     for (scalar s in vl.x) {
-      s.dirty = 2;
+      s.stencil.bc |= s_face;
+      s.stencil.bc &= ~s_centered;
       listc = list_add_depends (listc, s);
     }
   boundary_level (listc, -1);
@@ -1083,10 +1084,10 @@ void default_stencil (Point p, scalar * list)
     if (s.v.x.i != -1) {
       vector v = s.v;
       for (scalar c in {v})
-	c.input = c.output = c.nowarning = true, c.width = 2;
+        c.stencil.io |= s_input|s_output|s_nowarning, c.stencil.width = 2;
     }
     else
-      s.input = s.output = s.nowarning = true, s.width = 2;
+      s.stencil.io |= s_input|s_output|s_nowarning, s.stencil.width = 2;
   }
 }
 
@@ -1134,15 +1135,15 @@ void stencil_val (Point p, scalar s, int i, int j, int k,
       central = false;
   }
   if (central) {
-    if (!s.output)
-      s.input = true;
+    if (!(s.stencil.io & s_output))
+      s.stencil.io |= s_input;
   }
   else {
-    s.input = true;
+    s.stencil.io |= s_input;
     int d = 0;
     foreach_dimension() {
-      if ((!s.face || s.v.x.i != s.i) && abs(index[d]) > s.width)
-	s.width = abs(index[d]);
+      if ((!s.face || s.v.x.i != s.i) && abs(index[d]) > s.stencil.width)
+	s.stencil.width = abs(index[d]);
       d++;
     }
   }
@@ -1175,7 +1176,7 @@ void stencil_val_a (Point p, scalar s, int i, int j, int k, bool input,
       fflush (qstderr());
       abort();
     }
-  if (input && !s.output)
-    s.input = true;
-  s.output = true;
+  if (input && !(s.stencil.io & s_output))
+    s.stencil.io |= s_input;
+  s.stencil.io |= s_output;
 }

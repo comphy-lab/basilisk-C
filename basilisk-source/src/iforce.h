@@ -71,10 +71,8 @@ event acceleration (i++)
   fraction field as applied to the pressure field. */
   
 #if TREE
-  for (scalar f in list) {
-    f.prolongation = p.prolongation;
-    f.dirty = true; // boundary conditions need to be updated
-  }
+  for (scalar f in list)
+    set_prolongation (f, p.prolongation);
 #endif
 
   /**
@@ -114,10 +112,8 @@ event acceleration (i++)
   volume fraction field. */
   
 #if TREE
-  for (scalar f in list) {
-    f.prolongation = fraction_refine;
-    f.dirty = true; // boundary conditions need to be updated
-  }
+  for (scalar f in list)
+    set_prolongation (f, fraction_refine);
 #endif
   
   /**

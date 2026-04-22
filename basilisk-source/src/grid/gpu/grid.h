@@ -641,7 +641,8 @@ void hash_external (Adler32Hash * hash, const External * g, const ForeachData * 
   if (g->type == sym_function_declaration || g->type == sym_function_definition) {
     bool boundary = is_boundary_attribute (g);
     for (scalar s in baseblock)
-      if (g->name[0] != '.' || (!boundary && s.gpu.index) || (boundary && s.output)) {
+      if (g->name[0] != '.' || (!boundary && s.gpu.index) ||
+          (boundary && (s.stencil.io & s_output))) {
 	void * ptr = g->name[0] != '.' ? g->pointer :
 	  *((void **)(((char *) &_attribute[s.i]) + g->nd));
 	if (ptr) {
@@ -940,7 +941,7 @@ char * build_shader (External * externals, const ForeachData * loop,
 	    void * func = *((void **)(data + g->nd));
 	    if (func) {
 	      External * f = _get_function ((long) func);
-	      if (!f->used && (!boundary || s.output)) {
+	      if (!f->used && (!boundary || (s.stencil.io & s_output))) {
 		f->used = true;
 		char * args = is_void_function (f->data) ? " args,0" : " args";
 		if (!expr)
@@ -1294,7 +1295,7 @@ static void gpu_cpu_sync_scalar (scalar s, char * sep, GLenum mode)
 {
   assert ((mode == GL_MAP_READ_BIT && s.gpu.stored < 0) ||
 	  (mode == GL_MAP_WRITE_BIT && s.gpu.stored > 0));
-  if (s.gpu.stored > 0 && s.dirty)
+  if (s.gpu.stored > 0 && !(s.stencil.bc & s_centered))
     boundary ({s});
   GL_C (glMemoryBarrier (GL_BUFFER_UPDATE_BARRIER_BIT));
   size_t size = (size_t)field_size()*sizeof(real), offset = s.i*size, totalsize = s.block*size;
@@ -1330,8 +1331,9 @@ static void gpu_cpu_sync (scalar * list, GLenum mode, const char * fname, int li
   bool copy = false;
 #endif
   for (scalar s in list)
-    if ((s.input || s.output) && ((mode == GL_MAP_READ_BIT && s.gpu.stored < 0) ||
-				  (mode == GL_MAP_WRITE_BIT && s.gpu.stored > 0))) {
+    if (((s.stencil.io & s_input) || (s.stencil.io & s_output)) &&
+        ((mode == GL_MAP_READ_BIT && s.gpu.stored < 0) ||
+         (mode == GL_MAP_WRITE_BIT && s.gpu.stored > 0))) {
 #if PRINTCOPYGPU
       if (!copy) {
 	fprintf (stderr, "%s:%d: %s ", fname, line,
@@ -1418,7 +1420,8 @@ static External * merge_external (External * externals, External ** end, Externa
   if (g->type == sym_function_declaration || g->type == sym_function_definition) {
     bool boundary = is_boundary_attribute (g);
     for (scalar s in baseblock)
-      if (g->name[0] != '.' || (!boundary && s.gpu.index) || (boundary && s.output)) {
+      if (g->name[0] != '.' || (!boundary && s.gpu.index) ||
+          (boundary && (s.stencil.io & s_output))) {
 	void * ptr = g->name[0] != '.' ? g->pointer :
 	  *((void **)(((char *) &_attribute[s.i]) + g->nd));
 	if (ptr) {
@@ -1744,19 +1747,20 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
     /**
     We make sure all fields marked dirty are also outputs. */
 
-    if (!s.output)
-      s.output = true;
+    if (!(s.stencil.io & s_output))
+      s.stencil.io |= s_output;
   }
 
   for (scalar s in baseblock)
     s.gpu.index = 0;
   int index = 1;
   for (scalar s in baseblock)
-    if ((s.input || s.output) && !s.gpu.index) {
+    if (((s.stencil.io & s_input) || (s.stencil.io & s_output)) && !s.gpu.index) {
 #if PRINTBOUNDARY
       fprintf (stderr, "%s:%d: %s:%s%s index: %d\n",
                loop->fname, loop->line, 
-               s.name, s.input ? " input" : "", s.output ? " output" : "", index);
+               s.name, (s.stencil.io & s_input) ? " input" : "",
+               (s.stencil.io & s_output) ? " output" : "", index);
 #endif
       if (s.v.x.i == -1) // scalar
 	s.gpu.index = index++;
@@ -1770,8 +1774,10 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
   for (scalar s in loop->dirty) {
 #if PRINTBOUNDARY
     fprintf (stderr, "%s:%d: dirty: %s:%s%s index: %d\n",
-             loop->fname, loop->line, 
-             s.name, s.input ? " input" : "", s.output ? " output" : "", s.gpu.index);
+             loop->fname, loop->line, s.name,
+             (s.stencil.io & s_input) ? " input" : "",
+             (s.stencil.io & s_output) ? " output" : "",
+             s.gpu.index);
 #endif
     s.boundary_left   = s.boundary[left];
     s.boundary_right  = s.boundary[right];
@@ -1785,7 +1791,7 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
   for (External * g = externals; g && g->name; g++)
     if (g->reduct) {
       scalar s = new scalar;
-      s.output = 1;
+      s.stencil.io |= s_output;
       g->s = s;
 #if PRINTREDUCT
       fprintf (stderr, "%s:%d: new reduction field %d for %s\n",
@@ -1820,12 +1826,12 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
 
   scalar * listc = NULL;
   for (scalar s in loop->listc)
-    if (s.dirty)
+    if (!(s.stencil.bc & s_centered))
       listc = list_prepend (listc, s);
   scalar * listf_x = NULL, * listf_y = NULL;
   foreach_dimension()
     for (scalar s in loop->listf.x)
-      if (s.dirty)
+      if (!(s.stencil.bc & s_face))
 	listf_x = list_prepend (listf_x, s);
   if (listc || listf_x || listf_y) {
 #if PRINTBC
@@ -1849,13 +1855,13 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
     }
     memcpy (_attribute, backup, nvar*sizeof(_Attributes));
     for (scalar s in listc) {
-      s.dirty = false;
+      s.stencil.bc |= s_centered;
       s.gpu.stored = -1;
     }
     free (listc); 
     foreach_dimension() {
       for (scalar s in listf_x) {
-	s.dirty = false;
+        s.stencil.bc |= s_face;
 	s.gpu.stored = -1;
       }
       free (listf_x);
@@ -2057,7 +2063,7 @@ bool gpu_end_stencil (ForeachData * loop,
     foreach_dimension()
       free (loop->listf.x), loop->listf.x = NULL;
     for (scalar s in loop->dirty)
-      s.dirty = false;
+      s.stencil.bc = s_centered|s_face;
     free (loop->dirty), loop->dirty = NULL;
   }
   else {
@@ -2066,7 +2072,7 @@ bool gpu_end_stencil (ForeachData * loop,
   }
   
   for (scalar s in baseblock)
-    if (s.output)
+    if (s.stencil.io & s_output)
       s.gpu.stored = on_gpu ? -1 : 1;
 
   return on_gpu && loop->parallel != 3;

@@ -95,9 +95,9 @@ event defaults0 (i = 0)
   h = new scalar[nl];
   h.gradient = gradient;
 #if TREE
-  h.refine = h.prolongation = refine_linear;
-  h.restriction = restriction_volume_average;
-  h.dirty = true;
+  h.refine = refine_linear;
+  set_prolongation (h, refine_linear);
+  set_restriction (h, restriction_volume_average);
 #endif
   eta_r = eta = new scalar;
   reset ({h, zb}, 0.);
@@ -108,14 +108,13 @@ event defaults0 (i = 0)
   zb.gradient = gradient;
   eta.gradient = gradient;
 #if TREE
-  zb.refine = zb.prolongation = refine_linear;
-  zb.restriction = restriction_volume_average;
-  zb.dirty = true;
-  eta.prolongation = refine_linear;
+  zb.refine = refine_linear;
+  set_prolongation (zb, refine_linear);
+  set_restriction (zb, restriction_volume_average);
+  set_prolongation (eta, refine_linear);
   eta.refine  = refine_eta;
-  eta.restriction = restriction_eta;
+  set_restriction (eta, restriction_eta);
   eta.depends = list_copy ({zb,h});
-  eta.dirty = true;
 #endif // TREE
 }
 
@@ -151,9 +150,9 @@ event defaults (i = 0)
   for (scalar s in tracers) {
     s.gradient = gradient;
 #if TREE
-    s.refine = s.prolongation = refine_linear;
-    s.restriction = restriction_volume_average;
-    s.dirty = true;
+    s.refine = refine_linear;
+    set_prolongation (s, refine_linear);
+    set_restriction (s, restriction_volume_average);
 #endif
   }
 
@@ -643,9 +642,8 @@ We overload the `conserve_elevation()` function. */
 void conserve_layered_elevation (void)
 {
   h.refine  = refine_layered_elevation;
-  h.prolongation = prolongation_elevation;
-  h.restriction = restriction_elevation;
-  h.dirty = true; // boundary conditions need to be updated
+  set_prolongation (h, prolongation_elevation);
+  set_restriction (h, restriction_elevation);
 }
 
 #define conserve_elevation() conserve_layered_elevation()

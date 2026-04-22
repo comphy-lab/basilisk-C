@@ -297,8 +297,8 @@ event vof (i++)
   We restore the refinement function for the total momentum. */
 
   for (scalar s in {q}) {
-    s.refine = s.prolongation = refine;
-    s.dirty = true;
+    s.refine = refine;
+    set_prolongation (s, refine);
   }
 
 #if 0
@@ -307,8 +307,8 @@ event vof (i++)
   in [/src/vof.h#vof_concentration_refine]() seems to work fine. */
   
   for (scalar s in {fE1,fE2}) {
-    s.refine = s.prolongation = fE_refine;
-    s.dirty = true;
+    s.refine = fE_refine;
+    set_prolongation (s, fE_refine);
   }
 #endif
 #endif // TREE  

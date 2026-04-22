@@ -27,8 +27,9 @@ set xtics -90,30,90
 set xlabel 'Latitude'
 set ylabel 'Altitude'
 set output 'zonal_velocity.png'
-splot [-90:90][0:1]'out' index 'zonal velocity' u 1:($2/19.):3 lt 3 lc rgb "#000000", \
-     '' index 'zonal velocity' u 1:($2/19.):3 w labels
+nl = 20
+splot [-90:90][0:1]'out' index 'zonal velocity' u 1:($2/(nl-1.)):3 lt 3 lc rgb "#000000", \
+     '' index 'zonal velocity' every 3 u 1:($2/(nl-1.)):3 w labels
 ~~~
 
 The variance of the zonal temperature also compares well with Figure 3
@@ -44,14 +45,13 @@ compared to the graph on slide 27 (right) from Ringler et al, 2000.
 set cbrange [*:*]
 set cntrparam levels incremental 5,5,40
 set cbrange [0:40]
-nl = 20
 Kappa = 2./7. # R/cp
 P0 = 101300.
 Ps(z) = P0 - (z)
 PI(i) = (Ps(P0*(i + 0.5)/nl)/P0)**Kappa
 set output 'zonal_variance.png'
-splot [-90:90][0:1]'out' index 'zonal variance' u 1:($2/19.):($3*PI($2)**2) lt 3 lc rgb "#000000", \
-     '' index 'zonal variance' u 1:($2/19.):($3*PI($2)**2) w labels
+splot [-90:90][0:1]'out' index 'zonal variance' u 1:($2/(nl-1.)):($3*PI($2)**2) lt 3 lc rgb "#000000", \
+     '' index 'zonal variance' every 3 u 1:($2/(nl-1.)):($3*PI($2)**2) w labels
 ~~~
 
 So do the time-averaged zonal temperature and zonal potential temperature.
@@ -61,8 +61,8 @@ set cbrange [*:*]
 set cntrparam levels incremental 190,5,305
 set cbrange [190:305]
 set output 'zonal_temperature.png'
-splot [-90:90][0:1]'out' index 'zonal temperature' u 1:($2/19.):($3*PI($2)) lt 3 lc rgb "#000000", \
-     '' index 'zonal temperature' u 1:($2/19.):($3*PI($2)) w labels
+splot [-90:90][0:1]'out' index 'zonal temperature' u 1:($2/(nl-1.)):($3*PI($2)) lt 3 lc rgb "#000000", \
+     '' index 'zonal temperature' every 3 u 1:($2/(nl-1.)):($3*PI($2)) w labels
 ~~~
 
 ~~~gnuplot Time-averaged zonal potential temperature
@@ -72,8 +72,8 @@ set cbrange [*:*]
 unset surface
 unset colorbox
 set cntrlabel font ",7"
-splot [-90:90][0:1]'out' index 'zonal temperature' u 1:($2/19.):3 lt 3 lc rgb "#000000", \
-     '' index 'zonal temperature' u 1:($2/19.):3 w labels
+splot [-90:90][0:1]'out' index 'zonal temperature' u 1:($2/(nl-1.)):3 lt 3 lc rgb "#000000", \
+     '' index 'zonal temperature' every 3 u 1:($2/(nl-1.)):3 w labels
 ~~~
 */
 
@@ -101,15 +101,16 @@ macro zonal_average (double expr, int l)
 
 int main ()
 {
-  if (!restore (file = "../held-suarez/dump", list = all)) {
+  if (!restore (file = "../held-suarez.gpu/dump", list = all)) {
     fprintf (stderr, "could not restore\n");
     exit (1);
   }
   restriction (all);
   fields_stats();
 
+  const int nl = 20;
   printf ("# zonal velocity\n");
-  for (int l = 0; l < 20; l++) {
+  for (int l = 0; l < nl; l++) {
     char name[80] = "mu";
     if (l > 0)
       sprintf (name, "mu%d", l);
@@ -119,7 +120,7 @@ int main ()
   }
 
   printf ("\n# zonal variance\n");
-  for (int l = 0; l < 20; l++) {
+  for (int l = 0; l < nl; l++) {
     char name[80] = "vtheta";
     if (l > 0)
       sprintf (name, "vtheta%d", l);
@@ -129,7 +130,7 @@ int main ()
   }
   
   printf ("\n# zonal temperature\n");
-  for (int l = 0; l < 20; l++) {
+  for (int l = 0; l < nl; l++) {
     char name[80] = "mtheta";
     if (l > 0)
       sprintf (name, "mtheta%d", l);

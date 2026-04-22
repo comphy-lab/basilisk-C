@@ -107,13 +107,13 @@ refinement functions for the volume fraction fields. */
 event defaults (i = 0)
 {
   for (scalar c in interfaces) {
-    c.refine = c.prolongation = fraction_refine;
-    c.dirty = true;
+    c.refine = fraction_refine;
+    set_prolongation (c, fraction_refine);
     scalar * tracers = c.tracers;
     for (scalar t in tracers) {
-      t.restriction = restriction_volume_average;
-      t.refine = t.prolongation = vof_concentration_refine;
-      t.dirty = true;
+      set_restriction (t, restriction_volume_average);
+      t.refine = vof_concentration_refine;
+      set_prolongation (t, vof_concentration_refine);
       t.c = c;
     }
   }
@@ -342,9 +342,9 @@ void vof_advection (scalar * interfaces, int i)
 #endif // !NO_1D_COMPRESSION
 #if TREE
       if (t.refine != vof_concentration_refine) {
-	t.refine = t.prolongation = vof_concentration_refine;
-	t.restriction = restriction_volume_average;
-	t.dirty = true;
+	t.refine = vof_concentration_refine;
+        set_prolongation (t, vof_concentration_refine);
+	set_restriction (t, restriction_volume_average);
 	t.c = c;
       }
 #endif // TREE

@@ -393,8 +393,10 @@ trace
 static void halo_face (vectorl vl)
 {
   foreach_dimension()
-    for (scalar s in vl.x)
-      s.dirty = 2;
+    for (scalar s in vl.x) {
+      s.stencil.bc |= s_face;
+      s.stencil.bc &= ~s_centered;
+    }
   
   for (int l = depth() - 1; l >= 0; l--)
     foreach_halo (prolongation, l)

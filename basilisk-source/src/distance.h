@@ -462,12 +462,11 @@ void distance (scalar d, coord * p)
   surface = new scalar;
   surface.restriction = no_restriction;
 #if TREE
-  surface.prolongation = no_restriction;
   surface.refine = no_restriction; // handled by refine_distance()
-  d.prolongation = refine_bilinear;
+  set_prolongation (surface, no_restriction);
+  set_prolongation (d, refine_bilinear);
   d.refine = refine_distance;  
   d.coarsen = coarsen_distance;
-  d.dirty = true;
 #endif
   d.surface = surface;
   d.delete = delete_distance;

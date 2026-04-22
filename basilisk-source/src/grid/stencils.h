@@ -8,20 +8,30 @@ foreach_vertex()).
 This is done in practice by `qcc` which automatically adds, before
 each foreach loop, a minimal version of the loop body.
 
-The resulting access pattern is stored in the `read` and `write`
-arrays associated with each field.
+The `flags` indicate the status of boundary conditions and whether the
+field is used as input or output within a given loop.
 
-The `dirty` attribute is used to store the status of boundary
-conditions for each field. */
+The `width` is the width of the access stencil. */
+
+enum {
+  s_centered    = 1 << 0, // centered boundary conditions are up-to-date
+  s_face        = 1 << 1, // face boundary conditions are up-to-date
+  s_restriction = 1 << 2, // restriction is up-to-date
+  
+  s_input       = 1 << 3, // field is used as input
+  s_output      = 1 << 4, // field is used as output
+  s_nowarning   = 1 << 5  // warning are switched off
+} StencilFlags;
 
 attribute {
-  // fixme: use a structure
-  bool input, output, nowarning; // fixme: use a single flag
-  int width; // maximum stencil width/height/depth
-  int dirty; // // boundary conditions status:
-  // 0: all conditions applied
-  // 1: nothing applied
-  // 2: boundary_face applied
+  struct {
+    int bc, io, width;
+  } stencil;
+}
+
+static void set_dirty_stencil (scalar s)
+{
+  s.stencil.bc = 0;
 }
 
 typedef struct _External External;
@@ -61,11 +71,11 @@ the field `d` it depends on is dirty. */
 
 static inline bool scalar_is_dirty (scalar s)
 {
-  if (s.dirty)
+  if (!(s.stencil.bc & s_centered))
     return true;
   scalar * depends = s.depends;
   for (scalar d in depends)
-    if (d.dirty)
+    if (!(d.stencil.bc & s_centered))
       return true;
   return false;
 }
@@ -105,7 +115,7 @@ void check_stencil (ForeachData * loop)
   We check the accesses for each field... */
   
   for (scalar s in baseblock) {
-    bool write = s.output, read = s.input;
+    bool write = (s.stencil.io & s_output), read = (s.stencil.io & s_input);
     
 #ifdef foreach_layer
     if (_layer == 0 || s.block == 1)
@@ -123,7 +133,7 @@ void check_stencil (ForeachData * loop)
 	be applied, or whether "face" BCs are sufficient. */
 	
 	if (s.face) {
-	  if (s.width > 0) // face, stencil wider than 0
+	  if (s.stencil.width > 0) // face, stencil wider than 0
 	    loop->listc = list_append (loop->listc, s);
 	  else if (!write) { // face, flux only
 	    scalar sn = s.v.x.i >= 0 ? s.v.x : s;
@@ -135,7 +145,7 @@ void check_stencil (ForeachData * loop)
 		
 		if (sn.boundary[left] || sn.boundary[right])
 		  loop->listc = list_append (loop->listc, s);
-		else if (s.dirty != 2)
+		else if (!(s.stencil.bc & s_face))
 		  loop->listf.x = list_append (loop->listf.x, s);
 	      }
 	  }
@@ -145,7 +155,7 @@ void check_stencil (ForeachData * loop)
 	For dirty, centered fields BCs need to be applied if the
 	stencil is wider than zero. */
 	
-	else if (s.width > 0)
+	else if (s.stencil.width > 0)
 	  loop->listc = list_append (loop->listc, s);
       }
 
@@ -154,7 +164,7 @@ void check_stencil (ForeachData * loop)
       type (i.e. face or vertex). */
       
       if (write) {
-	if (dimension > 1 && !loop->vertex && loop->first && !s.nowarning) {
+	if (dimension > 1 && !loop->vertex && loop->first && !(s.stencil.io & s_nowarning)) {
 	  bool vertex = true;
 	  foreach_dimension()
 	    if (s.d.x != -1)
@@ -166,7 +176,7 @@ void check_stencil (ForeachData * loop)
 		     loop->fname, loop->line, s.name);
 	}
 	if (s.face) {
-	  if (loop->face == 0 && loop->first && !s.nowarning)
+	  if (loop->face == 0 && loop->first && !(s.stencil.io & s_nowarning))
 	    fprintf (stderr,
 		     "%s:%d: warning: face vector '%s' should be assigned with"
 		     " a foreach_face() loop\n",
@@ -187,7 +197,7 @@ void check_stencil (ForeachData * loop)
 	      }
 	      d *= 2, i++;
 	    }
-	    if (!s.face && loop->first && !s.nowarning)
+	    if (!s.face && loop->first && !(s.stencil.io & s_nowarning))
 	      fprintf (stderr,
 		       "%s:%d: warning: scalar '%s' should be assigned with "
 		       "a foreach_face(x|y|z) loop\n",
@@ -201,17 +211,20 @@ void check_stencil (ForeachData * loop)
 	      while (s != name && *s != '.') s--;
 	      if (s != name) *s = '\0';
 	    }
-	    struct { int x, y, z; } input, output;
+	    struct { bool x, y, z; } input, output;
 	    vector v = s.v;
 #if 1 // fixme: should not be necessary	    
 	    foreach_dimension()
-	      input.x = v.x.input, output.x = v.x.output;
+	      input.x = (v.x.stencil.io & s_input), output.x = (v.x.stencil.io & s_output);
 #endif
 	    init_face_vector (v, name);
 #if 1 // fixme: should not be necessary	    
-	    
-	    foreach_dimension()
-	      v.x.input = input.x, v.x.output = output.x;
+	    foreach_dimension() {
+              if (input.x) v.x.stencil.io |= s_input;
+              else v.x.stencil.io &= ~s_input;
+              if (output.x) v.x.stencil.io |= s_output;
+              else v.x.stencil.io &= ~s_output;
+            }
 #endif
 #if PRINTBOUNDARY
 	    fprintf (stderr, "%s:%d: turned %s into a face vector\n",
@@ -306,7 +319,7 @@ void boundary_stencil (ForeachData * loop)
     fputc ('\n', stderr);
 #endif
     for (scalar s in loop->dirty)
-      s.dirty = true;
+      set_dirty_stencil (s);
     free (loop->dirty), loop->dirty = NULL;
   }
 }
@@ -318,9 +331,10 @@ macro2 foreach_stencil (char flags, Reduce reductions)
     ForeachData _loop = {
       .fname = S__FILE__, .line = S_LINENO, .first = _first
     };
-    if (baseblock) for (scalar s = baseblock[0], * i = baseblock; s.i >= 0; i++, s = *i) {
-	_attribute[s.i].input = _attribute[s.i].output = _attribute[s.i].nowarning = false;
-	_attribute[s.i].width = 0;
+    if (baseblock)
+      for (scalar s = baseblock[0], * i = baseblock; s.i >= 0; i++, s = *i) {
+        _attribute[s.i].stencil.io = 0;
+	_attribute[s.i].stencil.width = 0;
       }
     int ig = 0, jg = 0, kg = 0; NOT_UNUSED(ig); NOT_UNUSED(jg); NOT_UNUSED(kg);
     Point point = {0}; NOT_UNUSED (point);

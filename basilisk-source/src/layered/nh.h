@@ -375,6 +375,14 @@ event pressure (i++)
   }
 
   /**
+  The fields used by the relaxation function above need to be
+  restricted to all levels. Note that the other fields (cm, fm,
+  alpha_eta) were already restricted in the [hydrostatic implicit
+  solver](implicit.h). */
+  
+  restriction ({zb, h, hf});
+  
+  /**
   We then call the multigrid solver, using the relaxation and residual
   functions defined above, to get both the non-hydrostatic pressure
   $\phi$ and free-surface elevation $\eta$. */

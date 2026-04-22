@@ -66,9 +66,9 @@ int tag (scalar t)
   We first set the restriction and prolongation functions (on trees). */
 
   t.restriction = restriction_tag;
-#if TREE  
-  t.refine = t.prolongation = refine_injection;
-  t.dirty = true;
+#if TREE
+  t.refine = refine_injection;
+  set_prolongation (t, refine_injection);
 #endif
 
   /**
@@ -154,6 +154,7 @@ int tag (scalar t)
 	}
       boundary_level ({t}, l);
     }
+    t.stencil.bc &= ~s_restriction;
   } while (changed);
 
   /**

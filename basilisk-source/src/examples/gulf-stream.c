@@ -144,7 +144,7 @@ int main (int argc, char * argv[])
   timestep (at low resolutions) can significantly affect the structure
   of the boundary current. */
   
-  DT = 600 [0,1];
+  DT = 600 [0,1]; // decrease to 300 for N = 4096
   if (argc > 2)
     DT = atof(argv[2]);
 
@@ -195,8 +195,10 @@ The simulation also runs fine [on GPUs](/src/grid/gpu/grid.h) using e.g.
 OMP_NUM_THREADS=16 make gulf-stream.gpu.tst
 ~~~
 
-On an [RTX 4090](https://www.techpowerup.com/gpu-specs/geforce-rtx-4090.c3889)
-runtimes are approx. 48 ypd for a resolution of 2048 x 1024.
+On an [RTX
+4090](https://www.techpowerup.com/gpu-specs/geforce-rtx-4090.c3889)
+runtimes are approx. 43 ypd for a resolution of 2048 x 1024 and 6 ypd
+for a resolution of 4096 x 2048.
 
 Spinup takes at least 5 years and statistics (for e.g. the standard
 deviations of SSH) at least 10 years.

@@ -114,8 +114,8 @@ event vof (i++) {
   We restore the refinement function for the total momentum. */
   
   for (scalar s in {q}) {
-    s.refine = s.prolongation = refine;
-    s.dirty = true;
+    s.refine = refine;
+    set_prolongation (s, refine);
   }
 #endif // TREE  
 

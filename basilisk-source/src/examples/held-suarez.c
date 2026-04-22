@@ -3,8 +3,10 @@
 
 This example illustrates how the hydrostatic [multilayer
 solver](/src/layered/README) can be used to build the simple, but
-realistic, climate model proposed by [Held & Suarez, 1994](#held1994) as a
-benchmark for the dynamical cores of climate models.
+realistic, climate model proposed by [Held & Suarez, 1994](#held1994)
+as a benchmark for the dynamical cores of climate models. See also
+[Held, 2005](#held2005) for an interesting general discussion on why
+it is important to build such idealised models.
 
 The movie below illustrates the evolution of the surface temperature
 when a quasi steady state is reached. The horizontal scale is 360
@@ -70,7 +72,7 @@ for the surface pressure. */
 #include "profiling.h"
 
 /**
-We declare a few constants and fields which will be use for time
+We declare a few constants and fields which will be used for time
 averages. */
 
 const double day = 86400.;
@@ -141,7 +143,8 @@ layer (`point.l = 0`) to zero at the top boundary of the top layer
 We define the equilibrium temperature distribution as in
 Held & Suarez (p. 1826 and figure 1.b) i.e.
 $$
-T_{eq} = \max\left(200K, \left[315K - \Delta T_y\sin^2\phi - \Delta T_z\log(p/p_0)\cos^2\phi\right]\frac{\Pi}{C_p}\right)
+T_{eq} = \max\left(200K, \left[315K - \Delta T_y\sin^2\phi -
+\Delta T_z\log(p/p_0)\cos^2\phi\right]\frac{\Pi}{C_p}\right)
 $$
 The equilibrium *potential* temperature is then obtained as
 $$
@@ -168,33 +171,49 @@ const double maxlat = 75;
 
 event init (i = 0)
 {
-  const double DT0 = 0.001;
-  foreach () {
-    zb[] = fabs(y) < maxlat ? 0. : 10*P0;
-    if (zb[] > 0.)
-      foreach_layer()
-        h[] = 0., T[] = 0.;
-    else {
+
+  /**
+  We can restart from a (dump) file if it exists. */
+  
+  if (restore ("restart"))
+    event ("metric");
+  else {
+
+    /**
+    Otherwise we set initial conditions. */
+    
+    const double DT0 = 0.001;
+    foreach () {
 
       /**
-      We set the initial potential temperature $T$ to the equilibrium
-      at 45 degrees plus some high-frequency modes of 10^-3^ degrees
-      amplitude. */
+      We bound the domain at $\pm$ maxlat using a "dry terrain". */
       
-      double z = zb[];
-      foreach_layer() {
-        h[] = P0/nl;
-        z += h[]/2.;
-        T[] = Thetaeq(45.*pi/180., z) + DT0*(sin(10.*pi*x/180.) + cos(10.*pi*y/180.));
-        z += h[]/2.;
+      zb[] = fabs(y) < maxlat ? 0. : 10*P0;
+      if (zb[] > 0.)
+        foreach_layer()
+          h[] = 0., T[] = 0.;
+      else {
+
+        /**
+        We set the initial potential temperature $T$ to the equilibrium
+        at 45 degrees plus some high-frequency modes of 10^-3^ degrees
+        amplitude. */
+      
+        double z = zb[];
+        foreach_layer() {
+          h[] = P0/nl;
+          z += h[]/2.;
+          T[] = Thetaeq(45.*pi/180., z) + DT0*(sin(10.*pi*x/180.) + cos(10.*pi*y/180.));
+          z += h[]/2.;
+        }
       }
     }
-  }
   
-  /**
-  We reset the fields used to store various averages/diagnostics. */
+    /**
+    We reset the fields used to store various averages/diagnostics. */
     
-  reset ({mu, mtheta, vtheta}, 0.);
+    reset ({mu, mtheta, vtheta}, 0.);
+  }
 }
 
 /**
@@ -441,44 +460,47 @@ CFLAGS=-DSHOW make held-suarez.gpu.tst
 
 On an [RTX
 4090](https://www.techpowerup.com/gpu-specs/geforce-rtx-4090.c3889)
-runtime is approximately 70 minutes for a resolution of 256 x 128 (1.4
-degrees), which is also about 9 nanoseconds per degree of freedom, or
-again 68 years per day (ypd). The time per degree of freedom decreases
-to 5 nanoseconds for 512 x 256 ($\approx$ 15 ypd) and to 3.6
-nanoseconds for 1024 x 512 ($\approx$ 2.6 ypd).
+runtime is approximately 44 minutes for a resolution of 256 x 128 (1.4
+degrees), which is also about 5.8 nanoseconds per degree of freedom, or
+again 107 years per day (ypd). The time per degree of freedom decreases
+to 2.8 nanoseconds for 512 x 256 ($\approx$ 28 ypd) and to 2
+nanoseconds for 1024 x 512 ($\approx$ 4.9 ypd).
 
-For `N = 246` profiling gives the following:
+For `N = 256` profiling gives the following:
 
 ~~~bash
-calls    total     self   % total   function
-      19     0.05     0.04     23.6%   advect():/src/layered/hydro.h:405
-      19     0.04     0.04     22.7%   acceleration_0():/src/layered/implicit.h:207
-      19     0.02     0.02     13.7%   vertical_remapping():/src/layered/remap.h:158
-     630     0.02     0.02     12.6%   relax_hydro():/src/layered/implicit.h:104
-      34     0.04     0.01      8.8%   mg_cycle():/src/poisson.h:92
-    4962     0.01     0.01      7.4%   setup_shader():/src/grid/gpu/grid.h:1950
-      38     0.00     0.00      1.8%   gpu_reduction():/src/utils.h:143
-      19     0.00     0.00      1.2%   gpu_reduction():/src/utils.h:171
-      19     0.01     0.00      1.1%   logfile():held-suarez.gpu.c:330
-      19     0.00     0.00      1.1%   face_fields():/src/layered/hydro.h:292
+   calls    total     self   % total   function
+      19     0.05     0.04     30.2%   advect():/src/layered/hydro.h:404
+      57     0.02     0.02     16.1%   multigrid_restriction():/src/grid/gpu/../multigrid-common.h:459
+     665     0.02     0.02     15.7%   relax_hydro():/src/layered/implicit.h:104
+    5092     0.01     0.01     10.1%   setup_shader():/src/grid/gpu/grid.h:1956
+      19     0.01     0.01      9.2%   vertical_remapping():/src/layered/remap.h:165
+      38     0.04     0.00      2.8%   mg_cycle():/src/poisson.h:92
+      38     0.00     0.00      2.8%   gpu_reduction():/src/utils.h:143
+      19     0.00     0.00      1.4%   gpu_reduction():/src/utils.h:171
+      19     0.00     0.00      1.4%   face_fields():/src/layered/hydro.h:291
+      19     0.01     0.00      1.2%   acceleration_0():/src/layered/implicit.h:206
+      19     0.00     0.00      1.2%   acceleration_2():/src/layered/dr.h:76
+      57     0.00     0.00      1.1%   residual_hydro():/src/layered/implicit.h:125
+      19     0.05     0.00      1.0%   pressure():/src/layered/hydro.h:461  
 ~~~
 
 For `N = 1024`:
 
 ~~~bash
-calls    total     self   % total   function
-      19     0.36     0.36     43.0%   vertical_remapping():/src/layered/remap.h:158
-      19     0.17     0.17     20.7%   acceleration_0():/src/layered/implicit.h:207
-      19     0.08     0.07      8.9%   advect():/src/layered/hydro.h:405
-      38     0.09     0.05      6.2%   mg_cycle():/src/poisson.h:92
-     966     0.04     0.03      4.0%   relax_hydro():/src/layered/implicit.h:104
-      19     0.11     0.02      2.8%   pressure():/src/layered/hydro.h:462
-      19     0.02     0.02      2.4%   face_fields():/src/layered/hydro.h:292
-      19     0.02     0.02      2.3%   acceleration_2():/src/layered/dr.h:76
-      19     0.12     0.02      2.3%   pressure_0():/src/layered/implicit.h:252
-    5884     0.02     0.02      2.1%   setup_shader():/src/grid/gpu/grid.h:1950
-      19     0.01     0.01      1.4%   set_eta():held-suarez.gpu.c:256
-      19     0.01     0.01      1.4%   acceleration_1():/src/layered/coriolis.h:64
+   calls    total     self   % total   function
+      19     0.14     0.14     29.1%   vertical_remapping():/src/layered/remap.h:165
+      19     0.08     0.07     14.7%   advect():/src/layered/hydro.h:404
+      57     0.07     0.06     13.1%   multigrid_restriction():/src/grid/gpu/../multigrid-common.h:459
+    1015     0.04     0.03      7.0%   relax_hydro():/src/layered/implicit.h:104
+      19     0.05     0.03      5.7%   acceleration_0():/src/layered/implicit.h:206
+      19     0.10     0.02      4.8%   pressure():/src/layered/hydro.h:461
+      19     0.02     0.02      4.1%   face_fields():/src/layered/hydro.h:291
+      19     0.11     0.02      3.8%   pressure_0():/src/layered/implicit.h:251
+      19     0.02     0.02      3.8%   acceleration_2():/src/layered/dr.h:76
+    5986     0.02     0.02      3.2%   setup_shader():/src/grid/gpu/grid.h:1956
+      19     0.01     0.01      2.4%   acceleration_1():/src/layered/coriolis.h:64
+      19     0.01     0.01      2.4%   set_eta():held-suarez.gpu.c:263
 ~~~
 
 ## Todo
@@ -497,7 +519,8 @@ calls    total     self   % total   function
 * Using `z` as name for vertical coordinate is confusing.
 * The dimension of the vertical coordinate should not be a length, as
   imposed by [/src/layered/hydro.h](/src/layered/hydro.h#175).
-* Vertical remapping could/should be optimised.
+* Vertical remapping has been optimised but still takes a substantial
+  fraction of time (twice as much as horizontal advection for `N = 1024`).
 
 ## See also
 
@@ -530,6 +553,17 @@ calls    total     self   % total   function
   year={2004},
   doi={10.1175/MWR2835.1},
   pdf={https://journals.ametsoc.org/view/journals/mwre/132/12/mwr2835.1.pdf}
+}
+
+@article{held2005,
+  title={The gap between simulation and understanding in climate modeling},
+  author={Held, Isaac M},
+  journal={Bulletin of the American Meteorological Society},
+  volume={86},
+  number={11},
+  pages={1609--1614},
+  year={2005},
+  publisher={American Meteorological Society}
 }
 ~~~
 */

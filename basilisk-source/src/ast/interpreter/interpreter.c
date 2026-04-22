@@ -1155,11 +1155,13 @@ Value * binary_operation (Ast * n, Stack * stack)
     res = va << vb;				\
   else if (op == sym_RIGHT_OP)			\
     res = va >> vb;				\
-  else if (op == token_symbol('&'))		\
-    res = va & vb;				\
+  else if (op == token_symbol('&') ||           \
+           ast_schema (n->child[1], sym_assignment_operator, 0, sym_AND_ASSIGN)) \
+    res = va & vb;                              \
   else if (op == token_symbol('^'))		\
     res = va ^ vb;				\
-  else if (op == token_symbol('|'))		\
+  else if (op == token_symbol('|') ||           \
+           ast_schema (n->child[1], sym_assignment_operator, 0, sym_OR_ASSIGN)) \
     res = va | vb;				\
   else if (op == token_symbol('%'))		\
     res = vb ? va % vb : 0;			\
@@ -1221,11 +1223,16 @@ Value * binary_operation (Ast * n, Stack * stack)
     type res;								\
     bool set;								\
     BITWISE_OPERATION (res, va, vb);					\
-    if (set) {								\
-      Value * value = new_value (stack, n, (Ast *) &ast_##type, 0);	\
-      if (is_constant_expression (a) && is_constant_expression (b))	\
-	set_constant_expression (value);				\
-      value = ast_binary_operation_hook (n, stack, a, b, value);	\
+    if (set) {                                                          \
+      Value * value;                                                    \
+      if (n->sym == sym_assignment_expression)				\
+	value_set_write (a, stack), value = ast_binary_operation_hook (n, stack, a, b, a); \
+      else {                                                            \
+        value = new_value (stack, n, (Ast *) &ast_##type, 0);           \
+        if (is_constant_expression (a) && is_constant_expression (b))	\
+          set_constant_expression (value);				\
+        value = ast_binary_operation_hook (n, stack, a, b, value);	\
+      }                                                                 \
       SET_VALUE (value, res);						\
       if ((value_flags (a) & unset) || (value_flags (b) & unset))	\
 	value_set_flags (value, unset);					\

@@ -1082,7 +1082,7 @@ void mpi_boundary_refine (scalar * list)
   if (rerefined.n)
     mpi_boundary_refine (list);
   for (scalar s in list)
-    s.dirty = true;
+    set_dirty_stencil (s);
 }
 
 static void check_depth()

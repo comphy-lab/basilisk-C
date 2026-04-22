@@ -250,10 +250,11 @@ macro2 foreach_stencil_generic (char flags, Reduce reductions,
   tracing_foreach ("foreach", S__FILE__, S_LINENO);
   static ForeachData _loop = { .fname = S__FILE__, .line = S_LINENO, .first = 1 };
   _loop.parallel = _parallel;
-  if (baseblock) for (scalar s = baseblock[0], * i = baseblock; s.i >= 0; i++, s = *i) {
-    _attribute[s.i].input = _attribute[s.i].output = false;
-    _attribute[s.i].width = 0;
-  }
+  if (baseblock)
+    for (scalar s = baseblock[0], * i = baseblock; s.i >= 0; i++, s = *i) {
+      _attribute[s.i].stencil.io = 0;
+      _attribute[s.i].stencil.width = 0;
+    }
   int ig = 0, jg = 0, kg = 0; NOT_UNUSED(ig); NOT_UNUSED(jg); NOT_UNUSED(kg);
   Point point = {0}; NOT_UNUSED (point);
   RegionParameters _region = {0};
@@ -264,11 +265,12 @@ macro2 foreach_stencil_generic (char flags, Reduce reductions,
   if (baseblock) {
     fprintf (stderr, "%s:%d:", _loop.fname, _loop.line);
     for (scalar s = baseblock[0], * i = baseblock; s.i >= 0; i++, s = *i)
-      if (_attribute[s.i].input || _attribute[s.i].output)
+      if ((_attribute[s.i].stencil.io & s_input) || (_attribute[s.i].stencil.io & s_output))
 	fprintf (stderr, " %s:%d:%c:%d", _attribute[s.i].name, s.i,
-		 _attribute[s.i].input && _attribute[s.i].output ? 'a' :
-		 _attribute[s.i].input ? 'r' : 'w',
-		 _attribute[s.i].width);
+                 (_attribute[s.i].stencil.io & s_input) &&
+                 (_attribute[s.i].stencil.io & s_output) ? 'a' :
+		 (_attribute[s.i].stencil.io & s_input) ? 'r' : 'w',
+		 _attribute[s.i].stencil.width);
     fprintf (stderr, "\n");
   }
 #endif // PRINTIO

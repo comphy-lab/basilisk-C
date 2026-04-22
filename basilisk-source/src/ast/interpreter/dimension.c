@@ -716,7 +716,16 @@ Dimension * get_dimension (Value * v, Stack * stack)
   if (ast_schema ((Ast *) v, sym_array_access)) {
     Ast * n = (Ast *) v;
     assert (n->child[2]);
+
+    /**
+    We re-run the array reference. This can be problematic if the
+    reference has side-effects, for example a reference like
+    `a[j++][1]` will cause `j` to be incremented twice ... There is no
+    easy fix: one needs to avoid indexing multidimensional arrays with
+    side effects. */
+    
     Value * a = run (n->child[0], stack);
+    
     assert (a);
     Value * value = array_member_value (n, a, 0, false, stack);
     return (value_dimension (v) = value_dimension (value));

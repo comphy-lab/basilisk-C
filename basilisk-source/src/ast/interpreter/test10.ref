@@ -1,16 +1,16 @@
 test10.c:9: interpreter_verbosity (4): !
 test10.c:11: val ({...}, 0  + [test10.c:11: '0'], 0  + [test10.c:11: '0'], 0  + [test10.c:11: '0'])
 ast/interpreter/overload.h:132: 1024: 1024  + [ast/interpreter/overload.h:132: '1024']
-ast/interpreter/overload.h:319: igrid->d + s.i*sizeof(real): 0xaddress
-ast/interpreter/overload.h:319: (real *)(igrid->d + s.i*sizeof(real)): 0xaddress
+ast/interpreter/overload.h:321: igrid->d + s.i*sizeof(real): 0xaddress
+ast/interpreter/overload.h:321: (real *)(igrid->d + s.i*sizeof(real)): 0xaddress
 test10.c:11: val(s,0,0,0): 0 (unset)
 test10.c:11: '0 > (s[])': [test10.c:11: '0'] = [0]
 test10.c:11: warning (interpreter): undefined condition '0 > (val(s,0,0,0))'
 test10.c:11: 0: 0  + [test10.c:11: '0']
 test10.c:11: val ({...}, 0  + [test10.c:11: '0'], 0  + [test10.c:11: '0'], 0  + [test10.c:11: '0'])
 ast/interpreter/overload.h:132: 1024: 1024  + [ast/interpreter/overload.h:132: '1024']
-ast/interpreter/overload.h:319: igrid->d + s.i*sizeof(real): 0xaddress
-ast/interpreter/overload.h:319: (real *)(igrid->d + s.i*sizeof(real)): 0xaddress
+ast/interpreter/overload.h:321: igrid->d + s.i*sizeof(real): 0xaddress
+ast/interpreter/overload.h:321: (real *)(igrid->d + s.i*sizeof(real)): 0xaddress
 test10.c:11: val(s,0,0,0): 0 (unset) [0]
 test10.c:11: '0 > (s[]) ? 0 : (s[])': [test10.c:11: '0'] = [0]
 test10.c:11: 0 > (val(s,0,0,0)) ? 0 : (val(s,0,0,0)): 0 (unset) [0]

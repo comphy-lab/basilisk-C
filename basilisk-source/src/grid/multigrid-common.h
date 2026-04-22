@@ -22,6 +22,18 @@ attribute {
   void (* restriction)  (Point, scalar);
 }
 
+void set_prolongation (scalar s, void (* prolongation) (Point, scalar))
+{
+  s.prolongation = prolongation;
+  set_dirty_stencil (s);
+}
+
+void set_restriction (scalar s, void (* restriction) (Point, scalar))
+{
+  s.restriction = restriction;
+  set_dirty_stencil (s);
+}
+
 // Multigrid methods
 
 void (* restriction) (scalar *);
@@ -408,11 +420,12 @@ void multigrid_debug (Point point)
   fclose (plot);
 }
 
+trace
 static void multigrid_restriction (scalar * list)
 {
   scalar * listdef = NULL, * listc = NULL, * list2 = NULL;
   for (scalar s in list) 
-    if (!is_constant (s) && s.block > 0) {
+    if (!is_constant (s) && s.block > 0 && !(s.stencil.bc & s_restriction)) {
       if (s.restriction == restriction_average) {
 	listdef = list_add (listdef, s);
 	list2 = list_add (list2, s);
@@ -432,14 +445,15 @@ static void multigrid_restriction (scalar * list)
       foreach_coarse_level(l, nowarning) {
 	for (scalar s in listdef)
 	  restriction_average (point, s);
-	for (scalar s in listc) {
+	for (scalar s in listc)
 	  s.restriction (point, s);
-	}
       }
       boundary_iterate (level, list2, l);      
     }
     free (listdef);
     free (listc);
+    for (scalar s in list2)
+      s.stencil.bc |= s_restriction;
     free (list2);
   }
 }

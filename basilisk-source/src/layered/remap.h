@@ -65,9 +65,9 @@ the remapping (defined by *beta*). */
 trace
 void vertical_remapping (scalar h, scalar * tracers)
 {
-  const int npos = nl + 1;
+  const int npos = nl + 1, nvar = list_len(tracers);
 #if USE_PPR
-  int nvar = list_len(tracers), ndof = 1;
+  int ndof = 1;
 #endif
   foreach() {
 #if HALF
@@ -131,26 +131,33 @@ void vertical_remapping (scalar h, scalar * tracers)
 	znew[point.l+1] = znew[point.l] + h[];
       }
       znew[npos -1] = zpos[npos - 1];
-      double fdat[nl], fnew[nl];
+
+      double fdat[nl][nvar], fnew[nl][nvar];
+      int v = 0;
       for (scalar s in tracers) {
-        int j = 0;
         foreach_layer() {
-          dimensional (fnew[j] = s[]);
-          fdat[j++] = s[];
+          dimensional (fnew[point.l][v] = s[]);
+          fdat[point.l][v] = s[];
         }
+        v++;
+      }
 
-        /**
-        For the moment we simply use Neumann zero top and bottom
-        boundary conditions for all fields. */
+      /**
+      For the moment we simply use Neumann zero top and bottom
+      boundary conditions for all fields. Note that we also ignore the
+      corresponding dimensions since this could be inconsistent when
+      remapping quantities with different dimensions. */
 
-        remap_c (npos, npos, zpos, znew, fdat, fnew,
-                 0, HUGE, 0,
-                 0, HUGE, 0,
-                 cell_lim);
+      remap_c (npos, npos, zpos, znew, nvar, fdat, fnew,
+               0[*], HUGE[*], 0[*],
+               0[*], HUGE[*], 0[*],
+               cell_lim);
 
-        j = 0;
+      v = 0;
+      for (scalar s in tracers) {
         foreach_layer()
-	  s[] = fnew[j++];
+          s[] = fnew[point.l][v];
+        v++;
       }
 #endif // !USE_PPR
     }

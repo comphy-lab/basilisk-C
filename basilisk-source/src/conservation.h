@@ -78,9 +78,9 @@ event defaults (i = 0)
 
   #if TREE
   for (scalar s in evolving) {
-    s.refine = s.prolongation = refine_linear;
-    s.restriction = restriction_volume_average;
-    s.dirty = true; // boundary conditions need to be updated
+    s.refine = refine_linear;
+    set_prolongation (s, refine_linear);
+    set_restriction (s, restriction_volume_average);
   }
   #endif
 }

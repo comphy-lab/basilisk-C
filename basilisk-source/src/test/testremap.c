@@ -51,21 +51,18 @@ void comparison (double (* f) (double),
 		 int cell_lim)
 {
   int ndof = 1, nvar = 1;
-  // number of point = npos - 1 because those are mean values on each interval
-  double init_pc[nposinit - 1], init_pf[nposinit - 1], init2_p[nposinit - 1];
-  double end_pc[nposend - 1], end_pf[nposend - 1];
+  // number of points = npos - 1 because those are mean values on each interval
+  double init_pc[nposinit - 1][nvar], init_pf[nposinit - 1], init2_p[nposinit - 1];
+  double end_pc[nposend - 1][nvar], end_pf[nposend - 1];
 
-  for (int i = 0; i < nposinit - 1; i++) {
-    init_pc[i] = integral (f, zinit[i], zinit[i+1]);
-    init_pf[i] = integral (f, zinit[i], zinit[i+1]);
-    init2_p[i] = init_pc[i];
-  }
+  for (int i = 0; i < nposinit - 1; i++)
+    init2_p[i] = init_pc[i][0] = init_pf[i] = integral (f, zinit[i], zinit[i+1]);
 
   int Nremap = 100; // number of remap
   for (int n = 0; n < Nremap; n++) {
-    remap_c (nposinit, nposend, zinit, zend, init_pc, end_pc,
+    remap_c (nposinit, nposend, zinit, zend, 1, init_pc, end_pc,
              f_b, lambda_b, 0, f_t, lambda_t, 0, true);
-    remap_c (nposend, nposinit, zend, zinit, end_pc, init_pc,
+    remap_c (nposend, nposinit, zend, zinit, 1, end_pc, init_pc,
              f_b, lambda_b, 0, f_t, lambda_t, 0, true);
     int edge_meth = p3e_method, cell_meth = ppm_method;
     my_remap (&nposinit, &nposend, &ndof, &nvar, zinit, zend, init_pf, end_pf,
@@ -76,7 +73,7 @@ void comparison (double (* f) (double),
 
   fputs ("\n\n", stderr);
   for (int i = 0; i < nposinit - 1; i++)
-    fprintf (stderr,"%d %g %g %g %g\n", i, zinit[i], init2_p[i], init_pc[i], init_pf[i]);
+    fprintf (stderr,"%d %g %g %g %g\n", i, zinit[i], init2_p[i], init_pc[i][0], init_pf[i]);
 }
 
 /**

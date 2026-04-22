@@ -1,4 +1,4 @@
-pristine:d7169b35243d806789f81f2070625821adf031b7f9f8f310b49436e9cb4557fa
+pristine:ccb99d02f74a987033ee84284f98be3d74feb826a52dcf68b81d36df937a3bfd
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -106,3 +106,65 @@ Stephane Popinet <popinet@basilisk.fr>**20260415151613
  Ignore-this: d9b70a4fceda4f1ff71c6e3ae21ec5ca20beb1ec2c670213cf61b5a0d23808e7bd112b6049faf77
 ] 
 hash: 0000000568-cbd703ef0e91f0ada86f5fe8d8aaf70f9a262ef9048593056e9f7f241c986150
+[Tracing for multigrid restrictions
+Stephane Popinet <popinet@basilisk.fr>**20260416123358
+ Ignore-this: 943d2844f51b91300fc96f7585192e6541bcb4e812fa34e2fe5278719adc196c011be8b701e42573
+] 
+hash: 0000000233-98f80b55430f46bce575539325bdec44bac36acd0c3e0689814805ac72796037
+[The interpreter now understands |= et &=
+Stephane Popinet <popinet@basilisk.fr>**20260416171855
+ Ignore-this: 21b40bd22cd54a3e156413eeced775aab8cfc183cf096cdee73baf3aaba1e77f45b952bd9c593a4c
+] 
+hash: 0000001738-cd3715876e187da1a6e7ba24686f23c4f70e5431bfaaefd42abd15b9067c356a
+[Comment on the interpreter not liking side-effects in multidimensional array indexing
+Stephane Popinet <popinet@basilisk.fr>**20260417135606
+ Ignore-this: 6c507eb0f0aea15ab4f925a1b3165067902e637a50e740efa11dcb4631428c5dc2eead37edbce8e3
+] 
+hash: 0000000642-94c42acee070eca7d127a8c749e5c7017be8fb8989bdebc62f7a946167e6da46
+[Remapping can act on multiple fields simultaneously
+Stephane Popinet <popinet@basilisk.fr>**20260417145809
+ Ignore-this: 25f0d49d74fd1a62d0ae7da97b2231bbcbec614a92a95853760739c8faa5ac45cca0bd4e718cfe04
+] 
+hash: 0000015928-8dd86ce5e99b6838c3a47cca9a1590cdc16b15f3127e106f48f039fe0c194844
+[Clearer name
+Stephane Popinet <popinet@basilisk.fr>**20260417150413
+ Ignore-this: 2a7d5ef4d12fa4102d5448f21664cdb804362e9189f158a3011ef2079eb3522eb813e0c9bfcd7e8b
+] 
+hash: 0000000213-cec0b861fab87c08cac5daa312b344155ec02001b3c28b75faa6e5b397fedf63
+[Stencils use flags instead of booleans
+Stephane Popinet <popinet@basilisk.fr>**20260418181020
+ Ignore-this: f59e94720c6d4ecd9558bcc07771c51eddcea797ff80a632e9642d3f385a888c05a3a24b89882b70
+] 
+hash: 0000010932-c425870073d3a57ac6c1519477d26e04c0cf27b2f28728bf84847ce676d68238
+[Updated references
+Stephane Popinet <popinet@basilisk.fr>**20260418181105
+ Ignore-this: 2b3874ab5d907d0f1f1baf01a7d53c43290252a52b3dfdd5063dd5bb2aee2bb9d77a3ca55d7e1549
+] 
+hash: 0000009185-03b2b8ba723c53c249f90ea67269b67c92ccbc76f3683e80295a982b2390d95d
+[Updated documentation for examples
+Stephane Popinet <popinet@basilisk.fr>**20260421161250
+ Ignore-this: 9c922862a36d3ac122eada323de6c299b5a1e7b690c380fd1fb7ee6d1cd69ebded5ca938a218ead4
+] 
+hash: 0000010946-0a975b0ea8572c68ae91292e2a53c289e4a207e6ded8896bdb2ab8d2a95be5ce
+[Update in place and ignore dump files
+Stephane Popinet <popinet@basilisk.fr>**20260421161315
+ Ignore-this: 287272f7d1df5021a6d2ae8c7e8ac8bbc3b040adfe0afd449d8f473544120dcfdce458e9ccc101b0
+] 
+hash: 0000000379-c9fecc6b0daf232b2b3116d0f71fcfc88aeb2f87dab81a2c905e70967425419b
+[output_ppm() on GPUs need to apply boundary conditions
+Stephane Popinet <popinet@basilisk.fr>**20260421161523
+ Ignore-this: 3a0d8189e14251fbcb4040aa07e03245473b82ca7ce9391842a553db689d14dc2583421f53734e1
+] 
+hash: 0000000458-0f74601d64d6a47ddc489406bed129ea122a3be3868dea19e89853b10868ea1f
+[The 'dirty' field attribute has been removed
+Stephane Popinet <popinet@basilisk.fr>**20260421161711
+ Ignore-this: 38746fc883a79d1c29ca10be17e24f0427c4dacb9090a501dfbe89b5d4d7292853d2d3118d78076e
+] 
+hash: 0000007664-9fabf7b96ff5b9a3eadbb65c2c11335c0fb5a50e3eefd86ae2718da815a51523
+[restrictions are only applied if necessary
+Stephane Popinet <popinet@basilisk.fr>**20260421162004
+ Ignore-this: 3cf2e5e01d03f9fef250dc6c8239b865b0e374974aba5b7fa2c010a3ca894331c2a163399240bd05
+ 
+ This significantly improves the performances of the Held-Suarez case on GPUs.
+] 
+hash: 0000001617-83dc32a682667f7d8a461ad618eff4ae2e1b5efac6e617d2d2e39146f13846af

@@ -1110,7 +1110,7 @@ void dump (const char * file = "dump",
   subtree_size (size, false);
 #if _GPU
   for (scalar s in slist)
-    s.input = 1;
+    s.stencil.io |= s_input;
   gpu_cpu_sync (slist, GL_MAP_READ_BIT, __FILE__, LINENO);
 #endif // _GPU
   foreach_cell() {
@@ -1393,7 +1393,7 @@ bool restore (const char * file = "dump",
       s.gpu.stored = 1; // stored on CPU
 #endif // _GPU
   for (scalar s in all)
-    s.dirty = true;
+    set_dirty_stencil (s);
 #endif // ! (TREE && _MPI)
   
   scalar * other = NULL;

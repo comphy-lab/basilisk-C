@@ -47,12 +47,12 @@ event defaults (i = 0)
 {
   for (scalar s in stracers) {
 #if EMBED
-    s.refine = s.prolongation = refine_embed_linear;
+    s.refine = refine_embed_linear;
+    set_prolongation (s, refine_embed_linear);
 #else
     s.refine  = refine_linear;
 #endif
-    s.restriction = restriction_volume_average;
-    s.dirty = true;
+    set_restriction (s, restriction_volume_average);
   }
 }
 #endif // TREE

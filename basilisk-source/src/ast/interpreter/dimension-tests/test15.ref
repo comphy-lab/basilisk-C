@@ -1,5 +1,5 @@
-/layered/hydro.h:231: error: the dimensional constraints below are not compatible
-/src/layered/hydro.h:231: 'h[-1] > dry'
+/layered/hydro.h:230: error: the dimensional constraints below are not compatible
+/src/layered/hydro.h:230: 'h[-1] > dry'
 	└─ [/src/layered/hydro.h:54: 'dry = 1e-12'] = [1]
 /src/layered/hydro.h:443: 'u.x[] += dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry)'
 	└─ [/src/layered/hydro.h:54: 'dry = 1e-12'] = [1,-1]

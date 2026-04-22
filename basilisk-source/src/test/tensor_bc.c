@@ -16,7 +16,7 @@ int main()
     D.x.y[] = (u.x[0,1] - u.x[0,-1] + u.y[1,0] - u.y[-1,0])/(2.*Delta);
   }
   output_cells (stdout);
-  D.y.x.dirty = true; // fixme
+  set_dirty_stencil (D.y.x); // fixme
   boundary ({D.y.x}); // fixme
   foreach()
     foreach_neighbor(1)

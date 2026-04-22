@@ -45,9 +45,9 @@ static void remap_neumann (double s_r,
                            double df_b,
                            double C[3])
 {
-  C[0] = s_r - df_b - C[2];
   C[1] = df_b;
   C[2] = 3.*(s_r - df_b/2. - f)/2.;
+  C[0] = s_r - df_b - C[2];
 }
 
 /**
@@ -70,9 +70,9 @@ static void remap_robin (double s_r,
 {
   double a = - lambda_b, s = - a + (a - 1.)/3. + 1/2. [0];
   double M[3][3] = {
-    {    - a,    1./6.,     a/3.},
-    {     1.,  - 2./3.,  - 1./3.},
-    { a - 1.,    1./2,  1/2. - a}
+    {    - a,    1./6.,     a/3.    },
+    {     1.,  - 2./3.,  - 1./3.[0] },
+    { a - 1.,    1./2,  1/2. - a    }
   };
   double B[3] = { f, f_b, s_r };
   for (int i = 0; i < 3; i++) {
@@ -98,13 +98,14 @@ x' = \frac{x}{x_{k+1} - x_k}
 $$
 */
 
-static double right_value (int k, int n,
-                           const double x[n], const double f[n-1],
-                           double f_b, double lambda_b, double df_b,
-                           double f_t, double lambda_t, double df_t)
+static void right_value (int nvar, double s_right[nvar],
+                         int k, int n,
+                         const double x[n], double f[n-1][nvar],
+                         double f_b, double lambda_b, double df_b,
+                         double f_t, double lambda_t, double df_t)
 {
   double xk = x[k], dx = x[k+1] - xk;
-  double M[4][4], B[4];
+  double M[4][4];
   for (int i = (k == 0); i < (k == n - 3 ? 3 : 4); i++) {
     double zeta1 = (x[i+k-1] - xk)/dx;
     double z1n = zeta1;
@@ -112,7 +113,6 @@ static double right_value (int k, int n,
     double z0n = zeta0;
     for (int j = 0; j < 4; j++, z1n *= zeta1, z0n *= zeta0)
       M[i][j] = (z0n - z1n)/(j + 1);
-    B[i] = (x[k+i] - x[k-1+i])/dx*f[k-1+i];
   }
 
   /**
@@ -132,7 +132,6 @@ static double right_value (int k, int n,
       M[0][1] = 1.;
       M[0][2] = 0.;
       M[0][3] = 0.;
-      B[0] = df_b*dx;
     }
 
     /**
@@ -143,14 +142,13 @@ static double right_value (int k, int n,
       M[0][1] = - lambda_b/dx;
       M[0][2] = 0.;
       M[0][3] = 0.;
-      B[0] = f_b;
     }
   }
 
   /**
   This is the equivalent for the top layer. The systems are different
-  because at this location because $x'=1$ for the top layer and $x'=0$
-  for the bottom layer. */
+  at this location because $x'=1$ for the top layer and $x'=0$ for the
+  bottom layer. */
   
   if (k == n - 3) {
     double zetab = (x[k+2] - xk)/dx;
@@ -159,14 +157,12 @@ static double right_value (int k, int n,
       M[3][1] = 1.;
       M[3][2] = 2.*zetab;
       M[3][3] = 3.*sq(zetab);
-      B[3] = df_t*dx;
     }
     else {
       M[3][0] = 1.;
       M[3][1] = zetab - lambda_t/dx;
-      M[3][2] = sq(zetab) - 2.*zetab*lambda_t/dx;
-      M[3][3] = cube(zetab) - 3.*sq(zetab)*lambda_t/dx;
-      B[3] = f_t;
+      M[3][2] = zetab*(zetab - 2.*lambda_t/dx);
+      M[3][3] = sq(zetab)*(zetab - 3.*lambda_t/dx);
     }
   }
 
@@ -179,14 +175,30 @@ static double right_value (int k, int n,
   
   assert (smatrix_inverse (4, M, 1.e-30) > 1.e-20);
 
-  double c[4] = {0.,0.,0.,0.};
-  for (int i = 0; i < 4; i++)
-    for (int j = 0; j < 4; j++)
-      c[i] += M[i][j]*B[j];
-  double s_right = c[3];
-  for (int i = 0; i < 3; i++)
-    s_right += c[i];
-  return s_right;
+  for (int v = 0; v < nvar; v++) {
+    double B[4];
+    for (int i = (k == 0); i < (k == n - 3 ? 3 : 4); i++)
+      B[i] = (x[k+i] - x[k-1+i])/dx*f[k-1+i][v];
+    if (k == 0) {
+      if (df_b)
+        B[0] = df_b*dx;
+      else
+        B[0] = f_b;
+    }
+    if (k == n - 3) {
+      if (df_t)
+        B[3] = df_t*dx;
+      else
+        B[3] = f_t;
+    }
+    double c[4] = {0.,0.,0.,0.};
+    for (int i = 0; i < 4; i++)
+      for (int j = 0; j < 4; j++)
+        c[i] += M[i][j]*B[j];
+    s_right[v] = c[3];
+    for (int i = 0; i < 3; i++)
+      s_right[v] += c[i];
+  }
 }
 
 /**
@@ -204,77 +216,80 @@ The reconstruction function take the left and right values, the layers
 positions `x` and corresponding average values `f`, a limiting option
 and returns the polynomial `C` on the interval $[x_k:x_{k+1}]$. */
 
-static void remap_central (const double s_l, const double s_r,
-                           const int n, const double x[n], const double f[n-1],
+static void remap_central (int nvar,
+                           const double s_l[nvar], const double s_r[nvar],
+                           const int n, const double x[n], double f[n-1][nvar],
                            const int k,
-                           double C[3],
+                           double C[3][nvar],
                            const bool limiter)
 {
   double xk = x[k], dx = x[k+1] - xk;
-  double sl = s_l, sr = s_r;
-
-  /**
-  If limiting is used, we first limit the left and right values. */
-  
-  if (limiter) {
-    if ((f[k+1] - f[k])*(f[k] - f[k-1]) < 0.) {
-      sl = f[k];
-      sr = f[k];
-    }
-    else {
-      double sigma_left = 2.*(f[k] - f[k-1])/dx;
-      double sigma_center = 2.*(f[k+1] - f[k-1])/(x[k+2] - x[k-1] + dx);
-      double sigma_right = 2.*(f[k+1] - f[k])/dx;
-      double sigma = minmodremap(sigma_center, minmodremap(sigma_left, sigma_right));
-      if ((sl - f[k-1])*(f[k] - sl) < 0.)
-        sl = f[k] - 1./2.*dx*sigma;
-      if ((sr - f[k])*(f[k+1] - sr) < 0.)
-        sr = f[k] + 1./2.*dx*sigma;
-    }
-  }
-
-  /**
-  The polynomial fit is given by the linear system
-  $$
-  \begin{aligned}
-  P(0) &= s_l, \\
-  \int_0^1P(x)dx &= f_k \\
-  P(1) &= s_r
-  \end{aligned}
-  $$
-  which has for solution */
-  
-  C[0] = sl;
-  C[1] = 6.*f[k] - 2.*sr - 4.*sl;
-  C[2] = 3.*(sr + sl - 2.*f[k]);
-
-  /**
-  If limiting is used, we check that the extrema of the polynomial do
-  not over- or undershoot. For a second-order polynomial, the extrema (if
-  $C_2\neq0$) is at
-  $x=-\frac{C_1}{2C_2}$ which can be developed as
-  $$
-  x=-\frac{6f_k-2s_r-4s_l}{6(s_r+s_l-3f_k)}
-  $$  
-  If $x\in[0,0.5]$, we change $s_r$ such that
-  $x=0$. The new value is then $s_r=3f_k-2s_l$.
-  
-  If $x\in[0.5,1]$, we change $s_l$ such that
-  $x=1$. The new value is then $s_l=3f_k-2s_r$.
-  */
-  
-  if (limiter && C[1]*C[2] < 0. && C[1]/C[2] > - 2.) {
-    if (C[1]/C[2] > - 1.)
-      sr = 3.*f[k] - 2.*sl;
-    else
-      sl = 3.*f[k] - 2.*sr;
+  for (int v = 0; v < nvar; v++) {
+    double sl = s_l[v], sr = s_r[v];
 
     /**
-    We update the polynomial coefficients using these new bounds. */
+    If limiting is used, we first limit the left and right values. */
+  
+    if (limiter) {
+      if ((f[k+1][v] - f[k][v])*(f[k][v] - f[k-1][v]) < 0.) {
+        sl = f[k][v];
+        sr = f[k][v];
+      }
+      else {
+        double sigma_left = 2.*(f[k][v] - f[k-1][v])/dx;
+        double sigma_center = 2.*(f[k+1][v] - f[k-1][v])/(x[k+2] - x[k-1] + dx);
+        double sigma_right = 2.*(f[k+1][v] - f[k][v])/dx;
+        double sigma = minmodremap(sigma_center, minmodremap(sigma_left, sigma_right));
+        if ((sl - f[k-1][v])*(f[k][v] - sl) < 0.)
+          sl = f[k][v] - 1./2.*dx*sigma;
+        if ((sr - f[k][v])*(f[k+1][v] - sr) < 0.)
+          sr = f[k][v] + 1./2.*dx*sigma;
+      }
+    }
+
+    /**
+    The polynomial fit is given by the linear system
+    $$
+    \begin{aligned}
+    P(0) &= s_l, \\
+    \int_0^1P(x)dx &= f_k \\
+    P(1) &= s_r
+    \end{aligned}
+    $$
+    which has for solution */
+  
+    C[0][v] = sl;
+    C[1][v] = 6.*f[k][v] - 2.*sr - 4.*sl;
+    C[2][v] = 3.*(sr + sl - 2.*f[k][v]);
+
+    /**
+    If limiting is used, we check that the extrema of the polynomial do
+    not over- or undershoot. For a second-order polynomial, the extrema (if
+    $C_2\neq0$) is at
+    $x=-\frac{C_1}{2C_2}$ which can be developed as
+    $$
+    x=-\frac{6f_k-2s_r-4s_l}{6(s_r+s_l-3f_k)}
+    $$  
+    If $x\in[0,0.5]$, we change $s_r$ such that
+    $x=0$. The new value is then $s_r=3f_k-2s_l$.
     
-    C[0] = sl;
-    C[1] = 6.*f[k] - 2.*sr - 4.*sl;
-    C[2] = 3.*(sr + sl - 2.*f[k]);
+    If $x\in[0.5,1]$, we change $s_l$ such that
+    $x=1$. The new value is then $s_l=3f_k-2s_r$.
+    */
+  
+    if (limiter && C[1][v]*C[2][v] < 0. && C[1][v]/C[2][v] > - 2.) {
+      if (C[1][v]/C[2][v] > - 1.)
+        sr = 3.*f[k][v] - 2.*sl;
+      else
+        sl = 3.*f[k][v] - 2.*sr;
+
+      /**
+      We update the polynomial coefficients using these new bounds. */
+    
+      C[0][v] = sl;
+      C[1][v] = 6.*f[k][v] - 2.*sr - 4.*sl;
+      C[2][v] = 3.*(sr + sl - 2.*f[k][v]);
+    }
   }
 }
 
@@ -287,6 +302,11 @@ and the corresponding arrays of initial and remapped positions `xpos`
 and `xnew` respectively, as well as the initial averaged values on the
 corresponding intervals `fdat`. The remapped averaged values will be
 stored in `fnew`.
+
+The `fdat` and `fnew` arrays are also indexed by `nvar` which allows
+to remap several fields simultaneously, for performance. Note however
+that the interface does not allow to apply different boundary
+conditions for each of these fields.
 
 Note that the `xpos` and `xnew` must be stored in strict increasing
 order i.e. negative interval values $x_{i+1} - x_i$ are not allowed.
@@ -317,7 +337,8 @@ other boundary conditions will not guarantee boundedness. */
 
 void remap_c (int npos, int nnew,
               const double xpos[npos], const double xnew[nnew],
-              const double fdat[npos-1], double fnew[nnew-1],
+              const int nvar,
+              double fdat[npos-1][nvar], double fnew[nnew-1][nvar],
               double f_b, double lambda_b, double df_b,
               double f_t, double lambda_t, double df_t,
               bool limiter)
@@ -333,8 +354,9 @@ void remap_c (int npos, int nnew,
   /**
   We go through each new interval. */
   
-  double x = xnew[0], s_left = 0., C[3];
-  fnew[0] = 0.;
+  double x = xnew[0], s_left[nvar], C[3][nvar];
+  for (int v = 0; v < nvar; v++)
+    fnew[0][v] = 0., s_left[v] = 0.;
   for (int inew = 0, k = -1; inew < nnew - 1 && x < xpos[npos - 1];) {
 
     /**
@@ -360,30 +382,34 @@ void remap_c (int npos, int nnew,
         If limiting is used together with Neumann zero fluxes, the
         value must be constant in the last layer. */
         
-        if (limiter && lambda_t == HUGE) {
-          C[0] = fdat[k];
-          C[1] = 0.;
-          C[2] = 0.;
-        }
+        if (limiter && lambda_t == HUGE)
+          for (int v = 0; v < nvar; v++) {
+            C[0][v] = fdat[k][v];
+            C[1][v] = 0.;
+            C[2][v] = 0.;
+          }
 
         /**
         Otherwise we use Neumann or Robin
         boundary conditions to compute the polynomial. */
         
-        else {
-          if (df_t)
-            remap_neumann (s_left, fdat[k], - df_t*(xpos[k+1] - xpos[k]), C);
-          else
-            remap_robin (s_left, fdat[k], f_t, - lambda_t/(xpos[k+1] - xpos[k]), C);
+        else
+          for (int v = 0; v < nvar; v++) {
+            double B[3];
+            if (df_t)
+              remap_neumann (s_left[v], fdat[k][v], - df_t*(xpos[k+1] - xpos[k]), B);
+            else
+              remap_robin (s_left[v], fdat[k][v], f_t, - lambda_t/(xpos[k+1] - xpos[k]), B);
 
-          /**
-          Since the functions above are written for the bottom layer, we
-          need to apply symmetry conditions i.e. transform $x$ into $1 -
-          x$. This gives the following polynomial coefficients. */
-        
-          C[0] += C[2] + C[1];
-          C[1] = - C[1] - 2.*C[2];
-        }
+            /**
+            Since the functions above are written for the bottom layer, we
+            need to apply symmetry conditions i.e. transform $x$ into $1 -
+            x$. This gives the following polynomial coefficients. */
+            
+            C[0][v] = B[0] + B[1] + B[2];
+            C[1][v] = - B[1] - 2.*B[2];
+            C[2][v] = B[2];
+          }
       }
       else {
 
@@ -391,33 +417,43 @@ void remap_c (int npos, int nnew,
         For all other layers, we need to compute the right value. If
         limiting is used together with Neumann zero fluxes we impose a
         constant profile in the bottom or top layer. */
-        
-        double s_right =
-          limiter && lambda_b == HUGE && k == 0 ? fdat[0] :
-          limiter && lambda_t == HUGE && k == npos - 3 ? fdat[npos - 2] :
-          right_value (k, npos, xpos, fdat, f_b, lambda_b, df_b, f_t, lambda_t, df_t);
 
+        double s_right[nvar];
+        if (limiter && lambda_b == HUGE && k == 0)
+          for (int v = 0; v < nvar; v++)
+            s_right[v] = fdat[0][v];
+        else if (limiter && lambda_t == HUGE && k == npos - 3)
+          for (int v = 0; v < nvar; v++)
+            s_right[v] = fdat[npos - 2][v];
+        else
+          right_value (nvar, s_right, k, npos, xpos, fdat, f_b, lambda_b, df_b, f_t, lambda_t, df_t);
+        
         /**
         We use boundary conditions for the bottom layer. */
-        
-        if (k == 0) {
-          if (df_b)
-            remap_neumann (s_right, fdat[0], df_b*(xpos[1] - xpos[0]), C);
-          else
-            remap_robin (s_right, fdat[0], f_b, lambda_b/(xpos[1] - xpos[0]), C);
-        }
+
+        if (k == 0)
+          for (int v = 0; v < nvar; v++) {
+            double B[3];
+            if (df_b)
+              remap_neumann (s_right[v], fdat[0][v], df_b*(xpos[1] - xpos[0]), B);
+            else
+              remap_robin (s_right[v], fdat[0][v], f_b, lambda_b/(xpos[1] - xpos[0]), B);
+            for (int i = 0; i < 3; i++)
+              C[i][v] = B[i];
+          }
 
         /**
         Or central remapping, with optional limiting, using the left
         and right values for all the other layers. */
         
         else
-          remap_central (s_left, s_right, npos, xpos, fdat, k, C, limiter);
-
+          remap_central (nvar, s_left, s_right, npos, xpos, fdat, k, C, limiter);
+        
         /**
         The new left value is just the old right value. */
-        
-        s_left = s_right;
+
+        for (int v = 0; v < nvar; v++)
+          s_left[v] = s_right[v];
       }
     }
 
@@ -434,7 +470,8 @@ void remap_c (int npos, int nnew,
     if (xnew[inew + 1] < xpos[k + 1]) {
       jnew = inew + 1;
       xe = xnew[jnew];
-      fnew[jnew] = 0.;
+      for (int v = 0; v < nvar; v++)
+        fnew[jnew][v] = 0.;
     }
     else
       xe = xpos[k + 1];
@@ -452,10 +489,13 @@ void remap_c (int npos, int nnew,
     GPUs. */
 
     double xk = xpos[k], dx = xpos[k+1] - xk, dx1 = dx/(xnew[inew + 1] - xnew[inew]);
-    double a = (x - xk)/dx, b = (xe - xk)/dx, an = a, bn = b;
+    double a = (x - xk)/dx, b = (xe - xk)/dx;
     assert (a >= 0. && a <= b && b <= 1.); // xpos and xnew must be ordered properly
-    for (int i = 0; i < 3; i++, an *= a, bn *= b)
-      fnew[inew] += C[i]/(i + 1)*(bn - an)*dx1;
+    for (int v = 0; v < nvar; v++) {
+      double an = a, bn = b;
+      for (int i = 0; i < 3; i++, an *= a, bn *= b)
+        fnew[inew][v] += C[i][v]/(i + 1)*(bn - an)*dx1;
+    }
 
     /**
     ## Update of integration bounds

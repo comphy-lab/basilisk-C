@@ -85,8 +85,7 @@ event acceleration (i++) {
 
 event properties (i++) {
 #if TREE
-  f.prolongation = refine_bilinear;
-  f.dirty = true;
+  set_prolongation (f, refine_bilinear);
 #endif
 
   foreach_face() {
@@ -98,8 +97,7 @@ event properties (i++) {
     rhov[] = cm[]*rho(f[]);
 
 #if TREE
-  f.prolongation = fraction_refine;
-  f.dirty = true;
+  set_prolongation (f, fraction_refine);
 #endif
 }
 

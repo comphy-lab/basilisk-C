@@ -189,11 +189,10 @@ event acceleration (i++)
   }
 
   /**
-  The fields used by the relaxation function above (and/or by the
-  [relaxation function](nh.h#relax_nh) of the non-hydrostatic solver)
-  need to be restricted to all levels. */
+  The fields used by the relaxation function above need to be
+  restricted to all levels. */
   
-  restriction ({cm, fm, zb, h, hf, alpha_eta});
+  restriction ({cm, fm, alpha_eta});
 
   /**
   The restriction function for $\eta$, which has been modified by the

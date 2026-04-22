@@ -1741,7 +1741,7 @@ void mpi_boundary_refine  (scalar * list){}
 void mpi_boundary_coarsen (int a, int b){}
 void mpi_boundary_update  (scalar * list) {
   for (scalar s in list)
-    s.dirty = true;
+    set_dirty_stencil (s);
   boundary (list);
 }
 @endif // !_MPI

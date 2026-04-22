@@ -253,6 +253,7 @@ There is 1 unconstrained constant within the following 2
 [1,-1]  bubble.c: 'uemax = 1e-2'
 [1,-2]  ast/interpreter/overload.h: 'g.x[] = 0.'
 [1,-2]  ast/interpreter/overload.h: 'g.y[] = 0.'
+[1,-2]  /src/grid/multigrid-common.h: 'sum = 0.'
 [1,-2]  /src/navier-stokes/centered.h: 'af.x[] = 0.'
 [1,-2]  /src/navier-stokes/centered.h: 'af.y[] = 0.'
 [1,-2]  /src/iforce.h: 'a.x[] = 0.'

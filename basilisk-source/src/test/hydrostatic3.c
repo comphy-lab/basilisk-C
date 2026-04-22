@@ -87,9 +87,9 @@ int main()
   foreach()
     p[] = (cs[] != 0.)*(G.x[]*x + G.y[]*y + G.z[]*z); // exact pressure
 #if 0
-  p.restriction = restriction_exact;
-  p.refine = p.prolongation = refine_exact;
-  p.dirty = true;
+  set_restriction (p, restriction_exact);
+  p.refine = refine_exact;
+  set_prolongation (p, refine_exact);
 #endif
   
   event ("acceleration");

@@ -1,7 +1,6 @@
 [0]  /src/grid/cartesian-common.h: '0'
 [0]  /src/grid/cartesian-common.h: '1.'
 [0]  /src/grid/cartesian-common.h: '1.'
-[0]  /src/grid/multigrid-common.h: 'sum = 0.'
 [0]  /src/grid/multigrid-common.h: 'size[] = 1'
 [0]  /src/layered/conservation.h: 'd[] = 0.'
 [0]  /src/layered/coriolis.h: '1.'

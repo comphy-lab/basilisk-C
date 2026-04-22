@@ -260,6 +260,7 @@
 [1,-1]  atomisation.c: '0'
 [1,-2]  ast/interpreter/overload.h: 'g.x[] = 0.'
 [1,-2]  ast/interpreter/overload.h: 'g.y[] = 0.'
+[1,-2]  /src/grid/multigrid-common.h: 'sum = 0.'
 [1,-2]  /src/navier-stokes/centered.h: 'af.x[] = 0.'
 [1,-2]  /src/navier-stokes/centered.h: 'af.y[] = 0.'
 [1,-2]  /src/iforce.h: 'a.x[] = 0.'

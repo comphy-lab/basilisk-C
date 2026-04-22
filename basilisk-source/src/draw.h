@@ -916,10 +916,8 @@ bool draw_vof (char * c, char * s = NULL, bool edges = false,
 #if TREE
   // make sure we prolongate properly
   void (* prolongation) (Point, scalar) = d.prolongation;
-  if (prolongation != fraction_refine) {
-    d.prolongation = fraction_refine;
-    d.dirty = true;
-  }
+  if (prolongation != fraction_refine)
+    set_prolongation (d, fraction_refine);
 #endif // TREE
     
   bview * view = draw();
@@ -1050,10 +1048,8 @@ bool draw_vof (char * c, char * s = NULL, bool edges = false,
 
 #if TREE
   // revert prolongation
-  if (prolongation != fraction_refine) {
-    d.prolongation = prolongation;
-    d.dirty = true;
-  }
+  if (prolongation != fraction_refine)
+    set_prolongation (d, prolongation);
 #endif // TREE
 
   if (expr) delete({col});
