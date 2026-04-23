@@ -1,8 +1,12 @@
 /**
  
- # Investigating the initial velocity profiles under a directional spectrum
+# Investigating horizontal average in the multilayer framework 
 
-**/
+The multilayer solver uses layer. Here we investigate how to do the horizontal
+average for different cases, from a simple monochromatic linear wave to a
+realistic synthetic wave field.
+
+ */
 #include "grid/multigrid.h"
 #include "layered/hydro.h"
 #include "layered/nh.h"
@@ -10,29 +14,30 @@
 #include "layered/perfs.h"
 #include "bderembl/libs/netcdf_bas.h" // read/write netcdf files
 
+/**
+ ## Parameters
 
+General */
 
-//#define g_ 9.81
 double g_=9.81;
 
 #ifndef WAVE
     #define WAVE 0 // default is to produce monochromatic wave
 #endif
 
-// General parameters
 double L = 200.0;         // Size of the domain
 double h0 = 100.0;        // depth of water
 double kp;                // peak wavelength
 
-// Solver parameters
+/** Solver parameters */
 int N_grid = 6;           // Number of cells
 int N_layer = 30;         // Number of layers
 char ncname[20] = "out";  // file name of output
 
-// Stokes wave parameters
-double ak = 0.33;
+/** Stokes wave parameters */
+double ak = 0.033;
 
-// Stynthetic field parameters
+/** Stynthetic field parameters */
 double P = 0.02;          // Energy level
 int N_mode = 32;          // Number of modes
 int N_power = 5;          // power exponent of cos^n
@@ -40,7 +45,7 @@ double thetam=0.;         // default direction
 int Nthetam = 4;          // number of direction (dir=i/Nthetam for i in
                           //                                [0,Nthetam])
 
-// Initial conditions generation
+/** Initial conditions generation functions */
 #if WAVE<2
 #include "hugoj/lib/common_waves.h"
 #elif WAVE==2
@@ -50,7 +55,7 @@ int Nthetam = 4;          // number of direction (dir=i/Nthetam for i in
 
 int main(){
   
-  // Common part, solver values
+  /** Common part, solver values */
   L0 = L;
   N = 1 << N_grid; // 1*2^N_grid
   nl = N_layer;
@@ -68,7 +73,7 @@ int main(){
 
 event init(i =  0) {
   
-  /*
+  /**
   ## Monochromatic wave
   */
   #if WAVE == 0
@@ -84,8 +89,6 @@ event init(i =  0) {
     foreach_layer() {
       h[] = H*beta[point.l];
       z += h[]/2.;
-      // u.x[] = a*omega*exp(k*z)*sin(k*x);
-      // w[] = a*omega*exp(k*z)*cos(k*x);
       u.x[] = u_x_monolin(0, x, z, a, k);
       w[] = u_y_monolin(0, x, z, a, k);
       eta[] += h[];
@@ -95,13 +98,14 @@ event init(i =  0) {
   create_nc({zb, h, u, w, eta}, ncname);
   write_nc();
 
-  /*
+  /**
   ## Stokes wave
   */
   #elif WAVE == 1
   
   snprintf(ncname, sizeof(ncname), "stokes.nc");
   kp=2*pi/L;
+  geometric_beta (1./3., true);
   foreach() {
      zb[] = - h0;
      double H = wave_stokes(x, 0, ak, kp, h0) - zb[];
@@ -118,7 +122,7 @@ event init(i =  0) {
   create_nc({zb, h, u, w, eta}, ncname);
   write_nc();
 
-  /*
+  /**
   ## Synthetic wave field (4 directions)
   */
   #elif WAVE == 2
@@ -126,13 +130,13 @@ event init(i =  0) {
 
   kp=10*PI/L;
   // initialise thetam list 
-  double list_thetam = (double*)calloc(Nthetam, sizeof(double));
+  double * list_thetam = (double*)calloc(Nthetam, sizeof(double));
   for (int i=0; i<Nthetam; ++i){
     list_thetam[i] = i*PI;
   }
 
   // Varying layer thickness
-  geometric_beta (0., true); 
+  geometric_beta (1./3., true); 
   
   // loop through the thetam values
   for (int kt=0; kt<Nthetam; ++kt){

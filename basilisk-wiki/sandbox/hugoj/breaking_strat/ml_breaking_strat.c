@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
   G = g_;
   theta_H = thetaH;
   CFL_H = 1; 
+  CFL=0.8;
   
   // Boundary condition
   origin (-L0/2., -L0/2.);
@@ -161,17 +162,33 @@ event init(i =  0) {
   T_Spectrum spectrum;
   spectrum = read_spectrum(N_mode);
 
-  // step 1: set eta and h
+  /** set T. Doing this now instead of later in the code allows for a
+      initial stratitifcation that follows layers.*/
   foreach() {
     zb[] = -h0;
+    double H =  - zb[];
+    double z = zb[];
+    foreach_layer() {
+      h[] = H*beta[point.l];
+      z+=h[]/2.;
+      T[] = Tini(z); // + noise();
+      z+=h[]/2.;
+    } 
+  }
+
+  // set eta and h
+  foreach() {
     eta[] = wave(x, y, N_grid, spectrum);
     double H = wave(x, y, N_grid, spectrum) - zb[];
     foreach_layer() {
       h[] = H*beta[point.l];
     } 
   }
+  
+  /** we now remap the T field onto the new layer coordinates */
+  vertical_remapping (h, tracers);
 
-  // step 2: set currents
+  /** set currents */
   foreach() {
     double z = zb[];
     foreach_layer() {
@@ -179,8 +196,8 @@ event init(i =  0) {
       u.x[] = u_x(x, y, z, N_grid, spectrum);
       u.y[] = u_y(x, y, z, N_grid, spectrum);
       w[] = u_z(x, y, z, N_grid, spectrum);
-      T[] = Tini(z);
-      fprintf(stderr, "l=%d, z=%f, Tini(z)=%f", point.l, z, Tini(z));
+      // T[] = Tini(z);
+      // fprintf(stderr, "l=%d, z=%f, Tini(z)=%f", point.l, z, Tini(z));
       z += h[]/2.;
     }
   }

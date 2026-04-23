@@ -21,20 +21,22 @@ filename = os.path.join(dirname, '../libpy/')
 sys.path.append( filename )
 from fftlib import get_spec_1D
 from data_reader import read_bas_data
+from tools_plots import plot_surface_3D
 
 
+case = "idealized"
 
-case = "mono"
-
-paths = {"mono":"./monochromatic/monoc.nc",}
+paths = {"mono":"./monochromatic/monoc.nc",
+         "stokes":"./stokes/stokes.nc",
+         "PM":"./synth_eta/synth_eta_0.nc"}
 
 """
-# Idealized case
+# I. Idealized case
 
 ## Monochromatic linear wave
 
 """
-if case=="mono":
+if case=="idealized":
     # linear (sin) wave
     H0 = 100        # m, depth of water
     dz = 0.5        # m
@@ -83,63 +85,56 @@ if case=="mono":
     """
     We compare with the initial field from the Basilisk simulation
     """
-    dsmono, grid = read_bas_data(paths[case])
+    # monochromatic wave
+    dsmono, grid = read_bas_data(paths["mono"])
     dsmono = dsmono.isel(time=0) # select the initial time
-    bas_profile_u = dsmono['u.x'].mean(['x','y']).values
-    bas_z = dsmono['z'].mean(['x','y']).values
+    bas_profile_u_m = dsmono['u.x'].mean(['x','y']).values
+    bas_z_m = dsmono['z'].mean(['x','y']).values
     Nlayers = len(dsmono['zl'])
+    # stokes wave
+    ds_s, grid = read_bas_data(paths["stokes"])
+    ds_s = ds_s.isel(time=0) # select the initial time
+    bas_profile_u_s = ds_s['u.x'].mean(['x','y']).values
+    bas_z_s = ds_s['z'].mean(['x','y']).values
+    # synthetic wave field
+    ds_PM, grid = read_bas_data(paths["PM"])
+    ds_PM = ds_PM.isel(time=0) # select the initial time
+    bas_profile_u_PM = ds_PM['u.x'].mean(['x','y']).values
+    bas_z_PM = ds_PM['z'].mean(['x','y']).values
+
+
 
     """
     Plot the results for layer average
     """
     fig, ax = plt.subplots(1,1,figsize = (5,5),constrained_layout=True,dpi=100)
-    ax.plot(a_profile,-np.mean(z_layers,axis=0), label='analytical', c='k')
-    ax.scatter(bas_profile_u, bas_z, label=f'U Bas (nl={Nlayers})',c='g', marker='x')
+    ax.plot(a_profile,-np.mean(z_layers,axis=0), label='analytical 1 linear mode', c='k')
+    ax.scatter(bas_profile_u_m, bas_z_m, label=f'1 linear mode (Basilisk, nl={Nlayers})',c='g', marker='x')
+    ax.scatter(bas_profile_u_s, bas_z_s, label=f'stokes wave (Basilisk, nl={Nlayers})',c='c', marker='x')
+    ax.scatter(bas_profile_u_PM, bas_z_PM, label=f'PM Spectrum (Basilisk, nl={Nlayers})',c='orange', marker='s')
     ax.legend()
     ax.vlines(0,-H0,0,color='gray',ls='--')
     ax.set_xlabel('<u> (m/s)')
     ax.set_ylabel('depth (m)')
-    ax.set_title('Layer average for monochromatic wave')
+    ax.set_title(r'Layer average ($\sigma$ type)')
     ax.set_ylim([-H0, 0])
-    fig.savefig('u_profiles_monochromatic.pdf')
+    fig.savefig('u_profiles_sigma.pdf')
     
 
     #
-    # surface field from basilisk
+    # 3D surface field from basilisk
     #
-    x = dsmono.x.values
-    y = dsmono.y.values
-    X, Y = np.meshgrid(x, y)
-    eta = dsmono.h.sum(dim='zl').values + dsmono.zb.values
-    u   = dsmono['u.x'].isel(zl=-1).values
+    fig, ax = plt.subplots(1,1,figsize = (7,5),constrained_layout=True,dpi=100, subplot_kw={'projection': '3d'})
+    plot_surface_3D(dsmono, 'u.x', cmin=-0.75, cmax=0.75,
+                    zmin=-2,zmax=2, fig_tuple=(fig,ax), psave='3D_monochromatic_bas.pdf')
 
+    fig, ax = plt.subplots(1,1,figsize = (7,5),constrained_layout=True,dpi=100, subplot_kw={'projection': '3d'})
+    plot_surface_3D(ds_s, 'u.x',cmin=-0.75, cmax=0.75,
+                    zmin=-2,zmax=2, fig_tuple=(fig,ax), psave='3D_stokes_bas.pdf')
 
-    # Normalize u to [0,1] for the colormap
-    from matplotlib.colors import Normalize
-    from matplotlib.cm import ScalarMappable
-
-    norm    = Normalize(vmin=u.min(), vmax=u.max())
-    cmap    = plt.cm.Greys_r
-    fcolors = cmap(norm(u))           # RGBA array shaped like eta
-
-    fig, ax = plt.subplots(1,1,figsize = (7,5),constrained_layout=True,dpi=100, 
-                           subplot_kw={'projection': '3d'})
-    surf = ax.plot_surface(X, Y, eta,
-                        facecolors=fcolors,           # color from u, not from eta
-                        rstride=1, cstride=1,
-                        linewidth=0, antialiased=False)
-    ax.set_zlim([-2,2])
-    ax.set_xlim([-L/2,L/2])
-    ax.set_ylim([-L/2,L/2])
-    # Colorbar (must be built manually when using facecolors)
-    mappable = ScalarMappable(norm=norm, cmap=cmap)
-    mappable.set_array(u)
-    fig.colorbar(mappable, ax=ax, shrink=0.5, aspect=10, label='u')
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
-    ax.set_zlabel('η (eta)')
-    ax.set_title(r'Surface $\eta$ colored by u')
-    fig.savefig('3D_monochromatic_bas.pdf')
+    fig, ax = plt.subplots(1,1,figsize = (7,5),constrained_layout=True,dpi=100, subplot_kw={'projection': '3d'})
+    plot_surface_3D(ds_PM, 'u.x',cmin=-0.75, cmax=0.75,
+                    zmin=-25,zmax=25, fig_tuple=(fig,ax), psave='3D_PM0_bas.pdf')
 
     #
     # surface field analytical
@@ -148,7 +143,7 @@ if case=="mono":
     ax.plot(myX, f_eta(myX, k, a), c='k', label='analytical')
     for l in range(len(H_frac)):
         ax.plot(myX,z_layers[:,l]-H0, lw='0.5',c='k')
-    ax.scatter(x, eta[0,:],c='g',marker='x', label='Bas')
+    ax.scatter(dsmono.x.values, dsmono.eta[0,:],c='g',marker='x', label='Bas')
     ax.set_xlim([-L/2,L/2])
     ax.set_ylim([-50,2])
     ax.legend()
@@ -163,7 +158,7 @@ if case=="mono":
     # i) fraction of total water height
     # ii) constant distance from the surface
     nl = 3
-    H0_close = 10 # here I use H0=10 to exagerate the effect
+    H0_close = 10 # here I use 10m depth to exagerate the effect
     fig, ax = plt.subplots(1,1,figsize = (5,5),constrained_layout=True,dpi=100)
     ax.plot(myX, f_eta(myX, k, a), c='k', label='surface')
     ax.plot(myX, -np.ones(myX.shape)*H0_close, c='firebrick', label='flat bottom')
@@ -199,11 +194,19 @@ if case=="mono":
 if case=="Stokes":
     a=0
 
+    """
+    Data from a Basilisk simulation
+    """
+    dsmono, grid = read_bas_data(paths[case])
+    dsmono = dsmono.isel(time=0) # select the initial time
+    bas_profile_u = dsmono['u.x'].mean(['x','y']).values
+    bas_z = dsmono['z'].mean(['x','y']).values
+    Nlayers = len(dsmono['zl'])
 
 
 
 """
-# Synthetic wave field case
+# II. Synthetic wave field case
 
 ## General parameters
 

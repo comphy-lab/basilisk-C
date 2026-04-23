@@ -12,7 +12,7 @@ all: gen_ini.tst ml_breaking_strat.tst
 gen_ini.tst: _prep_ini
 
 # > ppr_C, mpirun
-ml_breaking_strat.tst: _prep_cpu
+ml_breaking_strat.tst: _prep_local
 ml_breaking_strat.tst: CC = mpicc -D_MPI=16
 
 # GPU run

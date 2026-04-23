@@ -1,5 +1,5 @@
 CFLAGS += -I$(DOCUMENT_ROOT)/sandbox
-#CFLAGS += -disable-dimensions # skip dimensions check for now
+CFLAGS += -disable-dimensions # skip dimensions check for now
 CFLAGS := $(filter-out -g, $(CFLAGS)) # remove debug mode
 CFLAGS += -O2 # compilation optmisation
 
