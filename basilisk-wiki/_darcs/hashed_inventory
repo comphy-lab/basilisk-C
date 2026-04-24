@@ -1,4 +1,4 @@
-pristine:e24110127804db851cc48cb1578fd433685c5485739e2c7e489a0de56a467f9a
+pristine:d4548671c7a1ae9eafc130735c41d4ad11dcd7170b7fdf1ddaf3810666c5e5f6
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -9075,3 +9075,48 @@ Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260422125000
  Ignore-this: 6e9018047fbca57bf89c157716aad8a2
 ] 
 hash: 0000002087-a178e71ba74423be3a601506f6bca47f01840c96c6433f1607fed68dc102b275
+[Added article PDFs
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260423085449
+ Ignore-this: 66440841fbd37b94f30564725c82fa70193027f3b6ebb371d1c95738d4d8720d9543453604f83f4d
+] 
+hash: 0000000701-4592dd9454f99aa02350f0de3322aef505e75977be3654456199ff522945e0d8
+[Improve description
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260423091324
+ Ignore-this: cffda2f7a134874b4caa4a9c496e0ada96f6f4425cd78172e4b77bcf9bbb14b1e32d72aed7085f26
+] 
+hash: 0000001220-e680f832704b2f7344ceb9044ab4c71e29829832ad6bb52e38801af480e97991
+[New test case, a bubble rising in a tank and non coalescing with a free interface. With passive particles.
+fpicella <francesco.picella@sorbonne-universite.fr>**20260423173459
+ Ignore-this: 9a07c1ff74c8528bd91f81ed8bd710e6fddf4691c87b4060307c048594c93dda91cbb20844001dec
+] 
+hash: 0000014281-7e236505da97e59d401e782d33cadec82256774ffac42fd957340a8cc94d9d77
+[Typo on the include for Antoon's sandbox
+fpicella <francesco.picella@sorbonne-universite.fr>**20260423174105
+ Ignore-this: 6e4b2ff02c4570c26120820c9adc3a41038a553c598e67f5748e22b228d1a744c99898e45f78a03c
+] 
+hash: 0000001574-4a7cd1679f194d94af580b8a0f31bb9fe5fb35d2070d2eaf1b04a3e57e133413
+[Added axi gas bubble particle case
+fpicella <francesco.picella@sorbonne-universite.fr>**20260423174636
+ Ignore-this: baf85df2fb01683fb34e33ce3a33f207e7340465e7038d5226468fa71528a56865fbefadf3084332
+] 
+hash: 0000000447-ab2ab6642bc1e0405a2e27b14a2d8820657aca5a84ba0d77715f26009cd3c6be
+[soluble
+haouche <ilies.haouche2000@gmail.com>**20260423180931
+ Ignore-this: f2ef55f72f8983411c3fa74a4c483badb1c46386b9b49c4973f79e03efa804ddf26b1d1f08cda89d
+] 
+hash: 0000020991-8658d031c94fc6dbdfdfff13973962c8eb3352f5b58b5c584f86f3bc39b9b7f1
+[README file
+haouche <ilies.haouche2000@gmail.com>**20260423181437
+ Ignore-this: dfa627cfb21ca44ed8e9246861b3d117e690899be63ad69337e29c8d7761135eb499dad09101418c
+] 
+hash: 0000000267-872c32fef98c651a34d2f3414006516c6bc3c10ddc6b5e035981c3743faecf4e
+[README file
+haouche <ilies.haouche2000@gmail.com>**20260423181503
+ Ignore-this: 4b576080b4bf8a7a9fde9e1ebe6d39bc3a2bc1f8cce4e35ef959aecb28c2dd812112e10eee0563c9
+] 
+hash: 0000000290-4fe4d62eba77e6b9136201e9a4d2b818e2c815b0cb42f16b073c3868b420a37a
+[README file
+haouche <ilies.haouche2000@gmail.com>**20260423181709
+ Ignore-this: d0a185752e211461b522c548ef574bfcafc5a8cbcc91a16bd0de3abc51c6fcdc1b82ea837870cb1a
+] 
+hash: 0000000264-fb929c530ef3e3629f333450a4b728315c6c6d9882315db488925653e56dcd01

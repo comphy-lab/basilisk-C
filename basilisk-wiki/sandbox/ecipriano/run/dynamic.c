@@ -1,10 +1,11 @@
 /**
 # Mesh dependent dynamic contact angle
 
-A moving contact line on a solid surface is usually simulated by combining a
-static contact angle model with a no-slip condition at the fluid–solid
-interface. However, these conditions lead to a singularity in the viscous
-stresses, which is typically alleviated by introducing a small slip length.
+Moving contact lines are often simulated by combining a static contact angle
+model with no-slip boundary conditions on the solid surface. However, this
+combination leads to a singularity in the viscous stresses at the contact line,
+which is typically regularized by introducing a small slip length (although
+other regularization mechanisms exist).
 
 In VOF simulations, the interface is advected by the face velocity, located half
 a grid cell away from the solid boundary. This introduces an implicit
@@ -13,8 +14,8 @@ also results in mesh-dependent solutions.
 
 In this file, we implement the models proposed by [Afkhami et al.
 (2009)](afkhami2009) and [Legendre and Maglio (2015)](#legendre2015). These
-models exploit a Cox–Voinov-type law to dynamically adjust the contact angle
-based on the local capillary number.
+models exploit a [Cox–Voinov](https://youtu.be/K3gcJXDVjZU?si=K-dlcYATp7g-xa3l)-type
+law to dynamically adjust the contact angle based on the local capillary number.
 
 The two expressions for the dynamic contact angle considered here are:
 
@@ -621,17 +622,10 @@ event end (t = tend) {
   number={15},
   pages={5370--5389},
   year={2009},
-  publisher={Elsevier}
+  publisher={Elsevier},
+  pdf={https://web.njit.edu/~shahriar/download/AZB_JCP09.pdf}
 }
 
-@article{legendre2015,
-  title={Comparison between numerical models for the simulation of moving contact lines},
-  author={Legendre, Dominique and Maglio, Marco},
-  journal={Computers \& Fluids},
-  volume={113},
-  pages={2--13},
-  year={2015},
-  publisher={Elsevier}
-}
+@hal{legendre2015, hal-01340390}
 ~~~
 */

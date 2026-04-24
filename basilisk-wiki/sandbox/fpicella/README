@@ -31,6 +31,7 @@ For this reason, I'm re-adapting [Arthur Ghigo](/sandbox/ghigo/src/) implementat
 
 ### Gas bubbles generating liquid droplets.
  - [Single gas bubble, rising in a quiescent bath, impacting a free-interface and generating a liquid droplet](rising_bubble_to_droplet/axi_rising_bubble_to_droplet.c)
+ - [Single gas bubble rising in a quiescent bath, without coalescence and with particles seeded in the liquid phase.](https://basilisk.fr/sandbox/fpicella/rising_bubble_to_droplet/axi_particles_no_coalescence.c)
 
 ### Miscellaneous and Pedagogy
 
