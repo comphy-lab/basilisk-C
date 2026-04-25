@@ -1,0 +1,136 @@
+/**
+
+# Test of spectrum.h: parceval equality
+
+Reminder:
+
+Parceval equalities:
+
+$$
+\begin{aligned}
+	<\eta^{2}> = \int_{0}^{\infty} \int_{-\pi}^{\pi} E_1(k,\theta) k dk d\theta =
+	\int_{0}^{\infty} \int_{0}^{\infty} E_2 (k_x,k_y) d k_x d k_y
+\end{aligned}
+$$
+
+The omnidirectionnal wavenumber spectrum is:
+
+$$
+\begin{aligned}
+	\phi(k) = \int_{- \pi}^{\pi} E(k,\theta) k d \theta
+\end{aligned}
+$$
+
+
+ */
+
+
+#define g_ 9.81
+#include "hugoj/lib/spectrum.h" // Initial conditions generation
+
+double P = 0.02;
+int N_mode = 32;
+int N_power = 5;
+double L = 200.0;
+double *kmod;
+double *F_kmod;
+int N_cells = 1024;
+int N_kmod = 64;
+double dx;
+double x;
+double y;
+double *eta;
+int index_a;
+
+int main(){
+  double kp=10*PI/L;
+  
+  
+  /** F(k)
+  Note: this is a copy of whats inside spectrum_gen_linear  */
+  F_kmod = (double *)malloc(N_kmod * sizeof(double));
+  kmod = (double *)malloc(N_kmod * sizeof(double));
+  for (int i = 0; i < N_kmod; ++i) {
+    kmod[i] = 2 * PI / L + 1.0 * i / (N_kmod - 1) * (1.41 * 100 * 2 - 2) * PI / L;
+    F_kmod[i] = spectrum_PM(P, kp, kmod[i]);
+  }
+
+  /** F(kx,ky) */
+  T_Spectrum spectrum;
+  spectrum = spectrum_gen_linear(N_mode, N_power, L, P, kp);
+  
+  /** eta*/
+  dx = L/(1.0*N_cells);
+  eta = (double *)malloc(N_cells*N_cells * sizeof(double));
+  for (int i=0; i<N_cells; i++) {
+    x = L/2 + i*dx;
+    for (int j=0; j<N_cells; j++){
+      index_a = i*N_cells + j;
+      y =  L/2 + j*dx;
+      eta[index_a] = wave(x, y, N_cells, spectrum);
+    }
+  }
+
+  /** Printing the variances */
+  double sum=0.;
+  for (int i=0; i<N_kmod; ++i){
+    sum += F_kmod[i]*(kmod[1]-kmod[0]);
+  }
+  fprintf(stderr,"%f\n", sum);
+
+  sum = 0.;
+  double dkx = spectrum.kx[1]-spectrum.kx[0];
+  double dky = spectrum.ky[1]-spectrum.ky[0];
+
+  for (int i=0; i<spectrum.N_mode; ++i){
+    for (int k=0; k<spectrum.N_mode+1; ++k){
+      sum += spectrum.F_kxky[i*spectrum.N_mode + k]*dkx*dky;
+    }
+  }
+  fprintf(stderr,"%f\n", sum);
+
+  // Writting to file
+  FILE *fptr0 = fopen("F_k_C", "wb");
+  fwrite(F_kmod, sizeof(double), N_kmod, fptr0);
+  fclose(fptr0);
+
+  FILE *fptr1 = fopen("F_kxky_C", "wb");
+  fwrite(spectrum.F_kxky, sizeof(double), N_mode*(N_mode+1), fptr1);
+  fclose(fptr1);
+
+  FILE *fptr2 = fopen("kx_C", "wb");
+  fwrite(spectrum.kx, sizeof(double), N_mode, fptr2);
+  fclose(fptr2);
+
+  FILE *fptr3 = fopen("ky_C", "wb");
+  fwrite(spectrum.ky, sizeof(double), N_mode+1, fptr3);
+  fclose(fptr3);
+
+  FILE *fptr4 = fopen("kmod_C", "wb");
+  fwrite(kmod, sizeof(double), N_kmod, fptr4);
+  fclose(fptr4);
+
+  FILE *fptr5 = fopen("eta_C", "wb");
+  fwrite(eta, sizeof(double), N_cells*N_cells, fptr5);
+  fclose(fptr5);
+
+  /** Executing the python code to work on the binary files */
+  // TODO:
+
+  //system ("python3 parceval.py");
+
+  // Problem for now: the custom import for fftlib isnt recognized (module not
+  // found)
+  // Solution: make parceval.tst then py parceval.py
+}
+
+/**
+ ![Synthetic wave spectrum](F_kxky_C.pdf)
+
+![Comparison between the original PM spectrum (dashed line) and the azimuthal
+integrated 1D spectra derived from the synthetic wave spectrum](comparison_Fk.pdf)
+
+![Synthetic wave field](eta.png)
+
+*/
+

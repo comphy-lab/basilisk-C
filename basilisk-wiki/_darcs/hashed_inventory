@@ -1,4 +1,4 @@
-pristine:d4548671c7a1ae9eafc130735c41d4ad11dcd7170b7fdf1ddaf3810666c5e5f6
+pristine:49e4c8ef6d649b84ba47e37791879698df36173c865d6b2d04375519e566aff6
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -9120,3 +9120,53 @@ haouche <ilies.haouche2000@gmail.com>**20260423181709
  Ignore-this: d0a185752e211461b522c548ef574bfcafc5a8cbcc91a16bd0de3abc51c6fcdc1b82ea837870cb1a
 ] 
 hash: 0000000264-fb929c530ef3e3629f333450a4b728315c6c6d9882315db488925653e56dcd01
+[cleanup, use with no-dimensions for now
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260424084323
+ Ignore-this: 9e010144210789cb97e49b3aded4f5ff
+] 
+hash: 0000004342-a35f808159b5beeb60ec535b2de1fe4ed7679745941f1b270ec754baa7a7077e
+[Removed
+Stephane Popinet <popinet@basilisk.fr>**20260424121723
+ Ignore-this: 7e2bf7c6ae1cb7da40aac63a5d9908206408a67a614dad120b7d108a5c94946073f703ab8a2da1a9
+] 
+hash: 0000001073-a24f9c286a16685d09c930f94ce2ce99ea6beb1b9f3b34d0701cc5ee1bfdf724
+[new quantitative case for a bubble rising in a passive-particle-laiden bath
+fpicella <francesco.picella@sorbonne-universite.fr>**20260424123054
+ Ignore-this: c71081cd789b83f8cbdfd18890c0dea19e5c85901851b252d5c637be7e5c8e71a8f8c56f5074d1c7
+] 
+hash: 0000019152-4456d23bda8f7c3399137d94a8ed78d53b22ff405e3262fcbd341129f3307661
+[New plot and some sort of first explanation of the observed behaviour.
+fpicella <francesco.picella@sorbonne-universite.fr>**20260424130144
+ Ignore-this: d13fb20e100f0a327aa9c4a40b92a7d5d3723fd49e6ac568aeb8deaf829111fb51acd2ddb1cd4617
+] 
+hash: 0000001880-3645f23b4fa67a87806360e1c90d590246dcab315a899a42d6e928efe38cdb4b
+[added: proper test for spectrum.h, parceval.c
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260424085301
+ Ignore-this: b3e394af362ac7e33d16f0da31f0c20
+] 
+hash: 0000011187-bc0aea4e2ce7b9b977c7609168bb1a3b814d5a62d8aee04b9186d2fd667d32ca
+[fix: correct 1D index for nd arrays
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260424090012
+ Ignore-this: fabafad1b7b45021da0007a07e2a77d3
+] 
+hash: 0000001311-a400413212035bd1ec5a2e005e16db806a2c37e3ce8d3b56ebc0ad8c082ba1a8
+[Added example on how to use synthetic spectrum as initial condition
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260424142214
+ Ignore-this: 373e0d43562d288efce8ab29b0c66b2b
+] 
+hash: 0000007678-4e8683d7a5c632f4b0e2c18348fe0bd5b368caaab2c960b5ac1c618562eda233
+[added the possibility to use a nonzero direction of the wave field, and its test case
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260424142310
+ Ignore-this: eaf9fe558c9eb89675aeca7df542bcd5
+] 
+hash: 0000002989-79dac7f7bb626fcbba10baddd2785f2f4ab868dc91737a36a62d2d258ff330ef
+[run example on gpu
+hugoj <hugo.jacquet.work@gmail.com>**20260424142542
+ Ignore-this: 77eccee09a96c334f6444dff41e6b08c8e074a3dc3f5edb1de7ae22f62ab9fd2924f88dc08f0a2e4
+] 
+hash: 0000000264-de87961b82655a71188edb1afb409b6ef185833f8f651360c6a0420b8c101c33
+[adapted so that it can work on any domain size
+fpicella <francesco.picella@sorbonne-universite.fr>**20260424143843
+ Ignore-this: cc718a68c991ebbf013cfb45530927576eed31d9a6aa4d84e5acf065c3b70548b80166ec6daff86f
+] 
+hash: 0000001532-942d38ee990c33183a1f40687634eb231523f47aec9193329ee79ec864423352

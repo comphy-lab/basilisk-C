@@ -201,7 +201,8 @@ for k,flat in enumerate([True, False]):
         k,l = np.meshgrid(kx,kx)
         K = np.sqrt(k**2 + l**2)
         if all_kr== False:
-            kr = kx[0,int(N/2)+1:]
+            #kr = kx[0,int(N/2)+1:] # was this
+            kr = k[0,int(N/2)+1:] # should be this ?
         elif all_kr == True:
             kmax = K.max()
             dk = np.abs(kx[2]-kx[1])

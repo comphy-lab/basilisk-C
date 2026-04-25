@@ -7,6 +7,10 @@ Popinet and Julien LeSommer.
 My main interest is understanding the influence of surface gravity waves on the
 mixing of the upper layers of the ocean.
 
+
+![Focusing and breaking of a Pierson-Moscowitz sea
+state](example_PM_spectrum/ml_breaking.gpu/eta.mp4)
+
 *Hugo Jacquet*
 
 ## Physical systems
@@ -27,9 +31,9 @@ mixing of the upper layers of the ocean.
 
 ## Toolbox
 
-* WIP [Generate a synthetic wave field for a Basilisk multilayer simulation](./example_PM_spectrum/ml_breaking.c)
+* [Example of how to use a synthetic wave field as initial condition for the multilayer](./example_PM_spectrum/ml_breaking.c)
 
-* [Comparison on the generatation of a synthetic initial spectra, with python or
+* [Comparison on the generation of a synthetic initial spectra, with python or
 C code](specgen_py_vs_C/)
 
 * [How to correctly do the azimuthal integration of 2D
@@ -44,6 +48,8 @@ spectrum](./verif_spectrum/verif_spectrum.py)
 simulation, example on breaking.c](test_read_write_netcdf/README.md)
 
 * [Test of an interpolation method](test_interp/test_interp.c)
+
+* [Test of spectrum.h](test_spectrum.h/README.md)
 
 ## Bugs
 

@@ -211,50 +211,50 @@ event init(i =  0) {
       w[] = 0.;
       // T[] = Tini(z) - Trand + (rand() / (RAND_MAX+1.0) * 2 * Trand) ;
       //T[] = Tini(z) + Trand * (rand() / (RAND_MAX+1.0) * 2.0 - 1.0) ;
-      //T[] = Tini(z) + Trand * noise() ;
-      T[] = Trand * noise() ;
+      T[] = Tini(z) + Trand * noise() ;
+      //T[] = Trand * noise() ;
       //T[] = T0(z);
       z += h[]/2.;
     }
   }
   
   // initializing diag arrays
-  //T_profile[0] = Trand; // <- this passes the dimensional analysis
-  //dimensional (T_profile[0] == Trand); // <- this doesnt
-  // for (int i=0; i<nl; ++i) {
-  //   T_profile[i] = Trand*0.;
-  //   Tflx_profile[i] = Trand*L0/DT*0.;
-  //   W_profile[i] = L0/DT*0.;
-  // }
+  // T_profile[0] = Trand; // <- this passes the dimensional analysis
+  // dimensional (T_profile[0] == Trand); // <- this doesnt
+   for (int i=0; i<nl; ++i) {
+     T_profile[i] = Trand*0.;
+     Tflx_profile[i] = Trand*L0/DT*0.;
+     W_profile[i] = L0/DT*0.;
+   }
   
   show_dimension (T);
   
   // original version, bug for now (currents writes = 0)
-  create_nc({zb, h, u.x, u.y, w, eta, T}, file_out);
+  // create_nc({zb, h, u, w, eta, T}, file_out);
 
   // temporary fix
-  // #if dimension==1
-  //   create_nc((scalar *){zb, h, u.x, w, eta, T}, file_out);
-  // #else
-  //   create_nc((scalar *){zb, h, u.x, u.y, w, eta, T}, file_out);
-  // #endif
-  // fprintf (stderr,"Done initialization!\n");
+  #if dimension==1
+    create_nc((scalar *){zb, h, u.x, w, eta, T}, file_out);
+  #else
+    create_nc((scalar *){zb, h, u.x, u.y, w, eta, T}, file_out);
+  #endif
+  fprintf (stderr,"Done initialization!\n");
 }
 
 // vertical diffusion on T
 // This implements a heat flux at the surface
-// event viscous_term (i++)
-// {
-//   foreach()
-//     vertical_diffusion (point, h, T, dt, D, qt/(D*rho0*cp), 0., 0.);
-//     //TODO: change s_b for the value at bottom of stratification, instead of
-//     //      this 0.°C that is cooling down the fluid.
-// }
+event viscous_term (i++)
+{
+  foreach()
+    vertical_diffusion (point, h, T, dt, D, qt/(D*rho0*cp), 0., 0.);
+    //TODO: change s_b for the value at bottom of stratification, instead of
+    //      this 0.°C that is cooling down the fluid.
+}
 
-// Writing a 4D netcdf file
-// event output(t = 0.; t<= tend+smalltime; t+=dtout){
-//   write_nc();
-// }
+Writing a 4D netcdf file
+event output(t = 0.; t<= tend+smalltime; t+=dtout){
+  write_nc();
+}
 
 
 
@@ -312,40 +312,40 @@ event compute_horizontal_avg (t+=dt_mean; t<=tend+smalltime){
   //   #endif
   //   }
   T_profile = h_avg(T, T_profile);
-  show_dimension (T_profile[0]);
-  show_dimension (W_profile[0]);
-  //W_profile = h_avg(w, W_profile);
+  // show_dimension (T_profile[0]);
+  // show_dimension (W_profile[0]);
+  W_profile = h_avg(w, W_profile);
 }
 
-// event compute_flx_wT(t+=dt_mean, t<=tend+1e-10){
-//   foreach(reduction(+:Tflx_profile[:nl]))
-//     foreach_layer(){
-//     #if dimension==1
-//       Tflx_profile[point.l] += ((w[]-W_profile[point.l])*(T[]-T_profile[point.l])) / N;
-//     #else
-//       Tflx_profile[point.l] += ((w[]-W_profile[point.l])*(T[]-T_profile[point.l])) / (N*N);
-//     #endif
-//   }
-// }
+event compute_flx_wT(t+=dt_mean, t<=tend+1e-10){
+  foreach(reduction(+:Tflx_profile[:nl]))
+    foreach_layer(){
+    #if dimension==1
+      Tflx_profile[point.l] += ((w[]-W_profile[point.l])*(T[]-T_profile[point.l])) / N;
+    #else
+      Tflx_profile[point.l] += ((w[]-W_profile[point.l])*(T[]-T_profile[point.l])) / (N*N);
+    #endif
+  }
+}
 
 
 // This even writes to a file the layer average
-// event write_diag(t=0., t+=dt_mean){
-//     write_profile("T_profile.dat", T_profile, fp1);
-//     write_profile("Tflx_profile.dat", Tflx_profile, fp2);
-//
-//     // Reset the profile for all workers
-//     for (int i=0; i<nl; ++i) {
-//       T_profile[i] = 0.0;
-//       Tflx_profile[i] = 0.0;
-//     }
-// }
+event write_diag(t=0., t+=dt_mean){
+    write_profile("T_profile.dat", T_profile, fp1);
+    write_profile("Tflx_profile.dat", Tflx_profile, fp2);
+
+    // Reset the profile for all workers
+    for (int i=0; i<nl; ++i) {
+      T_profile[i] = 0.0;
+      Tflx_profile[i] = 0.0;
+    }
+}
 
 
-// event cleanup(t=end){
-//   free(T_profile);
-//   free(Tflx_profile);
-// }
+event cleanup(t=end){
+  free(T_profile);
+  free(Tflx_profile);
+}
 
 /**
 Results: plots
