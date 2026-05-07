@@ -34,13 +34,23 @@ See also the [POM Gallery]().
 
 ## News
 
-* Next [Basilisk Monthly Meeting](BMM/README): Tuesday, April 28th 16:00 CEST
+* Next [Basilisk Monthly Meeting](BMM/README): Tuesday, May 26th 16:00 CEST
 
 * Recent publications (see [Bibliography]() for more).
 
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{cardin2026, 
+title={Cylindrical versus spherical self-similar capillary cavity collapse}, 
+volume={1034}, 
+DOI={10.1017/jfm.2026.11463}, 
+journal={Journal of Fluid Mechanics}, 
+author={Cardin, Karl and Josserand, Christophe and Cal, Raúl Bayoán}, year={2026},
+month={April},
+pages={A34}
+}
+
 @hal{fullana2026, hal-05591630}
 
 @hal{yang2026, hal-05554495}
@@ -55,16 +65,5 @@ See also the [POM Gallery]().
   issn = {1385-8947},
   doi = {https://doi.org/10.1016/j.cej.2026.174297},
   author = {Riccardo Caraccio and Edoardo Cipriano and Alessio Frassoldati and Tiziano Faravelli},
-}
-
-@article{huang2026, 
-title={Bubble-burst-induced Puddle Jumping and Jet Printing}, 
-volume={17}, 
-DOI={10.1038/s41467-026-69512-y}, 
-journal={Nature Communications}, 
-author={Huang, Wenge and Lori, Mohammad Shamsodini and Yang, Anchenyi and Zhuang, Kai and Cheng, Yuanhao and Chen, Mojun and Sun, Chao and Ming, Tingzhen and Cui, Huachen and Cheng, Jiangtao}, 
-year={2026}, 
-pages={1818},
-pdf={https://doi.org/10.1038/s41467-026-69512-y}
 }
 ~~~

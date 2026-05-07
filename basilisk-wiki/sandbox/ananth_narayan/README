@@ -1,1 +1,55 @@
-Creating the sandbox account on 10-04-2026, 03:00 AM (IST)
+/**
+# Introduction
+
+Hello, I am Ananth Narayan, PhD student from [Indian Institute of Technology Madras](https://www.iitm.ac.in/), predominently working on Electrohydrodynamics (EHD), multiphase, phase change with the idea of enhancing the heat transfer in mini/ micro channels. 
+
+I have validated EHD solvers (unipolar and bipolar) in OpenFOAM for single phase, incompressible, laminar flow. Upon subsequent valdiation (in comparison with analytical solution [LopezHerrera2011](#LopezHerrera2011)) for multiphase flow with EHD it was revealed that OpenFOAM's isoAdvector and MULES were found not to capture the dynamics especially domination of spurious currents under EHD cases. Further trying with other available OpenFOAM solvers such as isoCLSVoF, sCLSVoF etc., it was decided that OpenFOAM's method were not accurate. Thus after spending 1 month in OpenFOAM's multiphase solvers, decided to switch to Basilisk.
+
+Upon discussion with a senior [Rahul Subburaj](https://scholar.google.com/citations?user=3z7NqpsAAAAJ&hl=en), understanding the key differences between Basilisk and OpenFOAM, I have decided to check out Basilisk and the test case written by López-Herrera, J.M. was helpful and now the [taylor.c](https://basilisk.fr/src/test/taylor.c) code has been modified and thus bubble deformation for various electric capillary number (CaE) is validated. 
+
+I am happy to involve in discussion and you can contact me via [email](mailto:am24d038@smail.iitm.ac.in). Special thanks to [Edoardo Cipriano](https://basilisk.fr/sandbox/ecipriano/) for discussions related to Basilisk.
+
+# Codes
+
+## Axisymmetric deformation of droplet under electric field
+**Update the code details here along with annotation**
+
+---
+# References
+
+~~~bib
+@Article{LopezHerrera2011,
+  author    = {López-Herrera, J.M. and Popinet, S. and Herrada, M.A.},
+  journal   = {Journal of Computational Physics},
+  title     = {A charge-conservative approach for simulating electrohydrodynamic two-phase flows using volume-of-fluid},
+  year      = {2011},
+  issn      = {0021-9991},
+  month     = mar,
+  number    = {5},
+  pages     = {1939--1955},
+  volume    = {230},
+  doi       = {10.1016/j.jcp.2010.11.042},
+  file      = {:PDF/LopezHerrera2011.pdf:PDF},
+  keywords  = {Validation,BubbleDynamics},
+  publisher = {Elsevier BV},
+}
+
+@Article{Lac2007,
+  author    = {Lac, Etienne and Homsy, G. M.},
+  journal   = {Journal of Fluid Mechanics},
+  title     = {Axisymmetric deformation and stability of a viscous drop in a steady electric field},
+  year      = {2007},
+  issn      = {1469-7645},
+  month     = oct,
+  pages     = {239--264},
+  volume    = {590},
+  comment   = {Fig 5 can be well validated with numerical},
+  doi       = {10.1017/s0022112007007999},
+  file      = {:PDF/Lac2007.pdf:PDF},
+  keywords  = {BubbleDynamics,Validation},
+  priority  = {prio1},
+  publisher = {Cambridge University Press (CUP)},
+}
+
+~~~
+*/

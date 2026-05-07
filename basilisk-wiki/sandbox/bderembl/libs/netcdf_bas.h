@@ -282,8 +282,8 @@ void write_nc() {
             field[Ny*Nx*_layer + Nx*j + i] = interpolate (s, xp, yp);
           }
           else {
-            Point point = locate (xp, yp);
-            field[Ny*Nx*_layer + Nx*j + i] = point.level >= 0 ? val(s) : nodata;
+            foreach_point (xp, yp, serial) 
+              field[Ny*Nx*_layer + Nx*j + i] = s[]; 
           }
         }
       }
@@ -417,7 +417,7 @@ void read_nc(scalar * list_in, char* file_in, bool read_time = false)
                                           &field[0])))
             ERR(nc_err);
 
-          foreach(noauto)
+          foreach()
 #if dimension > 1
             s[] = field[Nx*_J + _I];
 #else
@@ -441,7 +441,7 @@ void read_nc(scalar * list_in, char* file_in, bool read_time = false)
         
           // I  recreate a foreach_layer in case LAYER = 0
           for (_layer = 0; _layer < nl; _layer++){
-            foreach(noauto){
+            foreach(){
 #if dimension > 1
               s[] = field[Ny*Nx*_layer + Nx*_J + _I];
 #else

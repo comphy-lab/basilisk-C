@@ -13,7 +13,7 @@ The configuration is periodic.
 #if !ML
 # include "saint-venant.h"
 #else // ML
-# include "hydroMT.h"
+# include "hydroF.h"
 
 # define phi q
 # if !HYDRO
@@ -24,7 +24,7 @@ The configuration is periodic.
 #endif // ML
 
 
-const double HR = 1., NU = 0.1, T0 = 100;
+const double HR = 1., NU = 0.1, T0 = 30;
 //double slope = 0.25[0];
 scalar uold[];
 
@@ -99,7 +99,10 @@ int main()
   N = 16; 
   nu = NU;
   nl = 64; 
-
+	lambda_b[] = {0.,0.,0.};
+	u_b[] = {0.,0.,0.};
+	lambda_t[] = {-HUGE,0.,0.};
+	u_t[] = {0.0,0.,0.};
 #if !HYDRO  
   NITERMIN = 2;
 #endif
@@ -108,8 +111,12 @@ int main()
   tauy = 0.1;
   mu = 0.1;
   slope = 0.25;
-  
-  run();
+ for (N = 8; N<= 32; N*= 2){
+    for (nl = 4; nl <= 256; nl *= 2)
+      run();
+    fprintf (stderr,"\n\n");
+  } 
+ 
 }
 
 
@@ -133,7 +140,7 @@ event init (i = 0)
 //We initialize the velocity 
   foreach (){ 
     foreach_layer()
-      u.x[] = Ubgm(point);
+     // u.x[] = Ubgm(point);
     uold[] = 0; 
   }
 /**
@@ -146,19 +153,14 @@ the non-hydrostatic pressure $\phi$ of each layer. */
 
 }
 
-event acc(i++){
-  foreach ()
+
+event acceleration (i++, t<=T0)
+{
+  foreach_face()
     foreach_layer()
-      u.x[] = u.x[] + G*sin(slope)*dt;
+      ha.x[] += G*sin(slope)*hf.x[]; 
 }
 
-/** We check for convergence. */
-event logfile (t += 0.1; t<=T0) {
-
-  double du = change (u.x,uold);
-    if (i > 0 && du < 1e-6)
-      return 1; /* stop */
-}
 
 /**
 ## Outputs
@@ -225,31 +227,47 @@ event update_eta (i++)
 
 /**
 We also save the velocity and non-hydrostatic pressure fields. */
-
-event output (t = end)
+event error (t = end)
 {
-  if (N == 16 && nl ==64 ){
-    double shearnum = 0.0;
+  int i = 0;
+  foreach() {
+    if (i++ == N/2) {
+      double z = zb[];
+      double norm = 0, norm2 = 0, normax = 0; 
+ 
+      foreach_layer() {
+        double e = fabs(u.x[] - Ubgm2(z+0.5*h[],HR) );
+        norm += e*h[];
+        norm2 += sq(e)*h[];
+        normax = max( normax, e );
+        z += h[];
+      }
+      norm = norm/z;
+      norm2 = sqrt(norm2/z);
+      fprintf (stderr, "%d %d %g %g %g %g %g\n", N, nl, norm, norm2, normax, dt, t);
+    }
+  }
+}
+
+event output (t=end )
+{
+  double shearnum = 0.;
+  
+  if ( N == 16 && nl == 128 ){
     foreach () {
       double z = zb[];
-#if HYDRO
-      foreach_layer() { //-----Compute the shear
-        shearnum = shear(point, u.x, h, 0, point.l);
-        z += h[];
+      foreach_layer() { 
+      shearnum = shear(point, u.x, h, 0, point.l);
+
       fprintf (stdout,"%g %g %g %g %g %g %g\n", x, z, u.x[], w[],Ubgm2(z,HR),Sbgm(z,HR),shearnum);
+         z += h[];
     }
-#elif // ML
-    foreach_layer() {
-      z += h[];
-      fprintf (stdout, "%g %g %g %g %g\n", x, z, u.x[], w[], phi[]);
-    }
-#endif // ML
-  fprintf (stdout,"\n \n");   
+  fprintf (stdout,"\n \n");
   }
-#if HYDRO
-  delete ({w});
-#endif
+  
+	fclose(stdout);
   }
+	
 }
 
 /**
@@ -260,9 +278,33 @@ event output (t = end)
  set ylabel "u, shear"
  p "out" u 2:3 w p t'U computed',"" u 2:5 w l t'Uexact', "" u 2:7 w p t"shear computed", "" u 2:6 w l t'shear exact'
 ~~~
+
+# Convergence
+~~~gnuplot Variation of the relative error with number of layers, for different grid $N$.
+set key bottom left
+set xlabel 'nl'
+set ylabel 'Max |e|'
+set logscale
+#set format x "%.0e"
+set format y "%.1e"
+
+set xrange [2:512]
+set cbrange [1:2]
+set xtics 2,2,512
+
+set yrange [1e-4:1]
+#set cbrange [1:2]
+#set xtics 1e-5,10,1e-1
+set label 1 "N^{-2}" at 8,0.4*16**-2 font ',12' textcolor rgb 'purple' offset 0,1
+set label 2 "N^{-1}" at 8,1.4*16**-1 font ',12' textcolor rgb 'red' offset 0,1
+
+
+set grid ytics
+plot for [i=0:3] 'log' index i u 2:5 t "N=".columnhead(1) with lp lw 2 ps 1.5 lt i+2,\
+         [4:8<<2] 0.5*x**-2 t '' w l lw 2 lc rgb 'purple',\
+[4:8<<2] 0.8*x**-1 t '' w l lw 2 lc rgb 'red'
+~~~
 */
-
-
 
 
 

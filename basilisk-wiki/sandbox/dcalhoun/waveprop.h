@@ -574,13 +574,6 @@ We use the limiting terms to compute second order corrections.  These correction
             }   
         }
 
-        if (conservation_law)
-            boundary_flux(wpa_flux);
-        else {
-            boundary_flux(wpa_fp);
-            boundary_flux(wpa_fm);            
-        }
-
 /**
 
 ### Solution update

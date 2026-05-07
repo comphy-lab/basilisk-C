@@ -1,4 +1,25 @@
+/** 
+# Purpose 
+We simulate $2D$ poiseuille flows, having Navier boudary conditions for the top and the bottom (see diffusionMT.h for details). The gouverning equaitions of this problem is :
+$$
+\begin{aligned}
+\nu\frac{\partial^2 u}{\partial z^2}&=-g\sin{\theta}\\ 
+u(0) &= u_b + \lambda_b \frac{\partial u}{\partial z}|_{(z=0)}\\
+u(H) &= u_t+ \lambda_t \frac{\partial u}{\partial z}|_{(z=H)}
+\end{aligned}
+$$
+The analytical velocity profil can be obtained by integrating the above differential equation, with the integral constants satifying the imposed boundary conditions. The analytical profil is
+$$
+u(z) = -\frac{\Omega}{2}z^2 + \frac{-2 u_b+2 u_t+H(H-2\lambda_t)\Omega}{2(H+\lambda_b-\lambda_t)} z + \frac{2 u_b \lambda_b + 2 u_b(H-\lambda_t)+H(H-2\lambda_t)\lambda_b \Omega}{2(H+\lambda_b-\lambda_t)},
+$$
+with $\Omega=\frac{g \sin{\theta}}{\nu}$.
 
+Two remarks can be drawn : $(1)$ By setting non-slip boudary condition on bottom and surface ($u_b=u_t=0$, $\lambda_b=\lambda_t=0$), we get the classic parabolic profil for flows in channel:
+$$
+u(z) = \frac{\Omega}{2}(H-y)y.
+$$
+$(2)$ By setting $u_t=0$, $\lambda_t=\text{HUGE}$, the boundary condition at top is equivalent to "free surface" condition $(\frac{\partial u}{\partial z}|_{z=H}=0)$, which corresponds, for instance, to the flows in open channel.
+*/
 
 #define ML 1
 #define HYDRO 1
@@ -20,7 +41,7 @@
 #endif // ML
 
 
-const double HR = 1., NU = 0.1, T0 = 100;
+const double HR = 1., NU = 0.1, T0 = 50;
 //double slope = 0.25[0];
 scalar uold[];
 
@@ -28,7 +49,7 @@ scalar uold[];
 Analytic	velocity for Poiseuille flow
 */
 
-/*- - - - - - - - - - - - - - - - - - - - - - - - - */
+/*- - - - - - - - - - - - - - - - - - - - - - - - */
 double Up(Point point)
 {
   double omega = 0.0;
@@ -70,7 +91,7 @@ int main()
 //Bingham parameters
   slope = 0.3;
   
- for (N = 16; N<= 64; N*= 2){
+ for (N = 8; N<= 32; N*= 2){
     for (nl = 4; nl <= 256; nl *= 2)
       run();
     fprintf (stderr,"\n\n");
@@ -160,6 +181,15 @@ event update_eta (i++)
 }
 #endif // HYDRO
 
+#if 0
+/** We check for convergence. */
+event logfile (t += 0.1; t<=T0) {
+//event logfile (i++;t<=T0) {
+  double du = change (u.x,uold);
+    if (i > 10 && du < 1e-6)
+      return 1; /* stop */
+}
+#endif
 /**
 We also save the velocity and non-hydrostatic pressure fields. */
 
@@ -174,8 +204,8 @@ event output (t=end )
 		n = (2*u_t.x[]*lambda_b.x[]+2.*u_b.x[]*(HR-lambda_t.x[])+HR*lambda_b.x[]*(HR-2*lambda_t.x[])*omega)/(2*(HR+lambda_b.x[]-lambda_t.x[]));
       double z = zb[];
       foreach_layer() { 
-        z += h[];
-      fprintf (stdout,"%g %g %g %g\n", x, z, u.x[], -1./2.*omega*pow(z,2)+m*z+n);
+      fprintf (stdout,"%g %g %g %g %g\n", x, z, u.x[], -1./2.*omega*pow(z,2)+m*z+n, omega*(-0.5*sq(z)-0.5*z*h[]-1./6.*sq(h[])+0.5*z+0.25*h[]));
+         z += h[];
     }
   fprintf (stdout,"\n \n");
   }
@@ -187,18 +217,18 @@ event output (t=end )
 
 event error (t = end)
 {
-  double omega, m,n;
+  double omega;
   int i = 0;
   foreach() {
     omega = G*sin(slope)/nu;
-    m = (-2.*u_b.x[]+2*u_t.x[]+HR*(HR-2*lambda_t.x[])*omega)/(2*(HR+lambda_b.x[]-lambda_t.x[]));
-		n = (2*u_t.x[]*lambda_b.x[]+2.*u_b.x[]*(HR-lambda_t.x[])+HR*lambda_b.x[]*(HR-2*lambda_t.x[])*omega)/(2*(HR+lambda_b.x[]-lambda_t.x[]));
+   // m = (-2.*u_b.x[]+2*u_t.x[]+HR*(HR-2*lambda_t.x[])*omega)/(2*(HR+lambda_b.x[]-lambda_t.x[]));
+	//	n = (2*u_t.x[]*lambda_b.x[]+2.*u_b.x[]*(HR-lambda_t.x[])+HR*lambda_b.x[]*(HR-2*lambda_t.x[])*omega)/(2*(HR+lambda_b.x[]-lambda_t.x[]));
     if (i++ == N/2) {
       double z = zb[];
       double norm = 0, norm2 = 0, normax = 0; 
     #if ML
       foreach_layer() {
-        double e = fabs(u.x[] - (-1./2.*omega*pow((z+h[]/2.),2)+m*(z+h[]/2.)+n) );
+        double e = fabs(u.x[] - omega*(-0.5*sq(z)-0.5*z*h[]-1./6.*sq(h[])+0.5*z+0.25*h[]) );
         norm += e*h[];
         norm2 += sq(e)*h[];
         normax = max( normax, e );
@@ -207,7 +237,7 @@ event error (t = end)
     #else
         for (int l = 0; l <= nl - 1; l++) {
           vector u = ul[l]; 
-          double e = fabs(u.x[] -(-1./2.*omega*pow(z,2)+m*z+n) );
+          double e = fabs(u.x[] - omega*(-0.5*sq(z)-0.5*z*h[]-1./6.*sq(h[])+0.5*z+0.25*h[]) );
           norm += e*h[]*layer[l];
           norm2 += sq(e)*h[]*layer[l];
           normax = max( normax,e );
@@ -228,28 +258,32 @@ event error (t = end)
 ~~~gnuplot 
  set xlabel "y"
  set ylabel "u"
- p "out" u 3:2 w p t'U computed',"" u 4:2 w l t'Uexact'
+ p "out" u 3:2 w p t'U computed',"" u 5:2 w p t'Uexact'
 ~~~
 
 # Convergence
-We track the value of the relative error on the velocity for various
-number of layers $\text{nl}$. The error decrease with 2nd ordrer precision.
+We confront the numerical results of velocity on each layer ($u[]$) to the analytical exact solution, calculated by 
+$$
+u_{exa} = \frac{1}{h}\int_{z}^{z+h} u(z) dz.
+$$
+The comparaison shows that the numerical solution is exact. As the numerical solver is seconde-order, the Poiseuille solution can be obtained without numerical error.
 
 ~~~gnuplot Variation of the relative error with number of layers, for different grid $N$.
 set key bottom left
 set xlabel 'nl'
-#set ylabel 'Max |e|'
+set ylabel 'Max |e|'
 set logscale
 #set format x "%.0e"
-set format y "%.2e"
+set format y "%.1e"
 
 set xrange [2:512]
 set cbrange [1:2]
 set xtics 2,2,512
 
-#set yrange [1e-6:1e-1]
+set yrange [1e-15:1e-8]
 #set cbrange [1:2]
 #set xtics 1e-5,10,1e-1
+set label 1 "N^{-2}" at 8,0.01*16**-2 font ',12' textcolor rgb 'purple' offset 0,1
 
 set grid ytics
 plot for [i=0:3] 'log' index i u 2:5 t "N=".columnhead(1) with lp lw 2 ps 1.5 lt i+2,\

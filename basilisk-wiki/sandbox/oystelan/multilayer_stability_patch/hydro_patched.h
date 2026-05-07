@@ -1,6 +1,13 @@
 /**
 # The hydrostatic multilayer solver for free-surface flows
 
+Modified version of layered/hydro.h to remove spurious currents and
+improve consistency.
+- Adds a smooth cut-off  in addition to the dry parameter
+- In case of implicit.h, splits the update of hf into two steps, for
+consistency.
+
+
 The theoretical basis and main algorithms for this solver are
 described in [Popinet, 2020](/Bibliography#popinet2020). Note however
 that this version of the solver is more recent and may not match the

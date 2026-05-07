@@ -32,7 +32,7 @@ double kp;                // peak wavelength
 /** Solver parameters */
 int N_grid = 6;           // Number of cells
 int N_layer = 30;         // Number of layers
-char ncname[20] = "out";  // file name of output
+char ncname[30] = "out";  // file name of output
 
 /** Stokes wave parameters */
 double ak = 0.033;
@@ -132,7 +132,7 @@ event init(i =  0) {
   // initialise thetam list 
   double * list_thetam = (double*)calloc(Nthetam, sizeof(double));
   for (int i=0; i<Nthetam; ++i){
-    list_thetam[i] = i*PI;
+    list_thetam[i] = i*PI/4;
   }
 
   // Varying layer thickness

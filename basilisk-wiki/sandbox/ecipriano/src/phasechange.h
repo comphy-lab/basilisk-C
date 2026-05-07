@@ -198,13 +198,13 @@ event defaults (i = 0) {
   // [vof.h](src/vof.h). Other helper fractions with their tracers must be
   // set here. Do not remove.
   for (scalar c in fulist) {
-    c.refine = c.prolongation = fraction_refine;
-    c.dirty = true;
+    c.refine = fraction_refine;
+    set_prolongation (c, fraction_refine);
     scalar * tracers = c.tracers;
     for (scalar t in tracers) {
-      t.restriction = restriction_volume_average;
-      t.refine = t.prolongation = vof_concentration_refine;
-      t.dirty = true;
+      set_restriction (t, restriction_volume_average);
+      t.refine = vof_concentration_refine;
+      set_prolongation (t, vof_concentration_refine);
       t.c = c;
 
       t.depends = list_add (t.depends, c);

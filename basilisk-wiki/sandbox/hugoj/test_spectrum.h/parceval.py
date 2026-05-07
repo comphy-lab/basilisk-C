@@ -8,11 +8,11 @@ import sys
 dirname = os.path.dirname(__file__)
 filename = os.path.join(dirname, '../libpy/')
 sys.path.append( filename )
-from fftlib import get_spec_1D, azimuthal_integral
+from fftlib import get_spec_1D, get_spec_2D, azimuthal_integral
 
 L=200.
 kp=10*np.pi/L
-N_grid = 1024
+N_grid = 512
 x = np.linspace(-L/2,L/2,N_grid)
 y = x
 
@@ -43,31 +43,42 @@ eta_C = np.reshape(raw_eta_C,(N_grid,N_grid))
 
 
 kr_C, F_eta_C = get_spec_1D(eta_C, eta_C, L/N_grid)
+kxx,kyy,Fkxky_eta = get_spec_2D(eta_C,eta_C, L/N_grid)
+
+
 
 dkx = kx_C[1]-kx_C[0]
 dkmod = kmod_C[1]-kmod_C[0]
 dkr = kr_C[1] - kr_C[0]
-
+dkxx = kxx[0,1]-kxx[0,0]
+dkyy = kyy[1,0]-kyy[0,0]
 """
 Variance check
 """
 print("var F_kmod (computed from PM(k)) = %f" %(np.nansum(Fkmod_C*dkmod)))
 print("var F_kxky (interpolated from F_ktheta) = %f" %(np.nansum(F_kxky_tile)*dkx**2))
 print("var F_k (azimuthal integration from eta) = %f" %(np.nansum(F_eta_C*dkr)))
+print("var F_kxky (2D spectrum from eta) = %f" %(np.nansum(Fkxky_eta)*dkxx*dkyy))
 
 """
 Spectrum plots
 """
+
+kr_C = kr_C*2*np.pi
+kxx = kxx*2*np.pi
+kyy = kyy*2*np.pi
+
 # Compare F_k
 if True:
     fig, ax = plt.subplots(1,1,figsize = (7,5),constrained_layout=True,dpi=100)
-    ax.loglog(kmod_C*L, Fkmod_C*kp**3, label="PM (C)", ls='--') 
-    ax.loglog(kr_C*np.pi*2*L, (F_eta_C/(2*np.pi))*kp**3, c='r', label=r'computed from $\eta$ (C)')
-    ax.set_xlim([10,1000])
+    ax.loglog(kmod_C/kp, Fkmod_C*kp**3, label="PM (C)", ls='--') 
+    ax.loglog(kr_C/kp, (F_eta_C/(2*np.pi))*kp**3, c='r', label=r'computed from $\eta$ (C)')
+    #ax.set_xlim([10,1000])
     ax.set_ylim([1e-7,1e-2])
-    ax.set_ylabel(r'$F(k)_C.k_p^3$')
-    ax.set_xlabel(r'$k_p L$')
-    ax.vlines(kp*L,1e-8,1,ls='--', colors='gray') # kp
+    ax.set_ylabel(r'$F(k).k_p^3$')
+    ax.set_xlabel(r'$k$ /$k_p$')
+    #ax.vlines(kp*L,1e-8,1,ls='--', colors='gray') # kp
+    ax.vlines(1,1e-8,1,ls='--', colors='gray') # kp
     plt.legend()
     fig.savefig('comparison_Fk.pdf')
 
@@ -78,8 +89,21 @@ if True:
                     norm=matplotlib.colors.LogNorm(vmin=1e-7, vmax=1e-2))
     ax.set_xlabel(r'$k_x$/$k_p$')
     ax.set_ylabel(r'$k_y$/$k_p$')
+    ax.set_xlim([-5,5])
+    ax.set_ylim([-5,5])
     plt.colorbar(s,ax=ax,label=r'$F(k_x,k_y) kp^{3}$')
     fig.savefig('F_kxky_C.pdf')
+
+    fig, ax = plt.subplots(1,1,figsize = (7,5),constrained_layout=True,dpi=100)
+    s=ax.pcolormesh(kxx/kp,kyy/kp,(Fkxky_eta/(4*np.pi)).T*kp**3, shading='nearest', 
+                    norm=matplotlib.colors.LogNorm(vmin=1e-7, vmax=1e-2))
+    ax.set_xlabel(r'$k_x$/$k_p$')
+    ax.set_ylabel(r'$k_y$/$k_p$')
+    ax.set_xlim([-5,5])
+    ax.set_ylim([-5,5])
+    plt.colorbar(s,ax=ax,label=r'$F(k_x,k_y) kp^{3}$')
+    fig.savefig('F_kxky_eta.pdf')
+    # Why does this plot isnt scaled as the one before ??
 
 """
 We plot also the surface elevation field

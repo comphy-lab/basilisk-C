@@ -99,17 +99,16 @@ double RInt = 0., acc = 1.;
 We specify an initial solid temperature and the function used to refine or
 coarsen the solid temperature and the solid volume fraction. */
 
-
 event defaults (i = 0) {
   foreach()
     TS[] = TS0;
-
 #if TREE
-  cw.refine = cw.prolongation = fraction_refine;
+  cw.refine = fraction_refine;
+  set_prolongation (cw, fraction_refine);
   for (scalar t in {TS}) {
     // fixme: solid tracers deserve a better refinement method
-    t.refine = t.prolongation = refine_injection;
-    t.dirty = true;
+    t.refine = refine_injection;
+    set_prolongation (t, refine_injection);
     //t.c = cw;
     //t.depends = list_add (t.depends, cw);
   }

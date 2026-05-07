@@ -1,18 +1,11 @@
-#makefile for severely breaking stokes wave in multilayer test
+# the default CFLAGS are set in $(BASILISK)/config
+CFLAGS += -O2 -fopenmp -Wdimensions -DMTRACE=3 -I$(DOCUMENT_ROOT)/sandbox
 
+include $(BASILISK)/Makefile.defs
 
-PPR_LIBS=$(BASILISK)/ppr
+stokes-new.c: stokes.c
+	ln -sf stokes.c stokes-new.c
+stokes-new.s: CFLAGS += -Dswitch_solver=1
+stokes-new.tst: CFLAGS += -Dswitch_solver=1
 
-.PHONY: default clean
-
-default: stokes;
-
-stokes: stokes.c
-	CC99='gcc -std=c99' qcc -fopenmp stokes.c -o stokes -O2 -fcommon -Wall -L. -L$(BASILISK) -lm -L$(PPR_LIBS) -lppr -lgfortran
-
-clean:
-	rm *.o ; \
-	rm stokes; 
-
-
-
+stokes.tst: stokes-new.tst

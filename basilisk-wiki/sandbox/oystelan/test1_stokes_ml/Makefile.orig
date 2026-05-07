@@ -1,0 +1,14 @@
+#makefile for severely breaking stokes wave in multilayer test
+
+
+.PHONY: default clean
+
+default: stokes;
+
+stokes: stokes.c
+	CC99='gcc -std=c99' qcc -fopenmp stokes.c -o stokes -O2 -fcommon -Wall -lm
+
+clean:
+	rm -f stokes _stokes.c stokes.s *.o *.tags
+	rm output_vts_multilayer.h
+	rm -R multilayer_stability_patch

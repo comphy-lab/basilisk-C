@@ -420,9 +420,9 @@ event tracer_diffusion(i++) {
             psi[] = EPSILON*log((clamp(pfield[],0.,1.) + varepsilon) / (1. - clamp(pfield[],0.,1.) + varepsilon));
 
 #if dimension == 2
-            double phiup   = 0.25*(pfield[]   + pfield[-1] + pfield[0,1] + pfield[-1,1]);
-            double phidown = 0.25*(pfield[]   + pfield[-1] + pfield[0,-1]+ pfield[-1,-1]);
-            double mag_grad_phi = sqrt(sq(pfield[] - pfield[-1]) + sq(phiup - phidown)) / Delta;
+            // double phiup   = 0.25*(pfield[]   + pfield[-1] + pfield[0,1] + pfield[-1,1]);
+            // double phidown = 0.25*(pfield[]   + pfield[-1] + pfield[0,-1]+ pfield[-1,-1]);
+            // double mag_grad_phi = sqrt(sq(pfield[] - pfield[-1]) + sq(phiup - phidown)) / Delta;
 #endif
 
 #if dimension == 3

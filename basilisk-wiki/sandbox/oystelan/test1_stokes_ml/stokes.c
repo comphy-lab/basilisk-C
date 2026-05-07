@@ -1,41 +1,57 @@
 /**
-# Breaking Stokes wave
+# Breaking Stokes wave (modified)
 
-A steep, third-order Stokes wave is unstable and breaks.
+This is a modified version of the of the original [stokes.c]() that
+tests the stability of the solver for really steep breaking waves.
 
-![Animation of the free-surface](stokes/movie.mp4)
+A very steep, third-order Stokes wave is unstable and breaks, which
+makes the nonhydrostatic solver struggle due to a small slope term
+inconsistency in the pressure solver.
 
-The solution obtained using the layered model matches the
-Navier-Stokes/VOF solution remarkably well, even after breaking.
+![Animation of the free-surface, original implementation](stokes/movie.mp4)
 
-~~~gnuplot Wave evolution: layered (left column) and Navier-Stokes/VOF (right column) { width=100% }
-unset key
-unset xtics
-unset ytics
-unset border
-set multiplot layout 1,2
-set size ratio -1
-plot for [i = 0:10] 'log' index i u 1:($2-0.15*i) w l lc -1 lt 1
-plot for [i = 0:10] '../stokes-ns/log' index i u 1:($2-0.15*i) w l lc -1 lt 1
-unset multiplot
+By modifying the rhs of the pressure equation, much more stable
+simulations can be achieved.
+
+![Animation of the free-surface, patched nh.h](stokes-new/movie.mp4)
+
+The evolution of the energy also shows the instability of the
+original version.
+
+~~~gnuplot Evolution of the total energy
+set xlabel 'Time'
+set ylabel 'Total energy'
+plot 'log' u 1:($2+$3) w l t 'Original version', \
+     '../stokes-new/log' u 1:($2+$3) w l t 'Patched version'
 ~~~
 
-See [Popinet (2020)](/Bibliography#popinet2020) for a more detailed
-discussion and [stokes-ns.c]() for the Navier-Stokes/VOF code. 
+The number of iterations of the non-hydrostatic solver is also better (lower).
 
-Modified: to test different solver implementations. new_impl contains changes
-in the pressure solver which improves stability substantially.
-*/
+~~~gnuplot Number of iterations of the non-hydrostatic solver
+set ylabel '# iterations'
+plot 'perfs' u 1:3 w l t 'Original version', \
+     '../stokes-new/perfs' u 1:3 w l t 'Patched version'
+~~~
 
-#define vtk_output 1
-#define switch_solver 0 // 0 = original implementation, 1 = new impl.
+Default solver (0) uses the  original implementation. When switched on
+(1), the patched nonhydrostatic pressure solver is used. */
+
+// #define switch_solver 0 // 0 = original implementation, 1 = new impl.
+
+
+/**
+VTK output can optionally be switched on, for easier inspection of
+the resulting velocity and pressure field. */
+
+#define vtk_output 0
+
 
 #include "grid/multigrid1D.h"
 #include "layered/hydro.h"
 #if switch_solver
-#include "nh_patched.h"
+# include "../multilayer_stability_patch/nh_patched.h"
 #else
-#include "layered/nh.h"
+# include "layered/nh.h"
 #endif
 
 
@@ -47,39 +63,35 @@ in the pressure solver which improves stability substantially.
 
 double k_ = 2.*pi, h_ = 0.5, g_ = 1., ak = 0.45;
 double RE = 40000.;
+
 #if vtk_output
 #include "../output_vts_multilayer.h"
 #endif
-#include <sys/types.h>
-#include <sys/stat.h>
-
 
 //#define T0  (k_*L0/sqrt(g_*k_))
 
-#define T0 10.5
+#define T0 10.
 
 int main()
 {
-  omp_set_num_threads(4);
   origin (-L0/2.);
   periodic (right);
-  N = 256;
-  nl = 90;  
+  N = 128;
+  nl = 45;  
   G = g_;
   nu = 1./RE;
-  TOLERANCE = 1.0e-5 [*];
-  theta_H = 0.50;
+  TOLERANCE = 1e-5 [*];
+  CFL_H = 1;
+  theta_H = 0.51;
   #if switch_solver
-  theta_R = 0.02;
+  theta_R = 0.; // 0.002; // this is not necessary when theta_H > 0.5
   #endif
   run();
 }
 
 event init (i = 0)
 {
-  CFL=0.25;
-  CFL_H= 0.25;
-  //geometric_beta (0.4, true);
+  //  geometric_beta (0.4, true);
   foreach() {
     zb[] = -0.5;
     double H = wave(x, 0) - zb[];
@@ -97,19 +109,6 @@ event init (i = 0)
   }
 }
 
-
-#if 0
-event profiles (t += T0/4.; t <= 2.5*T0) {
-  foreach (serial) {
-    double H = zb[];
-    foreach_layer()
-      H += h[];
-    fprintf (stderr, "%g %g\n", x, H);
-  }
-  fprintf (stderr, "\n\n");
-}
-#endif
-
 event logfile (i++; t <= T0)
 {
   double ke = 0., gpe = 0.;
@@ -124,20 +123,16 @@ event logfile (i++; t <= T0)
       zc += h[];
     }
   }
-  printf ("%g %g %g\n", t/(k_/sqrt(g_*k_)), ke/2., g_*gpe + 0.125);
+  fprintf (stderr, "%g %g %g\n", t/(k_/sqrt(g_*k_)), ke/2., g_*gpe + 0.125);
 }
 
 
 #if vtk_output
 event output_domain_vtk(t = 0; t += 0.01) {
   fprintf(stdout, "domain vtk output at step: %d, time: %.2f \n", i, t);
-  struct stat st = { 0 };
-  if (stat("vtk", &st) == -1) {
-      mkdir("vtk", 0700);
-  }
   static int j = 0;
   char name[100];
-  sprintf(name, "%s/domain_%.6i.vts", "vtk", j++);
+  sprintf(name, "domain_%.6i.vts", j++);
   fprintf(stdout, "written to: %s\n", name);
   FILE* fp = fopen(name, "w");
   output_vts_bin_all_layers(fp,(scalar *){phi}, NULL, false, true);
@@ -146,24 +141,35 @@ event output_domain_vtk(t = 0; t += 0.01) {
 }
 #endif
 
-#if 0
-event movie (t += 0.01)
+#if 1
+event movie (t += 0.025)
 {
   static FILE * fp = popen ("gnuplot", "w");
   if (i == 0)
-    fprintf (fp, "set term pngcairo font ',9' size 800,250;"
-	     "set size ratio -1\n");  
+    fprintf (fp,
+	     "set term pngcairo font ',9' size 800,320\n"
+	     "set size ratio -1\n"
+	     "set pm3d map interpolate 4,4\n"
+	     "unset key\n"
+	     "set palette defined ( 0 0 0 0.5647, 0.125 0 0.05882 1,"
+	     " 0.25 0 0.5647 1, 0.375 0.05882 1 0.9333,"
+	     " 0.5 0.5647 1 0.4392, 0.625 1 0.9333 0,"
+	     " 0.75 1 0.4392 0, 0.875 0.9333 0 0, 1 0.498 0 0 )\n"
+	     "set cbrange [-0.5:0.5]\n"
+	     "set cblabel 'u.x'\n");
+  static int frame = 0;
   fprintf (fp,
 	   "set output 'plot%04d.png'\n"
 	   "set title 't = %.2f'\n"
-	   "p [%g:%g][-0.1:0.15]'-' u 1:(-1):2 w filledcu lc 3 t ''",
-	   i/3, t/(k_/sqrt(g_*k_)), X0, X0 + L0);
-  fprintf (fp, "\n");
+	   "splot [%g:%g][-0.2:0.15] '-' u 1:2:3\n",
+	   frame++, t/(k_/sqrt(g_*k_)), X0, X0 + L0);
   foreach (serial) {
-    double H = 0.;
-    foreach_layer()
-      H += h[];
-    fprintf (fp, "%g %g %g", x, zb[] + H, zb[]);
+    double z = zb[];
+    fprintf (fp, "%g %g %g\n", x, z, u.x[]);
+    foreach_layer() {
+      z += h[];
+      fprintf (fp, "%g %g %g\n", x, z, u.x[]);
+    }
     fprintf (fp, "\n");
   }
   fprintf (fp, "e\n\n");
@@ -173,7 +179,7 @@ event movie (t += 0.01)
 event moviemaker (t = end)
 {
   system ("rm -f movie.mp4 && "
-	  "ffmpeg -r 25 -f image2 -i plot%04d.png "
+	  "ffmpeg -y -r 25 -f image2 -pattern_type glob -i 'plot*.png' "
 	  "-vcodec libx264 -vf format=yuv420p -movflags +faststart "
 	  "movie.mp4 2> /dev/null && "
 	  "rm -f plot*.png");

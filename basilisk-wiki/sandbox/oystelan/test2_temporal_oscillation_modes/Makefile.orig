@@ -1,0 +1,17 @@
+#makefile for instability.c testcase
+
+
+.PHONY: default clean
+
+default: instability ;
+instability: instability.c
+	CC99='gcc -std=c99' qcc instability.c -o instability -lm -L. -ldl -lstdc++ -Wall -O2
+
+clean:
+	rm *.o ; \
+	rm instability;
+	rm output_vts_multilayer.h
+	rm -R multilayer_stability_patch 
+
+
+

@@ -2,9 +2,7 @@
 
 # Test of spectrum.h: parceval equality
 
-Reminder:
-
-Parceval equalities:
+Reminder: Parceval equalities
 
 $$
 \begin{aligned}
@@ -34,8 +32,8 @@ int N_power = 5;
 double L = 200.0;
 double *kmod;
 double *F_kmod;
-int N_cells = 1024;
-int N_kmod = 64;
+int N_cells = 512;
+int N_kmod = 128;
 double dx;
 double x;
 double y;
@@ -59,6 +57,29 @@ int main(){
   T_Spectrum spectrum;
   spectrum = spectrum_gen_linear(N_mode, N_power, L, P, kp);
   
+  // Writting to file
+  FILE *fptr0 = fopen("F_k_C", "wb");
+  fwrite(F_kmod, sizeof(double), N_kmod, fptr0);
+  fclose(fptr0);
+
+  FILE *fptr1 = fopen("F_kxky_C", "wb");
+  fwrite(spectrum.F_kxky, sizeof(double), (N_mode*2+1)*(N_mode*2+1), fptr1);
+  fclose(fptr1);
+
+  FILE *fptr2 = fopen("kx_C", "wb");
+  fwrite(spectrum.kx, sizeof(double), N_mode*2+1, fptr2);
+  fclose(fptr2);
+
+  FILE *fptr3 = fopen("ky_C", "wb");
+  fwrite(spectrum.ky, sizeof(double), N_mode*2+1, fptr3);
+  fclose(fptr3);
+
+  FILE *fptr4 = fopen("kmod_C", "wb");
+  fwrite(kmod, sizeof(double), N_kmod, fptr4);
+  fclose(fptr4);
+
+
+
   /** eta*/
   dx = L/(1.0*N_cells);
   eta = (double *)malloc(N_cells*N_cells * sizeof(double));
@@ -82,37 +103,24 @@ int main(){
   double dkx = spectrum.kx[1]-spectrum.kx[0];
   double dky = spectrum.ky[1]-spectrum.ky[0];
 
-  for (int i=0; i<spectrum.N_mode; ++i){
-    for (int k=0; k<spectrum.N_mode+1; ++k){
+  for (int i=0; i<2*spectrum.N_mode+1; ++i){
+    for (int k=0; k<2*spectrum.N_mode+1; ++k){
       sum += spectrum.F_kxky[i*spectrum.N_mode + k]*dkx*dky;
     }
   }
   fprintf(stderr,"%f\n", sum);
 
-  // Writting to file
-  FILE *fptr0 = fopen("F_k_C", "wb");
-  fwrite(F_kmod, sizeof(double), N_kmod, fptr0);
-  fclose(fptr0);
-
-  FILE *fptr1 = fopen("F_kxky_C", "wb");
-  fwrite(spectrum.F_kxky, sizeof(double), N_mode*(N_mode+1), fptr1);
-  fclose(fptr1);
-
-  FILE *fptr2 = fopen("kx_C", "wb");
-  fwrite(spectrum.kx, sizeof(double), N_mode, fptr2);
-  fclose(fptr2);
-
-  FILE *fptr3 = fopen("ky_C", "wb");
-  fwrite(spectrum.ky, sizeof(double), N_mode+1, fptr3);
-  fclose(fptr3);
-
-  FILE *fptr4 = fopen("kmod_C", "wb");
-  fwrite(kmod, sizeof(double), N_kmod, fptr4);
-  fclose(fptr4);
-
+  
   FILE *fptr5 = fopen("eta_C", "wb");
   fwrite(eta, sizeof(double), N_cells*N_cells, fptr5);
   fclose(fptr5);
+  
+  // free memory
+  free(eta);
+  free(F_kmod);
+  free(kmod);
+  free_spectrum(spectrum);
+
 
   /** Executing the python code to work on the binary files */
   // TODO:

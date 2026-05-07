@@ -364,9 +364,9 @@ Phase * new_phase (char * name = "", size_t ns = 0, bool inverse = false,
 
 #if TREE
   scalar rhov = phase->rho;
-  rhov.restriction = density_restriction;
-  rhov.refine = rhov.prolongation = density_refine;
-  rhov.dirty = true;
+  rhov.refine = density_refine;
+  set_prolongation (rhov, density_refine);
+  set_restriction (rhov, density_restriction);
 #endif
 
   return phase;

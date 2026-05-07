@@ -36,16 +36,23 @@ double shear(Point point, scalar s, scalar h, int layer, int layercoef){
     shear = (s[0,0,layer+1]-s[0,0,layer-1])/(h[0,0,layer]+0.5*(h[0,0,layer+1]+h[0,0,layer-1]));
   }
   else if(layercoef==0){
-     shear = (s[0,0,layer+1]-s[0,0,layer])/(0.5*(h[0,0,layer]+h[0,0,layer+1]));
+    // shear = (s[0,0,layer+1]-s[0,0,layer])/(0.5*(h[0,0,layer]+h[0,0,layer+1]));
+    shear = -s[0,0,0]*((h[0,0,0]+1.5*h[0,0,1]+0.5*h[0,0,2])/(0.5*(h[0,0,0]+h[0,0,1])*(h[0,0,1]+0.5*h[0,0,0]+0.5*h[0,0,2])))
+							+s[0,0,1]*(h[0,0,1]+0.5*h[0,0,0]+0.5*h[0,0,2])/(0.25*(h[0,0,0]+h[0,0,1])*(h[0,0,1]+h[0,0,2]))
+							-s[0,0,2]*(0.5*h[0,0,0]+0.5*h[0,0,1])/(0.5*(h[0,0,1]+h[0,0,2])*(h[0,0,1]+0.5*h[0,0,0]+0.5*h[0,0,2]));
   }
   else if(layercoef==nl-1){
-    shear = (s[0,0,layer]-s[0,0,layer-1])/(0.5*(h[0,0,layer]+h[0,0,layer-1]));
+   // shear = (s[0,0,layer]-s[0,0,layer-1])/(0.5*(h[0,0,layer]+h[0,0,layer-1]));
+   shear = s[0,0,nl-1]*(h[0,0,nl-1]+1.5*h[0,0,nl-2]+0.5*h[0,0,nl-3])/(0.5*(h[0,0,nl-1]+h[0,0,nl-2])*(h[0,0,nl-2]+0.5*(h[0,0,nl-1]+h[0,0,nl-3])))
+					-s[0,0,nl-2]*(h[0,0,nl-2]+0.5*(h[0,0,nl-1]+h[0,0,nl-3]))/(0.25*(h[0,0,nl-1]+h[0,0,nl-2])*(h[0,0,nl-2]+h[0,0,nl-3]))
+					+s[0,0,nl-3]*(0.5*(h[0,0,nl-1]+h[0,0,nl-2]))/(0.5*(h[0,0,nl-2]+h[0,0,nl-3])*(h[0,0,nl-2]+0.5*(h[0,0,nl-1]+h[0,0,nl-3])));
+    
   }
   else if(layercoef==-1){
     shear = 2.*s[0,0,0]/h[0,0,0];
   }
-  //return fabs(shear);
-  return sqrt(sq(shear) + .1e-8);   // Why?
+  return fabs(shear);
+//  return sqrt(sq(shear) + .1e-8);   // Why?
 }
 
 /*
@@ -133,7 +140,7 @@ double Nueq(Point point, scalar s, scalar h, int layer){
 /** Régularisation for $nu_{eq}$ */
 void regularization(Point point, scalar s, scalar h, double nueq[], double D)
 {
-  int nlc = nl, l;
+  int nlc=nl, l;
 
   for(l=0 ; l<nl;l++){ // Find the limiting layer shear
     if (shear(point,s,h,l,l) <=1e-3) {
@@ -143,9 +150,9 @@ void regularization(Point point, scalar s, scalar h, double nueq[], double D)
   }
 
   for( l=0 ; l<nl;l++){
-    //if ( l<=nlc ) nueq[l] = Nueq(point,s,h,l);
-   // else nueq[l] = nueq[l-1];
-    nueq[l] = Nueq(point,s,h,l);
+    if ( l<=nlc ) nueq[l] = Nueq(point,s,h,l);
+    else nueq[l] = nueq[l-1];
+ //   nueq[l] = Nueq(point,s,h,l);
    
   }
 

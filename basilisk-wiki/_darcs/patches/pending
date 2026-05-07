@@ -43,6 +43,9 @@ rmdir ./sandbox/rulli/Geostrophic%20Adjustement
 rmdir ./sandbox/rvilliers
 rmdir ./sandbox/spertant
 rmdir ./sandbox/zied/culvert_flushing_friction/culvert
+addfile ./sandbox/oystelan/test1_stokes_ml/output_vts_multilayer.h
+addfile ./sandbox/oystelan/test2_temporal_oscillation_modes/output_vts_multilayer.h
+addfile ./sandbox/oystelan/test3_sloshing_river/output_vts_multilayer.h
 hunk ./sandbox/Kaustubh/Steel_Melting_Multi-Physics/Dissusion_only_melting 1
 -
 rmfile ./sandbox/Kaustubh/Steel_Melting_Multi-Physics/Dissusion_only_melting

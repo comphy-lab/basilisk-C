@@ -121,48 +121,56 @@ $$
 s\vert_t = s_t + \lambda_t \partial_z s\vert_b
 $$
 this yields the following diagonal coefficient and right hand side value
-*/
- 
-double den = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2]) 
-    - 2.*lambda_t*(3.*h[0,0,nl-1]*h[0,0,nl-2] + 2.*sq(h[0,0,nl-1]) + sq(h[0,0,nl-2]));
-  b[nl-1] = h[0,0,nl-1] + 2.*dt*nueq[0]*(1./(h[0,0,nl-1] + h[0,0,nl-2]) +
-			  (sq(h[0,0,nl-2]) + 3.*h[0,0,nl-1]*h[0,0,nl-2] + 3.*sq(h[0,0,nl-1]))/den);
-  a[nl-1] = - 2.*dt*nueq[0]*(1./(h[0,0,nl-1] + h[0,0,nl-2]) + sq(h[0,0,nl-1])/den);
 
-  rhs[nl-1] += 2.*dt*nueq[0]*s_t*(sq(h[0,0,nl-2]) + 3.*h[0,0,nl-2]*h[0,0,nl-1] + 2.*sq(h[0,0,nl-1]))/den;
+ $$
+  \begin{aligned}
+  b_{nl-1} & = h_{nl-1} + 2 \Delta t \left( \frac{D_{nl-1}+D_{nl-2}}{2(h_{nl-1} + h_{nl-2})} + D_t\frac{h^2_{nl-2} + 3
+  h_{nl-1} h_{nl-2} + 3 h^2_{nl-1}}{\det} \right),\\
+  a_{nl-1} & = - 2 \Delta t \left( \frac{D_{nl-1}+D_{nl-2}}{2(h_{nl-1} + h_{nl-2})} + \frac{D_t h^2_{nl-1}}{\det}
+  \right),\\
+  \text{rhs}_{nl-1} & = (hs_{nl-1})^{\star} + 2 \Delta t D_t s_t  \frac{h^2_{nl-2} + 3 h_{nl-1}
+  h_{nl-2} + 2 h^2_{nl-1}}{\det},\\
+  \det & = h_{nl-1} (h_{nl-1} + h_{nl-2})^2  - 2\lambda_t (3\,h_{nl-1} h_{nl-2} + 2\,h_{nl-1}^2 + h_{nl-2}^2),
+  \end{aligned}
+  $$
+*/
+ double den = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2]) 
+    - 2.*lambda_t*(3.*h[0,0,nl-1]*h[0,0,nl-2] + 2.*sq(h[0,0,nl-1]) + sq(h[0,0,nl-2]));
+  b[nl-1] = h[0,0,nl-1] + dt*((nueq[nl-1]+nueq[nl-2])/(h[0,0,nl-1] + h[0,0,nl-2]) +
+			 2*D*(sq(h[0,0,nl-2]) + 3.*h[0,0,nl-1]*h[0,0,nl-2] + 3.*sq(h[0,0,nl-1]))/den);
+  a[nl-1] = - dt*((nueq[nl-1]+nueq[nl-2])/(h[0,0,nl-1] + h[0,0,nl-2]) + 2*D*sq(h[0,0,nl-1])/den);
+
+  rhs[nl-1] += 2.*dt*D*s_t*(sq(h[0,0,nl-2]) + 3.*h[0,0,nl-2]*h[0,0,nl-1] + 2.*sq(h[0,0,nl-1]))/den;
+  
+ 
 
   /**
   For the bottom layer a third-order discretisation of the Navier slip
   condition gives
   $$
   \begin{aligned}
-  b_0 & = h_0 + 2 \Delta t \left( \frac{D_0+D_1}{2(h_0 + h_1)} + D_0\frac{h^2_1 + 3
+  b_0 & = h_0 + 2 \Delta t \left( \frac{D_0+D_1}{2(h_0 + h_1)} + D_b\frac{h^2_1 + 3
   h_0 h_1 + 3 h^2_0}{\det} \right),\\
-  c_0 & = - 2 \Delta t \left( \frac{D_0+D_1}{2(h_0 + h_1)} + \frac{D_0 h^2_0}{\det}
+  c_0 & = - 2 \Delta t \left( \frac{D_0+D_1}{2(h_0 + h_1)} + \frac{D_b h^2_0}{\det}
   \right),\\
-  \text{rhs}_0 & = (hs_0)^{\star} + 2 \Delta t D_0 s_b  \frac{h^2_1 + 3 h_0
+  \text{rhs}_0 & = (hs_0)^{\star} + 2 \Delta t D_b s_b  \frac{h^2_1 + 3 h_0
   h_1 + 2 h^2_0}{\det},\\
-  \det & = h_0 (h_0 + h_1)^2  + 2\lambda (3\,h_0 h_1 + 2\,h_0^2 + h_1^2),
+  \det & = h_0 (h_0 + h_1)^2  + 2\lambda_b (3\,h_0 h_1 + 2\,h_0^2 + h_1^2),
   \end{aligned}
   $$
   */
-
  den = h[]*sq(h[] + h[0,0,1]) 
     + 2.*lambda_b*(3.*h[]*h[0,0,1] + 2.*sq(h[]) + sq(h[0,0,1]));
-  b[0] = h[] + 2.*dt*((nueq[0]+nueq[1])/(h[] + h[0,0,1])/2. +
-			  nueq[0]*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 3.*sq(h[]))/den);
-  c[0] = - 2.*dt*((nueq[0]+nueq[1])/(h[] + h[0,0,1])/2. + nueq[0]*sq(h[])/den);
+  b[0] = h[] + dt*((nueq[1]+nueq[0])/(h[] + h[0,0,1]) +
+			 2*D*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 3.*sq(h[]))/den);
+  c[0] = -dt*((nueq[0]+nueq[1])/(h[] + h[0,0,1]) + 2.*sq(h[])*D/den);
 
-  rhs[0] += 2.*dt*nueq[0]*s_b*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 2.*sq(h[0]))/den;
+  rhs[0] += 2.*dt*D*s_b*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 2.*sq(h[0]))/den;
 
   if (nl == 1) {
     b[0] += c[0];
     rhs[0] +=  (- c[0]*h[] - nueq[0]*dt) * dst;
   }
-
-  
- 
-
 /**
 Meanwhile, for the reason of simplicty, we compute the value of $c[0]$, $b[0]$, $rhs[0]$ when no-slip boundary condition is imposed ($s_b=0$, $\lambda=0$), using first-order discretisation. To apply this, one should first comment the code above conserning $b_0, c_0, rhs_0$.
 $$

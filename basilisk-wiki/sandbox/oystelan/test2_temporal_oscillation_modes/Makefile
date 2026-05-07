@@ -1,16 +1,11 @@
-#makefile for instability.c testcase
-PPR_LIBS=$(BASILISK)/ppr
+# the default CFLAGS are set in $(BASILISK)/config
+CFLAGS += -O2 -fopenmp -Wdimensions -DMTRACE=3 -I$(DOCUMENT_ROOT)/sandbox
 
+include $(BASILISK)/Makefile.defs
 
-.PHONY: default clean
+instability-new.c: instability.c
+	ln -sf instability.c instability-new.c
+instability-new.s: CFLAGS += -Dswitch_solver=1
+instability-new.tst: CFLAGS += -Dswitch_solver=1
 
-default: instability ;
-instability: instability.c
-	CC99='gcc -std=c99' qcc instability.c -o instability -lm -L. -ldl -lstdc++ -Wall -O2 -L$(PPR_LIBS) -lppr -lgfortran 
-
-clean:
-	rm *.o ; \
-	rm instability; 
-
-
-
+instability.tst: instability-new.tst

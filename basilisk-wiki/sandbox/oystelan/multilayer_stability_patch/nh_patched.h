@@ -1,6 +1,14 @@
 /**
 # Non-hydrostatic extension of the multilayer solver
 
+This is a modified version of the original layered/nh.h where we have
+implemented 2 patches:
+- Added temporal relaxation of phi, controlled by theta_R. Default value
+is theta_R=0, which disables relaxation. A more useful value to apply is
+theta_R=0.02.
+- Modified the slope terms on the rhs of the pressure equation for
+better stability performance.
+
 This adds the non-hydrostatic terms of the [vertically-Lagrangian
 multilayer solver for free-surface flows](hydro.h) described in
 [Popinet, 2020](/Bibliography#popinet2020). The corresponding system
@@ -375,6 +383,14 @@ event pressure (i++)
       v1 += dv();
     }
   }
+  
+    /**
+  The fields used by the relaxation function above need to be
+  restricted to all levels. Note that the other fields (cm, fm,
+  alpha_eta) were already restricted in the [hydrostatic implicit
+  solver](implicit.h). */
+  
+  restriction ({zb, h, hf});
   
   /**
   We store non-hydrostatic pressure from the previous time-step

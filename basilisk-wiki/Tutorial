@@ -14,7 +14,7 @@ What you need:
   copying and pasting the following command in your shell: 
 
 ~~~bash
-sudo apt-get install emacs
+sudo apt install emacs
 ~~~
 
 * Because Basilisk programs are written in a variant of the C
@@ -339,7 +339,7 @@ have not done so already, now is a good time to install ImageMagick
 and other graphics tools.
 
 ~~~bash
-sudo apt-get install gnuplot imagemagick ffmpeg
+sudo apt install gnuplot imagemagick ffmpeg
 ~~~
 
 We can now try to use the *display* command of ImageMagick to

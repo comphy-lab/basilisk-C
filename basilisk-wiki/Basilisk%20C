@@ -1043,8 +1043,9 @@ extension which provides this functionality.
 
 Basilisk can automatically parallelise field iterations
 (i.e. `foreach()` etc...) on systems supporting
-[OpenMP](https://en.wikipedia.org/wiki/OpenMP) or
-[MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface). If the
+[OpenMP](https://en.wikipedia.org/wiki/OpenMP),
+[MPI](https://en.wikipedia.org/wiki/Message_Passing_Interface) or [on
+Graphics Processing Units (GPUs)](/src/grid/gpu/grid.h). If the
 *write* operations performed on stencils are purely local
 (i.e. concurrent accesses by several threads are only possible for
 *read* operations), then nothing special needs to be done to

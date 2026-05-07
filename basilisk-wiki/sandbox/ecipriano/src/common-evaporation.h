@@ -161,9 +161,9 @@ void shift_field (scalar fts, scalar f, int dir) {
   // investigated more deeply
   avg.c = f;
 #if TREE
-  avg.refine = avg.prolongation = refinement_avg;
-  avg.restriction = no_restriction;
-  avg.dirty = true;
+  avg.refine = refinement_avg;
+  set_prolongation (avg, refinement_avg);
+  set_restriction (avg, no_restriction);
 #endif
 
   // Compute avg

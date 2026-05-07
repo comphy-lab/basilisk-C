@@ -28,6 +28,9 @@ For this reason, I'm re-adapting [Arthur Ghigo](/sandbox/ghigo/src/) implementat
 
 ### SuperHydroPhobic Surfaces.
  - [Rigid cylinder placed in a gas bubble under fluid flow](/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c). Plastron dynamics
+ 
+### Navier Boundary condition.
+ - [Flow around a 2D embedded cylinder with partially slippery surfaces](/sandbox/fpicella/navier_BC/cylinder_embed_navier_explicit.c)
 
 ### Gas bubbles generating liquid droplets.
  - [Single gas bubble, rising in a quiescent bath, impacting a free-interface and generating a liquid droplet](rising_bubble_to_droplet/axi_rising_bubble_to_droplet.c)

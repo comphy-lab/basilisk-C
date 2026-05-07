@@ -11,11 +11,13 @@ Simulate the collpase of a rectangle mass having Bingham rheology over inclined 
 */
 #define ML 1
 #define HYDRO 1
-#define MUI 1
+#define RHEOLOGY 1
 #define BINGHAM 1
 
+#define SINGLE_PRECISION 1
+
 #include "grid/multigrid1D.h"
-# include "hydroMT.h"
+# include "hydroF.h"
 # define phi q
 # if !HYDRO
 #   include "layered/nh.h"
@@ -25,7 +27,7 @@ Simulate the collpase of a rectangle mass having Bingham rheology over inclined 
 
 
 
-const double HR = 1., NU = 0.1, T0 = 1;
+const double HR = 1., NU = 1., T0 = 1;
 scalar uold[];
 
 
@@ -48,7 +50,10 @@ int main()
   N = 512*4; 
   nu = NU;
   nl = 64;
-  
+  lambda_b[] = {0.,0.,0.};
+  u_b[] = {0.,0.,0.};
+  lambda_t[] = {-HUGE,0.,0.};
+  u_t[] = {0.0,0.,0.};
 #if !HYDRO  
   NITERMIN = 2;
 #endif
