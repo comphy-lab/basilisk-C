@@ -46,37 +46,68 @@ static inline void restriction_vert (Point point, scalar s) {
 /**
    Or a coarse estimate (not in 3D);
  */
-static inline void restriction_coarsen_vert (Point point, scalar s) {
-#if (dimension == 1)
-  s[] = (fine(s,1,0,0) + 2*fine(s,0,0,0) + fine(s,-1,0,0))/4.;
-#elif (dimension == 2)
-  s[] = (fine(s,1,0,0) + 2*fine(s,0,0,0) + fine(s,-1,0,0) +
-	 fine(s,0,1,0) + fine(s,0,-1,0))/6.;
-#endif
-}
+static inline void restriction_coarsen_vert (Point point, scalar s) {  
+#if (dimension == 1)  
+  s[] = (fine(s,1,0,0) + 2*fine(s,0,0,0) + fine(s,-1,0,0))/4.;  
+#elif (dimension == 2)  
+  /* if (point.i < GHOSTS +1 || point.i > point.n.x + GHOSTS - 1 || */
+  /*     point.j < GHOSTS +1 || point.j > point.n.y + GHOSTS - 1) */
+  if (x <= X0 + 0.5*Delta || x >= X0 + L0 - 0.5*Delta ||
+    y <= Y0 + 0.5*Delta || y >= Y0 + L0 - 0.5*Delta)
+    s[] = fine(s,0,0,0);  
+  else  
+    s[] = (fine(s,1,0,0) + 2*fine(s,0,0,0) + fine(s,-1,0,0) +  
+           fine(s,0,1,0) + fine(s,0,-1,0))/6.;  
+#endif  
+}  
 
+static inline double bilinear_vertex (Point point, scalar s)
+{
+#if dimension == 1
+  bool on_x = ((point.i + GHOSTS) % 2 == 0);
+  if (on_x)
+    return coarse(s, 0);
+  else
+    return (coarse(s, 0) + coarse(s, 1))/2.;
 
-static inline void refine_vert (Point point, scalar s) { 
-  // Injection
-  fine (s,0,0,0) = s[];
-  // Vertices with two nearest coarse neighbors
-  fine (s,1,0,0) = (s[] + s[1])/2.;
-#if dimension > 1
-  fine (s,0,1,0) = (s[] + s[0,1])/2.;
-#endif
-#if dimension > 2
-  fine (s,0,0,1) = (s[] + s[0,0,1])/2.;
-#endif
-  // Vertices with four nearest coarse neighbors
-#if dimension > 1
-  fine(s,1,1,0) = (s[0] + s[1] + s[0,1] + s[1,1])/4.;
-#endif
-#if dimension > 2 // dimension == 3
-  fine(s,1,0,1) = (s[] + s[1] + s[0,0,1] + s[1,0,1])/4.;
-  fine(s,0,1,1) = (s[] + s[0,1] + s[0,1] + s[0,1,1])/4.;
-  // In 3D, there is a vertex with 8 nearest coarse neighbors
-  fine(s,1,1,1) = (s[] + s[1,1,1] +
-		   s[1] + s[0,1] + s[0,0,1] +
-		   s[1,1] + s[0,1,1] + s[1,0,1])/8.;
+#elif dimension == 2
+  bool on_x = ((point.i + GHOSTS) % 2 == 0);
+  bool on_y = ((point.j + GHOSTS) % 2 == 0);
+  if (on_x && on_y)
+    return coarse(s, 0, 0);
+  else if (on_x)
+    return (coarse(s, 0, 0) + coarse(s, 0, 1))/2.;
+  else if (on_y)
+    return (coarse(s, 0, 0) + coarse(s, 1, 0))/2.;
+  else
+    return (coarse(s, 0, 0) + coarse(s, 1, 0) +
+            coarse(s, 0, 1) + coarse(s, 1, 1))/4.;
+
+#elif dimension == 3
+  bool on_x = ((point.i + GHOSTS) % 2 == 0);
+  bool on_y = ((point.j + GHOSTS) % 2 == 0);
+  bool on_z = ((point.k + GHOSTS) % 2 == 0);
+  if (on_x && on_y && on_z)
+    return coarse(s, 0, 0, 0);
+  else if (!on_x && on_y && on_z)
+    return (coarse(s, 0, 0, 0) + coarse(s, 1, 0, 0))/2.;
+  else if (on_x && !on_y && on_z)
+    return (coarse(s, 0, 0, 0) + coarse(s, 0, 1, 0))/2.;
+  else if (on_x && on_y && !on_z)
+    return (coarse(s, 0, 0, 0) + coarse(s, 0, 0, 1))/2.;
+  else if (!on_x && !on_y && on_z)
+    return (coarse(s, 0, 0, 0) + coarse(s, 1, 0, 0) +
+            coarse(s, 0, 1, 0) + coarse(s, 1, 1, 0))/4.;
+  else if (!on_x && on_y && !on_z)
+    return (coarse(s, 0, 0, 0) + coarse(s, 1, 0, 0) +
+            coarse(s, 0, 0, 1) + coarse(s, 1, 0, 1))/4.;
+  else if (on_x && !on_y && !on_z)
+    return (coarse(s, 0, 0, 0) + coarse(s, 0, 1, 0) +
+            coarse(s, 0, 0, 1) + coarse(s, 0, 1, 1))/4.;
+  else
+    return (coarse(s, 0, 0, 0) + coarse(s, 1, 0, 0) +
+            coarse(s, 0, 1, 0) + coarse(s, 1, 1, 0) +
+            coarse(s, 0, 0, 1) + coarse(s, 1, 0, 1) +
+            coarse(s, 0, 1, 1) + coarse(s, 1, 1, 1))/8.;
 #endif
 }

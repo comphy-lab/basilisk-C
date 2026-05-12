@@ -39,16 +39,13 @@ void mg_cycle (scalar * a, scalar * res, scalar * da,
 
   /**
   We first define the residual on all levels. */
-
-    for (scalar s in res)
-      // BD: issue here 
-      s.restriction = restriction_coarsen_vert;
+  // BD: slower to converge in MPI without this
+  // BD: faster to converge in serial without this...
+  for (scalar s in res)
+    s.restriction = restriction_coarsen_vert; 
 
   restriction (res);
 
-    for (int l = 0; l <= depth(); l++) {
-      boundary_level(res, l);      
-    }
   /**
   We then proceed from the coarsest grid (*minlevel*) down to the
   finest grid. */
@@ -69,7 +66,13 @@ void mg_cycle (scalar * a, scalar * res, scalar * da,
     On all other grids, we take as initial guess the approximate solution
     on the coarser grid bilinearly interpolated onto the current grid. */
 
-    // BD: this step is now done at the end of the loop to use refine_vert
+    else {
+      boundary_level (da, l - 1);
+      foreach_level (l)
+        for (scalar s in da)
+          foreach_blockf (s)
+            s[] = bilinear_vertex (point, s);
+    }
 
     /**
     We then apply homogeneous boundary conditions and do several
@@ -79,20 +82,11 @@ void mg_cycle (scalar * a, scalar * res, scalar * da,
       boundary_level (da, l);
       relax (da, res, l, data);
     }
-
-    if (l < depth()){
-      boundary_level (da, l);
-      foreach_vertex_level (l)
-        for (scalar s in da)
-          foreach_blockf (s)
-            refine_vert (point, s);      
-      boundary_level (da, l+1);
-    }
-
   }
 
+  boundary_level (da, maxlevel); //BD: if not present, crashes with -DTRASH=1 
   /**
-  And finally we apply the resulting correction to *a*. */
+  And finally we apply the resulting correction to *a*. */  
 
   foreach_vertex() {
     vertex scalar s, ds;
@@ -147,7 +141,6 @@ mgstats mg_solve (scalar * a, scalar * b,
 		  int minlevel = 1, // on vertex minlevel = 1
 		  double tolerance = TOLERANCE)
 {
-
   /**
   We allocate a new correction and residual field for each of the scalars
   in *a*. */
@@ -156,21 +149,30 @@ mgstats mg_solve (scalar * a, scalar * b,
   if (!res)
     res = list_clone (b);
 
-  for (vertex scalar s in da){
-    s.restriction = restriction_vert;
-    s.prolongation = refine_vert;
-  }
+  /**
+  The boundary conditions for the correction fields are the
+  *homogeneous* equivalent of the boundary conditions applied to
+  *a*. */
 
-  for (vertex scalar s in res){
-    s.prolongation = refine_vert;
-    // BD: In principle, there is no need to define a BC for the rhs (or
-    // residual).  However, for the Multigrid method, these BC are necessary to
-    // converge in case a and b do not have the same BC (e.g. for the QG model with no slip BC)
-    s[left]   = 0.;
-    s[right]  = 0.;
-    s[top]    = 0.;
-    s[bottom] = 0.;
-  }
+  for (int b = 0; b < nboundary; b++)
+    for (scalar s in da)
+      s.boundary[b] = s.boundary_homogeneous[b];
+
+  /* for (vertex scalar s in da){ */
+  /*   s.restriction = restriction_vert; */
+  /*   s.prolongation = refine_vert; */
+  /* } */
+
+  /* for (vertex scalar s in res){ */
+  /*   s.prolongation = refine_vert; */
+  /*   // BD: In principle, there is no need to define a BC for the rhs (or */
+  /*   // residual).  However, for the Multigrid method, these BC are necessary to */
+  /*   // converge in case a and b do not have the same BC (e.g. for the QG model with no slip BC) */
+  /*   s[left]   = 0.; */
+  /*   s[right]  = 0.; */
+  /*   s[top]    = 0.; */
+  /*   s[bottom] = 0.; */
+  /* } */
 
   
   /**
@@ -203,7 +205,7 @@ mgstats mg_solve (scalar * a, scalar * b,
 	      minlevel,
 	      grid->maxdepth);
     s.resa = (* residual) (a, b, res, data);
-
+  fprintf(stderr, "iter %d: resa=%g nrelax=%d\n", s.i, s.resa, s.nrelax);  
     /**
     We tune the number of relaxations so that the residual is reduced
     by between 2 and 20 for each cycle. This is particularly useful
@@ -311,6 +313,7 @@ static void relax (scalar * al, scalar * bl, int l, void * data)
   vertex scalar c = a;
 #endif
 
+
   /**
   On GPUs, we use red/black Gauss-Seidel relaxation, which requires
   two loops (for odd/even indices). Note also that, unlike the other
@@ -324,6 +327,12 @@ static void relax (scalar * al, scalar * bl, int l, void * data)
   foreach_vertex_level (l, nowarning)
 #endif
   {
+  if (x <= X0 + 0.5*Delta || x >= X0 + L0 - 0.5*Delta ||
+    y <= Y0 + 0.5*Delta || y >= Y0 + L0 - 0.5*Delta)
+  /* if (point.i < GHOSTS +1|| point.i > point.n.x + GHOSTS - 1 || */
+  /*     point.j < GHOSTS +1|| point.j > point.n.y + GHOSTS - 1) */
+    /* if(is_boundary(point)) */
+    continue;  
 
     /**
     We use the face values of $\alpha$ to weight the gradients of the
@@ -331,9 +340,9 @@ static void relax (scalar * al, scalar * bl, int l, void * data)
 
     double n = - sq(Delta)*b[], d = - lambda[]*sq(Delta);
     foreach_dimension() {
-// BD: issue here
-      n += alpha.x[1]*a[1] + alpha.x[]*a[-1];
-      d += alpha.x[1] + alpha.x[];
+// BD: issue here for edge points
+      n += a[1] + a[-1];
+      d += 2;
     }
 #if EMBED
     if (p->embed_flux) {
@@ -380,7 +389,7 @@ static double residual (scalar * al, scalar * bl, scalar * resl, void * data)
   (const) face vector alpha = p->alpha;
   (const) scalar lambda = p->lambda;
   double maxres = 0.;
-#if TREE /* BD: NOT DONE*/
+#if TREE /* BD: Trees not done for now*/
   /* conservative coarse/fine discretisation (2nd order) */
   face vector g[];
   foreach_face()
@@ -401,10 +410,18 @@ static double residual (scalar * al, scalar * bl, scalar * resl, void * data)
 #else // !TREE
   /* "naive" discretisation (only 1st order on trees) */
   foreach_vertex (reduction(max:maxres), nowarning) {
+    /* if(is_boundary(point)){ */
+  /* if (point.i < GHOSTS +1|| point.i > point.n.x + GHOSTS - 1 || */
+  /*     point.j < GHOSTS +1|| point.j > point.n.y + GHOSTS - 1) { */
+if (x <= X0 + 0.5*Delta || x >= X0 + L0 - 0.5*Delta ||
+    y <= Y0 + 0.5*Delta || y >= Y0 + L0 - 0.5*Delta)  {
+    res[] = 0.;  
+  } else { 
     res[] = b[] - lambda[]*a[];
     foreach_dimension()
-      res[] += (alpha.x[0]*face_gradient_x (a, 0) -
-		alpha.x[1]*face_gradient_x (a, 1))/Delta;  
+      res[] += (face_gradient_x (a, 0) -
+		face_gradient_x (a, 1))/Delta;
+  }
 #if EMBED
     if (p->embed_flux) {
       double c, e = p->embed_flux (point, a, alpha, &c);
@@ -413,7 +430,7 @@ static double residual (scalar * al, scalar * bl, scalar * resl, void * data)
 #endif // EMBED
     if (fabs (res[]) > maxres)
       maxres = fabs (res[]);
-  }
+}
 #endif // !TREE
   return maxres;
 }

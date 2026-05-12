@@ -1,3 +1,5 @@
+
+#define BGHOSTS 2
 #include "grid/multigrid.h"
 #include "vertex-utils.h"
 #include "nodal-poisson.h"
@@ -5,7 +7,7 @@
 // qcc -lm -DTRASH=1 -disable-dimensions test.c -o test.e
 
 // CC99='mpicc -std=c99' qcc -D_MPI=1  -disable-dimensions -lm test.c -o test.e
-// mpirun -np 2 test.e
+// mpirun -np 4 test.e
 
 
 
@@ -18,7 +20,7 @@ vertex scalar psi[];
 mgstats mgpsi;
 
 int main() {
-  N = 8;
+  N = 1024;
   // if run in parallel
 //  dimensions(nx=2, ny=1);
 
@@ -45,11 +47,15 @@ int main() {
 
   boundary({psi, omega});
 
-  /* foreach_vertex() { */
-  /*   printf("%g \t %g \t %g \t %g\n",x,y,psi[],omega[]); */
-  /* } */
 
-
-  mgpsi = poisson (psi, omega);
-
+  mgpsi = poisson (psi, omega,tolerance=1e-6);
+  fprintf(stderr, "i=%d resb=%g resa=%g\n", mgpsi.i, mgpsi.resb, mgpsi.resa);
+  
+  // check against exact solution
+  double err = 0.;
+  foreach_vertex(reduction(max:err)) {
+    double psi_exact = -sq(L0)/(5.*sq(pi)) * sin(pi*x/L0) * sin(2.*pi*y/L0);
+    err = max(err, fabs(psi[] - psi_exact));
+  }
+  fprintf(stderr, "max error vs exact: %g\n", err);
 }
