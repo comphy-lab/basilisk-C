@@ -239,7 +239,7 @@ foreach_dimension()
 
 
 /** Injection and restriction functions for markers and color vertex */
-
+#if TREE
 foreach_dimension()
   static void myrefine_face_x (Point point, scalar s) {
     /** In the current version, the 3 by 3 stencil of the interfacial cell are refined
@@ -322,7 +322,7 @@ foreach_dimension()
           
         }
   }
-
+#endif
 
 void output_facets_ebit (char *file = "", FILE *fp = NULL) {
   char name[strlen(file) + 2];
@@ -1060,8 +1060,7 @@ void ebit_advection (vector u, int i) {
 
   boundary ((scalar *) {color_pha_new});
 
-  color_pha.restriction = my_restriction_vertex;
-  color_pha.dirty = true;
+  set_restriction (color_pha, my_restriction_vertex);
   //
   #endif
 
@@ -1098,8 +1097,8 @@ event adapt (i++) {
         color_pha[] = color_pha_new[];
     }
   }
-  color_pha.restriction = restriction_vertex;
-  color_pha.dirty = true;
+
+  set_restriction (color_pha, restriction_vertex);
   boundary ((scalar *) {color_pha});
   //
 

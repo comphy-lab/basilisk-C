@@ -1,4 +1,4 @@
-pristine:3dc0fad76b29574eadbd3db9e5ce635eb029afaf789fcd06ec0ab3a471dafb0b
+pristine:c43cfab76f241a7326ec439ace5f727cb911f578f885f4bafe98506b34a5f27e
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -9825,3 +9825,30 @@ Bruno Deremble <bruno.deremble@cnrs.fr>**20260511210714
  Ignore-this: 3a58d9326c4f52dc621f4efdb7bf826545b42b0a56704e897a8cd6f960afb90dcad66b1a35e991d8
 ] 
 hash: 0000004683-4f647eb06ac1efa7b3b495742835731342d55b2e96d02ced360295cf2bb59da1
+[Remove dirty for the 2D code.
+Jieyun Pan**20260512143741
+ Ignore-this: da94ecf32c583f7552a0338846428b8f
+] 
+hash: 0000001231-6124dea65ddffffa97f9c39af9fccc368b6d57160580441d0e4f286502908bd7
+[A copy of contact
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260512183518
+ Ignore-this: f90d7c7c1ba4d4fedc5b70a39b87ce0e4a95c27ce92f6433697204c1198130818d4436a354d4b43b
+] 
+hash: 0000004567-7a6d36b61bc793c57cf9062a78a7b913c7a9e6ea89c371d1931c8794d7909a30
+[Renamed copy of contact
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260512183621
+ Ignore-this: b7f6075f8237658faadc7e5fd83e54700b0621ca54ddd27e7aa525c1b1fc37829fd30c3046343b40
+] 
+hash: 0000008879-20defc787f5d9eae81a1de09c85bccf5f88f7d97a9190875b1338b711f9d260d
+[Small/large contact angles implementation
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260512183811
+ Ignore-this: 6689862759dc45f25ed7d61406bc6cc6846685c85cd24e2500ddb65d125d50fddbdc5050c8fdde97
+] 
+hash: 0000007039-f26ad0149f814c66b0b0020856a2c26a6a2437cf9cd0c956434cb060a2596b46
+[Improved robustness of fsolve with GSL
+Riccardo Caraccio <riccardo.caraccio@polimi.it>**20260512200458
+ Ignore-this: 5363870269bbd383522d4551a599af442337b717fbcc3030077253a7c6319ec0f8ed175ba33fb79a
+ 
+ When all equations are zero, for example with isothermal and iso-massfraciton conditions, GSL should check the residuals before starting any iterations
+] 
+hash: 0000000828-e69f1e2f1e5bd0651bf830690bc407cea63e358cf8036e74dcfc163fb8e3ed9c

@@ -224,20 +224,6 @@ static int face_to_face[6][4][5] = {
 };
 #endif
 
-/** Used for vertex vector */
-void boundary_edge (vector v_e, vector v_buf) {
-  foreach_dimension()
-    v_buf.x.dirty = false;
-
-  foreach_edge()
-    v_buf.x[] = v_e.x[];
-
-  boundary ((scalar *){v_e});
-  foreach_edge()
-    if (v_buf.x[] != v_e.x[])
-      v_e.x[] = v_buf.x[];
-}
-
 /**
 ## Helper functions for retrieving the connectivity
 */
@@ -729,7 +715,7 @@ event debug_end (t = end) {
 }
 #endif
 
-event profile_ebit (t = end) {
+void profile_ebit() {
   int nc = grid -> n, tnc = grid -> tn;
   printf ("\n# Total number of (leaf) cells. This process (PID:%d): %d.\
     All processes: %d\n", pid(), nc, tnc);

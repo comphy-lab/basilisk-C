@@ -155,14 +155,6 @@ static void refine_face_injection_x (Point point, scalar s) {
   }
 }
 
-/** All these are used for debugging*/
-static void my_no_restriction_r (Point point, scalar s) {
-  s.dirty = false;
-}
-
-static void my_no_restriction_p (Point point, scalar s) {
-  s.dirty = false;
-}
 #endif
 
 /** Warper function of adapt_wavelet. Add the criteria of the EBIT method and 

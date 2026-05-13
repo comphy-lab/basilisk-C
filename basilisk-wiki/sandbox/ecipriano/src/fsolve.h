@@ -54,7 +54,9 @@ void fsolve_gsl (nls_fun fun,
   s = gsl_multiroot_fsolver_alloc (T, n);
   gsl_multiroot_fsolver_set (s, &f, x);
 
-  do {
+  status = gsl_multiroot_test_residual (s->f, FSOLVE_ABSTOL);
+
+  while (status == GSL_CONTINUE && iter < 1000) {
     iter++;
     status = gsl_multiroot_fsolver_iterate (s);
 
@@ -69,9 +71,7 @@ void fsolve_gsl (nls_fun fun,
     else
       status =
         gsl_multiroot_test_residual (s->f, FSOLVE_ABSTOL);
-
   }
-  while (status == GSL_CONTINUE && iter < 1000);
 
   double * res = (double *)arrUnk->p;
   for (unsigned int i=0; i<size; i++)

@@ -17,9 +17,9 @@ is $(x,y)=(1,1)$.
 /**
 We have to define the use of gsl before including fsolve. */
 
-#define USE_GSL
+#define USE_GSL 1
 #include "run.h"
-#include "fsolve-gsl.h"
+#include "fsolve.h"
 
 /**
 We define a struct with data to be passed to the non-linear
