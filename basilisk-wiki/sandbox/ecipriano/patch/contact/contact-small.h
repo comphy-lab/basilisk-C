@@ -65,7 +65,7 @@ height function is not defined yet. This limits the range of
 accessible contact angles, since values of the normal component of the
 height function will be required to compute curvature at shallow
 angles. Follow the documentation in the section [Small/Large contact
-angles](#Small/Large contact angles) to activate support for very small (or very
+angles](#smalllarge-contact-angles) to activate support for very small (or very
 large) contact angle values. */
 
 #if dimension == 2
@@ -140,8 +140,8 @@ f[boundary] = contact_fraction (theta0*pi/180.);
 h.n[boundary] = contact_normal (theta0*pi/180., f);
 ~~~
 
-The implementation reflects the method proposed by [Afkhami et al.
-(2009)](#afkhami2009) and, as such, it is limited to 2D. */
+The implementation reflects the method proposed by [Afkhami \& Bussmann,
+2009](#afkhami2008) and, as such, it is limited to 2D. */
 
 /**
 First, we define functions which allows to categorize the cells in the vicinity
@@ -283,22 +283,13 @@ angle cases. */
 
 foreach_dimension()
 static inline
-double height_contact_x (Point point, scalar c, double expr, coord mb,
-    double * nratio = NULL)
-{
+double height_contact_x (Point point, scalar c, double expr, coord mb) {
   coord m = mycs (point, c);
   coord mcl = normal_contact (mb, m, expr);
   double alpha = plane_alpha (c[], mcl);
   double hc = nodata;
-  if (nratio) {
-    if (fabs (mcl.x) > fabs (mcl.y))
-      *nratio = fabs (mcl.x) > 1e-6 ? fabs (mcl.y/mcl.x) : 0.;
-    else
-      *nratio = fabs (mcl.y) > 1e-6 ? fabs (mcl.x/mcl.y) : 0.;
-  }
-  if (fabs (mcl.x) > 0. && fabs (alpha/mcl.x) <= 5.5) {
+  if (fabs (mcl.x) > 0. && fabs (alpha/mcl.x) <= 5.5)
     hc = alpha/mcl.x + (mcl.x < 0.)*HSHIFT;
-  }
   return hc;
 }
 
@@ -308,7 +299,9 @@ static double contact_normal_x (double expr, scalar c,
 {
   if (is_contact_x (point, c, expr)) {
     coord mb = normal_boundary (point, neighbor);
-    s[] = height_contact_x (point, c, expr, mb);
+    double hc = height_contact_x (point, c, expr, mb);
+    if (s[] == nodata)
+      s[] = hc;
     return s[];
   }
   if (is_opposite_x (point, c, expr)) {
@@ -318,12 +311,11 @@ static double contact_normal_x (double expr, scalar c,
       return nodata;
     else {
       coord mb = normal_boundary (point, neighbor);
-      double nratio = 0.;
-      double hc = height_contact_x (neighborp(0,i), c, expr, mb, &nratio);
+      double hc = height_contact_x (neighborp(0,i), c, expr, mb);
       if (hc != nodata) {
         s[] = (point.level < neighborp(0,i).level) ?
-          hc + (orientation (hc) ? 1. : -1.)*1.5*nratio :
-          hc + (orientation (hc) ? 1. : -1.)*nratio;
+          hc + (orientation (hc) ? 1. : -1.)*1.5*tan (expr) :
+          hc + (orientation (hc) ? 1. : -1.)*tan (expr);
         return s[];
       }
     }
@@ -356,6 +348,18 @@ double contact_normal (double expr, scalar c,
   year={2009},
   publisher={Wiley Online Library},
   url={https://web.njit.edu/~shahriar/Publication/IJNMF2.pdf}
+}
+
+@article{afkhami2008,
+  title={Height functions for applying contact angles to 2D VOF simulations},
+  author={Afkhami, Shahriar and Bussmann, Markus},
+  journal={International journal for numerical methods in fluids},
+  volume={57},
+  number={4},
+  pages={453--472},
+  year={2008},
+  publisher={Wiley Online Library},
+  url={https://web.njit.edu/~shahriar/Publication/IJNMF1.pdf}
 }
 ~~~
 */

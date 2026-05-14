@@ -1,4 +1,4 @@
-pristine:c43cfab76f241a7326ec439ace5f727cb911f578f885f4bafe98506b34a5f27e
+pristine:9e5a5902e03f6ee0813377ebe79af3280a193a71e526b4dba2aba8070953e589
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -9852,3 +9852,13 @@ Riccardo Caraccio <riccardo.caraccio@polimi.it>**20260512200458
  When all equations are zero, for example with isothermal and iso-massfraciton conditions, GSL should check the residuals before starting any iterations
 ] 
 hash: 0000000828-e69f1e2f1e5bd0651bf830690bc407cea63e358cf8036e74dcfc163fb8e3ed9c
+[Compute the vertical height in a contact line cell only if needed
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260513222715
+ Ignore-this: 7565a576bd7c2959c3c32ad32a8af787c179ff0289728f78196cab85befbf062e6954ae40fb7e436
+] 
+hash: 0000002632-619026c4357eabea1c933952f8a55956973292de3083473e08c0326ca047b06f
+[Draft of a test case for small contact angles
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260513223720
+ Ignore-this: 2adb0b44adada9160d6441389a6fe33473ab91127aaeb536b46b648e2f0a4ed41157ad8d2b645e80
+] 
+hash: 0000003720-b14df0838cce522c7692473688eec2b1390be5668cc62ac95194f8efa16212c7
