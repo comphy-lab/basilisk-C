@@ -1,15 +1,13 @@
-# makefile for sloshing river testcase
+# the default CFLAGS are set in $(BASILISK)/config
+CFLAGS += -O2 -fopenmp -Wdimensions -DMTRACE=3 -I$(DOCUMENT_ROOT)/sandbox
 
-.PHONY: default clean
+include $(BASILISK)/Makefile.defs
 
-default: river ;
+river-new.c: river.c
+	ln -sf river.c river-new.c
+river-new.s: CFLAGS += -Dswitch_solver=1
+river-new.tst: CFLAGS += -Dswitch_solver=1
 
-river: river.c
-	CC99='gcc -std=c99' qcc -fopenmp river.c -o river -lm -L. -ldl -lstdc++ -Wall -O2
-
-clean:
-	rm *.o ; \
-	rm river; 
-
+river.tst: river-new.tst
 
 

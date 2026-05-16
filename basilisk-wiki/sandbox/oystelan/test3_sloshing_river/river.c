@@ -1,18 +1,26 @@
 /** Sloshing River
-A testcase to investigate spurious currents caused by thin cells
-when using different advection schemes
+A testcase to investigate spurious currents caused by the gradient
+limiter of thin cells with dry neighbour cells. The test case is a sloshing
+river where which should not generate any vorticity/turbulence at the shorelines.
+However they do when we use the original implementation, as can be seen here
+
+![vertical velocity in a sloshing river (original monmod limiting of thin almost dry cells)](river/movie.mp4)
+
+The reason for these currents are the gradient limiters (in this case minmod2) which for cells with
+neighbours that is close to dry will result in unwanted spurious current into the domain.
+
+The problem can easy enough be solved by introducing a "soft" cut-off in the advection scheme, 
+giving much more predictable behaviour of the gradient limiters.
+
+The result can be seen underneath.
+![vertical velocity in a sloshing river (soft-cutoff of velocity)](river-new/movie.mp4)
 
 */
 
 
-#define output_vtk 1 // switch on/off vtk file output
-#define solver_type 1 // 0 = original basilisk, 1 = new impl.
-
-
-
 #include "grid/multigrid.h"
-#if solver_type
-#include "hydro_patched.h"
+#if switch_solver
+#include "../multilayer_stability_patch/hydro_patched.h"
 #else
 #include "layered/hydro.h"
 #endif
@@ -23,29 +31,33 @@ when using different advection schemes
 scalar w, phi, omega;
 #endif
 
-#include "layered/remap.h"
-#include "layered/perfs.h"
-#if output_vtk
-#include "../output_vts_multilayer.h"
+/**
+GPUs and bview are not compatible yet. */
+
+#if !_GPU
+# include "view.h"
 #endif
+
+#include "layered/remap.h"
+#include "layered/perfs.h" 
 #include <sys/stat.h>
 
-
+#define T0 50.
+#define L0 1.
 #define LEVEL 7
-int num_omp = 12;
 FILE* fp_energy;
 
 int main()
 {
   periodic(right);
-  omp_set_num_threads(num_omp);
   init_grid (1 << LEVEL);
   size (1.);
   origin (-L0/2.,-L0/2.);
   G = 9.81; 
   nl = 11;
   TOLERANCE = 1E-5;
-  #if solver_type
+  //theta_H = 0.501;
+  #if switch_solver
   h_lim = 1e-6; // soft cutoff to avoid rediculous velocities
   #endif
   run();
@@ -60,8 +72,7 @@ int main()
 double dt_max_rampup(double t, double dtinit, double rampuptime, double dtmax){
     return dtinit + dtmax*clamp(t/rampuptime,0,1.);
 }
-
-/**/
+/** We initialize with water at a small tilt angle and with velocity in the x direction*/
 event init (i = 0)
 {
    #if !NH // if NH is not defined:
@@ -107,26 +118,27 @@ event logfile (i += 10) {
 	   t, i, s.min, s.max, s.sum, n.rms, n.max, dt);
 }
 
-
 /**
-* output vts files which can be viewed in paraview
-*/
-#if output_vtk
-//event output_domain_vtk(t += T0/4.; t <= 5*T0) {
-event output_domain_vtk(t <= 100.; t += 0.05) {
-    foreach_layer(){
-       vorticity(u,omega);
-    }
-    struct stat st = { 0 };
-    if (stat("vtk", &st) == -1) {
-        mkdir("vtk", 0700);
-    }
-    static int j = 0;
-    char name[100];
-    sprintf(name, "%s/domain_%.6i.vts", "vtk", j++);
-    //fprintf(stdout, "written to: %s\n", name);
-    FILE* fp = fopen(name, "w");
-    output_vts_bin_all_layers(fp,(scalar *){omega}, NULL, false, false);
-    fclose(fp);
+And generate the movie of the free surface (this is quite
+expensive). The movie is 45 seconds at 25 frames/second. 
+
+Since GPUs and bview are not compatible yet, we replace 3D with 2D
+outputs when running on GPUs. */
+
+event movie (t += 0.05; t<= T0)
+{
+#if !_GPU  
+  view (fov = 24, quat = {0, 0, 0, 1},
+	tx = 0, ty = 0, width = 400, height = 400);
+  char s[80];
+  sprintf (s, "t = %.2f T0", t/T0);
+  draw_string (s, size = 80);
+  for (double x = -1; x <= 1; x++)
+    translate (x)
+      squares ("u10.y", linear = true, z = "eta", min = -0.1, max = 0.1);
+  save ("movie.mp4");
+#else // _GPU
+  vector u = lookup_vector ("u29");
+  output_ppm (u.x, file = "movie.mp4", linear = true, min = -0.15, max = 0.6, n = 512);
+#endif // _GPU
 }
-#endif
