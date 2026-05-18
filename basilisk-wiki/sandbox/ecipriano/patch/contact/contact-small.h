@@ -141,7 +141,7 @@ h.n[boundary] = contact_normal (theta0*pi/180., f);
 ~~~
 
 The implementation reflects the method proposed by [Afkhami \& Bussmann,
-2009](#afkhami2008) and, as such, it is limited to 2D. */
+2008](#afkhami2008) and, as such, it is limited to 2D. */
 
 /**
 First, we define functions which allows to categorize the cells in the vicinity
@@ -217,8 +217,7 @@ The following function returns the normal of an interface touching the boundary.
 considering the contact angle), while `angle` is the contact angle value. */
 
 static inline
-coord normal_contact (coord ns, coord nf, double angle)
-{
+coord normal_contact (coord ns, coord nf, double angle) {
   coord n;
   if (- ns.x*nf.y + ns.y*nf.x > 0) { // 2D cross product
     n.x = - ns.x*cos(angle) + ns.y*sin(angle);
@@ -297,12 +296,10 @@ foreach_dimension()
 static double contact_normal_x (double expr, scalar c,
     Point point = point, Point neighbor = neighbor, scalar s = _s)
 {
-  if (is_contact_x (point, c, expr)) {
+  if (is_contact_x (point, c, expr) && s[] == nodata) {
     coord mb = normal_boundary (point, neighbor);
     double hc = height_contact_x (point, c, expr, mb);
-    if (s[] == nodata)
-      s[] = hc;
-    return s[];
+    s[] = hc;
   }
   if (is_opposite_x (point, c, expr)) {
     int i = is_contact_x (neighborp(0,1), c, expr) ? 1 :
@@ -316,7 +313,6 @@ static double contact_normal_x (double expr, scalar c,
         s[] = (point.level < neighborp(0,i).level) ?
           hc + (orientation (hc) ? 1. : -1.)*1.5*tan (expr) :
           hc + (orientation (hc) ? 1. : -1.)*tan (expr);
-        return s[];
       }
     }
   }
@@ -338,18 +334,6 @@ double contact_normal (double expr, scalar c,
 ## References
 
 ~~~bib
-@article{afkhami2009,
-  title={Height functions for applying contact angles to 3D VOF simulations},
-  author={Afkhami, S and Bussmann, M},
-  journal={International Journal for Numerical Methods in Fluids},
-  volume={61},
-  number={8},
-  pages={827--847},
-  year={2009},
-  publisher={Wiley Online Library},
-  url={https://web.njit.edu/~shahriar/Publication/IJNMF2.pdf}
-}
-
 @article{afkhami2008,
   title={Height functions for applying contact angles to 2D VOF simulations},
   author={Afkhami, Shahriar and Bussmann, Markus},
@@ -360,6 +344,18 @@ double contact_normal (double expr, scalar c,
   year={2008},
   publisher={Wiley Online Library},
   url={https://web.njit.edu/~shahriar/Publication/IJNMF1.pdf}
+}
+
+@article{afkhami2009,
+  title={Height functions for applying contact angles to 3D VOF simulations},
+  author={Afkhami, S and Bussmann, M},
+  journal={International Journal for Numerical Methods in Fluids},
+  volume={61},
+  number={8},
+  pages={827--847},
+  year={2009},
+  publisher={Wiley Online Library},
+  url={https://web.njit.edu/~shahriar/Publication/IJNMF2.pdf}
 }
 ~~~
 */
