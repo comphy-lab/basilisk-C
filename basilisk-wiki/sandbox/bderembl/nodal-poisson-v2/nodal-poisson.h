@@ -5,7 +5,7 @@ We want to solve Poisson--Helmholtz equations of the general form
 $$
 L(a) = \nabla\cdot (\alpha\nabla a) + \lambda a = b
 $$
-This can be done efficiently using a multigrid solver. 
+This can be done efficiently using a multigrid solver.
 
 An important aspect of Poisson--Helmholtz equations is that the
 operator $L()$ is linear. This property can be used to build better
@@ -31,20 +31,24 @@ cycle. */
 
 trace
 void mg_cycle (scalar * a, scalar * res, scalar * da,
-	       void (* relax) (scalar * da, scalar * res, 
+	       void (* relax) (scalar * da, scalar * res,
 			       int depth, void * data),
 	       void * data,
 	       int nrelax, int minlevel, int maxlevel)
 {
 
+  boundary(res);
   /**
   We first define the residual on all levels. */
   // BD: slower to converge in MPI without this
   // BD: faster to converge in serial without this...
   for (scalar s in res)
-    s.restriction = restriction_coarsen_vert; 
+    s.restriction = restriction_coarsen_vert;
 
   restriction (res);
+  for (int l = 0; l <= depth(); l++) {
+    boundary_level(res, l);
+  }
 
   /**
   We then proceed from the coarsest grid (*minlevel*) down to the
@@ -65,15 +69,13 @@ void mg_cycle (scalar * a, scalar * res, scalar * da,
     /**
     On all other grids, we take as initial guess the approximate solution
     on the coarser grid bilinearly interpolated onto the current grid. */
-
     else {
       boundary_level (da, l - 1);
-      foreach_level (l)
+      foreach_vertex_level (l)
         for (scalar s in da)
           foreach_blockf (s)
             s[] = bilinear_vertex (point, s);
     }
-
     /**
     We then apply homogeneous boundary conditions and do several
     iterations of the relaxation function to refine the initial guess. */
@@ -84,9 +86,9 @@ void mg_cycle (scalar * a, scalar * res, scalar * da,
     }
   }
 
-  boundary_level (da, maxlevel); //BD: if not present, crashes with -DTRASH=1 
+  boundary_level (da, maxlevel); //BD: if not present, crashes with -DTRASH=1
   /**
-  And finally we apply the resulting correction to *a*. */  
+  And finally we apply the resulting correction to *a*. */
 
   foreach_vertex() {
     vertex scalar s, ds;
@@ -94,6 +96,7 @@ void mg_cycle (scalar * a, scalar * res, scalar * da,
       foreach_blockf (s)
 	s[] += ds[];
   }
+  boundary(a); //vertex not automatic
 }
 
 /**
@@ -101,7 +104,7 @@ void mg_cycle (scalar * a, scalar * res, scalar * da,
 
 The multigrid solver itself uses successive calls to the multigrid
 cycle to refine an initial guess until a specified tolerance is
-reached. 
+reached.
 
 The maximum number of iterations is controlled by *NITERMAX* and the
 tolerance by *TOLERANCE* with the default values below. */
@@ -133,7 +136,7 @@ trace
 mgstats mg_solve (scalar * a, scalar * b,
 		  double (* residual) (scalar * a, scalar * b, scalar * res,
 				       void * data),
-		  void (* relax) (scalar * da, scalar * res, int depth, 
+		  void (* relax) (scalar * da, scalar * res, int depth,
 				  void * data),
 		  void * data = NULL,
 		  int nrelax = 4,
@@ -174,7 +177,7 @@ mgstats mg_solve (scalar * a, scalar * b,
   /*   s[bottom] = 0.; */
   /* } */
 
-  
+
   /**
   We initialise the structure storing convergence statistics. */
 
@@ -185,7 +188,7 @@ mgstats mg_solve (scalar * a, scalar * b,
     sum += rhs[];
   s.sum = sum;
   s.nrelax = nrelax > 0 ? nrelax : 4;
-  
+
   /**
   Here we compute the initial residual field and its maximum. */
 
@@ -196,7 +199,7 @@ mgstats mg_solve (scalar * a, scalar * b,
   We then iterate until convergence or until *NITERMAX* is reached. Note
   also that we force the solver to apply at least one cycle, even if the
   initial residual is lower than *TOLERANCE*. */
-  
+
   for (s.i = 0;
        s.i < NITERMAX && (s.i < NITERMIN || s.resa > tolerance);
        s.i++) {
@@ -205,7 +208,7 @@ mgstats mg_solve (scalar * a, scalar * b,
 	      minlevel,
 	      grid->maxdepth);
     s.resa = (* residual) (a, b, res, data);
-  fprintf(stderr, "iter %d: resa=%g nrelax=%d\n", s.i, s.resa, s.nrelax);  
+  fprintf(stderr, "iter %d: resa=%g nrelax=%d\n", s.i, s.resa, s.nrelax);
     /**
     We tune the number of relaxations so that the residual is reduced
     by between 2 and 20 for each cycle. This is particularly useful
@@ -229,18 +232,18 @@ mgstats mg_solve (scalar * a, scalar * b,
     resb = s.resa;
   }
   s.minlevel = minlevel;
-  
+
   /**
   If we have not satisfied the tolerance, we warn the user. */
 
   if (s.resa > tolerance) {
     scalar v = a[0]; // fixme: should not be necessary
-    fprintf (ferr, 
+    fprintf (ferr,
 	     "src/poisson.h:%d: warning: convergence for %s not reached after %d iterations\n"
 	     "  res: %g sum: %g nrelax: %d tolerance: %g\n", LINENO, v.name,
 	     s.i, s.resa, s.sum, s.nrelax, tolerance), fflush (ferr);
   }
-    
+
   /**
   We deallocate the residual and correction fields and free the lists. */
 
@@ -261,7 +264,7 @@ $$
 We first setup the data structure required to pass the extra
 parameters $\alpha$ and $\lambda$. We define $\alpha$ as a face
 vector field because we need values at the face locations
-corresponding to the face gradients of field $a$. 
+corresponding to the face gradients of field $a$.
 
 *alpha* and *lambda* are declared as *(const)* to indicate that the
 function works also when *alpha* and *lambda* are constant vector
@@ -306,7 +309,7 @@ static void relax (scalar * al, scalar * bl, int l, void * data)
   order). The same comment applies to OpenMP or MPI parallelism. In
   practice however Jacobi convergence tends to be slower than simple
   reuse. */
-  
+
 #if JACOBI
   vertex scalar c[];
 #else
@@ -318,7 +321,7 @@ static void relax (scalar * al, scalar * bl, int l, void * data)
   On GPUs, we use red/black Gauss-Seidel relaxation, which requires
   two loops (for odd/even indices). Note also that, unlike the other
   option, red/black relaxation should be deterministic. */
-  
+
 #if GAUSS_SEIDEL || _GPU
   for (int parity = 0; parity < 2; parity++)
     foreach_vertex_level (l, nowarning)
@@ -332,7 +335,7 @@ static void relax (scalar * al, scalar * bl, int l, void * data)
   /* if (point.i < GHOSTS +1|| point.i > point.n.x + GHOSTS - 1 || */
   /*     point.j < GHOSTS +1|| point.j > point.n.y + GHOSTS - 1) */
     /* if(is_boundary(point)) */
-    continue;  
+    continue;
 
     /**
     We use the face values of $\alpha$ to weight the gradients of the
@@ -359,7 +362,7 @@ static void relax (scalar * al, scalar * bl, int l, void * data)
 
   /**
   For weighted Jacobi we under-relax with a weight of 2/3. */
-  
+
 #if JACOBI
   foreach_level_or_leaf (l)
     a[] = (a[] + 2.*c[])/3.;
@@ -403,7 +406,7 @@ static double residual (scalar * al, scalar * bl, scalar * resl, void * data)
       double c, e = p->embed_flux (point, a, alpha, &c);
       res[] += c - e*a[];
     }
-#endif // EMBED    
+#endif // EMBED
     if (fabs (res[]) > maxres)
       maxres = fabs (res[]);
   }
@@ -415,8 +418,8 @@ static double residual (scalar * al, scalar * bl, scalar * resl, void * data)
   /*     point.j < GHOSTS +1|| point.j > point.n.y + GHOSTS - 1) { */
 if (x <= X0 + 0.5*Delta || x >= X0 + L0 - 0.5*Delta ||
     y <= Y0 + 0.5*Delta || y >= Y0 + L0 - 0.5*Delta)  {
-    res[] = 0.;  
-  } else { 
+    res[] = 0.;
+  } else {
     res[] = b[] - lambda[]*a[];
     foreach_dimension()
       res[] += (face_gradient_x (a, 0) -
@@ -522,7 +525,7 @@ mgstats project (face vector uf, scalar p,
 		 double dt = 1.,
 		 int nrelax = 4)
 {
-  
+
   /**
   We allocate a local scalar field and compute the divergence of
   $\mathbf{u}_f$. The divergence is scaled by *dt* so that the
@@ -539,10 +542,10 @@ mgstats project (face vector uf, scalar p,
   /**
   We solve the Poisson problem. The tolerance (set with *TOLERANCE*) is
   the maximum relative change in volume of a cell (due to the divergence
-  of the flow) during one timestep i.e. the non-dimensional quantity 
+  of the flow) during one timestep i.e. the non-dimensional quantity
   $$
-  |\nabla\cdot\mathbf{u}_f|\Delta t 
-  $$ 
+  |\nabla\cdot\mathbf{u}_f|\Delta t
+  $$
   Given the scaling of the divergence above, this gives */
 
   mgstats mgp = poisson (p, div, alpha,

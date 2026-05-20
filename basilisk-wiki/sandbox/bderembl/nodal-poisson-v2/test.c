@@ -50,7 +50,7 @@ int main() {
 
   mgpsi = poisson (psi, omega,tolerance=1e-6);
   fprintf(stderr, "i=%d resb=%g resa=%g\n", mgpsi.i, mgpsi.resb, mgpsi.resa);
-  
+
   // check against exact solution
   double err = 0.;
   foreach_vertex(reduction(max:err)) {

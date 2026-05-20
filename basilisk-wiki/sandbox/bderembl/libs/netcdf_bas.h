@@ -273,19 +273,14 @@ void write_nc() {
   for (scalar s in nc_scalar_list){
     nv += 1;
 
+
     for (_layer = 0; _layer < nl; _layer++){
-      for (int j = 0; j < Ny; j++) {
-        float yp = Delta*j + Y0 + Delta/2.;
-        for (int i = 0; i < Nx; i++) {
-          float xp = Delta*i + X0 + Delta/2.;
-          if (nc_linear_interp) {
-            field[Ny*Nx*_layer + Nx*j + i] = interpolate (s, xp, yp);
-          }
-          else {
-            foreach_point (xp, yp, serial) 
-              field[Ny*Nx*_layer + Nx*j + i] = s[]; 
-          }
-        }
+      foreach(serial){
+#if dimension > 1
+        field[Ny*Nx*_layer + Nx*_J + _I] = s[];
+#else
+        field[Nx*_layer + _I] = s[];// would like to use _J = 0 but does not work in 1D
+#endif
       }
     }
     _layer = 0;
@@ -417,7 +412,7 @@ void read_nc(scalar * list_in, char* file_in, bool read_time = false)
                                           &field[0])))
             ERR(nc_err);
 
-          foreach()
+          foreach(serial)
 #if dimension > 1
             s[] = field[Nx*_J + _I];
 #else
@@ -441,7 +436,7 @@ void read_nc(scalar * list_in, char* file_in, bool read_time = false)
         
           // I  recreate a foreach_layer in case LAYER = 0
           for (_layer = 0; _layer < nl; _layer++){
-            foreach(){
+            foreach(serial){
 #if dimension > 1
               s[] = field[Ny*Nx*_layer + Nx*_J + _I];
 #else

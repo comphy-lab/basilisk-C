@@ -1,4 +1,4 @@
-pristine:203c9c5c8a83fbad5fbe4c0e81a4b47fbbf461c04378c201836311a54c42270f
+pristine:35032062e92ecbbba6b928c230ab842701722d948f47856a67ca6820b7fc1eac
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -10022,3 +10022,53 @@ rcaraccio <riccardo.caraccio@polimi.it>**20260518175847
  Ignore-this: c7b8c064f98267854de95dbee45b38232a97481cf5098df1684c9235ae92f49f2a757b518e311ff1
 ] 
 hash: 0000000319-06898a0697516f672e5f71bf4d75dbe2768624e6db6f95851d296781e1829992
+[add image of the potential
+Antoonvh <j.a.v.hooft@gmail.com>**20260519081610
+ Ignore-this: 4910e0fa02743829b2c0e15ac9f1caae5f3c31b7469e2d892c1823d73eaaa535de8196ec76e7a899
+] 
+hash: 0000000471-d557d09d75ff48760b04e63969d502683ab5f7c2f664b1693f91c8aab3d99ba7
+[Passed the wrong flag
+rcaraccio <riccardo.caraccio@polimi.it>**20260519132053
+ Ignore-this: ea559bfcdbd6e70cf4329b414e9de8dabf4db06fa4cb19c21f6cd90d0109a9eec6edf21afd7c0f1e
+] 
+hash: 0000000285-2d56e97ca0038200b432d05cada63a09634313d54b8ea0e51695aa7419812f6c
+[Problems compiling test with MPI
+rcaraccio <riccardo.caraccio@polimi.it>**20260519132919
+ Ignore-this: 1a9c42e9e9292cd77cffa29595a783dd4e607203821d0dfb6ec40c7f40412332141d033ce5060b2c
+] 
+hash: 0000000304-aa36cefadaa58920605d5256d43c4588d000aefc7477a86d83c8abf28aed7f5b
+[Problems compiling test with MPI
+rcaraccio <riccardo.caraccio@polimi.it>**20260519134038
+ Ignore-this: dbe63cdccf076d7bf52237d5b926f5ec8ddb8ed572b96d855f69e11e010e65fc569800a131fc5409
+] 
+hash: 0000000333-ae88355702b38bb6158e11e7be43c534a240b0b60e12c270fa44f8a46685a4db
+[Rolling back to previous core number
+rcaraccio <riccardo.caraccio@polimi.it>**20260519135115
+ Ignore-this: a3f8cfb113a625246e476e0b277f34d44aaf66c69abaf4e3f5d94bbf77684f92de15d1f47b54a714
+] 
+hash: 0000000303-ace79005398e9dc01723726bb0ae6f003ef70aa727fad9793a942aefdc73a4c1
+[v1
+measn <measnoah@gmail.com>**20260519140113
+ Ignore-this: 8fb660b2d4dd28396a281a1732105c0995fd45e196970b2f21d67d234840eb113e60175ba6e440a5
+] 
+hash: 0000000235-892d69663ae4050f15c4d934725d1c3213eea8d8f20d03bb0005a85e8d4e0708
+[Added Lande et al
+Stephane Popinet <popinet@basilisk.fr>**20260519154605
+ Ignore-this: f7da32ab17a5460a6c83dc9e688d0369ab87f5ac735a983d963f0f9d8bf56fbb396bcf2cadae731b
+] 
+hash: 0000000488-f6eb83cd5439d27f3a566feb324ce10c92e65108f4c92eeabe61e3d69d44d9c0
+[Still troubles with MPI
+rcaraccio <riccardo.caraccio@polimi.it>**20260519162608
+ Ignore-this: faa01a7745e95f40df093dbc172637b20a54012ec712e207b89c3222234c37dd3e2688a5570eee62
+] 
+hash: 0000000288-0872b03d6c4c29eef887ab73e2ed03f58fad0b7a612366801e8b1382fb11be12
+[nodal poisson with layers
+Bruno Deremble <bruno.deremble@cnrs.fr>**20260519192218
+ Ignore-this: a0ba27bfb1c505d3086ef0acc73c6a13a7c803158fb136caa008cdb4060b85b5732dbc4093f613e2
+] 
+hash: 0000005082-f9fe1b4405f9b83fde46351af57dc152f62024b07a407cff8774694e7306f709
+[simpler foreach for netcdf lib
+Bruno Deremble <bruno.deremble@cnrs.fr>**20260519195634
+ Ignore-this: 821ff075e00beb637c2eb0f3f77c8e670de2ab58c77873d5e3751dc93faac8b69ac4e0f1249936b1
+] 
+hash: 0000001310-9131b4397aa9d647fb15c730df64864eae482fc92b9e64c095da02ce6b710959

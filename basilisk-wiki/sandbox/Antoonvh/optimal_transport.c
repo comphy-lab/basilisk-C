@@ -18,6 +18,8 @@ plot 'log' u 1:2 t 'Final positions', '' u 3:4 t 'initial positions'
 
 Gues what! *A* solution to this problem can be found via potential flow:
 
+![The potential](optimal_transport/potential.png)
+
 ![The proposed solution of the transport problem (indeed, the problem is derived from this solution)](optimal_transport/optimal.mp4)
 
 Is this mapping, achieved by lagrangian tracing of a
@@ -120,7 +122,12 @@ event init (t = 0) {
   foreach_particle() 
     p().init_pos = (coord){x, y};
   tag_particles (ot);
-
+  
+  scalar m[];
+  foreach()
+    m[] = cs[] < 0.5 ? -1 : 1;
+  output_ppm (a, file = "potential.png", min = 0, max = 1, mask = m, n = 512);
+  
   foreach()
     a[] = level;
   output_ppm (a, file = "grid.png", min = 5, max = 11);

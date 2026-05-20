@@ -41,25 +41,42 @@ macro2 foreach_vertex_level (int l, char flags = 0, Reduce reductions = None) {
 Restrict only the local `point` instead of $2^{\mathtt{dimension}}$
  */
 static inline void restriction_vert (Point point, scalar s) {
-  s[] = fine(s,0,0,0);
+  foreach_blockf (s)
+    s[] = fine(s,0,0,0);
 }
 /**
    Or a coarse estimate (not in 3D);
  */
-static inline void restriction_coarsen_vert (Point point, scalar s) {  
-#if (dimension == 1)  
-  s[] = (fine(s,1,0,0) + 2*fine(s,0,0,0) + fine(s,-1,0,0))/4.;  
-#elif (dimension == 2)  
+static inline void restriction_coarsen_vert (Point point, scalar s) {
+  foreach_blockf (s){
+#if (dimension == 1)
+  s[] = (fine(s,1,0,0) + 2*fine(s,0,0,0) + fine(s,-1,0,0))/4.;
+#elif (dimension == 2)
   /* if (point.i < GHOSTS +1 || point.i > point.n.x + GHOSTS - 1 || */
   /*     point.j < GHOSTS +1 || point.j > point.n.y + GHOSTS - 1) */
   if (x <= X0 + 0.5*Delta || x >= X0 + L0 - 0.5*Delta ||
     y <= Y0 + 0.5*Delta || y >= Y0 + L0 - 0.5*Delta)
-    s[] = fine(s,0,0,0);  
-  else  
-    s[] = (fine(s,1,0,0) + 2*fine(s,0,0,0) + fine(s,-1,0,0) +  
-           fine(s,0,1,0) + fine(s,0,-1,0))/6.;  
-#endif  
-}  
+    s[] = fine(s,0,0,0);
+  else
+    s[] = (fine(s,1,0,0) + 2*fine(s,0,0,0) + fine(s,-1,0,0) +
+           fine(s,0,1,0) + fine(s,0,-1,0))/6.;
+#endif
+}
+}
+
+static inline void restriction_coarsen_vert2 (Point point, scalar s) {
+  foreach_blockf (s){
+#if (dimension == 1)
+  s[] = (fine(s,1,0,0) + 2*fine(s,0,0,0) + fine(s,-1,0,0))/4.;
+#elif (dimension == 2)
+  s[] = (4*fine(s,0,0,0) +
+         2*fine(s,1,0,0) + 2*fine(s,-1,0,0) +
+	 2*fine(s,0,1,0) + 2*fine(s,0,-1,0) +
+         fine(s,1,1,0) + fine(s,-1,1,0) +
+	 fine(s,1,-1,0) + fine(s,-1,-1,0))/16.;
+#endif
+}
+}
 
 static inline double bilinear_vertex (Point point, scalar s)
 {

@@ -4,7 +4,7 @@
 */
 
 
-// CC99='mpicc -std=c99' qcc -D_MPI=1 -O3 netcdf.c -o netcdf.e -lm -lnetcdf 
+// CC99='mpicc -std=c99' qcc -D_MPI=1 -O3 test_netcdf.c -o test_netcdf.e -lm -lnetcdf 
 
 
 #include "grid/multigrid.h"

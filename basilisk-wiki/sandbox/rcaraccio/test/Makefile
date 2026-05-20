@@ -1,5 +1,5 @@
 include $(BASILISK)/Makefile.defs
 
-CFLAGS += -O2 -disable-dimension
+CFLAGS += -O2 -disable-dimensions
 
-balancing.tst: CC = mpicc -D_MPI=7
+balancing.tst: CC=mpicc -D_MPI=7

@@ -24,6 +24,13 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
+@Article{lande2026,
+author={Øystein Lande and Stephane Popinet and Odin Gramstad and Thomas Berge Johannessen and Atle Jensen},
+title={Phase-resolved coastal wave modelling using a non-hydrostatic multilayer formulation},
+journal={Journal: Coastal Engineering},
+year={2026}
+}
+
 @Article{miller2025,
 author={Lennard Miller and Antoine Venaille and Stéphane Popinet and Bruno Deremble},
 title={Enhanced Gulf Stream Path Variability Under Intensified Stratification},
