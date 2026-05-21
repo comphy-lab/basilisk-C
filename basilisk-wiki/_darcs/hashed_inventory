@@ -1,4 +1,4 @@
-pristine:35032062e92ecbbba6b928c230ab842701722d948f47856a67ca6820b7fc1eac
+pristine:cbd2f396b3e35243fb1d17994d0e6e6bb4b2d705ecf224c3b1d2ae81d2b5ee07
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -10072,3 +10072,33 @@ Bruno Deremble <bruno.deremble@cnrs.fr>**20260519195634
  Ignore-this: 821ff075e00beb637c2eb0f3f77c8e670de2ab58c77873d5e3751dc93faac8b69ac4e0f1249936b1
 ] 
 hash: 0000001310-9131b4397aa9d647fb15c730df64864eae482fc92b9e64c095da02ce6b710959
+[cleaning
+walmetzm <malo.walmetz@gmail.com>**20260520091633
+ Ignore-this: 6f35e8f2e44b5d39d7c8ca5ca9808ab7594fc828a298a76dad3997a9a139a57adfd8bae835c72b67
+] 
+hash: 0000000679-eff81f289ef11319430fb01f94d0ebd924ed74259a22d66241f8cd768fa77710
+[Added blanco 2026
+Stephane Popinet <popinet@basilisk.fr>**20260520163536
+ Ignore-this: 35bee32515fe48144a57c2579940a27f35c349d43039a8335a17c54331a03b90dbb431248a028b10
+] 
+hash: 0000000720-5e85ad674378a7348533b84316dfecff04f23cd64d08ac6d1537def016a3a5ea
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20260520163844
+ Ignore-this: 50d5dae7e81a84794c5c2fcc079142eb5bd2902d450989f1184020f5fedc9b7e391032aa1a0eb31d
+] 
+hash: 0000000653-29036f052d96d840a3c4323287067912e8b1b0bb074d3d1d61d9f1922450f9e9
+[Added blanco 2026
+Stephane Popinet <popinet@basilisk.fr>**20260520164411
+ Ignore-this: 743ff3daabf4eb75f7bae44b850a5f1313cb84cbd798d968d94eaef44f7f38f7c4a6c51a4cbca2ef
+] 
+hash: 0000000577-58a0e2883db4ee485820fa1a8b0b3c64d5803b12795a769ec42dd5248b6398e1
+[Small angle conditions fall back to default results for normal angle values
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260520161639
+ Ignore-this: ca869507354d6de4a649a80b274fd58e4c3b43f1a495226c538904c99cdcf87ba44a5dbb17f11893
+] 
+hash: 0000002265-d09aa4dd1c36e3fac602cd2812c952d776ca92a9b36a0b6d58cf0d3dc0a5880b
+[Speed up small angles test case
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260520163031
+ Ignore-this: 741f12ca3a3b9f230efbb2525be716490bda14216ae98e722fc3be07b5d8f9fb257a9c67b9872bcf
+] 
+hash: 0000001817-9d3175da590f695d12fc838d1c21383efaa4ff71c284f871b077824b1e00e026

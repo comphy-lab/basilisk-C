@@ -48,7 +48,7 @@ int LEVEL;
 
 int main()
 {
-  size (4 [1]);
+  size (3 [1]);
 
   /**
   We use a constant viscosity. */
@@ -69,8 +69,8 @@ int main()
 
   f.sigma = 1.;
 
-  for (LEVEL = 4; LEVEL <= 7; LEVEL++) {
-    for (theta0 = 10.; theta0 <= 25.; theta0 += 5.) {
+  for (LEVEL = 4; LEVEL <= 6; LEVEL++) {
+    for (theta0 = 10.; theta0 <= 30.; theta0 += 10.) {
       init_grid (1 << LEVEL);
       run();
     }
@@ -95,9 +95,9 @@ event adapt (i++) {
 At equilibrium (t = 20 seems sufficient), we output the interface
 shape and compute the (constant) curvature. */
 
-event end (t = 20)
+event end (t = 30)
 {
-  if (LEVEL == 7)
+  if (LEVEL == 6)
     output_facets (f, stdout);
 
   scalar kappa[];
@@ -114,13 +114,12 @@ We compare $R/R_0$ to the analytical expression, with $R_0=\sqrt{V/\pi}$.
 reset
 set xlabel 'Contact angle (degrees)'
 set ylabel 'R/R_0'
-set xr[10:25]
-set xtics 10,5,25
+set xr[10:30]
+set xtics 10,10,30
 set grid
 plot 1./sqrt(x/180. - sin(x*pi/180.)*cos(x*pi/180.)/pi) t 'analytical', \
   '<grep "level 4" log' u 3:4 pt 7 t 'LEVEL 4', \
   '<grep "level 5" log' u 3:4 pt 7 t 'LEVEL 5', \
-  '<grep "level 6" log' u 3:4 pt 7 t 'LEVEL 6', \
-  '<grep "level 7" log' u 3:4 pt 7 t 'LEVEL 7'
+  '<grep "level 6" log' u 3:4 pt 7 t 'LEVEL 6'
 ~~~
 */

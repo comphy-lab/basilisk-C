@@ -236,10 +236,14 @@ coord normal_contact (coord ns, coord nf, double angle) {
 We adjust the value of the volume fraction in the ghost cells in order to match
 the interface orientation promoted by the contact angle. */
 
+#define THETA_MIN (20.*pi/180.)
+
 foreach_dimension()
-static double contact_fraction_x (double expr, Point point = point,
-    Point neighbor = neighbor, scalar s = _s)
+static double contact_fraction_x (double expr, double tol,
+    Point point = point, Point neighbor = neighbor, scalar s = _s)
 {
+  if (expr > tol && expr < pi - tol)
+    return s[];
   if (is_contact_x (point, s, expr)) {
     coord m = mycs (point, s);
     coord mb = normal_boundary (point, neighbor);
@@ -259,13 +263,13 @@ static double contact_fraction_x (double expr, Point point = point,
     return s[];
 }
 
-double contact_fraction (double expr, Point point = point,
-    Point neighbor = neighbor, scalar s = _s)
+double contact_fraction (double expr, double tol = THETA_MIN,
+    Point point = point, Point neighbor = neighbor, scalar s = _s)
 {
   if (neighbor.i != point.i)
-    return contact_fraction_x (expr, point, neighbor, s);
+    return contact_fraction_x (expr, tol, point, neighbor, s);
   if (neighbor.j != point.j)
-    return contact_fraction_y (expr, point, neighbor, s);
+    return contact_fraction_y (expr, tol, point, neighbor, s);
   assert (false);
   return 0;
 }
@@ -293,9 +297,11 @@ double height_contact_x (Point point, scalar c, double expr, coord mb) {
 }
 
 foreach_dimension()
-static double contact_normal_x (double expr, scalar c,
+static double contact_normal_x (double expr, scalar c, double tol,
     Point point = point, Point neighbor = neighbor, scalar s = _s)
 {
+  if (expr > tol && expr < pi - tol)
+    return nodata;
   if (is_contact_x (point, c, expr) && s[] == nodata) {
     coord mb = normal_boundary (point, neighbor);
     double hc = height_contact_x (point, c, expr, mb);
@@ -319,13 +325,13 @@ static double contact_normal_x (double expr, scalar c,
   return nodata;
 }
 
-double contact_normal (double expr, scalar c,
+double contact_normal (double expr, scalar c, double tol = THETA_MIN,
     Point point = point, Point neighbor = neighbor, scalar s = _s)
 {
   if (neighbor.i != point.i)
-    return contact_normal_x (expr, c, point, neighbor, s);
+    return contact_normal_x (expr, c, tol, point, neighbor, s);
   if (neighbor.j != point.j)
-    return contact_normal_y (expr, c, point, neighbor, s);
+    return contact_normal_y (expr, c, tol, point, neighbor, s);
   assert (false);
   return 0;
 }

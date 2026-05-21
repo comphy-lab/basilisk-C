@@ -7,6 +7,18 @@ own papers if they use Basilisk. See also [src/references.bib]() for older refer
 
 ### 2026
 ~~~bib
+@article{caraccio2026,
+  title = {Multiphase modeling of anisotropic biomass particle pyrolysis accounting for particle deformation and coupled gas-phase dynamics},
+  journal = {Chemical Engineering Journal},
+  volume = {531},
+  pages = {174297},
+  year = {2026},
+  month={March},
+  issn = {1385-8947},
+  doi = {https://doi.org/10.1016/j.cej.2026.174297},
+  author = {Riccardo Caraccio and Edoardo Cipriano and Alessio Frassoldati and Tiziano Faravelli},
+}
+
 @article{wang2026b,
   title={Cavitation bubble near a wall: Sensitivity to modeling conditions},
   author={Wang, Bo and Yang, Zhidian and Roman{\`o}, Francesco},

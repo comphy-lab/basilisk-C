@@ -41,6 +41,8 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@hal{blanco2026, hal-05626800}
+
 @article{cardin2026, 
 title={Cylindrical versus spherical self-similar capillary cavity collapse}, 
 volume={1034}, 
@@ -54,16 +56,4 @@ pages={A34}
 @hal{fullana2026, hal-05591630}
 
 @hal{yang2026, hal-05554495}
-
-@article{caraccio2026,
-  title = {Multiphase modeling of anisotropic biomass particle pyrolysis accounting for particle deformation and coupled gas-phase dynamics},
-  journal = {Chemical Engineering Journal},
-  volume = {531},
-  pages = {174297},
-  year = {2026},
-  month={March},
-  issn = {1385-8947},
-  doi = {https://doi.org/10.1016/j.cej.2026.174297},
-  author = {Riccardo Caraccio and Edoardo Cipriano and Alessio Frassoldati and Tiziano Faravelli},
-}
 ~~~

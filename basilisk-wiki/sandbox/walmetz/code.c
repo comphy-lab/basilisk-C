@@ -16,8 +16,8 @@ I modified it a bit to use it my way.
 #define yc 0.
 #define T 25.
 
-int MAXLEVEL = 11;
-int MINLEVEL = 6;
+int MAXLEVEL = 10;
+int MINLEVEL = 7;
 
 face vector muv[];
 
@@ -50,7 +50,6 @@ int main() {
 
     Reynolds = list_re[i_re];
 
-    // boucle sur kn
     for (int i_kn=0 ; i_kn < size_kn ; i_kn++){
 
       knudsen = list_kn[i_kn];
@@ -78,7 +77,7 @@ p[right]   = dirichlet(0.);
 pf[right]  = dirichlet(0.);
 
 /**
-Must impose no-slip on embedded boundaries!*/
+Must impose no-slip on embedded boundaries!, even though we have a navier condition*/
 u.n[embed] = dirichlet(0.);
 u.t[embed] = dirichlet(0.);
 
@@ -124,7 +123,7 @@ event compute_forces (i++, t<=T)
 
 }
 
-/** If we need to visualise what we're doing (slow down the computing) :*/
+/** If we need to visualise what we're doing (it slows down the computing) :*/
 
 //event movie(i+=100, t<=T){
 //  view(fov=5, tx = 0, ty = 0);

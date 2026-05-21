@@ -45,13 +45,6 @@ journal={Journal of Computational Physics},
 year={2025}
 }
 
-@Article{martin2025,
-author={Clara Martin-Blanco and Nicolo Scapin and Jiarong Wu and Stéphane Popinet and J. Thomas Farrar and Bertrand Chapron and Luc Deike},
-title={Kinematics of gravity-capillary waves above an evolving underwater current},
-journal={Journal of Fluid Mechanics},
-year={2025}
-}
-
 @Article{deoclecio2025,
   author = 	 {Deoclecio, Lucas and Thompson, Roney and Popinet, Stéphane and Soares, Edson},
   title = 	 {Bubble rise and interfacial coalescence initiation in elasto-viscoplastic materials},
@@ -174,6 +167,8 @@ doi = {10.5194/gmd-11-4727-2018}
 ### Waves
 
 ~~~bib
+@hal{blanco2026, hal-05626800}
+
 @hal{yang2026, hal-05554495}
 
 @hal{scapin2026, hal-05466359}
