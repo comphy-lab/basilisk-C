@@ -200,6 +200,72 @@ make -k
 make
 ```
 
+## Running MPI Simulations with `dump` / `restore`
+
+Notes for running parallel (MPI) Basilisk simulations that checkpoint with
+`dump()` and restart with `restore()` — in particular the two-phase
+init → main pattern used across CoMPhy Lab drop/bubble codes.
+
+### Compile flags (Linux / HPC)
+
+Build the MPI executable with:
+
+```shell
+CC99='mpicc -std=c99 -D_GNU_SOURCE=1' qcc -Wall -O2 -D_MPI=1 -disable-dimensions solver.c -o solver -lm
+```
+
+- `-D_GNU_SOURCE=1` is **required**. Recent Basilisk (`grid/memindex/virtual.h`)
+  uses `MAP_ANONYMOUS` and `MADV_DONTNEED`; without `_GNU_SOURCE` the build
+  fails with `MAP_ANONYMOUS undeclared`.
+- `-D_MPI=1` selects the MPI grid and `restore_mpi` code paths.
+- Compile from the source file's own directory — `qcc` can crash if the
+  source is passed via a `../`-relative path.
+
+The serial init phase (anything that includes `distance.h` for STL geometry)
+is **not** MPI-compatible — build and run it without `-D_MPI`.
+
+### HPC modules (Snellius example)
+
+Load the same toolchain for compiling **and** running:
+
+```shell
+module purge
+module load 2024
+module load OpenMPI/5.0.3-GCC-13.3.0
+```
+
+Compile-environment and run-environment must match. A binary built against a
+different OpenMPI than the one loaded at runtime, or an install tree built
+with a stale toolchain, can segfault inside the MPI restore path.
+
+### `dump` / `restore` across process counts
+
+- `dump()` writes a single, parallel-agnostic file. `restore()` reads it and
+  redistributes the tree across the *current* `npe()`, so a dump written
+  serially (or with N ranks) can be restarted with a different rank count.
+- A geometry-only `dumpInit` (volume fraction + zeroed velocity, no
+  parameter-dependent state) is reusable as the restart file for every case
+  in a parameter sweep: build it once, copy it in as `dump` per case.
+- Call `restore()` from `event init (t = 0)`, before any field is touched —
+  it replaces the grid with the one stored in the dump.
+- If `restore_mpi` / `mpi_boundary_update` segfaults at startup, the cause is
+  almost always an environment mismatch (Basilisk version, OpenMPI build, or
+  compile ≠ run toolchain). Rebuild Basilisk fresh against the exact modules
+  used to run, rather than reusing an old binary or install tree.
+
+### Sweep pattern: init once, restart many
+
+```shell
+# 1. serial init: STL geometry -> dumpInit  (run once)
+./solver_init case.params
+
+# 2. stage the shared dumpInit into each case directory as `dump`
+for c in case_*/; do cp dumpInit "$c/dump"; done
+
+# 3. parallel main phase: one MPI job per case, each restarts from `dump`
+srun ./solver_main case.params      # run inside each case directory
+```
+
 ## Patches
 
 Our fork maintains a set of patches in the `patches/` directory that fix issues or add features not yet available in upstream Basilisk. These patches are automatically applied by the installation scripts. For detailed information about each patch, see [`patches/README.md`](patches/README.md).
