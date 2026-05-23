@@ -1,4 +1,4 @@
-pristine:cbd2f396b3e35243fb1d17994d0e6e6bb4b2d705ecf224c3b1d2ae81d2b5ee07
+pristine:a75940143eb8da4c5700347d27feae99f1f3be420ab9df225f229205cc6deae2
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -10102,3 +10102,113 @@ Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260520163031
  Ignore-this: 741f12ca3a3b9f230efbb2525be716490bda14216ae98e722fc3be07b5d8f9fb257a9c67b9872bcf
 ] 
 hash: 0000001817-9d3175da590f695d12fc838d1c21383efaa4ff71c284f871b077824b1e00e026
+[cleanup netcdf
+Bruno Deremble <bruno.deremble@cnrs.fr>**20260522081749
+ Ignore-this: 5ac6b7107373741236da428ff2578a83d56ab7a9140a4b705fc0dc6cd45fa0c1c5cf8f690cb27748
+] 
+hash: 0000000710-13e477c1f72a217f06c4d651d781060a80f41f5cdde36f167024aa7046a274db
+[cleaning
+walmetzm <malo.walmetz@gmail.com>**20260522093551
+ Ignore-this: a368ba9d80dfcb382e3c9bc25bd16bc797599b1d9cdd1fa709c2457697cf2cf227f879a5d7cac2f5
+] 
+hash: 0000000993-b73f306e74de98313c18c1dc6b8ec1e4f0c769a4dec2eda5b7a43a2db32b2334
+[image_1
+walmetzm <malo.walmetz@gmail.com>**20260522094604
+ Ignore-this: a50e1bc7f955d007dbaa8820d516c5b7415af0a8644cbb788e185b471b0efd274b71ebb6fabf28f
+] 
+hash: 0000000253-df87c972d9feaf486b7f447a28ab8141b59afb0d9e241ecc358d6bac05b099ac
+[image v1
+walmetzm <malo.walmetz@gmail.com>**20260522095521
+ Ignore-this: e15ce68eccde30bc4fcca46b5f22d5a4a98e6dd0c8f204315134bd6e9817a64c35938ab828573131
+] 
+hash: 0000000338-9dbe969182e3a268af1dbec28e3ef95a559741e099adbe36f9024f6d07b48c18
+[final
+walmetzm <malo.walmetz@gmail.com>**20260522100701
+ Ignore-this: 2df67cd5077af795843763d4ef288dde70f52e7dcd4bb0005584ae852bf6e924db9f6ebb19768d1b
+] 
+hash: 0000001022-92699a03b60094b18d994e1b98d5f36ede01b9b99a42115a9bad750c87099033
+[final
+walmetzm <malo.walmetz@gmail.com>**20260522100725
+ Ignore-this: e059086b1d8cd67a4de9f0714a3a75b9a78f78580c1199828e6f0077b991573b1d2700f7bd8ea73c
+] 
+hash: 0000000456-3e71d3ae450c9ef9879e5e1cdfeec032ecd6d3122042e6eb46732b349b2a8afd
+[final2
+walmetzm <malo.walmetz@gmail.com>**20260522100749
+ Ignore-this: ac89b1e60c351d6ac3ed3609ec76b88252a26250e45658ee8349ca6b4230f36d122158b817c781ba
+] 
+hash: 0000000429-5852199572e79687183ada2397b7130ee7fb74e2e7c50e65c2ef2d6b3e3840df
+[final3
+walmetzm <malo.walmetz@gmail.com>**20260522100812
+ Ignore-this: 2cc7edd0593958852f911481cccf996d59bcb9f1e1a1dd68c592ebd36683cba287ed2fd5ab154faa
+] 
+hash: 0000000429-0d55931b8b1a76956ee63535944ae159916cecdbd1102b5285f6ef3cf2b5cbd1
+[final4
+walmetzm <malo.walmetz@gmail.com>**20260522100824
+ Ignore-this: ec7e284cad371004680c5c0609d56fae2032ecaae6014ea16e296994fd7d85c99b96a871cb46453b
+] 
+hash: 0000000458-e758f91e975cfaab555415b9d5b326ea718997686cbe807b026b7167d17c3e8d
+[ébauche 
+walmetzm <malo.walmetz@gmail.com>**20260522121533
+ Ignore-this: b469425b5a671f17e61bd9522d0fdeba133e34e0d8b4dd30be2750534d81d3cfbde45f3cd23e2b73
+] 
+hash: 0000001624-783c2c94cc6426cb27e57b74b488c841b0e32d4bf80d48398a0d035d2ce33b62
+[ajout des liens ENSAM et SU
+walmetzm <malo.walmetz@gmail.com>**20260522121931
+ Ignore-this: 747cc2a12fcc8840972b0337599f68c77a80daa88c3e1a82a474aebbe8e98413da32a2076be09a73
+] 
+hash: 0000000486-df42f5101604a54adeb689dd7d41c9fa7bb4b3fa0e1d07a5674c97068128f8fb
+[création ctrl c ctrl v 
+walmetzm <malo.walmetz@gmail.com>**20260522123943
+ Ignore-this: d7d0a99bbc387264c4c27d0a51413024f335ba001bd8404aa7cbce1e509606ebbd980f33a4374563
+] 
+hash: 0000004626-4e970cf454537a8018bf513ee6c3048e6dae9c952b7307aa862e889de2e23711
+[ajout du lien navierBC_validation
+walmetzm <malo.walmetz@gmail.com>**20260522124048
+ Ignore-this: c3799199d1554a157d1ac8a47ad2c82a237382344f4abe92c0e551ce785f7de538130ae1477e27a9
+] 
+hash: 0000000765-230eed2b71a1200b3c3aa5a7399928b29924f06cc117e3464f28e51c431806f1
+[test taille image
+walmetzm <malo.walmetz@gmail.com>**20260522124136
+ Ignore-this: 82036087551d55cbad9c0e6d53afe944b36802a44e4bb1f83193fdcde5d56d3c2020d5c631bef1a
+] 
+hash: 0000000465-e4b45d57dbdd0b55d084aa7063a209f915528646e85ca93695a42b26015b8e99
+[validation taille figure
+walmetzm <malo.walmetz@gmail.com>**20260522124228
+ Ignore-this: 6396c320d7c6e338c652a35843d2b46f245bbbc4d15d5a41c5348856125616324bfae47579dfb21e
+] 
+hash: 0000000474-a91f60c24f0b6bb2c398479afb0f89665f98b896a10cf20609dedaffa0ae9522
+[link folder slip lenght
+walmetzm <malo.walmetz@gmail.com>**20260522124458
+ Ignore-this: dc33900d94276a75c01128f8a0d415188f4c75bb99f99747d50b050ffb8c41626265d6893ab2cec7
+] 
+hash: 0000000331-6259a2c3c78e63ace8ae64a1740fed82ed0cbdbddac49a8608c433f858781838
+[typo sur lambda_b
+mtavares <tavaresmathilde92@gmail.com>**20260522125438
+ Ignore-this: 9d50f2e0a76102d0f28f2f6008507e0dd3708bf63f18052501ad91883ce83ac0276d800b0ca97331
+] 
+hash: 0000000311-be975c3e357cc9fed70da679b07662c240a32ac20412acb680655ac1054037af
+[ébauche du code karman
+walmetzm <malo.walmetz@gmail.com>**20260522134317
+ Ignore-this: 68ef3ae5df1e730cdbc9241d6ed0a9add1d4357fac57c77333a7592e8d4d2199f28a0caff992ec39
+] 
+hash: 0000002651-b33c3a086a49a97a5e766173cdb7354f1a3a5ebe921d9d8cc6e514f168d37b5b
+[annonce de a comparaison avec theorie
+walmetzm <malo.walmetz@gmail.com>**20260522134611
+ Ignore-this: 2c87f4a4577c566593e6b85f9be00a47d6672d4ae664a9d941118348b5b1791f8d3c231e5a6c6ea
+] 
+hash: 0000000475-9f2f28a49852829b2f901a8f004d93b0bf5b8b23556948acd757f45a91bc4cd6
+[Inscirption de la partie karman
+walmetzm <malo.walmetz@gmail.com>**20260522134900
+ Ignore-this: 8b202ceabbe3dfc18ef6064fe317d64f87fdf7979b0a1976cdf5a8abbb9ca238d24357d131755dd4
+] 
+hash: 0000000583-ce6fbe0a1ec533de0ad03a80407775be4f861fba46acb5caa4e080a4fba43d77
+[update netcdf_bas to not use global indices
+Bruno Deremble <bruno.deremble@cnrs.fr>**20260522142802
+ Ignore-this: bb9a3f68ad3e31d67d353d1f654656d6e0078e4fe5a497db0459711a9c824b3b5d960a38dcf18de5
+] 
+hash: 0000013812-7987ffa418537cb4189f6acd39abffb71df468be088ccc46c3b6337296aa71d9
+[also handle 1d case
+Bruno Deremble <bruno.deremble@cnrs.fr>**20260522145320
+ Ignore-this: 6ab2c9448c69afdc0e074a9396ab1ae54483229e25154f1752b36932516f0560c2c72d01e9d8e7ef
+] 
+hash: 0000001299-253b92f05d4cf812cfa8cfc0a506c2414351085956d6e30e417c76dfe7f2e8bf

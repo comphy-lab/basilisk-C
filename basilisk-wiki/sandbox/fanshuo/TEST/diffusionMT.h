@@ -34,7 +34,7 @@ $$
 $$
 or a Navier slip condition on the top i.e.
 $$
-s\vert_t = s_t + \lambda_t \partial_z s\vert_b
+s\vert_t = s_t + \lambda_t \partial_z s\vert_t
 $$
 and a Navier slip condition on the bottom i.e.
 $$
