@@ -1,4 +1,4 @@
-pristine:ccb99d02f74a987033ee84284f98be3d74feb826a52dcf68b81d36df937a3bfd
+pristine:4cde7f4dbe2593a81795fd1e35df3262d39e733c60a381e7e2f2aebaf81cdc45
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -168,3 +168,10 @@ Stephane Popinet <popinet@basilisk.fr>**20260421162004
  This significantly improves the performances of the Held-Suarez case on GPUs.
 ] 
 hash: 0000001617-83dc32a682667f7d8a461ad618eff4ae2e1b5efac6e617d2d2e39146f13846af
+[Undefine private definitions
+Stephane Popinet <popinet@basilisk.fr>**20260522090744
+ Ignore-this: 2ca0fa2769aa2f0e4c443192ba0f49182b011eafe35e0fc329fb9ef78ee93a8dd5104543548f1f9d
+ 
+ So that "clever" users cannot attempt to use them.
+] 
+hash: 0000003289-3261f79dd5af3ad8dc404bf36a3333d040562fa9a6b7809ab8012184a8540cff

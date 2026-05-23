@@ -17,9 +17,9 @@ typedef double real;
 #endif
 
 #if _MPI
-# define ND(i) ((size_t)(1 << point.level))
+# define _ND(i) ((size_t)(1 << point.level))
 #else
-# define ND(i) ((size_t)(1 << point.level)*((int *)&Dimensions)[i])
+# define _ND(i) ((size_t)(1 << point.level)*((int *)&Dimensions)[i])
 #endif
 
 #define _I     (point.i - GHOSTS)
@@ -77,16 +77,16 @@ static Point last_point;
 #elif dimension == 2
 @undef val
 @def val(a,k,l,m) (((real *)multigrid->d)[point.j + (l) +
-					  (point.i + (k))*(ND(1) + 2*GHOSTS) +
+					  (point.i + (k))*(_ND(1) + 2*GHOSTS) +
 					  multigrid->shift[point.level] +
 					  _index(a,m)*multigrid->shift[depth() + 1]])
 @
 #elif dimension == 3
 @undef val
 @def val(a,l,m,o) (((real *)multigrid->d)[point.k + (o) +
-					  (ND(2) + 2*GHOSTS)*
+					  (_ND(2) + 2*GHOSTS)*
 					  (point.j + (m) +
-					   (point.i + (l))*(ND(1) + 2*GHOSTS)) +
+					   (point.i + (l))*(_ND(1) + 2*GHOSTS)) +
 					  multigrid->shift[point.level] +
 					  _index(a,0)*multigrid->shift[depth() + 1]])
 @
@@ -97,39 +97,39 @@ static Point last_point;
 # if BGHOSTS == 1
 @define allocated(...) true
 # else // BGHOST != 1
-@define allocated(k,l,m) (point.i+(k) >= 0 && point.i+(k) < ND(0) + 2*GHOSTS)
+@define allocated(k,l,m) (point.i+(k) >= 0 && point.i+(k) < _ND(0) + 2*GHOSTS)
 # endif // BGHOST != 1
 @def allocated_child(k,l,m) (level < depth() &&
-                             point.i > 0 && point.i <= ND(0) + 2)
+                             point.i > 0 && point.i <= _ND(0) + 2)
 @
 #elif dimension == 2
 # if BGHOSTS == 1
 @define allocated(...) true
 # else // BGHOST != 1
-@def allocated(k,l,m) (point.i+(k) >= 0 && point.i+(k) < ND(0) + 2*GHOSTS &&
-		       point.j+(l) >= 0 && point.j+(l) < ND(1) + 2*GHOSTS)
+@def allocated(k,l,m) (point.i+(k) >= 0 && point.i+(k) < _ND(0) + 2*GHOSTS &&
+		       point.j+(l) >= 0 && point.j+(l) < _ND(1) + 2*GHOSTS)
 @
 # endif // BGHOST != 1
 @def allocated_child(k,l,m)  (level < depth() &&
-			      point.i > 0 && point.i <= ND(0) + 2 &&
-			      point.j > 0 && point.j <= ND(1) + 2)
+			      point.i > 0 && point.i <= _ND(0) + 2 &&
+			      point.j > 0 && point.j <= _ND(1) + 2)
 @			   
 #else // dimension == 3
 # if BGHOSTS == 1
 @define allocated(...) true
 #else // BGHOST != 1
 @def allocated(a,l,m) (point.i+(a) >= 0 &&
-		       point.i+(a) < ND(0) + 2*GHOSTS &&
+		       point.i+(a) < _ND(0) + 2*GHOSTS &&
 		       point.j+(l) >= 0 &&
-		       point.j+(l) < ND(1) + 2*GHOSTS &&
+		       point.j+(l) < _ND(1) + 2*GHOSTS &&
 		       point.k+(m) >= 0 &&
-		       point.k+(m) < ND(2) + 2*GHOSTS)
+		       point.k+(m) < _ND(2) + 2*GHOSTS)
 @
 #endif // BGHOST != 1
 @def allocated_child(a,l,m)  (level < depth() &&
-			      point.i > 0 && point.i <= ND(0) + 2 &&
-			      point.j > 0 && point.j <= ND(1) + 2 &&
-			      point.k > 0 && point.k <= ND(2) + 2)
+			      point.i > 0 && point.i <= _ND(0) + 2 &&
+			      point.j > 0 && point.j <= _ND(1) + 2 &&
+			      point.k > 0 && point.k <= _ND(2) + 2)
 @
 #endif // dimension == 3
 
@@ -160,13 +160,13 @@ macro POINT_VARIABLES (Point point = point)
 #elif dimension == 2
 @def fine(a,k,l,m)
 (((real *)multigrid->d)[2*point.j - GHOSTS + (l) +
-			(2*point.i - GHOSTS + (k))*(ND(1)*2 + 2*GHOSTS) +
+			(2*point.i - GHOSTS + (k))*(_ND(1)*2 + 2*GHOSTS) +
 			multigrid->shift[point.level + 1] +
 			_index(a,m)*multigrid->shift[depth() + 1]])
 @
 @def coarse(a,k,l,m)
 (((real *)multigrid->d)[(point.j + GHOSTS)/2 + (l) +
-			((point.i + GHOSTS)/2 + (k))*(ND(1)/2 + 2*GHOSTS) +
+			((point.i + GHOSTS)/2 + (k))*(_ND(1)/2 + 2*GHOSTS) +
 			multigrid->shift[point.level - 1] +
 			_index(a,m)*multigrid->shift[depth() + 1]])
 @
@@ -185,17 +185,17 @@ macro POINT_VARIABLES (Point point = point) {
 #elif dimension == 3
 @def fine(a,l,m,o)
 (((real *)multigrid->d)[2*point.k - GHOSTS + (o) +
-			(ND(2)*2 + 2*GHOSTS)*
+			(_ND(2)*2 + 2*GHOSTS)*
 			(2*point.j - GHOSTS + (m) +
-			 (2*point.i - GHOSTS + (l))*(ND(1)*2 + 2*GHOSTS)) +
+			 (2*point.i - GHOSTS + (l))*(_ND(1)*2 + 2*GHOSTS)) +
 			multigrid->shift[point.level + 1] +
 			_index(a,0)*multigrid->shift[depth() + 1]])
 @
 @def coarse(a,l,m,o)
 (((real *)multigrid->d)[(point.k + GHOSTS)/2 + (o) +
-			(ND(2)/2 + 2*GHOSTS)*
+			(_ND(2)/2 + 2*GHOSTS)*
 			((point.j + GHOSTS)/2 + (m) +
-			 ((point.i + GHOSTS)/2 + (l))*(ND(1)/2 + 2*GHOSTS)) +
+			 ((point.i + GHOSTS)/2 + (l))*(_ND(1)/2 + 2*GHOSTS)) +
 			multigrid->shift[point.level - 1] +
 			_index(a,0)*multigrid->shift[depth() + 1]])
 @
@@ -954,3 +954,9 @@ ivec dimensions (int nx = 0, int ny = 0, int nz = 0)
 #define foreach_cell() foreach_cell_restore()
 
 #endif // !_MPI
+
+#undef _I
+#undef _J
+#undef _K
+#undef _ND
+#undef _DELTA
