@@ -21,7 +21,9 @@ A few important observations from the current implementation:
 * unsupported loops transparently fall back to CPU
 * execution model assumes GLSL/OpenGL compute dispatch (`glDispatchCompute`) ([Basilisk][1])
 
-A ROCm version should preserve the *semantic contract* more than the implementation details.# The biggest architectural decision
+A ROCm version should preserve the *semantic contract* more than the implementation details.
+
+# The biggest architectural decision
 
 You have two fundamentally different approaches.
 
@@ -48,7 +50,9 @@ You would still:
 * cache compiled kernels
 * dispatch dynamically
 
-This is probably the cleanest conceptual mapping.## Option B — static AOT compilation (better performance, harder integration)
+This is probably the cleanest conceptual mapping.
+
+## Option B — static AOT compilation (better performance, harder integration)
 
 Generate HIP kernels ahead-of-time during `qcc`.
 
@@ -60,7 +64,9 @@ This is more “native ROCm style”, but much more invasive because Basilisk cu
 
 You would basically be redesigning the GPU backend.
 
-Unless you want a long-term rewrite, I strongly recommend Option A first.# Mapping OpenGL concepts to ROCm/HIP
+Unless you want a long-term rewrite, I strongly recommend Option A first.
+
+# Mapping OpenGL concepts to ROCm/HIP
 
 Here’s the practical translation table.
 
@@ -74,7 +80,9 @@ Here’s the practical translation table.
 | uniforms            | kernel parameters                |
 | `glMemoryBarrier`   | `hipDeviceSynchronize` / streams |
 | reductions          | HIP reduction kernels            |
-| shader cache        | HIP module cache                 |# What I would preserve unchanged
+| shader cache        | HIP module cache                 |
+
+# What I would preserve unchanged
 
 These parts are actually very good abstractions:
 
@@ -94,11 +102,15 @@ typedef struct {
 
 is backend-independent.
 
-Good design.## 2. `ForeachData`
+Good design.
+
+## 2. `ForeachData`
 
 Also backend-independent.
 
-The GPU backend should remain a consumer of loop metadata.## 3. CPU/GPU hybrid mode
+The GPU backend should remain a consumer of loop metadata.
+
+## 3. CPU/GPU hybrid mode
 
 This is one of the best features of the current implementation.
 
@@ -116,7 +128,9 @@ You will need:
 hipMemcpyAsync(...)
 ```
 
-instead of buffer mapping.# The hardest part
+instead of buffer mapping.
+
+# The hardest part
 
 The hardest part is NOT kernel launch.
 
@@ -133,7 +147,9 @@ The generated GLSL currently assumes:
 * compute-grid IDs
 * OpenGL memory layout
 
-You will need a compatibility layer.# I would introduce a GPU backend abstraction
+You will need a compatibility layer.
+
+# I would introduce a GPU backend abstraction
 
 Right now `grid.h` is very OpenGL-specific.
 
@@ -157,7 +173,9 @@ Then:
 
 become implementations.
 
-This prevents another monolithic file.# Runtime compilation with HIPRTC
+This prevents another monolithic file.
+
+# Runtime compilation with HIPRTC
 
 This is probably the core mechanism you want.
 
@@ -185,7 +203,9 @@ with:
 
 * generated HIP source
 * runtime compile
-* cached module/function handles# Replace GLSL thread indexing
+* cached module/function handles
+
+# Replace GLSL thread indexing
 
 Current GLSL:
 
@@ -207,7 +227,9 @@ I would define compatibility macros:
 #define GPU_J (...)
 ```
 
-so the code generator stays cleaner.# Memory layout advice
+so the code generator stays cleaner.
+
+# Memory layout advice
 
 This matters enormously for AMD GPUs.
 
@@ -225,7 +247,9 @@ You should:
 
 Current SSBO layout is already reasonable.
 
-Do NOT switch to pointer-heavy structures.# Watch out for dynamic branching
+Do NOT switch to pointer-heavy structures.
+
+# Watch out for dynamic branching
 
 Basilisk stencils often contain:
 
@@ -245,7 +269,9 @@ You may want:
 
 later.
 
-But do not optimize too early.# Reductions
+But do not optimize too early.
+
+# Reductions
 
 Current GLSL reductions are fairly custom.
 
@@ -265,7 +291,9 @@ Use:
 __shfl_down
 ```
 
-carefully through HIP abstractions.# Important ROCm-specific issue
+carefully through HIP abstractions.
+
+# Important ROCm-specific issue
 
 The current backend relies heavily on:
 
@@ -290,7 +318,9 @@ Hash:
 
 Then cache binaries on disk.
 
-Otherwise startup overhead will be painful.# Suggested incremental roadmap
+Otherwise startup overhead will be painful.
+
+# Suggested incremental roadmap
 
 This is the safest route.
 
@@ -310,7 +340,9 @@ foreach()
   a[] = b[] + c[];
 ```
 
-works.## Phase 2 — synchronization model
+works.
+
+## Phase 2 — synchronization model
 
 Implement:
 
@@ -318,22 +350,30 @@ Implement:
 gpu_cpu_sync()
 ```
 
-using HIP memory copies.## Phase 3 — reductions
+using HIP memory copies.
+
+## Phase 3 — reductions
 
 Then:
 
 * `reduction(+:x)`
 * norms
-* statistics## Phase 4 — multigrid support
+* statistics
 
-Only after basic kernels are stable.## Phase 5 — optimize
+## Phase 4 — multigrid support
+
+Only after basic kernels are stable.
+
+## Phase 5 — optimize
 
 Only then:
 
 * streams
 * async overlap
 * wavefront tuning
-* LDS/shared-memory tiling# One thing I would NOT do
+* LDS/shared-memory tiling
+
+# One thing I would NOT do
 
 I would NOT attempt:
 
@@ -343,7 +383,9 @@ I would NOT attempt:
 
 Those routes become extremely messy because Basilisk generates kernels dynamically with custom semantics.
 
-Generate HIP source directly instead.# A very practical suggestion
+Generate HIP source directly instead.
+
+# A very practical suggestion
 
 Start by extracting the backend-independent pieces from `grid/gpu/grid.h` into:
 
@@ -358,7 +400,9 @@ gpu/glsl/
 gpu/hip/
 ```
 
-Otherwise the file will become impossible to maintain.# Overall assessment
+Otherwise the file will become impossible to maintain.
+
+# Overall assessment
 
 This is a feasible project because Basilisk already has:
 
