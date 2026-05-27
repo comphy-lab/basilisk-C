@@ -2,14 +2,14 @@ Hi, I'm Malo WALMETZ, currently studying at [Arts et Métiers (ENSAM)](https://a
 
 My sandbox is based on my M2 internship with Francesco Picella ([d'Alembert Institute](https://www.dalembert.upmc.fr/ijlrda/)) and Jean-Christophe Robinet ([DynFluid](https://dynfluid.ensam.eu/accueil-dynfluid-100729.kjsp)). Thus, every line of code is dedicated to superhydrophobicity and has been written between march and july 2026.
 
-If you need a further look at anyone of my graph, checkout my [GitHub](https://github.com/mwalmetz/intership_dalembert). They are traced with matplotlib, with codes on my laptop, and I'd be pleased to share them.
+If you need a further look at anyone of my graph, checkout my [GitHub](https://github.com/mwalmetz/intership_dalembert). They are traced with matplotlib, with codes on my laptop, and I'd be pleased to share them. I didn't find another solution : since I cannot run the codes on basilisk.fr, gnuplot can't work here. 
 
 # Codes 
 
 ## About the simple 2D cylinder in a fluid flow
 This parti is only made to validate the classical 2D cylinder flow, and for me to understand how Basilisk works.
 
-- Validation of a modified version of [Picella's code](https://basilisk.fr/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c) based on the (Cd,Re) diagram : [2D_cylinder](https://basilisk.fr/sandbox/walmetz/simple%20cylinder/2D_cylinder.c)
+- Validation of a modified version of [Picella's code](https://basilisk.fr/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c) based on the (Cd,Re) diagram : [2D_cylinder](https://basilisk.fr/sandbox/walmetz/simple_cylinder/2D_cylinder.c)
 
 ## About slip-lenght 
 [link to slip-lenght folder](https://basilisk.fr/sandbox/walmetz/slip-lenght/)
@@ -19,3 +19,8 @@ This is, in my case, the simplest way to model superhydrophobicity.
 - Validation of [twitkamp embed navier condition](https://basilisk.fr/sandbox/twitkamp/MovingEmbed/embed_navier.h) by using it [in this code](https://basilisk.fr/sandbox/walmetz/slip-lenght/navierBC_validation.c) and comparing it to [Legendre et al.,2009](https://www.damtp.cam.ac.uk/user/lauga/papers/30.pdf)
 
 ## About multiphase flows
+[link to multiphase flows folders](https://basilisk.fr/sandbox/walmetz/multiphase_flow/)
+
+We want to go as close as possible to reality, bringing up multiphase flows.
+
+- The first step to reality is a ["frozen" bubble around the cylinder](https://basilisk.fr/sandbox/walmetz/multiphase_flow/frozen_bubble.c). In itself, this case is everything but realistic but it will help us for the dynamic bubble case.

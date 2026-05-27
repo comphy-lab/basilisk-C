@@ -67,11 +67,17 @@ double average_dissipation_plane(vector u, scalar w, double *mean_grad, double *
       mean_grad_sq[8] += sq(dwdz) * weight;
     #endif
 
-    #ifndef mu
-      mean_strain_sq[0] += S2 * weight;
-    #else
-      mean_strain_sq[0] += (mu(f[])/rhov[]) * S2 * weight;
-    #endif 
+    double nu = 1.0;
+    #ifdef mu
+      #if defined(FOUR_PHASE)
+        nu = mu(f1[],f2[],f3[])/rhov[];
+      #elif defined(THREE_PHASE)
+        nu = mu(f1[],f2[])/rhov[];
+      #else
+        nu = mu(f[])/rhov[];
+      #endif
+    #endif
+    mean_strain_sq[0] += nu * S2 * weight;
     mean_strain_sq[1] += sq(Sxx) * weight;
     mean_strain_sq[2] += sq(Sxy) * weight;
     mean_strain_sq[3] += sq(Syy) * weight;

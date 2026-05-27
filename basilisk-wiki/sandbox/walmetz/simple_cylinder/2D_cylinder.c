@@ -1,7 +1,7 @@
 /**
 Code by F.Picella ([original](https://basilisk.fr/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c)) modified to suppress multiphase flow and model a simple 2D cylinder.
 
-I just want to validate it by comparing it to a typical (Cd,Re) diagram.
+I just want to validate it by comparing it to a typical (Cd,Re) diagram ([Roshko,1960](https://www.cambridge.org/core/journals/journal-of-fluid-mechanics/article/abs/experiments-on-the-flow-past-a-circular-cylinder-at-very-high-reynolds-number/7859A6C46BF4B0F43F11F52AE1C60150)).
 */
 
 
@@ -103,7 +103,13 @@ If we need to visualise what we’re doing (it slows down the computing) :
 //}
 
 /**
-Comparison to theory is coming on monday or tuesday : currently running ;)
-*/
 
-                                                            
+Finally, we plot the drag coefficient $C_d$ as a function of the Reynolds number $Re$, and we compare our results with the experimental data of [Roshko, 1954](https://scispace.com/pdf/on-the-drag-and-shedding-frequency-of-two-dimensional-bluff-4zhbhc9yhp.pdf) (taken on [Persillon et Braza, 1998](https://doi.org/10.1017/S0022112098001116)), and the numerical results of [Sheard et al., 2005](https://doi.org/10.1017/S0022112004002836). On the left panel, the first one is represented by the orange circles, while the second one is shown as the red curve. On the right panel, we use the numerical study to compute the error $\varepsilon$.
+
+Although this cylinder case has been studied for more than a century, no universally accepted reference curve exists. Therefore, even though there is a near 10% error for some Re, we will consider our code to be valid.
+
+The plots are shown for Reynolds numbers between 5 and 180, since the wake instability becomes three-dimensional above $Re≈180$.
+
+<img src="https://raw.githubusercontent.com/mwalmetz/intership_dalembert/main/noslip_cylinder_Cd_Re.png" width="1000" alt="Results compared to other studies">
+
+*/
