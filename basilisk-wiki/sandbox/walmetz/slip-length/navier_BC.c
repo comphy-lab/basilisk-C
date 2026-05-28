@@ -153,7 +153,7 @@ I'm not able to run the code on basilisk.fr, so there is no gnuplot link... I ra
 
 It appears we're near their results for Kn < 0.1, for each reynolds (and each LEVEL superior to 9). Physically, it shouldn't exceed 0.1, so we can validate the code with an accuracy of within 5% compared to Legendre.
 
-<img src="https://raw.githubusercontent.com/mwalmetz/intership_dalembert/main/cd_err_vs_kn_level10.png" width="1000" alt="Ma figure">
+<img src="https://raw.githubusercontent.com/mwalmetz/intership_dalembert/main/cd_err_vs_kn_level10.png" width="900" alt="Ma figure">
 
 */
 

@@ -11,12 +11,12 @@ This parti is only made to validate the classical 2D cylinder flow, and for me t
 
 - Validation of a modified version of [Picella's code](https://basilisk.fr/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c) based on the (Cd,Re) diagram : [2D_cylinder](https://basilisk.fr/sandbox/walmetz/simple_cylinder/2D_cylinder.c)
 
-## About slip-lenght 
-[link to slip-lenght folder](https://basilisk.fr/sandbox/walmetz/slip-lenght/)
+## About slip-length
+[link to slip-length folder](https://basilisk.fr/sandbox/walmetz/slip-length/)
 
 This is, in my case, the simplest way to model superhydrophobicity.
 
-- Validation of [twitkamp embed navier condition](https://basilisk.fr/sandbox/twitkamp/MovingEmbed/embed_navier.h) by using it [in this code](https://basilisk.fr/sandbox/walmetz/slip-lenght/navierBC_validation.c) and comparing it to [Legendre et al.,2009](https://www.damtp.cam.ac.uk/user/lauga/papers/30.pdf)
+- Validation of [twitkamp embed navier condition](https://basilisk.fr/sandbox/twitkamp/MovingEmbed/embed_navier.h) by using it [in this code](https://basilisk.fr/sandbox/walmetz/slip-length/navier_BC.c) and comparing it to [Legendre et al.,2009](https://www.damtp.cam.ac.uk/user/lauga/papers/30.pdf)
 
 ## About multiphase flows
 [link to multiphase flows folders](https://basilisk.fr/sandbox/walmetz/multiphase_flow/)

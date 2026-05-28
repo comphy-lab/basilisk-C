@@ -108,7 +108,7 @@ Finally, we plot the drag coefficient $C_d$ as a function of the Reynolds number
 
 Although this cylinder case has been studied for more than a century, no universally accepted reference curve exists. Therefore, even though there is a near 10% error for some Re, we will consider our code to be valid.
 
-The plots are shown for Reynolds numbers between 5 and 180, since the wake instability becomes three-dimensional above $Re≈180$.
+The plots are shown for Reynolds numbers between 5 and 180 (with a step of 1), since the wake instability becomes three-dimensional above $Re≈180$.
 
 <img src="https://raw.githubusercontent.com/mwalmetz/intership_dalembert/main/noslip_cylinder_Cd_Re.png" width="1000" alt="Results compared to other studies">
 
