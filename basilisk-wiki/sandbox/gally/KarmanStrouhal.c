@@ -1,26 +1,33 @@
 /**
-# Bénard–von Kármán Vortex Street for flow around a cylinder at Re = 160
+# Bénard–von Kármán Vortex Street for flow around a cylinder
 
-Re-use of the [example code](https://basilisk.fr/src/examples/karman.c)
+Re-use of the [example code](https://basilisk.fr/src/examples/karman.c).
+Modifications to extract velocity and pressure after the cylinder.
 
-Modifications to extract velocity and pressure after the cylinder.*/
+We use the centered Navier-Stokes solver, with embedded boundaries and
+advect the passive tracer *f*.*/
 
 #include "embed.h"
 #include "navier-stokes/centered.h"
-// #include "navier-stokes/perfs.h"
 #include "tracer.h"
 
 scalar f[];
 scalar * tracers = {f};
-double Reynolds = 160.;
+double Reynolds;
 int maxlevel = 9;
 face vector muv[];
+
+/** We create all variables necessary for the SFD.*/
+
+double SFD_delta = 0.25;
+vector ubar[];
+scalar pbar[];
+double SFD_res, res;
 
 /**
 The domain is eight units long, centered vertically. */
 
-int main()
-{
+int main() {
   L0 = 8. [1];
   origin (-0.5, -L0/2.);
   N = 512;
@@ -32,8 +39,9 @@ int main()
   
   display_control (Reynolds, 10, 1000);
   display_control (maxlevel, 6, 12);
-  
-  run(); 
+
+  for (Reynolds = 50; N <= 170; Re += 20)
+    run();
 }
 
 /**
@@ -42,8 +50,7 @@ diameter $D$ and the inflow velocity $U0$. */
 
 double D = 0.125, U0 = 1.;
 
-event properties (i++)
-{
+event properties (i++) {
   foreach_face()
     muv.x[] = fm.x[]*D*U0/Reynolds;
 }
@@ -68,16 +75,9 @@ The cylinder is no-slip. */
 u.n[embed] = dirichlet(0.);
 u.t[embed] = dirichlet(0.);
 
-event init (t = 0)
-{
-
-  /**
-  The domain contains a cylinder of diameter 0.125. */
-
+event init (t = 0) {
+  
   solid (cs, fs, sqrt(sq(x) + sq(y)) - D/2.);
-
-  /**
-  We set the initial velocity field. */
   
   foreach()
     u.x[] = cs[] ? U0 : 0.;
@@ -90,12 +90,12 @@ event logfile (i++)
   fprintf (stderr, "%d %g %d %d\n", i, t, mgp.i, mgu.i);
 
 /**
-   We follow the evolution of velocity and pressure at a point situated after the cylinder. */
+We follow the evolution of a point situated after the cylinder. */
 
 double xp, yp;
 
-event probe (i++){
-
+event probe (i++) {
+  
   xp = 0.5*D + 3*D;
   yp = 0.;
   
@@ -115,16 +115,13 @@ event probe (i++){
 /**
 We produce animations of the vorticity and tracer fields... */
 
-event movies (i += 4; t <= 20.)
-{
+event movies (i += 4; t <= 35.) {
   scalar omega[], m[];
   vorticity (u, omega);
-  foreach() {
+ 
+  foreach()
     m[] = cs[] - 0.5;
-    if ((fabs(x - xp) < 3.*Delta) && (fabs(y - yp) < 3.*Delta)){
-      omega[] = 0;
-    }
-  }
+
   output_ppm (omega, file = "vort.mp4", box = {{-0.5,-0.5},{7.5,0.5}},
 	      min = -10, max = 10, linear = true, mask = m);
   output_ppm (f, file = "f.mp4", box = {{-0.5,-0.5},{7.5,0.5}},
@@ -139,70 +136,56 @@ event adapt (i++) {
 }
 
 /**
-# Strouhal number at Re = 160
+# Strouhal number
 
 ~~~pythonplot Fourier transform
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import rfft, rfftfreq
 
-# Define Reynolds
-Re = 160
+# Define problem data
+D, U0 = 0.125, 1
+Re = np.arange(50, 180, 20)
 
-# Load data: t  up  vp  pp
-data = np.loadtxt(f"probe_Re{Re}.dat")
-t  = data[:, 0]
-vp = data[:, 2]
+# Define lists
+length = len(Re)
+St = np.zeros(length)
 
-# Temporal plot
+for i in range(length):
+
+   # Load data: t  vp
+   data = np.loadtxt(f"probe_Re{Re[i]}.dat")
+   t  = data[:, 0]
+   vp = data[:, 2]
+
+   # Dimensionless data
+   time_char = D / U0
+   t = t / time_char
+   vp = vp / U0
+
+   # Mask (wait until instabilities are established)
+   mask = (t > (15/time_char))
+   vp = vp[mask]
+   t = t[mask]
+
+   vp = vp - np.mean(vp)
+
+   # Time-step
+   dt = t[1] - t[0]
+   N = len(vp)
+
+   # FFT
+   spectrum = rfft(vp)
+   freq = rfftfreq(N, d = dt)
+
+   # Strouhal number
+   St[i] = freq[np.argmax(np.abs(spectrum))]
+
 plt.figure()
-plt.plot(t, vp)
-plt.xlabel("Time")
-plt.ylabel("Velocity")
-plt.title("Vertical velocity behind the cylinder")
+plt.plot(Re, St, 'o')
+plt.xlabel("Reynolds number")
+plt.ylabel("Strouhal number")
+plt.grid()
 plt.tight_layout()
-plt.savefig("temp160.png")
-plt.close()
-
-vp = vp - np.mean(vp)
-
-# Mask (wait until instabilities are established)
-mask = (t > 10.)
-vp = vp[mask]
-t = t[mask]
-
-# Time-step
-dt = t[1] - t[0]
-N = len(vp)
-
-# FFT
-spectrum = rfft(vp)
-freq = rfftfreq(N, d = dt)
-
-# Strouhal number
-f_peak = freq[np.argmax(spectrum)]
-St = f_peak * 0.125    # St = f*D/U0, with D=0.125, U0=1
-print(f"Vortex-shedding frequency: {f_peak:.4f}")
-print(f"Strouhal number: {St:.4f}")
-
-# Plot
-plt.figure()
-plt.plot(freq, np.real(spectrum))
-plt.xlabel("Frequency")
-plt.ylabel("Spectrum")
-plt.xlim(0, 20)
-plt.title("FFT vertical speed behind the cylinder")
-plt.suptitle(f"Vortex-shedding frequency: {f_peak:.4f} Hz"
-             f"\n Strouhal number:    {St:.4f}"
-             f"\n\n (With Re = 160, U0 = 1, D = 0.125)",
-             x = 0.6, y = 0.4)
-plt.tight_layout()
-plt.savefig("strouhal160.png")
-plt.close()
-~~~
-*/
-
-/**
-# Strouhal number for different Reynolds
-
-After running the simulation for different Reynolds, we can plot the following graph: */
+plt.show()
+~~~*/

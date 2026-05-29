@@ -112,5 +112,13 @@ event logfile (i++; t <= T){
 
 
 /**
-Results and comparison to theory is coming soon, code is currently running ;)
+My results are compared to [Sheard et al. (JFM, 2005)](https://doi.org/10.1017%2FS0022112004002836), that compute a cylinder in a monophasic fluid flow (classical case).
+
+It appears our code is valid for 1, since we are in the case of a classical solid cylinder in a monophasic fluid flow. Then as $µ_1/µ_2$ decreases, $C_D$ is decreasing too as we could expect. Since I did'nt found any theoric validation, we have to take a step back on these results.
+
+Since the bubble ($µ_1$) is bigger than the cylinder, it modifies the Reynolds number and can affects the results. *I have to run a simulation for a 0.55 diameter cylinder to help to take a step back.*
+
+<img src="https://raw.githubusercontent.com/mwalmetz/intership_dalembert/main/Cd_vs_Re_mu.png" width="900" alt="Ma figure">
+
+
 */

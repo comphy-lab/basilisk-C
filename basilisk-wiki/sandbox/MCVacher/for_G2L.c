@@ -29,7 +29,7 @@ int main() {
   
   Di=1.;
   H=5*Di;
-  W=20*Di;
+  W=25*Di;
   Do=Di/2;
   Li=2*Di;
   Lo=2*Do;
@@ -56,6 +56,10 @@ int main() {
   
   u.t[left] = (y > Li && y < Li+Do) ? neumann(0.) : dirichlet(0.);
   u.t[right] = (y > Li && y < Li+Do) ? neumann(0.) : dirichlet(0.);
+  
+  u.n[top] = u.n[] > 0. ? neumann(0) : dirichlet(0);
+  p[top] = dirichlet(0.);
+  pf[top] = dirichlet(0.);
  
   G.y = -9.81;
 
@@ -65,7 +69,7 @@ int main() {
   
   fpmax =  fopen("log.dat", "w");
   
-  f.sigma=0.1;
+  f.sigma=0.5;
 
   run();
 }
@@ -80,11 +84,12 @@ event logfile (i++) {
   fprintf (fpmax, "%d %g \n", i, t);
 }
 
-/*
+
 event remove_droplets (i++) {
-  remove_droplets (f, threshold=0.05, bubbles=true);
+  remove_droplets (f, threshold=0.01, bubbles=true);
 }
 
+/*
 int isave1 = 1;
 event res_save (t += 0.5; t <= 10) {
   char name[80];
@@ -98,7 +103,7 @@ event res_save (t += 0.5; t <= 10) {
 }
 **/
 
-event ppm_output (t = 0; t += 0.05; t <= 100) {
+event ppm_output (t = 0; t += 0.05; t <= 70) {
   char name[80];
   sprintf (name, "f.mp4");
   output_ppm (f, file = name, n = 512, min = 0, max = 1, linear = true);
@@ -117,7 +122,7 @@ event ppm_output (t = 0; t += 0.05; t <= 100) {
 
   char name3[80];
   sprintf (name3, "p.mp4");
-  output_ppm (p, file = name3, n = 512, min = 0, max = 100, linear = true);
+  output_ppm (p, file = name3, n = 512, linear = true);
   
   char name4[80];
   sprintf (name4, "cs.mp4");

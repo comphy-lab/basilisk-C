@@ -1,4 +1,4 @@
-pristine:dc6969695ac684c8d1e9fbbdce9ebab5a5edec3daf2efdbd38f323e74e4c6a60
+pristine:9d9e89a50883973540e0b82bd6b522c2d43d11b9f7125bba809cb63d9b683b2e
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -10447,3 +10447,48 @@ mvacher <marc.cordelle.vacher@gmail.com>**20260527220302
  Ignore-this: 827f6415a12d28d3a8f30e240da9afc5b2d25bbac11a9fa7ab3a0aa3e1880cbefb4bdc902e5e799e
 ] 
 hash: 0000000273-fb5ef20eca87ace46c8fb67f00e1a1338422f86b999a586f0577b7d8cdaf4d21
+[explanation and plot
+walmetzm <malo.walmetz@gmail.com>**20260528132328
+ Ignore-this: 82617470618423ec9f95dee611c331b041a23f95d81f3abc4464ee241609b9eb06144c63eb16a8bb
+] 
+hash: 0000001102-b0a627c24d8561f3efbce5acda24b4ec902668ea766fc8752de26a5380bbf6d8
+[page creation
+Louise Gally <louisegally@gmail.com>**20260528143805
+ Ignore-this: 1dc5ab679339995650f2e2b98e0896fbc2edf33a4b068b6c5e65dd784f012e5c9eb3bacdf09becd
+] 
+hash: 0000004460-417a0fc1c81bc27d0ae9d4bb1afd7f5da6bfb8ff22b02fcc997c337f54c5ab8f
+[Deleted using web interface
+Louise Gally <louisegally@gmail.com>**20260528144002
+ Ignore-this: 5d9c5b1092e2b1705b36264bbd34904e08f39c2fd079e97e625c4657be8362f9b32061e47f1c46bf
+] 
+hash: 0000005025-7051df3a55db34cacb95a65b179fc661a0657e8899f3fe25bd4cadd60f183467
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260528161132
+ Ignore-this: 90a332e38368016955a77cfb5fa6ece5f75452f6c70dd05a8ea8907e93b86299dd4d200ad0eff5fb
+] 
+hash: 0000000294-f72fc95e4b9f797d4fb3c43f75abfdeaec6ba1f816548d7c7822b50246493d04
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260528184911
+ Ignore-this: bac6981f3e3fe147c48c8ec6370ebb9e3f52c5c34b614228043196eb00fae6574e11c9faacace326
+] 
+hash: 0000000392-eef3c4f74f4c11b1d5cdc9bc8b40da889fab27ad8a21b4bcdfd84aa93a46a0d2
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260528191829
+ Ignore-this: 2d7ba2bb6073b960301ac0ba08dffca5e9e27f30ff024c51c41f60c69a41b1a7965deaf907cb4e5b
+] 
+hash: 0000000378-2548311873058d6f0680d0cbf89f2e720e1342320509f0912baa8977f9e4eacc
+[remove_droplets
+mvacher <marc.cordelle.vacher@gmail.com>**20260528194057
+ Ignore-this: b233724585d04a4995a299840b9ac435ac6eeb6d9b1f0c2b33fe0e22374f73b746f854eb8ee18613
+] 
+hash: 0000000533-06b8ab51040ca307fc08aec653748b1e7b74867c7d3ca47ba56e8a12c8686ab6
+[Trying to reproduce Gerris version of sessile.c with convergence rates
+ecipriano <edoardo.cip@gmail.com>**20260528214410
+ Ignore-this: 1db4a2090a60bf283cf2fdf3f0d85486f0585db99284e3e17311791f73c93363b0f6c3951f43ca4c
+] 
+hash: 0000006926-41938f2418eb6f049b01ec386838f02c625504bf979e44d935ef661ed783e88d
+[Add Makefile
+ecipriano <edoardo.cip@gmail.com>**20260528214651
+ Ignore-this: 8a19c974e17ab11ac0e10f7e8de0a41becfb58cd9b753ff968d3aa0c469bce561ec2e0831a6b4a82
+] 
+hash: 0000000562-35d99ea464c22cf22d811a94e8b78ef601abd54b5fddc4c947a4cc492c998ee9
