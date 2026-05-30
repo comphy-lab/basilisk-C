@@ -1,5 +1,5 @@
 /**
-# Sinusoidal wave propagation over a bar (modified)
+# Sinusoidal wave propagation over a bar
 
 [Beji and Battjes, 1993](/src/references.bib#beji1993) and [Luth et
 al, 1994](/src/references.bib#luth1994) studied experimentally the
@@ -11,16 +11,18 @@ corresponding to the dispersion relation.
 This test case is discussed in [Popinet
 (2020)](/Bibliography#popinet2020) for the layered version. */
 
-#define ML 1
-
 #include "grid/multigrid1D.h"
 #if ML
 #if 1
-  #define a_baro(eta, i) 0.
+  extern double * drho;
+  #define NL (nl/2)
+  #define rho(l) drho[l]
+  #define G_PHI G
+  #define G_ETA 0
   #include "layered/hydro.h"
-  #include "nh1.h"
+  #include "layered/nh.h"
+  #include "isopycnal1.h"
   #include "layered/remap.h"
-  double * rho = (double[]){1., 1.};
 #else
   #include "layered/hydro.h"
   #include "layered/nh.h"
@@ -45,6 +47,7 @@ int main() {
   nl = 2;  
   breaking = 0.1;
   CFL_H = 0.5;
+  theta_H = 1.;
 #endif
   run();
 }
@@ -86,7 +89,7 @@ event init (i = 0)
 
 /**
 We use gnuplot to visualise the wave profile as the simulation
-runs and to generate a snapshot at $t=40$.
+runs and to generate a snapshot at $t=40$. 
 
 ![Snapshot of waves. The top of the bar is seen in white.](bar/snapshot.png)
 */
@@ -126,6 +129,14 @@ event profiles (t += 0.05)
   plot_profile (t, fp);
   fprintf (stderr, "%g %f %g %g\n", t, interpolate (eta, 17.3, 0.), ke, gpe);
 }
+
+/**
+This optionally displays consistency between `res_eta` and `deta`
+(corresponding to the `check_eta.h` option above). */
+
+#if 0
+#include "deta.h"
+#endif
 
 event gnuplot (t = end) {
   FILE * fp = popen ("gnuplot", "w");
@@ -179,29 +190,29 @@ unset xtics
 # t0 is a tunable parameter
 t0 = -0.24
 plot 'WG4' u ($1+t0):($2*100.) w l lc -1 lw 2 t 'gauge 4', \
-     'gauge-4' pt 6 lc -1 t ''
+     '../gauge-4' pt 6 lc -1 t ''
 unset ytics
 plot 'WG5' u ($1+t0):($2*100.) w l lc -1 lw 2 t 'gauge 5', \
-     'gauge-5' pt 6 lc -1 t ''
+     '../gauge-5' pt 6 lc -1 t ''
 set ytics -2,2,6
 plot 'WG6' u ($1+t0):($2*100.) w l lc -1 lw 2 t 'gauge 6', \
-     'gauge-6' pt 6 lc -1 t ''
+     '../gauge-6' pt 6 lc -1 t ''
 unset ytics
 plot 'WG7' u ($1+t0):($2*100.) w l lc -1 lw 2 t 'gauge 7', \
-     'gauge-7' pt 6 lc -1 t ''
+     '../gauge-7' pt 6 lc -1 t ''
 set ytics -2,2,6
 plot 'WG8' u ($1+t0):($2*100.) w l lc -1 lw 2 t 'gauge 8', \
-     'gauge-8' pt 6 lc -1 t ''
+     '../gauge-8' pt 6 lc -1 t ''
 unset ytics
 plot 'WG9' u ($1+t0):($2*100.) w l lc -1 lw 2 t 'gauge 9', \
-     'gauge-9' pt 6 lc -1 t ''
+     '../gauge-9' pt 6 lc -1 t ''
 set xtics
 set ytics -2,2,6
 plot 'WG10' u ($1+t0):($2*100.) w l lc -1 lw 2 t 'gauge 10', \
-     'gauge-10' pt 6 lc -1 t ''
+     '../gauge-10' pt 6 lc -1 t ''
 unset ytics
 plot 'WG11' u ($1+t0):($2*100.) w l lc -1 lw 2 t 'gauge 11', \
-     'gauge-11' pt 6 lc -1 t ''
+     '../gauge-11' pt 6 lc -1 t ''
 unset multiplot
 ~~~
 */

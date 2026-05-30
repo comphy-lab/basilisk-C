@@ -14,35 +14,40 @@ More details can be found in [Popinet (2020)](/Bibliography#popinet2020).
 We use a 1D grid and either the Green-Naghdi solver or the multi-layer
 solver. */
 #define ML 1
-#define HALF 1 //Rui: for remapping
 #include "grid/multigrid1D.h"
-#define a_baro(eta, i) 0.
 #if !ML
   #include "green-naghdi.h"
 #else
+#define TWOPHASE 1
+#define NL (nl/2)
+#define rho(l) ((l) < NL ? 1.[-3,0,1] : 1./100000.)
+#define G_PHI G
+#define G_ETA 0
   #include "layered/hydro.h"
-  #include "nh1.h"
+  #include "layered/nh.h"
   // necessary for stability at high h0 of the box scheme
   #include "layered/remap.h"
 #endif
 
 double emax = 1.;
-double h0 = 0.1;  //Rui: height of bottom liquid
-double * rho = (double [10]){ 1. [-3,0,1] }; //Rui: define a big enough rho array
+double h0 = 0.1;
 
 /**
 We initialise a wave of small relative amplitude ($10^{-3}$) to be in
-the linear regime. For the multilayer model, we also run a case with
-three "optimised" non-uniform layer thicknesses. */
+the linear regime. */
 
 event init (i = 0)
 {
 #if ML
-  if (nl == 3 && emax == 1.5)
-    beta[0] = 0.68, beta[1] = 0.265, beta[2] = 0.055;
-  foreach()
-    foreach_layer()
-      h[] = beta[point.l]*h0*(1. + 0.001*cos(x))*2.; //Rui: factor of 2 since total height is 2*h0 
+  foreach() {
+    double H = h0*(1. + 0.001*cos(x));
+    foreach_layer() {
+      if (point.l < NL)
+        h[] = H/NL;
+      else
+        h[] = h0/NL;
+    }
+  }
 #else
   foreach()
     h[] = h0*(1. + 0.001*cos(x));
@@ -61,10 +66,10 @@ event logfile (i++)
 {
   double pe = 0., ke = 0.;
 #if ML  
-  foreach(reduction(+:ke) reduction(+:pe)) {//Rui: not working locally without the reduction compared to the original version
+  foreach(reduction(+:ke) reduction(+:pe)) {//Rui's modification
     double H = 0.;
     foreach_layer() {
-      if (point.l < nl/2){ //Rui: only calculate energy for the bottom liquid
+      if (point.l < NL) {
         ke += Delta*h[]*(sq(u.x[]) + sq(w[]))/2.;
         H += h[];
       }
@@ -72,7 +77,7 @@ event logfile (i++)
     pe += Delta*G*sq(H - h0)/2.;
   }
 #else
-  foreach(reduction(+:ke) reduction(+:pe)) { //Rui: add reduction
+  foreach(reduction(+:ke) reduction(+:pe)) { //Rui's modification
     int l = 0;
     for (vector u in ul)
       ke += Delta*layer[l++]*h[]*sq(u.x[])/2.;
@@ -82,9 +87,9 @@ event logfile (i++)
 
 #if ML
   double H = 0.;
-  foreach_point (L0/2., reduction(+:H)) //Rui: add reduction
+  foreach_point (L0/2., reduction(+:H)) //Rui's modification
     foreach_layer()
-      if (point.l < nl/2) //Rui: H is the height for the local interface
+      if (point.l < NL)
          H += h[];
 #else
   double H = interpolate (h, L0/2., linear = false);
@@ -133,14 +138,14 @@ profiles. */
 #if ML
 event profile (t = 9.25*2.*pi/sqrt(tanh(h0)))
 {
-  if (nl == 10) { //Rui: plot profile for nl = 10 (original nl =5)
+  if (nl == 10) { //Rui's modification
     char name[80];
     sprintf (name, "profile-%g", h0);
     FILE * fp = fopen (name, "w");
     foreach_point (L0/2.) {
       double zl = zb[];
       foreach_layer() {
-	if (point.l < nl/2){ //Rui: only for bottom liquid
+	if (point.l < NL) {
 	  fprintf (fp, "%g %g %g\n", zl + h[]/2., w[], phi[]);
 	  zl += h[];
 	}
@@ -231,21 +236,21 @@ int main()
   CFL_H = 0.5;
   TOLERANCE = 1e-6;
   linearised = true;
-#if 1
-  for (nl = 2; nl <= 10; nl += 2) //Rui: doubled compared to single phase
+  theta_H = 1.;
+#if 0
+  for (nl = 1; nl <= 5; nl++)
 #else
-  nl = 4;
+  nl = 10;
 #endif
   {
     char name[80];
     sprintf (name, "log-%d", nl);
     freopen (name, "w", stderr);
     emax = 1.;
-    DT = 2.*pi/sqrt(tanh(h0))/200./nl/2.; //Rui: changed for DT test
-    for (int l = 0; l < nl; l++)   //Rui: update the density profile
-      rho[l] = l < nl/2 ? 1. : 0.001;    
+    DT = 2.*pi/sqrt(tanh(h0))/200./10.0; //Rui's test
 #if 1
-    for (h0 = 0.1; h0 <= 100. && emax > 0.96; h0 *= 1.3)
+    //for (h0 = 0.1; h0 <= 100. && emax > 0.96; h0 *= 1.3)
+    for (h0 = 0.1; h0 <= 100.; h0 *= 1.3)
 #else
     h0 = 0.37;
 #endif

@@ -30,7 +30,7 @@ unset ytics
 unset border
 set xrange [-1:1]
 set yrange [0:]
-plot 'out' w l, '' u (-$1):2 w l lt 1, 0 lt -1
+plot '../sessile-gerris-small/out' w l, '' u (-$1):2 w l lt 1, 0 lt -1
 set term pop
 ~~~
 */

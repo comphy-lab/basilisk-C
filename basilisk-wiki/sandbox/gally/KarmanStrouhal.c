@@ -17,13 +17,6 @@ double Reynolds;
 int maxlevel = 9;
 face vector muv[];
 
-/** We create all variables necessary for the SFD.*/
-
-double SFD_delta = 0.25;
-vector ubar[];
-scalar pbar[];
-double SFD_res, res;
-
 /**
 The domain is eight units long, centered vertically. */
 
@@ -40,7 +33,7 @@ int main() {
   display_control (Reynolds, 10, 1000);
   display_control (maxlevel, 6, 12);
 
-  for (Reynolds = 50; N <= 170; Re += 20)
+  for (Reynolds = 50; Reynolds <= 170; Reynolds += 20)
     run();
 }
 
@@ -94,7 +87,7 @@ We follow the evolution of a point situated after the cylinder. */
 
 double xp, yp;
 
-event probe (i++) {
+event probe (i++; t <= 35) {
   
   xp = 0.5*D + 3*D;
   yp = 0.;
@@ -105,27 +98,11 @@ event probe (i++) {
 
   static FILE * fp = NULL;
   if (!fp) {
-    char filename[20];
+    char filename[25];
     snprintf(filename, sizeof(filename), "probe_Re%.0f.dat", Reynolds);
     fp = fopen(filename, "w");
   }
   fprintf(fp, "%g %g %g %g\n", t, up, vp, pp);
-}
-
-/**
-We produce animations of the vorticity and tracer fields... */
-
-event movies (i += 4; t <= 35.) {
-  scalar omega[], m[];
-  vorticity (u, omega);
- 
-  foreach()
-    m[] = cs[] - 0.5;
-
-  output_ppm (omega, file = "vort.mp4", box = {{-0.5,-0.5},{7.5,0.5}},
-	      min = -10, max = 10, linear = true, mask = m);
-  output_ppm (f, file = "f.mp4", box = {{-0.5,-0.5},{7.5,0.5}},
-	      linear = false, min = 0, max = 1, mask = m);
 }
 
 /**
@@ -138,7 +115,9 @@ event adapt (i++) {
 /**
 # Strouhal number
 
-~~~pythonplot Fourier transform
+Reference data from [Jiang et al. (2016)](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/10E6105E8A6342BDF8FE7C1FDF024980/S0022112016004468a.pdf/threedimensional_direct_numerical_simulation_of_wake_transitions_of_a_circular_cylinder.pdf)
+
+~~~pythonplot
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.fft import rfft, rfftfreq
@@ -146,6 +125,10 @@ from scipy.fft import rfft, rfftfreq
 # Define problem data
 D, U0 = 0.125, 1
 Re = np.arange(50, 180, 20)
+
+# Jiang et al. data
+Re_Jiang = [46.86495177, 50, 59.88745981, 74.8392283, 99.91961415, 125, 149.8392283, 174.9196141]
+St_Jiang = [0.119480499, 0.123879433, 0.136684722, 0.150366905, 0.166194074, 0.177131267, 0.185232431, 0.191573047]
 
 # Define lists
 length = len(Re)
@@ -181,11 +164,15 @@ for i in range(length):
    # Strouhal number
    St[i] = freq[np.argmax(np.abs(spectrum))]
 
-plt.figure()
-plt.plot(Re, St, 'o')
-plt.xlabel("Reynolds number")
-plt.ylabel("Strouhal number")
+plt.plot(Re, St, 'ko', label = 'Basilisk')
+plt.plot(Re_Jiang, St_Jiang, 'ro', label = 'Jiang et al. (2016)')
+plt.xlabel("$Re$")
+plt.ylabel("$St$")
+plt.title("Evolution of the Strouhal number in function of the Reynolds")
+plt.legend()
 plt.grid()
 plt.tight_layout()
-plt.show()
-~~~*/
+plt.savefig('st-re.png')
+
+~~~
+*/
