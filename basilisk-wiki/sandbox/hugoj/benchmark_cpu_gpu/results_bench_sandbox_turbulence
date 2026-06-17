@@ -1,0 +1,26 @@
+cpu
+128
+# Multigrid, 2008 steps, 13.5656 CPU, 1.698 real, 1.94e+07 points.step/s, 8 var
+256
+# Multigrid, 2073 steps, 37.6603 CPU, 4.71 real, 2.88e+07 points.step/s, 8 var
+512
+# Multigrid, 2363 steps, 125.084 CPU, 15.64 real, 3.96e+07 points.step/s, 8 var
+1024
+# Multigrid, 2887 steps, 566.771 CPU, 70.87 real, 4.27e+07 points.step/s, 8 var
+2048
+# Multigrid, 3010 steps, 2484.88 CPU, 310.7 real, 4.06e+07 points.step/s, 8 var
+4096
+# Multigrid, 3110 steps, 10083.9 CPU, 1261 real, 4.14e+07 points.step/s, 8 var
+gpu
+128
+# Multigrid (GPU), 2009 steps, 1.26929 CPU, 1.27 real, 2.59e+07 points.step/s, 8 var
+256
+# Multigrid (GPU), 2008 steps, 1.41643 CPU, 1.416 real, 9.29e+07 points.step/s, 8 var
+512
+# Multigrid (GPU), 2328 steps, 2.00638 CPU, 2.007 real, 3.04e+08 points.step/s, 8 var
+1024
+# Multigrid (GPU), 2767 steps, 3.154 CPU, 3.154 real, 9.2e+08 points.step/s, 8 var
+2048
+# Multigrid (GPU), 2991 steps, 6.92783 CPU, 6.928 real, 1.81e+09 points.step/s, 8 var
+4096
+# Multigrid (GPU), 3011 steps, 31.0801 CPU, 31.08 real, 1.63e+09 points.step/s, 8 var

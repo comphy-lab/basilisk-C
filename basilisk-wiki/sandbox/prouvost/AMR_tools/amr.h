@@ -3,7 +3,7 @@
 # AMR algorithm
 
 The objective is to perform AMR simulations using $L^p$-norm metric-based error estimates.
-When dealing with numerical solutions obtained using a solver, at least norm 2 is recommanded.
+When dealing with numerical solutions obtained using a solver, at least norm 2 is recommended.
 
 This file provide some global variables which can be modified:
 
@@ -11,14 +11,17 @@ This file provide some global variables which can be modified:
 
 * maxlevel: the maximum level of refinement. By default equal to 100, meaning unconstrained mesh adaptation.
 
-* AMReps: the epsilon criterion used to refine/coarsen the elements.
+* AMReps: the epsilon threshold used to refine/coarsen the elements.
 
+*/
 
-First, we include the file which computes metric-based errors.
+/**
+File which computes metric-based errors.
 */
 
 #include "error_metric.h"
 
+/** Code */
 scalar AMRerror[];     // note: only one error field, but it may contain the
 double AMReps = 1.e-5; // error from several sources
                        // fixme: to detail better, and cf 

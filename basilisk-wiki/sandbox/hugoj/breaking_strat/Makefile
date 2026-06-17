@@ -1,10 +1,11 @@
 CFLAGS += -I$(DOCUMENT_ROOT)/sandbox
-CFLAGS += -disable-dimensions # skip dimensions check for now
-#CFLAGS := $(filter-out -g, $(CFLAGS)) # remove debug mode
-#CFLAGS += -O2 # compilation optmisation
+CFLAGS += -O2 -disable-dimensions # skip dimensions check for now
 
 #CFLAGS += -DTRACE=2 	# toggle tracing
 #CFLAGS += -DMTRACE=1 # memory profiling
+
+INI_FILES = F_kxky ky kx omega phase
+
 
 all: gen_ini.tst ml_breaking_strat.tst
 #all: _prep_low_res gen_ini.tst ml_breaking_strat.tst
@@ -25,12 +26,12 @@ _ml_breaking_strat.c: CFLAGS += -D_MPI=1
 hpc_run: _ml_breaking_strat.c
 	mkdir -p ml_breaking_strat.hpc
 	mv _ml_breaking_strat.c ml_breaking_strat.hpc/
-	cp namelist.toml ml_breaking_strat.hpc/
+	ln -sf ../namelist.toml ml_breaking_strat.hpc/namelist.toml
 	$(foreach f,$(INI_FILES), cp gen_ini/$(f) ml_breaking_strat.hpc/;)
 
 _prep_ini:
 	ln -sf ../namelist.toml gen_ini/namelist.toml
-INI_FILES = F_kxky ky kx omega phase
+
 
 _prep_local:
 	mkdir -p ml_breaking_strat

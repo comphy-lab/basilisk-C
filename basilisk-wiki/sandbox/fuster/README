@@ -1,5 +1,13 @@
 /**
-# File index 
+# My personal sandbox
+
+## Regularization methods (one fluid model)
+
+Currently I am working on the impact of regularization errors introduced by the one-fluid formulation.
+
+* For elliptic equations two works are already published: In absence of jumps [JCP, 2024](https://hal.science/hal-04618206v1) and in the presence of jumps [JCP,2025](https://hal.science/hal-05397196v1)
+
+* More recently, we have evaluated the impact of regularization errors on the development of interfacial instabilities [Aknine et al, 2026](https://hal.science/hal-05553377v2)
 
 ## Development of AMR methods
 
@@ -7,16 +15,24 @@ Within the PhD of Lucas Prouvost and in collaboration with Anca Belme, we have b
 
 ## Tests and examples for the All-Mach formulation
 
-List of tests and examples of the all-Mach compressible solver [Fuster and Popinet (JCP, 2018)](https://hal.sorbonne-universite.fr/hal-01845218).
+List of tests and examples of the all-Mach compressible solver [Fuster and Popinet (JCP, 2018)](https://hal.sorbonne-universite.fr/hal-01845218). This includes thermal effects implemented by Saade et al [JCP, 2023](https://hal.science/hal-03950917v1) [see his sandbox](https://basilisk.fr/sandbox/ysaade/README)
 
 The code is now part of the stable release, so you can check the test cases included in the last version of Basilisk [here](/src/test/README#compressible-two-phase-flows)
 
-Below some old links that could be useful
+#### Related works
 
-### Related works
+* The work from the [PhD of Mandeep Saini](https://theses.hal.science/tel-03935878/) which includes:
+   * [On the dynamics of a collapsing bubble in contact with a rigid wall (JFM)](https://hal.science/hal-03778417v1) 
+   * [Direct numerical simulations of microlayer formation during heterogeneous bubble nucleation (JFM)](https://hal.science/hal-04544137v2)
+   * [A Review of the Accuracy of Direct Numerical Simulation Tools for the Simulation of Non-Spherical Bubble Collapses (JISS)](https://hal.science/hal-04563704v1)
+   * [Finite speed of sound effects on asymmetry in multibubble cavitation (PRF)](https://hal.science/hal-04534545v1)
 
-* The work from the PhD of Mandeep Saini which includes a [JFM paper](https://doi.org/10.1017/jfm.2022.705) and [his thesis](https://theses.hal.science/tel-03935878/). You can check [his sandbox](/sandbox/msaini/README) for more information.
+        Check [Saini's sandbox](/sandbox/msaini/README) for more information.
+
+* Finite amplitude wave propagation through bubbly  fluids [Ohl et al, IJMF, 2024](https://hal.science/hal-04257279v2)
+
 * Effects of surface tension on the Richtmyer-Meshkov instability in fully compressible and inviscid fluids. [Tang et al PRF, 2021](https://journals.aps.org/prfluids/abstract/10.1103/PhysRevFluids.6.113901)
+
 * Optimal subharmonic emission of stable bubble oscillations in a tube [Fan et al, PRE, 2020](https://journals.aps.org/pre/abstract/10.1103/PhysRevE.102.013105)
 
 

@@ -49,7 +49,6 @@ variables
 
 #if LAYERS == 0
 int nl = 1;
-int _layer = 0;
 #endif
 
 /* /\* For the units attributes. *\/ */
@@ -260,36 +259,38 @@ void write_nc() {
   }
   unsigned int len = Nx*Ny*nl;
   float * field = (float *)malloc(len*sizeof(float));
-  for (int i = 0; i < len; i++)
-    field[i] = HUGE;
 
   int nv = -1;
   /* char * str1; */
   for (scalar s in nc_scalar_list){
     nv += 1;
-
-
-    for (_layer = 0; _layer < nl; _layer++){
+    
+    for (int i = 0; i < len; i++)
+      field[i] = HUGE;
 //BD: use this switch instead of MPI_reduce if can reduce float
 /* #if _MPI */
 /*   foreach_region (p, box, cn, reduction(max:field[:len])) */
 /* #else */
-      foreach_region (p, box, cn, cpu)
+    foreach_region (p, box, cn, cpu)
 /* #endif */
-        {
+      {
+        foreach_blockf (s) {
+#if LAYERS
+          int k = point.l;
+#else
+          int k = 0;
+#endif
           int i = (p.x - box[0].x)/(box[1].x - box[0].x)*cn.x;
 #if dimension > 1
           int j = (p.y - box[0].y)/(box[1].y - box[0].y)*cn.y;
 #else
           int j = 0;
 #endif
-          float * alias = field; // so that qcc considers ppm a local variable
-          alias[Ny*Nx*_layer + Nx*j + i] = s[];
+          float * alias = field; // so that qcc considers field a local variable
+          alias[Ny*Nx*k + Nx*j + i] = s[];
         }
-    }
-    _layer = 0;
+      }
 
-    
     if (pid() == 0) { // master
 #if _MPI
       MPI_Reduce (MPI_IN_PLACE, &field[0], Ny*Nx*nl, MPI_FLOAT, MPI_MIN, 0,MPI_COMM_WORLD);
@@ -449,20 +450,23 @@ void read_nc(scalar * list_in, char* file_in, bool read_time = false)
                                           &field[0])))
             ERR(nc_err);
         
-          // I  recreate a foreach_layer in case LAYER = 0
-          for (_layer = 0; _layer < nl; _layer++){
             foreach_region (p, box, cn, cpu)
               {
-                int i = (p.x - box[0].x)/(box[1].x - box[0].x)*cn.x;
-#if dimension > 1
-                int j = (p.y - box[0].y)/(box[1].y - box[0].y)*cn.y;
+                foreach_blockf (s) {
+#if LAYERS
+                  int k = point.l;
 #else
-                int j = 0;
+                  int k = 0;
 #endif
-                s[] = field[Ny*Nx*_layer + Nx*j + i];
-              }
-          }
-          _layer = 0;
+                  int i = (p.x - box[0].x)/(box[1].x - box[0].x)*cn.x;
+#if dimension > 1
+                  int j = (p.y - box[0].y)/(box[1].y - box[0].y)*cn.y;
+#else
+                  int j = 0;
+#endif
+                  s[] = field[Ny*Nx*k + Nx*j + i];
+              } //blockf
+          } //region
         } // end if var_ndims == 3
       } // end if strcmp
     } // end loop nvars

@@ -687,7 +687,7 @@ double estimate_eta_opt ( struct etaData p ) {
    
    struct PreFactorData cd = compute_prefactors (p);
 
-   return pow(cd.copt/cd.cuniform, dimension/2.)/pow(L0,dimension); //fixme: 3D? axisymmetric?
+   return pow(cd.copt/cd.cuniform, dimension/2.); 
 }
 
 

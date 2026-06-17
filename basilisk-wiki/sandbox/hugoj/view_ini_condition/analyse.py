@@ -95,9 +95,9 @@ if dopart==1 or dopart==0:
     # verification of recursion
     verif_first_terms_recursion()
 
-    nmax = 5
-    verif_analytical_solution(nmax)
-    plt.show()
+    # nmax = 5
+    # verif_analytical_solution(nmax)
+    # plt.show()
     raise Exception
 
     """

@@ -41,16 +41,16 @@ ax.set_ylabel('layer')
 fig.savefig('T_profile.png')
 
 # > wT_profile
-Nl, Nt = get_Nl_Nt(rawwT)
-time, layers, datawT = read_raw(rawwT, Nl, Nt)
-flx0 = 500/(1025*4.2e3)
-# plot
-fig, ax = plt.subplots(1,1,figsize = (7,3),constrained_layout=True,dpi=100)
-s=ax.pcolormesh(time,layers,datawT/flx0, shading="nearest", cmap='magma')
-plt.colorbar(s,ax=ax, label=r"$<w'T'>$/$H_0$)")
-ax.set_xlabel('time (s)')
-ax.set_ylabel('layer')
-fig.savefig('wT_profile.png')
+# Nl, Nt = get_Nl_Nt(rawwT)
+# time, layers, datawT = read_raw(rawwT, Nl, Nt)
+# flx0 = 500/(1025*4.2e3)
+# # plot
+# fig, ax = plt.subplots(1,1,figsize = (7,3),constrained_layout=True,dpi=100)
+# s=ax.pcolormesh(time,layers,datawT/flx0, shading="nearest", cmap='magma')
+# plt.colorbar(s,ax=ax, label=r"$<w'T'>$/$H_0$)")
+# ax.set_xlabel('time (s)')
+# ax.set_ylabel('layer')
+# fig.savefig('wT_profile.png')
 
 plt.show()
 

@@ -28,6 +28,7 @@ For this reason, I'm re-adapting [Arthur Ghigo](/sandbox/ghigo/src/) implementat
 
 ### SuperHydroPhobic Surfaces.
  - [Rigid cylinder placed in a gas bubble under fluid flow](/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c). Plastron dynamics
+ - [Cylinder with single notch and a gas bubble](/sandbox/fpicella/cylinder_plastron/cylinder_single_notch_bubble.c). Free-interface dynamics and drag computation.
  
 ### Navier Boundary condition.
  - [Flow around a 2D embedded cylinder with partially slippery surfaces](/sandbox/fpicella/navier_BC/cylinder_embed_navier_explicit.c)
@@ -41,3 +42,4 @@ For this reason, I'm re-adapting [Arthur Ghigo](/sandbox/ghigo/src/) implementat
  - [A very concise darcs tutorial](/sandbox/fpicella/short_darcs_tutorial.c).
  - [A very concise basilisk tutorial. 1D advection-diffusion problem](/sandbox/fpicella/1D_Nikhill/1D_advection_diffusion.c)
  - [Plane Couette flow. Setting up a simple embed simulation and extracting velocity profiles](/sandbox/fpicella/pedagogy/plane_couette_embed_instrumented.c)
+ - [2D Benard-Von-Karman vortices around a cylinder. Quantitative test. Compute Drag, lift and comparison with literature](/sandbox/fpicella/cylinder_plastron/karman_quantitative.c)

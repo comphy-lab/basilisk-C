@@ -28,7 +28,6 @@ See also [how to create test
 cases](/src/test/README#running-and-creating-test-cases-and-examples).  
 
 # Bugs
-
 * [No inheritance of dimension from scalar to array](https://basilisk.fr/sandbox/hugoj/bug_dimension_of_array/main.c)
 * [Incompatible arguments in _stencil_function with pre-defined input values](args-stencil.c)
 * [Default boundary conditions do not work for face vector fields in MPI](bc_face_vector.c)
@@ -97,6 +96,7 @@ mistakes.
 
 The bugs below should be fixed in the most recent release.
 
+* [Compiling qcc in any parent folders containing ".c" or ".h" prevents qcc from transpiling basilisk C code](https://basilisk.fr/sandbox/bugs/qcc-is_code)  [04/06/26](https://basilisk.fr/src/?changes=20260527160025)
 * [Errors when restarting simulations](atomisation_NoEdit.c) [15/04/26](/src/?changes=20260415151613)
 * [Basilisk C parse error with typedef-enum](typedef-enum.c) [01/04/26](/src/?changes=20260401165542)
 * [Memory leak in solve.h](memory_leak_solve.c) [26/02/26](/src/?changes=20260226171227)

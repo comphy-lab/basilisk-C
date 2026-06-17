@@ -6,7 +6,7 @@
  Here we illustrate the tangent, normal and binormal vector of a
  curve, based on an approximation of the Leap into the deep artwork.
 
- ![One may use a local coordinate system when walking along a paramterized curve](litd/lid.mp4)
+ ![One may use a local coordinate system when walking along a paramterized curve](litd/lid.mp4)(loop)
  */
 #include "grid/octree.h"
 #include "view.h"

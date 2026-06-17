@@ -32,6 +32,8 @@ state](example_PM_spectrum/ml_breaking/eta.mp4)
 ## Examples
 
 * [Example of how to use a synthetic wave field as initial condition for the multilayer](./example_PM_spectrum/ml_breaking.c)
+* [Example of how to use diffusion.h with
+dr.h](./test_diffusion_with_bott_neumann/diff_test.c)
 
 ## Toolbox
 
@@ -63,6 +65,8 @@ spectrum](./verif_spectrum/verif_spectrum.py)
 * [Test of an interpolation method](test_interp/test_interp.c)
 
 * [Test of spectrum.h](test_spectrum.h/README.md)
+
+* [Benchmark of Basilisk on some machines](./benchmark_cpu_gpu/README.md)
 
 ## Bugs
 

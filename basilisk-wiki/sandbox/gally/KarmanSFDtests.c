@@ -137,9 +137,9 @@ event bar (i++; t <= 35) {
   
   static FILE * fbar = NULL;
   if (!fbar) {
-    char filenamebar[25];
-    snprintf(filenamebar, sizeof(filenamebar), "res_Re%.0f_D%.2f.dat", Reynolds, SFD_delta);
-    fbar = fopen(filenamebar, "w");
+    char filename[25];
+    snprintf(filename, sizeof(filename), "res_Re%.0f_D%.2f.dat", Reynolds, SFD_delta);
+    fbar = fopen(filename, "w");
   }
   fprintf(fbar, "%g %g\n", t, SFD_res);
 }
@@ -149,6 +149,32 @@ We check the number of iterations of the Poisson and viscous problems. */
 
 event logfile (i++)
   fprintf (stderr, "%d %g %d %d\n", i, t, mgp.i, mgu.i);
+
+/**
+We produce animations of the vorticity fields... */
+
+event movies (i += 4; t <= 35.) {
+  scalar omega[], omegabar[],  m[];
+  vorticity (u, omega);
+  vorticity (ubar, omegabar);
+ 
+  foreach()
+    m[] = cs[] - 0.5;
+  
+  char name_video[30];
+  char name_videobar[30];
+
+  snprintf(name_video, sizeof(name_video),
+	   "vort_Re%.0f_D%.2f.mp4", Reynolds, SFD_delta);
+
+  snprintf(name_videobar, sizeof(name_videobar),
+	   "vortbar_Re%.0f_D%.2f.mp4", Reynolds, SFD_delta);
+
+  output_ppm (omega, file = name_video, box = {{-0.5,-0.5},{7.5,0.5}},
+	      min = -10, max = 10, linear = true, mask = m);
+  output_ppm (omegabar, file = name_videobar, box = {{-0.5,-0.5},{7.5,0.5}},
+	      min = -10, max = 10, linear = true, mask = m);
+}
 
 /**
 We adapt according to the error on the embedded geometry, velocity and tracer fields. */
@@ -194,4 +220,20 @@ plt.tight_layout()
 plt.savefig("residual.png")
 
 ~~~
+*/
+
+/**
+# Visualisation of the vorticity fields
+
+## Animation of the unfiltered vorticity field
+
+![Unfiltered vorticity field](KarmanSFDtests/vort_Re80_D0.25.mp4)(loop)
+
+## Animations of the filtered vorticity fields
+
+![$\Delta = 0.25$](KarmanSFDtests/vortbar_Re80_D0.25.mp4)(loop)
+
+![$\Delta = 6$](KarmanSFDtests/vortbar_Re80_D6.00.mp4)(loop)
+
+![$\Delta = 20$](KarmanSFDtests/vortbar_Re80_D20.00.mp4)(loop)
 */

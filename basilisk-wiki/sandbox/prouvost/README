@@ -13,22 +13,23 @@ If a message should be taken home, it would be: Every cursus learning computatio
 
 A beautiful example which shows what is mesh adaptation is presented [here](./AMR_examples/basilisk_logo/AMRlogo.c)
 
-### Article and PhD thesis
+### Basic theoretical principles  
 
-[AMR article: A metric-based adaptive mesh refinement criterion under constrain for solving elliptic problems on quad/octree grids](https://www.sciencedirect.com/science/article/abs/pii/S0021999124001906). It is available free of charge until May, 9$^{th}$ 2024 at [this link](https://authors.elsevier.com/a/1in%7EY508H%7EBHo), and will be later on HAL.
+Let $u$ be the exact solution of a PDE, $u_h$ be the numerical solution of a discretized PDE and $\Pi_h u$ the interpolation of the exact solution on the mesh.
+We try to reduce the total error $||u-u_h||$ which contains local and non-local parts.
 
-[my PhD manuscript](https://theses.hal.science/tel-03966961)
+The exact solution interpolated on the mesh $\Pi_h u$ doesn't solves the discrete PDE.
+Thus, the numerical solution is modeled as $u_h = \Pi_h u + u'$ with $u'$ a correction.
+From that, the total error becomes $||u-\Pi_h u|| \leq ||u-\Pi_h u|| + ||u'||$ where
 
-### Registered presentations
+* $||u-\Pi_h u||$ is the interpolation error. This error is local (by definition). It is never null (except for linear equations): as soon as an exact solution solution is injected in a discretized mesh, the interpolation error can be defined. 
 
-[PMMH-$\partial$'Alembert interlab visit 2024](https://youtu.be/spUojLZ_EXk): A 2 minutes popularizing science video presenting a numerical experiment of a cavitation bubble collapse. Both mesh adaptation and Arbitrary Lagrangian Eulerian methods are used. No equations are shown.
+* $||u'||$ is a non necessarily local component of the total error.
 
-[$\partial$'Alembertiennes 2023](https://www.youtube.com/watch?v=jgJhhZVfxy4): A 2 minutes video about mesh adaptation and total numerical error minimization.
+We propose to reduce the total error by reducing the interpolation error.
+We observed the influence of $||u'||$ and from that proposed a method which can restrict the minimal element size of a mesh. It is shown to reduce the total error when $||u'||$ dominates it.
 
-[BGUM 2023](/BGUM2023/prouvost.pdf)
-
-[my PhD defense](https://www.youtube.com/watch?v=9XA-GdbJP-A)
-
+The interpolation error is derived from the metric-based theory and the the continuous mesh framework. It has been adapted to the grids of Basilisk.
 
 ### Comparison with the previously existing AMR method in Basilisk 
 
@@ -49,7 +50,13 @@ It follows that:
 
 ### Basic usage and example
 
-The user simply need to replace 
+The user simply need to add the new amr module (and all the required files available [here](./../../AMR_tools))
+
+~~~literatec
+       #include "./../../AMR_tools/amr.h"  // AMR
+~~~~
+
+and to replace 
 
 ~~~literatec
       int maxl = 42;
@@ -71,13 +78,19 @@ by
       adapt_metric( {psi} );                     // user interface similar to adapt_wavelet()
 ~~~
 
+Note that the value for global variable AMReps can be eventually obtained in order to obtain iteratively a given number of elements using the function (this should apply to adapwavelts too)
+
+~~~literatec
+AMReps = update_epsilon_control(Nobj);
+~~~
+
 The optimal converge rate for a given field can be simply obtained using the theoretical prefactor constants 
 
 ~~~literatec
 struct PreFactorData cd = compute_prefactors (2, {psi}, NULL );
 ~~~~
 
-The theoretical error is simply obtained as
+The minimum theoretical (interpolation) error only depends on the structure of the function and is $\epsilon = c_d \; \Delta x^{-2}$
 
 ~~~literatec
 double errtheory = cd.copt*pow(grid->tn,-(2./dimension)) )
@@ -86,24 +99,6 @@ double errtheory = cd.copt*pow(grid->tn,-(2./dimension)) )
 
 [A simple example to show that the user-interface is easy to use](./AMR_examples/basic_example/bubble.c), and where we solve the laplace equation in axi-symmetric coordinates around a circular embedded boundary.
 
-
-### Some more details on my work  (TO EDIT AND EXPLAIN BETTER)
-
-Let $u$ be the exact solution of a PDE, $u_h$ be the numerical solution of a discretized PDE and $\Pi_h u$ the interpolation of the exact solution on the mesh.
-We try to reduce the total error $||u-u_h||$ which contains local and non-local parts.
-
-The exact solution interpolated on the mesh $\Pi_h u$ doesn't solves the discrete PDE.
-Thus, the numerical solution is modeled as $u_h = \Pi_h u + u'$ with $u'$ a correction.
-From that, the total error becomes $||u-\Pi_h u|| \leq ||u-\Pi_h u|| + ||u'||$ where
-
-* $||u-\Pi_h u||$ is the interpolation error. This error is local (by definition). It is never null (except for linear equations): as soon as an exact solution solution is injected in a discretized mesh, the interpolation error can be defined. 
-
-* $||u'||$ is a non necessarily local component of the total error.
-
-We propose to reduce the total error by reducing the interpolation error.
-We observed the influence of $||u'||$ and from that proposed a method which can restrict the minimal element size of a mesh. It is shown to reduce the total error when $||u'||$ dominates it.
-
-The interpolation error is derived from the metric-based theory and the the continuous mesh framework. It has been adapted to the grids of Basilisk.
 
 
 
@@ -122,32 +117,45 @@ It was necessary due to the struct Adapt being removed from src/ during the prev
 As a consequence, the current implementation of my code triggers a warning at compilation, but it has no impact on the computations.
 
 
-### More complex examples showing the necessity of the minimal element size constrain
+### AMR Examples
 
-A boundary layer-like function:
+#### Boundary-Layer-Like Function
 
-In this case, the interpolation error provide optimal meshes, and the constraint slightly penalizes the interpolation error.
+For this test case, the interpolation error alone provides nearly optimal meshes. Introducing the mesh-size constraint only slightly penalizes the interpolation error.
 
-[without constraint](./AMR_examples/no_hmin/sharp.c)
+* [Without constraint](./AMR_examples/no_hmin/sharp.c)
+* [With constraint](./AMR_examples/with_hmin/sharp.c)
 
-[with constraint](./AMR_examples/with_hmin/sharp.c)
+#### Exponential Function
 
-An exponential function:
+For this function, the interpolation error alone does not lead to optimal meshes. The term $||u'||$ dominates the adaptation process and becomes disconnected from the interpolation error when the mesh compression ratio is too large. The mesh-size constraint limits this compression ratio and enables the construction of nearly optimal meshes.
 
-In this case, the interpolaiton error alone does not provide optimal meshes, $||u'||$ dominates and is not related to the interpolation error for meshes with a too high compression ratio. The constraint limits this compression ratio and allows to find nearly optimal meshes.
+* [Without constraint](./AMR_examples/no_hmin/exp.c)
+* [With constraint](./AMR_examples/with_hmin/exp.c)
+* [Start from a mesh without constraint and add the constraint](./AMR_examples/with_hmin/add_constraint.c)
 
-[without constraint](./AMR_examples/no_hmin/exp.c)
+#### 3D Exponential Function
 
-[with constraint](./AMR_examples/with_hmin/exp.c)
+Extension of the previous example to three dimensions.
 
-[strat from a mesh without constraint and add a constraint](./AMR_examples/with_hmin/add_constrain.c).
+* [Without constraint](./AMR_examples/no_hmin/3Dexp.c)
+* [With constraint](./AMR_examples/with_hmin/3Dexp.c)
 
-A 3D exponential function:
+### Article and PhD thesis
 
-[without constraint](./AMR_examples/no_hmin/3Dexp.c)
+[AMR article: A metric-based adaptive mesh refinement criterion under constrain for solving elliptic problems on quad/octree grids](https://www.sciencedirect.com/science/article/abs/pii/S0021999124001906). It is on [HAL](https://hal.science/hal-04516638v1).
 
-[with constraint](./AMR_examples/with_hmin/3Dexp.c)
+[my PhD manuscript](https://theses.hal.science/tel-03966961)
 
+### Registered presentations
+
+[PMMH-$\partial$'Alembert interlab visit 2024](https://youtu.be/spUojLZ_EXk): A 2 minutes popularizing science video presenting a numerical experiment of a cavitation bubble collapse. Both mesh adaptation and Arbitrary Lagrangian Eulerian methods are used. No equations are shown.
+
+[$\partial$'Alembertiennes 2023](https://www.youtube.com/watch?v=jgJhhZVfxy4): A 2 minutes video about mesh adaptation and total numerical error minimization.
+
+[BGUM 2023](/BGUM2023/prouvost.pdf)
+
+[my PhD defense](https://www.youtube.com/watch?v=9XA-GdbJP-A)
 
 Outputs
 -------

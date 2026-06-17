@@ -1,0 +1,22 @@
+When qcc is compiled in a directory containing ".c" or ".h", qcc no longer is able to correctly compile Basilisk C code files. 
+
+To reproduce the bug:
+
+1. Clone basilisk into `/tmp/foo.h.bar/` or `/tmp/foo.c.bar/`
+2. Compile all targets as normal in the makefile build system, which sets `-DBASILISK="/tmp/foo.h.bar/src"` when compiling qcc
+3. Attempt to compile any basilisk code example, such as [karman.c](https://basilisk.fr/src/examples/karman.c) using `/tmp/foo.h.bar/src/qcc karman.c`.
+
+The cause has to due with the use of `strstr` in `is_code` in [include.lex](https://basilisk.fr/src/include.lex). 
+
+Redefining the function as follows resolves the issue
+
+```c
+static int is_code (const char * file)
+{
+  // check whether the basename has a .c or .h extension
+  const char * base = strrchr (file, '/');
+  base = base ? base + 1 : file;
+  const char * s = strrchr (base, '.');
+  return s && (!strcmp (s, ".c") || !strcmp (s, ".h"));
+}
+```

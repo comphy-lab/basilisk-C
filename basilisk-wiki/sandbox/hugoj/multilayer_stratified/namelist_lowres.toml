@@ -12,7 +12,7 @@ rho0 = 1025.0   # [kg.m-3] reference density
 strat = 0.00002 # s^2
 Ts = 20.0       # °C
 cp = 4.2e3      # [J.kg-1.K-1] heat capacity water
-betaT = 2e-4    # Linear equation of state: drho = betaT*(T0-T) (Vallis 2.4)
+alphaT = 2e-4   # Linear equation of state: drho = betaT*(T0-T) (Vallis 2.4)
 #
 # DOMAIN DEFINITION
 #

@@ -31,7 +31,9 @@ The function needed for the analytical solution
 '''
 def first_term_reduction(m, theta):
     return np.cos(theta)**(m-1)*np.sin(theta)
-
+'''
+The reduction of cos^n
+'''
 def reduction_cosn(n, theta1, theta2):
     result = 0.
     if n//2==0:
@@ -115,8 +117,8 @@ def verif_first_terms_recursion():
     for k in range(len(terms)):
         terms[k] = reduction_cosn(k, tht1, tht2)
     
-    for k in range(len(terms)):
-        print(f'true = {true_terms[k]}, term = {terms[k]}')
+    for k in range(4): # len(terms)
+        print(f'k={k} true = {true_terms[k]}, term = {terms[k]}')
     
 
 def verif_analytical_solution(nmax):

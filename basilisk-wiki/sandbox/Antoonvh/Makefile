@@ -50,10 +50,10 @@ omega.tst: slave-omgpsi.o
 
 trefoil4.tst: CFLAGS += -fopenmp
 
-slave-omgpsi.o: slave-omgpsi.c Makefile
-	qcc -O2 -fno-common -c slave-omgpsi.c
-	objcopy -G slave_free -G slave_interpolate -G slave_solve_psi -G slave_level -G slave_init slave-omgpsi.o
-	cp -f slave-omgpsi.o omega/
+#slave-omgpsi.o: slave-omgpsi.c Makefile
+#	qcc -O2 -fno-common -c slave-omgpsi.c
+#	objcopy -G slave_free -G slave_interpolate -G slave_solve_psi -G #slave_level -G slave_init slave-omgpsi.o
+#	cp -f slave-omgpsi.o omega/
 
 hilbert.tst: CFLAGS += -disable-dimensions
 

@@ -1,7 +1,6 @@
 /**
-  Field scale wave breaking (multilayer solver)
-
-with stratification
+ 
+ # Wave breaking with stratification (multilayer solver)
 
 
 USAGE

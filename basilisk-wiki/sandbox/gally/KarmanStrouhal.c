@@ -33,8 +33,16 @@ int main() {
   display_control (Reynolds, 10, 1000);
   display_control (maxlevel, 6, 12);
 
-  for (Reynolds = 50; Reynolds <= 170; Reynolds += 20)
+  double Res[] = {
+    46.86495177, 50., 59.88745981,
+    74.8392283, 99.91961415,
+    125., 149.8392283, 174.9196141
+  };
+
+  for (int i = 0; i < sizeof(Res)/sizeof(Res[0]); i++) {
+    Reynolds = Res[i];
     run();
+  }
 }
 
 /**
@@ -99,7 +107,7 @@ event probe (i++; t <= 35) {
   static FILE * fp = NULL;
   if (!fp) {
     char filename[25];
-    snprintf(filename, sizeof(filename), "probe_Re%.0f.dat", Reynolds);
+    snprintf(filename, sizeof(filename), "probe_Re%d.dat", (int)Reynolds);
     fp = fopen(filename, "w");
   }
   fprintf(fp, "%g %g %g %g\n", t, up, vp, pp);
@@ -124,20 +132,19 @@ from scipy.fft import rfft, rfftfreq
 
 # Define problem data
 D, U0 = 0.125, 1
-Re = np.arange(50, 180, 20)
 
 # Jiang et al. data
 Re_Jiang = [46.86495177, 50, 59.88745981, 74.8392283, 99.91961415, 125, 149.8392283, 174.9196141]
 St_Jiang = [0.119480499, 0.123879433, 0.136684722, 0.150366905, 0.166194074, 0.177131267, 0.185232431, 0.191573047]
 
 # Define lists
-length = len(Re)
+length = len(Re_Jiang)
 St = np.zeros(length)
 
 for i in range(length):
 
    # Load data: t  vp
-   data = np.loadtxt(f"probe_Re{Re[i]}.dat")
+   data = np.loadtxt(f"probe_Re{int(Re_Jiang[i])}.dat")
    t  = data[:, 0]
    vp = data[:, 2]
 
@@ -164,7 +171,7 @@ for i in range(length):
    # Strouhal number
    St[i] = freq[np.argmax(np.abs(spectrum))]
 
-plt.plot(Re, St, 'ko', label = 'Basilisk')
+plt.plot(Re_Jiang, St, 'ko', label = 'Basilisk')
 plt.plot(Re_Jiang, St_Jiang, 'ro', label = 'Jiang et al. (2016)')
 plt.xlabel("$Re$")
 plt.ylabel("$St$")

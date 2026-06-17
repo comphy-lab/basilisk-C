@@ -4,6 +4,7 @@ My sandbox is based on my M2 internship with Francesco Picella ([d'Alembert Inst
 
 If you need a further look at anyone of my graph, checkout my [GitHub](https://github.com/mwalmetz/intership_dalembert). They are traced with matplotlib, with codes on my laptop, and I'd be pleased to share them. I didn't find another solution : since I cannot run the codes on basilisk.fr, gnuplot can't work here. 
 
+
 # Codes 
 
 ## About the simple 2D cylinder in a fluid flow
@@ -24,3 +25,28 @@ This is, in my case, the simplest way to model superhydrophobicity.
 We want to go as close as possible to reality, bringing up multiphase flows.
 
 - The first step to reality is a ["frozen" bubble around the cylinder](https://basilisk.fr/sandbox/walmetz/multiphase_flow/frozen_bubble.c). In itself, this case is everything but realistic but it will help us for the dynamic bubble case.
+
+
+# To do list
+This part is only for myself ;)
+
+Pour tous les cas : analyse de longueur de recirculation pour comparaison avec Enzo.
+Se renseigner sur paraview.
+
+SLIP 2D :
+
+- plot Cd=f(Re) 
+- bifurcation ?
+ 
+NO SLIP 3D :
+
+ - !! Pouvoir faire tourner haut L0, haut maxlevel !!
+
+ - plot Cf=f(Re)
+ - Etude modale ? Référer à Williamson
+ - Condition d'arrêt
+ - maxlevel variable en fonction de convergence (donc cond d'arrêt)
+
+
+SLIP 3D :
+
