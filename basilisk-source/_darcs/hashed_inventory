@@ -1,4 +1,4 @@
-pristine:4cde7f4dbe2593a81795fd1e35df3262d39e733c60a381e7e2f2aebaf81cdc45
+pristine:f7a1cc67109843cfa8c25a69d3b8ac833e0076701892a0c86d9a9faedd178168
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -175,3 +175,113 @@ Stephane Popinet <popinet@basilisk.fr>**20260522090744
  So that "clever" users cannot attempt to use them.
 ] 
 hash: 0000003289-3261f79dd5af3ad8dc404bf36a3333d040562fa9a6b7809ab8012184a8540cff
+[Fixed stupid way of checking file extension
+Stephane Popinet <popinet@basilisk.fr>**20260527160025
+ Ignore-this: 8e6a9c143454a9bfdb465a23813172a0ddfdfc09bffb238b372eae65e942bfbbdd026f63c3ee3ab1
+] 
+hash: 0000000968-c2e36e68b90cc7b9552a22cd7c5e28b367f851fe0beb146e4df609bbdd88ce69
+[Initial copy of grid/gpu for CUDA version
+Stephane Popinet <popinet@basilisk.fr>**20260525150051
+ Ignore-this: bd2c49e11934e94f754d1d1cfd83f34f866bf92cdfbcd0076aa6855967856c31d3f23fef4244dd59
+] 
+hash: 0000080845-2bb2f63ebb5448c14da9aefcc4d6c4d8e1fa6163bb2efaa207da354f93b98fc0
+[Split off OpenGL specific code in grid/gpu/grid.h
+Stephane Popinet <popinet@basilisk.fr>**20260527163232
+ Ignore-this: e03089604bd57679330131e9b404e218abed82d02fdecd414c16fcfefaf6f6415b0ecfdc13889d0f
+] 
+hash: 0000052915-cdf8a1f8fc21eec6b13ba88694b1ed11ad97ecf235a1e046c26539763942e3ab
+[CUDA implementation
+Stephane Popinet <popinet@basilisk.fr>**20260527171952
+ Ignore-this: b6ac97658bb95f537221eac4d1167711069a9373bd40550d8e087815442374de1703a2b6339888d7
+] 
+hash: 0000068771-461a3a8dbf2cb36d6929082506f8100e8fd02c39ebcf6418ea60929f1fbd436f
+[CUDA reductions
+Stephane Popinet <popinet@basilisk.fr>**20260530132750
+ Ignore-this: 6f33c62bc21e6cffbe740eb8b9d0d7f8d481cfae1a1fdabcccd99057ccd93c8b5d3b3b54b672f2b1
+] 
+hash: 0000010399-ead7490de7c2c79c05f31a34dea01eea263a42118f15314603a8ccf148ac3d29
+[Use path substitutions in default Makefile
+Stephane Popinet <popinet@basilisk.fr>**20260605134555
+ Ignore-this: 2d02f22064d0df3fe69333ad0b69b6388f26d46900c6d0b0f0f5f1dd8e184a4b8e8e5086cb6e540d
+] 
+hash: 0000001547-f05ec9f40cae28d6401e484b53b8145711150e10342188357a8650449d82ab90
+[References for GPU and CUDA
+Stephane Popinet <popinet@basilisk.fr>**20260605164706
+ Ignore-this: 2cb6dfba9677e9f5fda40a24f586ee9de11c3b971a8a965e3b0815592ea0fc41bf728dff5b72858e
+] 
+hash: 0000024905-715f38b84abc0e25b4596e89bd89e1d34c8387b0b2a45d22c20688a96363c7ae
+[The OpenGL backend is compiled separately
+Stephane Popinet <popinet@basilisk.fr>**20260605180712
+ Ignore-this: 357a2f13e804938864659c2da0e54dcb6d18b7d72727e7b95ed9396007d4e3a561f0153514b60e74
+] 
+hash: 0000062626-ea1292ce3f9bf47b080b81d00a89e112be2d772c2a4956178cb91995d9a6a08a
+[CUDA backend is compiled separately
+Stephane Popinet <popinet@basilisk.fr>**20260605180725
+ Ignore-this: 283bee46515cf7de1d062da754adb7ac5bcd348857775e76f628f19d4b3f0268d050ddde15df8b57
+] 
+hash: 0000106139-de7f7f29f886133f55b095d22d6c94d08b8f73800d48f09280134125705ea5f8
+[Cleanup libraries
+Stephane Popinet <popinet@basilisk.fr>**20260606073331
+ Ignore-this: 452fa118ed51e7a087e4715eb1f863e746b66ec85d0429c659d93dbed7bb29d716bae2fabe6158f6
+] 
+hash: 0000000344-56f386b36c7976605746bc967a024b304d7d490745dc4aa6f3ecb4cf30ef5feb
+[Initial HIP backend for GPUs (copy of the CUDA backend)
+Stephane Popinet <popinet@basilisk.fr>**20260606090325
+ Ignore-this: 94a568755019377cf840a4bce19f78a9f7f0abc185eaf917cf912ec95d5a48d1afb65357e5047588
+] 
+hash: 0000030050-1c651b6881583505ceb5a418b8565a9248936138cb9f66b622f8c2b6b19f81ed
+[Automatic "hipification" of the CUDA -> HIP backend
+Stephane Popinet <popinet@basilisk.fr>**20260606090657
+ Ignore-this: d56b405342736b928888540d2620f3c8c7f3a314067aa58b29ddb5c090f0fd2e6754c817e58fe602
+] 
+hash: 0000010809-1985db9ff182e8fb0b289415f492ac2833b5710d065ae616040510b57b97a00e
+[Compilation and linking of the HIP/CUDA libraries
+Stephane Popinet <popinet@basilisk.fr>**20260606092529
+ Ignore-this: 6e48fe59fbf57f69bbcf8bb0bc4a2b361b3bc1fa87edfb35bb03181d3c19c2ca48c97e0b9c64cb24
+] 
+hash: 0000001590-cb1de7c842ebf506810f617c8d1e60120720a26d34a97af4a35bbc45e3b5f4dd
+[Manual tweaks to the automatic CUDA -> HIP translation
+Stephane Popinet <popinet@basilisk.fr>**20260606092546
+ Ignore-this: 7f5000dcadb1822b954699d4d34f49aad15239197d21faf593d8878cd21e7aa7e67c51631e73204c
+] 
+hash: 0000014920-0609b1aa04d43d64571912ed15a078b57cd827892f444ab07170954710ec945e
+[HIP does not like the long integers used as pointers in CUDA
+Stephane Popinet <popinet@basilisk.fr>**20260606092631
+ Ignore-this: 6f486f2deadfaf711671f404e4661e3c389966864dc1103734e603f72dd66cad079b4493f8b80063
+] 
+hash: 0000001151-5a4834061538871709524983deedd490a44a9daea4ac6ca016be1ec309fed2d7
+[Documentation for the HIP backend
+Stephane Popinet <popinet@basilisk.fr>**20260606093753
+ Ignore-this: 3eff72165d6a687a80bfbb4e640209f4f088a3f62e31e394a406504a47e9b03877d702f242089b93
+] 
+hash: 0000022260-696f07762122b07cbf94e1f5d95bdcd7bbff7e9d19a2f191266080b96f24294a
+[Reuse common multigrid.h and cartesian.h on GPUs
+Stephane Popinet <popinet@basilisk.fr>**20260606102925
+ Ignore-this: b094a85f48a8dd94075a2805fdf20447d72c5b6b9fed9074025f4146bb69ab83ffc46df59afe92f2
+] 
+hash: 0000012370-19cfed855af27fec9d002dfb958d903be77bce6c98e3235ba4e3b1be68094df4
+[Stencil data includes function name
+Stephane Popinet <popinet@basilisk.fr>**20260608141905
+ Ignore-this: 61ca1541dd9f84c236b9f8037cc86c922cf41ecc0c3a5886d68b60fc74fd600618b5f235e0e4b2f5
+] 
+hash: 0000016818-b8eca2420002042c3b2cf760a78b2552d05966c81915272855e047c9688f69c9
+[Various improvements for the experimental CUDA backend
+Stephane Popinet <popinet@basilisk.fr>**20260608144214
+ Ignore-this: a77a6fffa4a4b2cd5598956da47185419244a9ae17c7d439d997c9c5e57164e471ba60a94db41053
+] 
+hash: 0000020198-fb50bfaf520e87dc9b0fc89fad20ba1cae3436d5221380e5b7f173e91356ae67
+[Updates to the HIP backend (based on those of the CUDA backend)
+Stephane Popinet <popinet@basilisk.fr>**20260608145751
+ Ignore-this: a881cefa5c20cb11311e925aa430073d1b0004a099745dac4db836f2907e6e19a53cbce9afe88f4d
+] 
+hash: 0000018416-a7a8e60c3942ddf5b55a6c8e1e302633d65863e0eb4070a79677143fafead7e0
+[Automatic conversion of floating-point constants to float rather than double
+Stephane Popinet <popinet@basilisk.fr>**20260609172849
+ Ignore-this: 752a0dd081e565a282a02cfc0cf993965a9bdf38c6ca16906a75e6cd9e992eaaddf561af5bdd82aa
+] 
+hash: 0000032211-ad4dfc657cc51bc668c7ce30bd5d741e65212cb5ae756dc2f335dd1a80a8a4de
+[Updated references
+Stephane Popinet <popinet@basilisk.fr>**20260609173440
+ Ignore-this: d46ab35c7d9590149cf136c0beabecfe7efc0c24e9a2286a7ef617b8a33d1865fd753208d90a2a13
+] 
+hash: 0000006382-430d0b69758c2a4cb5f8b616e4e264174e29ec513887cda6cb719faf5627f75b

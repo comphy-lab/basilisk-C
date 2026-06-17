@@ -1567,8 +1567,12 @@ Ast * struct_size (Ast * type,
   }
   *size = 0;
   int i = 0;
+  if (!list)
+    return NULL;
   foreach_item_r (list, sym_struct_declaration, item) {
     Ast * list = ast_child (item, sym_struct_declarator_list);
+    if (!list)
+      return NULL;
     foreach_item_r (list, sym_struct_declarator, item) {
       if (ast_child (item, sym_constant_expression))
 	return not_implemented (NULL, type, stack);

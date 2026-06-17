@@ -1111,7 +1111,7 @@ void dump (const char * file = "dump",
 #if _GPU
   for (scalar s in slist)
     s.stencil.io |= s_input;
-  gpu_cpu_sync (slist, GL_MAP_READ_BIT, __FILE__, LINENO);
+  gpu_cpu_sync (slist, GPU_READ, __FILE__, LINENO);
 #endif // _GPU
   foreach_cell() {
     unsigned flags = is_leaf(cell) ? leaf : 0;
@@ -1421,6 +1421,6 @@ bool restore (const char * file = "dump",
 
 #endif // MULTIGRID
 
-#if _GPU
+#if _GPU && !_CUDA
 # include "grid/gpu/output.h"
 #endif

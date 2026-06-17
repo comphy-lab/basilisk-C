@@ -107,9 +107,7 @@ This function writes timing statistics on standard output. */
 
 void timer_print (timer t, int i, size_t tnc)
 {
-#if _GPU
-  glFinish(); // make sure rendering is done on the GPU
-#endif
+  device_synchronize(); // make sure rendering is done on the device  
   timing s = timer_timing (t, i, tnc, NULL);
   fprintf (fout,
 	   "\n# " GRIDNAME 

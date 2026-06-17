@@ -304,7 +304,11 @@ Ast * ast_variable_array_size  (Ast * n, Stack * stack);
 
 void ast_diagonalize (Ast * n, Stack * stack, void * field);
 char * ast_external_references (Ast * n, char * references, Stack * functions);
-char * ast_kernel              (Ast * n, char * argument, bool nolineno, Ast * macroscope);
+
+typedef struct { bool nolineno, glsl, fp32; } KernelOptions;
+
+char * ast_kernel              (Ast * n, char * argument, KernelOptions opts,
+                                Ast * macroscope);
 
 /**
 ## Macros */
@@ -334,6 +338,6 @@ Called by [qcc](/src/qcc.c) to trigger the translation. */
 AstRoot * endfor (FILE * fin, FILE * fout,
 		  const char * grid, int dimension,
 		  bool nolineno, bool progress, bool catch,
-		  bool parallel, bool cpu, bool gpu,
+		  bool parallel, bool cpu, bool gpu, bool glsl, bool fp32,
 		  bool prepost,
 		  FILE * swigfp, char * swigname);

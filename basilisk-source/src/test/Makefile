@@ -596,7 +596,7 @@ dimensions-tests: bump2D.s capwave.s lid.s rising-axi.s		\
 	wind-driven-stvt.s shock.s starting.s layered.s 	\
 	stokes.s stokes-ns.s lonlat.s overflow.s bleck.s
 
-# GPUs
+# GPUs (GLSL/OpenGL)
 # fixme: the dependencies *.gpu.s.d are not created automatically
 gpu-tests: gpu.gpu.tst gpu-cpu.gpu.tst gpu-reduce.gpu.tst gpu-boundary.gpu.tst \
 	restriction1.gpu.tst layers.gpu.tst nonlinear.gpu.tst \
@@ -612,5 +612,15 @@ rising-clsvof.gpu.c: rising.c
 	ln -sf rising.c rising-clsvof.gpu.c
 rising-clsvof.gpu.s: CFLAGS += -DLEVELSET=1 -DCLSVOF=1
 rising-clsvof.gpu.tst: CFLAGS += -DLEVELSET=1 -DCLSVOF=1
+
+# GPUs (CUDA)
+cuda-tests: gpu.cuda.tst gpu-reduce.cuda.tst restriction1.cuda.tst gpu-boundary.cuda.tst \
+	 bump2D-gpu.cuda.tst advection.cuda.tst
+cuda-tests: CFLAGS += -DPRINTNSHADERS
+
+# GPUs (HIP)
+hip-tests: gpu.hip.tst gpu-reduce.hip.tst restriction1.hip.tst gpu-boundary.hip.tst \
+	 bump2D-gpu.hip.tst advection.hip.tst
+hip-tests: CFLAGS += -DPRINTNSHADERS
 
 include ../Makefile.defs

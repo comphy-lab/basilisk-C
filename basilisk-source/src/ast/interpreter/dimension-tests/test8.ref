@@ -32,7 +32,7 @@ size: 17, flags: 1, pointer: 0, scope: 2, value: 28 (unset)  + [dimension-tests/
 19 constraints, 19 unknowns
 Dimensions of finite constants
   [1]
-    /src/common.h:34: 'L0 = 1. [1]'
+    /src/common.h:35: 'L0 = 1. [1]'
     dimension-tests/test8.c:11: 'f[] = 1. [1]'
     dimension-tests/test8.c:13: 'f[] = 2.'
     dimension-tests/test8.c:16: '3.'

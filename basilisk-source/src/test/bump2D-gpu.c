@@ -8,8 +8,10 @@ int main (int argc, char * argv[])
   if (argc > 1)
     LEVEL = atoi (argv[1]);
   origin (-0.5, -0.5);
+#if !_CUDA // fixme: does not work with CUDA yet
   periodic (right);
   periodic (top);
+#endif
   init_grid (1 << LEVEL);
   run();
 }

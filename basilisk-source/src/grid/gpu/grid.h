@@ -347,6 +347,15 @@ To maximize performance, here are a few tips and observations:
   spent. Use the `-DTRACE=3` compilation flag to get profiling
   information at the level of foreach loops.
 
+## Profiling with Nsight Compute or Nsight Systems
+
+~~~bash
+ncu --set default ./my_app
+
+nsys profile --stats=true <your_executable> [args]
+nsys-ui report*.nsys-rep
+~~~
+  
 ## Bugs
 
 * Trying to use more than one shader storage buffer (SSBO) with Intel
@@ -359,52 +368,59 @@ To maximize performance, here are a few tips and observations:
 * [Test cases on GPUs](/src/test/README#gpu-tests)
 * [GPU benchmarks](Benchmarks.md)
 * [Computation kernels](/src/ast/kernels.c)
+* [An experimental CUDA driver](/src/grid/cuda/cuda.c)
+* [An experimental HIP driver](/src/grid/cuda/hip.c)
 
 # Implementation */
 
 bool on_cpu = false;
 
-#include <khash.h>
-
-typedef struct {
-  int location, type, nd, local;
-  void * pointer;
-} MyUniform;
-
-typedef struct {
-  GLuint id, ng[2];
-  MyUniform * uniforms;
-} Shader;
-
-KHASH_MAP_INIT_INT(INT, Shader *)
-  
-typedef struct {
-  GRIDPARENT parent;
-  GLuint reduct[2];
-  khash_t(INT) * shaders;
-} GridGPU;
-
 #define gpu_grid ((GridGPU *)grid)
 
-static char * str_append_array (char * dst, const char * list[])
-{
-  int empty = (dst == NULL);
-  int len = empty ? 0 : strlen (dst);
-  for (const char ** s = list; *s != NULL; s++)
-    len += strlen (*s);
-  dst = (char *) sysrealloc (dst, len + 1);
-  if (empty) dst[0] = '\0';
-  for (const char ** s = list; *s != NULL; s++)
-    strcat (dst, *s);
-  return dst;
-}
+GPUContext_t GPUContext = {
+  .current_shader = -1,
+};
 
-#define str_append(dst, ...) str_append_array (dst, (const char *[]){__VA_ARGS__, NULL})
-#define xstr(a) str(a)
-#define str(a) #a
+#if _CUDA
+#  define DEFINITIONS              \
+  "#define uniform __constant__\n" \
+  "typedef int2 ivec2;\n"          \
+  "typedef unsigned uint;\n"       \
+  "__device__ __forceinline__\n"                                        \
+  "int clamp (int x, int a, int b) { return max(a, min(x, b)); }\n"     \
+  "typedef float2 vec2;\n"                                              \
+  "typedef float3 vec3;\n"                                              \
+  "#define forin(type,s,list) for (int _i = 0; _i < sizeof(list)/sizeof(type) - 1; _i++) { type s = list[_i];\n" \
+  "#define forin2(a,b,c,d) for (int _i = 0; _i < sizeof(c)/sizeof(a) - 1; _i++)" \
+  "  { a = c[_i]; b = d[_i];\n"                                         \
+  "#define forin3(a,b,e,c,d,f) for (int _i = 0; _i < sizeof(c)/sizeof(a) - 1; _i++)" \
+  "  { a = c[_i]; b = d[_i]; e = f[_i];\n"                              \
+  "#define layout(x)\n"
+#else // !_CUDA
+#  define DEFINITIONS                                                   \
+  "#define forin(type,s,list) for (int _i = 0; _i < list.length() - 1; _i++) { type s = list[_i];\n" \
+  "#define forin2(a,b,c,d) for (int _i = 0; _i < c.length() - 1; _i++)" \
+  "  { a = c[_i]; b = d[_i];\n"                                         \
+  "#define forin3(a,b,e,c,d,f) for (int _i = 0; _i < c.length() - 1; _i++)" \
+  "  { a = c[_i]; b = d[_i]; e = f[_i];\n"
+#endif // !_CUDA
 
-static char glsl_preproc[] =
+const char glsl_preproc[] =
   "// #line " xstr(LINENO) " " __FILE__ "\n"
+  DEFINITIONS
+#if _CUDA
+  "#define neighborp(_i,_j,_k) Point{point.i+_i,point.j+_j,point.level,point.n"
+#if LAYERS
+  ",point.l"
+#endif
+  "}\n"
+#else // !CUDA
+  "#define neighborp(_i,_j,_k) Point(point.i+_i,point.j+_j,point.level,point.n"
+#if LAYERS
+  ",point.l"
+#endif
+  ")\n"
+#endif // !_CUDA
   "#define dimensional(x)\n"
   "#define fmin(a,b) min(a,b)\n"
   "#define fmax(a,b) max(a,b)\n"
@@ -421,7 +437,7 @@ static char glsl_preproc[] =
 #if SINGLE_PRECISION
   "#define _coord vec2\n"
 #else
-  "#define _coord dvec2\n"
+  "#define coord dvec2\n"
   "#define cos(x) cos(float(x))\n"
   "#define sin(x) sin(float(x))\n"
   "#define exp(x) exp(float(x))\n"
@@ -453,33 +469,23 @@ static char glsl_preproc[] =
   "#define diagonalize(a)\n"
   "#define val_diagonal(s,i,j,k) real((i) == 0 && (j) == 0 && (k) == 0)\n"
   "#define _attr(s,member) (_attr[(s).index].member)\n"
-  "#define forin(type,s,list) for (int _i = 0; _i < list.length() - 1; _i++) { type s = list[_i];\n"
   "#define endforin() }\n"
 #if LAYERS
   "#define _index(a,m) ((a).i + (point.l + _layer + (m) < _attr(a,block) ? point.l + _layer + (m) : 0))\n"
 #else
   "#define _index(a,m) ((a).i)\n"
 #endif
-  "#define forin2(a,b,c,d) for (int _i = 0; _i < c.length() - 1; _i++)"
-  "  { a = c[_i]; b = d[_i];\n"
   "#define endforin2() }\n"
-  "#define forin3(a,b,e,c,d,f) for (int _i = 0; _i < c.length() - 1; _i++)"
-  "  { a = c[_i]; b = d[_i]; e = f[_i];\n"
   "#define endforin3() }\n"
   "#define NOT_UNUSED(x)\n"
-  "#define pi 3.14159265359\n"
-  "#define nodata (1e30)\n"
+  "#define pi 3.14159265359f\n"
+  "#define nodata (1e30f)\n"
   "#define fabs(x) abs(x)\n"
-  "#define neighborp(_i,_j,_k) Point(point.i+_i,point.j+_j,point.level,point.n"
-#if LAYERS
-  ",point.l"
-#endif
-  ")\n"
   "const real z = 0.;\n"
   "const int ig = 0, jg = 0;\n"
-  "layout (location = 0) uniform ivec2 csOrigin = ivec2(0,0);\n"
-  "layout (location = 1) uniform vec2 vsOrigin = vec2(0.,0.);\n"
-  "layout (location = 2) uniform vec2 vsScale = vec2(1.,1.);\n"
+  "layout (location = 0) uniform ivec2 csOrigin = {0,0};\n"
+  "layout (location = 1) uniform vec2 vsOrigin = {0.,0.};\n"
+  "layout (location = 2) uniform vec2 vsScale = {1.,1.};\n"
   ;
 
 static inline int list_size (const External * i)
@@ -632,9 +638,6 @@ static bool is_boundary_attribute (const External * g)
 	   !strcmp (g->name, ".boundary_top")));
 }
 
-// fixme: for the moment only 'const int' are considered, this could be generalised
-#define IS_EXTERNAL_CONSTANT(g) ((g)->constant && (g)->type == sym_INT && !(g)->data)
-
 static
 void hash_external (Adler32Hash * hash, const External * g, const ForeachData * loop, int indent)
 {
@@ -784,18 +787,20 @@ static char * type_string (const External * g)
   return "unknown_type";
 }
 
-#define EXTERNAL_NAME(g) (g)->global == 2 ? "_loc_" : "", (g)->name, (g)->reduct ? "_in_" : ""
-
 trace
 char * build_shader (External * externals, const ForeachData * loop,
-		     const RegionParameters * region, const GLuint nwg[2])
+		     const RegionParameters * region, const unsigned nwg[2])
 {
   int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
   char s[30];
   snprintf (s, 19, "%d", nconst > 0 ? nconst : 1);
   char a[20];
   snprintf (a, 19, "%g", nconst > 0 ? _constant[0] : 0);
-  char * fs = str_append (NULL, "#version 430\n", glsl_preproc,
+  char * fs = str_append (NULL,
+#if !_CUDA
+                          "#version 430\n",
+#endif
+                          glsl_preproc,
 			  "const int _nconst = ", s, ";\n"
 			  "const real _constant[_nconst] = {", a);
   for (int i = 1; i < nconst; i++) {
@@ -803,8 +808,13 @@ char * build_shader (External * externals, const ForeachData * loop,
     fs = str_append (fs, ",", a);
   }
   fs = str_append (fs, "};\n"
+#if _CUDA
+                    "uniform struct { real * f; } _data"
+#else
 		   "layout(std430, binding = 0)"
-		   " restrict buffer _data_layout { real f[]; } _data");
+		   " restrict buffer _data_layout { real f[]; } _data"
+#endif
+                   );
   if (GPUContext.nssbo > 1) {
     snprintf (a, 19, "%d", GPUContext.nssbo);
     snprintf (s, 29, "%ld", GPUContext.max_ssbo_size/sizeof(real));
@@ -988,7 +998,7 @@ char * build_shader (External * externals, const ForeachData * loop,
 	snprintf (l, 19, "%d", level);
 	fs = str_append (fs,
 			 "const uint N = ", s, ", _depth = ", d, ";\n");
-	if (GPUContext.nssbo == 1) {
+	if (GPUContext.nssbo <= 1) {
 	  char size[30];
 	  snprintf (size, 29, "%ld", (size_t) field_size());	  
 	  fs = str_append (fs,
@@ -1003,11 +1013,13 @@ char * build_shader (External * externals, const ForeachData * loop,
 	}
 	fs = str_append (fs, "};\n");
 #endif // ifdef shift_level
-	snprintf (s, 19, "{%d,%d}", Dimensions.x, Dimensions.y);
+        snprintf (s, 19, "%d", Dimensions.x);
+        snprintf (d, 19, "%d", Dimensions.y);
 	fs = str_append (fs,
-			 "const ivec Dimensions = ", s, ";\n"
-			 "const uint NY = ", loop->face > 1 || loop->vertex ?
-			 "N*Dimensions.y + 1" : "N*Dimensions.y", ";\n");
+                         "const ivec Dimensions = {", s, ",", d, "};\n"
+			 "const uint NY = N*", d,
+                         loop->face > 1 || loop->vertex ? "+1" : "", ";\n");
+#if !_CUDA
 	if (GPUContext.fragment_shader)
 	  fs = str_append (fs, "in vec2 vsPoint;\n"
 			   "Point point = {int((vsPoint.x*vsScale.x + vsOrigin.x)*N*Dimensions.x)"
@@ -1030,6 +1042,7 @@ char * build_shader (External * externals, const ForeachData * loop,
 	  fs = str_append (fs, "layout (local_size_x = ", nwgx,
 			   ", local_size_y = ", nwgy, ") in;\n");
 	}
+#endif // !_CUDA
       }
       else if (g->type == sym_INT && !strcmp (g->name, "nl")) {
 
@@ -1070,13 +1083,6 @@ char * build_shader (External * externals, const ForeachData * loop,
 	  fs = str_append (fs, "[", s, "]");
 	}
 	fs = str_append (fs, ";\n");
-	if (g->reduct) {
-	  fs = str_append (fs, type, " ", g->global == 2 ? "_loc_" : "", g->name, " = ",
-			   EXTERNAL_NAME (g), ";\n");
-	  fs = str_append (fs, "const scalar ", g->name, "_out_ = ");
-	  fs = write_scalar (fs, g->s);
-	  fs = str_append (fs, ";\n");
-	}
       }
     }
     else { // scalar, vector and tensor fields
@@ -1141,24 +1147,15 @@ Shader * load_shader (const char * fs, uint32_t hash, const ForeachData * loop)
     fputs (fs, stderr);
   }
 #endif
-  GLuint id;
-  if (!GPUContext.fragment_shader)
-    id = loadNormalShader (NULL, fs);
-  else {
-    const char quad[] =
-      "#version 430\n"
-      "layout(location = 0) in vec3 vsPos;"
-      "out vec2 vsPoint;"
-      "void main() {"
-      "  vsPoint = vsPos.xy;"
-      "  gl_Position =  vec4(2.*vsPos.xy - vec2(1.), 0., 1.);"
-      "}";
-    id = loadNormalShader (quad, fs);
+  Shader * shader;
+  if (loop && loop->func) {
+    char func[strlen(loop->func) + 20];
+    sprintf (func, "%s_%d", loop->func, loop->line);
+    shader = load_normal_shader (fs, func, loop->fname, loop->line);
   }
-  Shader * shader = NULL;
-  if (id) {
-    shader = calloc (1, sizeof (Shader));
-    shader->id = id;
+  else
+    shader = load_normal_shader (fs, __func__, __FILE__, LINENO);
+  if (shader) {
     int ret;
     khiter_t k = kh_put (INT, gpu_grid->shaders, hash, &ret);
     assert (ret > 0);
@@ -1168,97 +1165,25 @@ Shader * load_shader (const char * fs, uint32_t hash, const ForeachData * loop)
   return shader;
 }
 
-void gpu_limits (FILE * fp)
-{
-  GLString * i = gpu_limits_list;
-  while (i->s) {
-    GLint val;
-    GL_C (glGetIntegerv (i->index, &val));  
-    fprintf (fp, "%s: %d\n", i->s, val);
-    i++;
-  }
-}
-
 void gpu_free()
 {
   if (!grid)
     return;
   free_boundaries();
-  Shader * shader;
-  int nshaders = 0;
-  kh_foreach_value (gpu_grid->shaders, shader,
-		    free (shader->uniforms);
-		    free (shader);
-		    nshaders++; );
+  if (gpu_grid->shaders) {
+    Shader * shader;
+    int nshaders = 0;
+    kh_foreach_value (gpu_grid->shaders, shader,
+                      free_shader (shader);
+                      nshaders++; );
 #if PRINTNSHADERS  
-  fprintf (stderr, "# %d shaders\n", nshaders);
+    fprintf (stderr, "# %d shaders\n", nshaders);
 #endif
-  kh_destroy (INT, gpu_grid->shaders);
-  gpu_grid->shaders = NULL;
-  if (gpu_grid->reduct[0]) {
-    GL_C (glDeleteBuffers (2, gpu_grid->reduct));
-    for (int i = 0; i < 2; i++)
-      gpu_grid->reduct[i] = 0;
+    kh_destroy (INT, gpu_grid->shaders);
+    gpu_grid->shaders = NULL;
+    gpu_free_context (gpu_grid->data);
+    gpu_grid->data = NULL;
   }
-  if (GPUContext.nssbo) {
-    GL_C (glDeleteBuffers (GPUContext.nssbo, GPUContext.ssbo));
-    free (GPUContext.ssbo);
-    GPUContext.ssbo = NULL;
-    GPUContext.nssbo = 0;
-  }
-  GPUContext.current_size = 0;
-}
-
-void gpu_init()
-{
-  /* GPUs drivers often generate floating-point exceptions... turn them off */
-  disable_fpe (FE_DIVBYZERO|FE_INVALID);
-  if (!GPUContext.window) {
-    if (!glfwInit ())
-      exit (1);
-
-    glfwWindowHint (GLFW_VISIBLE, GL_FALSE);
-    glfwWindowHint (GLFW_RESIZABLE, GL_FALSE);
-    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint (GLFW_SAMPLES, 0);
-    glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#if DEBUG_OPENGL    
-    glfwWindowHint (GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#endif
-    
-    GPUContext.window = glfwCreateWindow (1, 1, "GPU grid", NULL, NULL);
-    if (!GPUContext.window) {
-      glfwTerminate();
-      fprintf (stderr, "GLFW: error: could not create window!\n");
-      exit (1);
-    }
-    glfwMakeContextCurrent (GPUContext.window);
-
-    // load GLAD.
-    assert (gladLoadGLLoader ((GLADloadproc)glfwGetProcAddress));
-    assert (glBindImageTexture);
-
-#if DEBUG_OPENGL    
-    GLint flags;
-    GL_C (glGetIntegerv (GL_CONTEXT_FLAGS, &flags));
-    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
-      GL_C (glEnable(GL_DEBUG_OUTPUT));
-      GL_C (glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS));
-      GL_C (glDebugMessageCallback (GLDebugMessageCallback, NULL));
-      GL_C (glDebugMessageControl (GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE));
-    }
-#endif // DEBUG_OPENGL
-
-    free_solver_func_add (gpu_free);
-    free_solver_func_add (gpu_free_solver);
-  }
-  gpu_grid->shaders = kh_init (INT);
-  for (int i = 0; i < 2; i++)
-    gpu_grid->reduct[i] = 0;
-    
-  realloc_ssbo();
 }
 
 void gpu_free_grid (void)
@@ -1290,100 +1215,18 @@ attribute {
   } gpu;
 }
 
-trace
-static void gpu_cpu_sync_scalar (scalar s, char * sep, GLenum mode)
-{
-  assert ((mode == GL_MAP_READ_BIT && s.gpu.stored < 0) ||
-	  (mode == GL_MAP_WRITE_BIT && s.gpu.stored > 0));
-  if (s.gpu.stored > 0 && !(s.stencil.bc & s_centered))
-    boundary ({s});
-  GL_C (glMemoryBarrier (GL_BUFFER_UPDATE_BARRIER_BIT));
-  size_t size = (size_t)field_size()*sizeof(real), offset = s.i*size, totalsize = s.block*size;
-  char * cd = grid_data() + offset;
-  int index = offset/GPUContext.max_ssbo_size;
-  offset -= index*GPUContext.max_ssbo_size;
-  while (totalsize) {
-    GL_C (glBindBuffer (GL_SHADER_STORAGE_BUFFER, GPUContext.ssbo[index]));
-    size_t size = min (totalsize, GPUContext.max_ssbo_size - offset);
-
-    //    fprintf (stderr, "map %d %ld %ld\n", index, offset, size);
-    
-    char * gd = glMapBufferRange (GL_SHADER_STORAGE_BUFFER, offset, size, mode);
-    assert (gd);
-    if (mode == GL_MAP_READ_BIT)
-      memcpy (cd, gd, size);
-    else if (mode == GL_MAP_WRITE_BIT)
-      memcpy (gd, cd, size);
-    else
-      assert (false);
-    assert (glUnmapBuffer (GL_SHADER_STORAGE_BUFFER));
-    cd += size, totalsize -= size, offset = 0, index++;
-  }
-  GL_C (glBindBuffer (GL_SHADER_STORAGE_BUFFER, 0));
-  if (sep)
-    fprintf (stderr, "%s%s", sep, s.name);
-  s.gpu.stored = 0;
-}
-
-static void gpu_cpu_sync (scalar * list, GLenum mode, const char * fname, int line)
-{
-#if PRINTCOPYGPU
-  bool copy = false;
-#endif
-  for (scalar s in list)
-    if (((s.stencil.io & s_input) || (s.stencil.io & s_output)) &&
-        ((mode == GL_MAP_READ_BIT && s.gpu.stored < 0) ||
-         (mode == GL_MAP_WRITE_BIT && s.gpu.stored > 0))) {
-#if PRINTCOPYGPU
-      if (!copy) {
-	fprintf (stderr, "%s:%d: %s ", fname, line,
-		 mode == GL_MAP_READ_BIT ? "importing" : "exporting");
-	copy = true;
-	gpu_cpu_sync_scalar (s, "{", mode);
-      }
-      else
-	gpu_cpu_sync_scalar (s, ",", mode);
-#else
-      gpu_cpu_sync_scalar (s, NULL, mode);
-#endif
-    }
-#if PRINTCOPYGPU
-  if (copy)
-    fprintf (stderr, "} %s GPU\n", mode == GL_MAP_READ_BIT ? "from" : "to");
-#endif
-}
+#define reset(...) reset_gpu (__VA_ARGS__)
 
 trace
 void reset_gpu (void * alist, double val)
 {
-  size_t size = (size_t)field_size()*sizeof(real);
   scalar * list = alist;
   for (scalar s in list)
     if (!is_constant(s)) {
-      size_t offset = s.i*size, totalsize = max(s.block, 1)*size;
-      int index = offset/GPUContext.max_ssbo_size;
-      offset -= index*GPUContext.max_ssbo_size;
-      while (totalsize) {
-	GL_C (glBindBuffer (GL_SHADER_STORAGE_BUFFER, GPUContext.ssbo[index]));
-	size_t size = min (totalsize, GPUContext.max_ssbo_size - offset);
-#if SINGLE_PRECISION
-	float fval = val;
-	GL_C (glClearBufferSubData (GL_SHADER_STORAGE_BUFFER, GL_R32F,
-				    offset, size,
-				    GL_RED, GL_FLOAT, &fval));
-#else
-	GL_C (glClearBufferSubData (GL_SHADER_STORAGE_BUFFER, GL_RG32UI,
-				    offset, size,
-				    GL_RG_INTEGER, GL_UNSIGNED_INT, &val));      
-#endif
-	totalsize -= size, offset = 0, index++;
-      }
+      reset_scalar (s.i, s.block, field_size(), val);
       s.gpu.stored = -1;
     }
-  GL_C (glBindBuffer (GL_SHADER_STORAGE_BUFFER, 0));
 }
-
-#define reset(...) reset_gpu (__VA_ARGS__)
 
 void gpu_init_grid (int n)
 {
@@ -1392,7 +1235,14 @@ void gpu_init_grid (int n)
   gpu_free_grid();
   init_grid (n);
   grid = realloc (grid, sizeof (GridGPU));
-  gpu_init();
+  /* GPUs drivers often generate floating-point exceptions... turn them off */
+  disable_fpe (FE_DIVBYZERO|FE_INVALID);
+  if (gpu_init_context (&gpu_grid->data)) {
+    free_solver_func_add (gpu_free);
+    free_solver_func_add (gpu_free_solver);
+  }
+  gpu_grid->shaders = kh_init (INT);
+  realloc_ssbo (field_size());
 }
 
 // overload the default various functions
@@ -1400,8 +1250,6 @@ void gpu_init_grid (int n)
 #define init_grid(n)  gpu_init_grid(n)
 #undef  free_grid
 #define free_grid()   gpu_free_grid()
-
-#include "reduction.h"
 
 static External * append_external (External * externals, External ** end, External * g)
 {
@@ -1503,6 +1351,19 @@ static External * merge_externals (External * externals, const ForeachData * loo
   return merged;
 }
 
+static char * shader_append_func (char * s, const ForeachData * loop)
+{
+#if _CUDA
+  char func[strlen(loop->func) + 20];
+  sprintf (func, "%s_%d", loop->func, loop->line);
+  return str_append (s,
+                     "extern \"C\" __global__\n"
+                     "void ", func, "() {\n");
+#else // !_CUDA
+  return str_append (s, "void main() {\n");
+#endif
+}
+
 trace
 static Shader * compile_shader (ForeachData * loop,
 				uint32_t hash,
@@ -1567,7 +1428,7 @@ static Shader * compile_shader (ForeachData * loop,
   ## Number of compute shader work groups and groups */
 
   static const int NWG[2] = {16, 16};
-  GLuint ng[2], nwg[2];
+  unsigned ng[2], nwg[2];
   int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
   int * dims = &Dimensions.x;
   if (loop->face || loop->vertex)
@@ -1611,19 +1472,30 @@ static Shader * compile_shader (ForeachData * loop,
       }
     shader = str_append (shader, ") {\n");
   }
-  else  
-    shader = str_append (shader, "void main() {\n");
-  
+  else
+    shader = shader_append_func (shader, loop);
+
   if (!GPUContext.fragment_shader) {
     char d[20];
     snprintf (d, 19, "%d", region->level > 0 ? region->level - 1 : depth());
-    shader = str_append (shader, "Point point = {csOrigin.x + int(gl_GlobalInvocationID.y) + GHOSTS,"
+    shader = str_append (shader,
+#if _CUDA
+                         "Point point = {csOrigin.x + int(blockIdx.y * blockDim.y + threadIdx.y) + GHOSTS,"
+			 "csOrigin.y + int(blockIdx.x * blockDim.x + threadIdx.x) + GHOSTS,", d,
+#if MULTIGRID
+			 ",{(1<<",d,")*Dimensions.x,(1<<",d,")*Dimensions.y}"
+#else
+			 ",N"
+#endif
+#else // !_CUDA
+                         "Point point = {csOrigin.x + int(gl_GlobalInvocationID.y) + GHOSTS,"
 			 "csOrigin.y + int(gl_GlobalInvocationID.x) + GHOSTS,", d,
 #if MULTIGRID
 			 ",ivec2((1<<",d,")*Dimensions.x,(1<<",d,")*Dimensions.y)"
 #else
 			 ",N"
 #endif
+#endif // !_CUDA
 #if LAYERS
 			 ",0};\n"
 #else
@@ -1636,6 +1508,18 @@ static Shader * compile_shader (ForeachData * loop,
 		       "point.j < N*Dimensions.y + 2*GHOSTS) {\n");
   if (loop->vertex)
     shader = str_append (shader, "  int ig = -1, jg = -1;\n");
+#if 1
+  for (const External * g = merged; g; g = g->next)
+    if (g->reduct) {
+      shader = str_append (shader, type_string (g), " ",
+                           g->global == 2 ? "_loc_" : "", g->name, " = ",
+                           EXTERNAL_NAME (g), ";\n");
+      shader = str_append (shader, "const scalar ", g->name, "_out_ = ");
+      shader = write_scalar (shader, g->s);
+      shader = str_append (shader, ";\n");
+    }
+#endif
+  
   shader = str_append (shader, kernel);
   shader = str_append (shader, "\nif (point.j - GHOSTS < NY) {");
   for (const External * g = merged; g; g = g->next)
@@ -1649,7 +1533,8 @@ static Shader * compile_shader (ForeachData * loop,
 		       "}}\n");
 
   if (local) {
-    shader = str_append (shader, "void main(){_loop(");
+    shader = shader_append_func (shader, loop);
+    shader = str_append (shader, "_loop(");
     local = 1;
     for (const External * g = merged; g; g = g->next)
       if (g->global == 2)
@@ -1661,55 +1546,8 @@ static Shader * compile_shader (ForeachData * loop,
   loop->data = s;
   if (!s)
     return NULL;
-  s->ng[0] = ng[0], s->ng[1] = ng[1];
-  
-  /**
-  ## Make list of uniforms */
 
-  for (External * g = merged; g; g = g->next)
-    g->used = 0;
-  int index = 1;
-  for (External * g = externals; g && g->name; g++)
-    g->used = index++;
-  int nuniforms = 0;
-  for (const External * g = merged; g; g = g->next) {
-    if (g->name[0] == '.') continue;
-    if (IS_EXTERNAL_CONSTANT(g)) continue;
-    if (g->type == sym_function_declaration || g->type == sym_function_definition) continue;
-    if (g->type == sym_INT && (!strcmp (g->name, "N") ||
-			       !strcmp (g->name, "nl") ||
-			       !strcmp (g->name, "bc_period_x") ||
-			       !strcmp (g->name, "bc_period_y")))
-      continue;
-    if (g->type == sym_INT ||
-	g->type == sym_LONG ||
-	g->type == sym_FLOAT ||
-	g->type == sym_DOUBLE ||
-	g->type == sym__COORD ||
-	g->type == sym_COORD ||
-	g->type == sym_BOOL ||
-	g->type == sym_VEC4) {
-      char * name = str_append (NULL, EXTERNAL_NAME (g));
-      int location = glGetUniformLocation (s->id, name);
-      sysfree (name);
-      if (location >= 0) {
-	// fprintf (stderr, "%s:%d: %s\n", loop->fname, loop->line, name);
-	// not an array or just a one-dimensional array
-	assert (!g->nd);
-	assert (!g->data || ((int *)g->data)[1] == 0);
-	int nd = g->data ? ((int *)g->data)[0] : 1;
-	s->uniforms = realloc (s->uniforms, (nuniforms + 2)*sizeof(MyUniform));
-	s->uniforms[nuniforms] = (MyUniform){
-	  .location = location, .type = g->type, .nd = nd,
-	  .local = g->global == 1 ? -1 : g->used - 1,
-	  .pointer = g->global == 1 ? g->pointer : NULL };
-	s->uniforms[nuniforms + 1].type = 0;
-	nuniforms++;
-	// uniforms refering to local variables must be in the 'externals' local list
-	assert (g->global == 1 || g->used);
-      }
-    }
-  }
+  finalize_shader (s, externals, merged, ng, nwg);
   
   return s;
 }
@@ -1722,6 +1560,41 @@ void free_reduction_fields (const External * externals)
       scalar s = g->s;
       delete ({s});
     }
+}
+
+trace
+static void gpu_cpu_sync (scalar * list, SyncMode mode, const char * fname, int line)
+{
+#if PRINTCOPYGPU
+  bool copy = false;
+#endif
+  for (scalar s in list)
+    if (((s.stencil.io & s_input) || (s.stencil.io & s_output)) &&
+        ((mode == GPU_READ && s.gpu.stored < 0) ||
+         (mode == GPU_WRITE && s.gpu.stored > 0))) {
+      if (s.gpu.stored > 0 && !(s.stencil.bc & s_centered))
+        boundary ({s});
+#if PRINTCOPYGPU
+      if (!copy) {
+	fprintf (stderr, "%s:%d: %s ", fname, line,
+		 mode == GPU_READ ? "importing" : "exporting");
+	copy = true;
+	gpu_cpu_sync_scalar (s.i, s.block, grid_data(), mode);
+        fprintf (stderr, "{%s", s.name);
+      }
+      else {
+	gpu_cpu_sync_scalar (s.i, s.block, grid_data(), mode);
+        fprintf (stderr, ",%s", s.name);
+      }
+#else
+      gpu_cpu_sync_scalar (s.i, s.block, grid_data(), field_size(), mode);
+#endif
+      s.gpu.stored = 0;
+    }
+#if PRINTCOPYGPU
+  if (copy)
+    fprintf (stderr, "} %s GPU\n", mode == GPU_READ ? "from" : "to");
+#endif
 }
 
 trace
@@ -1815,8 +1688,8 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
       return NULL;
     }
   }
-    
-  gpu_cpu_sync (baseblock, GL_MAP_WRITE_BIT, loop->fname, loop->line);
+
+  gpu_cpu_sync (baseblock, GPU_WRITE, loop->fname, loop->line);
 
   /**
   ## Apply boundary conditions
@@ -1869,90 +1742,8 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
     apply_bc_list = loop->dirty;
   }
   
-  /**
-  For the Intel driver, it looks like the next line is necessary to
-  ensure proper synchronisation of the compute shader and fragment
-  shader (for example when using output_ppm() for interactive
-  display). The nvidia driver somehow does not need this... */
-
-  if (shader->id != GPUContext.current_shader) {
-    GL_C (glBindBufferBase (GL_SHADER_STORAGE_BUFFER, 0, 0));
-    GL_C (glUseProgram (shader->id));
-    for (int i = 0; i < GPUContext.nssbo; i++)
-      GL_C (glBindBufferBase (GL_SHADER_STORAGE_BUFFER, i, GPUContext.ssbo[i]));
-    GPUContext.current_shader = shader->id;
-  }
-    
-  /**
-  ## Set uniforms */
-
-  for (const MyUniform * g = shader->uniforms; g && g->type; g++) {
-    void * pointer = g->pointer;
-    if (!pointer) {
-      assert (g->local >= 0);
-      pointer = externals[g->local].pointer;
-    }
-    switch (g->type) {
-    case sym_INT:
-      glUniform1iv (g->location, g->nd, pointer); break;
-    case sym_FLOAT:
-      glUniform1fv (g->location, g->nd, pointer); break;
-    case sym_VEC4:
-      glUniform4fv (g->location, g->nd, pointer); break;
-    case sym_BOOL: {
-      int p[g->nd];
-      bool * data = pointer;
-      for (int i = 0; i < g->nd; i++)
-	p[i] = data[i];
-      glUniform1iv (g->location, g->nd, p);
-      break;
-    }
-    case sym_LONG: {
-      int p[g->nd];
-      long * data = pointer;
-      for (int i = 0; i < g->nd; i++)
-	p[i] = data[i];
-      glUniform1iv (g->location, g->nd, p);
-      break;
-    }
-#if SINGLE_PRECISION
-    case sym_DOUBLE: {
-      float p[g->nd];
-      double * data = pointer;
-      for (int i = 0; i < g->nd; i++)
-	p[i] = data[i];
-      glUniform1fv (g->location, g->nd, p);
-      break;
-    }
-    case sym__COORD: {
-      float p[2*g->nd];
-      double * data = pointer;
-      for (int i = 0; i < 2*g->nd; i++)
-	p[i] = data[i];
-      glUniform2fv (g->location, g->nd, p);
-      break;
-    }
-    case sym_COORD: {
-      float p[3*g->nd];
-      double * data = pointer;
-      for (int i = 0; i < 3*g->nd; i++)
-	p[i] = data[i];
-      glUniform3fv (g->location, g->nd, p);
-      break;
-    }
-#else // DOUBLE_PRECISION
-    case sym_DOUBLE:
-      glUniform1dv (g->location, g->nd, pointer); break;
-    case sym__COORD:
-      glUniform2dv (g->location, g->nd, pointer); break;
-    case sym_COORD:
-      glUniform3dv (g->location, g->nd, pointer); break;
-#endif // DOUBLE_PRECISION
-    default:
-      assert (false);
-    }
-  }
-
+  post_setup_shader (shader, externals);
+  
   return shader;
 }
 
@@ -1965,43 +1756,9 @@ static bool doloop_on_gpu (ForeachData * loop, const RegionParameters * region,
     return false;
   
   /**
-  ## Render 
+  ## Render */
 
-  If this is a `foreach_point()` iteration, we draw a single point */
-
-  int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
-  if (region->n.x == 1 && region->n.y == 1) {
-    int csOrigin[] = {
-      (region->p.x - X0)/L0*Nl*Dimensions.x,
-      (region->p.y - Y0)/L0*Nl*Dimensions.x
-    };
-    GL_C (glUniform2iv (0, 1, csOrigin));
-    assert (!GPUContext.fragment_shader);
-    GL_C (glMemoryBarrier (GL_SHADER_STORAGE_BARRIER_BIT));
-    GL_C (glDispatchCompute (1, 1, 1));
-  }
-
-  /**
-  This is a region */
-  
-  else if (region->n.x || region->n.y) {
-    float vsScale[] = {
-      (region->box[1].x - region->box[0].x)/L0,
-      (region->box[1].y - region->box[0].y)/L0
-    };
-    float vsOrigin[] = { (region->box[0].x - X0)/L0, (region->box[0].y - Y0)/L0 };
-    GL_C (glUniform2fv (1, 1, vsOrigin));
-    GL_C (glUniform2fv (2, 1, vsScale));
-    assert (GPUContext.fragment_shader);
-    GL_C (glMemoryBarrier (GL_SHADER_STORAGE_BARRIER_BIT));
-    GL_C (glDrawArrays (GL_TRIANGLES, 0, 6));
-  }
-
-  else {
-    assert (!GPUContext.fragment_shader);
-    GL_C (glMemoryBarrier (GL_SHADER_STORAGE_BARRIER_BIT));
-    GL_C (glDispatchCompute (shader->ng[0], shader->ng[1], 1));
-  }
+  int Nl = run_shader (shader, region);
 
   /**
   ## Perform reductions and cleanup */
@@ -2018,6 +1775,7 @@ static bool doloop_on_gpu (ForeachData * loop, const RegionParameters * region,
     if (g->reduct) {
       scalar s = g->s;
       double result = gpu_reduction (field_offset(s, region->level), g->reduct, region,
+                                     gpu_grid->data,
 				     loop->face == 1 ?  (Nl*Dimensions.x + 1)*Nl*Dimensions.y :
 				     loop->face == 2 ?   Nl*Dimensions.x*(Nl*Dimensions.y + 1) :
 				     loop->face == 3 || loop->vertex ?
@@ -2067,7 +1825,7 @@ bool gpu_end_stencil (ForeachData * loop,
     free (loop->dirty), loop->dirty = NULL;
   }
   else {
-    gpu_cpu_sync (baseblock, GL_MAP_READ_BIT, loop->fname, loop->line);
+    gpu_cpu_sync (baseblock, GPU_READ, loop->fname, loop->line);
     boundary_stencil (loop);
   }
   

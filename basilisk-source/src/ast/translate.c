@@ -804,7 +804,7 @@ static Field * field_append (Field ** fields, Ast * identifier,
 
 typedef struct {
   int dimension;
-  bool nolineno, parallel, cpu, gpu;
+  bool nolineno, parallel, cpu, gpu, glsl, fp32;
   Field * constants;
   int constants_index, fields_index, nboundary;
   Ast * init_solver, * init_events, * init_fields, * last_events;
@@ -3888,7 +3888,7 @@ static void stencils (Ast * n, Stack * stack, void * data)
 	str_prepend (params, "call(", par, ",(External[]){");
 	str_append (params, "{0}},");
 	if (gpu)
-	  params = ast_kernel (foreach, params, d->nolineno, NULL);
+	  params = ast_kernel (foreach, params, (KernelOptions){d->nolineno, d->glsl, d->fp32}, NULL);
 	else
 	  str_append (params, "NULL");
 	str_append (params, ");");
@@ -5030,7 +5030,7 @@ Called by [qcc](/src/qcc.c) to trigger the translation. */
 AstRoot * endfor (FILE * fin, FILE * fout,
 		  const char * grid, int dimension,
 		  bool nolineno, bool progress, bool catch,
-		  bool parallel, bool cpu, bool gpu,
+		  bool parallel, bool cpu, bool gpu, bool glsl, bool fp32,
 		  bool prepost,
 		  FILE * swigfp, char * swigname)
 {
@@ -5066,7 +5066,7 @@ AstRoot * endfor (FILE * fin, FILE * fout,
 
   TranslateData data = {
     .dimension = dimension, .nolineno = nolineno,
-    .parallel = parallel, .cpu = cpu, .gpu = gpu,
+    .parallel = parallel, .cpu = cpu, .gpu = gpu, .glsl = glsl, .fp32 = fp32,
     .constants_index = 0, .fields_index = 0, .nboundary = 0,
     // fixme: splitting of events and fields is not used yet
     .init_solver = NULL, .init_events = NULL, .init_fields = NULL,
@@ -5142,7 +5142,7 @@ AstRoot * endfor (FILE * fin, FILE * fout,
       Ast * func = ast_parent (*name, sym_function_definition);
       ast_after (m, "register_function ((void (*)(void))", ast_terminal (*name)->start,
 		 ",\"", ast_terminal (*name)->start, "\",");
-      char * kernel = ast_kernel (func, NULL, nolineno, *name);
+      char * kernel = ast_kernel (func, NULL, (KernelOptions){nolineno, glsl, fp32}, *name);
       char * references = ast_external_references (func, NULL, data.functions);
       ast_after (m, "$(", kernel, "),");
       free (kernel);

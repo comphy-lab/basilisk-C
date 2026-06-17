@@ -7,8 +7,10 @@ int main (int argc, char * argv[])
 {
   init_grid (argc > 1 ? atoi(argv[1]) : 1024);
 
+#if !_CUDA // fixme: does not work with CUDA yet
   periodic (right);
   periodic (top);
+#endif
   
   size (2.*pi);
 

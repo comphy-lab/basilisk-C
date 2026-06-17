@@ -30,6 +30,27 @@ The simulation can also be started in 'pause' mode using
 
 before calling 'run()'. */
 
+#include <grid/gpu/glad.h>
+#include <GLFW/glfw3.h>
+#if DEBUG_OPENGL
+#include <grid/gpu/debug.h>
+#endif
+
+void gpu_check_error (const char * stmt, const char * fname, int line);
+
+#ifdef NDEBUG
+// helper macro that checks for GL errors.
+#define GL_C(stmt) do {	stmt; } while (0)
+#else
+// helper macro that checks for GL errors.
+#define GL_C(stmt) do {							\
+    stmt;								\
+    gpu_check_error (#stmt, __FILE__, LINENO);				\
+  } while (0)
+#endif
+
+extern GLFWwindow * opengl_window;
+
 typedef struct {
   float frameStartTime;
   GLFWwindow * window;
@@ -117,7 +138,7 @@ void output_ppm_gpu (OutputPPMGPU * display,
     
     if (!display->window) {
       glfwWindowHint (GLFW_VISIBLE, fps ? GL_TRUE : GL_FALSE);
-      display->window = glfwCreateWindow (cn.x, cn.y, f.name, NULL, GPUContext.window);
+      display->window = glfwCreateWindow (cn.x, cn.y, f.name, NULL, opengl_window);
       glfwSetKeyCallback (display->window, key_callback);
       glfwMakeContextCurrent (display->window);
       
@@ -248,7 +269,7 @@ void output_ppm_gpu (OutputPPMGPU * display,
 	fflush (fp);
     }
     
-    glfwMakeContextCurrent (GPUContext.window);
+    glfwMakeContextCurrent (opengl_window);
   }
 
   if (fps) {

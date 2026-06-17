@@ -1,4 +1,4 @@
-double cpu_reduction (GLuint * src, size_t offset, size_t nb, const char op)
+static double cpu_reduction (GLuint * src, size_t offset, size_t nb, const char op)
 {
   GL_C (glMemoryBarrier (GL_BUFFER_UPDATE_BARRIER_BIT));
   double result;
@@ -38,14 +38,15 @@ double cpu_reduction (GLuint * src, size_t offset, size_t nb, const char op)
   return result;
 }
 
-double gpu_reduction (size_t offset, const char op, const RegionParameters * region, size_t nb)
+double gpu_reduction (size_t offset, const char op, const RegionParameters * region,
+                      GPUData * data, size_t nb)
 {
   const int stride = 64, nwgr = 64;
   bool is_foreach_point = (region->n.x == 1 && region->n.y == 1);
   if (!is_foreach_point && nb < nwgr*stride)
-    return cpu_reduction (GPUContext.ssbo, offset, nb, op);
-  
-  GLuint * br = gpu_grid->reduct;
+    return cpu_reduction (ssbo, offset, nb, op);
+
+  GLuint * br = data->reduct;
   if (!br[0]) {
     GL_C (glGenBuffers (2, br));
     for (int i = 0; i < 2; i++) {
@@ -134,7 +135,7 @@ double gpu_reduction (size_t offset, const char op, const RegionParameters * reg
   int start = offset*sizeof(real)/GPUContext.max_ssbo_size;
   offset -= start*GPUContext.max_ssbo_size/sizeof(real);
   for (int i = start; i < GPUContext.nssbo; i++)
-    GL_C (glBindBufferBase (GL_SHADER_STORAGE_BUFFER, 1 + i - start, GPUContext.ssbo[i]));
+    GL_C (glBindBufferBase (GL_SHADER_STORAGE_BUFFER, 1 + i - start, ssbo[i]));
 
   if (is_foreach_point) {
     real result = 0.;

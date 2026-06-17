@@ -674,6 +674,8 @@ int main (int argc, char * argv[])
   scalar p[], tmp[];
   reset ({p}, 0.);
 
+  device_synchronize(); // make sure rendering is done on the device
+  
   timer t = timer_start();
   int iter;
   for (iter = 0; iter < 40000*64/N; iter++) {
@@ -698,9 +700,7 @@ int main (int argc, char * argv[])
 #endif
   }
 
-#if _GPU
-  glFinish(); // make sure rendering is done on the GPU
-#endif
+  device_synchronize(); // make sure rendering is done on the device
   
   double elapsed = timer_elapsed (t);
   fprintf (stdout, "N: %d elapsed: %g speed: %g\n",

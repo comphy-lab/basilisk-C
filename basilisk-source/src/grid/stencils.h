@@ -52,6 +52,7 @@ struct _External {
 
 typedef struct {
   const char * fname; // name of the source file
+  const char * func;  // name of the function containing the loop
   int line;           // line number in the source
   int first;          // is this the first time the loop is called?
   int face;           // the face component(s) being traversed
@@ -329,7 +330,7 @@ macro2 foreach_stencil (char flags, Reduce reductions)
   {
     static int _first = 1.;
     ForeachData _loop = {
-      .fname = S__FILE__, .line = S_LINENO, .first = _first
+      .fname = S__FILE__, .func = S__func__, .line = S_LINENO, .first = _first
     };
     if (baseblock)
       for (scalar s = baseblock[0], * i = baseblock; s.i >= 0; i++, s = *i) {

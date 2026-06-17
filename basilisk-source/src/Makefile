@@ -33,7 +33,7 @@ qcc: qcc.c include.o postproc.o ast/libast.a config ast/ast.h
 		-DBASILISK="\"$(BASILISK)\"" \
 		qcc.c include.o postproc.o -o qcc -Last -last -lm
 
-include.o: include.c
+include.o: include.c include.h
 	$(CC) $(CFLAGS) -DLIBDIR=\"`pwd`\" -c include.c
 
 postproc.o: postproc.c

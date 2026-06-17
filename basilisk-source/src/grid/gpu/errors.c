@@ -745,9 +745,10 @@ char *yytext;
 #line 5 "errors.lex"
 
   /**
-  # Error message parsing for compilation of GLSL code on GPUs
+  # Error message parsing for compilation of GLSL or CUDA code on GPUs
   */
   static char * sout;
+  static const char * slang;
   static char * fname;
   static int line;
   
@@ -856,8 +857,8 @@ char *yytext;
     free (src);
     return merged;
   }
-#line 860 "errors.c"
 #line 861 "errors.c"
+#line 862 "errors.c"
 
 #define INITIAL 0
 
@@ -1077,10 +1078,10 @@ YY_DECL
 		}
 
 	{
-#line 125 "errors.lex"
+#line 126 "errors.lex"
 
 
-#line 1084 "errors.c"
+#line 1085 "errors.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1150,7 +1151,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 127 "errors.lex"
+#line 128 "errors.lex"
 {
   char * sline = yytext;
   while (!strchr ("0123456789", *sline)) sline++;
@@ -1167,7 +1168,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 140 "errors.lex"
+#line 141 "errors.lex"
 {
   if (0) // !strncmp (yytext, "@error ", 7))
     yytext += 6;
@@ -1180,7 +1181,9 @@ YY_RULE_SETUP
     char s[81];
     snprintf (s, 80, "%d", line);
     sout = str_append (sout, s);
-    sout = str_append (sout, ": GLSL: ");
+    sout = str_append (sout, ": ");
+    sout = str_append (sout, slang);
+    sout = str_append (sout, ": ");
   }
   *strchr (yytext + 1, '@') = '\0';
   sout = str_append (sout, yytext + 1);
@@ -1190,20 +1193,20 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 159 "errors.lex"
+#line 162 "errors.lex"
 { line++; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 161 "errors.lex"
+#line 164 "errors.lex"
 ; // very important!!
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 163 "errors.lex"
+#line 166 "errors.lex"
 ECHO;
 	YY_BREAK
-#line 1207 "errors.c"
+#line 1210 "errors.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2222,16 +2225,18 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 163 "errors.lex"
+#line 166 "errors.lex"
 
 
-char * gpu_errors (const char * errors, const char * source, char * fout)
+char * gpu_errors (const char * errors, const char * source, char * fout,
+                   const char * lang)
 {
   if (0) yyunput (0, NULL); // just prevents 'yyunput unused' compiler warning
 
   char * merged = merge (source, errors);
   sout = fout;
   sout = str_append (NULL, "");
+  slang = lang;
   YY_BUFFER_STATE buf = yy_scan_string (merged);
   fname = NULL;
   line = 1;
