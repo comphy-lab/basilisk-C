@@ -226,7 +226,10 @@ apply_patches_from_dir() {
   fi
 
   local patch_files
-  patch_files=($(ls "$patches_dir"/*.patch 2>/dev/null | sort))
+  patch_files=()
+  while IFS= read -r patch_file; do
+    patch_files+=("$patch_file")
+  done < <(find "$patches_dir" -maxdepth 1 -type f -name '*.patch' | sort)
 
   if [[ ${#patch_files[@]} -eq 0 ]]; then
     print_yellow "Warning: No patches found in $patches_dir"
@@ -273,7 +276,11 @@ write_lock_stamp() {
   local applied_patches=()
   local skipped_patches=()
 
-  patch_files=($(ls "$patches_dir"/*.patch 2>/dev/null | sort))
+  if [[ -d "$patches_dir" ]]; then
+    while IFS= read -r patch_file; do
+      patch_files+=("$patch_file")
+    done < <(find "$patches_dir" -maxdepth 1 -type f -name '*.patch' | sort)
+  fi
   for patch_file in "${patch_files[@]}"; do
     local patch_name
     patch_name=$(basename "$patch_file")
