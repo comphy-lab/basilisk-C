@@ -1,4 +1,4 @@
-pristine:f7a1cc67109843cfa8c25a69d3b8ac833e0076701892a0c86d9a9faedd178168
+pristine:3dd972598062fabca037027752bfbf988421f2f74ebc5903d7a0b68b0b03fa73
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -285,3 +285,18 @@ Stephane Popinet <popinet@basilisk.fr>**20260609173440
  Ignore-this: d46ab35c7d9590149cf136c0beabecfe7efc0c24e9a2286a7ef617b8a33d1865fd753208d90a2a13
 ] 
 hash: 0000006382-430d0b69758c2a4cb5f8b616e4e264174e29ec513887cda6cb719faf5627f75b
+[Free the distance surface only once when using multiroot multigrid
+Stephane Popinet <popinet@basilisk.fr>**20260618090126
+ Ignore-this: 65621ee2dc843dfdb4d620f49cb2d9f74b12e42340fe9061754743f79ff2fc1effd080075be7b943
+] 
+hash: 0000000566-a63a8a5a4e9caad3891d648eb8e20aed5f249dca0a62b7c951edcf74be68e925
+[Optimised CUDA driver through elimination of unnecessary "uniforms" updates
+Stephane Popinet <popinet@basilisk.fr>**20260618162621
+ Ignore-this: f1535dbc7ad8b40bbefe4ba08597dc860be7189748a206924c1e535896e7f7884dac7e12903af452
+] 
+hash: 0000002249-135cffb72348cb8b1a4631355fc49e8d932e700afbd89e293bfcb2658a004361
+[The turbulence benchmark ignores the startup cost
+Stephane Popinet <popinet@basilisk.fr>**20260618163334
+ Ignore-this: daed2492cd1120d940c7ca3b68b6296b33ab871d557769275af632d86951be781b815a34ec899da4
+] 
+hash: 0000000730-fbd098eae3738189015852d8b3b04f938b7d9f436a91e53405b4da8387ed9904

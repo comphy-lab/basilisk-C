@@ -102,19 +102,30 @@ typedef struct {
   CUdeviceptr location;
   int type, nd, local;
   size_t size;
-  void * pointer;
+  void * pointer, * last;
 } MyUniform;
 
 struct _Shader {
   unsigned ng[2], nwg[2];
-  CUdeviceptr _data, csOrigin;
+  CUdeviceptr _data, csOrigin, ssbo;
   MyUniform * uniforms;
   CUmodule module;
   CUfunction kernel;
 };
 
+static void * memcpycheck (CUdeviceptr location, void * pointer, void * last, size_t size)
+{
+  if (last && !memcmp (pointer, last, size))
+    return last;
+  CUDA_CHECK (cuMemcpyHtoDAsync (location, pointer, size, stream));
+  if (!last) last = malloc (size);
+  return memcpy (last, pointer, size);
+}
+
 void free_shader (Shader * s)
 {
+  for (MyUniform * g = s->uniforms; g && g->type; g++)
+    free (g->last);
   free (s->uniforms);
   free (s);
 }
@@ -355,7 +366,8 @@ void finalize_shader (Shader * shader, External * externals, External * merged,
 	shader->uniforms[nuniforms] = (MyUniform){
 	  .location = location, .type = g->type, .nd = nd, .size = size,
 	  .local = g->global == 1 ? -1 : g->used - 1,
-	  .pointer = g->global == 1 ? g->pointer : NULL };
+	  .pointer = g->global == 1 ? g->pointer : NULL
+        };
 	shader->uniforms[nuniforms + 1].type = 0;
 	nuniforms++;
 	// uniforms refering to local variables must be in the 'externals' local list
@@ -375,12 +387,15 @@ void post_setup_shader (Shader * shader, External * externals)
   Set SSBO pointer. */
   
   assert (ssbo);
-  CUDA_CHECK (cuMemcpyHtoDAsync (shader->_data, &ssbo, sizeof (ssbo), stream));
-
+  if (shader->ssbo != ssbo) {
+    CUDA_CHECK (cuMemcpyHtoDAsync (shader->_data, &ssbo, sizeof (ssbo), stream));
+    shader->ssbo = ssbo;
+  }
+    
   /**
   ## Set uniforms */
 
-  for (const MyUniform * g = shader->uniforms; g && g->type; g++) {
+  for (MyUniform * g = shader->uniforms; g && g->type; g++) {
     void * pointer = g->pointer;
     if (!pointer) {
       assert (g->local >= 0);
@@ -388,14 +403,14 @@ void post_setup_shader (Shader * shader, External * externals)
     }
     switch (g->type) {
     case sym_INT: case sym_FLOAT: case sym_VEC4: case sym_BOOL:
-      CUDA_CHECK (cuMemcpyHtoDAsync (g->location, pointer, g->size, stream));
+      g->last = memcpycheck (g->location, pointer, g->last, g->size);
       break;
     case sym_LONG: {
       int p[g->nd];
       long * data = pointer;
       for (int i = 0; i < g->nd; i++)
 	p[i] = data[i];
-      CUDA_CHECK (cuMemcpyHtoDAsync (g->location, p, g->size, stream));
+      g->last = memcpycheck (g->location, p, g->last, g->size);
       break;
     }
 #if SINGLE_PRECISION
@@ -404,12 +419,12 @@ void post_setup_shader (Shader * shader, External * externals)
       double * data = pointer;
       for (int i = 0; i < g->nd; i++)
 	p[i] = data[i];
-      CUDA_CHECK (cuMemcpyHtoDAsync (g->location, p, g->size, stream));
+      g->last = memcpycheck (g->location, p, g->last, g->size);
       break;
     }
 #else // DOUBLE_PRECISION
     case sym_DOUBLE: case sym__COORD: case sym_COORD:
-      CUDA_CHECK (cuMemcpyHtoDAsync (g->location, pointer, g->size, stream));
+      g->last = memcpycheck (g->location, pointer, g->last, g->size);
       break;
 #endif // DOUBLE_PRECISION
     default:
@@ -538,7 +553,7 @@ static CUfunction compile_kernel (const char * start, const char * op)
     "--use_fast_math"
   };
   if (nvrtcCompileProgram (prog, 3, options) != NVRTC_SUCCESS) {
-    fputs (kernel_source, stderr);
+    //    fputs (kernel_source, stderr);
     size_t log_size;
     NVRTC_CHECK (nvrtcGetProgramLogSize (prog, &log_size));
     if (log_size) {

@@ -48,6 +48,18 @@ event display (i++)
 #endif
 
 /**
+When benchmarking we ignore the first two timesteps. This is to avoid
+taking into account the shader compilation overhead, which is
+particularly large with the CUDA driver. */
+
+#if BENCHMARK
+event reset_timer (i = 2)
+{
+  reset_perf();
+}
+#endif // BENCHMARK
+
+/**
 ## See also
 
 [Benchmark on GPUs](/src/grid/gpu/Benchmarks.md#two-dimensional-turbulence)
