@@ -159,8 +159,8 @@ event interface (t = {0, 1. , 2., 3., 4., 5.}) {
 }
 
 /**
-#if QUADTREE
-  if no #include "grid/multigrid.h" then adapt */
+ if QUADTREE
+  if no include "grid/multigrid.h" then adapt */
 
 event adapt(i++){
 
@@ -181,10 +181,10 @@ event adapt(i++){
 
 }
 
-
 /**
 film output
 */
+
 #if 0
 event movie (t += 0.05) {
   static FILE * fp1 = popen ("ppm2mpeg > level.mpg", "w");

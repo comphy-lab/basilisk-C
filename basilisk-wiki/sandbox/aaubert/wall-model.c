@@ -395,9 +395,11 @@ set ylabel 'error'
 unset logscale
 set logscale y
 set key bottom right
-plot 'log_dirichlet' u 1:2 w l lw 1.1 t 'Dirichlet', \
-'log_navier' u 1:2 w l t 'Navier', \
-'log_neumann' u 1:2 w l t 'Neumann'
+set xrange [3:10]
+set pointsize 1.3
+plot 'log_dirichlet' pt 5 t 'Dirichlet', \
+'log_navier' pt 7 t 'Navier', \
+'log_neumann' pt 9 t 'Neumann'
 ~~~
 
 ## See also
