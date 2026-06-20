@@ -6,9 +6,7 @@ Simulation du coarsening des roll waves eau claire
    $$
 
    $$
-   \partial_t (hu)
-   + \partial_x \left( hu^2 + \frac{g h^2}{2} \right)
-   = -gh\,\partial_x z - \frac{f}{8}u|u|
+   \partial_t (hu) + \partial_x \left( hu^2 + \frac{1}{2} g h^2 \right) = -gh      \, \partial_x z - \frac{g n^2}{h^{1/3}} u|u|
    $$
    
    avec :
