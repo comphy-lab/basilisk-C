@@ -46,13 +46,17 @@ set title 'Speed in grid points x timesteps / second'
 plot '< awk -v findex=3 -v minlevel=6 -f advection.awk advection' using 2:xtic(1) ti col lc rgb c1, \
      '' u 3 ti col lc rgb c2, \
      '' u 4 ti col lc rgb c3, \
-     '' u 5 ti col lc rgb c4, \
-	 '' u 6 ti col lc rgb c5
+     '' u 5 ti col, \
+     '' u 6 ti col lc rgb c4, \
+	 '' u 7 ti col lc rgb c5, \
+	 '' u 8 ti col
 set title 'Speedup relative to 8 x Intel Core i7'
 plot '< awk -v findex=3 -v minlevel=6 -f advection.awk advection' using ($3/$2):xtic(1) ti col lc rgb c2, \
      '' u ($4/$2) ti col lc rgb c3, \
-     '' u ($5/$2) ti col lc rgb c4, \
-     '' u ($6/$2) ti col lc rgb c5
+     '' u ($5/$2) ti col, \
+     '' u ($6/$2) ti col lc rgb c4, \
+     '' u ($7/$2) ti col lc rgb c5, \
+     '' u ($8/$2) ti col
 unset multiplot
 ~~~
 
@@ -94,12 +98,14 @@ plot '< awk -v findex=3 -v minlevel=6 -f advection.awk bump2D-gpu' using 2:xtic(
      '' u 3 ti col lc rgb c2, \
      '' u 4 ti col lc rgb c3, \
      '' u 5 ti col lc rgb c4, \
-     '' u 6 ti col lc rgb c5
+     '' u 6 ti col lc rgb c5, \
+     '' u 7 ti col
 set title 'Speedup relative to 8 x Intel Core i7'
 plot '< awk -v findex=3 -v minlevel=6 -f advection.awk bump2D-gpu' using ($3/$2):xtic(1) ti col lc rgb c2, \
      '' u ($4/$2) ti col lc rgb c3, \
      '' u ($5/$2) ti col lc rgb c4, \
-     '' u ($6/$2) ti col lc rgb c5
+     '' u ($6/$2) ti col lc rgb c5, \
+     '' u ($7/$2) ti col
 unset multiplot
 ~~~
 
@@ -145,11 +151,13 @@ plot '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' using 2:xtic(
      '' u 3 ti col lc rgb c2, \
      '' u 4 ti col lc rgb c3, \
      '' u 5 ti col lc rgb c4, \
-     '' u 6 ti col lc rgb c5
+     '' u 6 ti col lc rgb c5, \
+     '' u 7 ti col
 set title 'Speedup relative to 8 x Intel Core i7'
 plot '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' using ($3/$2):xtic(1) ti col lc rgb c2, \
      '' u ($4/$2) ti col lc rgb c3, \
      '' u ($5/$2) ti col lc rgb c4, \
-     '' u ($6/$2) ti col lc rgb c5
+     '' u ($6/$2) ti col lc rgb c5, \
+     '' u ($7/$2) ti col
 unset multiplot
 ~~~

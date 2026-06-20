@@ -8,9 +8,7 @@ can be installed on Debian systems using:
 ~~~bash
 apt install nvidia-driver nvidia-cuda-dev
 ~~~
-
-For some reason the performances are very low compared to the [GLSL
-backend](/src/grid/gpu/opengl.c) (on the same nvidia card). */
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -18,6 +16,8 @@ backend](/src/grid/gpu/opengl.c) (on the same nvidia card). */
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+#include <sys/stat.h>
+#include <errno.h>
 #include "a32.h"
 
 typedef struct { double x, y, z; } coord;
@@ -144,7 +144,9 @@ void architecture (char * arch)
   // fixme: not sure whether this should be compute_%d%d or sm_%d%d ??
 }
 
-Shader * load_normal_shader (const char * fs, const char * func, const char * file, int line)
+static char * compile_ptx (const char * fs, const char * arch,
+                           const char * func, const char * file, int line,
+                           size_t * ptxSize)
 {
   //  fputs (fs, stderr);
   nvrtcProgram prog;
@@ -154,8 +156,6 @@ Shader * load_normal_shader (const char * fs, const char * func, const char * fi
                                   NULL,
                                   NULL
                                   ));
-  char arch[] = "--gpu-architecture=compute_????";
-  architecture (arch);
   const char *opts[] = {
     "--std=c++11",
     arch,
@@ -188,9 +188,8 @@ Shader * load_normal_shader (const char * fs, const char * func, const char * fi
   // Get PTX
   // ------------------------------------------------------------
 
-  size_t ptxSize;
-  NVRTC_CHECK (nvrtcGetPTXSize (prog, &ptxSize));
-  char ptx[ptxSize];
+  NVRTC_CHECK (nvrtcGetPTXSize (prog, ptxSize));
+  char * ptx = malloc (*ptxSize);
   NVRTC_CHECK (nvrtcGetPTX (prog, ptx));
   NVRTC_CHECK (nvrtcDestroyProgram (&prog));
 
@@ -200,6 +199,73 @@ Shader * load_normal_shader (const char * fs, const char * func, const char * fi
     fprintf (stderr, "%s:%d: warning: CUDA: found FP64 assembly in single precision mode\n",
              file, line);
 #endif // SINGLE_PRECISION
+
+  return ptx;
+}
+
+static
+int create_tmpdir (const char * path)
+{
+  struct stat st;
+  if (stat (path, &st) == 0) {
+    if (S_ISDIR (st.st_mode))
+      return 0; // Directory exists
+    else {
+      errno = ENOTDIR;
+      return -1; // Path exists but is not a directory
+    }
+  }
+  // Directory does not exist, try to create it
+  if (mkdir (path, 0755) == 0)
+    return 0; // Successfully created
+  return -1; // Failed to create
+}
+
+Shader * load_normal_shader (const char * fs,
+                             const char * func, const char * file, int line)
+{
+  char arch[] = "--gpu-architecture=compute_????";
+  architecture (arch);
+
+  // ------------------------------------------------------------
+  // Try to read from a compilation cache (by default in /tmp/buda/)
+  // ------------------------------------------------------------
+  
+  Adler32Hash hasha;
+  a32_hash_init (&hasha);
+  a32_hash_add (&hasha, fs, strlen (fs));
+  a32_hash_add (&hasha, arch, strlen (arch));
+  uint32_t hash = a32_hash (&hasha);
+
+  const char * tmpdir = getenv ("TMPDIR"), * tmp = tmpdir ? tmpdir : "/tmp";
+  char cache[strlen(tmp) + strlen("/buda/ffffffff") + 1];
+  sprintf (cache, "%s/buda", tmp);
+  if (create_tmpdir (cache)) {
+    fprintf (stderr, "%s:%d: cannot create temporary directory '%s'\n", \
+             __FILE__, __LINE__, cache);
+    perror ("");
+    exit (1);
+  }
+  sprintf (cache, "%s/buda/%x", tmp, hash);
+  FILE * fp = fopen (cache, "r");
+  char * ptx;
+  if (fp) {
+    size_t size;
+    assert (fread (&size, 1, sizeof (size_t), fp) == sizeof (size_t));
+    ptx = malloc (size);
+    assert (fread (ptx, 1, size, fp) == size);
+    fclose (fp);
+  }
+  else {
+    size_t size;
+    ptx = compile_ptx (fs, arch, func, file, line, &size);
+    fp = fopen (cache, "w");
+    if (fp) {
+      assert (fwrite (&size, 1, sizeof (size_t), fp) == sizeof (size_t));
+      assert (fwrite (ptx, 1, size, fp) == size);
+      fclose (fp);
+    }
+  }
   
   // ------------------------------------------------------------
   // Load PTX module
@@ -207,6 +273,7 @@ Shader * load_normal_shader (const char * fs, const char * func, const char * fi
 
   Shader * shader = calloc (1, sizeof (Shader));
   CUDA_CHECK (cuModuleLoadData (&shader->module, ptx));
+  free (ptx);
   CUDA_CHECK (cuModuleGetFunction (&shader->kernel, shader->module, func));
   return shader;
 }

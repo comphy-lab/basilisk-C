@@ -6,6 +6,7 @@ for i in 128 256 512 1024 2048 4096; do
   OMP_NUM_THREADS=8 turbulence/turbulence $i 2> /tmp/log; 
 done
 
+# Title: Inteli7
 # Multigrid, 2008 steps, 13.5656 CPU, 1.698 real, 1.94e+07 points.step/s, 8 var
 # Multigrid, 2073 steps, 37.6603 CPU, 4.71 real, 2.88e+07 points.step/s, 8 var
 # Multigrid, 2363 steps, 125.084 CPU, 15.64 real, 3.96e+07 points.step/s, 8 var
@@ -22,6 +23,7 @@ for i in 128 256 512 1024 2048 4096; do
   OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu $i 2> /tmp/log; 
 done
 
+# Title: IntelHUD
 # Multigrid (GPU), 2009 steps, 2.59921 CPU, 5.478 real, 6.01e+06 points.step/s, 8 var
 # Multigrid (GPU), 2008 steps, 1.992 CPU, 8.546 real, 1.54e+07 points.step/s, 8 var
 # Multigrid (GPU), 2328 steps, 4.43931 CPU, 25.36 real, 2.41e+07 points.step/s, 8 var
@@ -35,6 +37,7 @@ for i in 128 256 512 1024 2048 4096; do
   OMP_NUM_THREADS=1 nvidia turbulence.gpu/turbulence.gpu $i 2> /tmp/log; 
 done
 
+# Title: RTX3050
 # Multigrid (GPU), 2009 steps, 1.53716 CPU, 1.537 real, 2.14e+07 points.step/s, 8 var
 # Multigrid (GPU), 2008 steps, 1.63853 CPU, 1.639 real, 8.03e+07 points.step/s, 8 var
 # Multigrid (GPU), 2328 steps, 3.30781 CPU, 3.308 real, 1.84e+08 points.step/s, 8 var
@@ -49,6 +52,7 @@ for i in 128 256 512 1024 2048 4096; do
   OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu $i 2> /tmp/log; 
 done
 
+# Title: RTX6000
 # Multigrid (GPU), 2009 steps, 1.32091 CPU, 1.321 real, 2.49e+07 points.step/s, 8 var
 # Multigrid (GPU), 2008 steps, 1.45009 CPU, 1.45 real, 9.07e+07 points.step/s, 8 var
 # Multigrid (GPU), 2328 steps, 2.27639 CPU, 2.276 real, 2.68e+08 points.step/s, 8 var
@@ -63,16 +67,30 @@ for i in 128 256 512 1024 2048 4096; do
   OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu $i 2> /tmp/log;
 done
 
-# Multigrid (GPU), 2009 steps, 1.26929 CPU, 1.27 real, 2.59e+07 points.step/s, 8 var
-# Multigrid (GPU), 2008 steps, 1.41643 CPU, 1.416 real, 9.29e+07 points.step/s, 8 var
-# Multigrid (GPU), 2328 steps, 2.00638 CPU, 2.007 real, 3.04e+08 points.step/s, 8 var
-# Multigrid (GPU), 2767 steps, 3.154 CPU, 3.154 real, 9.2e+08 points.step/s, 8 var
-# Multigrid (GPU), 2991 steps, 6.92783 CPU, 6.928 real, 1.81e+09 points.step/s, 8 var
-# Multigrid (GPU), 3011 steps, 31.0801 CPU, 31.08 real, 1.63e+09 points.step/s, 8 var
+# Title: RTX4090
+# Multigrid (gpu), 2009 steps, 1.2733 CPU, 1.273 real, 2.58e+07 points.step/s, 8 var
+# Multigrid (gpu), 2008 steps, 1.42316 CPU, 1.423 real, 9.24e+07 points.step/s, 8 var
+# Multigrid (gpu), 2328 steps, 1.96559 CPU, 1.966 real, 3.1e+08 points.step/s, 8 var
+# Multigrid (gpu), 2767 steps, 3.07085 CPU, 3.071 real, 9.44e+08 points.step/s, 8 var
+# Multigrid (gpu), 2991 steps, 6.72074 CPU, 6.721 real, 1.87e+09 points.step/s, 8 var
+# Multigrid (gpu), 3011 steps, 30.9292 CPU, 30.93 real, 1.63e+09 points.step/s, 8 var
+
+for i in 128 256 512 1024 2048 4096; do
+  OMP_NUM_THREADS=1 turbulence.cuda/turbulence.cuda $i 2> /tmp/log;
+done
+
+# Title: RTX4090(cuda)
+# Multigrid (cuda), 2009 steps, 1.20694 CPU, 1.207 real, 2.73e+07 points.step/s, 8 var
+# Multigrid (cuda), 2008 steps, 1.40442 CPU, 1.404 real, 9.36e+07 points.step/s, 8 var
+# Multigrid (cuda), 2328 steps, 1.88767 CPU, 1.887 real, 3.23e+08 points.step/s, 8 var
+# Multigrid (cuda), 2767 steps, 3.01486 CPU, 3.014 real, 9.62e+08 points.step/s, 8 var
+# Multigrid (cuda), 2991 steps, 6.31229 CPU, 6.311 real, 1.99e+09 points.step/s, 8 var
+# Multigrid (cuda), 3011 steps, 27.0165 CPU, 27.01 real, 1.87e+09 points.step/s, 8 var
 
 OpenGL renderer string: NVIDIA GeForce RTX 4090 D/PCIe/SSE2 (stokes.lmm.jussieu.fr)
 Dedicated video memory: 24564 MB
 
+# Title: RTX4090D
 # Multigrid (GPU), 2009 steps, 1.39246 CPU, 1.392 real, 2.36e+07 points.step/s, 8 var
 # Multigrid (GPU), 2008 steps, 1.5809 CPU, 1.581 real, 8.32e+07 points.step/s, 8 var
 # Multigrid (GPU), 2328 steps, 2.20537 CPU, 2.205 real, 2.77e+08 points.step/s, 8 var

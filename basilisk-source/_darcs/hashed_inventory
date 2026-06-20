@@ -1,4 +1,4 @@
-pristine:3dd972598062fabca037027752bfbf988421f2f74ebc5903d7a0b68b0b03fa73
+pristine:46bbadda6d0111ad64e08caa12f9c10aef0856a4f78cb6a8799877d95e9b433e
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -300,3 +300,28 @@ Stephane Popinet <popinet@basilisk.fr>**20260618163334
  Ignore-this: daed2492cd1120d940c7ca3b68b6296b33ab871d557769275af632d86951be781b815a34ec899da4
 ] 
 hash: 0000000730-fbd098eae3738189015852d8b3b04f938b7d9f436a91e53405b4da8387ed9904
+[Same optimisations on the HIP backend
+Stephane Popinet <popinet@basilisk.fr>**20260618164932
+ Ignore-this: b7dc29c6df25ae5956d8b42f5ebbc6f3627c807dd1c7295843479015c299f4980573d0230f352c24
+] 
+hash: 0000006350-2a3d9f0da5dabd47e16567fe234a7aedf87b000e845f86f893d272c8e24ac939
+[The CUDA backend caches compilations to minimize startup overhead
+Stephane Popinet <popinet@basilisk.fr>**20260619124015
+ Ignore-this: d0cc2be1b7d76d1b8a99e93166fbb067f639107d03c87c8a872eafb9b114837e149cdb44c6779521
+] 
+hash: 0000003196-2699ee1d0502d1a958b06bd13cd8c3648c8c6e328b3621c9b060cb0faa4699a4
+[Added library dependencies to GPU targets
+Stephane Popinet <popinet@basilisk.fr>**20260619124053
+ Ignore-this: 72bedaf7edf1f6259e63bd147e94d6e50586119b89e2e496f39f2ca35823b577ed3b64d29325eb67
+] 
+hash: 0000000614-68f90250101a81670c1e0533762c486970aff43d8a23520397e6085ea27c600e
+[Added benchmark results for CUDA backend
+Stephane Popinet <popinet@basilisk.fr>**20260619131859
+ Ignore-this: 5bb6734300460ed33ab29b2c22a14c0e83fb19452d0c230e300eb346c7407bcc2d762acfa7f6d030
+] 
+hash: 0000007324-4774efb82110c0da8de64617213d9930c951ba19215b41972345e7f21eb4a737
+[CUDA benchmark results for bump2D-gpu
+Stephane Popinet <popinet@basilisk.fr>**20260619133425
+ Ignore-this: 313f7ed7f7b53e7c84dad03d70fa135c7436785ea97cc15eeb8f47c5838e5b4345b70fbe31a37f9f
+] 
+hash: 0000002196-e21914ca0dcf4989c7b3d60195e8b38f68e8d5fc4a1d0c6cd2e5f14200b8d12d

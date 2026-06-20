@@ -3,6 +3,7 @@ rm -f bump2D-gpu.ctst && CFLAGS='-fopenmp -DBENCHMARK -DSINGLE_PRECISION' make b
 
 for i in 6 7 8 9 10 11; do OMP_NUM_THREADS=8 ./bump2D-gpu/bump2D-gpu $i; done
 
+# Title: Inteli7
 # Multigrid, 217 steps, 0.584182 CPU, 0.07575 real, 1.17e+07 points.step/s, 27 var
 # Multigrid, 437 steps, 2.08056 CPU, 0.2613 real, 2.74e+07 points.step/s, 27 var
 # Multigrid, 885 steps, 12.9367 CPU, 1.619 real, 3.58e+07 points.step/s, 27 var
@@ -17,6 +18,7 @@ Video memory: 3072MB
 
 for i in 6 7 8 9 10 11; do ./bump2D-gpu/bump2D-gpu $i; done
 
+# Title: IntelHUD
 # Cartesian (GPU), 217 steps, 1.72295 CPU, 1.806 real, 4.92e+05 points.step/s, 28 var
 # Cartesian (GPU), 437 steps, 0.32242 CPU, 0.5966 real, 1.2e+07 points.step/s, 28 var
 # Cartesian (GPU), 885 steps, 1.96664 CPU, 3.117 real, 1.86e+07 points.step/s, 28 var
@@ -29,6 +31,7 @@ Dedicated video memory: 4096 MB
 
 for i in 6 7 8 9 10 11; do __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia ./bump2D-gpu/bump2D-gpu $i; done
 
+# Title: RTX3050
 # Cartesian (GPU), 217 steps, 0.061795 CPU, 0.06184 real, 1.44e+07 points.step/s, 28 var
 # Cartesian (GPU), 437 steps, 0.124741 CPU, 0.1248 real, 5.74e+07 points.step/s, 28 var
 # Cartesian (GPU), 885 steps, 0.417376 CPU, 0.4174 real, 1.39e+08 points.step/s, 28 var
@@ -41,6 +44,7 @@ Dedicated video memory: 24576 MB
 
 for i in 6 7 8 9 10 11; do ./bump2D-gpu/bump2D-gpu $i; done
 
+# Title: RTX6000
 # Cartesian (GPU), 217 steps, 0.410228 CPU, 0.4102 real, 2.17e+06 points.step/s, 28 var
 # Cartesian (GPU), 437 steps, 0.079351 CPU, 0.07935 real, 9.02e+07 points.step/s, 28 var
 # Cartesian (GPU), 885 steps, 0.567819 CPU, 0.5678 real, 1.02e+08 points.step/s, 28 var
@@ -53,18 +57,30 @@ Dedicated video memory: 24564 MB
 
 for i in 6 7 8 9 10 11; do ./bump2D-gpu/bump2D-gpu $i; done
 
-# Cartesian (GPU), 217 steps, 0.056273 CPU, 0.05627 real, 1.58e+07 points.step/s, 28 var
-# Cartesian (GPU), 437 steps, 0.145359 CPU, 0.146 real, 4.9e+07 points.step/s, 28 var
-# Cartesian (GPU), 885 steps, 0.204354 CPU, 0.2044 real, 2.84e+08 points.step/s, 28 var
-# Cartesian (GPU), 1789 steps, 0.561238 CPU, 0.5614 real, 8.35e+08 points.step/s, 28 var
-# Cartesian (GPU), 3615 steps, 2.63442 CPU, 2.636 real, 1.44e+09 points.step/s, 28 var
-# Cartesian (GPU), 7303 steps, 20.4474 CPU, 20.45 real, 1.5e+09 points.step/s, 28 var
+# Title: RTX4090
+# Cartesian (GPU), 217 steps, 0.095892 CPU, 0.09601 real, 9.26e+06 points.step/s, 28 var
+# Cartesian (GPU), 437 steps, 0.186181 CPU, 0.1862 real, 3.84e+07 points.step/s, 28 var
+# Cartesian (GPU), 885 steps, 0.391937 CPU, 0.392 real, 1.48e+08 points.step/s, 28 var
+# Cartesian (GPU), 1789 steps, 0.851171 CPU, 0.8514 real, 5.51e+08 points.step/s, 28 var
+# Cartesian (GPU), 3615 steps, 3.23489 CPU, 3.235 real, 1.17e+09 points.step/s, 28 var
+# Cartesian (GPU), 7303 steps, 20.8893 CPU, 20.89 real, 1.47e+09 points.step/s, 28 var
+
+for i in 6 7 8 9 10 11; do ./bump2D-gpu.cuda/bump2D-gpu.cuda $i; done
+
+# Title: RTX4090(cuda)
+# Multigrid (cuda), 217 steps, 0.152187 CPU, 0.1522 real, 5.84e+06 points.step/s, 28 var
+# Multigrid (cuda), 437 steps, 0.232904 CPU, 0.2329 real, 3.07e+07 points.step/s, 28 var
+# Multigrid (cuda), 885 steps, 0.355241 CPU, 0.3552 real, 1.63e+08 points.step/s, 28 var
+# Multigrid (cuda), 1789 steps, 0.671001 CPU, 0.6708 real, 6.99e+08 points.step/s, 28 var
+# Multigrid (cuda), 3615 steps, 1.84696 CPU, 1.847 real, 2.05e+09 points.step/s, 28 var
+# Multigrid (cuda), 7303 steps, 16.7044 CPU, 16.7 real, 1.83e+09 points.step/s, 28 var
 
 OpenGL renderer string: NVIDIA GeForce RTX 4090 D/PCIe/SSE2 (stokes.lmm.jussieu.fr)
 Dedicated video memory: 24564 MB
 
 for i in 6 7 8 9 10 11; do DISPLAY=:0 ./bump2D-gpu/bump2D-gpu $i; done
 
+# Title: RTX4090D
 # Cartesian (GPU), 217 steps, 0.13414 CPU, 0.1341 real, 6.63e+06 points.step/s, 28 var
 # Cartesian (GPU), 437 steps, 0.267096 CPU, 0.2671 real, 2.68e+07 points.step/s, 28 var
 # Cartesian (GPU), 885 steps, 0.558252 CPU, 0.5583 real, 1.04e+08 points.step/s, 28 var

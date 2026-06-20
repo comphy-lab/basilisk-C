@@ -8,6 +8,7 @@ OpenGL renderer string: Intel Core i7
 
 for i in 64 128 256 512 1024 2048; do OMP_NUM_THREADS=8 ./lid $i 2> /dev/null | grep steps; done
 
+# Title: Inteli7
 # Multigrid, 300 steps, 4.42842 CPU, 0.5561 real, 2.21e+06 points.step/s, 15 var
 # Multigrid, 300 steps, 6.59194 CPU, 0.8264 real, 5.95e+06 points.step/s, 15 var
 # Multigrid, 300 steps, 12.8195 CPU, 1.604 real, 1.23e+07 points.step/s, 15 var
@@ -24,6 +25,7 @@ Video memory: 3072MB
 
 for i in 64 128 256 512 1024 2048; do ./lid.gpu $i | grep steps; done
 
+# Title: IntelHUD
 # Multigrid (GPU), 300 steps, 0.77206 CPU, 1.645 real, 7.47e+05 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 0.873143 CPU, 2.017 real, 2.44e+06 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 1.36386 CPU, 4.26 real, 4.62e+06 points.step/s, 17 var
@@ -36,6 +38,7 @@ Dedicated video memory: 4096 MB
 
 for i in 64 128 256 512 1024 2048; do nvidia ./lid.gpu $i | grep steps; done
 
+# Title: RTX3050
 # Multigrid (GPU), 300 steps, 0.540176 CPU, 0.5402 real, 2.27e+06 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 0.597448 CPU, 0.5975 real, 8.23e+06 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 0.931005 CPU, 0.931 real, 2.11e+07 points.step/s, 17 var
@@ -48,6 +51,7 @@ Dedicated video memory: 24576 MB
 
 for i in 64 128 256 512 1024 2048; do ./lid.gpu $i | grep steps; done
 
+# Title: RTX6000
 # Multigrid (GPU), 300 steps, 0.427174 CPU, 0.4272 real, 2.88e+06 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 0.430609 CPU, 0.4306 real, 1.14e+07 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 0.600736 CPU, 0.6008 real, 3.27e+07 points.step/s, 17 var
@@ -60,6 +64,7 @@ Dedicated video memory: 24564 MB
 
 for i in 64 128 256 512 1024 2048; do ./lid.gpu $i | grep steps; done
 
+# Title: RTX4090
 # Multigrid (GPU), 300 steps, 0.446156 CPU, 0.4469 real, 2.75e+06 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 0.565475 CPU, 0.5657 real, 8.69e+06 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 0.703262 CPU, 0.7046 real, 2.79e+07 points.step/s, 17 var
@@ -72,6 +77,7 @@ Dedicated video memory: 24564 MB
 
 for i in 64 128 256 512 1024 2048; do ./lid.gpu $i | grep steps; done
 
+# Title: RTX4090D
 # Multigrid (GPU), 300 steps, 0.997049 CPU, 0.9971 real, 1.23e+06 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 1.14402 CPU, 1.144 real, 4.3e+06 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 1.60657 CPU, 1.607 real, 1.22e+07 points.step/s, 17 var

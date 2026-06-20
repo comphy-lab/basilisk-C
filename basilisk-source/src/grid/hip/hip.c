@@ -16,7 +16,8 @@ this file was (mostly) translated automatically from the [CUDA
 backend](../cuda/cuda.c) using
 
 ~~~bash
-hipify-perl -hip-kernel-execution-syntax ../cuda/cuda.c > hip.c
+hipify-perl -hip-kernel-execution-syntax ../cuda/cuda.c | \
+  sed -e 's/CUDA_/HIP_/g' -e 's/NVRTC_/HIPRTC_/g' > hip.c
 ~~~
 
 Note that this was only tested using the HIP-on-CUDA implementation
@@ -131,19 +132,30 @@ typedef struct {
   hipDeviceptr_t location;
   int type, nd, local;
   size_t size;
-  void * pointer;
+  void * pointer, * last;
 } MyUniform;
 
 struct _Shader {
   unsigned ng[2], nwg[2];
-  hipDeviceptr_t _data, csOrigin;
+  hipDeviceptr_t _data, csOrigin, ssbo;
   MyUniform * uniforms;
   hipModule_t module;
   hipFunction_t kernel;
 };
 
+static void * memcpycheck (hipDeviceptr_t location, void * pointer, void * last, size_t size)
+{
+  if (last && !memcmp (pointer, last, size))
+    return last;
+  HIP_CHECK (hipMemcpyHtoDAsync (location, pointer, size, stream));
+  if (!last) last = malloc (size);
+  return memcpy (last, pointer, size);
+}
+
 void free_shader (Shader * s)
 {
+  for (MyUniform * g = s->uniforms; g && g->type; g++)
+    free (g->last);
   free (s->uniforms);
   free (s);
 }
@@ -165,7 +177,6 @@ void architecture (char * arch)
 Shader * load_normal_shader (const char * fs, const char * func, const char * file, int line)
 {
   //  fputs (fs, stderr);
-  
   hiprtcProgram prog;
   HIPRTC_CHECK(hiprtcCreateProgram (&prog, fs,
                                     "kernel.cu",
@@ -378,7 +389,8 @@ void finalize_shader (Shader * shader, External * externals, External * merged,
 	shader->uniforms[nuniforms] = (MyUniform){
 	  .location = location, .type = g->type, .nd = nd, .size = size,
 	  .local = g->global == 1 ? -1 : g->used - 1,
-	  .pointer = g->global == 1 ? g->pointer : NULL };
+	  .pointer = g->global == 1 ? g->pointer : NULL
+        };
 	shader->uniforms[nuniforms + 1].type = 0;
 	nuniforms++;
 	// uniforms refering to local variables must be in the 'externals' local list
@@ -398,12 +410,15 @@ void post_setup_shader (Shader * shader, External * externals)
   Set SSBO pointer. */
   
   assert (ssbo);
-  HIP_CHECK (hipMemcpyHtoDAsync (shader->_data, &ssbo, sizeof (ssbo), stream));
-
+  if (shader->ssbo != ssbo) {
+    HIP_CHECK (hipMemcpyHtoDAsync (shader->_data, &ssbo, sizeof (ssbo), stream));
+    shader->ssbo = ssbo;
+  }
+    
   /**
   ## Set uniforms */
 
-  for (const MyUniform * g = shader->uniforms; g && g->type; g++) {
+  for (MyUniform * g = shader->uniforms; g && g->type; g++) {
     void * pointer = g->pointer;
     if (!pointer) {
       assert (g->local >= 0);
@@ -411,14 +426,14 @@ void post_setup_shader (Shader * shader, External * externals)
     }
     switch (g->type) {
     case sym_INT: case sym_FLOAT: case sym_VEC4: case sym_BOOL:
-      HIP_CHECK (hipMemcpyHtoDAsync (g->location, pointer, g->size, stream));
+      g->last = memcpycheck (g->location, pointer, g->last, g->size);
       break;
     case sym_LONG: {
       int p[g->nd];
       long * data = pointer;
       for (int i = 0; i < g->nd; i++)
 	p[i] = data[i];
-      HIP_CHECK (hipMemcpyHtoDAsync (g->location, p, g->size, stream));
+      g->last = memcpycheck (g->location, p, g->last, g->size);
       break;
     }
 #if SINGLE_PRECISION
@@ -427,12 +442,12 @@ void post_setup_shader (Shader * shader, External * externals)
       double * data = pointer;
       for (int i = 0; i < g->nd; i++)
 	p[i] = data[i];
-      HIP_CHECK (hipMemcpyHtoDAsync (g->location, p, g->size, stream));
+      g->last = memcpycheck (g->location, p, g->last, g->size);
       break;
     }
 #else // DOUBLE_PRECISION
     case sym_DOUBLE: case sym__COORD: case sym_COORD:
-      HIP_CHECK (hipMemcpyHtoDAsync (g->location, pointer, g->size, stream));
+      g->last = memcpycheck (g->location, pointer, g->last, g->size);
       break;
 #endif // DOUBLE_PRECISION
     default:
@@ -509,37 +524,37 @@ void gpu_synchronize()
 ## Reductions */
    
 static char kernel_source[] =
-  "#define REDUCE(reduced,rhs) reduced += rhs                                          \n"
-  "extern \"C\"\n"
-  "__global__ void reduce (const float* input, float* output, int n){\n"
-  "    __shared__ float sdata[256];                       \n"
-  "    unsigned int tid = threadIdx.x;                    \n"
-  "    unsigned int i = blockIdx.x * blockDim.x * 2 + tid;\n"
-  "    float reduced = 0.0f;                              \n"
-  "    if (i < n)                                         \n"
-  "        REDUCE (reduced, input[i]);                    \n"
-  "    if (i + blockDim.x < n)                            \n"
-  "        REDUCE (reduced, input[i + blockDim.x]);       \n"
-  "    sdata[tid] = reduced;                              \n"
-  "    __syncthreads();                                   \n"
-  "                                                       \n"
-  "    for (unsigned int s = blockDim.x/2; s > 32; s >>= 1){\n"
-  "        if (tid < s)                                    \n"
-  "            REDUCE (sdata[tid], sdata[tid + s]);        \n"
-  "        __syncthreads();                                \n"
-  "    }                                                   \n"
-  "    if (tid < 32) {                                     \n"
-  "        volatile float* smem = sdata;                   \n"
-  "        REDUCE (smem[tid], smem[tid + 32]);             \n"
-  "        REDUCE (smem[tid], smem[tid + 16]);             \n"
-  "        REDUCE (smem[tid], smem[tid + 8]);              \n"
-  "        REDUCE (smem[tid], smem[tid + 4]);              \n"
-  "        REDUCE (smem[tid], smem[tid + 2]);              \n"
-  "        REDUCE (smem[tid], smem[tid + 1]);              \n"
-  "    }                                                   \n"
-  "    if (tid == 0)                                       \n"
-  "        output[blockIdx.x] = sdata[0];                  \n"
-  "}                                                       \n";
+"#define REDUCE(reduced,rhs) reduced += rhs                                          \n"
+"extern \"C\"\n"
+"__global__ void reduce (const float* input, float* output, int n){\n"
+"    __shared__ float sdata[256];                       \n"
+"    unsigned int tid = threadIdx.x;                    \n"
+"    unsigned int i = blockIdx.x * blockDim.x * 2 + tid;\n"
+"    float reduced = 0.0f;                              \n"
+"    if (i < n)                                         \n"
+"        REDUCE (reduced, input[i]);                    \n"
+"    if (i + blockDim.x < n)                            \n"
+"        REDUCE (reduced, input[i + blockDim.x]);       \n"
+"    sdata[tid] = reduced;                              \n"
+"    __syncthreads();                                   \n"
+"                                                       \n"
+"    for (unsigned int s = blockDim.x/2; s > 32; s >>= 1){\n"
+"        if (tid < s)                                    \n"
+"            REDUCE (sdata[tid], sdata[tid + s]);        \n"
+"        __syncthreads();                                \n"
+"    }                                                   \n"
+"    if (tid < 32) {                                     \n"
+"        volatile float* smem = sdata;                   \n"
+"        REDUCE (smem[tid], smem[tid + 32]);             \n"
+"        REDUCE (smem[tid], smem[tid + 16]);             \n"
+"        REDUCE (smem[tid], smem[tid + 8]);              \n"
+"        REDUCE (smem[tid], smem[tid + 4]);              \n"
+"        REDUCE (smem[tid], smem[tid + 2]);              \n"
+"        REDUCE (smem[tid], smem[tid + 1]);              \n"
+"    }                                                   \n"
+"    if (tid == 0)                                       \n"
+"        output[blockIdx.x] = sdata[0];                  \n"
+"}                                                       \n";
 
 static hipFunction_t compile_kernel (const char * start, const char * op)
 {
@@ -561,7 +576,7 @@ static hipFunction_t compile_kernel (const char * start, const char * op)
     "--use_fast_math"
   };
   if (hiprtcCompileProgram (prog, 3, options) != HIPRTC_SUCCESS) {
-    fputs (kernel_source, stderr);
+    //    fputs (kernel_source, stderr);
     size_t log_size;
     HIPRTC_CHECK (hiprtcGetProgramLogSize (prog, &log_size));
     if (log_size) {
