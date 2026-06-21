@@ -3,13 +3,15 @@
 #include "../gpu-cartesian.h"
 
 /**
-Note that the libraries `-lcuda -lcudart -lnvrtc` are only required for the
-HIP-on-CUDA version. This will need to be adapted for the HIP/ROCm
-version. See also the [Makefile]() for compilation of the
-corresponding `libhip.a` library. */
+By default _HIP_AMD is not defined and the CUDA version is used. To
+use the AMD version compile your Basilisk program with -D_HIP_AMD=1. */
 
-#pragma autolink -L$BASILISK/grid/hip -lhip -lcuda -lcudart -lnvrtc -L$BASILISK/grid/gpu -lerrors
-               
+#if _HIP_AMD
+  #pragma autolink -L$BASILISK/grid/hip -lhipamd -lamdhip64 -lhiprtc -L$BASILISK/grid/gpu -lerrors
+#else // HIP-on-NVIDIA
+  #pragma autolink -L$BASILISK/grid/hip -lhipcuda -lcuda -lcudart -lnvrtc -L$BASILISK/grid/gpu -lerrors
+#endif
+
 static void hip_cartesian_methods()
 {
   cartesian_methods();

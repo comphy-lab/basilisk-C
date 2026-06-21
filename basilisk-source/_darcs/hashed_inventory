@@ -1,4 +1,4 @@
-pristine:46bbadda6d0111ad64e08caa12f9c10aef0856a4f78cb6a8799877d95e9b433e
+pristine:82d49844bf49d014eefb665a2da04495d01cf423e8b74b60c807d305b70f362a
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -325,3 +325,18 @@ Stephane Popinet <popinet@basilisk.fr>**20260619133425
  Ignore-this: 313f7ed7f7b53e7c84dad03d70fa135c7436785ea97cc15eeb8f47c5838e5b4345b70fbe31a37f9f
 ] 
 hash: 0000002196-e21914ca0dcf4989c7b3d60195e8b38f68e8d5fc4a1d0c6cd2e5f14200b8d12d
+[Simplified CUDA caching
+Stephane Popinet <popinet@basilisk.fr>**20260620112335
+ Ignore-this: 88345935d4d8f4907eabfafa24fad48ee66137b9f32317f0bf8c939bf59006975195a716fce61d2a
+] 
+hash: 0000001535-213496075ea350a5ec6324b551c835fb8e81dd17d25c7882912269bd8a871b0b
+[Portability of HIP to AMD after Hackathon at CINES on Adastra
+Hugo Jacquet <hugo.jacquet1@univ-grenoble-alpes.fr>**20260620153313
+ Ignore-this: af99b6ae3238233e8f5c73cd6dd3bae103d8c790745d304d1ef4fafbfcb78df07fed0a7144441b42
+] 
+hash: 0000016698-1586847a438702f1e1f5374dc5afeac9a1a5ed355c6a943d961f38e972354622
+[Caching of HIP kernel compilation
+Stephane Popinet <popinet@basilisk.fr>**20260620154729
+ Ignore-this: 1e6fc446ed2b9ed81532daee9309a6cd54b19fac569edc19adf1fed06eaf37aef3d30fea139081c3
+] 
+hash: 0000003807-15258533d323d9b7a8f2335d4995413516af925b7cf6849fd96ed222ed588d62

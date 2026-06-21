@@ -382,14 +382,12 @@ GPUContext_t GPUContext = {
 };
 
 #if _CUDA
-#  define DEFINITIONS              \
-  "#define uniform __constant__\n" \
-  "typedef int2 ivec2;\n"          \
-  "typedef unsigned uint;\n"       \
-  "__device__ __forceinline__\n"                                        \
-  "int clamp (int x, int a, int b) { return max(a, min(x, b)); }\n"     \
-  "typedef float2 vec2;\n"                                              \
-  "typedef float3 vec3;\n"                                              \
+#    define DEFINITIONS              \
+  "struct ivec2 { int x, y; };\n" \
+  "typedef unsigned int uint;\n" \
+  "struct vec2 { float x, y; };\n" \
+  "struct vec3 { float x, y, z; };\n" \
+  "__host__ __device__ inline int clamp(int x, int a, int b) { return max(a, min(x, b)); }\n" \
   "#define forin(type,s,list) for (int _i = 0; _i < sizeof(list)/sizeof(type) - 1; _i++) { type s = list[_i];\n" \
   "#define forin2(a,b,c,d) for (int _i = 0; _i < sizeof(c)/sizeof(a) - 1; _i++)" \
   "  { a = c[_i]; b = d[_i];\n"                                         \
@@ -407,6 +405,13 @@ GPUContext_t GPUContext = {
 
 const char glsl_preproc[] =
   "// #line " xstr(LINENO) " " __FILE__ "\n"
+#if _CUDA
+#if _HIP_AMD
+  "#define uniform __device__\n"
+#else
+  "#define uniform __constant__\n"
+#endif
+#endif
   DEFINITIONS
 #if _CUDA
   "#define neighborp(_i,_j,_k) Point{point.i+_i,point.j+_j,point.level,point.n"
@@ -484,8 +489,8 @@ const char glsl_preproc[] =
   "const real z = 0.;\n"
   "const int ig = 0, jg = 0;\n"
   "layout (location = 0) uniform ivec2 csOrigin = {0,0};\n"
-  "layout (location = 1) uniform vec2 vsOrigin = {0.,0.};\n"
-  "layout (location = 2) uniform vec2 vsScale = {1.,1.};\n"
+  "layout (location = 1) uniform vec2 vsOrigin = {0.f,0.f};\n"
+  "layout (location = 2) uniform vec2 vsScale = {1.f,1.f};\n"
   ;
 
 static inline int list_size (const External * i)
@@ -809,7 +814,7 @@ char * build_shader (External * externals, const ForeachData * loop,
   }
   fs = str_append (fs, "};\n"
 #if _CUDA
-                    "uniform struct { real * f; } _data"
+                   "uniform real * _data;\n"
 #else
 		   "layout(std430, binding = 0)"
 		   " restrict buffer _data_layout { real f[]; } _data"
@@ -823,8 +828,13 @@ char * build_shader (External * externals, const ForeachData * loop,
 		     "].f[(_offset[(field)].j+(index))%", s, "]\n");
   }
   else
+#if _CUDA
+    fs = str_append (fs,
+		     "#define _data_val(field,index) _data[(field)*field_size() + (index)]\n");
+#else
     fs = str_append (fs, ";\n"
 		     "#define _data_val(field,index) _data.f[(field)*field_size() + (index)]\n");
+#endif
   
   /**
   Scalar field attributes */
@@ -977,7 +987,11 @@ char * build_shader (External * externals, const ForeachData * loop,
     }
     else if (g->type == sym_function_definition) {
       External * f = _get_function ((long) g->pointer);
+#if _HIP_AMD
+      fs = str_append (fs, "\n__device__ ", f->data, "\n");
+#else
       fs = str_append (fs, "\n", f->data, "\n");
+#endif
       char s[20]; snprintf (s, 19, "%d", f->nd);
       fs = str_append (fs, "const int _p", g->name, " = ", s, ";\n");
     }
@@ -1016,7 +1030,7 @@ char * build_shader (External * externals, const ForeachData * loop,
         snprintf (s, 19, "%d", Dimensions.x);
         snprintf (d, 19, "%d", Dimensions.y);
 	fs = str_append (fs,
-                         "const ivec Dimensions = {", s, ",", d, "};\n"
+                         "const ivec2 Dimensions = {", s, ",", d, "};\n"
 			 "const uint NY = N*", d,
                          loop->face > 1 || loop->vertex ? "+1" : "", ";\n");
 #if !_CUDA
@@ -1026,7 +1040,7 @@ char * build_shader (External * externals, const ForeachData * loop,
 			   " + GHOSTS,"
 			   "int((vsPoint.y*vsScale.y + vsOrigin.y)*N*Dimensions.x) + GHOSTS,", l,
 #if MULTIGRID
-			   ",ivec2(N*Dimensions.x,N*Dimensions.y)"
+			   ",{int(N*Dimensions.x),int(N*Dimensions.y)}"
 #else
 			   ",N"
 #endif
@@ -1491,7 +1505,7 @@ static Shader * compile_shader (ForeachData * loop,
                          "Point point = {csOrigin.x + int(gl_GlobalInvocationID.y) + GHOSTS,"
 			 "csOrigin.y + int(gl_GlobalInvocationID.x) + GHOSTS,", d,
 #if MULTIGRID
-			 ",ivec2((1<<",d,")*Dimensions.x,(1<<",d,")*Dimensions.y)"
+			 ",{(1<<",d,")*Dimensions.x,(1<<",d,")*Dimensions.y}"
 #else
 			 ",N"
 #endif

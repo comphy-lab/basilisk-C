@@ -8,6 +8,7 @@
   flow](test/artery1D.c)
 * [Daniel Fuster](/sandbox/fuster/README): [All-Mach two-phase
   compressible solver](compressible/two-phase.h)
+* [Hugo Jacquet](/sandbox/hugoj/README.md): [HIP on AMD](/src/grid/hip/hip.c)
 * [Geoffroy Kirstetter](/sandbox/geoffroy/README): [flow rates for
   multiple rivers](test/multiriverinflow.c)  
 * [Pierre-Yves Lagrée](/sandbox/M1EMN/README): [SAG equation](test/sag.c)

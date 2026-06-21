@@ -1,14 +1,21 @@
 .PHONY: all clean
 
-# Change -D__HIP_PLATFORM_NVIDIA__ to -D__HIP_PLATFORM_AMD__ to use ROCm on AMD
+CFLAGS += -I$(BASILISK) -I.. -DSINGLE_PRECISION -O2
 
-CFLAGS += -I$(BASILISK) -I.. -DSINGLE_PRECISION -O2 -D__HIP_PLATFORM_NVIDIA__
+all: libhipcuda.a libhipamd.a
 
-all: libhip.a
+libhipcuda.a: hipcuda.o
+	ar cr libhipcuda.a hipcuda.o
+hipcuda.o: ../gpu/backend.h hipcuda.c
+hipcuda.o: CFLAGS += -D__HIP_PLATFORM_NVIDIA__
+hipcuda.c: hip.c
+	ln -s -f hip.c hipcuda.c
 
-libhip.a: hip.o
-	ar cr libhip.a hip.o
-
-cuda.o: ../gpu/backend.h hip.c
+libhipamd.a: hipamd.o
+	ar cr libhipamd.a hipamd.o
+hipamd.o: ../gpu/backend.h hipamd.c
+hipamd.o: CFLAGS += -D__HIP_PLATFORM_AMD__
+hipamd.c: hip.c
+	ln -s -f hip.c hipamd.c
 
 include ../../Makefile.defs

@@ -50,7 +50,7 @@ clean:
 %.cuda.s.d: CFLAGS += -grid=cuda/multigrid
 %.cuda.tst: CFLAGS += -grid=cuda/multigrid
 
-%.hip.c: %.c $(BASILISK)/grid/gpu/liberrors.a $(BASILISK)/grid/hip/libhip.a
+%.hip.c: %.c $(BASILISK)/grid/gpu/liberrors.a $(BASILISK)/grid/hip/hip.c
 	ln -s -f $< $@
 %.hip.s:   CFLAGS += -grid=hip/multigrid
 %.hip.s.d: CFLAGS += -grid=hip/multigrid

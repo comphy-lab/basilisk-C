@@ -227,9 +227,9 @@ Shader * load_normal_shader (const char * fs,
   char arch[] = "--gpu-architecture=compute_????";
   architecture (arch);
 
-  // ------------------------------------------------------------
+  // ---------------------------------------------------------------
   // Try to read from a compilation cache (by default in /tmp/buda/)
-  // ------------------------------------------------------------
+  // ---------------------------------------------------------------
   
   Adler32Hash hasha;
   a32_hash_init (&hasha);
@@ -247,21 +247,22 @@ Shader * load_normal_shader (const char * fs,
     exit (1);
   }
   sprintf (cache, "%s/buda/%x", tmp, hash);
-  FILE * fp = fopen (cache, "r");
   char * ptx;
-  if (fp) {
-    size_t size;
-    assert (fread (&size, 1, sizeof (size_t), fp) == sizeof (size_t));
-    ptx = malloc (size);
-    assert (fread (ptx, 1, size, fp) == size);
+  struct stat st;
+  if (stat (cache, &st) == 0) { // found in cache
+    FILE * fp = fopen (cache, "r");
+    assert (fp);
+    ptx = malloc (st.st_size);
+    assert (fread (ptx, 1, st.st_size, fp) == st.st_size);
     fclose (fp);
   }
-  else {
+  else { // not found in cache
     size_t size;
     ptx = compile_ptx (fs, arch, func, file, line, &size);
-    fp = fopen (cache, "w");
+    if (!ptx)
+      return NULL;
+    FILE * fp = fopen (cache, "w");
     if (fp) {
-      assert (fwrite (&size, 1, sizeof (size_t), fp) == sizeof (size_t));
       assert (fwrite (ptx, 1, size, fp) == size);
       fclose (fp);
     }
