@@ -129,6 +129,7 @@ size_t bintable_index (BinTable * table, size_t bin_id, bool * exist) {
       return i;
     }
   }
+  *exist = false;
   return table->nbins-1;
 }
 
@@ -292,14 +293,14 @@ void binning_average (BinTable * table, scalar * fields,
 /**
 Calculate the average of a given field in a bin. */
 
-double bin_average (const Bin * bin, scalar field) {
+double bin_average (const Bin * bin, (const) scalar field) {
   double num = 0.;
   foreach_bin_cell (bin)
     num += field[];
   return bin->ncells ? num / bin->ncells : 0;
 }
 
-double bin_volaverage (const Bin * bin, scalar field) {
+double bin_volaverage (const Bin * bin, (const) scalar field) {
   double num = 0., den = 0.;
   foreach_bin_cell (bin) {
     num += field[]*dv();
