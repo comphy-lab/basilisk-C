@@ -99,12 +99,14 @@
     while (*s != '\0') {
       if (*s == '\n') {
 	while (error && eline <= line) {
-	  merged = str_append (merged, "@");
-	  if (eline != line)
-	    merged = str_append (merged, "!");
-	  merged = str_append (merged, msg);
-	  merged = str_append (merged, "@");
-	  error = next_error (error, &eline, &msg);
+          if (msg[0] != '\0' && !strstr(msg, "error detected")) {
+            merged = str_append (merged, "@");
+            if (eline != line)
+              merged = str_append (merged, "!");
+            merged = str_append (merged, msg);
+            merged = str_append (merged, "@");
+          }
+          error = next_error (error, &eline, &msg);
 	}
 	line++;
       }

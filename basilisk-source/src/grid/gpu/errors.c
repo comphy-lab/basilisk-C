@@ -840,12 +840,14 @@ char *yytext;
     while (*s != '\0') {
       if (*s == '\n') {
 	while (error && eline <= line) {
-	  merged = str_append (merged, "@");
-	  if (eline != line)
-	    merged = str_append (merged, "!");
-	  merged = str_append (merged, msg);
-	  merged = str_append (merged, "@");
-	  error = next_error (error, &eline, &msg);
+          if (msg[0] != '\0' && !strstr(msg, "error detected")) {
+            merged = str_append (merged, "@");
+            if (eline != line)
+              merged = str_append (merged, "!");
+            merged = str_append (merged, msg);
+            merged = str_append (merged, "@");
+          }
+          error = next_error (error, &eline, &msg);
 	}
 	line++;
       }
@@ -857,8 +859,8 @@ char *yytext;
     free (src);
     return merged;
   }
-#line 861 "errors.c"
-#line 862 "errors.c"
+#line 863 "errors.c"
+#line 864 "errors.c"
 
 #define INITIAL 0
 
@@ -1078,10 +1080,10 @@ YY_DECL
 		}
 
 	{
-#line 126 "errors.lex"
+#line 128 "errors.lex"
 
 
-#line 1085 "errors.c"
+#line 1087 "errors.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1151,7 +1153,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 128 "errors.lex"
+#line 130 "errors.lex"
 {
   char * sline = yytext;
   while (!strchr ("0123456789", *sline)) sline++;
@@ -1168,7 +1170,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 141 "errors.lex"
+#line 143 "errors.lex"
 {
   if (0) // !strncmp (yytext, "@error ", 7))
     yytext += 6;
@@ -1193,20 +1195,20 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 162 "errors.lex"
+#line 164 "errors.lex"
 { line++; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 164 "errors.lex"
+#line 166 "errors.lex"
 ; // very important!!
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 166 "errors.lex"
+#line 168 "errors.lex"
 ECHO;
 	YY_BREAK
-#line 1210 "errors.c"
+#line 1212 "errors.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2225,7 +2227,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 166 "errors.lex"
+#line 168 "errors.lex"
 
 
 char * gpu_errors (const char * errors, const char * source, char * fout,

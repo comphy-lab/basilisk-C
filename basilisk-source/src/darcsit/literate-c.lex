@@ -9,6 +9,7 @@
   #include <glob.h>
   #include <time.h>
   #include <assert.h>
+  #include <errno.h>
    
   #undef YY_BUF_SIZE
   #define YY_BUF_SIZE 262144
@@ -52,6 +53,29 @@
 	     "<img src=/img/warning.png>"
 	     "</div>"
 	     "<div id=msg_label>", scan->line + 1);
+  }
+
+  static int ffmpeg_snapshot (const char * link, const char * snapshot) {
+    pid_t pid = fork();
+    if (pid < 0)
+      return -1;
+    if (pid == 0) {
+      char * const argv[] = {
+	"ffmpeg", "-ss", "00:00:10", "-i", (char *) link,
+	"-frames:v", "1", "-q:v", "2", "-loglevel", "quiet",
+	"-stats", "-y", (char *) snapshot, NULL
+      };
+      execvp (argv[0], argv);
+      _exit (127);
+    }
+
+    int status, ret;
+    do
+      ret = waitpid (pid, &status, 0);
+    while (ret < 0 && errno == EINTR);
+    if (ret < 0)
+      return -1;
+    return status;
   }
 
   static void error_end (struct MyScanner * scan) {
@@ -440,19 +464,12 @@ savefig{SP}*[(]{SP}*['"][^'"]+['"] {
       output_s ("src=\"");
       char * snapshot = strdup (link);
       strcpy (snapshot + strlen(snapshot) - 4, ".jpg");
-      char * command = malloc (100 + strlen (link) + strlen (snapshot));
-      strcpy (command, "ffmpeg -ss 00:00:10 -i '");
-      strcat (command, link);
-      strcat (command, "' -frames:v 1 -q:v 2 -loglevel quiet -stats -y '");
-      strcat (command, snapshot);
-      strcat (command, "'");
-      int status = system (command); // fixme: warning
+      int status = ffmpeg_snapshot (link, snapshot);
       if (status < 0)
 	fputs ("", stderr);
       output_s (snapshot);
       output_s ("\">");
       free (snapshot);
-      free (command);
       
       output_s ("</a>");
       
@@ -798,4 +815,3 @@ int main (int argc, char * argv[])
   literate (f, argv[1], atoi(argv[2]));
   return 0;
 }
-
