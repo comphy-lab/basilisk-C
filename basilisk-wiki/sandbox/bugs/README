@@ -28,6 +28,7 @@ See also [how to create test
 cases](/src/test/README#running-and-creating-test-cases-and-examples).  
 
 # Bugs
+* [multigrid3D dump/restart grid depth do not match](my_report_bug.c) 
 * [No inheritance of dimension from scalar to array](https://basilisk.fr/sandbox/hugoj/bug_dimension_of_array/main.c)
 * [Incompatible arguments in _stencil_function with pre-defined input values](args-stencil.c)
 * [Default boundary conditions do not work for face vector fields in MPI](bc_face_vector.c)

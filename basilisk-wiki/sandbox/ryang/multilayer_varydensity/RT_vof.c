@@ -5,14 +5,16 @@ The [Rayleigh-Taylor instability, RTI](https://en.wikipedia.org/wiki/Rayleigh%E2
 occurs when a heavy fluid is on top of a lighter one.
  */
 
-#define LEVEL 9
-#define ADAPT 0
+#define LEVEL 8
+//#define ADAPT 1
 
 face vector av[];
 
 #include "navier-stokes/centered.h"
 #include "two-phase.h"
+#include "navier-stokes/conserving.h"
 #include "tension.h"
+#include "reduced.h"
 
 const double MEANPOS = 0.054;
 const double DY = 0.0012;
@@ -35,12 +37,12 @@ int main() {
   rho2 = 1.;
   f.sigma = 0.;
   gra = 0.74*9.8 [1, -2];
-  mu1 = 0;//rho1*sqrt(gra)/Reynolds*sqrt(cube(lref));
-  mu2 = 0;//mu1;
+  mu1 = 5e-6;//small viscosity to suppress instability
+  mu2 = mu2.;//mu1;
 
-  CFL = 0.05;
+  CFL = 0.01;
   DT = 2.e-3 [0, 1];
-  TOLERANCE = 1e-5 [*];
+  TOLERANCE = 1e-4 [*];
 
   size (0.108 [1]);
   
@@ -109,7 +111,7 @@ event acceleration (i++) {
 }
 
 /** Ouput the interfaces at different time instants. */
-event interface (t += 0.1; t <= 0.4) {
+event interface (t += 0.01; t <= 0.4) {
   char name[80];
 
   sprintf (name, "rt_intf_vof_%.2f.dat", t);
@@ -121,11 +123,11 @@ event interface (t += 0.1; t <= 0.4) {
 }
 
 
-#if ADAPT
-event adapt (i++) {
-  adapt_wavelet ({f, u}, (double[]){5e-4, 1e-3, 1e-3}, maxlevel = LEVEL, minlevel = LEVEL - 3);
-}
-#endif
+//#if ADAPT
+//event adapt (i++) {
+//  adapt_wavelet ({f, u}, (double[]){5e-4, 1e-3, 1e-3}, maxlevel = LEVEL, minlevel = LEVEL - 3);
+//}
+//#endif
 
 /**
 ## Results
