@@ -1,4 +1,4 @@
-pristine:f7a029960a1a73bbc5018d9cdee97d148deeb7a78e166913513142f2f8121eb2
+pristine:71975721a7463144d8a122c8922504509e179be80eed010537371eb95e490ade
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -11387,3 +11387,23 @@ Tay W**20260623212710
  Ignore-this: f35608db7a08a4196fda19d19cc89b332918ab866214caa0b00ce737171bdff5452fb053b11af5e7
 ] 
 hash: 0000001994-e7b81a27243f78d18b03753e0d313b47ccfa639ce543c92ba7559aa27ff7e235
+[numerical training for students: internal waves
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260625100625
+ Ignore-this: 68afd13da9de8261c82b14b4fea887ee
+] 
+hash: 0000010098-229c963619047fe01ca914209c369fafe082e973a53bda08520820dc8193c00a
+[update Benchmarks
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260625115741
+ Ignore-this: 12e15fa0d1aa011b37849ac6e9a0bbd0
+] 
+hash: 0000405710-7939b3c7cdb5852283e43a4075afb0c27e1efe26e7f100e1518b54cf5b1fcbe5
+[Added common waves
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260625120232
+ Ignore-this: 3957fa6e5d5fe55ada1e3551714d6a10
+] 
+hash: 0000002848-7b24549b4b80bba36fdd315966085df73351ae78608c77da68ad0c6921d900c3
+[using Fanshuo's diffusion.h to get Neumann condition for multilayer model. test case 
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260625134226
+ Ignore-this: 62e0ef71c5222cfdc3af625d62bdc923
+] 
+hash: 0000032258-ed332cef83f4b1c306e6c3868e986e21c22ea30b0be12236621cd9a68fee6198

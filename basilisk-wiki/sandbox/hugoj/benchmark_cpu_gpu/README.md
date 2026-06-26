@@ -104,8 +104,11 @@ make
 ```
 The compilation (you might need to modify the Makefile) command is
 ```bash
-hipcc -I/home/jacqhugo/basilisk/src -I.. -DSINGLE_PRECISION -O2 -D__HIP_PLATFORM_NVIDIA__ -g -D_FORTIFY_SOURCE=2 -c -o hip.o hip.c
+cc -I/home/jacqhugo/basilisk/src -I.. -DSINGLE_PRECISION -O2 -D__HIP_PLATFORM_NVIDIA__ -g -D_FORTIFY_SOURCE=2 -c -o hip.o hip.c
 ```
+Note: you might need to `-I/path/to/hipcc/headers`. I used `hipcc` instead of
+`cc` but it should not be necessary.
+
 
 ***Notes***
 

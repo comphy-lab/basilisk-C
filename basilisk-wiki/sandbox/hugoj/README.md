@@ -68,6 +68,9 @@ spectrum](./verif_spectrum/verif_spectrum.py)
 
 * [Benchmark of Basilisk on some machines](./benchmark_cpu_gpu/README.md)
 
+* [Test of Neumann condition at bottom for multilayer using Fanshuo's
+implementation](test_diffusion_with_bott_neumann/diff_test.c)
+
 ## Bugs
 
 * [SOLVED: reduction operator using MPI](./bugmpi/ml_breaking_simple.c)

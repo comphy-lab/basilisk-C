@@ -8,9 +8,10 @@ import numpy as np
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 # Backends to plot (one subplot each); edit order freely
-BACKENDS = ["cpu", "gpu", "cuda", "hip"]
+BACKENDS = ["cpu", "gpu", "cuda"] # , "hip"
 
 MACHINES = ["sandbox","local","home","JZ","bigfoot"] # "bigfoot_NV100","JZ_NV100"
+MACHINES = ["sandbox","local","JZ","bigfoot"]
 GPU_NAMES = {"sandbox":"RTX4090",
             "local":"RTX1000",
              "home":"RTX4080",
@@ -123,11 +124,13 @@ for i, machine in enumerate(data.keys()):
             label=CPU_NAMES[machine]
         else:
             label=GPU_NAMES[machine]
+        # The plot
         bars    = ax_speed.bar(
             x + offset, speeds, width,
             label=label,
             color=machine_colors[machine], edgecolor="white", linewidth=0.5,
         )
+        ax_speed.set_yscale('log', base=10)
         ax_speed.set_title(backend)
         for speed in speeds:
             if speed>maxspeed:
@@ -153,12 +156,12 @@ for i, machine in enumerate(data.keys()):
 
 for backend in range(len(BACKENDS)):
     axes[0,backend].set_ylim([0, 1.1*maxspeed])
-    axes[1,backend].set_ylim([0,1.1])
+    axes[1,backend].set_ylim([0,1.2])
 axes[0,0].set_ylabel('speed (points.step/s)')
 axes[0,0].legend(fontsize=8, framealpha=0.8)
 axes[0,1].legend(fontsize=8, framealpha=0.8)
 axes[0,2].legend(fontsize=8, framealpha=0.8)
-axes[0,3].legend(fontsize=8, framealpha=0.8)
+#axes[0,3].legend(fontsize=8, framealpha=0.8)
 axes[1,0].set_ylabel('speedup (vs RTX4090 OpenGL)')
 
 fig.savefig(f"bench_{CASE}.png", dpi=150) #, bbox_inches="tight")

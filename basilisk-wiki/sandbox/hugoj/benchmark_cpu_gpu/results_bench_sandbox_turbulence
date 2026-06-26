@@ -24,3 +24,17 @@ gpu
 # Multigrid (GPU), 2991 steps, 6.92783 CPU, 6.928 real, 1.81e+09 points.step/s, 8 var
 4096
 # Multigrid (GPU), 3011 steps, 31.0801 CPU, 31.08 real, 1.63e+09 points.step/s, 8 var
+cuda
+128
+# Multigrid (cuda), 2009 steps, 1.20694 CPU, 1.207 real, 2.73e+07 points.step/s, 8 var
+256
+# Multigrid (cuda), 2008 steps, 1.40442 CPU, 1.404 real, 9.36e+07 points.step/s, 8 var
+512
+# Multigrid (cuda), 2328 steps, 1.88767 CPU, 1.887 real, 3.23e+08 points.step/s, 8 var
+1024
+# Multigrid (cuda), 2767 steps, 3.01486 CPU, 3.014 real, 9.62e+08 points.step/s, 8 var
+2048
+# Multigrid (cuda), 2991 steps, 6.31229 CPU, 6.311 real, 1.99e+09 points.step/s, 8 var
+4096
+# Multigrid (cuda), 3011 steps, 27.0165 CPU, 27.01 real, 1.87e+09 points.step/s, 8 var
+

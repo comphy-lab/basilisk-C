@@ -4,7 +4,7 @@
 
 set -x
 
-TODO='all'
+TODO='allgpu'
 NTHREADS=8
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
@@ -45,50 +45,20 @@ if [ $TODO = 'cpu' ] || [ $TODO = 'all' ]; then
 fi
 
 list_res=(128 256 512 1024 2048 4096) # 128 256 512 1024
-list_backend=('gpu' 'cuda' 'hip')
-
+list_backend=('gpu')                  # 'cuda')           #'hip'
+cd $BASILISK/examples
+make clean
 if [ $TODO = 'allgpu' ] || [ $TODO = 'all' ]; then
   for backend in "${list_backend[@]}"; do
     echo $backend >>$FILE
-    cd $BASILISK/examples
-    __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 CFLAGS='-DTRACE=2 -DBENCHMARK=1' make turbulence.gpu.tst # compile first
+    rm -rf $CASE.$backend
+    __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 CFLAGS='-DTRACE=2 -DBENCHMARK=1' make turbulence.$backend.tst # compile first
     for i in "${list_res[@]}"; do
       echo $i >>$FILE
-      __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu $i >>"${FILE}" 2>&1
+      __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 turbulence.$backend/turbulence.$backend $i >>"${FILE}" 2>&1
     done
   done
 fi
-
-# if [ $TODO = 'gpu' ] || [ $TODO = 'all' ] || [ $TODO = 'allgpu1' ]; then
-#   echo '-> GPU'
-#   FILE_PATH="${SCRIPT_DIR}/${name}_turbulence_gpu_"
-#   cd $BASILISK/examples
-#   __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 CFLAGS='-DTRACE=2 -DBENCHMARK=1' make turbulence.gpu.tst # compile first
-#   for i in "${list_res[@]}"; do
-#     echo $i
-#     __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 turbulence.gpu/turbulence.gpu $i >"${FILE_PATH}${i}" 2>&1
-#   done
-# fi
-# if [ $TODO = 'cuda' ] || [ $TODO = 'all' ] || [ $TODO = 'allgpu' ]; then
-#   echo '-> CUDA'
-#   FILE_PATH="${SCRIPT_DIR}/${name}_turbulence_cuda_"
-#   cd $BASILISK/examples
-#   __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 CFLAGS='-DTRACE=2 -DBENCHMARK=1' make turbulence.cuda.tst # compile first
-#   for i in "${list_res[@]}"; do
-#     echo $i
-#     __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 turbulence.cuda/turbulence.cuda $i >"${FILE_PATH}${i}" 2>&1
-#   done
-# fi
-# if [ $TODO = 'hip' ] || [ $TODO = 'all' ] || [ $TODO = 'allgpu' ]; then
-#   echo '-> HIP'
-#   FILE_PATH="${SCRIPT_DIR}/${name}_turbulence_hip_"
-#   cd $BASILISK/examples
-#   __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 CFLAGS='-DTRACE=2 -DBENCHMARK=1' make turbulence.hip.tst # compile first
-#   for i in "${list_res[@]}"; do
-#     echo $i
-#     __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia OMP_NUM_THREADS=1 turbulence.hip/turbulence.hip $i >"${FILE_PATH}${i}" 2>&1
-#   done
-# fi
 
 echo 'CASE 2'
 list_res=(128, 256, 512, 1024, 2048)

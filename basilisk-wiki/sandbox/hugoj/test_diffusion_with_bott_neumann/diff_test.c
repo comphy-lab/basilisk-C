@@ -18,8 +18,8 @@ There might be a better way to do this...
 */
 #include "grid/multigrid.h"
 //#include "grid/multigrid1D.h"
-#include "layered/hydro.h"
-#include "layered/nh.h"
+#include "hydro.h"
+#include "nh.h"
 #include "layered/remap.h"
 #include "layered/perfs.h"
 
@@ -95,7 +95,20 @@ event init(i =  0) {
 event viscous_term (i++)
 {
   foreach() {
-    vertical_diffusion (point, h, T, dt, kappa, qt/(kappa*rho0*cp), T[0,0,0]-strat/(g_*alphaT) , 1.); // 
+    vertical_diffusion (point,  // point
+                        h, // h
+                        T, // scalar
+                        dt, // dt
+                        kappa, // D
+                        qt/(kappa*rho0*cp), // dst
+                        strat/(g_*alphaT), // dsb
+                        0., // s_b
+                        HUGE, // lambda_b
+                        0., // s_t
+                        HUGE); // lambda_t
+    // void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
+    // double dst, double dsb,double s_b, double lambda_b, double s_t, double lambda_t)
+    //vertical_diffusion (point, h, T, dt, kappa, qt/(kappa*rho0*cp), 0., 0. , HUGE); // 
   }
 }
 
