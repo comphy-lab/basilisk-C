@@ -1,0 +1,13 @@
+Hi, I'm Louise. I'm a fourth year student doing an internship, during which I'm implementing the Selective Frequency Damping (SFD) method into Basilisk.
+
+# SFD module and examples
+- **The [SFD module](/sandbox/gally/SFD.h) to be included in the header of the following file codes**
+- Stabilisation of a [Kármán Vortex Street](/sandbox/gally/KarmanSFD.c) behind a 2D cylinder
+
+## To come soon 
+- Stabilisation of a flow behind a 3D sphere
+- Baseflow around an edge (edgetone)
+
+# Kármán
+- [Strouhal number of the oscillations behind a 2D sphere](/sandbox/gally/KarmanStrouhal.c)
+- First step of the SFD : [filtering the unstable flow](/sandbox/gally/KarmanFiltered.c)

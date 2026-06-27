@@ -38,7 +38,7 @@ double Reynolds = 80.;
 int maxlevel = 9;
 face vector muv[];
 
-/** We create all variables necessary for the SFD.*/
+/** We create all variables necessary for the SFD*/
 
 double SFD_delta;
 vector ubar[];
@@ -138,7 +138,7 @@ event bar (i++; t <= 35) {
   static FILE * fbar = NULL;
   if (!fbar) {
     char filename[25];
-    snprintf(filename, sizeof(filename), "res_Re%.0f_D%.2f.dat", Reynolds, SFD_delta);
+    snprintf(filename, sizeof(filename), "res_D%.2f.dat", SFD_delta);
     fbar = fopen(filename, "w");
   }
   fprintf(fbar, "%g %g\n", t, SFD_res);
@@ -165,10 +165,10 @@ event movies (i += 4; t <= 35.) {
   char name_videobar[30];
 
   snprintf(name_video, sizeof(name_video),
-	   "vort_Re%.0f_D%.2f.mp4", Reynolds, SFD_delta);
+	   "vort_D%.2f.mp4", SFD_delta);
 
   snprintf(name_videobar, sizeof(name_videobar),
-	   "vortbar_Re%.0f_D%.2f.mp4", Reynolds, SFD_delta);
+	   "vortbar_D%.2f.mp4", SFD_delta);
 
   output_ppm (omega, file = name_video, box = {{-0.5,-0.5},{7.5,0.5}},
 	      min = -10, max = 10, linear = true, mask = m);
@@ -205,7 +205,7 @@ ax1[0].set_ylabel("Residual")
 for i in range(len(delta)):
 
     # Load data: t  vp
-    data = np.loadtxt(f"res_Re{Re}_D{delta[i]}.dat")
+    data = np.loadtxt(f"res_D{delta[i]}.dat")
     t  = data[:, 0] / time_char
     res = data[:, 1]
 
@@ -227,13 +227,13 @@ plt.savefig("residual.png")
 
 ## Animation of the unfiltered vorticity field
 
-![Unfiltered vorticity field](KarmanSFDtests/vort_Re80_D0.25.mp4)(loop)
+![Unfiltered vorticity field](KarmanFiltered/vort_D0.25.mp4)(loop)
 
 ## Animations of the filtered vorticity fields
 
-![$\Delta = 0.25$](KarmanSFDtests/vortbar_Re80_D0.25.mp4)(loop)
+![$\Delta = 0.25$](KarmanFiltered/vortbar_D0.25.mp4)(loop)
 
-![$\Delta = 6$](KarmanSFDtests/vortbar_Re80_D6.00.mp4)(loop)
+![$\Delta = 6$](KarmanFiltered/vortbar_D6.00.mp4)(loop)
 
-![$\Delta = 20$](KarmanSFDtests/vortbar_Re80_D20.00.mp4)(loop)
+![$\Delta = 20$](KarmanFiltered/vortbar_D20.00.mp4)(loop)
 */

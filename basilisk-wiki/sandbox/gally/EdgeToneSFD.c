@@ -4,6 +4,7 @@
 
 #include "navier-stokes/centered.h"
 #include "utils.h"
+#include "SFD.h"
 
 bid inner;
 
@@ -13,13 +14,12 @@ double b = 1.;  // jet diameter
 double U0 = 1.; // for top hat
 double W=10.;   // edge-distance
 
-double Strouhal = 0.0373;
-float SFD_startingtime = 0.;
-
-double SFD_delta, SFD_chi;
-vector ubar[];
-scalar pbar[];
-face vector av[];
+/**
+We set the SFD parameters. */
+double freq_SFD = 0.0373;
+bool SFD_toggle;
+event adapt_toggle (i++)
+  SFD_toggle = (t >= 0.);
 
 scalar omega[];
 scalar base[];
@@ -47,10 +47,6 @@ int main(int argc, char * argv[])
   init_grid (N);
   mu = muv;
   
-  a = av;
-  SFD_delta = b/(M_PI*Strouhal*U0);
-  SFD_chi = 1/SFD_delta;
-  
   run();
 }
 
@@ -66,28 +62,8 @@ event init (i = 0) {
 
 /**
 We set initial conditions. */  
-  
-  foreach() {
+  foreach()
     u.x[] = 0.;
-    ubar.x[] = 0.;
-    ubar.y[] = 0.;
-    pbar[] = 0.;
-  }
-}
-
-/** We calculate the SFD's terms */
-
-event acceleration (i++) {
-    foreach_face()
-      av.x[] = (t >= SFD_startingtime) ? - SFD_chi * ((u.x[] - ubar.x[]) + (u.x[-1] - ubar.x[-1]))/2. : 0.;
-}
-
-event bar (i++) {
-  foreach() {
-    ubar.x[] = (u.x[] - ubar.x[]) * (dt/SFD_delta) + ubar.x[];
-    ubar.y[] = (u.y[] - ubar.y[]) * (dt/SFD_delta) + ubar.y[];
-    pbar[] = (p[] - pbar[]) * (dt/SFD_delta) + pbar[];
-  }
 }
 
 event properties (i++) {
@@ -118,16 +94,6 @@ u.t[bottom] = neumann(0.);
 
 u.n[inner] = x < W ? neumann(0.) : dirichlet(0.);
 u.t[inner] = x < W ? dirichlet(1.) : dirichlet(0.);
-
-
-ubar.n[left]  = dirichlet(fabs(y) > b/2. ? cf : 1.);
-pbar[left]    = neumann(0.);
-
-ubar.n[right] = neumann(0.);
-pbar[right]   = dirichlet(0.);
-
-ubar.n[inner] = x < W ? neumann(0.) : dirichlet(0.);
-ubar.t[inner] = x < W ? dirichlet(1.) : dirichlet(0.);
 
 
 event logfile (i++, t<=Tend) {

@@ -1,6 +1,7 @@
 /** 
-Simulation du coarsening des roll waves granulaires 
-   avec les équations :
+## Simulation du coarsening des roll waves granulaires 
+
+Pour décrire les instabilités d’un écoulement à surface libre sur plan incliné on utilise les équations de Saint-Venant:
 
    $$ \frac{\partial h}{\partial t} + \frac{\partial (h \bar{u})}{\partial x} = 0 $$
 
@@ -12,6 +13,10 @@ Simulation du coarsening des roll waves granulaires
        + \frac{\partial}{\partial x}\left(\nu h^{3/2} \frac{\partial \bar{u}}{\partial x}\right) $$
 
    Avec un bruit initial.
+   
+   
+   
+## Code
 */
 
 #include "grid/cartesian1D.h"
@@ -175,6 +180,9 @@ event plot_animation (t = end) {
 
 
 /**
+## Results
+
+Phénomène de coarsening : diminution du nombre d'onde en fonction du temps.
 ~~~gnuplot Coarsening
 
 set terminal pngcairo size 700,400 enhanced font 'Verdana,10'
@@ -197,6 +205,9 @@ plot "evolution_vagues.dat" using 1:2 with linespoints lw 2 lc rgb "red" title "
 
 
 /**
+Regroupement des ondes à cause du phénomène de coarsening, avec apparition
+d'ondes de plus en plus grandes jusqu'à une taille de saturation $h_{max}$.
+
 ~~~gnuplot Animation Coarsening
 # Configuration du terminal pour générer un GIF animé
 # delay 40 = 0.4 seconde entre chaque image | loop 0 = répétition infinie
@@ -226,6 +237,14 @@ do for [t=20:2500:20] {
 /**
 ## Bibliography
   
- * D. Razis, A. N. Edwards, J. M. N. T. Gray, and Ko van der Weele
+ * [D. Razis, A. N. Edwards, J. M. N. T. Gray, and Ko van der Weele](10.1063/1.4904520)
  "Arrested coarsening of granular roll waves"
+ * [Kanellopoulos, Giorgos and Razis, Dimitrios and van der Weele, Ko](10.1017/jfm.2022.811)
+ "On the shape and size of granular roll waves"
+ Journal of Fluid Mechanics
+ * [Gray, J. M. N. T. and Edwards, A. N.](https://personalpages.manchester.ac.uk/staff/nico.gray/Papers/JFM_755_2014.pdf)
+ "A depth-averaged $\mu(I)$-rheology for shallow granular free-surface flows"
+ Journal of Fluid Mechanics
+ * [Lagrée P-Y](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/MFEnv.pdf)
+"Equations de Saint Venant et application, Ecoulements en milieux naturels" Cours MSF12, M1 Sorbonne-Université
 */

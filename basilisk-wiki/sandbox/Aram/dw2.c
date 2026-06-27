@@ -1,6 +1,6 @@
 /** 
-Simulation du coarsening des roll waves eau claire
-   avec les équations :
+## Simulation des trains d'ondes (roll-waves) en eau claire
+Pour décrire les instabilités d'un écoulement à surface libre sur plan incliné on utilise les équations de Saint-Venant:
    $$
    \partial_t h + \partial_x (hu) = 0
    $$
@@ -11,14 +11,19 @@ Simulation du coarsening des roll waves eau claire
    = -gh\,\partial_x z - \frac{f}{8}u|u|
    $$
    
-   avec :
+avec pour le frottement:
 $$
 S_0 = \frac{f}{8}\,\frac{u^2}{g h} = \frac{f}{8} Fr^2
 $$
-   et un coefficient de frottement de Darcy--Weisbach :
+   et un coefficient de frottement de Darcy--Weisbach pour modéliser le frottement turbulent:
 $$
 f = 0.048
 $$
+Pour un nombre de Froude supérieur à 1.5, on montre que l'écoulement est instable et qu'un train d'ondes apparait, appelé "roll-waves" en anglais.
+
+
+
+## Code
 */
 #include "grid/cartesian1D.h"
 #include "saint-venant.h"
@@ -134,6 +139,10 @@ event diag (t = 0; t <= 50; t += 0.5) {
 
 
 /**
+## Results
+
+Pour Fr = 2.5, accord entre méthode numérique et solution analytique de Dressler.
+
 ~~~pythonplot Dressler (analytique) et résultat numérique
 import numpy as np
 import matplotlib.pyplot as plt
@@ -276,6 +285,8 @@ plt.savefig("dressler.png")
 
 /**
 
+Développement d'un train d'onde, l'échelle de la hauteur est amplifiée par rapport à la direction de l'écoulement.
+
 ~~~pythonplot Fr = 2.5
 import numpy as np
 import matplotlib.pyplot as plt
@@ -333,6 +344,14 @@ else:
 /**
 ## Bibliography
   
- * Olivier Delestre
+ * [J. Needham and J. H. Merkin](http://www.jstor.org/stable/2397934)
+ "On roll waves down an open inclined channel"
+ Proc. R. Soc. Lond. A 394, 259-278 (1984)
+ 
+ * [Olivier Delestre](https://theses.hal.science/tel-00531377v3)
  "Simulation du ruissellement d’eau de pluie sur des surfaces agricoles"
+ 
+ * [Lagrée P-Y](http://www.lmm.jussieu.fr/~lagree/COURS/MFEnv/MFEnv.pdf)
+"Equations de Saint Venant et application, Ecoulements en milieux naturels" Cours MSF12, M1 Sorbonne-Université
+
 */
