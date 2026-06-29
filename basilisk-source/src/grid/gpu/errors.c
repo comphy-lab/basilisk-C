@@ -748,11 +748,11 @@ char *yytext;
   # Error message parsing for compilation of GLSL or CUDA code on GPUs
   */
   static char * sout;
-  static const char * slang;
+  static char * slang;
   static char * fname;
   static int line;
   
-  static char * str_append (char * dst, const char * src) {
+  static char * str_append (char * dst, char * src) {
     if (dst == NULL) {
       dst = malloc (strlen(src) + 1);
       dst[0] = '\0';
@@ -777,7 +777,7 @@ char *yytext;
 
   /* parse Intel GPU error messages of the form:
      0:31(15):... */
-  static int parse_intel (const char * errors, const char ** msg)
+  static int parse_intel (char * errors, char ** msg)
   {
     char * end = strchr (errors, '\n');
     char * sline = strchr (errors, ':');
@@ -792,7 +792,7 @@ char *yytext;
 
   /* parse Nvidia GPU error messages of the form:
      0(31) :... */
-  static int parse_nvidia (const char * errors, const char ** msg)
+  static int parse_nvidia (char * errors, char ** msg)
   {
     char * end = strchr (errors, '\n');
     char * sline = strchr (errors, '(');  
@@ -804,8 +804,23 @@ char *yytext;
     if (!*msg) return -1; (*msg)++;
     return atoi_check (sline, s1);
   }
-
-  static char * next_error (const char * errors, int * line, const char ** msg)
+  
+  /* parse OpenCL error messages of the form:
+     <kernel>:368:78:... */
+  static int parse_opencl (char * errors, char ** msg)
+  {
+    char * end = strchr (errors, '\n');
+    char * sline = strchr (errors, ':');
+    if (!sline) return -1; sline++;
+    if (end && end < sline) return -1;
+    char * s1 = strchr (sline, ':');
+    if (!s1) return -1;
+    *msg = strchr (s1 + 1, ':');
+    if (!*msg) return -1; (*msg)++;
+    return atoi_check (sline, s1);
+  }
+  
+  static char * next_error (char * errors, int * line, char ** msg)
   {
     if (!errors || *errors == '\0')
       return NULL;
@@ -813,6 +828,8 @@ char *yytext;
     *line = parse_intel (errors, msg);
     if (*line < 0)
       *line = parse_nvidia (errors, msg);
+    if (*line < 0)
+      *line = parse_opencl (errors, msg);
     if (*line < 0) {
       // unknown error format: assumes first line
       *line = 1;
@@ -830,10 +847,10 @@ char *yytext;
     return s3;
   }
   
-  static char * merge (const char * source, const char * errors)
+  static char * merge (char * source, char * errors)
   {
     char * merged = NULL;
-    const char * msg;
+    char * msg;
     int eline, line = 1;
     char * error = next_error (errors, &eline, &msg);
     char * src = strdup (source), * s = src;
@@ -859,8 +876,8 @@ char *yytext;
     free (src);
     return merged;
   }
-#line 863 "errors.c"
-#line 864 "errors.c"
+#line 880 "errors.c"
+#line 881 "errors.c"
 
 #define INITIAL 0
 
@@ -1080,10 +1097,10 @@ YY_DECL
 		}
 
 	{
-#line 128 "errors.lex"
+#line 145 "errors.lex"
 
 
-#line 1087 "errors.c"
+#line 1104 "errors.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1153,7 +1170,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 130 "errors.lex"
+#line 147 "errors.lex"
 {
   char * sline = yytext;
   while (!strchr ("0123456789", *sline)) sline++;
@@ -1170,7 +1187,7 @@ YY_RULE_SETUP
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 143 "errors.lex"
+#line 160 "errors.lex"
 {
   if (0) // !strncmp (yytext, "@error ", 7))
     yytext += 6;
@@ -1195,20 +1212,20 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 164 "errors.lex"
+#line 181 "errors.lex"
 { line++; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 166 "errors.lex"
+#line 183 "errors.lex"
 ; // very important!!
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 168 "errors.lex"
+#line 185 "errors.lex"
 ECHO;
 	YY_BREAK
-#line 1212 "errors.c"
+#line 1229 "errors.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2227,11 +2244,11 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 168 "errors.lex"
+#line 185 "errors.lex"
 
 
-char * gpu_errors (const char * errors, const char * source, char * fout,
-                   const char * lang)
+char * gpu_errors (char * errors, char * source, char * fout,
+                   char * lang)
 {
   if (0) yyunput (0, NULL); // just prevents 'yyunput unused' compiler warning
 

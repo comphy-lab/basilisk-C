@@ -1,4 +1,4 @@
-pristine:e81cc9b786386e00221385f0d28e6752d3251ccba6770a55ddfdf0285a8a14ba
+pristine:dbd0881b668222ada34dc31c4aa390e2f1bb906a61a1067b9100615728e8ff50
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -365,3 +365,33 @@ Stephane Popinet <popinet@basilisk.fr>**20260622091443
  Ignore-this: 8077b06b1155c81e53d77167df345c65dbe6d85c7a00a8f3dda1a0a5c23988b4d99bb3c2ea6bc7f8
 ] 
 hash: 0000000343-efda6ed2523779d5d5609aa397fb777ffd3cf337776952c540451e27d04d71fa
+[Declarations in init_declarator_list were not respecting the traversal order
+Stephane Popinet <popinet@basilisk.fr>**20260624144708
+ Ignore-this: 86957e44ea52013c75ffed3c7e35c032aedfc25b77c874fee22c753c961009c34c9df09d9d3d61e3
+] 
+hash: 0000000503-c24aec0795b69d4890223502161a3c0f387a384319c3ffbb03ff11eb705b3c9f
+[Improved gnuplot robustness in some tests
+Stephane Popinet <popinet@basilisk.fr>**20260624174556
+ Ignore-this: 3e94ecc6d4eb82ea894b86cedcde5d65f5cd291892bef4f11978cdd3be128b4f2f5867494401cbd9
+] 
+hash: 0000000927-55e49f5a0ef724faa196a8ed721faa78cf9e740ed5e84caad3c8098e406d6ece
+[CUDA/HIP backends use a buffer for global variables and kernel parameters for local variables
+Stephane Popinet <popinet@basilisk.fr>**20260624174659
+ Ignore-this: 6651ec5fb65369cfcdb5ddcf885c3f00c7472ff6be9c06241483f1148ce66f3377cfe90333f32c4
+] 
+hash: 0000053156-3dd4dbdc03a4f5cf656da2bcc18dafcaa4544f9fc97d0556d969d24ef1c037df
+[Oversubscribe MPI processes in a more modern way
+Stephane Popinet <popinet@basilisk.fr>**20260624180326
+ Ignore-this: 230dbcb244745db48d1c0870863e146b9f9528335054f8e72fa472fc61fb396c88b8301b65d40c22
+] 
+hash: 0000000575-7755a59b33cdd2351c561dec92fc8d7ef21ba4d7c607e38620783b1633be50d5
+[An OpenCL GPU backend
+Stephane Popinet <popinet@basilisk.fr>**20260628172854
+ Ignore-this: f36766b9b335dc09018c4150c76e44b6c55b97354a63145590192c27fcf8052ad261d851d92a534a
+] 
+hash: 0000113775-d0e4521a4bf6ce373bc8f40755214d1a84c76b03823ec14950d657eda2de3ae6
+[More GPU benchmarks (CUDA and OpenCL)
+Stephane Popinet <popinet@basilisk.fr>**20260628183924
+ Ignore-this: dd000d38858eff44f90589ded7218fcc39f76e25fb5072a71aac95934e5b00c52fa3cc59ed33ed76
+] 
+hash: 0000014246-131a9e1a763185b95984f727d9566509a232dd174df4d5b50ceaf24bc32d5bd7

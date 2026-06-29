@@ -203,7 +203,7 @@ These tests can be run using `make embed-tests`.
 These tests can be run manually using:
 
 ~~~bash
-make -k gpu-tests
+make -k gpu-tests cuda-tests hip-tests ocl-tests
 ~~~
 
 * [A range of GPU tests](gpu.c)

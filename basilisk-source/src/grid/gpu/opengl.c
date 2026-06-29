@@ -14,6 +14,8 @@
 #define swap(type,a,b) do { type _tmp_ = a; a = b; b = _tmp_; } while(false)
 
 typedef struct { double x, y, z; } coord;
+typedef struct { double x, y, z; } _coord;
+typedef struct { float r, g, b, a; } vec4;
 typedef float real;
 typedef struct { int i; } scalar;
 extern int datasize;
@@ -26,22 +28,6 @@ typedef struct {
 extern int N;
 extern double X0, Y0, Z0, L0;
 extern struct { int x, y; } Dimensions;
-
-typedef struct _External External;
-
-struct _External {
-  char * name;    // the name of the variable
-  void * pointer; // a pointer to the data
-  int type;       // the type of the variable
-  int nd;         // the number of pointer dereferences or attribute offset or enum constant
-  char reduct;    // the reduction operation
-  char global;    // is it a global variable?
-  char constant;  // is it a constant?
-  void * data;    // the dimensions (int *) for arrays or the code (char *) for functions
-  scalar s;       // used for reductions on GPUs
-  External * externals, * next;
-  int used;
-};
 
 #include "../../ast/symbols.h"
 
@@ -60,6 +46,8 @@ enum typedef_kind_t {
 
 #define sysrealloc realloc
 
+#define _GPU 1
+#include "../externals.h"
 #include "backend.h"
 
 Shader * load_shader (const char * fs, uint32_t hash, void * loop);
@@ -535,6 +523,7 @@ void reset_scalar (int i, int block, size_t field_size, double val)
 void finalize_shader (Shader * s, External * externals, External * merged,
                       unsigned ng[2], unsigned nwg[2])
 {
+  if (false) is_external_variable (NULL); // just to prevent a -Wunused-function
   s->ng[0] = ng[0], s->ng[1] = ng[1];
   
   /**
@@ -548,7 +537,7 @@ void finalize_shader (Shader * s, External * externals, External * merged,
   int nuniforms = 0;
   for (const External * g = merged; g; g = g->next) {
     if (g->name[0] == '.') continue;
-    if (IS_EXTERNAL_CONSTANT(g)) continue;
+    if (is_external_constant(g)) continue;
     if (g->type == sym_function_declaration || g->type == sym_function_definition) continue;
     if (g->type == sym_INT && (!strcmp (g->name, "N") ||
 			       !strcmp (g->name, "nl") ||

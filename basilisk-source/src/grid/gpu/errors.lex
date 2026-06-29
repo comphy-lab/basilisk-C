@@ -7,11 +7,11 @@
   # Error message parsing for compilation of GLSL or CUDA code on GPUs
   */
   static char * sout;
-  static const char * slang;
+  static char * slang;
   static char * fname;
   static int line;
   
-  static char * str_append (char * dst, const char * src) {
+  static char * str_append (char * dst, char * src) {
     if (dst == NULL) {
       dst = malloc (strlen(src) + 1);
       dst[0] = '\0';
@@ -36,7 +36,7 @@
 
   /* parse Intel GPU error messages of the form:
      0:31(15):... */
-  static int parse_intel (const char * errors, const char ** msg)
+  static int parse_intel (char * errors, char ** msg)
   {
     char * end = strchr (errors, '\n');
     char * sline = strchr (errors, ':');
@@ -51,7 +51,7 @@
 
   /* parse Nvidia GPU error messages of the form:
      0(31) :... */
-  static int parse_nvidia (const char * errors, const char ** msg)
+  static int parse_nvidia (char * errors, char ** msg)
   {
     char * end = strchr (errors, '\n');
     char * sline = strchr (errors, '(');  
@@ -63,8 +63,23 @@
     if (!*msg) return -1; (*msg)++;
     return atoi_check (sline, s1);
   }
-
-  static char * next_error (const char * errors, int * line, const char ** msg)
+  
+  /* parse OpenCL error messages of the form:
+     <kernel>:368:78:... */
+  static int parse_opencl (char * errors, char ** msg)
+  {
+    char * end = strchr (errors, '\n');
+    char * sline = strchr (errors, ':');
+    if (!sline) return -1; sline++;
+    if (end && end < sline) return -1;
+    char * s1 = strchr (sline, ':');
+    if (!s1) return -1;
+    *msg = strchr (s1 + 1, ':');
+    if (!*msg) return -1; (*msg)++;
+    return atoi_check (sline, s1);
+  }
+  
+  static char * next_error (char * errors, int * line, char ** msg)
   {
     if (!errors || *errors == '\0')
       return NULL;
@@ -72,6 +87,8 @@
     *line = parse_intel (errors, msg);
     if (*line < 0)
       *line = parse_nvidia (errors, msg);
+    if (*line < 0)
+      *line = parse_opencl (errors, msg);
     if (*line < 0) {
       // unknown error format: assumes first line
       *line = 1;
@@ -89,10 +106,10 @@
     return s3;
   }
   
-  static char * merge (const char * source, const char * errors)
+  static char * merge (char * source, char * errors)
   {
     char * merged = NULL;
-    const char * msg;
+    char * msg;
     int eline, line = 1;
     char * error = next_error (errors, &eline, &msg);
     char * src = strdup (source), * s = src;
@@ -167,8 +184,8 @@ ES     (\\([\'\"\?\\abfnrtv]|[0-7]{1,3}|x[a-fA-F0-9]+))
 
 %%
 
-char * gpu_errors (const char * errors, const char * source, char * fout,
-                   const char * lang)
+char * gpu_errors (char * errors, char * source, char * fout,
+                   char * lang)
 {
   if (0) yyunput (0, NULL); // just prevents 'yyunput unused' compiler warning
 

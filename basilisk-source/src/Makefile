@@ -7,7 +7,7 @@ EXCLUDE = qcc.c include.c postproc.c bview.c
 
 TOPTARGETS = all clean check
 
-SUBDIRS = darcsit ast kdt wsServer gl
+SUBDIRS = darcsit ast kdt wsServer gl grid
 
 .PHONY: subdirs $(SUBDIRS) $(TOPTARGETS)
 

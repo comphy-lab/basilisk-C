@@ -26,13 +26,14 @@ darcs clone https://basilisk.fr/basilisk
 If later you want to update the source code, you just need to do
 
 ~~~bash
-cd basilisk
+cd basilisk/src
 darcs pull
 ~~~
 
 and recompile using
 
 ~~~bash
+touch qcc
 make -k clean
 make
 ~~~
@@ -75,6 +76,7 @@ looks close to yours, then try
 cd basilisk/src
 ls config.*
 cp config.[your pick] config
+make -k
 make
 ~~~
 

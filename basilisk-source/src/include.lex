@@ -44,7 +44,8 @@
   
   static char * paths[100] = { LIBDIR }, grid[80] = "";
   static int npath = 1, hasgrid = 0, debug = 0;
-  static int dimension = 0, bghosts = 0, layers = 0, gpu = 0, cuda = 0, fp32 = 0;
+  static int dimension = 0, bghosts = 0, layers = 0, gpu = 0,
+    cuda = 0, opencl = 0, fp32 = 0;
   static int incode;    // are we in code (or in a code block)?
   
   static char * strip_path (char * s) {
@@ -316,6 +317,10 @@ FDECL     {ID}+{SP}*\(
   cuda = 1;
 }
 
+^{SP}*#{SP}*define{SP}+_OPENCL{WS}+1{SP}*$ {
+  opencl = 1;
+}
+
 ^{SP}*#{SP}*define{SP}+LAYERS{WS}+1{SP}*$ {
   layers = 1;
 }
@@ -582,7 +587,8 @@ static void prepend_path (char * path)
 
 void includes (int argc, char ** argv,
 	       char ** grid1, int * default_grid,
-	       int * dim, int * bg, int * lyrs, int * gpus, int * cudas, int * fp32s,
+	       int * dim, int * bg, int * lyrs, int * gpus,
+               int * cudas, int * opencls, int * fp32s,
 	       const char * dir)
 {
   int depend = 0, tags = 0, swig = 0;
@@ -743,6 +749,7 @@ void includes (int argc, char ** argv,
   *lyrs = layers;
   *gpus = gpu;
   *cudas = cuda;
+  *opencls = opencl;
   *fp32s = fp32;
   free (basilisk_include_path);
   free_allocator (alloc);

@@ -57,7 +57,7 @@ All other options will be passed directly to the C compiler. */
 int dimension = 2, bghosts = 0, layers = 0;
   
 int debug = 0, catch = 0, cadna = 0, nolineno = 0, events = 0, progress = 0;
-int parallel = 0, cpu = 0, gpu = 0, cuda = 0, fp32 = 0;
+int parallel = 0, cpu = 0, gpu = 0, cuda = 0, opencl = 0, fp32 = 0;
 static FILE * dimensions = NULL;
 static int run = -1, finite = 1, redundant = 0, warn = 0, maxcalls = 20000000;
 char dir[] = ".qccXXXXXX";
@@ -111,8 +111,10 @@ AstRoot * compdir (FILE * fin, FILE * fout, FILE * swigfp,
 {
   FILE * fout1 = dopen ("_endfor.c", "w");
   AstRoot * ast = endfor (fin, fout1, grid, dimension, nolineno, progress, catch,
-			  parallel, cpu, gpu, !cuda, fp32, source == 2,
-			  swigfp, swigname);
+			  parallel, cpu, gpu,
+                          (KernelOptions) {
+                            .glsl = !cuda, .opencl = opencl, .fp32 = fp32
+                          }, source == 2, swigfp, swigname);
   fclose (fout1);
   
   fout1 = dopen ("_endfor.c", "r");
@@ -307,7 +309,7 @@ int main (int argc, char ** argv)
     char * grid = NULL;
     int default_grid;
     includes (argc, argv, &grid, &default_grid,
-	      &dimension, &bghosts, &layers, &gpu, &cuda, &fp32,
+	      &dimension, &bghosts, &layers, &gpu, &cuda, &opencl, &fp32,
 	      dep || tags ? NULL : dir);
     if (gpu)
       parallel = 1;

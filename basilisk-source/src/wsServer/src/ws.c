@@ -556,7 +556,7 @@ static inline int is_control_frame(int frame)
 static int do_handshake(struct ws_frame_data *wfd)
 {
 	char *response; /* Handshake response message. */
-	char *p;        /* Last request line pointer.  */
+	const char *p;        /* Last request line pointer.  */
 	ssize_t n;      /* Read/Write bytes.           */
 
 	/* Read the very first client message. */

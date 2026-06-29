@@ -9,7 +9,7 @@
 typedef struct {
   char * error;
   int return_macro_index;
-  Ast * macroscope;
+  Ast * macroscope, * scope;
   KernelOptions opts;
 } KernelData;
 
@@ -217,6 +217,94 @@ Ast * implicit_type_cast (Ast * n, Stack * stack)
   return type;
 }
 
+static bool is_global_declaration (const Ast * ref)
+{
+  return (!ast_parent (ref, sym_compound_statement) &&
+          !ast_parent (ref, sym_parameter_declaration));
+}
+
+static
+bool is_local_declaration (Ast * n, Stack * stack, Ast * scope)
+{
+  if (!strcmp (ast_terminal (n)->start, "point"))
+    return true;
+  Ast ** d;
+  for (int i = 0; (d = stack_index (stack, i)); i++)
+    if (*d == n)
+      return true;
+    else if (*d == scope)
+      break;
+  Ast * list = ast_schema (scope, sym_macro_statement,
+                           2, sym_argument_expression_list);
+  if (list) {
+    foreach_item_r (list, sym_argument_expression_list_item, argument) {
+      Ast * reduction_list = ast_find (argument, sym_reduction_list);
+      if (reduction_list) {
+        foreach_item (reduction_list, 1, reduction) {
+          Ast * variable = ast_find (reduction, sym_reduction,
+                                     4, sym_reduction_array,
+                                     0, sym_generic_identifier,
+                                     0, sym_IDENTIFIER);
+          if (variable && !strcmp (ast_terminal (variable)->start,
+                                   ast_terminal (n)->start))
+            return true; // this is a reduction variable
+        }
+      }
+    }
+  }
+  return false;
+}
+
+static
+bool can_be_uniform (Ast * ref, Stack * stack, Ast * scope, bool * global)
+{
+  if (!ref)
+    return false;
+  if (ref->parent->sym == sym_enumeration_constant)
+    return false;
+  if (ast_find (ast_parent (ref, sym_declaration),
+                sym_declaration_specifiers,
+                0, sym_type_qualifier,
+                0, sym_CONST))
+    return false;
+  
+  *global = is_global_declaration (ref);
+  if (*global) {
+    if (!strcmp (ast_terminal (ref)->start, "N") ||
+        !strcmp (ast_terminal (ref)->start, "nl") ||
+        !strcmp (ast_terminal (ref)->start, "Dimensions"))
+      return false;
+  }
+  else if (is_local_declaration (ref, stack, scope))
+    return false;
+  
+  AstDimensions dim = {0};
+  Ast * type = ast_identifier_type (ref, &dim, stack);
+  if (type == (Ast *) &ast_function)
+    return false;
+  Ast * def;
+  if (ast_schema (ast_ancestor (type, 5), sym_declaration,
+		  0, sym_declaration_specifiers,
+		  0, sym_storage_class_specifier,
+		  0, sym_TYPEDEF) &&
+      (def = ast_schema (ast_ancestor (type, 5), sym_declaration,
+			 1, sym_init_declarator_list,
+			 0, sym_init_declarator,
+			 0, sym_declarator,
+			 0, sym_direct_declarator,
+			 0, sym_generic_identifier,
+			 0, sym_IDENTIFIER))) {
+    // typedef
+    if (strcmp (ast_terminal (def)->start, "coord") &&
+        strcmp (ast_terminal (def)->start, "_coord") &&
+        strcmp (ast_terminal (def)->start, "vec4") &&
+        strcmp (ast_terminal (def)->start, "ivec") &&
+        strcmp (ast_terminal (def)->start, "bool"))
+      return false;
+  }
+  return true;
+}
+
 static
 void kernel (Ast * n, Stack * stack, void * data)
 {
@@ -224,66 +312,64 @@ void kernel (Ast * n, Stack * stack, void * data)
 
   if (d->error)
     return;
-  
+
+  /**
+  # Transformations only applied to CUDA and OpenCL
+
+  Essentially due to the diffrerent handling of "uniforms" and global
+  variables. */
+
+  if (!d->opts.glsl)
   switch (n->sym) {
 
   /**
-  ## Floating-point constants
+  ## References to global variables (i.e. "uniforms") */
 
-  If 32-bits floats (i.e. single precision) is used, we need to add
-  'f' to all floating-point constants, otherwise they will be
-  automatically considered to be 'double' (64 bits). */
-    
-  case sym_F_CONSTANT: {
-    if (d->opts.fp32) {
-      AstTerminal * t = ast_terminal (n);
-      int len = strlen (t->start);
-      if (t->start[len - 1] != 'f') {
-        len++;
-        t->start = realloc (t->start, len + 1);
-        t->start[len - 1] = 'f';
-        t->start[len] = '\0';
+  case sym_IDENTIFIER:
+    if (n->parent->sym == sym_primary_expression &&
+        ast_ancestor (n, 3)->sym != sym_function_call &&
+        ast_parent (n, sym_compound_statement)) {
+      Ast * ref = ast_identifier_declaration (stack, ast_terminal (n)->start);
+      bool global = false;
+      if (can_be_uniform (ref, stack, d->scope, &global)) {
+        str_prepend (ast_terminal (n)->start, global ? "_GLOB_VAL_(" : "_LOC_VAL_(",
+                     !strcmp (ast_terminal (n)->start, "val") ? "_" : "");
+        str_append (ast_terminal (n)->start, ")");
       }
     }
     break;
-  }
-    
-  case sym_IDENTIFIER: {
 
-    /**
-    ## Function pointers */
-
-    if (ast_is_function_pointer (n, stack))
-      str_prepend (ast_terminal (n)->start, "_p");
-
-    /**
-    ## 'val'
-
-    Buggy GLSL preprocessors do not make the difference between 'val'
-    as a variable identifier and 'val()' as a macro call. */
-
-    else if (!ast_schema (ast_ancestor (n, 3), sym_function_call,
-			  0, sym_postfix_expression,
-			  0, sym_primary_expression) &&
-	     !strcmp (ast_terminal (n)->start, "val"))
-      free (ast_terminal (n)->start), ast_terminal (n)->start = strdup ("_val");
-    
-    break;
-  }
-    
   /**
-  ## Assumes that pointers to structures are used through "inout" parameter */
+  ## Context for function definitions */
 
-  case sym_PTR_OP:
-    if (d->opts.glsl) {
-      ast_terminal(n)->start[0] = '.';
-      ast_terminal(n)->start[1] = '\0';
-    }
+  case sym_function_definition: {
+    Ast * para = ast_schema (n->child[0], sym_function_declaration,
+                             1, sym_declarator,
+                             0, sym_direct_declarator,
+                             1, token_symbol('('));
+    if (para)
+        str_append (ast_terminal (para)->start,
+                    ast_schema (n->child[0], sym_function_declaration,
+                                1, sym_declarator,
+                                0, sym_direct_declarator,
+                                2, token_symbol(')')) ? "_GLOB_PARAMS0_ " : "_GLOB_PARAMS_ ");
     break;
+  }
+  }
 
+  /**
+  # Transformations common to GLSL and CUDA
+
+  These transformations are mostly due to the differences between C99
+  and C++: implicit type conversions in C99, structure declarations
+  etc.  Since OpenCL is C99, it does not need these. */
+  
+  if (!d->opts.opencl)
+  switch (n->sym) {
+      
   /**
   ## Remove some reserved GLSL keywords */
-    
+
   case sym_STATIC: case sym_INLINE:
     ast_terminal (n)->start[0] = '\0';
     break;
@@ -394,62 +480,6 @@ void kernel (Ast * n, Stack * stack, void * data)
     }
     break;
   }
-    
-  case sym_postfix_expression: {
-    Ast * list;
-    if ((list = ast_schema (n, sym_postfix_expression,
-			    3, sym_postfix_initializer,
-			    1, sym_initializer_list))) {
-      
-      /**
-      ## Postfix initializers */
-      
-      Ast * a = n->child[0];
-      ast_set_child (n, 0, n->child[1]);
-      ast_set_child (n, 1, a);
-      a = n->child[3];
-      ast_set_child (n, 3, n->child[2]);
-      ast_set_child (n, 2, list);
-      ast_destroy (a);
-    }
-    else if (ast_attribute_access (n, stack) || ast_attribute_array_access (n)) {
-
-      /**
-      ## Attribute access */
-
-      if (n->parent->sym == sym_function_call) {
-	Ast * identifier = ast_schema (n, sym_postfix_expression,
-				       2, sym_member_identifier,
-				       0, sym_generic_identifier,
-				       0, sym_IDENTIFIER);
-	ast_before (n->parent, "_attr_", ast_terminal (identifier)->start, "(");
-	ast_terminal (ast_schema (n, sym_postfix_expression,
-				  1, token_symbol('.')))->start[0] = ',';
-	ast_terminal (identifier)->start[0] = '\0';
-	ast_after (n->parent, ")");
-      }
-      else {
-	if (ast_schema (n, sym_postfix_expression,
-			0, sym_postfix_expression,
-			0, sym_array_access)) {
-	  Ast * scalar = ast_find (n, sym_unary_expression,
-				   0, sym_postfix_expression);
-	  ast_destroy (scalar->child[1]);
-	  ast_destroy (scalar->child[2]);
-	  scalar->child[1] = NULL;
-	  Ast * array = ast_find (n, sym_array_access);
-	  scalar = ast_find (array, sym_expression);
-	  ast_set_child (n, 0, scalar);
-	  ast_destroy (array);
-	}
-	ast_terminal (ast_schema (n, sym_postfix_expression,
-				  1, token_symbol('.')))->start[0] = ',';
-	type_cast (n, "_attr");
-      }
-    }
-    
-    break;
-  }
 
   /**
   ## Arrays as parameters 
@@ -480,6 +510,132 @@ void kernel (Ast * n, Stack * stack, void * data)
       ast_set_child (n, 2, a);
     }
     break;
+
+  }
+
+  if (!n)
+    return;
+
+  /**
+  # Transformations independent from the language */
+
+
+  switch (n->sym) {
+
+  /**
+  ## Floating-point constants
+
+  If 32-bits floats (i.e. single precision) is used, we need to add
+  'f' to all floating-point constants, otherwise they will be
+  automatically considered to be 'double' (64 bits). */
+    
+  case sym_F_CONSTANT: {
+    if (d->opts.fp32) {
+      AstTerminal * t = ast_terminal (n);
+      int len = strlen (t->start);
+      if (t->start[len - 1] != 'f') {
+        len++;
+        t->start = realloc (t->start, len + 1);
+        t->start[len - 1] = 'f';
+        t->start[len] = '\0';
+      }
+    }
+    break;
+  }
+    
+  case sym_IDENTIFIER:
+
+    /**
+    ## Function pointers */
+
+    if (ast_is_function_pointer (n, stack))
+      str_prepend (ast_terminal (n)->start, "_p");
+
+    /**
+    ## 'val'
+
+    Buggy GLSL preprocessors do not make the difference between 'val'
+    as a variable identifier and 'val()' as a macro call. */
+
+    else if (!ast_schema (ast_ancestor (n, 3), sym_function_call,
+			  0, sym_postfix_expression,
+			  0, sym_primary_expression) &&
+	     !strcmp (ast_terminal (n)->start, "val"))
+      free (ast_terminal (n)->start), ast_terminal (n)->start = strdup ("_val");
+    break;
+
+  case sym_postfix_expression: {
+    Ast * list;
+    if ((list = ast_schema (n, sym_postfix_expression,
+			    3, sym_postfix_initializer,
+			    1, sym_initializer_list))) {
+      
+      /**
+      ## Postfix initializers */
+
+      if (d->opts.glsl) {
+        Ast * a = n->child[0];
+        ast_set_child (n, 0, n->child[1]);
+        ast_set_child (n, 1, a);
+        a = n->child[3];
+        ast_set_child (n, 3, n->child[2]);
+        ast_set_child (n, 2, list);
+        ast_destroy (a);
+      }
+      else if (!d->opts.opencl) { // CUDA
+        ast_destroy (n->child[0]);
+        ast_set_child (n, 0, n->child[1]);
+        ast_destroy (n->child[1]);
+        ast_set_child (n, 1, n->child[3]);
+        n->child[2] = NULL;
+      }
+    }
+    else if (ast_attribute_access (n, stack) || ast_attribute_array_access (n)) {
+
+      /**
+      ## Attribute access */
+
+      if (n->parent->sym == sym_function_call) {
+	Ast * identifier = ast_schema (n, sym_postfix_expression,
+				       2, sym_member_identifier,
+				       0, sym_generic_identifier,
+				       0, sym_IDENTIFIER);
+        if (!d->opts.glsl) {
+          Ast * para = ast_schema (n->parent, sym_function_call,
+                                   1, token_symbol('('));
+          if (para)
+            str_append (ast_terminal (para)->start,
+                        ast_schema (n->parent, sym_function_call,
+                                    2, token_symbol(')')) ? "_GLOB0_ " : "_GLOB_ ");
+        }
+	ast_before (n->parent, "_attr_", ast_terminal (identifier)->start, "(");
+	ast_terminal (ast_schema (n, sym_postfix_expression,
+				  1, token_symbol('.')))->start[0] = ',';
+	ast_terminal (identifier)->start[0] = '\0';
+	ast_after (n->parent, ")");
+      }
+      else {
+	if (ast_schema (n, sym_postfix_expression,
+			0, sym_postfix_expression,
+			0, sym_array_access)) {
+	  Ast * scalar = ast_find (n, sym_unary_expression,
+				   0, sym_postfix_expression);
+	  ast_destroy (scalar->child[1]);
+	  ast_destroy (scalar->child[2]);
+	  scalar->child[1] = NULL;
+	  Ast * array = ast_find (n, sym_array_access);
+	  scalar = ast_find (array, sym_expression);
+	  ast_set_child (n, 0, scalar);
+	  ast_destroy (array);
+	}
+	ast_terminal (ast_schema (n, sym_postfix_expression,
+				  1, token_symbol('.')))->start[0] = ',';
+	type_cast (n, "_attr");
+      }
+    }
+    
+    break;
+  }
 
   case sym_pointer: {
     Ast * p, * type, * identifier;
@@ -527,6 +683,16 @@ void kernel (Ast * n, Stack * stack, void * data)
     }
     break;
   }
+     
+  /**
+  ## For GLSL only, assumes that pointers to structures are used through "inout" parameter */
+
+  case sym_PTR_OP:
+    if (d->opts.glsl) {
+      ast_terminal(n)->start[0] = '.';
+      ast_terminal(n)->start[1] = '\0';
+    }
+    break;
 
   /**
   ## forin_declaration_statement */
@@ -629,7 +795,7 @@ void kernel (Ast * n, Stack * stack, void * data)
       parent->child[0] = parent->child[1];
       parent->child[1] = NULL;
       break;
-    }    
+    }
     
     /**
     ## Field assignments 
@@ -657,6 +823,15 @@ void kernel (Ast * n, Stack * stack, void * data)
       d->error = strdup (s);
       return;
     }
+
+    if (!d->opts.glsl && strcmp (ast_terminal (identifier)->file, "ast/defaults.h")) {
+      Ast * para = ast_schema (n, sym_function_call,
+                               1, token_symbol('('));
+      if (para)
+        str_append (ast_terminal (para)->start,
+                    ast_schema (n, sym_function_call,
+                                2, token_symbol(')')) ? "_GLOB0_ " : "_GLOB_ ");
+    }
     
     /**
     ## Function pointers */
@@ -670,6 +845,9 @@ void kernel (Ast * n, Stack * stack, void * data)
       t->start = s;
       AstTerminal * o = ast_terminal (ast_child (n, token_symbol('(')));
       free (o->start); o->start = strdup ("((");
+      if (!d->opts.glsl)
+        str_append (o->start, ast_schema (n, sym_function_call,
+                                          2, token_symbol(')')) ? "_GLOB0_ " : "_GLOB_ ");
       AstTerminal * c = ast_terminal (ast_child (n, token_symbol(')')));
       free (c->start); c->start = strdup ("))");
       break;
@@ -713,6 +891,9 @@ void kernel (Ast * n, Stack * stack, void * data)
     
   }
 }
+
+/**
+# Utilities */
 
 static
 char * stringify (Ast * n, char * output, bool nolineno)
@@ -762,9 +943,13 @@ char * ast_kernel (Ast * n, char * argument, KernelOptions opts, Ast * macroscop
   AstRoot * root = ast_get_root (n);
   Stack * stack = root->stack;
   stack_push (stack, &n);
-  KernelData d = {0, 0, macroscope, opts};
+  KernelData d = {0, 0, macroscope, NULL, opts};
   Ast * statement = n->sym == sym_function_definition ?
     ast_copy (n) : ast_copy (ast_child (n, sym_statement));
+  if (n->sym == sym_function_definition)
+    d.scope = statement;
+  else
+    d.scope = n;
   ast_traverse (statement, stack, postmacros, &d);
   ast_traverse (statement, stack, kernel, &d);
 

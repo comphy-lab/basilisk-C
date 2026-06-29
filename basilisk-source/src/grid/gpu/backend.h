@@ -1,6 +1,10 @@
 // fixme: for the moment only 'const int' are considered, this could be generalised
-#define IS_EXTERNAL_CONSTANT(g) ((g)->constant && (g)->type == sym_INT && !(g)->data)
 #define EXTERNAL_NAME(g) (g)->global == 2 ? "_loc_" : "", (g)->name, (g)->reduct ? "_in_" : ""
+#if _CUDA
+  #define IS_KERNEL_PARAMETER(g) (!(g)->global && (!(g)->data || ((int *)(g)->data)[0] == 1))
+#else
+  #define IS_KERNEL_PARAMETER(g) false
+#endif
 
 static char * str_append_array (char * dst, const char * list[])
 {

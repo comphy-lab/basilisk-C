@@ -45,6 +45,19 @@ done
 # Multigrid (GPU), 2991 steps, 45.4397 CPU, 45.44 real, 2.76e+08 points.step/s, 8 var
 # Multigrid (GPU), 3011 steps, 179.499 CPU, 179.5 real, 2.81e+08 points.step/s, 8 var
 
+CFLAGS='-DBENCHMARK=1' make turbulence.cuda.tst
+for i in 128 256 512 1024 2048 4096; do
+  OMP_NUM_THREADS=1 turbulence.cuda/turbulence.cuda $i 2> /tmp/log;
+done
+
+# Title: RTX3050(cuda)
+# Multigrid (cuda), 2009 steps, 1.19183 CPU, 1.191 real, 2.76e+07 points.step/s, 8 var
+# Multigrid (cuda), 2008 steps, 1.39756 CPU, 1.397 real, 9.41e+07 points.step/s, 8 var
+# Multigrid (cuda), 2328 steps, 2.872 CPU, 2.871 real, 2.12e+08 points.step/s, 8 var
+# Multigrid (cuda), 2767 steps, 10.1896 CPU, 10.19 real, 2.85e+08 points.step/s, 8 var
+# Multigrid (cuda), 2991 steps, 40.408 CPU, 40.39 real, 3.1e+08 points.step/s, 8 var
+# Multigrid (cuda), 3011 steps, 167.324 CPU, 167.3 real, 3.02e+08 points.step/s, 8 var
+
 OpenGL renderer string: Quadro RTX 6000/PCIe/SSE2
 Dedicated video memory: 24576 MB
 
@@ -75,17 +88,31 @@ done
 # Multigrid (gpu), 2991 steps, 6.72074 CPU, 6.721 real, 1.87e+09 points.step/s, 8 var
 # Multigrid (gpu), 3011 steps, 30.9292 CPU, 30.93 real, 1.63e+09 points.step/s, 8 var
 
+CFLAGS='-DBENCHMARK=1' make turbulence.cuda.tst
 for i in 128 256 512 1024 2048 4096; do
   OMP_NUM_THREADS=1 turbulence.cuda/turbulence.cuda $i 2> /tmp/log;
 done
 
 # Title: RTX4090(cuda)
-# Multigrid (cuda), 2009 steps, 1.20694 CPU, 1.207 real, 2.73e+07 points.step/s, 8 var
-# Multigrid (cuda), 2008 steps, 1.40442 CPU, 1.404 real, 9.36e+07 points.step/s, 8 var
-# Multigrid (cuda), 2328 steps, 1.88767 CPU, 1.887 real, 3.23e+08 points.step/s, 8 var
-# Multigrid (cuda), 2767 steps, 3.01486 CPU, 3.014 real, 9.62e+08 points.step/s, 8 var
-# Multigrid (cuda), 2991 steps, 6.31229 CPU, 6.311 real, 1.99e+09 points.step/s, 8 var
-# Multigrid (cuda), 3011 steps, 27.0165 CPU, 27.01 real, 1.87e+09 points.step/s, 8 var
+# Multigrid (cuda), 2009 steps, 1.03011 CPU, 1.03 real, 3.19e+07 points.step/s, 8 var
+# Multigrid (cuda), 2008 steps, 1.19515 CPU, 1.195 real, 1.1e+08 points.step/s, 8 var
+# Multigrid (cuda), 2328 steps, 1.61682 CPU, 1.617 real, 3.77e+08 points.step/s, 8 var
+# Multigrid (cuda), 2767 steps, 2.66406 CPU, 2.663 real, 1.09e+09 points.step/s, 8 var
+# Multigrid (cuda), 2991 steps, 5.8545 CPU, 5.853 real, 2.14e+09 points.step/s, 8 var
+# Multigrid (cuda), 3011 steps, 26.6636 CPU, 26.66 real, 1.89e+09 points.step/s, 8 var
+
+CFLAGS='-DBENCHMARK=1' make turbulence.ocl.tst
+for i in 128 256 512 1024 2048 4096; do
+  OMP_NUM_THREADS=1 turbulence.ocl/turbulence.ocl $i 2> /tmp/log;
+done
+
+# Title: RTX4090(opencl)
+# Multigrid (opencl), 2009 steps, 2.29921 CPU, 2.299 real, 1.43e+07 points.step/s, 8 var
+# Multigrid (opencl), 2008 steps, 2.62439 CPU, 2.624 real, 5.01e+07 points.step/s, 8 var
+# Multigrid (opencl), 2329 steps, 3.56261 CPU, 3.562 real, 1.71e+08 points.step/s, 8 var
+# Multigrid (opencl), 2765 steps, 5.39095 CPU, 5.39 real, 5.38e+08 points.step/s, 8 var
+# Multigrid (opencl), 2991 steps, 9.12213 CPU, 9.12 real, 1.37e+09 points.step/s, 8 var
+# Multigrid (opencl), 3011 steps, 30.6107 CPU, 30.6 real, 1.65e+09 points.step/s, 8 var
 
 OpenGL renderer string: NVIDIA GeForce RTX 4090 D/PCIe/SSE2 (stokes.lmm.jussieu.fr)
 Dedicated video memory: 24564 MB

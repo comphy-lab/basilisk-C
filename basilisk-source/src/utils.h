@@ -395,6 +395,7 @@ Optionally, we can reset the performance timer, for example to profile
 only a section of the code. */
 
 void reset_perf() {
+  device_synchronize();
   perf.nc = 0, perf.tnc = 0;
   perf.gt = timer_start();
 }

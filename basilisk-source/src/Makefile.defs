@@ -56,6 +56,12 @@ clean:
 %.hip.s.d: CFLAGS += -grid=hip/multigrid
 %.hip.tst: CFLAGS += -grid=hip/multigrid
 
+%.ocl.c: %.c $(BASILISK)/grid/gpu/liberrors.a $(BASILISK)/grid/opencl/libocl.a
+	ln -s -f $< $@
+%.ocl.s:   CFLAGS += -grid=opencl/multigrid
+%.ocl.s.d: CFLAGS += -grid=opencl/multigrid
+%.ocl.tst: CFLAGS += -grid=opencl/multigrid
+
 %.CADNA.c: %.c
 	ln -s -f $< $@
 

@@ -9,7 +9,17 @@ can be installed on Debian systems using:
 
 ~~~bash
 apt install hipcc
+cd $BASILISK/grid/hip
+make libhipcuda.a
 ~~~
+
+for the HIP-on-CUDA version, or
+
+~~~bash
+make libhipamd.a
+~~~
+
+for the HIP on AMD version.
 
 Since the HIP driver interface is meant to be compatible with CUDA,
 this file was (mostly) translated automatically from the [CUDA
@@ -22,7 +32,22 @@ hipify-perl -hip-kernel-execution-syntax ../cuda/cuda.c | \
 
 In principle this should work on both NVidia and AMD cards. Note
 however that Basilisk GPU development is done on Nvidia cards so that
-the AMD version is not as well tested. */
+the AMD version is not as well tested.
+
+The [default Makefile](/src/Makefile.defs) provides a recipe to run a
+program using the hip grid:
+
+~~~bashrc
+make myprogram.hip.tst
+~~~
+
+The tests cases are:
+
+~~~bashrc
+cd $BASILISK/test
+make hip-tests
+~~~
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -35,6 +60,8 @@ the AMD version is not as well tested. */
 #include "a32.h"
 
 typedef struct { double x, y, z; } coord;
+typedef struct { double x, y, z; } _coord;
+typedef struct { float r, g, b, a; } vec4;
 typedef float real;
 typedef struct { int i; } scalar;
 extern int datasize;
@@ -47,22 +74,6 @@ typedef struct {
 extern int N;
 extern double X0, Y0, Z0, L0;
 extern struct { int x, y; } Dimensions;
-
-typedef struct _External External;
-
-struct _External {
-  char * name;    // the name of the variable
-  void * pointer; // a pointer to the data
-  int type;       // the type of the variable
-  int nd;         // the number of pointer dereferences or attribute offset or enum constant
-  char reduct;    // the reduction operation
-  char global;    // is it a global variable?
-  char constant;  // is it a constant?
-  void * data;    // the dimensions (int *) for arrays or the code (char *) for functions
-  scalar s;       // used for reductions on GPUs
-  External * externals, * next;
-  int used;
-};
 
 #include "../../ast/symbols.h"
 
@@ -81,6 +92,9 @@ enum typedef_kind_t {
 
 #define sysrealloc realloc
 
+#define _GPU 1
+#define _CUDA 1
+#include "../externals.h"
 #include "../gpu/backend.h"
 
 #include <hip/hip_runtime.h>
@@ -115,36 +129,32 @@ static hipStream_t stream = 0;
   } while(0)
 
 typedef struct {
-  hipDeviceptr_t location;
   int type, nd, local;
-  size_t size;
-  void * pointer, * last;
+  size_t size, esize;
+  void * pointer;
 } MyUniform;
+
+struct _Ctx_ {
+  hipDeviceptr_t _data;
+};
 
 struct _Shader {
   unsigned ng[2], nwg[2];
-  hipDeviceptr_t _data, csOrigin, ssbo;
-  MyUniform * uniforms;
+  struct _Ctx_ * hctx, * tmp;
+  hipDeviceptr_t dctx;
+  MyUniform * uniforms, * locals;
+  char * args;
+  size_t size, lsize;
   hipModule_t module;
   hipFunction_t kernel;
 };
 
-static void * memcpycheck (hipDeviceptr_t location, void * pointer, void * last,
-                           size_t size)
-{
-  if (last && !memcmp (pointer, last, size))
-    return last;
-  HIP_CHECK (hipMemcpyAsync ((void *)location, pointer, size,
-                             hipMemcpyHostToDevice, stream));
-  if (!last) last = malloc (size);
-  return memcpy (last, pointer, size);
-}
-
 void free_shader (Shader * s)
 {
-  for (MyUniform * g = s->uniforms; g && g->type; g++)
-    free (g->last);
+  free (s->hctx);
+  free (s->tmp);
   free (s->uniforms);
+  free (s->args);
   free (s);
 }
 
@@ -173,6 +183,7 @@ static char * compile_ptx (const char * fs, const char * arch,
                            const char * func, const char * file, int line,
                            size_t * ptxSize)
 {
+  if (false) str_append_array (NULL, NULL); // just to avoid a -Wunused-function
   //  fputs (fs, stderr);
   hiprtcProgram prog;
   HIPRTC_CHECK(hiprtcCreateProgram (&prog, fs,
@@ -234,6 +245,7 @@ static char * compile_ptx (const char * fs, const char * arch,
 #else
   // For NVIDIA GPUs via HIP: verify single precision mode
 #if SINGLE_PRECISION
+  //  fputs (ptx, stderr);
   if (strstr (ptx, ".f64"))
     fprintf (stderr, "%s:%d: warning: HIP: found FP64 assembly in single precision mode\n",
              file, line);
@@ -261,7 +273,8 @@ int create_tmpdir (const char * path)
   return -1; // Failed to create
 }
 
-Shader * load_normal_shader (const char * fs, const char * func, const char * file, int line)
+Shader * load_normal_shader (const char * fs,
+                             const char * func, const char * file, int line)
 {
   char arch[64] = "";
   architecture (arch);
@@ -403,6 +416,11 @@ void reset_scalar (int i, int block, size_t field_size, double val)
   }
 }
 
+// Calculate padding needed to align 'current_offset' to 'alignment'
+static size_t pad_to_align (size_t current_offset, size_t alignment) {
+  return (alignment - (current_offset % alignment)) % alignment;
+}
+
 void finalize_shader (Shader * shader, External * externals, External * merged,
                       unsigned ng[2], unsigned nwg[2])
 {
@@ -410,102 +428,134 @@ void finalize_shader (Shader * shader, External * externals, External * merged,
     shader->ng[i] = ng[i], shader->nwg[i] = nwg[i];
   
   /**
-  Get the SSBO pointer. */
-
-  size_t size;
-  HIP_CHECK (hipModuleGetGlobal(&shader->_data, &size, shader->module, "_data"));
-  assert (size == sizeof (ssbo));
-
-  /**
-  Get the csOrigin pointer. */
-
-  HIP_CHECK (hipModuleGetGlobal(&shader->csOrigin, &size, shader->module, "csOrigin"));
-  assert (size == 2*sizeof (int));
-  
-  /**
-  ## Make list of uniforms */
+  ## Make list of local and global uniforms */
 
   for (External * g = merged; g; g = g->next)
     g->used = 0;
   int index = 1;
   for (External * g = externals; g && g->name; g++)
     g->used = index++;
-  int nuniforms = 0;
-  for (const External * g = merged; g; g = g->next) {
-    if (g->name[0] == '.') continue;
-    if (IS_EXTERNAL_CONSTANT(g)) continue;
-    if (g->type == sym_function_declaration || g->type == sym_function_definition) continue;
-    if (g->type == sym_INT && (!strcmp (g->name, "N") ||
-			       !strcmp (g->name, "nl") ||
-			       !strcmp (g->name, "bc_period_x") ||
-			       !strcmp (g->name, "bc_period_y")))
-      continue;
-    if (g->type == sym_INT ||
-	g->type == sym_LONG ||
-	g->type == sym_FLOAT ||
-	g->type == sym_DOUBLE ||
-	g->type == sym__COORD ||
-	g->type == sym_COORD ||
-	g->type == sym_BOOL ||
-	g->type == sym_VEC4) {
-      char * name = str_append (NULL, EXTERNAL_NAME (g));
-      hipDeviceptr_t location = 0;
-      size_t size;
-      hipModuleGetGlobal (&location, &size, shader->module, name);
-      if (location) {
-        //        fprintf (stderr, "%s %d %ld\n", name, g->type, size);
-	// not an array or just a one-dimensional array
-	assert (!g->nd);
-	assert (!g->data || ((int *)g->data)[1] == 0);
-	int nd = g->data ? ((int *)g->data)[0] : 1;
-        switch (g->type) {
-        case sym_INT: case sym_LONG:
-          assert (size == sizeof(int)*nd); break;
-        case sym_FLOAT:
-          assert (size == sizeof(float)*nd); break;
-        case sym_VEC4:
-          nd *= 4;
-          assert (size == sizeof(float)*nd); break;
-        case sym_BOOL:
-          assert (size == sizeof(bool)*nd); break;
+  int nglobals = 0, nlocals = 0;
+  for (const External * g = merged; g; g = g->next)
+    if (is_external_variable (g)) {
+      int nd = g->data ? ((int *)g->data)[0] : 1;
+      size_t esize;
+      switch (g->type) {
+      case sym_INT: case sym_LONG:
+        esize = sizeof(int); break;
+      case sym_FLOAT:
+        esize = sizeof(float); break;
+      case sym_VEC4:
+        nd *= 4;
+        esize = sizeof(float); break;
+      case sym_BOOL:
+        esize = sizeof(bool); break;
 #if SINGLE_PRECISION
-        case sym_DOUBLE:
-          assert (size == sizeof(float)*nd); break;
-        case sym__COORD:
-          nd *= 2;
-          assert (size == sizeof(float)*nd); break;
-        case sym_COORD:
-          nd *= 3;
-          assert (size == sizeof(float)*nd); break;
+      case sym_DOUBLE:
+        esize = sizeof(float); break;
+      case sym__COORD:
+        nd *= 2;
+        esize = sizeof(float); break;
+      case sym_COORD:
+        nd *= 3;
+        esize = sizeof(float); break;
 #else // DOUBLE_PRECISION
-        case sym_DOUBLE:
-          assert (size == sizeof(double)*nd); break;
-        case sym__COORD:
-          nd *= 2;
-          assert (size == sizeof(double)*nd); break;
-        case sym_COORD:
-          nd *= 3;
-          assert (size == sizeof(double)*nd); break;
+      case sym_DOUBLE:
+        esize = sizeof(double); break;
+      case sym__COORD:
+        nd *= 2;
+        esize = sizeof(double); break;
+      case sym_COORD:
+        nd *= 3;
+        esize = sizeof(double); break;
 #endif // DOUBLE_PRECISION
-        default:
-          assert (false);
-        }
-	shader->uniforms = realloc (shader->uniforms, (nuniforms + 2)*sizeof(MyUniform));
-	shader->uniforms[nuniforms] = (MyUniform){
-	  .location = location, .type = g->type, .nd = nd, .size = size,
-	  .local = g->global == 1 ? -1 : g->used - 1,
-	  .pointer = g->global == 1 ? g->pointer : NULL
-        };
-	shader->uniforms[nuniforms + 1].type = 0;
-	nuniforms++;
-	// uniforms refering to local variables must be in the 'externals' local list
-	assert (g->global == 1 || g->used);
+      default:
+        assert (false);
       }
-      else
-        fprintf (stderr, "%s not found\n", name);
-      free (name);
+      MyUniform uniform = {
+        .type = g->type, .nd = nd, .size = nd*esize, .esize = esize,
+        .local = g->global == 1 ? -1 : g->used - 1,
+        .pointer = g->global == 1 ? g->pointer : NULL
+      };
+      if (g->global) {
+        shader->uniforms = realloc (shader->uniforms, (nglobals + 2)*sizeof(MyUniform));
+        shader->uniforms[nglobals] = uniform;
+        shader->uniforms[nglobals + 1].type = 0;
+        nglobals++;
+        // fprintf (stderr, "global: %s\n", g->name);
+      }
+      else {
+        shader->locals = realloc (shader->locals, (nlocals + 2)*sizeof(MyUniform));
+        shader->locals[nlocals] = uniform;
+        shader->locals[nlocals + 1].type = 0;
+        nlocals++;
+        // fprintf (stderr, "local: %s\n", g->name);
+      }
     }
+  
+  /**
+  Allocate host and device buffers to hold uniforms. */
+
+  shader->size = sizeof (struct _Ctx_);
+  for (const MyUniform * g = shader->uniforms; g && g->type; g++)
+    shader->size += pad_to_align (shader->size, g->esize) + g->size;
+  shader->hctx = calloc (1, shader->size);
+  shader->tmp = calloc (1, shader->size);
+  HIP_CHECK (hipMalloc ((void **) &shader->dctx, shader->size));
+
+  /**
+  Allocate host buffer to hold locals. */
+  
+  if (shader->locals) {
+    for (const MyUniform * g = shader->locals; g && g->type; g++)
+      shader->lsize += pad_to_align (shader->lsize, g->esize) + g->size;
+    shader->args = calloc (1, shader->lsize);
   }
+}
+
+static char * set_uniforms (const MyUniform * uniforms,
+                            const External * externals,
+                            char * buffer, char * start)
+{
+  for (const MyUniform * g = uniforms; g && g->type; g++) {
+    void * pointer = g->pointer;
+    if (!pointer) {
+      assert (g->local >= 0);
+      pointer = externals[g->local].pointer;
+    }
+    buffer += pad_to_align (buffer - start, g->esize);
+    switch (g->type) {
+    case sym_INT: case sym_FLOAT: case sym_VEC4: case sym_BOOL:
+      memcpy (buffer, pointer, g->size);
+      break;
+    case sym_LONG: {
+      int p[g->nd];
+      long * data = pointer;
+      for (int i = 0; i < g->nd; i++)
+	p[i] = data[i];
+      memcpy (buffer, p, g->size);
+      break;
+    }
+#if SINGLE_PRECISION
+    case sym_DOUBLE: case sym__COORD: case sym_COORD: {
+      float p[g->nd];
+      double * data = pointer;
+      for (int i = 0; i < g->nd; i++)
+	p[i] = data[i];
+      memcpy (buffer, p, g->size);
+      break;
+    }
+#else // DOUBLE_PRECISION
+    case sym_DOUBLE: case sym__COORD: case sym_COORD:
+      memcpy (buffer, pointer, g->size);
+      break;
+#endif // DOUBLE_PRECISION
+    default:
+      assert (false);
+    }
+    buffer += g->size;
+  }
+  return buffer;
 }
 
 void post_setup_shader (Shader * shader, External * externals)
@@ -515,72 +565,47 @@ void post_setup_shader (Shader * shader, External * externals)
   Set SSBO pointer. */
   
   assert (ssbo);
-  if (shader->ssbo != ssbo) {
-    HIP_CHECK (hipMemcpyAsync ((void *)shader->_data, &ssbo, sizeof (ssbo),
-                               hipMemcpyHostToDevice, stream));
-    shader->ssbo = ssbo;
-  }
-    
-  /**
-  ## Set uniforms */
+  shader->tmp->_data = ssbo;
+  char * buffer = ((char *)shader->tmp) + sizeof(struct _Ctx_);
 
-  for (MyUniform * g = shader->uniforms; g && g->type; g++) {
-    void * pointer = g->pointer;
-    if (!pointer) {
-      assert (g->local >= 0);
-      pointer = externals[g->local].pointer;
-    }
-    switch (g->type) {
-    case sym_INT: case sym_FLOAT: case sym_VEC4: case sym_BOOL:
-      g->last = memcpycheck (g->location, pointer, g->last, g->size);
-      break;
-    case sym_LONG: {
-      int p[g->nd];
-      long * data = pointer;
-      for (int i = 0; i < g->nd; i++)
-	p[i] = data[i];
-      g->last = memcpycheck (g->location, p, g->last, g->size);
-      break;
-    }
-#if SINGLE_PRECISION
-    case sym_DOUBLE: case sym__COORD: case sym_COORD: {
-      float p[g->nd];
-      double * data = pointer;
-      for (int i = 0; i < g->nd; i++)
-	p[i] = data[i];
-      g->last = memcpycheck (g->location, p, g->last, g->size);
-      break;
-    }
-#else // DOUBLE_PRECISION
-    case sym_DOUBLE: case sym__COORD: case sym_COORD:
-      g->last = memcpycheck (g->location, pointer, g->last, g->size);
-      break;
-#endif // DOUBLE_PRECISION
-    default:
-      assert (false);
-    }
+  /**
+  Set globals */
+  
+  buffer = set_uniforms (shader->uniforms, externals, buffer, (char *)shader->tmp);
+  assert (shader->size == buffer - (char *)shader->tmp);
+
+  if (memcmp (shader->hctx, shader->tmp, shader->size)) {
+    struct _Ctx_ * tmp = shader->tmp; shader->tmp = shader->hctx; shader->hctx = tmp;
+    HIP_CHECK (hipMemcpyHtoDAsync (shader->dctx, shader->hctx, shader->size, stream));
   }
+
+  /**
+  Set locals */
+
+  buffer = set_uniforms (shader->locals, externals, shader->args, shader->args);
+  assert (shader->lsize == buffer - shader->args);
 }
 
 int run_shader (const Shader * shader, const RegionParameters * region)
 {
+  hipDeviceptr_t dctx = shader->dctx;
+  struct { int x, y; } csOrigin = {0,0};
+  void * params[] = { &dctx, &csOrigin, shader->args };
+  
   /**
-  ## Render 
+  ## Render
 
   If this is a `foreach_point()` iteration, we access a single point */
 
   int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
   if (region->n.x == 1 && region->n.y == 1) {
-    int csOrigin[] = {
-      (region->p.x - X0)/L0*Nl*Dimensions.x,
-      (region->p.y - Y0)/L0*Nl*Dimensions.x
-    };
-    HIP_CHECK (hipMemcpyHtoDAsync (shader->csOrigin, csOrigin, 2*sizeof(int), stream));
+    csOrigin.x = (region->p.x - X0)/L0*Nl*Dimensions.x;
+    csOrigin.y = (region->p.y - Y0)/L0*Nl*Dimensions.x;
     assert (!GPUContext.fragment_shader);
     HIP_CHECK (hipModuleLaunchKernel (shader->kernel,
                                       1, 1, 1,
                                       1, 1, 1,
-                                      0, stream, NULL, NULL));
+                                      0, stream, params, NULL));
   }
 
   /**
@@ -608,7 +633,7 @@ int run_shader (const Shader * shader, const RegionParameters * region)
     HIP_CHECK (hipModuleLaunchKernel (shader->kernel,
                                       shader->ng[0], shader->ng[1], 1,
                                       shader->nwg[0], shader->nwg[1], 1,
-                                      0, stream, NULL, NULL));
+                                      0, stream, params, NULL));
   }
   return Nl;
 }

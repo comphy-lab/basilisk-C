@@ -92,7 +92,7 @@ event logfile (i++)
 
 event movie (i += 3)
 {
-  static FILE * fp = popen ("gnuplot", "w");
+  static FILE * fp = popen ("gnuplot 2> /dev/null", "w");
   if (i == 0)
     fprintf (fp, "set term pngcairo font ',9' size 800,250;"
 	     "set size ratio -1\n");  

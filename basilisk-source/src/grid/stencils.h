@@ -34,21 +34,7 @@ static void set_dirty_stencil (scalar s)
   s.stencil.bc = 0;
 }
 
-typedef struct _External External;
-
-struct _External {
-  char * name;    // the name of the variable
-  void * pointer; // a pointer to the data
-  int type;       // the type of the variable
-  int nd;         // the number of pointer dereferences or attribute offset or enum constant
-  char reduct;    // the reduction operation
-  char global;    // is it a global variable?
-  char constant;  // is it a constant?
-  void * data;    // the dimensions (int *) for arrays or the code (char *) for functions
-  scalar s;       // used for reductions on GPUs
-  External * externals, * next;
-  int used;
-};
+#include "externals.h"
 
 typedef struct {
   const char * fname; // name of the source file

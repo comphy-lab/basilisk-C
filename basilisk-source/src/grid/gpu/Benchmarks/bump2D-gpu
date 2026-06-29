@@ -68,12 +68,12 @@ for i in 6 7 8 9 10 11; do ./bump2D-gpu/bump2D-gpu $i; done
 for i in 6 7 8 9 10 11; do ./bump2D-gpu.cuda/bump2D-gpu.cuda $i; done
 
 # Title: RTX4090(cuda)
-# Multigrid (cuda), 217 steps, 0.152187 CPU, 0.1522 real, 5.84e+06 points.step/s, 28 var
-# Multigrid (cuda), 437 steps, 0.232904 CPU, 0.2329 real, 3.07e+07 points.step/s, 28 var
-# Multigrid (cuda), 885 steps, 0.355241 CPU, 0.3552 real, 1.63e+08 points.step/s, 28 var
-# Multigrid (cuda), 1789 steps, 0.671001 CPU, 0.6708 real, 6.99e+08 points.step/s, 28 var
-# Multigrid (cuda), 3615 steps, 1.84696 CPU, 1.847 real, 2.05e+09 points.step/s, 28 var
-# Multigrid (cuda), 7303 steps, 16.7044 CPU, 16.7 real, 1.83e+09 points.step/s, 28 var
+# Multigrid (cuda), 217 steps, 0.128166 CPU, 0.1281 real, 6.94e+06 points.step/s, 28 var
+# Multigrid (cuda), 437 steps, 0.232662 CPU, 0.2326 real, 3.08e+07 points.step/s, 28 var
+# Multigrid (cuda), 885 steps, 0.37004 CPU, 0.3699 real, 1.57e+08 points.step/s, 28 var
+# Multigrid (cuda), 1789 steps, 0.787113 CPU, 0.787 real, 5.96e+08 points.step/s, 28 var
+# Multigrid (cuda), 3615 steps, 2.08017 CPU, 2.08 real, 1.82e+09 points.step/s, 28 var
+# Multigrid (cuda), 7303 steps, 17.3996 CPU, 17.4 real, 1.76e+09 points.step/s, 28 var
 
 OpenGL renderer string: NVIDIA GeForce RTX 4090 D/PCIe/SSE2 (stokes.lmm.jussieu.fr)
 Dedicated video memory: 24564 MB
