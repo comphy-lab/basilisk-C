@@ -76,8 +76,11 @@ event movies (i += 4; t <= 40.) {
  
   scalar omega[], m[];
   vorticity (u, omega);
-  foreach()
+  foreach() {
     m[] = cs[] - 0.5;
+    if (((x < -0.4) && (y > 0.4)) && SFD_toggle)
+      m[] = -0.5; // SFD on/off indicator
+  }
     
   output_ppm (omega, file = "vort.mp4", box = {{-0.5,-0.5},{7.5,0.5}},
 	      min = -10, max = 10, linear = true, mask = m);

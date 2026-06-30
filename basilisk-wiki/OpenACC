@@ -1,3 +1,7 @@
+<div class="message">
+<div id="msg_logo"><img src="/img/warning.png"></div>
+This page is kept for historical interest. Current releases of Basilisk use a different [GPU implementation](/src/grid/gpu/grid.h)</div>
+
 This page describes the current status of the OpenACC implementation in Basilisk for running simulations on GPUs. At the moment, OpenACC support is only implemented for Cartesian grids, and only for a subset of Basilisk modules (mainly those that are needed for running tsunami and flooding simualations with the Saint-Venant solver).
 
 # Introduction

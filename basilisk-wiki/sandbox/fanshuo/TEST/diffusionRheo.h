@@ -189,7 +189,7 @@ Inserting the expression of $s_{-1}$ into the Equation. The coefficients in fron
   */
 //
 D_b = nueq[0];
-   den = h[]*sq(h[] + h[0,0,1]) 
+   double den = h[]*sq(h[] + h[0,0,1]) 
     + 2.*lambda_b*(3.*h[]*h[0,0,1] + 2.*sq(h[]) + sq(h[0,0,1]));
   b[0] = h[] + dt*((nueq[1]+nueq[0])/(h[] + h[0,0,1]) +
 			 2*D_b*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 3.*sq(h[]))/den);
@@ -217,7 +217,7 @@ $$
   $$
 */
 D_t = nueq[nl-1];
-  double den = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2]) 
+   den = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2]) 
     - 2.*lambda_t*(3.*h[0,0,nl-1]*h[0,0,nl-2] + 2.*sq(h[0,0,nl-1]) + sq(h[0,0,nl-2]));
   b[nl-1] = h[0,0,nl-1] + dt*((nueq[nl-1]+nueq[nl-2])/(h[0,0,nl-1] + h[0,0,nl-2]) +
 			 2*D_t*(sq(h[0,0,nl-2]) + 3.*h[0,0,nl-1]*h[0,0,nl-2] + 3.*sq(h[0,0,nl-1]))/den);

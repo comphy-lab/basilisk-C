@@ -11,7 +11,7 @@ A 2D complex flow over a plate with a free surface is presented. The configurati
 #if !ML
 # include "saint-venant.h"
 #else // ML
-#include "hydroMT.h"
+#include "hydroRheo.h"
 
 # define phi q
 # if !HYDRO
@@ -22,7 +22,7 @@ A 2D complex flow over a plate with a free surface is presented. The configurati
 #endif // ML
 
 #
-const double NU = 0.1, T0 = 10000, HR = 1.;
+const double NU = 0.1, T0 = 10, HR = 1.;
 double slope;
 scalar uold[];
 
@@ -80,7 +80,11 @@ int main()
   NITERMIN = 2;
 #endif
 #endif
-
+  lambda_b[] = {0.,0.,0.};
+  u_b[] = {0.0,0.,0.};
+  lambda_t[] = {-HUGE,0.,0.};
+  u_t[] = {0.,0.,0.};
+  
   I0 = 0.3;
   mu0 = 0.38;
   deltamu = 0.26;
@@ -113,21 +117,14 @@ event init (i = 0)
     uold[] = 0;
   }
 }
-
-event acc(i++){
-  foreach () 
+event acceleration (i++, t<=T0)
+{
+  foreach_face()
     foreach_layer()
-      u.x[] = u.x[] + G*sin(slope)*dt;
+      ha.x[] += G*sin(slope)*hf.x[]; 
 }
 
 
-// /** We check for convergence. */
-event logfile (t += 1; t<=T0) {
-
-  double du = change (u.x,uold);
-    if (i > 0 && du < 1e-6)
-      return 1; /* stop */
-}
 /**
 ## Outputs
 

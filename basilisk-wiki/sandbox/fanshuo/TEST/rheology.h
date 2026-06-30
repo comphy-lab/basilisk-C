@@ -140,7 +140,7 @@ $$
   } 
 /** we choose this kind of regularisation preventing shear from decreasing to zero*/
  // return fabs(shear);
-  return sqrt(sq(shear) + .1e-8);  
+  return sqrt(sq(shear) + .1e-4);  
 }
 
 /** ## The pressure field (for $\mu(I)$ rheology)*/
@@ -309,19 +309,19 @@ To note that this is the only function being called in diffusionRheo.h, the aim 
 */
 void regularization(Point point, scalar s, scalar h, double nueq[], double D)
 {
-  int nlc=nl, l;
+  int l;
 
-  for(l=0 ; l<nl;l++){ // Find the limiting layer shear
-    if (shear(point,s,h,l,l) <=1e-3) {
-      nlc = l-1;
-    break;
-    }
-  }
+  //for(l=0 ; l<nl;l++){ // Find the limiting layer shear
+   // if (shear(point,s,h,l,l) <=1e-3) {
+    //  nlc = l-1;
+   // break;
+   // }
+ // }
 
   for( l=0 ; l<nl;l++){
-    if ( l<=nlc ) nueq[l] = Nueq(point,s,h,l);
-    else nueq[l] = nueq[l-1];
- //   nueq[l] = Nueq(point,s,h,l);
+    //if ( l<=nlc ) nueq[l] = Nueq(point,s,h,l);
+  //  else nueq[l] = nueq[l-1];
+    nueq[l] = Nueq(point,s,h,l);
    
   }
 
