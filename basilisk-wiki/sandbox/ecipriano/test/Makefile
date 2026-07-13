@@ -17,13 +17,3 @@ pinning-axi.s: CFLAGS += -DAXI=1
 pinning-axi.tst: CFLAGS += -DAXI=1
 
 pinning.tst: pinning-axi.tst
-
-# New targets
-GFM = poisson-gfm.tst capwave.tst spurious.tst oscillation.tst
-quick: aslam.tst aslamvof.tst fsolve-gsl.tst interfaceregression.tst \
-  mapregion.tst radiation.tst spark.tst fickcorrected.tst \
-  boilingtemperature.tst $(GFM)
-gfm: $(GFM)
-slow: pinning.tst
-opensmoke-all: opensmoke.tst opensmoke-properties.tst batchreactor.tst
-all: quick slow opensmoke-all

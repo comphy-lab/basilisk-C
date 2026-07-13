@@ -7,16 +7,19 @@ import numpy as np
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
+PLOT_SPEEDUP = False
+
 # Backends to plot (one subplot each); edit order freely
-BACKENDS = ["cpu", "gpu", "cuda"] # , "hip"
+BACKENDS = ["cpu", "gpu", "cuda", "hip"] # , "hip"
 
 MACHINES = ["sandbox","local","home","JZ","bigfoot"] # "bigfoot_NV100","JZ_NV100"
-MACHINES = ["sandbox","local","JZ","bigfoot"]
+MACHINES = ["sandbox","local","JZ","bigfoot","ADAmi250x"]
 GPU_NAMES = {"sandbox":"RTX4090",
             "local":"RTX1000",
              "home":"RTX4080",
              "bigfoot":"V100",
-             "JZ":"A100"}
+             "JZ":"A100",
+             "ADAmi250x":"mi250x"}
 CPU_NAMES = {"local":"i7x8",
              "home":"R7x8",
              "sandbox":"i7x8"}
@@ -31,7 +34,8 @@ FILES = {'local':'results_bench_local_turbulence',
          'home':'results_bench_home_turbulence',
          'sandbox':'results_bench_sandbox_turbulence',
          'bigfoot':'result_bench_bigfoot_turbulence_cuda',
-         'JZ':'result_bench_JZ_turbulence_cuda'}
+         'JZ':'result_bench_JZ_turbulence_cuda',
+         'ADAmi250x':'results_bench_ADAmi250x_hip'}
 
 CASE = 'turbulence'
 
@@ -57,7 +61,7 @@ def parse_file(filepath: str) -> dict:
     # If the backend comes from the filename, set it once before the loop
     if filename[2] not in ['home', 'local', 'sandbox']:
         current_backend = filename[-1]
-        if current_backend not in ('cpu', 'gpu', 'cuda', 'hip'):
+        if current_backend not in BACKENDS:
             raise Exception(f'Backend {current_backend} not recognized')
         results[current_backend] = {}
 
@@ -66,7 +70,7 @@ def parse_file(filepath: str) -> dict:
 
         # Match backend from file content
         if filename[2] in ['home', 'local', 'sandbox']:
-            if line in ('cpu', 'gpu', 'cuda', 'hip'):
+            if line in BACKENDS:
                 current_backend = line
                 if current_backend not in results:
                     results[current_backend] = {}  # ← only initialise once
@@ -95,27 +99,60 @@ def backend_to_axe(backend,axes):
     else:
         raise Exception(f'Backend {backend} not recognized')
 
+def get_all_res(data):
+    all_res = []
+    for machine in data.keys():
+        for backend in data[machine].keys():
+            res=list(data[machine][backend].keys())
+            if len(res)>len(all_res):
+                all_res = res
+    return all_res
+
+
 data = {}
 for machine in MACHINES:
     data[machine] = parse_file(FILES[machine])
 
-print(data["sandbox"])
-
-fig, axes = plt.subplots(2, len(BACKENDS), figsize=(9, 6), constrained_layout=True)
+if PLOT_SPEEDUP:
+    nrow=2
+    width=9
+    height=6
+else:
+    nrow=1
+    width=10
+    height=3.5
+fig, axes = plt.subplots(nrow, len(BACKENDS), figsize=(width, height), constrained_layout=True)
 machine_colors = {m: PALETTE[i % len(PALETTE)] for i, m in enumerate(MACHINES)}
 baseline = data[BASELINE_MACHINE][BASELINE_BACKEND]
 baseline_speeds = list(baseline.values())
 
-all_res = [float(value) for value in baseline.keys()]
+get_all_res(data)
+
+all_res = get_all_res(data) #[float(value) for value in baseline.keys()]
 n_m   = len(data.keys())
 x     = np.arange(len(all_res))
 width = 0.8 / n_m
 
 maxspeed = 0.
+
+if PLOT_SPEEDUP:
+    base_ax_speed = axes[0,:]
+    base_ax_speedup = axes[1,:]
+else:
+    base_ax_speed = axes
+
+# log grid
+for k in range(len(base_ax_speed)):
+    base_ax_speed[k].set_axisbelow(True)
+    base_ax_speed[k].grid(axis='y',which='both')
+
 for i, machine in enumerate(data.keys()):
     for j, backend in enumerate(data[machine].keys()):
-        ax_speed = backend_to_axe(backend,axes[0,:]) #axes[0, j]
-        ax_speedup = backend_to_axe(backend,axes[1,:]) #axes[1, j]
+        print(machine, backend)
+        ax_speed = backend_to_axe(backend,base_ax_speed) #axes[0, j]
+        ax_speed.set_yscale('log', base=10)
+        if PLOT_SPEEDUP:
+            ax_speedup = backend_to_axe(backend,base_ax_speedup) #axes[1, j]
         # ── speed ──
         speeds = list(data[machine][backend].values())
         offset  = (i - n_m / 2 + 0.5) * width
@@ -128,41 +165,49 @@ for i, machine in enumerate(data.keys()):
         bars    = ax_speed.bar(
             x + offset, speeds, width,
             label=label,
-            color=machine_colors[machine], edgecolor="white", linewidth=0.5,
+            color=machine_colors[machine], linewidth=0.5,
         )
-        ax_speed.set_yscale('log', base=10)
         ax_speed.set_title(backend)
         for speed in speeds:
             if speed>maxspeed:
                 maxspeed = speed
-        if len(x)==len(all_res):
-            ax_speed.set_xticks(x)
-            ax_speed.set_xticklabels([str(int(r)) for r in all_res], rotation=45)
-        # ── speedup ──
-        speedups = np.zeros(len(speeds))
-        for k in range(len(speeds)):
-            speedups[k] = speeds[k]/baseline_speeds[k]
-        offset  = (i - n_m / 2 + 0.5) * width
-        x = np.arange(len(data[machine][backend].keys()))
-        if not (machine == BASELINE_MACHINE and backend == BASELINE_BACKEND): 
-            bars    = ax_speedup.bar(
-                x + offset, speedups, width,
-                label=machine,
-                color=machine_colors[machine], edgecolor="white", linewidth=0.5,
-            )
-        if len(x)==len(all_res):
-            ax_speedup.set_xticks(x)
-            ax_speedup.set_xticklabels([str(int(r)) for r in all_res], rotation=45)
+        ax_speed.set_xticks(x)
+        ax_speed.set_xticklabels([str(int(r)) for r in all_res[:len(x)]], rotation=45)
+        if PLOT_SPEEDUP:
+            # ── speedup ──
+            speedups = np.zeros(len(speeds))
+            for k in range(len(speeds)):
+                if k>=len(baseline_speeds):
+                    speedups[k]=0 # no data for baseline at this resolution
+                else:
+                    speedups[k] = speeds[k]/baseline_speeds[k]
+            offset  = (i - n_m / 2 + 0.5) * width
+            x = np.arange(len(data[machine][backend].keys()))
+            if not (machine == BASELINE_MACHINE and backend == BASELINE_BACKEND): 
+                bars    = ax_speedup.bar(
+                    x + offset, speedups, width,
+                    label=machine,
+                    color=machine_colors[machine], edgecolor="white", linewidth=0.5,
+                )
+            if len(x)==len(all_res):
+                ax_speedup.set_xticks(x)
+                ax_speedup.set_xticklabels([str(int(r)) for r in all_res], rotation=45)
 
 for backend in range(len(BACKENDS)):
-    axes[0,backend].set_ylim([0, 1.1*maxspeed])
-    axes[1,backend].set_ylim([0,1.2])
-axes[0,0].set_ylabel('speed (points.step/s)')
-axes[0,0].legend(fontsize=8, framealpha=0.8)
-axes[0,1].legend(fontsize=8, framealpha=0.8)
-axes[0,2].legend(fontsize=8, framealpha=0.8)
-#axes[0,3].legend(fontsize=8, framealpha=0.8)
-axes[1,0].set_ylabel('speedup (vs RTX4090 OpenGL)')
+    base_ax_speed[backend].set_ylim([1e5, 1.1*maxspeed])
+    if PLOT_SPEEDUP:
+        base_ax_speedup[backend].set_ylim([0,1.2])
+base_ax_speed[0].set_ylabel('speed (points.step/s)')
+base_ax_speed[0].legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),
+          fancybox=True, shadow=True, ncol=2)
+base_ax_speed[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),
+          fancybox=True, shadow=True, ncol=2)
+base_ax_speed[3].legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),
+          fancybox=True, shadow=True, ncol=2)
+base_ax_speed[2].legend(loc='upper center', bbox_to_anchor=(0.5, -0.2),
+          fancybox=True, shadow=True, ncol=2)
+if PLOT_SPEEDUP:
+    base_ax_speedup[1].set_ylabel('speedup (vs RTX4090 OpenGL)')
 
 fig.savefig(f"bench_{CASE}.png", dpi=150) #, bbox_inches="tight")
 plt.show()

@@ -15,12 +15,11 @@
 #SBATCH --output=out_bench%j.out      # nom du fichier de sortie (%j est remplacé par le numéro du travail)
 #SBATCH --error=err_bench%j.out       # nom du fichier d'erreur (ici commun avec la sortie)
 
-
 # nettoyage des modules charges en interactif et herites par defaut
 module purge
 
 # chargement des modules
-module load arch/a100 # specific module for A100 GPUs
+module load arch/a100   # specific module for A100 GPUs
 module load cuda/12.6.3 # same version used to compile src/grid/cuda/libbuda.a
 module load imagemagick # we use 'convert'
 
@@ -35,10 +34,14 @@ FILE="${SCRIPT_DIR}/result_bench_JZ_${NAME}_${CASE}"
 
 # run
 list_res=(128 256 512 1024 2048 4096)
+
+# a first run to avoid possible JIT shader compilation
+./${NAME}.${CASE}/${NAME}.${CASE} 128
+
 echo $CASE >$FILE
 for i in "${list_res[@]}"; do
-    echo $i>>$FILE
-    ./${NAME}.${CASE}/${NAME}.${CASE} $i >>"${FILE}" 2>&1
-    mv omega_ini.ppm omega_ini${i}.ppm
-    mv omega_end.ppm omega_end${i}.ppm
+  echo $i >>$FILE
+  ./${NAME}.${CASE}/${NAME}.${CASE} $i >>"${FILE}" 2>&1
+  mv omega_ini.ppm omega_ini${i}.ppm
+  mv omega_end.ppm omega_end${i}.ppm
 done

@@ -8,7 +8,7 @@ linear, following $\rho = \rho_0(1-\alpha(T-T_0))$ or in Basilisk's dr.h
 notation $\Delta \rho = -\alpha(T-T_0)$.
 
 The experiment depends on the Richardson number $Ri=N^2.H^2/w_*^2$ and Prandtl
-number which is the ratio of viscosity to temperature diffusion $Pr=\nu/\kappa$.
+number which is the ratio of viscosity to temperature diffusion $Pr=\nu/\diff_T$.
 We use the convective velocity $w_*=(-B0.h)^(1/3)$, $B_0$ the buoyancy flux at the
 surface $B_0=\frac{g\alpha}{rho.cp}Q with $Q$ the heat flux in $W.m^{-2}$, $H$
 the depth of the mixed layer. A convective time can be built $t_*=H/w_*$ and
@@ -27,9 +27,9 @@ they take into account entrainment of cold water into the mixed layer, while
 
 
 //#include "grid/gpu/multigrid.h"
-#include "grid/multigrid.h"
-//#include "grid/multigrid1D.h"
-#include "hydro.h"
+//#include "grid/multigrid.h"
+#include "grid/multigrid1D.h"
+#include "layered/hydro.h"
 #include "layered/nh.h"
 
 /**
@@ -41,6 +41,7 @@ We use remapping, but this might not be necessary
 #include "bderembl/libs/extra.h"      // parameters from namlist
 #include "bderembl/libs/netcdf_bas.h" // read/write netcdf files
 
+#include "hugoj/lib/diffusionH.h" // Neuman bott and top
 //#define g_ 9.81
 
 /*
@@ -85,8 +86,8 @@ double thetaH = 0.5 [0];              // theta_h for dumping fast barotropic mod
 double rho0 = 1025. [-3,0,0,0,1];     // [kg.m-3] reference density
 double cp = 4.2e3 [0,0,-1,1,-1];      // [J.kg-1.K-1] heat capacity water
 double alphaT = 2e-4 [0,0,-1];        // [K-1] Thermal expansion coeff for water
-double Pr = 1.;                       // Prandtl number = nu/kappa
-double kappa = 1.5e-5 [2,-1];         // [m2.s-1] Scalar vertical diffusion coeff
+double Pr = 1.;                       // Prandtl number = nu/diff_T
+double diff_T = 1.5e-5 [2,-1];         // [m2.s-1] Scalar vertical diffusion coeff
 double T0 = 20. [0,0,1];              // [°C] Reference temperature
 double Trand = 0.1 [0,0,1];           // [°C] Random temperature perturbution
 const double g_ = 9.81 [1,-2];        // [m.s-2] Gravity
@@ -142,7 +143,7 @@ int main(int argc, char *argv[])
   // Settings solver values from namlist values
   L0 = L;
   nu = nu0;
-  kappa = nu0/Pr;
+  diff_T = nu0/Pr;
   N = 1 << N_grid; // 1*2^N_grid
   nl = N_layer;
   G = g_;
@@ -182,7 +183,7 @@ event init(i =  0) {
   // reset({T},0.);
   geometric_beta (0., true); // if !=0, varying layer thickness 1./3.
   // step 1: set eta and h
-  foreach() {
+  foreach(cpu) {
     zb[] = -h0;
     eta[] = 0.;
     double H = - zb[];
@@ -200,7 +201,12 @@ event init(i =  0) {
       foreach_dimension()
         u.x[] = 0.;
       w[] = 0.;
-      T[] = Tini(z) + Trand * noise() ;
+
+/**
+Initial temperature profile is linear. We add a white noise in the upper layers
+to trigger the instability.
+*/
+      T[] = Tini(z) + Trand * noise() * exp(z/h0) ;
       z += h[]/2.;
     }
   }
@@ -233,12 +239,13 @@ event init(i =  0) {
 event viscous_term (i++)
 {
   foreach()
-    vertical_diffusion (point, h, T, dt, kappa, qt/(kappa*rho0*cp), 0., 0.); // T[0,0,nl-1]
-    //TODO: explain more how I do the bottom flux = 0. This is in a custom
-    // diffusion.h in hugoj/lib/diffusion.h
+    vertical_diffusion2 (point, h, T, dt, diff_T, qt/(diff_T*rho0*cp), strat/(g_*alphaT));
+  //TODO: ADD HORIZONTAL DIFF
+  horizontal_diffusion ({T}, diff_T, dt);
+  horizontal_diffusion ({u, w}, nu, dt);
 }
 
-//Writing a 4D netcdf file
+//Writing a netcdf file
 event output(t = 0.; t<= tend+smalltime; t+=dtout){
   write_nc();
 }
@@ -360,7 +367,7 @@ event cleanup(t=end){
   free(T_profile);
   //free(Tflx_profile);
 }
-#endif
+#endif // DIAG
 
 /**
 Results: plots

@@ -42,10 +42,2114 @@ rmdir ./sandbox/piersonj/data
 rmdir ./sandbox/prouvost/miscellaneous/autre/foo
 rmdir ./sandbox/rulli/Geostrophic%20Adjustement
 rmdir ./sandbox/rvilliers
-rmdir ./sandbox/spertant
 rmdir ./sandbox/walmetz/simple%20cylinder
 rmdir ./sandbox/walmetz/slip-lenght
 rmdir ./sandbox/zied/culvert_flushing_friction/culvert
+addfile ./sandbox/oystelan/test1_stokes_ml/output_vts_multilayer.h
+addfile ./sandbox/oystelan/test2_temporal_oscillation_modes/output_vts_multilayer.h
+addfile ./sandbox/oystelan/test3_sloshing_river/output_vts_multilayer.h
+hunk ./sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale/Makefile 1
+-CFLAGS += -O2
+-include $(BASILISK)/Makefile.defs
+-
+-# "OpenGL" libraries
+-
+-OPENGLIBS = -lfb_tiny
+-# OPENGLIBS = -lfb_osmesa -lOSMesa
+-# OPENGLIBS = -lfb_glx -lGLEW -lGL -lX11
+rmfile ./sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale/Makefile
+hunk ./sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale/Ovale_3D.c 1
+-/**  
+-
+-# Capillary relaxation of a soap film with two thicknesses separated by an oval shape (with smooth transition with hyperbolic tangent) with incompressible free surface.
+-
+-This test case includes incompressible free surface and surface viscosity $\eta_s$. Using the lubrication approximation and especially small slopes assumption, the interface incompressibility conditions reads 
+-$$
+-\nabla \cdot \bm{u}_s = 0, 
+-$$
+-where $\nabla$ is the 2D operator (consistent with multilayer solver) and $\bm{u}_s$ is the horizontal velocity at the free surface.
+-The Marangoni constraint at the free surface can be written
+-$$
+--  \left. \rho \, \nu \, \frac{\partial \bm{u}}{\partial z} \right|_{z=\eta} + \eta_s \Delta  \bm{u}_s + \nabla \sigma = 0.
+-$$
+-Using the lubrication theory, the bulk viscosity term can be transformed to obtain:
+-$$
+-\sigma_0 \, \eta \nabla \Delta \eta + \eta_s \Delta  \bm{u}_s + \nabla \sigma = 0,
+-$$
+-Where $\sigma_0$ is the surface tension of the surface at rest.
+-The free surface velocity $\bm{u}_s$ is thus the solution of a 2D Stokes flow defined by the equations 
+-$$
+-\begin{aligned}
+-\eta_s \Delta  \bm{u}_s + \nabla \sigma & = - \sigma_0 \, \eta \nabla \Delta \eta, \\
+-\nabla \cdot \bm{u}_s & = 0, 
+-\end{aligned}
+-$$
+-where the surface tension plays the role of a pressure and the right-hand side has no 3D equivalent, but can be estimated knowing the free-surface height. 
+-The free surface velocity $\bm{u}_s$ being determined, it can be used as a boundary condition for the layered bulk velocity solved by the multilayered solver.
+-
+-Taking the divergence of the Marangoni equation and using the fact that Laplacian operator and Divergence operator can be swapped and using the incompressibility condition, we obtain a Poisson equation for the surface tension :
+-$$
+-\Delta \sigma = - \nabla \cdot \left( \sigma_0 \, \eta \nabla \Delta \eta \right),
+-$$
+-which can be solved with Dirichlet conditions $\sigma = \sigma_0$ on the boundaries if the film is at rest on the boundaries.
+-
+-Using again the Marangoni equation, we have a vectorial Poisson equation for the free surface velocity :
+-$$
+-\Delta  \bm{u}_s = - \frac{1}{\eta_s} \left( \nabla \sigma + \sigma_0 \, \eta \nabla \Delta \eta \right),
+-$$
+-which is splitted into two scalar Poisson equations to solve:
+-$$
+-\begin{aligned}
+-\Delta  \bm{u}_{s,x} & = - \frac{1}{\eta_s} \left( \frac{\partial \sigma}{\partial x} + \sigma_0 \, \eta \frac{\partial \left( \Delta \eta \right) } {\partial x} \right), \\
+-\Delta  \bm{u}_{s,y} & = - \frac{1}{\eta_s} \left( \frac{\partial \sigma}{\partial y} + \sigma_0 \, \eta \frac{\partial \left( \Delta \eta \right) } {\partial y} \right). \\
+-\end{aligned}
+-$$
+-We thus have a system of equations verifying $\Delta \left( \nabla \cdot \bm{u}_s \right) = 0$. 
+-If we ensure $\nabla \cdot \bm{u}_s = 0$ on the domain boundaries (rectangle sides here), the unique solution of the problem is $\nabla \cdot \bm{u}_s = 0$ everywhere (To be proved with maximum principle ?).
+-
+-The boundary condition imposed for $\bm{u}_s$ has to satisfy the condition on each boundary
+-$$
+-\frac{\partial {\bm{u}_s,n}}{\partial n} + \frac{\partial {\bm{u}_s,t}}{\partial t} = 0,
+-$$
+-where $n$ and $t$ are the normal and tangential coordinates associated with each boundary.
+-Arbitrarily, we impose the set of conditions
+-$$
+-\begin{aligned}
+-\frac{\partial {\bm{u}_s,n}}{\partial n} &  = 0 \\ ,
+-\bm{u}_s,t & = 0,
+-\end{aligned}
+-$$
+-which respects the divergence-free condition on the boundaries.
+-
+-*/
+-
+-
+-/**
+-## Include and parameters
+-This test uses the multilayer solver, with surface tension and viscosity and without gravity. */
+-#include "grid/multigrid.h"
+-#include "../Solver_modified/hydro-tension.h"
+-#include "layered/remap.h"
+-#include "poisson.h"
+-#include "view.h"
+-
+-double h_0 = 0.3e-6; // 1e-6;  // film at rest height
+-
+-#define nu0 1.5e-6 // 1e-6 // mu/rho
+-#define eta_s0 1e-11 // 1e-8 // 1e-10 // 1e-11 // eta_s/rho 
+-#define sigma0 3.5e-5 // 2.0e-5 // gamma/rho
+-#define L 2e-2 //4e-2 //2e-2 //
+-#define T_END 1.0   
+-#define C_F_L 0.5
+-#define d 1.5e-4 //width of the initial thickness profile transition
+-#define c 20. // 3.5  //ratio of oval center-center distance with semi width of oval
+-#define a 5e-4 //semi width of the oval
+-#define delta_h 20.0 //0.3 //initial thickness difference
+-#define domain_ratio 2.  // ratio Ly/Lx of domain box
+-double xc = 0; //oval center horizontal position
+-
+-/**
+-## Main function
+-*/
+-int main()
+-{
+-  L0 = L;
+-  dimensions(nx = 1., ny = domain_ratio); // Il faut que les dimensions soient superieures a 1 pour que les valeurs soient prises en compte. L'echelle se fait dans origin.
+-  origin(-L0/2, -domain_ratio*L0/2);
+-  G = 0.;
+-  nu = nu0;
+-  eta_s = eta_s0;
+-  N = 512; // 1024 // 512;
+-  nl = 1; 
+-
+-  symmetric_bathymetry = true;
+-  navier_surface = true;
+-
+-  run();
+- 
+-}
+-
+-/**
+-## Initialisation 
+-*/
+-scalar Hi[], div_us[], div_us_nodal[], div_lapl_us[], div_rhs[], rhs_poisson[], error_poisson_sigma[], sigma_poisson[], error_poisson_us_x[], error_poisson_us_y[];
+-vector rhs_poisson_us[];
+-double maxerror;
+-event init (i = 0)
+-{
+-  // Il faut modifier les CFL ici sinon la modif sur CFL (et pas CFL_H) n'est pas prise en compte	
+-  CFL_H = C_F_L; 
+-  CFL = C_F_L;
+-
+-  // Il faut mettre le foreach_dimension() pour bien faire le tour des boundaries
+-  foreach_dimension(){
+-
+-    // LES CONDITIONS LIMITES SUR U DOIVENT ETRE LES MEME QUE CELLES SUR US	  
+-    u.n[right] = neumann(0);
+-    u.n[left] = neumann(0);
+-    
+-    u.t[right] = dirichlet(0);
+-    u.t[left] = dirichlet(0);
+-    
+-    sigma[right] = dirichlet (sigma0);
+-    sigma[left] = dirichlet (sigma0);
+-
+-    sigma_poisson[right] = dirichlet (sigma0);
+-    sigma_poisson[left] = dirichlet (sigma0);
+-  
+-    us_poisson.n[right] = neumann (0);
+-    us_poisson.n[left] = neumann (0);
+-    
+-    us_poisson.t[right] = dirichlet (0);
+-    us_poisson.t[left] = dirichlet (0);
+-
+-    us.n[right] = neumann (0);
+-    us.n[left] = neumann (0);
+-
+-    us.t[right] = dirichlet (0);
+-    us.t[left] = dirichlet (0);
+-  }
+-
+-  foreach(){ 
+-    double H = h_0;
+-    double r = fabs(x-xc)-a;
+-    if (y>c*a)
+-      r = sqrt(sq(x-xc) + sq(y-c*a))-a;	    
+-    if (y<-c*a)
+-      r = sqrt(sq(x-xc) + sq(y+c*a))-a;
+-    if (r < 3*d)    
+-      H = h_0 + delta_h*h_0*(1.+tanh(-r/d))/2.;
+-    Hi[] = H;
+-    sigma_poisson[] = sigma0;
+-    sigma[] = sigma0;
+-    foreach_dimension()
+-      us_poisson.x[] = 0;
+-    foreach_layer() {
+-      h[] = H/nl;
+-    }
+-  }
+-  boundary({sigma,sigma_poisson});
+-}
+-
+-
+-/**
+-## Outputs 
+-*/
+-
+-
+-event logfile (i+=10; i = 0; t <= T_END)
+-//event logfile (i++, i<2)
+-{
+-  char name[250];
+-  sprintf (name, "height_center_gamma_with_new_eta-h0-%g-L0-%g-nl-%d-N-%d-sigma0-%g-nu-%g-CFL-%g-d-%g-dh-%g-a-%g-c-%g-etas-%g-IMPOSE_US_POISSON_NON_SQUARE", h_0, L0, nl, N, sigma0, nu, CFL, d, delta_h, a, c, eta_s);
+-  static FILE * fph = fopen (name, "w");
+-  if (i > 0)
+-    fprintf(fph, "%g %g %g %g %d\n", t, statsf(eta).sum, statsf(eta).max, dt, i);
+-}
+-
+-// ON DOIT D'ABORD PASSER DANS VISCOUS TERM ICI, PUIS DANS HYDRO-TENSION, PUIS DANS DIFFUSION (CE QUI EST FAIT)
+-
+-event viscous_term (i++) 
+-{
+-  scalar lapl_eta[];
+-  face vector eta_grad_lapl_eta[];
+-  face vector grad_sigma[];
+-
+-  foreach() 
+-    lapl_eta[] = (eta[1,0]-2*eta[0,0]+eta[-1,0])/sq(Delta) + (eta[0,1]-2*eta[0,0]+eta[0,-1])/sq(Delta); 	    
+-  foreach_face(){
+-    eta_grad_lapl_eta.x[] = (eta[-1,0]+eta[0,0])/2.*(lapl_eta[0,0]-lapl_eta[-1,0])/Delta;
+-  }	  
+-
+-  foreach(){
+-    rhs_poisson[] = 0;
+-    foreach_dimension(){
+-      rhs_poisson[] += -sigma0*(eta_grad_lapl_eta.x[1,0]-eta_grad_lapl_eta.x[0,0])/Delta;
+-    }
+-  }	  
+-  
+-  TOLERANCE = 1e-9; //1e-5;
+-  poisson (sigma_poisson, rhs_poisson);
+-  
+-  foreach()
+-    sigma[] = sigma_poisson[];	  
+-   
+-  foreach_face(){
+-    grad_sigma.x[] = (sigma[0,0]-sigma[-1,0])/Delta;
+-  }
+-
+-  foreach() 
+-    foreach_dimension() 
+-      rhs_poisson_us.x[] = -1./eta_s*(grad_sigma.x[]+sigma0*eta_grad_lapl_eta.x[]);
+-
+-  TOLERANCE = 1e-5;
+-
+-  poisson (us_poisson.x, rhs_poisson_us.x);
+-  
+-  poisson (us_poisson.y, rhs_poisson_us.y);
+-
+-  foreach(){
+-    div_us[] = 0;
+-    div_lapl_us[] = 0;
+-    foreach_dimension() {
+-      div_us[] += (us_poisson.x[1,0]-us_poisson.x[0,0])/Delta;
+-      us.x[] = (us_poisson.x[0,0]+us_poisson.x[1,0])/2.0;
+-    }
+-    div_lapl_us[] = (us_poisson.x[2,0]-5*us_poisson.x[1,0]-us_poisson.x[-1,0]-us_poisson.x[0,1]-us_poisson.x[0,-1]+us_poisson.x[1,1]+us_poisson.x[1,-1]+5*us_poisson.x[0,0])/pow(Delta,3) + (us_poisson.y[0,2]-5*us_poisson.y[0,1]-us_poisson.y[0,-1]-us_poisson.y[1,0]-us_poisson.y[-1,0]+us_poisson.y[1,1]+us_poisson.y[-1,1]+5*us_poisson.y[0,0])/pow(Delta,3);
+-    div_rhs[] = -1./eta_s*((sigma[1,0]+sigma[0,1]-4*sigma[0,0]+sigma[-1,0]+sigma[0,-1])/sq(Delta)-rhs_poisson[]); 
+-    error_poisson_sigma[] = (sigma[1,0]+sigma[0,1]-4*sigma[0,0]+sigma[-1,0]+sigma[0,-1])/sq(Delta)-rhs_poisson[];
+-    error_poisson_us_x[] =  (us_poisson.x[1,0]+us_poisson.x[0,1]-4*us_poisson.x[0,0]+us_poisson.x[-1,0]+us_poisson.x[0,-1])/sq(Delta)-rhs_poisson_us.x[];
+-    error_poisson_us_y[] =  (us_poisson.y[1,0]+us_poisson.y[0,1]-4*us_poisson.y[0,0]+us_poisson.y[-1,0]+us_poisson.y[0,-1])/sq(Delta)-rhs_poisson_us.y[];
+-  }
+-
+-  foreach(){
+-    div_us_nodal[] = 0;
+-    foreach_dimension()
+-      div_us_nodal[] += (us.x[1,0]-us.x[-1,0])/(2*Delta);
+-  }
+-}
+-
+-event save_us_max (i+=10)
+-//event save_us_max (i++)
+-{
+-  double div_us_avg = 0, div_us_max = 0, x_div_us_max = 0, y_div_us_max = 0, area_thick_film = 0;
+-  double y_top=0, y_bottom=0, x_left=0, x_right=0, L_Y=0, L_X=0;
+-  int count = 0;  
+-  foreach() {
+-    div_us_avg += div_us_nodal[];
+-    count += 1;
+-    if (fabs(div_us_nodal[]) > div_us_max){
+-      div_us_max = div_us_nodal[];
+-      x_div_us_max = x;
+-      y_div_us_max = y;
+-    }
+-    if (eta[]>(2+delta_h)*h_0/2.){
+-      area_thick_film += sq(Delta);
+-    }
+-    if (fabs(x)<xc+L0/N && x>xc){
+-      if ((eta[0,0]>(2+delta_h)*h_0/2.) && (eta[0,1]<(2+delta_h)*h_0/2.))
+-        y_top = y;	      
+-      if ((eta[0,0]<(2+delta_h)*h_0/2.) && (eta[0,1]>(2+delta_h)*h_0/2.))
+-        y_bottom = y;	      
+-    }
+-    if (fabs(y)<L0/N && y>0){
+-      if ((eta[0,0]>(2+delta_h)*h_0/2.) && (eta[1,0]<(2+delta_h)*h_0/2.))
+-        x_right = x;	      
+-      if ((eta[0,0]<(2+delta_h)*h_0/2.) && (eta[1,0]>(2+delta_h)*h_0/2.))
+-        x_left = x;	      
+-    }
+-    L_X = x_right - x_left;
+-    L_Y = y_top - y_bottom;
+-  } 
+-  div_us_avg = div_us_avg/count;
+-  char name3[250];
+-  sprintf (name3, "us-max_gamma_with_new_eta-h0-%g-L0-%g-nl-%d-N-%d-sigma0-%g-nu-%g-CFL-%g-d-%g-dh-%g-a-%g-c-%g-etas-%g-IMPOSE_US_POISSON_NON_SQUARE", h_0, L0, nl, N, sigma0, nu, CFL, d, delta_h, a, c, eta_s);
+-  static FILE * file = fopen (name3, "w");
+-  fprintf(file, "%d %g %g %g %g %g %g %g %g %g %g\n", i, t, statsf(us.x).max, statsf(us.y).max, statsf(div_us_nodal).max, div_us_avg, x_div_us_max, y_div_us_max, area_thick_film, L_X, L_Y);
+-}
+-
+-event div_us_x_profile (i+=100)
+-//event div_us_x_profile (i++)
+-{
+-  char name2[250];
+-  sprintf (name2, "div_us_x_profile_gamma_with_new_eta-h0-%g-L0-%g-nl-%d-N-%d-sigma0-%g-nu-%g-CFL-%g-d-%g-dh-%g-a-%g-c-%g-etas-%g-IMPOSE_US_POISSON_NON_SQUARE", h_0, L0, nl, N, sigma0, nu, CFL, d, delta_h, a, c, eta_s);
+-  static FILE * fpc = fopen (name2, "w");
+-  foreach(){
+-    if (fabs(y)<L0/N && y>0){
+-      fprintf (fpc, "%d %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g\n", i, t, x, eta[], us_poisson.x[], us_poisson.y[], div_lapl_us[], div_rhs[], error_poisson_us_x[], error_poisson_us_y[], rhs_poisson_us.x[], rhs_poisson_us.y[], error_poisson_sigma[], rhs_poisson[], div_us[], (us_poisson.x[1,0] - us_poisson.x[0,0])/(Delta), (us_poisson.y[0,1] - us_poisson.y[0,0])/(Delta), div_us_nodal[], (us.x[1,0] - us.x[-1,0])/(2*Delta), (us.y[0,1] - us.y[0,-1])/(2*Delta), sigma[]);
+-    }  
+-  }
+-
+-  fprintf(fpc, "\n\n");
+-}
+-
+-event div_us_y_profile (i+=100)
+-//event div_us_y_profile (i++)
+-{
+-  char name5[250];
+-  sprintf (name5, "div_us_y_profile_gamma_with_new_eta-h0-%g-L0-%g-nl-%d-N-%d-sigma0-%g-nu-%g-CFL-%g-d-%g-dh-%g-a-%g-c-%g-etas-%g-IMPOSE_US_POISSON_NON_SQUARE", h_0, L0, nl, N, sigma0, nu, CFL, d, delta_h, a, c, eta_s);
+-  static FILE * fpz = fopen (name5, "w");
+-  foreach(){
+-    if (fabs(x)<xc+L0/N && x>xc)	  
+-      fprintf (fpz, "%d %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g %g\n", i, t, y, eta[], us_poisson.x[], us_poisson.y[], div_lapl_us[], div_rhs[], error_poisson_us_x[], error_poisson_us_y[], rhs_poisson_us.x[], rhs_poisson_us.y[], error_poisson_sigma[], rhs_poisson[], div_us[], (us_poisson.x[1,0] - us_poisson.x[0,0])/(Delta), (us_poisson.y[0,1] - us_poisson.y[0,0])/(Delta), div_us_nodal[], (us.x[1,0] - us.x[-1,0])/(2*Delta), (us.y[0,1] - us.y[0,-1])/(2*Delta), sigma[]);
+-  }
+-  fprintf(fpz, "\n\n");
+-}
+-
+-//event bnd_profile (i++)
+-event bnd_profile (i+=100)
+-{
+-  char name10[250];
+-  sprintf (name10, "bnd_profile_gamma_with_new_eta-h0-%g-L0-%g-nl-%d-N-%d-sigma0-%g-nu-%g-CFL-%g-d-%g-dh-%g-a-%g-c-%g-etas-%g-IMPOSE_US_POISSON_NON_SQUARE", h_0, L0, nl, N, sigma0, nu, CFL, d, delta_h, a, c, eta_s);
+-  static FILE * file10 = fopen (name10, "w");
+-
+-  foreach_boundary(bottom){
+-    fprintf (file10, "%d %g %g %g %g %g %g %g %g %g\n", i, t, y, x, us.x[], us.y[], (us.y[0,1]-us.y[0,0])/Delta, (us.y[0,0]-us.y[0,-1])/Delta, div_us_nodal[], div_us[]);
+-  }
+-  fprintf(file10, "\n");
+-  
+-  foreach_boundary(top){
+-    fprintf (file10, "%d %g %g %g %g %g %g %g %g %g\n", i, t, y, x, us.x[], us.y[], (us.y[0,0]-us.y[0,-1])/Delta, (us.y[0,1]-us.y[0,0])/Delta, div_us_nodal[], div_us[]);
+-  }
+-  fprintf(file10, "\n");
+-
+-  foreach_boundary(left){
+-    fprintf (file10, "%d %g %g %g %g %g %g %g %g %g\n", i, t, y, x, us.x[], us.y[], (us.x[1,0]-us.x[0,0])/Delta, (us.x[0,0]-us.x[-1,0])/Delta, div_us_nodal[], div_us[]);
+-  }
+-  fprintf(file10, "\n");
+-
+-  foreach_boundary(right){
+-    fprintf (file10, "%d %g %g %g %g %g %g %g %g %g\n", i, t, y, x, us.x[], us.y[], (us.x[0,0]-us.x[-1,0])/Delta, (us.x[1,0]-us.x[0,0])/Delta, div_us_nodal[], div_us[]);
+-  }
+-
+-  fprintf(file10, "\n\n");
+-}
+-
+-void plot_profile_x (double t, FILE * fp)
+-{
+-  fprintf (fp,
+-	   "set title 't = %e'\n"
+-	   "plot [%g:%g][%g:%g]'-' u 1:2 w l lc rgb 'red' t ''\n", t, -L0/2, L0/2, 0.0, (3.0+delta_h)*h_0);
+-  foreach(){
+-    if (fabs(y)<L0/N && y>0)	  
+-      fprintf (fp, "%g %g\n", x, eta[]);
+-  }
+-  fprintf (fp, "e\n\n");
+-  fflush (fp);
+-}
+-
+-
+-void plot_profile_y (double t, FILE * fy)
+-{
+-  fprintf (fy,
+-	   "set title 't = %e'\n"
+-	   "plot [%g:%g][%g:%g]'-' u 1:2 w l lc rgb 'red' t ''\n", t, -domain_ratio*L0/2, domain_ratio*L0/2, h_0/2., (3.+delta_h)*h_0);
+-  foreach(){
+-    if (fabs(x)<xc+L0/N && x>xc)	  
+-      fprintf (fy, "%g %g\n", y, eta[]);
+-  }
+-  fprintf (fy, "e\n\n");
+-  fflush (fy);
+-}
+-
+-event animate_profile_x (i += 10)
+-{ 
+-static FILE * fp = popen ("gnuplot 2> /dev/null", "w");
+-if (i == 0)
+-   fprintf (fp, "set term x11\n");
+-plot_profile_x (t, fp);
+-}
+-event animate_profile_y (i += 10)
+-{ 
+-static FILE * fy = popen ("gnuplot 2> /dev/null", "w");
+-if (i == 0)
+-   fprintf (fy, "set term x11\n");
+-plot_profile_y (t, fy);
+-}
+-
+-event images (i+=10)
+-{
+-  char name6[250];
+-  sprintf (name6, "thickness_field_gamma_with_new_eta-h0-%g-L0-%g-nl-%d-N-%d-sigma0-%g-nu-%g-CFL-%g-d-%g-dh-%g-a-%g-c-%g-etas-%g-IMPOSE_US_POISSON_NON_SQUARE.mp4", h_0, L0, nl, N, sigma0, nu, CFL, d, delta_h, a, c, eta_s);
+-  output_ppm(eta, file=name6, min = h_0/2., max = (3.+delta_h)*h_0);
+-}	
+-
+-event movie (i+=10; t <= T_END)
+-{
+-  view (fov = 22, quat = {0.475152,0.161235,0.235565,0.832313},
+-	tx = 0.02, ty = 0., width = 800, height = 600);
+-  char s[80];
+-  sprintf (s, "t = %.7f", t);
+-  draw_string (s, size = 80);
+-  squares ("eta", linear = true, z = "eta", min = -0.3, max = 0.3);
+-  char name4[250];
+-  sprintf (name4, "profile_gamma_with_new_eta-h0-%g-L0-%g-nl-%d-N-%d-sigma0-%g-nu-%g-CFL-%g-d-%g-dh-%g-a-%g-c-%g-etas-%g-IMPOSE_US_POISSON_NON_SQUARE.mp4", h_0, L0, nl, N, sigma0, nu, CFL, d, delta_h, a, c, eta_s);
+-  save (name4);
+-}
+rmfile ./sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale/Ovale_3D.c
+rmdir ./sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale
+hunk ./sandbox/spertant/Solver_modified/diffusion.h 1
+-/**
+-# Vertical diffusion
+-
+-We consider the vertical diffusion of a tracer $s$ with a diffusion
+-coefficient $D$ for the multilayer solver.
+-
+-For stability, we discretise the vertical diffusion equation implicitly as
+-$$
+-\frac{(hs_l)^{n + 1} - (hs_l)^{\star}}{\Delta t} =
+-D \left( \frac{s_{l + 1} - s_l}{h_{l + 1 / 2}} -
+-\frac{s_l - s_{l - 1}}{h_{l - 1 / 2}} \right)^{n + 1}
+-$$
+-which can be expressed as the linear system
+-$$
+-\mathbf{Ms}^{n + 1} = \mathrm{rhs}
+-$$
+-where $\mathbf{M}$ is a 
+-[tridiagonal matrix](https://en.wikipedia.org/wiki/Tridiagonal_matrix). 
+-The lower, principal and upper diagonals are *a*, *b* and *c* respectively. 
+-
+-Boundary conditions on the top and bottom layers need to be added to close the
+-system. We chose to impose a Neumann condition on the free-surface i.e.
+-$$
+-\partial_z s |_t = \dot{s}_t
+-$$
+-and a Navier slip condition on the bottom i.e.
+-$$
+-s|_b = s_b + \lambda_b \partial_z s|_b
+-$$ */
+-
+-void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
+-			 double dst, double s_b, double lambda_b)
+-{
+-  double a[nl], b[nl], c[nl], rhs[nl];
+-
+-  /**
+-  The *rhs* of the tridiagonal system is $h_l s_l$. */
+-      
+-  foreach_layer()
+-    rhs[point.l] = s[]*h[];
+-
+-  /**
+-  The lower, principal and upper diagonals $a$, $b$ and $c$ are given by
+-  $$
+-  a_{l > 0} = - \left( \frac{D \Delta t}{h_{l - 1 / 2}} \right)^{n + 1}
+-  $$
+-  $$
+-  c_{l < \mathrm{nl} - 1} = - \left( \frac{D \Delta t}{h_{l + 1 / 2}}
+-  \right)^{n + 1}
+-  $$
+-  $$
+-  b_{0 < l < \mathrm{nl} - 1} = h_l^{n + 1} - a_l - c_l
+-  $$
+-  */
+-
+-  for (int l = 1; l < nl - 1; l++) {
+-    a[l] = - 2.*D*dt/(h[0,0,l-1] + h[0,0,l]);
+-    c[l] = - 2.*D*dt/(h[0,0,l] + h[0,0,l+1]);
+-    b[l] = h[0,0,l] - a[l] - c[l];
+-  }
+-    
+-  /**
+-  For the top layer the boundary conditions give the (ghost)
+-  boundary value
+-  $$
+-  s_{\mathrm{nl}} = s_{\mathrm{nl} - 1} + \dot{s}_t h_{\mathrm{nl} - 1},
+-  $$
+-  which gives the diagonal coefficient and right-hand-side
+-  $$
+-  b_{\mathrm{nl} - 1} = h_{\mathrm{nl} - 1}^{n + 1}
+-  - a_{\mathrm{nl} - 1}
+-  $$
+-  $$
+-  \mathrm{rhs}_{\mathrm{nl} - 1} = 
+-  (hs)_{\mathrm{nl} - 1}^{\star} + D \Delta t \dot{s}_t
+-  $$
+-  */
+-
+-  a[nl-1] = - 2.*D*dt/(h[0,0,nl-2] + h[0,0,nl-1]);
+-  b[nl-1] = h[0,0,nl-1] - a[nl-1];
+-  rhs[nl-1] += D*dt*dst;
+-
+-  /**
+-  For the bottom layer a third-order discretisation of the Navier slip
+-  condition gives
+-  $$
+-  \begin{aligned}
+-  b_0 & = h_0 + 2 \Delta t D \left( \frac{1}{h_0 + h_1} + \frac{h^2_1 + 3
+-  h_0 h_1 + 3 h^2_0}{\det} \right),\\
+-  c_0 & = - 2 \Delta t D \left( \frac{1}{h_0 + h_1} + \frac{h^2_0}{\det}
+-  \right),\\
+-  \text{rhs}_0 & = (hs_0)^{\star} + 2 \Delta t D s_b  \frac{h^2_1 + 3 h_0
+-  h_1 + 2 h^2_0}{\det},\\
+-  \det & = h_0 (h_0 + h_1)^2  + 2\lambda (3\,h_0 h_1 + 2\,h_0^2 + h_1^2),
+-  \end{aligned}
+-  $$
+-  */
+-
+-  double den = h[]*sq(h[] + h[0,0,1]) 
+-    + 2.*lambda_b*(3.*h[]*h[0,0,1] + 2.*sq(h[]) + sq(h[0,0,1]));
+-  b[0] = h[] + 2.*dt*D*(1./(h[] + h[0,0,1]) +
+-			  (sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 3.*sq(h[]))/den);
+-  c[0] = - 2.*dt*D*(1./(h[] + h[0,0,1]) + sq(h[])/den);
+-  rhs[0] += 2.*dt*D*s_b*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 2.*sq(h[0]))/den;
+-
+-  if (nl == 1) {
+-    b[0] += c[0];
+-    rhs[0] += (- c[0]*h[] - D*dt) * dst;
+-  }
+-    
+-  /**
+-  We can now solve the tridiagonal system using the [Thomas
+-  algorithm](https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm). */
+-  
+-  for (int l = 1; l < nl; l++) {
+-    b[l] -= a[l]*c[l-1]/b[l-1];
+-    rhs[l] -= a[l]*rhs[l-1]/b[l-1];
+-  }
+-  a[nl-1] = rhs[nl-1]/b[nl-1];
+-  s[0,0,nl-1] = a[nl-1];
+-  for (int l = nl - 2; l >= 0; l--)
+-    s[0,0,l] = a[l] = (rhs[l] - c[l]*a[l+1])/b[l];
+-}
+-
+-void vertical_diffusion_NavierNeumann (Point point, scalar h, scalar s, double dt, double D,
+-				       double s_t, double lambda_t, double dsb)
+-{
+-  double a[nl], b[nl], c[nl], rhs[nl];
+-
+-  /**
+-  The *rhs* of the tridiagonal system is $h_l s_l$. */
+-      
+-  foreach_layer()
+-    rhs[point.l] = s[]*h[];
+-
+-  /**
+-  The lower, principal and upper diagonals $a$, $b$ and $c$ are given by
+-  $$
+-  a_{l > 0} = - \left( \frac{D \Delta t}{h_{l - 1 / 2}} \right)^{n + 1}
+-  $$
+-  $$
+-  c_{l < \mathrm{nl} - 1} = - \left( \frac{D \Delta t}{h_{l + 1 / 2}}
+-  \right)^{n + 1}
+-  $$
+-  $$
+-  b_{0 < l < \mathrm{nl} - 1} = h_l^{n + 1} - a_l - c_l
+-  $$
+-  */
+-
+-  for (int l = 1; l < nl - 1; l++) {
+-    a[l] = - 2.*D*dt/(h[0,0,l-1] + h[0,0,l]);
+-    c[l] = - 2.*D*dt/(h[0,0,l] + h[0,0,l+1]);
+-    b[l] = h[0,0,l] - a[l] - c[l];
+-  }
+-    
+-  /**
+-  For the top layer a third-order discretisation of the Navier slip
+-  condition gives
+-  $$
+-  \begin{aligned}
+-  a_{\mathrm{nl} - 1} & = - 2 \Delta t D \left( \frac{1}{h_{\mathrm{nl} - 1} + h_{\mathrm{nl} - 2}} + \frac{h^2_{\mathrm{nl} - 1}}{\det}
+-  \right),\\
+-  b_{\mathrm{nl} - 1}& = h_{\mathrm{nl} - 1} + 2 \Delta t D \left( \frac{1}{h_{\mathrm{nl} - 1} + h_{\mathrm{nl} - 2}} + \frac{h^2_{\mathrm{nl} - 2} + 3
+-  h_{\mathrm{nl} - 1} h_ {\mathrm{nl} - 2}+ 3 h^2_{\mathrm{nl} - 1}}{\det} \right),\\
+-  \text{rhs}_{\mathrm{nl} - 1} & = (hs_{\mathrm{nl} - 1})^{\star} + 2 \Delta t D s_t\frac{h^2_{\mathrm{nl} - 2} + 3 h_{\mathrm{nl} - 1}
+-  h_{\mathrm{nl} - 2} + 2 h^2_{\mathrm{nl} - 1}}{\det},\\
+-  \det & = h_{\mathrm{nl} - 1} (h_{\mathrm{nl} - 1} + h_{\mathrm{nl} - 2})^2  - 2\lambda_t (3\,h_ {\mathrm{nl} - 1}h_{\mathrm{nl} - 2} + 2\,h_{\mathrm{nl} - 1}^2 + h_{\mathrm{nl} - 2}^2),
+-  \end{aligned}
+-  $$
+-  */
+-  
+-  double den = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2]) 
+-    - 2.*lambda_t*(3.*h[0,0,nl-1]*h[0,0,nl-2] + 2.*sq(h[0,0,nl-1]) + sq(h[0,0,nl-2]));
+-  
+-  a[nl-1] = - 2.*dt*D*(1./(h[0,0,nl-1] + h[0,0,nl-2]) + sq(h[0,0,nl-1])/den);
+-  b[nl-1] = h[0,0,nl-1] + 2.*dt*D*(1./(h[0,0,nl-1] + h[0,0,nl-2]) +
+-			  (sq(h[0,0,nl-2]) + 3.*h[0,0,nl-1]*h[0,0,nl-2] + 3.*sq(h[0,0,nl-1]))/den);
+-  rhs[nl-1] += 2.*dt*D*s_t*(sq(h[0,0,nl-2]) + 3.*h[0,0,nl-1]*h[0,0,nl-2] + 2.*sq(h[0,0,nl-1]))/den;
+-  
+-   /**
+-  For the bottom layer the boundary conditions give the (ghost)
+-  boundary value
+-  $$
+-  s_{-1} = s_{0} - \dot{s}_b h_{0},
+-  $$
+-  which gives the diagonal coefficient and right-hand-side
+-  $$
+-  b_{0} = h_{0}^{n + 1}
+-  - c_{0}
+-  $$
+-  $$
+-  \mathrm{rhs}_{0} = 
+-  (hs)_{0}^{\star} - D \Delta t \dot{s}_b
+-  $$
+-  */
+-
+-  c[0]=- 2.*D*dt/(h[0,0,0] + h[0,0,1]);
+-  b[0]= h[] - c[0];
+-  rhs[0] -= D*dt*dsb;
+-
+-  if (nl == 1) {
+-    b[0] = h[]+3.*dt*D/(h[]-3.*lambda_t);
+-    rhs[0] = s[]*h[]+3.*dt*D*(s_t/(h[]-3.*lambda_t)-1/2.*(h[]-2.*lambda_t)/(h[]-3.*lambda_t)*dsb); 
+-  }
+-    
+-  /**
+-  We can now solve the tridiagonal system using the [Thomas
+-  algorithm](https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm). */
+-  
+-  for (int l = 1; l < nl; l++) {
+-    b[l] -= a[l]*c[l-1]/b[l-1];
+-    rhs[l] -= a[l]*rhs[l-1]/b[l-1];
+-  }
+-  a[nl-1] = rhs[nl-1]/b[nl-1];
+-  s[0,0,nl-1] = a[nl-1];
+-  for (int l = nl - 2; l >= 0; l--)
+-    s[0,0,l] = a[l] = (rhs[l] - c[l]*a[l+1])/b[l];
+-}
+-
+-void vertical_diffusion_NeumannNeumann (Point point, scalar h, scalar s, double dt, double D,
+-				        double dst, double dsb)
+-{
+-  double a[nl], b[nl], c[nl], rhs[nl];
+-
+-  /**
+-  The *rhs* of the tridiagonal system is $h_l s_l$. */
+-      
+-  foreach_layer()
+-    rhs[point.l] = s[]*h[];
+-
+-  /**
+-  The lower, principal and upper diagonals $a$, $b$ and $c$ are given by
+-  $$
+-  a_{l > 0} = - \left( \frac{D \Delta t}{h_{l - 1 / 2}} \right)^{n + 1}
+-  $$
+-  $$
+-  c_{l < \mathrm{nl} - 1} = - \left( \frac{D \Delta t}{h_{l + 1 / 2}}
+-  \right)^{n + 1}
+-  $$
+-  $$
+-  b_{0 < l < \mathrm{nl} - 1} = h_l^{n + 1} - a_l - c_l
+-  $$
+-  */
+-
+-  for (int l = 1; l < nl - 1; l++) {
+-    a[l] = - 2.*D*dt/(h[0,0,l-1] + h[0,0,l]);
+-    c[l] = - 2.*D*dt/(h[0,0,l] + h[0,0,l+1]);
+-    b[l] = h[0,0,l] - a[l] - c[l];
+-  }
+-    
+-  /**
+-  For the top layer the boundary conditions give the (ghost)
+-  boundary value
+-  $$
+-  s_{\mathrm{nl}} = s_{\mathrm{nl} - 1} + \dot{s}_t h_{\mathrm{nl} - 1},
+-  $$
+-  which gives the diagonal coefficient and right-hand-side
+-  $$
+-  b_{\mathrm{nl} - 1} = h_{\mathrm{nl} - 1}^{n + 1}
+-  - a_{\mathrm{nl} - 1}
+-  $$
+-  $$
+-  \mathrm{rhs}_{\mathrm{nl} - 1} = 
+-  (hs)_{\mathrm{nl} - 1}^{\star} + D \Delta t \dot{s}_t
+-  $$
+-  */
+-
+-  a[nl-1] = - 2.*D*dt/(h[0,0,nl-2] + h[0,0,nl-1]);
+-  b[nl-1] = h[0,0,nl-1] - a[nl-1];
+-  rhs[nl-1] += D*dt*dst;
+-
+- /**
+-  For the bottom layer the boundary conditions give the (ghost)
+-  boundary value
+-  $$
+-  s_{-1} = s_{0} - \dot{s}_b h_{0},
+-  $$
+-  which gives the diagonal coefficient and right-hand-side
+-  $$
+-  b_{0} = h_{0}^{n + 1}
+-  - c_{0}
+-  $$
+-  $$
+-  \mathrm{rhs}_{0} = 
+-  (hs)_{0}^{\star} - D \Delta t \dot{s}_b
+-  $$
+-  */
+-
+-  c[0]=- 2.*D*dt/(h[0,0,0] + h[0,0,1]);
+-  b[0]= h[] - c[0];
+-  rhs[0] -= D*dt*dsb;
+-
+-  if (nl == 1) {
+-    b[0] = h[];
+-  }
+-    
+-  /**
+-  We can now solve the tridiagonal system using the [Thomas
+-  algorithm](https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm). */
+-  
+-  for (int l = 1; l < nl; l++) {
+-    b[l] -= a[l]*c[l-1]/b[l-1];
+-    rhs[l] -= a[l]*rhs[l-1]/b[l-1];
+-  }
+-  a[nl-1] = rhs[nl-1]/b[nl-1];
+-  s[0,0,nl-1] = a[nl-1];
+-  for (int l = nl - 2; l >= 0; l--)
+-    s[0,0,l] = a[l] = (rhs[l] - c[l]*a[l+1])/b[l];
+-  
+-}
+-
+-void vertical_diffusion_NavierNavier (Point point, scalar h, scalar s, double dt, double D,
+-				      double s_t, double lambda_t, double s_b, double lambda_b)
+-{
+-  double a[nl], b[nl], c[nl], rhs[nl];
+-
+-  /**
+-  The *rhs* of the tridiagonal system is $h_l s_l$. */
+-      
+-  foreach_layer()
+-    rhs[point.l] = s[]*h[];
+-
+-  /**
+-  The lower, principal and upper diagonals $a$, $b$ and $c$ are given by
+-  $$
+-  a_{l > 0} = - \left( \frac{D \Delta t}{h_{l - 1 / 2}} \right)^{n + 1}
+-  $$
+-  $$
+-  c_{l < \mathrm{nl} - 1} = - \left( \frac{D \Delta t}{h_{l + 1 / 2}}
+-  \right)^{n + 1}
+-  $$
+-  $$
+-  b_{0 < l < \mathrm{nl} - 1} = h_l^{n + 1} - a_l - c_l
+-  $$
+-  */
+-
+-  for (int l = 1; l < nl - 1; l++) {
+-    a[l] = - 2.*D*dt/(h[0,0,l-1] + h[0,0,l]);
+-    c[l] = - 2.*D*dt/(h[0,0,l] + h[0,0,l+1]);
+-    b[l] = h[0,0,l] - a[l] - c[l];
+-  }
+-    
+-  /**
+-  For the top layer a third-order discretisation of the Navier slip
+-  condition gives
+-  $$
+-  \begin{aligned}
+-  a_{\mathrm{nl} - 1} & = - 2 \Delta t D \left( \frac{1}{h_{\mathrm{nl} - 1} + h_{\mathrm{nl} - 2}} + \frac{h^2_{\mathrm{nl} - 1}}{\det}
+-  \right),\\
+-  b_{\mathrm{nl} - 1}& = h_{\mathrm{nl} - 1} + 2 \Delta t D \left( \frac{1}{h_{\mathrm{nl} - 1} + h_{\mathrm{nl} - 2}} + \frac{h^2_{\mathrm{nl} - 2} + 3
+-  h_{\mathrm{nl} - 1} h_ {\mathrm{nl} - 2}+ 3 h^2_{\mathrm{nl} - 1}}{\det} \right),\\
+-  \text{rhs}_{\mathrm{nl} - 1} & = (hs_{\mathrm{nl} - 1})^{\star} + 2 \Delta t D s_t\frac{h^2_{\mathrm{nl} - 2} + 3 h_{\mathrm{nl} - 1}
+-  h_{\mathrm{nl} - 2} + 2 h^2_{\mathrm{nl} - 1}}{\det},\\
+-  \det & = h_{\mathrm{nl} - 1} (h_{\mathrm{nl} - 1} + h_{\mathrm{nl} - 2})^2  - 2\lambda_t (3\,h_ {\mathrm{nl} - 1}h_{\mathrm{nl} - 2} + 2\,h_{\mathrm{nl} - 1}^2 + h_{\mathrm{nl} - 2}^2),
+-  \end{aligned}
+-  $$
+-  */
+-
+-  double den_t = h[0,0,nl-1]*sq(h[0,0,nl-1] + h[0,0,nl-2]) 
+-    - 2.*lambda_t*(3.*h[0,0,nl-1]*h[0,0,nl-2] + 2.*sq(h[0,0,nl-1]) + sq(h[0,0,nl-2]));
+-  
+-  a[nl-1] = - 2.*dt*D*(1./(h[0,0,nl-1] + h[0,0,nl-2]) + sq(h[0,0,nl-1])/den_t);
+-  b[nl-1] = h[0,0,nl-1] + 2.*dt*D*(1./(h[0,0,nl-1] + h[0,0,nl-2]) +
+-			  (sq(h[0,0,nl-2]) + 3.*h[0,0,nl-1]*h[0,0,nl-2] + 3.*sq(h[0,0,nl-1]))/den_t);
+-  rhs[nl-1] += 2.*dt*D*s_t*(sq(h[0,0,nl-2]) + 3.*h[0,0,nl-1]*h[0,0,nl-2] + 2.*sq(h[0,0,nl-1]))/den_t;
+-
+-  /**
+-  For the bottom layer a third-order discretisation of the Navier slip
+-  condition gives
+-  $$
+-  \begin{aligned}
+-  b_0 & = h_0 + 2 \Delta t D \left( \frac{1}{h_0 + h_1} + \frac{h^2_1 + 3
+-  h_0 h_1 + 3 h^2_0}{\det} \right),\\
+-  c_0 & = - 2 \Delta t D \left( \frac{1}{h_0 + h_1} + \frac{h^2_0}{\det}
+-  \right),\\
+-  \text{rhs}_0 & = (hs_0)^{\star} + 2 \Delta t D s_b  \frac{h^2_1 + 3 h_0
+-  h_1 + 2 h^2_0}{\det},\\
+-  \det & = h_0 (h_0 + h_1)^2  + 2\lambda_b (3\,h_0 h_1 + 2\,h_0^2 + h_1^2),
+-  \end{aligned}
+-  $$
+-  */
+-
+-  double den_b = h[]*sq(h[] + h[0,0,1]) 
+-    + 2.*lambda_b*(3.*h[]*h[0,0,1] + 2.*sq(h[]) + sq(h[0,0,1]));
+-  b[0] = h[] + 2.*dt*D*(1./(h[] + h[0,0,1]) +
+-			  (sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 3.*sq(h[]))/den_b);
+-  c[0] = - 2.*dt*D*(1./(h[] + h[0,0,1]) + sq(h[])/den_b);
+-  rhs[0] += 2.*dt*D*s_b*(sq(h[0,0,1]) + 3.*h[]*h[0,0,1] + 2.*sq(h[0]))/den_b;
+-  
+-  if (nl == 1) {
+-    b[0] = h[]+12.*D*dt*(h[]+lambda_b-lambda_t)/(sq(h[])+4.*h[]*(lambda_b-lambda_t)-12.*lambda_b*lambda_t);
+-    rhs[0] =  s[]*h[] + 6.*D*dt * ((h[]+2.*lambda_b)*s_t+(h[]-2.*lambda_t)*s_b)/(sq(h[])+4.*h[]*(lambda_b-lambda_t)-12.*lambda_b*lambda_t);
+-  }
+-    
+-  /**
+-  We can now solve the tridiagonal system using the [Thomas
+-  algorithm](https://en.wikipedia.org/wiki/Tridiagonal_matrix_algorithm). */
+-  
+-  for (int l = 1; l < nl; l++) {
+-    b[l] -= a[l]*c[l-1]/b[l-1];
+-    rhs[l] -= a[l]*rhs[l-1]/b[l-1];
+-  }
+-  a[nl-1] = rhs[nl-1]/b[nl-1];
+-  s[0,0,nl-1] = a[nl-1];
+-  for (int l = nl - 2; l >= 0; l--)
+-    s[0,0,l] = a[l] = (rhs[l] - c[l]*a[l+1])/b[l];
+-}
+-
+-/**
+-# Viscous friction between layers
+-
+-By default the viscosity is zero and we impose free-slip on the
+-free-surface and no-slip on the bottom boundary
+-i.e. $\dot{\mathbf{u}}_t = 0$, $\mathbf{\lambda}_b = 0$, $\mathbf{u}_b
+-= 0$. */
+-
+-double nu = 0.;
+-// (const) vector lambda_b[] = {0,0,0}, dut[] = {0,0,0}, u_b[] = {0,0,0};
+-vector lambda_t[] = {0,0,0}, u_t[] = {0,0,0}, dut[] = {0,0,0}, lambda_b[] = {0,0,0}, u_b[] = {0,0,0}, dub[] = {0,0,0} ;
+-
+-/**
+-In the [layered solver](hydro.h), vertical viscosity is applied to the
+-velocity field just after advection, but before the pressure
+-gradient/acceleration term is applied. To take the pressure gradient
+-into account, we first apply the acceleration of the previous
+-timestep, apply vertical viscosity and then substract the previous
+-acceleration. */
+-
+-/**
+-double eta_s = 0.;
+-scalar us[];
+-scalar us_pdt[];
+-*/
+-
+-vector us_poisson[];
+-vector us[];
+-
+-event viscous_term (i++,last)
+-{
+-  if (nu > 0.) {	  
+-    /**	  
+-    foreach() 
+-      us_pdt[] = us[];	
+-    */  
+-    
+-    if (!is_constant(sigma)) {
+-      foreach()
+-        foreach_dimension() {
+-          //u_t.x[] = us_poisson.x[];
+-          u_t.x[] = us.x[];
+-        }
+-    }
+-
+-    foreach() {
+-      // /**	    
+-      foreach_layer()
+-	foreach_dimension()
+-	  u.x[] += dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);
+-      // */
+-      
+-      /**	    
+-      if (!is_constant(sigma)){ 
+-        lambda_t.x[] = nu*sq(Delta)/eta_s;
+-        u_t.x[] = - (sigma[1] - sigma[-1])/(2*Delta)*sq(Delta)/eta_s + 2*us[-1] - us[-2]; 
+-      }
+-      */
+-      foreach_dimension()
+-	if (symmetric_bathymetry){
+-	  if(navier_surface){
+-	    /**vertical_diffusion_NavierNeumann (point, h, u.x, dt, nu,
+-					      u_t.x[], lambda_t.x[], dub.x[]);
+-            */
+-	    vertical_diffusion_NavierNeumann (point, h_pdt, u.x, dt, nu,
+-					      u_t.x[], lambda_t.x[], dub.x[]);
+-	  }
+-	  else{
+-	    /**vertical_diffusion_NeumannNeumann (point, h, u.x, dt, nu,
+-					       dut.x[], dub.x[]);
+-            */					       
+-	    vertical_diffusion_NeumannNeumann (point, h_pdt, u.x, dt, nu,
+-					       dut.x[], dub.x[]);
+-	  }
+-	}
+-	else{
+-	  if(navier_surface){
+-	    /**vertical_diffusion_NavierNavier (point, h, u.x, dt, nu, 
+-                                              u_t.x[], lambda_t.x[], u_b.x[], lambda_b.x[]);
+-	    */				      
+-	    vertical_diffusion_NavierNavier (point, h_pdt, u.x, dt, nu, 
+-                                              u_t.x[], lambda_t.x[], u_b.x[], lambda_b.x[]);
+-	  }
+-	  else{
+-            /**vertical_diffusion (point, h, u.x, dt, nu,
+-			        dut.x[], u_b.x[], lambda_b.x[]);
+-	    */			
+-            vertical_diffusion (point, h_pdt, u.x, dt, nu,
+-			        dut.x[], u_b.x[], lambda_b.x[]);
+-	  }
+-	}
+-
+-      // Compute interface velocity after diffusion 
+-      /** 
+-      double A12 = eta[] - h[0,0,nl-1]/2.;
+-      double A13 = sq(eta[]) - eta[]*h[0,0,nl-1] + sq(h[0,0,nl-1])/3.; 
+-      double A22 = eta[] - h[0,0,nl-1] - h[0,0,nl-2]/2.;
+-      double A23 = sq(eta[]-h[0,0,nl-1]) - (eta[]-h[0,0,nl-1])*h[0,0,nl-2] + sq(h[0,0,nl-2])/3.;
+-      double A32 = eta[] - h[0,0,nl-1] - h[0,0,nl-2] - h[0,0,nl-3]/2.;
+-      double A33 = sq(eta[]-h[0,0,nl-1]-h[0,0,nl-2]) - (eta[]-h[0,0,nl-1]-h[0,0,nl-2])*h[0,0,nl-3] + sq(h[0,0,nl-3])/3.;
+-
+-      double anm3 = (A12*A23-A13*A22)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-      double anm2 = (A32*A13-A12*A33)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-      double anm1 = (A22*A33-A32*A23)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-
+-      double bnm3 = (A13-A23)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);	
+-      double bnm2 = (A33-A13)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-      double bnm1 = (A23-A33)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-        
+-      double cnm3 = (A22-A12)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-      double cnm2 = (A12-A32)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-      double cnm1 = (A32-A22)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-
+-      us[] = u.x[0,0,nl-3]*(anm3+bnm3*eta[]+cnm3*sq(eta[])) + u.x[0,0,nl-2]*(anm2+bnm2*eta[]+cnm2*sq(eta[])) + u.x[0,0,nl-1]*(anm1+bnm1*eta[]+cnm1*sq(eta[]));
+-      */
+-      
+-      foreach_layer()
+-	foreach_dimension()
+-	  u.x[] -= dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);
+-    }
+-  }
+-}
+-
+-/**
+-## Horizontal diffusion
+-
+-This approximates
+-$$
+-h \partial_t s = D \nabla \cdot (h \nabla s)
+-$$
+-with $D$ the diffusion coefficient. Note that metric terms linked to
+-the slope of the layers are not taken into account. Note also that the
+-time discretisation is explicit so that the timestep must be limited
+-(manually) by $\min(\Delta^2/D)$. */
+-
+-void horizontal_diffusion (scalar * list, double D, double dt)
+-{
+-  if (D > 0.) {
+-    scalar * d2sl = list_clone (list);
+-    foreach_layer() {
+-      foreach() {
+-	scalar s, d2s;
+-	for (s,d2s in list,d2sl) {
+-	  double a = 0.;
+-	  foreach_dimension()
+-	    a += (hf.x[]*fm.x[]/(cm[-1] + cm[])*(s[-1] - s[]) +
+-		  hf.x[1]*fm.x[1]/(cm[1] + cm[])*(s[1] - s[]));
+-	  d2s[] = 2.*a/(cm[]*sq(Delta));
+-        }
+-      }
+-      foreach()
+-	if (h[] > dry) {
+-	  scalar s, d2s;
+-	  for (s,d2s in list,d2sl)
+-	    s[] += dt*D*d2s[]/h[];
+-	}
+-    }
+-    delete (d2sl);
+-    free (d2sl);
+-  }
+-}
+-
+-/**
+-### Time-implicit integration
+-
+-When the timestep constraint due to explicit time integration is too
+-strong, one can use the time-implicit version below. The diffusion equation
+-$$
+-h \partial_t s = D \nabla \cdot (h \nabla s)
+-$$
+-is discretised implicitly as
+-$$
+-h \frac{s^{n + 1} - s^n}{\Delta t} = \nabla \cdot (Dh \nabla s^{n + 1})
+-$$
+-which can be reordered as
+-$$
+-\nabla \cdot (\Delta tDh \nabla s^{n + 1}) - hs^{n + 1} = - hs^n
+-$$
+-i.e. a Poisson--Helmoltz equation of the form
+-$$
+-\nabla \cdot (\alpha \nabla s^{n + 1}) + \lambda s^{n + 1} = b
+-$$
+-which is solved using the [multigrid Poisson--Helmholz solver](/src/poisson.h#user-interface).
+-
+-The function returns convergence statistics for the multigrid solver. */
+-
+-#include "poisson.h"
+-
+-trace
+-mgstats implicit_horizontal_diffusion (scalar * list, double D, double dt)
+-{
+-  mgstats mg = {0};
+-  if (D > 0.) {
+-    scalar b[], lambda[];
+-    face vector alpha[];
+-    foreach_layer() {
+-      foreach_face()
+-	alpha.x[] = 2.*dt*D*hf.x[]*fm.x[]/(cm[-1] + cm[]);
+-      foreach()
+-	lambda[] = - cm[]*h[];
+-      for (scalar s in list) {
+-	foreach()
+-	  b[] = lambda[]*s[];
+-	mg = poisson (s, b, alpha, lambda);
+-      }
+-    }
+-  }
+-  return mg;
+-}
+-
+-/**
+-## References
+-
+-~~~bib
+-@hal{popinet2020, hal-02365730}
+-
+-@hal{devita2019, hal-02295398}
+-~~~
+-*/
+rmfile ./sandbox/spertant/Solver_modified/diffusion.h
+hunk ./sandbox/spertant/Solver_modified/hydro-tension.h 1
+-/**
+-# Multilayer solver with surface tension
+-
+-This file adds surface tension to the [multilayer
+-solver](/src/layered/README) i.e. the Laplace pressure applied on the free surface as
+-$$
+-(\mathbf{T_{liquid}} - \mathbf{T_{gas}}) \cdot \mathbf{n} = - \rho \sigma \kappa\mathbf{n}
+-$$
+-with $T$, the stress tensors respectively in the gas and in the
+-liquid, $\rho \sigma$ the surface tension coefficient, and $\kappa$ the
+-curvature of the free-surface.
+-
+-Note that this file is also compatible with the [implicit free-surface
+-extension](/src/layered/implicit.h) and with the [non-hydrostatic
+-extension](/src/layered/nh.h). In both cases the Laplace pressure term
+-is treated implicitly and does not restrict the timestep.
+-
+-The default surface tension coefficient $\sigma$ is constant and equal to
+-unity. */
+-
+-//(const) scalar sigma[] = 1.;
+-scalar sigma[] = 1.; 
+-
+-/**
+-## Laplace pressure
+-
+-The Laplace pressure corresponds to a barotropic pressure $\phi(x) = -
+-\rho \sigma \kappa$ that is added to the hydrostatic equations (term
+-in blue).
+-$$
+-\begin{aligned}
+-  \partial_t h_k + \mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k & =
+-  0,\\
+-  \partial_t \left( h \mathbf{u} \right)_k + \mathbf{{\nabla}} \cdot \left(
+-  h \mathbf{u}  \mathbf{u} \right)_k & = - gh_k  \mathbf{{\nabla}} (\eta)  
+-  \color{blue} + h_k \mathbf{{\nabla}} (\sigma \kappa)
+-\end{aligned}
+-$$
+-
+-### Implementation
+-
+-We will need auxilliary fields containing the "non-linear surface
+-tension coefficients", which are
+-$$
+-\sigma_n = \frac{\sigma}{n}
+-$$
+-in one dimension and
+-$$
+-\begin{aligned}
+-\sigma_x & = \sigma \frac{1 + (\partial_y\eta)^2}{n} \\
+-\sigma_y & = \sigma \frac{1 + (\partial_x\eta)^2}{n} \\
+-\sigma_n & = - 2 \sigma \frac{\partial_x\eta \partial_y\eta}{n}
+-\end{aligned}
+-$$
+-in two dimensions, with
+-$$
+-n = (1 + |\mathbf{\nabla}\eta|^2)^{3/2}
+-$$
+-*/
+-
+-scalar sigma_n;
+-#if dimension > 1
+-vector sigma_d;
+-#endif
+-
+-/**
+-We overload the default definition of the barotropic acceleration in
+-[hydro.h](/src/layered/hydro.h) which becomes
+-$$
+-\mathbf{a}_\text{baro} = - g \mathbf{{\nabla}} (\eta) 
+-                           \color{blue} + \mathbf{{\nabla}} (\sigma \kappa)
+-$$
+-where $\sigma \kappa$ is computed as
+-$$
+-\sigma \kappa = \sigma_n \frac{\partial^2\eta}{\partial x^2}
+-$$
+-in two dimensions and
+-$$
+-\sigma \kappa = \sigma_x \frac{\partial^2\eta}{\partial x^2} +
+-  \sigma_y \frac{\partial^2\eta}{\partial y^2} +
+-  \sigma_n \frac{\partial^2\eta}{\partial x y}
+-$$
+-in three dimensions.
+-
+-In 3D, the weighing with the `0.2` coefficient is necessary to avoid odd-even
+-decoupling. */
+-
+-#if dimension == 1
+-# define sigma_kappa(eta, i)					\
+-  (sigma_n[i]*(eta[i+1] + eta[i-1] - 2.*eta[i])/sq(Delta))
+-#else // dimension == 2
+-# define sigma_kappa(eta, i)						\
+-  ((sigma_d.x[i]*(0.2*(eta[i+1,1] + eta[i-1,1] - 2.*eta[i,1] +		\
+-		       eta[i+1,-1] + eta[i-1,-1] - 2.*eta[i,-1]) +	\
+-		  eta[i+1] + eta[i-1] - 2.*eta[i])/(1. + 2.*0.2) +	\
+-    sigma_d.y[i]*(0.2*(eta[i+1,1] + eta[i+1,-1] - 2.*eta[i+1] +		\
+-		       eta[i-1,1] + eta[i-1,-1] - 2.*eta[i-1]) +	\
+-		  eta[i,1] + eta[i,-1] - 2.*eta[i])/(1. + 2.*0.2) +	\
+-    sigma_n[i]*(eta[i+1,1] + eta[i-1,-1] -				\
+-		eta[i+1,-1] - eta[i-1,1]))/sq(Delta))
+-#endif // dimension == 2
+-
+-#define p_baro(eta,i) (- G*eta[i] +    sigma_kappa(eta, i))  
+-#define a_baro(eta, i)						\
+-  (gmetric(i)*(p_baro (eta, i) - p_baro (eta, i - 1))/Delta)
+-
+-// #include "hydro.h"
+-// Ne change rien, prend le hydro.h dans le meme dossier
+-#include "../Solver_modified/hydro.h"
+-
+-/**
+-The non-linear surface tension coefficient(s) are defined using the
+-surface elevation at the beginning of the timestep. */
+-
+-event face_fields (i++)
+-{
+-  sigma_n = new scalar;
+-#if dimension > 1
+-  scalar dx = new scalar, dy = new scalar;
+-  sigma_d.x = dx, sigma_d.y = dy;
+-#endif
+-
+-  foreach() {
+-    double n = 1.;
+-    coord dh;
+-    foreach_dimension() {
+-      dh.x = (eta[1] - eta[-1])/(2.*Delta);
+-      n += sq(dh.x);
+-    }
+-    n = pow(n, 3./2.);
+-#if dimension == 1
+-    sigma_n[] = sigma[]/n;
+-#else
+-    sigma_n[] = - sigma[]*dh.x*dh.y/(2.*n);
+-    foreach_dimension()
+-      sigma_d.x[] = sigma[]*(1. + sq(dh.y))/n;
+-#endif
+-  }
+-#if dimension == 1
+-  boundary ({sigma_n});
+-  restriction ({sigma_n});
+-#else
+-  boundary ({sigma_n, sigma_d});
+-  restriction ({sigma_n, sigma_d});
+-#endif  
+-  
+-  /**
+-  In the case of a time-explicit integration (as controlled by CFL_H),
+-  we need to restrict the timestep based on the celerity of capillary
+-  waves (and not only gravity waves as done by the default solver). To
+-  do so, we imitate the code in
+-  [hydro.h](/src/layered/hydro.h#face_fields) which sets `dtmax`, but
+-  take into account the celerity of the shortest capillary waves (of
+-  wavelength $2\Delta$). */ 
+-  
+-  foreach_face (reduction (min:dtmax)) {
+-    double H = 0., um = 0.;
+-    foreach_layer() {
+-      double hl = h[-1] > dry ? h[-1] : 0.;
+-      double hr = h[] > dry ? h[] : 0.;
+-      double uf = hl > 0. || hr > 0. ? (hl*u.x[-1] + hr*u.x[])/(hl + hr) : 0.;
+-      if (fabs(uf) > um)
+-	um = fabs(uf);
+-      H += (h[] + h[-1])/2.;
+-    }
+-    if (H > dry) {
+-      double c = um/CFL + sqrt((G + max(sigma[], sigma[-1])*sq(pi/Delta))*
+-			       (hydrostatic ? H : Delta*tanh(H/Delta)))/CFL_H;
+-      double dt = min(cm[], cm[-1])*Delta/(c*fm.x[]);
+-      if (dt < dtmax)
+-	dtmax = dt;
+-    }
+-  }
+-}
+-
+-/**
+-At the end of the timestep we delete the auxilliary fields. */
+-
+-event pressure (i++) {
+-  delete ({sigma_n});
+-#if dimension > 1
+-  delete ((scalar *){sigma_d});
+-#endif  
+-}
+-
+-
+-/** Marangoni flows */
+-
+-// /**
+-//vector du[];
+-//scalar us[];
+-double eta_s = 0.;
+-
+-/**
+-event viscous_term (i++) 
+-{
+-
+-  if (nl == 1) {
+-    foreach(){
+-      foreach_layer()
+-        foreach_dimension()
+-	  u.x[] += dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);
+-      us[] = u.x[0,0,0] + dub.x[0,0,0]*h[0,0,0]/6 + dut.x[0,0,0]*h[0,0,0]/3;
+-    }
+-  }  
+-  else {
+-    foreach(){
+-      foreach_layer()
+-        foreach_dimension()
+-	  u.x[] += dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);
+-
+-      double A12 = eta[] - h[0,0,nl-1]/2.;
+-      double A13 = sq(eta[]) - eta[]*h[0,0,nl-1] + sq(h[0,0,nl-1])/3.; 
+-      double A22 = eta[] - h[0,0,nl-1] - h[0,0,nl-2]/2.;
+-      double A23 = sq(eta[]-h[0,0,nl-1]) - (eta[]-h[0,0,nl-1])*h[0,0,nl-2] + sq(h[0,0,nl-2])/3.;
+-      double A32 = eta[] - h[0,0,nl-1] - h[0,0,nl-2] - h[0,0,nl-3]/2.;
+-      double A33 = sq(eta[]-h[0,0,nl-1]-h[0,0,nl-2]) - (eta[]-h[0,0,nl-1]-h[0,0,nl-2])*h[0,0,nl-3] + sq(h[0,0,nl-3])/3.;
+-
+-      double anm3 = (A12*A23-A13*A22)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-      double anm2 = (A32*A13-A12*A33)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-      double anm1 = (A22*A33-A32*A23)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-
+-      double bnm3 = (A13-A23)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);	
+-      double bnm2 = (A33-A13)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-      double bnm1 = (A23-A33)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-        
+-      double cnm3 = (A22-A12)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-      double cnm2 = (A12-A32)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-      double cnm1 = (A32-A22)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
+-
+-      us[] = u.x[0,0,nl-3]*(anm3+bnm3*eta[]+cnm3*sq(eta[])) + u.x[0,0,nl-2]*(anm2+bnm2*eta[]+cnm2*sq(eta[])) + u.x[0,0,nl-1]*(anm1+bnm1*eta[]+cnm1*sq(eta[]));
+-    }
+-  }
+-
+-  //if (nu > 0 && !is_constant(sigma) && !navier_surface) {
+-  if (nu > 0 && !is_constant(sigma)) {
+-    foreach()
+-      foreach_dimension() {
+-        du.x[] = (sigma[1] - sigma[-1])/(2*Delta*nu) + eta_s/nu*(us[1]-2*us[]+us[-1])/sq(Delta);
+-        }
+-    dut = du;
+-
+-  }
+-}
+-
+-*/
+rmfile ./sandbox/spertant/Solver_modified/hydro-tension.h
+hunk ./sandbox/spertant/Solver_modified/hydro.h 1
+-/**
+-# The hydrostatic multilayer solver for free-surface flows
+-
+-The theoretical basis and main algorithms for this solver are
+-described in [Popinet, 2020](/Bibliography#popinet2020). Note however
+-that this version of the solver is more recent and may not match the
+-details of Popinet, 2020.
+-
+-The system of $n$ layers of incompressible fluid pictured below is
+-modelled as the set of (hydrostatic) equations:
+-$$
+-\begin{aligned}
+-  \partial_t h_k + \mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k & =
+-  0,\\
+-  \partial_t \left( h \mathbf{u} \right)_k + \mathbf{{\nabla}} \cdot \left(
+-  h \mathbf{u}  \mathbf{u} \right)_k & = - gh_k  \mathbf{{\nabla}} (\eta)
+-\end{aligned}
+-$$
+-with $\mathbf{u}_k$ the velocity vector, $h_k$ the layer thickness,
+-$g$ the acceleration of gravity and $\eta$ the free-surface
+-height. The non-hydrostatic pressure $\phi_k$ and vertical velocity
+-$w_k$ can be added using [the non-hydrostatic extension](nh.h). See
+-also the [general introduction](README).
+-
+-![Definition of the $n$ layers.](../figures/layers.svg){ width="60%" }
+-
+-## Fields and parameters
+-
+-The `zb` and `eta` fields define the bathymetry and free-surface
+-height. The `h` and `u` fields define the layer thicknesses and velocities.
+-
+-The acceleration of gravity is `G` and `dry` controls the minimum
+-layer thickness. The hydrostatic CFL criterion is defined by
+-`CFL_H`. It is set to a very large value by default, but will be tuned
+-either by the user or by the default solver settings (typically
+-depending on whether time integration is explicit or implicit).
+-
+-The `gradient` pointer gives the function used for limiting.
+-
+-`tracers` is a list of tracers for each layer. By default it contains
+-only the components of velocity (unless `linearised` is set to `true`
+-in which case the tracers list is empty). */
+-
+-#define BGHOSTS 2
+-#define LAYERS 1
+-#include "utils.h"
+-
+-scalar zb[], eta, h, h_pdt;
+-vector u; //, u_tmp;
+-double G = 1., dry = 1e-12, CFL_H = 1e40;
+-double (* gradient) (double, double, double) = minmod2;
+-
+-scalar * tracers = NULL, eta_r;
+-bool linearised = false;
+-
+-/** The symmetric_bathymetry flag switches the bathymetry boundary 
+-    condition between a no-slip wall (false) and a symmetry plane (true)*/
+-
+-bool symmetric_bathymetry = false;
+-bool navier_surface = false;
+-
+-/**
+-## Setup
+-
+-We first define refinement and restriction functions for the
+-free-surface height `eta` which is just the sum of all layer
+-thicknesses and of bathymetry. */
+-
+-#if TREE
+-static void refine_eta (Point point, scalar eta)
+-{
+-  foreach_child() {
+-    eta[] = zb[];
+-    foreach_layer()
+-      eta[] += h[];
+-  }
+-}
+-
+-static void restriction_eta (Point point, scalar eta)
+-{
+-  eta[] = zb[];
+-  foreach_layer()
+-    eta[] += h[];
+-}
+-#endif // TREE
+-
+-/**
+-The allocation of fields for each layer is split in two parts, because
+-we need to make sure that the layer thicknesses and $\eta$ are
+-allocated first (in the case where other layer fields are added, for
+-example for the [non-hydrostatic extension](nh.h)). */
+-
+-event defaults0 (i = 0)
+-{
+-  assert (nl > 0);
+-  h = new scalar[nl];
+-  h_pdt = new scalar[nl];
+-  h.gradient = gradient;
+-#if TREE
+-  h.refine = h.prolongation = refine_linear;
+-  h.restriction = restriction_volume_average;
+-  h.dirty = true;
+-#endif
+-  eta_r = eta = new scalar;
+-  reset ({h, zb}, 0.);
+-
+-  /**
+-  We set the proper gradient and refinement/restriction functions. */
+-  
+-  zb.gradient = gradient;
+-  eta.gradient = gradient;
+-#if TREE
+-  zb.refine = zb.prolongation = refine_linear;
+-  zb.restriction = restriction_volume_average;
+-  zb.dirty = true;
+-  eta.prolongation = refine_linear;
+-  eta.refine  = refine_eta;
+-  eta.restriction = restriction_eta;
+-  eta.depends = list_copy ({zb,h});
+-  eta.dirty = true;
+-#endif // TREE
+-}
+-
+-#include "run.h"
+-
+-/**
+-Other fields, such as $\mathbf{u}_k$ here, are added by this
+-event. */
+-
+-event defaults (i = 0)
+-{
+-
+-  /**
+-  The (velocity) CFL is limited by the unsplit advection scheme, so is
+-  dependent on the dimension. The (gravity wave) CFL is set to 1/2 (if
+-  not already set by the user). */
+-  
+-  CFL = 1./(2.*dimension);
+-  if (CFL_H == 1e40)
+-    CFL_H = 0.5 [0];
+-  
+-  u = new vector[nl];
+-  //u_tmp = new vector[nl];
+-  reset ({u}, 0.);
+-  //reset ({u_tmp}, 0.);
+-    
+-  if (!linearised)
+-    foreach_dimension()
+-      tracers = list_append (tracers, u.x);
+-  
+-  /**
+-  The gradient and prolongation/restriction functions are set for all
+-  tracer fields. */
+-
+-  for (scalar s in tracers) {
+-    s.gradient = gradient;
+-#if TREE
+-    s.refine = s.prolongation = refine_linear;
+-    s.restriction = restriction_volume_average;
+-    s.dirty = true;
+-#endif
+-  }
+-
+-  /**
+-  We setup the default display. */
+-
+-  display ("squares (color = 'eta > zb ? eta : nodata', spread = -1);");
+-}
+-
+-/**
+-After user initialisation, we define the free-surface height $\eta$. */
+-
+-event init (i = 0)
+-{
+-  foreach() {
+-    eta[] = zb[];
+-    foreach_layer()
+-      eta[] += h[];
+-    dimensional (h[] == Delta);
+-    dimensional (h_pdt[] == Delta);
+-  }
+-}
+-
+-/**
+-The maximum timestep `dtmax` can be used to impose additional stability
+-conditions. */
+-
+-double dtmax;
+-event set_dtmax (i++,last) dtmax = DT;
+-
+-/**
+-The macro below can be overloaded to define the barotropic
+-acceleration. By default it is just the slope of the free-surface
+-times gravity. */
+-
+-#define gmetric(i) (2.*fm.x[i]/(cm[i] + cm[i-1]))
+-#ifndef a_baro
+-# define a_baro(eta, i) (G*gmetric(i)*(eta[i-1] - eta[i])/Delta)
+-#endif
+-
+-/**
+-## Computation of face values
+-
+-At each timestep, temporary face fields are defined for the fluxes $(h
+-\mathbf{u})^{n+1/2}$, face height $h_f^{n+1/2}$ and height-weighted
+-face accelerations $(ha)^{n+1/2}$. */
+-
+-
+-static bool hydrostatic = true;
+-face vector hu, hf, ha;
+-
+-event face_fields (i++, last)
+-{
+-  hu = new face vector[nl];
+-  hf = new face vector[nl];
+-  ha = new face vector[nl];
+-
+-  /**
+-  The (CFL-limited) timestep is also computed by this function. A
+-  difficulty is that the prediction step below also requires an
+-  estimated timestep (the `pdt` variable below). The timestep at the
+-  previous iteration is used as estimate. */
+-
+-  static double pdt = 0.;
+-  foreach_face (reduction (min:dtmax)) {
+-    double ax = a_baro (eta_r, 0);
+-    double H = 0., um = 0.;
+-    double Hr = 0., Hl = 0.;
+-    foreach_layer() {
+-      Hr += h[], Hl += h[-1];
+-
+-      /**
+-      The face velocity is computed as the height-weighted average of
+-      the cell velocities. */
+-      
+-      double hl = h[-1] > dry ? h[-1] : 0.;
+-      double hr = h[] > dry ? h[] : 0.;
+-      hu.x[] = hl > 0. || hr > 0. ? (hl*u.x[-1] + hr*u.x[])/(hl + hr) : 0.;
+-
+-      /**
+-      If the left or central cell are dry, we consider a "step-like"
+-      bathymetry and define the face height as the water level above
+-      the step. */
+-
+-      double hff;
+-      if (Hl <= dry)
+-	hff = fmax (fmin (zb[] + Hr - zb[-1], h[]), 0.);
+-      else if (Hr <= dry)
+-	hff = fmax (fmin (zb[-1] + Hl - zb[], h[-1]), 0.);
+-      else {
+-
+-	/**
+-	In the default case, the face height is computed using a variant of the
+-	[BCG](/src/bcg.h) scheme. */
+-
+-	double un = pdt*hu.x[]/Delta, a = sign(un);
+-	int i = - (a + 1.)/2.;
+-	double g = h.gradient ? h.gradient (h[i-1], h[i], h[i+1])/Delta :
+-	  (h[i+1] - h[i-1])/(2.*Delta);
+-	hff = h[i] + a*(1. - a*un)*g*Delta/2.;
+-      }
+-      hf.x[] = fm.x[]*hff;
+-
+-      /**
+-      The maximum velocity is stored and the flux and height-weighted
+-      accelerations are computed. */
+-      
+-      if (fabs(hu.x[]) > um)
+-	um = fabs(hu.x[]);
+-      
+-      hu.x[] *= hf.x[];
+-      ha.x[] = hf.x[]*ax;
+- 
+-      H += hff;
+-    }
+-
+-    /**
+-    The maximum timestep is computed using the total depth `H` and the
+-    advection and gravity wave CFL criteria. The gravity wave speed
+-    takes dispersion into account in the non-hydrostatic case. */
+-    
+-    if (H > dry) {
+-      double c = um/CFL + sqrt(G*(hydrostatic ? H : Delta*tanh(H/Delta)))/CFL_H;
+-      if (c > 0.) {
+-	double dt = min(cm[], cm[-1])*Delta/(c*fm.x[]);
+-	if (dt < dtmax)
+-	  dtmax = dt;
+-      }
+-    }
+-  }
+-
+-  /**
+-  The timestep is computed, taking into account the timing of events,
+-  and also stored in `pdt` (see comment above). */
+-  
+-  pdt = dt = dtnext (dtmax);
+-}
+-
+-// /**
+-event advect_h (i++, last)
+-{
+-  foreach_face()
+-    foreach_layer() 
+-      hu.x[] += dt*ha.x[];
+-  foreach_layer()
+-    foreach() {
+-      h_pdt[] = h[];	
+-      double h1 = h[];
+-      foreach_dimension()
+-	h1 += dt*(hu.x[] - hu.x[1])/(Delta*cm[]);
+-#if !_GPU
+-      if (h1 < - dry)
+-	fprintf (stderr, "src/layered/hydro.h:%d: warning: h1 = %g < - 1e-12 at %g,%g,%d,%g\n",
+-		 LINENO, h1, x, y, _layer, t);
+-#endif
+-      h[] = max(h1, 0.);
+-    }  
+-}
+-
+-
+-event update_eta (i++, last)
+-{
+-  // delete ((scalar *){hu, hf});
+-  foreach() {
+-    double etap = zb[];
+-    foreach_layer()
+-      etap += h[];
+-    eta[] = etap;
+-  }
+-}
+-
+-// */
+-
+-/**
+-## Advection and diffusion
+-
+-The function below approximates the advection terms using estimates of
+-the face fluxes $h\mathbf{u}$ and face heights $h_f$. */
+-
+-void advect (scalar * tracers, face vector hu, face vector hf, double dt)
+-{
+-
+-  /**
+-  The fluxes are first limited according to the CFL condition to
+-  ensure strict positivity of the layer heights. This step is
+-  necessary due to the approximate estimation of the CFL condition in
+-  the timestep calculation above. */
+-  
+-  foreach_face()
+-    foreach_layer() {
+-      double hul = hu.x[];
+-      //if (hul*dt/(Delta*cm[-1]) > CFL*h[-1])
+-      if (hul*dt/(Delta*cm[-1]) > CFL*h_pdt[-1])
+-	//hul = CFL*h[-1]*Delta*cm[-1]/dt;
+-	hul = CFL*h_pdt[-1]*Delta*cm[-1]/dt;
+-      //else if (- hul*dt/(Delta*cm[]) > CFL*h[])
+-      else if (- hul*dt/(Delta*cm[]) > CFL*h_pdt[])
+-	//hul = - CFL*h[]*Delta*cm[]/dt;
+-	hul = - CFL*h_pdt[]*Delta*cm[]/dt;
+-      
+-      /**
+-      In the case where the flux is limited, and for multiple layers, an
+-      attempt is made to conserve the total barotropic flux by merging
+-      the flux difference with the flux in the layer just above. This
+-      allows to maintain an accurate evolution for the free-surface
+-      height $\eta$. */
+-      
+-      if (hul != hu.x[]) {
+-	if (point.l < nl - 1)
+-	  hu.x[0,0,1] += hu.x[] - hul;
+-#if !_GPU
+-	else if (nl > 1)
+-	  fprintf (stderr, "src/layered/hydro.h:%d: warning: could not conserve barotropic flux "
+-		   "at %g,%g,%d\n", LINENO, x, y, point.l);
+-#endif
+-	hu.x[] = hul;
+-      }
+-    }
+-
+-  face vector flux[];
+-  foreach_layer() {
+-        
+-    /**
+-    We compute the flux $(shu)_{i+1/2,k}$ for each tracer $s$, using a
+-    variant of the BCG scheme. */
+-    
+-    for (scalar s in tracers) {
+-      foreach_face() {
+-	double un = dt*hu.x[]/((hf.x[] + dry)*Delta), a = sign(un);
+-	int i = -(a + 1.)/2.;
+-	double g = s.gradient ?
+-	  s.gradient (s[i-1], s[i], s[i+1])/Delta :
+-	  (s[i+1] - s[i-1])/(2.*Delta);
+-	double s2 = s[i] + a*(1. - a*un)*g*Delta/2.;
+-
+-#if dimension > 1
+-	if (hf.y[i] + hf.y[i,1] > dry) {
+-	  double vn = (hu.y[i] + hu.y[i,1])/(hf.y[i] + hf.y[i,1]);
+-	  double syy = (s.gradient ? s.gradient (s[i,-1], s[i], s[i,1]) :
+-			vn < 0. ? s[i,1] - s[i] : s[i] - s[i,-1]);
+-	  s2 -= dt*vn*syy/(2.*Delta);
+-	}
+-#endif // dimension > 1
+-	
+-	flux.x[] = s2*hu.x[];
+-      }
+-      
+-      /**
+-      We compute $(hs)^\star_i = (hs)^n_i + \Delta t 
+-      [(shu)_{i+1/2} -(shu)_{i-1/2}]/\Delta$. */
+-      
+-      foreach() {
+-        //s[] *= h[];
+-	s[] *= h_pdt[];
+-	foreach_dimension()
+-	  s[] += dt*(flux.x[] - flux.x[1])/(Delta*cm[]);
+-      }
+-    }
+-
+-    /**
+-    We then obtain $h^{n+1}$ and $s^{n+1}$ using
+-    $$
+-    \begin{aligned}
+-    h_i^{n+1} & = h_i^n + \Delta t \frac{(hu)_{i+1/2} - (hu)_{i-1/2}}{\Delta},\\
+-    s_i^{n+1} & = \frac{(hs)^\star_i}{h_i^{n+1}}
+-    \end{aligned}
+-    $$
+-    */
+-
+-    // With my modif, the following is just to check if it is dry, because h has already been updated
+-    // Could be improved with a boolean test ? 
+-    foreach() {
+-      //double h1 = h[];
+-      double h1 = h_pdt[];
+-      foreach_dimension()
+-	h1 += dt*(hu.x[] - hu.x[1])/(Delta*cm[]);
+-      /**
+-#if !_GPU
+-      if (h1 < - dry)
+-	fprintf (stderr, "src/layered/hydro.h:%d: warning: h1 = %g < - 1e-12 at %g,%g,%d,%g\n",
+-		 LINENO, h1, x, y, _layer, t);
+-#endif
+-      */	
+-      
+-      /**
+-      h[] = max(h1, 0.);
+-      */
+-
+-      if (h1 < dry) {
+-	for (scalar f in tracers)
+-	  f[] = 0.;
+-      }
+-      else
+-	for (scalar f in tracers)
+-          /**		
+-	  f[] /= h1;
+-	  */      
+-	  f[] /= h[];      
+-    }
+-  }
+-}
+-
+-/**
+-This is where the 'two-step advection' of the [implicit
+-scheme](implicit.h) plugs itself (nothing is done for the explicit
+-scheme). */
+-
+-event half_advection (i++, last);
+-
+-/**
+-Vertical diffusion (including viscosity) is added by this code. */
+-
+-#include "diffusion.h"
+-
+-/**
+-## Accelerations 
+-
+-Acceleration terms are added here. In the simplest case, this is only
+-the pressure gradient due to the free-surface slope, as computed in
+-[face_fields](#face_fields). */
+-
+-event acceleration (i++, last);
+-
+-event pressure (i++, last)
+-{
+-
+-  /**
+-  The acceleration is applied to the face fluxes... */
+-  
+-  /**	
+-  foreach_face()
+-    foreach_layer() 
+-      hu.x[] += dt*ha.x[];
+-
+-  */     
+-  /**
+-  ... and to the centered velocity field, using height-weighting. */
+-  
+-  foreach()
+-    foreach_layer() {
+-      foreach_dimension()
+-	u.x[] += dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);
+-#if dimension == 2
+-      // metric terms
+-      double dmdl = (fm.x[1,0] - fm.x[])/(cm[]*Delta);
+-      double dmdt = (fm.y[0,1] - fm.y[])/(cm[]*Delta);
+-      double ux = u.x[], uy = u.y[];
+-      double fG = uy*dmdl - ux*dmdt;
+-      u.x[] += dt*fG*uy;
+-      u.y[] -= dt*fG*ux;
+-#endif // dimension == 2
+-    }
+-  delete ((scalar *){ha});
+-
+-  /**
+-  The resulting fluxes are used to advect both tracers and layer
+-  heights. */
+- 
+-  // hu has not been updated with the height at the new iteration so it corresponds to hu at the end of advect_h
+-  advect (tracers, hu, hf, dt);
+-  
+-  delete ((scalar *){hu, hf});
+-}
+-  
+-/**
+-Finally the free-surface height $\eta$ is updated. */
+-/**
+-event update_eta (i++, last)
+-{
+-  delete ((scalar *){hu, hf});
+-  foreach() {
+-    double etap = zb[];
+-    foreach_layer()
+-      etap += h[];
+-    eta[] = etap;
+-  }
+-}
+-*/
+-
+-/**
+-## Vertical remapping and mesh adaptation
+-
+-[Vertical remapping](remap.h) is applied here if necessary. */
+-
+-event remap (i++, last);
+- 
+-#if TREE
+-event adapt (i++,last);
+-#endif
+-
+-/**
+-## Cleanup
+-
+-The fields and lists allocated in [`defaults()`](#defaults0) above
+-must be freed at the end of the run. */
+-   
+-event cleanup (t = end, last)
+-{
+-  delete ({eta, eta_r, h, u});
+-  //delete ({eta, eta_r, h, u, u_tmp});
+-  free (tracers), tracers = NULL;
+-}
+-
+-/**
+-# Horizontal pressure gradient
+-
+-The macro below computes the horizontal pressure gradient
+-$$
+-pg_k = - \mathbf{{\nabla}} (h \phi)_k + \left[ \phi 
+- \mathbf{{\nabla}} z \right]_k
+-$$
+-on the faces of each layer. The slope of the layer interfaces
+-$\mathbf{{\nabla}} z_{k+1/2}$ in the second-term is bounded by
+-`max_slope` (by default 30 degrees). */
+-
+-double max_slope = 0.577350269189626 [0]; // = tan(30.*pi/180.)
+-#define slope_limited(dz) (fabs(dz) < max_slope ? (dz) :	\
+-			   ((dz) > 0. ? max_slope : - max_slope))
+-
+-#define hpg(pg,phi,i,code) do {						\
+-  double dz = zb[i] - zb[i-1];						\
+-  foreach_layer() {							\
+-    double pg = 0.;							\
+-    if (h[i] + h[i-1] > dry) {						\
+-      double s = Delta*slope_limited(dz/Delta);				\
+-      pg = (h[i-1] - s)*phi[i-1] - (h[i] + s)*phi[i];                   \
+-      if (point.l < nl - 1) {						\
+-	double s = Delta*slope_limited((dz + h[i] - h[i-1])/Delta);     \
+-	pg += (h[i-1] + s)*phi[i-1,0,1] - (h[i] - s)*phi[i,0,1];        \
+-      }									\
+-      pg *= gmetric(i)*hf.x[i]/(Delta*(h[i] + h[i-1]));			\
+-    } code;								\
+-    dz += h[i] - h[i-1];						\
+-  }									\
+-} while (0)
+-
+-/**
+-# Hydrostatic vertical velocity
+-
+-For the hydrostatic solver, the vertical velocity is not defined by
+-default since it is usually not required. The function below can be
+-applied to compute it using the (diagnostic) incompressibility condition
+-$$
+-\mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k + \left[ w -
+-\mathbf{u} \cdot \mathbf{{\nabla}} (z) \right]_k = 0
+-$$
+-*/
+-
+-void vertical_velocity (scalar w, face vector hu, face vector hf)
+-{
+-  foreach() {
+-    double dz = zb[1] - zb[-1];
+-    double wm = 0.;
+-    foreach_layer() {
+-      w[] = wm + (hu.x[] + hu.x[1])/(hf.x[] + hf.x[1] + dry)*
+-	(dz + h[1] - h[-1])/(2.*Delta);
+-      if (point.l > 0)
+-	foreach_dimension()
+-	  w[] -= (hu.x[0,0,-1] + hu.x[1,0,-1])
+-	  /(hf.x[0,0,-1] + hf.x[1,0,-1] + dry)*dz/(2.*Delta);
+-      foreach_dimension()
+-	w[] -= (hu.x[1] - hu.x[])/Delta;
+-      dz += h[1] - h[-1], wm = w[];
+-    }
+-  }
+-}
+-
+-/**
+-# "Radiation" boundary conditions
+-
+-This can be used to implement open boundary conditions at low
+-[Froude numbers](http://en.wikipedia.org/wiki/Froude_number). The idea
+-is to set the velocity normal to the boundary so that the water level
+-relaxes towards its desired value (*ref*). */
+-
+-double _radiation (Point point, double ref, scalar s)
+-{
+-  double H = 0.;
+-  foreach_layer()
+-    H += h[];
+-#if 0  
+-  return H > dry ? sqrt(G/H)*(zb[] + H - ref) : 0.;
+-#else
+-  return sqrt (G*max(H,0.)) - sqrt(G*max(ref - zb[], 0.));
+-#endif
+-}
+-  
+-#define radiation(ref) _radiation(point, ref, _s)
+-
+-/**
+-# Conservation of water surface elevation
+-
+-We re-use some generic functions. */
+-
+-#include "elevation.h"
+-
+-/**
+-But we need to re-define the water depth refinement function. */
+-
+-#if TREE
+-static void refine_layered_elevation (Point point, scalar h)
+-{
+-
+-  /**
+-  We first check whether we are dealing with "shallow cells". */
+-  
+-  bool shallow = zb[] > default_sea_level;
+-  foreach_child()
+-    if (zb[] > default_sea_level) {
+-      shallow = true; break;
+-    }
+-
+-  /**
+-  If we do, refined cells are just set to the default sea level. */
+-  
+-  if (shallow)
+-    foreach_child()
+-      h[] = max(0., default_sea_level - zb[]);
+-
+-  /**
+-  Otherwise, we use the surface elevation of the parent cells to
+-  reconstruct the water depth of the children cells. */
+-  
+-  else {
+-    double eta = zb[] + h[];   // water surface elevation  
+-    coord g; // gradient of eta
+-    if (gradient)
+-      foreach_dimension()
+-	g.x = gradient (zb[-1] + h[-1], eta, zb[1] + h[1])/4.;
+-    else
+-      foreach_dimension()
+-	g.x = (zb[1] + h[1] - zb[-1] - h[-1])/(2.*Delta);
+-    // reconstruct water depth h from eta and zb
+-    foreach_child() {
+-      double etac = eta;
+-      foreach_dimension()
+-	etac += g.x*child.x;
+-      h[] = max(0., etac - zb[]);
+-    }  
+-  }
+-}
+-
+-/**
+-We overload the `conserve_elevation()` function. */
+-
+-void conserve_layered_elevation (void)
+-{
+-  h.refine  = refine_layered_elevation;
+-  h.prolongation = prolongation_elevation;
+-  h.restriction = restriction_elevation;
+-  h.dirty = true; // boundary conditions need to be updated
+-}
+-
+-#define conserve_elevation() conserve_layered_elevation()
+-
+-#endif // TREE
+-
+-#include "gauges.h"
+-
+-#if dimension == 2
+-
+-/**
+-# Fluxes through sections
+-
+-These functions are typically used to compute fluxes (i.e. flow rates)
+-through cross-sections defined by two endpoints (i.e. segments). Note
+-that the orientation of the segment is taken into account when
+-computing the flux i.e the positive normal direction to the segment is
+-to the "left" when looking from the start to the end. 
+-
+-This can be expressed mathematically as:
+-$$
+-\text{flux}[k] = \int_A^B h_k\mathbf{u}_k\cdot\mathbf{n}dl
+-$$
+-with $A$ and $B$ the endpoints of the segment, $k$ the layer index,
+-$\mathbf{n}$ the oriented segment unit normal and $dl$ the elementary
+-length. The function returns the sum (over $k$) of all the fluxes. */
+-
+-double segment_flux (coord segment[2], double * flux, scalar h, vector u)
+-{
+-  coord m = {segment[0].y - segment[1].y, segment[1].x - segment[0].x};
+-  normalize (&m);
+-  for (int l = 0; l < nl; l++)
+-    flux[l] = 0.;
+-  foreach_segment (segment, p, reduction(+:flux[:nl])) {
+-    double dl = 0.;
+-    foreach_dimension() {
+-      double dp = (p[1].x - p[0].x)*Delta/Delta_x*(fm.y[] + fm.y[0,1])/2.;
+-      dl += sq(dp);
+-    }
+-    dl = sqrt (dl);
+-    for (int i = 0; i < 2; i++) {
+-      coord a = p[i];
+-      foreach_layer()
+-	flux[point.l] += dl/2.*
+-	interpolate_linear (point, h, a.x, a.y, 0.)*
+-	(m.x*interpolate_linear (point, u.x, a.x, a.y, 0.) +
+-	 m.y*interpolate_linear (point, u.y, a.x, a.y, 0.));
+-    }
+-  }
+-  double tot = 0.;
+-  for (int l = 0; l < nl; l++)
+-    tot += flux[l];
+-  return tot;
+-}
+-
+-/**
+-A NULL-terminated array of *Flux* structures passed to
+-*output_fluxes()* will create a file (called *name*) for each
+-flux. Each time *output_fluxes()* is called a line will be appended to
+-the file. The line contains the time, the total flux and the value of
+-the flux for each $h$, $u$ pair in the layer. The *desc* field can be
+-filled with a longer description of the flux. */
+-
+-typedef struct {
+-  char * name;
+-  coord s[2];
+-  char * desc;
+-  FILE * fp;
+-} Flux;
+-
+-void output_fluxes (Flux * fluxes, scalar h, vector u)
+-{
+-  for (Flux * f = fluxes; f->name; f++) {
+-    double flux[nl];
+-    double tot = segment_flux (f->s, flux, h, u);
+-    if (pid() == 0) {
+-      if (!f->fp) {
+-	f->fp = fopen (f->name, "w");
+-	if (f->desc)
+-	  fprintf (f->fp, "%s\n", f->desc);
+-      }
+-      fprintf (f->fp, "%g %g", t, tot);
+-      for (int i = 0; i < nl; i++)
+-	fprintf (f->fp, " %g", flux[i]);
+-      fputc ('\n', f->fp);
+-      fflush (f->fp);
+-    }
+-  }
+-}
+-
+-#endif // dimension == 2
+rmfile ./sandbox/spertant/Solver_modified/hydro.h
+rmdir ./sandbox/spertant/Solver_modified
 hunk ./sandbox/Kaustubh/Steel_Melting_Multi-Physics/Dissusion_only_melting 1
 -
 rmfile ./sandbox/Kaustubh/Steel_Melting_Multi-Physics/Dissusion_only_melting
@@ -200,6 +2304,17 @@ hunk ./sandbox/Llourenco/feedbackmechanism/baseflow.c 1
 -
 +
 rmfile ./sandbox/Llourenco/feedbackmechanism/baseflow.c
+hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 173
+-
+-
+-/**
+-# Visualisations
+-
+-
+-![Animation of the vorticity field](timeSeries/vorticity.mp4)(loop)
+-
+-![Animation of the velocity field (u.x)](timeSeries/ux.mp4)(loop)
+-*/
 hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 1
 -/** # Feedback Mechanism in a Jet Impinging a Flat Plate
 -
@@ -372,17 +2487,6 @@ hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 1
 -
 -event adapt (i++) 
 -  adapt_wavelet ({u}, (double[]){1e-3,1e-3}, maxlevel, 4);
-hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 2
--
--
--/**
--# Visualisations
--
--
--![Animation of the vorticity field](timeSeries/vorticity.mp4)(loop)
--
--![Animation of the velocity field (u.x)](timeSeries/ux.mp4)(loop)
--*/
 rmfile ./sandbox/Llourenco/feedbackmechanism/timeSeries.c
 rmdir ./sandbox/Llourenco/feedbackmechanism
 rmdir ./sandbox/Llourenco
@@ -1688,7 +3792,8 @@ hunk ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h 1
 -}
 rmfile ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h
 rmdir ./sandbox/acastillo/frozen_waves/without_walls
-addfile ./sandbox/oystelan/test1_stokes_ml/output_vts_multilayer.h
-addfile ./sandbox/oystelan/test2_temporal_oscillation_modes/output_vts_multilayer.h
-addfile ./sandbox/oystelan/test3_sloshing_river/output_vts_multilayer.h
+hunk ./sandbox/spertant/README 1
+-Simulation of soap films with Basilisk multilayer model
++
+rmfile ./sandbox/spertant/README
 }

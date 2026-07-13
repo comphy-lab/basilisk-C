@@ -1,58 +1,58 @@
 gpu
 128
 
-# Multigrid (gpu), 2009 steps, 17.5999 CPU, 8.81 real, 3.73e+06 points.step/s, 8 var
+# Multigrid (gpu), 2009 steps, 17.3021 CPU, 8.664 real, 3.8e+06 points.step/s, 8 var
    calls    total     self   % total   function
-    3892     7.90     6.37     71.9%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-  289465     0.92     0.82      9.2%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1761
-    5902     0.79     0.69      7.8%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
-    2010     8.44     0.23      2.6%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    5902     0.21     0.20      2.3%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    3892     7.77     6.23     71.6%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+  289465     0.95     0.84      9.7%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1869
+    5902     0.77     0.67      7.7%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
+    2010     8.29     0.23      2.6%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    5902     0.21     0.21      2.4%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
     2010     0.13     0.11      1.3%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-    2010     0.10     0.10      1.1%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
-  289466     0.10     0.10      1.1%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1612
-    2010     8.52     0.07      0.8%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+  289466     0.10     0.10      1.2%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1720
+    2010     0.10     0.09      1.1%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
+    2010     8.37     0.07      0.8%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
     2010     0.06     0.06      0.7%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
-    2010     0.19     0.04      0.5%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
+    2010     0.18     0.04      0.5%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
     2010     0.15     0.04      0.5%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-      59     0.01     0.01      0.1%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1179
-    9919     0.00     0.00      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1154
-       1     8.86     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
-      56     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1144
-    2010     8.44     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
-    2010     0.19     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
-      56     0.01     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1566
+      59     0.01     0.01      0.1%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1262
+    9919     0.00     0.00      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1233
+       1     8.70     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+    2010     8.30     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+    2010     0.18     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
+      56     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1223
+      56     0.01     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1674
        1     0.00     0.00      0.0%   init_0():turbulence.gpu.c:27
        2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/gpu/../cartesian-common.h:591
        1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
        1     0.00     0.00      0.0%   reset_timer():turbulence.gpu.c:59
+       1     0.00     0.00      0.0%   cleanup():/home/jacqhugo/basilisk/src/run.h:52
        1     0.00     0.00      0.0%   defaults_0():/home/jacqhugo/basilisk/src/advection.h:40
        1     0.00     0.00      0.0%   defaults():/home/jacqhugo/basilisk/src/run.h:44
-       1     0.00     0.00      0.0%   cleanup():/home/jacqhugo/basilisk/src/run.h:52
 256
 
-# Multigrid (gpu), 2008 steps, 15.6752 CPU, 7.84 real, 1.68e+07 points.step/s, 8 var
+# Multigrid (gpu), 2008 steps, 15.9252 CPU, 7.966 real, 1.65e+07 points.step/s, 8 var
    calls    total     self   % total   function
-    4025     7.08     5.63     71.5%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-  336354     0.95     0.83     10.5%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1761
-    6034     0.68     0.58      7.3%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
-    6034     0.17     0.17      2.2%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
-    2009     7.58     0.16      2.1%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    2009     0.13     0.13      1.6%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
-  336355     0.11     0.11      1.3%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1612
+    4025     7.20     5.72     71.4%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+  336354     0.98     0.86     10.7%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1869
+    6034     0.69     0.59      7.4%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
+    6034     0.18     0.17      2.2%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    2009     7.70     0.16      2.0%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    2009     0.13     0.12      1.6%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
+  336355     0.11     0.11      1.3%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1720
     2009     0.10     0.08      1.0%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
     2009     0.06     0.06      0.7%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
     2009     0.14     0.04      0.5%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
-    2009     7.63     0.04      0.5%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+    2009     7.75     0.04      0.5%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
     2009     0.11     0.04      0.5%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-      65     0.01     0.01      0.1%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1179
-   10049     0.00     0.00      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1154
-       1     7.88     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
-      62     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1144
-    2009     7.58     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
-    2009     0.14     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
+      65     0.01     0.01      0.1%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1262
+   10049     0.00     0.00      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1233
+       1     8.01     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+      62     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1223
+    2009     7.70     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+    2009     0.15     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
        1     0.00     0.00      0.0%   init_0():turbulence.gpu.c:27
-      62     0.01     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1566
+      62     0.01     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1674
        2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/gpu/../cartesian-common.h:591
        1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
        1     0.00     0.00      0.0%   reset_timer():turbulence.gpu.c:59
@@ -60,279 +60,280 @@ gpu
        1     0.00     0.00      0.0%   cleanup():/home/jacqhugo/basilisk/src/run.h:52
 512
 
-# Multigrid (gpu), 2328 steps, 21.3851 CPU, 10.71 real, 5.69e+07 points.step/s, 8 var
+# Multigrid (gpu), 2328 steps, 21.985 CPU, 11.02 real, 5.54e+07 points.step/s, 8 var
    calls    total     self   % total   function
-    4670     9.58     7.51     69.7%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-  440040     1.23     1.08     10.0%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1761
-    6999     1.07     0.94      8.7%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
-    6999     0.30     0.30      2.8%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
-    2329    10.28     0.25      2.4%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    2329     0.17     0.15      1.4%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-  440041     0.14     0.14      1.3%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1612
-    2329     0.10     0.10      0.9%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
+    4670     9.85     7.69     69.4%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+  440040     1.31     1.15     10.3%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1869
+    6999     1.09     0.95      8.6%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
+    6999     0.31     0.31      2.8%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    2329    10.57     0.26      2.3%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    2329     0.17     0.15      1.3%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
+  440041     0.15     0.15      1.3%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1720
+    2329     0.11     0.11      1.0%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
     2329     0.09     0.09      0.8%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
     2329     0.25     0.07      0.7%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
-    2329     0.17     0.07      0.7%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-    2329    10.35     0.06      0.5%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
-      71     0.01     0.01      0.1%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1179
-       1    10.78     0.01      0.1%   run():/home/jacqhugo/basilisk/src/run.h:37
-   11654     0.00     0.00      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1154
+    2329     0.18     0.07      0.7%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
+    2329    10.65     0.06      0.5%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+      71     0.01     0.01      0.1%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1262
+   11654     0.00     0.00      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1233
+       1    11.08     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
        1     0.00     0.00      0.0%   init_0():turbulence.gpu.c:27
-      68     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1144
-    2329    10.28     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+    2329    10.57     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
     2329     0.25     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
-      68     0.01     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1566
+      68     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1223
+      68     0.01     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1674
        2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/gpu/../cartesian-common.h:591
        1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
        1     0.00     0.00      0.0%   reset_timer():turbulence.gpu.c:59
+       1     0.00     0.00      0.0%   cleanup():/home/jacqhugo/basilisk/src/run.h:52
        1     0.00     0.00      0.0%   defaults_0():/home/jacqhugo/basilisk/src/advection.h:40
        1     0.00     0.00      0.0%   defaults():/home/jacqhugo/basilisk/src/run.h:44
 1024
 
-# Multigrid (gpu), 2767 steps, 32.5235 CPU, 16.35 real, 1.77e+08 points.step/s, 8 var
+# Multigrid (gpu), 2767 steps, 32.645 CPU, 16.43 real, 1.76e+08 points.step/s, 8 var
    calls    total     self   % total   function
-    5559    14.09    11.07     67.1%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-  574415     1.72     1.49      9.0%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1761
-    8327     1.63     1.45      8.8%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
-    2768    15.42     0.61      3.7%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    8327     0.48     0.48      2.9%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
-    2768     0.45     0.42      2.6%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-  574416     0.22     0.21      1.3%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1612
-    2768    15.60     0.16      1.0%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+    5559    14.15    11.06     66.7%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+  574415     1.76     1.54      9.3%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1869
+    8327     1.68     1.49      9.0%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
+    2768    15.49     0.62      3.7%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    8327     0.49     0.49      2.9%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    2768     0.45     0.42      2.5%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
+  574416     0.20     0.20      1.2%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1720
+    2768    15.67     0.16      1.0%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
     2768     0.15     0.15      0.9%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
     2768     0.15     0.15      0.9%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
     2768     0.30     0.14      0.8%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
     2768     0.58     0.13      0.8%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
+      77     0.01     0.01      0.1%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1262
        1     0.01     0.01      0.1%   init_0():turbulence.gpu.c:27
-      77     0.01     0.01      0.1%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1179
-       1    16.51     0.01      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
-   13860     0.00     0.00      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1154
-      74     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1144
-    2768    15.43     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+       1    16.58     0.01      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+   13860     0.00     0.00      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1233
+    2768    15.50     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
     2768     0.59     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
+      74     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1223
        2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/gpu/../cartesian-common.h:591
-      74     0.01     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1566
+      74     0.01     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1674
+       1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
+       1     0.00     0.00      0.0%   reset_timer():turbulence.gpu.c:59
+       1     0.00     0.00      0.0%   defaults():/home/jacqhugo/basilisk/src/run.h:44
+2048
+
+# Multigrid (gpu), 2991 steps, 73.7372 CPU, 37.13 real, 3.38e+08 points.step/s, 8 var
+   calls    total     self   % total   function
+    6034    26.10    21.51     57.3%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+    2992    31.41     3.21      8.5%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    2992     2.81     2.78      7.4%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
+    9026     2.83     2.60      6.9%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
+  686611     2.27     1.95      5.2%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1869
+    9026     1.42     1.42      3.8%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    2992     1.48     1.01      2.7%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
+    2992     3.72     0.90      2.4%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
+    2992    32.31     0.89      2.4%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+    2992     0.45     0.45      1.2%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
+    2992     0.45     0.45      1.2%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
+  686612     0.31     0.30      0.8%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1720
+       1     0.05     0.05      0.1%   init_0():turbulence.gpu.c:27
+      83     0.01     0.01      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1262
+       1    37.57     0.01      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+   15007     0.01     0.01      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1233
+       2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/gpu/../cartesian-common.h:591
+    2992    31.41     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+    2992     3.72     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
+      80     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1223
+      80     0.02     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1674
+       1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
+       1     0.00     0.00      0.0%   reset_timer():turbulence.gpu.c:59
+       1     0.00     0.00      0.0%   defaults():/home/jacqhugo/basilisk/src/run.h:44
+       1     0.00     0.00      0.0%   cleanup():/home/jacqhugo/basilisk/src/run.h:52
+4096
+
+# Multigrid (gpu), 3011 steps, 275.136 CPU, 138.5 real, 3.65e+08 points.step/s, 8 var
+   calls    total     self   % total   function
+    6125    85.15    76.69     54.7%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+    3012   111.15    14.51     10.3%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    3012    13.72    13.69      9.8%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
+    9137     8.05     8.05      5.7%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    9137     6.52     6.24      4.5%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
+    3012     7.19     4.48      3.2%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
+    3012   115.15     3.98      2.8%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+    3012    17.66     3.93      2.8%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
+    3012     2.69     2.69      1.9%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
+    3012     2.64     2.64      1.9%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
+  756911     3.08     2.53      1.8%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1869
+  756912     0.54     0.53      0.4%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1720
+       1     0.18     0.18      0.1%   init_0():turbulence.gpu.c:27
+       1   140.20     0.02      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+      89     0.01     0.01      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1262
+       2     0.01     0.01      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/gpu/../cartesian-common.h:591
+   15158     0.01     0.01      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1233
+      86     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1223
+    3012   111.15     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+    3012    17.66     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
+      86     0.02     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1674
        1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
        1     0.00     0.00      0.0%   reset_timer():turbulence.gpu.c:59
        1     0.00     0.00      0.0%   cleanup():/home/jacqhugo/basilisk/src/run.h:52
-       1     0.00     0.00      0.0%   defaults_0():/home/jacqhugo/basilisk/src/advection.h:40
-2048
-
-# Multigrid (gpu), 2991 steps, 76.8803 CPU, 38.71 real, 3.24e+08 points.step/s, 8 var
-   calls    total     self   % total   function
-    6034    27.63    23.11     59.0%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-    2992    32.99     3.24      8.3%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    2992     2.82     2.79      7.1%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-    9026     2.84     2.62      6.7%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
-  686611     2.21     1.90      4.8%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1761
-    9026     1.43     1.42      3.6%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
-    2992     1.49     1.02      2.6%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-    2992     3.73     0.90      2.3%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
-    2992    33.89     0.89      2.3%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
-    2992     0.46     0.46      1.2%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
-    2992     0.46     0.46      1.2%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
-  686612     0.30     0.29      0.8%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1612
-       1     0.05     0.05      0.1%   init_0():turbulence.gpu.c:27
-      83     0.01     0.01      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1179
-       1    39.18     0.01      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
-   15007     0.01     0.01      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1154
-       2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/gpu/../cartesian-common.h:591
-      80     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1144
-    2992    32.99     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
-    2992     3.73     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
-      80     0.02     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1566
-       1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
-       1     0.00     0.00      0.0%   reset_timer():turbulence.gpu.c:59
-4096
-
-# Multigrid (gpu), 3011 steps, 283.176 CPU, 142.5 real, 3.54e+08 points.step/s, 8 var
-   calls    total     self   % total   function
-    6125    86.98    78.50     54.4%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-    3012   114.36    15.25     10.6%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    3012    14.17    14.14      9.8%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-    9137     8.48     8.48      5.9%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
-    9137     6.57     6.28      4.3%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/gpu/../multigrid-common.h:459
-    3012     7.46     4.63      3.2%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-    3012   118.50     4.13      2.9%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
-    3012    18.21     4.02      2.8%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
-    3012     2.82     2.81      1.9%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
-    3012     2.78     2.78      1.9%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
-  756911     3.13     2.55      1.8%   setup_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1761
-  756912     0.55     0.55      0.4%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1612
-       1     0.19     0.19      0.1%   init_0():turbulence.gpu.c:27
-       1   144.40     0.04      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
-      89     0.02     0.02      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1179
-       2     0.01     0.01      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/gpu/../cartesian-common.h:591
-   15158     0.01     0.01      0.0%   load_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1154
-      86     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1144
-    3012    18.21     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
-    3012   114.36     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
-      86     0.02     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/gpu/../gpu/grid.h:1566
-       1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
-       1     0.00     0.00      0.0%   reset_timer():turbulence.gpu.c:59
-       1     0.00     0.00      0.0%   defaults_0():/home/jacqhugo/basilisk/src/advection.h:40
 cuda
 128
 
-# Multigrid (cuda), 2009 steps, 3.39225 CPU, 3.391 real, 9.7e+06 points.step/s, 8 var
+# Multigrid (cuda), 2009 steps, 2.48991 CPU, 2.49 real, 1.32e+07 points.step/s, 8 var
    calls    total     self   % total   function
-      56     3.47     3.47     49.6%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1179
-  289465     5.07     1.50     21.4%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1761
-    3892     5.91     1.48     21.1%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-    5902     1.07     0.16      2.3%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
-    5902     0.10     0.10      1.4%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+      56     3.75     3.75     58.8%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1262
+    3892     5.19     1.50     23.5%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+  289465     4.43     0.57      8.9%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1869
+    5902     1.11     0.16      2.5%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
+    5902     0.10     0.10      1.6%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
     2010     0.06     0.06      0.9%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
-    2010     0.06     0.06      0.8%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
-    2010     6.41     0.05      0.8%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-  289466     0.04     0.04      0.6%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1612
-    2010     0.18     0.03      0.4%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-    2010     0.26     0.01      0.2%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
-    2010     6.56     0.01      0.2%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
-    2010     0.17     0.01      0.2%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-      56     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1144
-       1     6.99     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
-      56     3.47     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1566
-    2010     6.41     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
-    2010     0.26     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
+    2010     0.06     0.06      0.9%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
+    2010     5.72     0.06      0.9%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+  289466     0.04     0.04      0.7%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1720
+    2010     0.19     0.03      0.4%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
+    2010     0.27     0.01      0.2%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
+    2010     5.87     0.01      0.2%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+    2010     0.22     0.01      0.2%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
+      56     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1223
+      56     3.75     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1674
+       1     6.37     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+    2010     5.72     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+    2010     0.27     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
        1     0.00     0.00      0.0%   init_0():turbulence.cuda.c:27
        2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/cuda/../cartesian-common.h:591
-       1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
        1     0.00     0.00      0.0%   reset_timer():turbulence.cuda.c:59
+       1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
+       1     0.00     0.00      0.0%   cleanup():/home/jacqhugo/basilisk/src/run.h:52
 256
 
-# Multigrid (cuda), 2008 steps, 4.02391 CPU, 4.024 real, 3.27e+07 points.step/s, 8 var
+# Multigrid (cuda), 2008 steps, 2.99477 CPU, 2.994 real, 4.39e+07 points.step/s, 8 var
    calls    total     self   % total   function
-    4025     3.74     1.76     42.1%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-  336354     1.82     1.75     42.0%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1761
-    6034     0.26     0.20      4.9%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
-    6034     0.10     0.10      2.5%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
-    2009     3.99     0.07      1.6%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    2009     0.07     0.07      1.6%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
-    2009     0.06     0.06      1.5%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
-  336355     0.05     0.05      1.3%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1612
-    2009     0.05     0.04      0.9%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-    2009     4.02     0.02      0.4%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
-    2009     0.07     0.02      0.4%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
-    2009     0.08     0.02      0.4%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-      62     0.02     0.02      0.4%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1179
-       1     4.17     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
-      62     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1144
+    4025     2.70     1.80     57.2%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+  336354     0.74     0.66     21.0%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1869
+    6034     0.27     0.21      6.7%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
+    6034     0.11     0.11      3.4%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    2009     2.96     0.07      2.2%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    2009     0.07     0.07      2.1%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
+    2009     0.06     0.06      2.0%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
+  336355     0.06     0.06      1.8%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1720
+    2009     0.05     0.04      1.2%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
+    2009     2.98     0.02      0.6%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+    2009     0.09     0.02      0.5%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
+    2009     0.07     0.02      0.5%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
+      62     0.02     0.02      0.5%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1262
+       1     3.15     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+      62     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1223
+      62     0.02     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1674
        1     0.00     0.00      0.0%   init_0():turbulence.cuda.c:27
-    2009     3.99     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+    2009     2.96     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
     2009     0.07     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
-      62     0.02     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1566
        2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/cuda/../cartesian-common.h:591
        1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
        1     0.00     0.00      0.0%   reset_timer():turbulence.cuda.c:59
+       1     0.00     0.00      0.0%   defaults():/home/jacqhugo/basilisk/src/run.h:44
        1     0.00     0.00      0.0%   defaults_0():/home/jacqhugo/basilisk/src/advection.h:40
 512
 
-# Multigrid (cuda), 2328 steps, 5.66075 CPU, 5.66 real, 1.08e+08 points.step/s, 8 var
+# Multigrid (cuda), 2328 steps, 4.27231 CPU, 4.272 real, 1.43e+08 points.step/s, 8 var
    calls    total     self   % total   function
-      68     4.41     4.41     43.2%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1179
-    4670     8.84     2.50     24.5%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-  440040     6.87     2.33     22.8%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1761
-    6999     1.50     0.32      3.1%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
-    6999     0.13     0.13      1.3%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
-    2329     9.48     0.13      1.3%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    2329     0.24     0.08      0.8%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-    2329     0.07     0.07      0.7%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
-    2329     0.07     0.07      0.7%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
-  440041     0.07     0.07      0.7%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1612
-    2329     9.66     0.03      0.3%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
-    2329     0.34     0.03      0.3%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
-    2329     0.21     0.03      0.3%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-      68     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1144
+      68     4.56     4.56     50.8%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1262
+    4670     7.57     2.55     28.4%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+  440040     5.57     0.87      9.7%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1869
+    6999     1.57     0.32      3.6%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
+    6999     0.13     0.13      1.5%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    2329     8.23     0.13      1.5%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    2329     0.24     0.08      0.9%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
+    2329     0.07     0.07      0.8%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
+  440041     0.07     0.07      0.8%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1720
+    2329     0.07     0.07      0.8%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
+    2329     8.41     0.04      0.4%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+    2329     0.21     0.03      0.4%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
+    2329     0.34     0.03      0.4%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
+      68     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1223
        1     0.00     0.00      0.0%   init_0():turbulence.cuda.c:27
-       1    10.21     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
-      68     4.41     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1566
-    2329     9.49     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+      68     4.56     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1674
+       1     8.97     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
     2329     0.34     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
+    2329     8.23     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
        2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/cuda/../cartesian-common.h:591
        1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
        1     0.00     0.00      0.0%   reset_timer():turbulence.cuda.c:59
+       1     0.00     0.00      0.0%   defaults_0():/home/jacqhugo/basilisk/src/advection.h:40
+       1     0.00     0.00      0.0%   defaults():/home/jacqhugo/basilisk/src/run.h:44
        1     0.00     0.00      0.0%   cleanup():/home/jacqhugo/basilisk/src/run.h:52
 1024
 
-# Multigrid (cuda), 2767 steps, 9.54015 CPU, 9.538 real, 3.04e+08 points.step/s, 8 var
+# Multigrid (cuda), 2767 steps, 8.06737 CPU, 8.078 real, 3.59e+08 points.step/s, 8 var
    calls    total     self   % total   function
-      74     4.75     4.75     32.8%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1179
-    5559    12.10     4.38     30.4%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-  574415     7.99     3.08     21.3%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1761
-    8327     1.90     0.58      4.0%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
-    2768    13.23     0.46      3.2%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    2768     0.45     0.29      2.0%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-    8327     0.24     0.24      1.7%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+      74     5.13     5.13     38.3%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1262
+    5559    10.81     4.67     34.9%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+  574415     6.47     1.18      8.8%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1869
+    8327     2.00     0.58      4.4%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
+    2768    12.02     0.51      3.8%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    2768     0.50     0.33      2.5%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
+    8327     0.26     0.26      1.9%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    2768    12.30     0.13      1.0%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+    2768     0.35     0.13      0.9%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
+    2768     0.69     0.12      0.9%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
     2768     0.11     0.11      0.8%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
-    2768    13.48     0.11      0.8%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
-    2768     0.32     0.11      0.8%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-    2768     0.11     0.11      0.7%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
-    2768     0.62     0.10      0.7%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
-  574416     0.09     0.09      0.6%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1612
+    2768     0.11     0.11      0.8%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
+  574416     0.10     0.10      0.7%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1720
        1     0.01     0.01      0.1%   init_0():turbulence.cuda.c:27
-       1    14.45     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
-      74     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1144
+       1    13.37     0.00      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+      74     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1223
+      74     5.13     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1674
        2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/cuda/../cartesian-common.h:591
-      74     4.75     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1566
-    2768    13.23     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
-    2768     0.62     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
+    2768    12.02     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+    2768     0.69     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
        1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
        1     0.00     0.00      0.0%   reset_timer():turbulence.cuda.c:59
-       1     0.00     0.00      0.0%   cleanup():/home/jacqhugo/basilisk/src/run.h:52
-       1     0.00     0.00      0.0%   defaults():/home/jacqhugo/basilisk/src/run.h:44
-       1     0.00     0.00      0.0%   defaults_0():/home/jacqhugo/basilisk/src/advection.h:40
 2048
 
-# Multigrid (cuda), 2991 steps, 35.3306 CPU, 35.31 real, 3.55e+08 points.step/s, 8 var
+# Multigrid (cuda), 2991 steps, 35.8387 CPU, 35.83 real, 3.5e+08 points.step/s, 8 var
    calls    total     self   % total   function
-    6034    28.00    18.38     45.1%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-      80     5.17     5.17     12.7%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1179
-  686611     9.37     4.01      9.9%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1761
-    2992    33.59     3.77      9.3%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    2992     3.27     3.11      7.6%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-    9026     2.61     1.13      2.8%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
-    9026     1.12     1.12      2.8%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
-    2992     1.59     1.08      2.7%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-    2992    34.82     1.08      2.7%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
-    2992     4.24     0.91      2.2%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
-    2992     0.40     0.40      1.0%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
-    2992     0.36     0.36      0.9%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
-  686612     0.12     0.12      0.3%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1612
+    6034    27.33    19.93     47.9%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+      80     5.58     5.58     13.4%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1262
+    2992    33.62     4.28     10.3%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    2992     3.62     3.45      8.3%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
+  686611     7.17     1.40      3.4%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1869
+    2992     1.84     1.27      3.1%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
+    2992    35.05     1.26      3.0%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+    9026     1.25     1.25      3.0%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    9026     2.77     1.17      2.8%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
+    2992     4.70     1.00      2.4%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
+    2992     0.45     0.45      1.1%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
+    2992     0.41     0.41      1.0%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
+  686612     0.12     0.12      0.3%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1720
        1     0.05     0.05      0.1%   init_0():turbulence.cuda.c:27
-       1    40.70     0.01      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+       1    41.64     0.01      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+      80     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1223
        2     0.00     0.00      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/cuda/../cartesian-common.h:591
-      80     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1144
-      80     5.17     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1566
-    2992     4.25     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
-    2992    33.59     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+      80     5.58     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1674
+    2992    33.62     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+    2992     4.70     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
        1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
        1     0.00     0.00      0.0%   reset_timer():turbulence.cuda.c:59
        1     0.00     0.00      0.0%   defaults_0():/home/jacqhugo/basilisk/src/advection.h:40
-       1     0.00     0.00      0.0%   defaults():/home/jacqhugo/basilisk/src/run.h:44
 4096
 
-# Multigrid (cuda), 3011 steps, 192.869 CPU, 192.8 real, 2.62e+08 points.step/s, 8 var
+# Multigrid (cuda), 3011 steps, 205.637 CPU, 205.5 real, 2.46e+08 points.step/s, 8 var
    calls    total     self   % total   function
-    6125   119.28   106.56     53.6%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
-    3012   158.04    28.31     14.3%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
-    3012    18.63    18.47      9.3%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
-    9137     7.47     7.47      3.8%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
-    3012   164.81     6.63      3.3%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
-    3012     8.83     6.36      3.2%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
-    3012    24.80     6.10      3.1%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
-      86     5.33     5.33      2.7%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1179
-  756911    10.31     4.73      2.4%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1761
-    9137     4.86     3.31      1.7%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
-    3012     2.61     2.61      1.3%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
-    3012     2.37     2.37      1.2%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
+    6125   123.62   113.51     53.6%   mg_cycle():/home/jacqhugo/basilisk/src/poisson.h:92
+    3012   165.40    30.61     14.5%   mg_solve():/home/jacqhugo/basilisk/src/poisson.h:230
+    3012    21.12    20.95      9.9%   tracer_fluxes():/home/jacqhugo/basilisk/src/bcg.h:61
+    9137     7.87     7.87      3.7%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:381
+    3012   173.27     7.72      3.6%   velocity_0():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:87
+    3012    10.11     7.46      3.5%   velocity():/home/jacqhugo/basilisk/src/advection.h:54
+    3012    28.15     6.96      3.3%   advection():/home/jacqhugo/basilisk/src/bcg.h:99
+      86     5.72     5.72      2.7%   load_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1262
+    9137     5.18     3.50      1.7%   multigrid_restriction():/home/jacqhugo/basilisk/src/grid/cuda/../multigrid-common.h:459
+    3012     2.92     2.92      1.4%   gpu_reduction():/home/jacqhugo/basilisk/src/poisson.h:163
+    3012     2.54     2.54      1.2%   gpu_reduction():/home/jacqhugo/basilisk/src/timestep.h:7
+  756911     7.54     1.57      0.7%   setup_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1869
        1     0.19     0.19      0.1%   init_0():turbulence.cuda.c:27
-  756912     0.18     0.17      0.1%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1612
-       1   198.65     0.02      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
+  756912     0.18     0.17      0.1%   gpu_cpu_sync():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1720
+       1   211.73     0.01      0.0%   run():/home/jacqhugo/basilisk/src/run.h:37
        2     0.01     0.01      0.0%   boundary_internal():/home/jacqhugo/basilisk/src/grid/cuda/../cartesian-common.h:591
-      86     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1144
-      86     5.34     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1566
-    3012    24.80     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
-    3012   158.04     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
+      86     0.00     0.00      0.0%   build_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1223
+      86     5.72     0.00      0.0%   compile_shader():/home/jacqhugo/basilisk/src/grid/cuda/../gpu/grid.h:1674
+    3012    28.15     0.00      0.0%   tracer_advection():/home/jacqhugo/basilisk/src/tracer.h:45
+    3012   165.41     0.00      0.0%   poisson():/home/jacqhugo/basilisk/src/poisson.h:460
        1     0.00     0.00      0.0%   defaults_1():/home/jacqhugo/basilisk/src/navier-stokes/stream.h:63
        1     0.00     0.00      0.0%   reset_timer():turbulence.cuda.c:59
-       1     0.00     0.00      0.0%   cleanup():/home/jacqhugo/basilisk/src/run.h:52

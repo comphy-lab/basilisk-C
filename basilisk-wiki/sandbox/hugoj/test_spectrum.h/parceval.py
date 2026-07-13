@@ -18,17 +18,15 @@ y = x
 
 # files
 path = "./parceval/"
-f_C = "F_kxky_C"
-fkx_C, fky_C = "kx_C", "ky_C"
-
+f_C, fkx_C, fky_C = "F_kxky", "kx", "ky"
 
 # data from C code
 kx_C = np.fromfile(path+fkx_C)
 ky_C = np.fromfile(path+fky_C)
 rawC = np.fromfile(path+f_C)
 F_kxky_tile = np.reshape(rawC, (len(kx_C),len(ky_C)))
-Fkmod_C = np.fromfile(path+"F_k_C")
-kmod_C = np.fromfile(path+"kmod_C")
+Fkmod_C = np.fromfile(path+"F_k")
+kmod_C = np.fromfile(path+"kmod")
 #F_kxky_tile = np.zeros((len(kx_C),len(ky_C)))
 raw_eta_C = np.fromfile(path+"eta_C")
 eta_C = np.reshape(raw_eta_C,(N_grid,N_grid))

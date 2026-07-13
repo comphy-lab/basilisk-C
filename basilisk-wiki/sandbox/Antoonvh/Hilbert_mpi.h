@@ -163,26 +163,34 @@ static void apply_bc (Rcv * rcv, scalar * list, scalar * listv,
 {
   double * b = rcv->buf;
   foreach_cache_level(rcv->halo[l], l) {
-    for (scalar s in list)
-      s[] = *b++;
+    for (scalar s in list) {
+      memcpy (&s[], b, sizeof(double)*s.block);
+      b += s.block;
+    }
     for (vector v in listf)
       foreach_dimension() {
-	v.x[] = *b++;
+	memcpy (&v.x[], b, sizeof(double)*v.x.block);
+	b += v.x.block;
 	if (*b != nodata && allocated(1))
-	  v.x[1] = *b;
-	b++;
+	  memcpy (&v.x[1], b, sizeof(double)*v.x.block);
+	b += v.x.block;
       }
     for (scalar s in listv) {
       for (int i = 0; i <= 1; i++)
 	for (int j = 0; j <= 1; j++)
 #if dimension == 3
-	  for (int k = 0; k <= 1; k++)
-#endif
-	    {
-	      if (*b != nodata && allocated(i,j,k))
-		s[i,j,k] = *b;
-	      b++;
-	    }
+	  for (int k = 0; k <= 1; k++) {
+	    if (*b != nodata && allocated(i,j,k))
+	      memcpy (&s[i,j,k], b, sizeof(double)*s.block);
+	    b += s.block;
+	  }
+#else // dimension == 2
+          {
+	    if (*b != nodata && allocated(i,j))
+	      memcpy (&s[i,j], b, sizeof(double)*s.block);
+	    b += s.block;	    
+          }
+#endif // dimension == 2
     }
   }
   size_t size = b - (double *) rcv->buf;
@@ -286,6 +294,20 @@ static int mpi_waitany (int count, MPI_Request array_of_requests[], int *indx,
   return MPI_Waitany (count, array_of_requests, indx, status);
 }
 
+static int list_lenb (scalar * list) {
+  int len = 0;
+  for (scalar s in list)
+    len += s.block;
+  return len;
+}
+
+static int vectors_lenb (vector * list) {
+  int len = 0;
+  for (vector v in list)
+    len += v.x.block;
+  return len;
+}
+
 static void rcv_pid_receive (RcvPid * m, scalar * list, scalar * listv,
 			     vector * listf, int l)
 {
@@ -294,8 +316,8 @@ static void rcv_pid_receive (RcvPid * m, scalar * list, scalar * listv,
   
   prof_start ("rcv_pid_receive");
 
-  int len = list_len (list) + 2*dimension*vectors_len (listf) +
-    (1 << dimension)*list_len (listv);
+  int len = list_lenb (list) + 2*dimension*vectors_lenb (listf) +
+    (1 << dimension)*list_lenb (listv);
 
   MPI_Request r[m->npid];
   Rcv * rrcv[m->npid]; // fixme: using NULL requests should be OK
@@ -356,8 +378,8 @@ static void rcv_pid_send (RcvPid * m, scalar * list, scalar * listv,
 
   prof_start ("rcv_pid_send");
 
-  int len = list_len (list) + 2*dimension*vectors_len (listf) +
-    (1 << dimension)*list_len (listv);
+  int len = list_lenb (list) + 2*dimension*vectors_lenb (listf) +
+    (1 << dimension)*list_lenb (listv);
 
   /* send ghost values */
   for (int i = 0; i < m->npid; i++) {
@@ -367,20 +389,40 @@ static void rcv_pid_send (RcvPid * m, scalar * list, scalar * listv,
       rcv->buf = malloc (sizeof (double)*rcv->halo[l].n*len);
       double * b = rcv->buf;
       foreach_cache_level(rcv->halo[l], l) {
-	for (scalar s in list)
-	  *b++ = s[];
+	for (scalar s in list) {
+	  memcpy (b, &s[], sizeof(double)*s.block);
+	  b += s.block;
+	}
 	for (vector v in listf)
 	  foreach_dimension() {
-	    *b++ = v.x[];
-	    *b++ = allocated(1) ? v.x[1] : nodata;
+	    memcpy (b, &v.x[], sizeof(double)*v.x.block);
+	    b += v.x.block;
+	    if (allocated(1))
+	      memcpy (b, &v.x[1], sizeof(double)*v.x.block);
+	    else
+	      *b = nodata;
+	    b += v.x.block;
 	  }
 	for (scalar s in listv) {
 	  for (int i = 0; i <= 1; i++)
 	    for (int j = 0; j <= 1; j++)
 #if dimension == 3
-	      for (int k = 0; k <= 1; k++)
-#endif
-		*b++ = allocated(i,j,k) ? s[i,j,k] : nodata;
+	      for (int k = 0; k <= 1; k++) {
+		if (allocated(i,j,k))
+		  memcpy (b, &s[i,j,k], sizeof(double)*s.block);
+		else
+		  *b = nodata;
+		b += s.block;
+	      }
+#else // dimension == 2
+	      {
+		if (allocated(i,j))
+		  memcpy (b, &s[i,j], sizeof(double)*s.block);
+		else
+		  *b = nodata;
+		b += s.block;
+	      }
+#endif // dimension == 2
 	}
       }
 #if 0
@@ -402,7 +444,7 @@ static void rcv_pid_sync (SndRcv * m, scalar * list, int l)
   scalar * listr = NULL, * listv = NULL;
   vector * listf = NULL;
   for (scalar s in list)
-    if (!is_constant(s)) {
+    if (!is_constant(s) && s.block > 0) {
       if (s.face)
 	listf = vectors_add (listf, s.v);
       else if (s.restriction == restriction_vertex)
@@ -856,14 +898,16 @@ void mpi_boundary_update_buffers()
 	  foreach_neighbor(1)
 	    if ((is_local(cell) &&
 		 (is_refined(cell) || is_local_prolongation (point, p))) ||
-		is_root(point))
-	      locals = true, break;
+		is_root(point)) {
+	      locals = true; break;
+	    }
 	}
       }
       else
 	foreach_neighbor(1)
-	  if (is_local(cell) || is_root(point))
-	    locals = true, break;
+	  if (is_local(cell) || is_root(point)) {
+	    locals = true; break;
+	  }
       if (locals)
 	foreach_child()
 	  if (is_remote(cell))
@@ -892,8 +936,9 @@ void mpi_boundary_update_buffers()
 	else if (is_remote(cell)) {
 	  bool root = false;
 	  foreach_child()
-	    if (is_local(cell))
-	      root = true, break;
+	    if (is_local(cell)) {
+	      root = true; break;
+	    }
 	  if (root) {
 	    int pid = cell.pid;
 	    foreach_neighbor()
@@ -1010,8 +1055,9 @@ void mpi_boundary_refine (scalar * list)
 	  if (is_leaf(cell)) {
 	    bool neighbors = false;
 	    foreach_neighbor()
-	      if (allocated(0) && (is_active(cell) || is_local(aparent(0))))
-		neighbors = true, break;
+	      if (allocated(0) && (is_active(cell) || is_local(aparent(0)))) {
+		neighbors = true; break;
+	      }
 	    // refine the cell only if it has local neighbors
 	    if (neighbors)
 	      refine_cell (point, list, 0, &rerefined);
@@ -1035,6 +1081,8 @@ void mpi_boundary_refine (scalar * list)
   mpi_all_reduce (rerefined.n, MPI_INT, MPI_SUM);
   if (rerefined.n)
     mpi_boundary_refine (list);
+  for (scalar s in list)
+    set_dirty_stencil (s);
 }
 
 static void check_depth()
@@ -1153,13 +1201,15 @@ static void flag_border_cells()
     if (is_active(cell)) {
       short flags = cell.flags & ~border;
       foreach_neighbor() {
-	if (!is_local(cell) || (level > 0 && !is_local(aparent(0))))
-	  flags |= border, break;
+	if (!is_local(cell) || (level > 0 && !is_local(aparent(0)))) {
+	  flags |= border; break;
+	}
 	// root cell
 	if (is_refined_check())
 	  foreach_child()
-	    if (!is_local(cell))
-	      flags |= border, break;
+	    if (!is_local(cell)) {
+	      flags |= border; break;
+	    }
 	if (flags & border)
 	  break;
       }
@@ -1176,8 +1226,9 @@ static void flag_border_cells()
 	if (is_border(cell)) {
 	  bool remote = false;
 	  foreach_neighbor (GHOSTS/2)
-	    if (!is_local(cell))
-	      remote = true, break;
+	    if (!is_local(cell)) {
+	      remote = true; break;
+	    }
 	  if (remote)
 	    foreach_child()
 	      cell.flags |= border;
@@ -1188,32 +1239,31 @@ static void flag_border_cells()
   }
 }
 
-static int balanced_pid (long index, long nt, int nproc)
-{
-  long ne = max(1, nt/nproc), nr = nt % nproc;
-  int pid = index < nr*(ne + 1) ?
-    index/(ne + 1) :
-    nr + (index - nr*(ne + 1))/ne;
-  return min(nproc - 1, pid);
+static int balanced_pid (double cw, double tw, int nproc) {
+  double il = tw/nproc; // ideal load per process
+  int idx = il > 0. ? (int) (cw/il) : 0;
+  return min (idx, nproc - 1);
 }
 
 // static partitioning: only used for tests
 trace
-void mpi_partitioning()
+void mpi_partitioning((const) scalar w = unity)
 {
   prof_start ("mpi_partitioning");
 
-  long nt = 0;
-  foreach()
-    nt++;
+  double tl = 0.;
+  foreach (serial)
+    tl += w[];
 
-  /* set the pid of each cell */
-  long i = 0;
+  double cw = 0.;
   tree->dirty = true;
   foreach_cell_post (is_active (cell))
     if (is_active (cell)) {
       if (is_leaf (cell)) {
-	cell.pid = balanced_pid (i++, nt, npe());
+
+        cell.pid = balanced_pid (cw, tl, npe());
+        cw += w[];
+
 	if (cell.neighbors > 0) {
 	  int pid = cell.pid;
 	  foreach_child()
@@ -1226,8 +1276,9 @@ void mpi_partitioning()
 	cell.pid = child(0).pid;
 	bool inactive = true;
 	foreach_child()
-	  if (is_active(cell))
-	    inactive = false, break;
+	  if (is_active(cell)) {
+	    inactive = false; break;
+	  }
 	if (inactive)
 	  cell.flags &= ~active;
       }
@@ -1313,8 +1364,9 @@ void restore_mpi (FILE * fp, scalar * list1)
     if (!(flags & leaf) && is_leaf(cell)) {
       bool locals = false;
       foreach_neighbor(1)
-	if ((cell.flags & set) && (is_local(cell) || is_root(point)))
-	  locals = true, break;
+	if ((cell.flags & set) && (is_local(cell) || is_root(point))) {
+	  locals = true; break;
+	}
       if (locals)
 	refine_cell (point, listm, 0, NULL);
       else {
@@ -1344,8 +1396,9 @@ void restore_mpi (FILE * fp, scalar * list1)
       else if (!is_local(cell)) {
 	bool inactive = true;
 	foreach_child()
-	  if (is_active(cell))
-	    inactive = false, break;
+	  if (is_active(cell)) {
+	    inactive = false; break;
+	  }
 	if (inactive)
 	  cell.flags &= ~active;
       }
@@ -1353,30 +1406,154 @@ void restore_mpi (FILE * fp, scalar * list1)
   }
 
   flag_border_cells();
-
-  mpi_boundary_update (list);
+  
+  scalar * clean = NULL;
+  for (scalar s in list)
+    if (s.i != INT_MAX)
+      clean = list_append (clean, s);
   free (list);
+  mpi_boundary_update (clean);
+  free (clean);
+}
+
+/**
+## *z_weights()*: fills *cw* with the cumulative z-ordering weights.
+If `leaves` is `true` only leaves are used, otherwise all active cells.
+
+On the master process (`pid() == 0`), the function returns the total load
+(and -1 on all other processes).
+
+On a single processor, we would just need something like (for leaves),
+given a weight scalar field w;
+
+~~~literatec
+scalar w[]; 
+double rw = 0; // running weight 
+foreach() {
+  cw[] = rw;   // weight of all leaves *before* this one
+  rw += w[];
+} ~~~
+
+in parallel, this is a bit more difficult. */
+
+trace
+double z_weights (scalar cw, (const) scalar w, bool leaves)
+{
+  /** This function fills 'cw' with the cumulative-weight computed along
+  the z-order for each cell given a weight scalar field 'w' (if 'leaves'
+  is true, only leaves are counted).
+
+  We first compute the weight of each subtree, stored in 'sw'. We
+  accumulate 'w' (the per-cell own weight) into 'sw', the subtree weight,
+  via a (parallel) restriction from fine to coarse. A separate field is
+  required because the indexing loop below needs both the parent's own
+  weight and each child's subtree weight at the same time. */
+  
+  scalar sw[];
+  foreach()
+    sw[] = w[]; // own weight (set on leaves)
+
+  boundary_iterate (restriction, {sw}, depth());
+  for (int l = depth() - 1; l >= 0; l--) {
+    foreach_coarse_level(l) {
+      double sum = leaves ? 0. : w[]; // parent's own contribution
+      foreach_child()
+        sum += sw[];
+      sw[] = sum;
+    }
+    boundary_iterate (restriction, {sw}, l);
+  }
+
+  /**
+  The total load is the weight of the entire tree (i.e. the value of
+  `sw` in the root cell on the master process). */
+  
+  double tl = -1.;
+  if (pid() == 0)
+    foreach_level(0, serial)
+      tl = sw[];
+
+  /**
+  We now push the cumulative offset down the tree, exactly as z_indexing()
+  does with the integer index. 'cw[]' on a cell is the cumulative weight
+  of its subtree; the first child starts at the parent's offset (plus
+  the parent's own weight when indexing all cells), and each subsequent
+  sibling is offset by the preceding sibling's subtree weight 'sw[]'. */
+  
+  // seed the root: master cell starts at 0
+  foreach_level(0)
+    cw[] = 0.;
+
+  for (int l = 0; l < depth(); l++) {
+    boundary_iterate (restriction, {cw}, l); // sync cw across mpi processes
+    foreach_cell() {
+      if (level == l) {
+	if (is_leaf(cell)) {
+	  if (is_local(cell) && cell.neighbors) {
+            double i = cw[]; // ghost children share the offset
+	    foreach_child()
+              cw[] = i;
+	  }
+	}
+	else { // not leaf
+	  bool loc = is_local(cell);
+	  if (!loc)
+	    foreach_child()
+	      if (is_local(cell)) {
+		loc = true; break;
+	      }
+	  if (loc) {
+            double i = cw[] + (leaves ? 0. : w[]); // parent's own slot
+	    foreach_child() {
+              cw[] = i;
+              i += sw[]; // child's subtree weight
+	    }
+	  }
+	}
+	continue; // level == l
+      }
+      if (is_leaf(cell))
+	continue;
+    }
+  }
+  boundary_iterate (restriction, {cw}, depth());
+
+  return tl;
 }
 
 /**
 # *z_indexing()*: fills *index* with the Z-ordering index.
-   
+
+**Note**: this is just a special case of `z_weights` with unitary weights.
+
 If `leaves` is `true` only leaves are indexed, otherwise all active
-cells are indexed. 
+cells are indexed.
 
-On the master process (`pid() == 0`), the function returns the
-(global) maximum index (and -1 on all other processes).
+On the master process (`pid() == 0`), the function returns the (global)
+maximum index (and -1 on all other processes).
 
-On a single processor, we would just need something
-like (for leaves)
+On a single processor, we would just need something like (for leaves):
 
 ~~~literatec
 double i = 0;
 foreach()
   index[] = i++;
 ~~~
+*/
 
-In parallel, this is a bit more difficult. */
+trace
+double z_indexing (scalar index, bool leaves) 
+{
+  return z_weights (index, w=unity, leaves=leaves);
+}
+
+static inline void restriction_min (Point point, scalar s) {
+  double minv = HUGE;
+  foreach_child()
+    if (minv > s[])
+      minv = s[];
+  s[] = minv;
+}
 
 trace
 double H_indexing (scalar H, bool leaves)
@@ -1384,7 +1561,7 @@ double H_indexing (scalar H, bool leaves)
   assert (leaves);
   double i = 0;
   foreach_cell()
-    H[] = pid();
+    H[] = 0;
   foreach()
     H[] = i++;
   double Mta = i;
@@ -1396,9 +1573,27 @@ double H_indexing (scalar H, bool leaves)
   Mta = Mt[npe() - 1] + M[npe() - 1]; 
   foreach()
     H[] += Mt[pid()];
-  multigrid_restriction ({H});
-  H.prolongation = refine_injection;
+  // Apply "boundary conditions"
+  for (int l = depth(); l >=0; l--) {
+    boundary_iterate (restriction, {H}, l);
+    foreach_cell() {
+    if (level == l)
+      if (is_leaf(cell)) {
+	  if (is_local(cell) && cell.neighbors) {
+	    int i = H[];
+	foreach_child()
+	  H[] = i;
+	  }
+	} else if (is_coarse()) {
+	  restriction_min (point, H);
+	}
+    }
+  }
+  // And again
+  set_prolongation (H, refine_injection);
+  set_restriction (H, restriction_min);
   boundary ({H});
+  
   return Mta - 1;
 }
 

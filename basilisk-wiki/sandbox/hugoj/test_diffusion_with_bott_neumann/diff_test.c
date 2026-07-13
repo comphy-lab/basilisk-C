@@ -3,31 +3,20 @@
 # How to use diffusion.h and dr.h together
 
 This 1D case is an example on how to set boundary condition for a scalar T.
-Temperature is initialized as affine function of $z$, at the surface a (heat) flux is
+Temperature is initialized as an affine function of $z$, at the surface a (heat) flux is
 imposed and at the bottom we impose a that the initial gradient is conserved at
 all $t$.
-
-Note: imposing flux = 0 at the bottom could be done using $\lambda_b$ = HUGE but
-its not clean. A proper Neumann condition would need a modification of
-diffusion.h. I started that but adding an argument with default value (allowing
-existing code to continue to run without modification) to the function
-'vertical_diffusion' raise some error. Working on this modified diffusion.h
-requires to copy/link nh.h, implicit.h, hydro.h in the directory of diffusion.h.
-There might be a better way to do this...
-
 */
 #include "grid/multigrid.h"
-//#include "grid/multigrid1D.h"
-#include "hydro.h"
-#include "nh.h"
+#include "layered/hydro.h"
+#include "layered/nh.h"
 #include "layered/remap.h"
 #include "layered/perfs.h"
-
-//#include "bderembl/libs/netcdf_bas.h" // read/write netcdf files
+#include "hugoj/lib/diffusionH.h"
 
 double tend = 3600.0;
 double smalltime = 1e-10;
-
+double H0 = 100.;
 // -> stratification related
 double strat = 0.000002;       // [s-2] N^2 stratification
 double Ts = 20.;              // [K] Surface temperature (arbitrary)
@@ -43,6 +32,9 @@ const double g_ = 9.81;        // [m.s-2] Gravity
 #define drho(T) (alphaT*(T0-T))       // Linear equation of state (Vallis 2.4)
 #define Tini(z) strat/(g_*alphaT)*z + Ts
 #include "layered/dr.h"
+double fluxbot,fluxtop;
+
+
 
 static FILE * fp;
 
@@ -60,6 +52,20 @@ int main(int argc, char *argv[])
   
   origin (-L0/2., -L0/2.);
   
+  /**
+
+  Boundary condition for temperature. We test two cases: i) imposing the initial
+  stratification at top and bottom, ii) impose a destabilising flux at top and
+  initial stratification at bottom. 
+
+  */
+  fluxbot = strat/(g_*alphaT);
+#if HEATING
+  fluxtop = qt/(kappa*rho0*cp);
+#else
+  fluxtop = strat/(g_*alphaT); 
+#endif
+
   #if dimension==2
     periodic (top);
   #endif
@@ -71,7 +77,7 @@ int main(int argc, char *argv[])
 event init(i =  0) {
 
   foreach() {
-    zb[] = -100.;
+    zb[] = -H0;
     eta[] = 0.;
     double H = - zb[];
     double z = zb[];
@@ -81,7 +87,7 @@ event init(i =  0) {
       foreach_dimension()
         u.x[] = 0.;
       w[] = 0.;
-      T[] = Tini(z) + Trand * noise()*exp(z/100.) ;
+      T[] = Tini(z); // + Trand * noise()*exp(z/100.) ;
       z += h[]/2.;
     }
   }
@@ -91,24 +97,21 @@ event init(i =  0) {
 
 }
 
+/**
+We impose the stratification at the top and the bottom to be the initial
+stratification. We should not see any change in the profile.
+*/
 
 event viscous_term (i++)
 {
   foreach() {
-    vertical_diffusion (point,  // point
-                        h, // h
-                        T, // scalar
-                        dt, // dt
-                        kappa, // D
-                        qt/(kappa*rho0*cp), // dst
-                        strat/(g_*alphaT), // dsb
-                        0., // s_b
-                        HUGE, // lambda_b
-                        0., // s_t
-                        HUGE); // lambda_t
-    // void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
-    // double dst, double dsb,double s_b, double lambda_b, double s_t, double lambda_t)
-    //vertical_diffusion (point, h, T, dt, kappa, qt/(kappa*rho0*cp), 0., 0. , HUGE); // 
+    vertical_diffusion2 (point,   // point
+                        h,        // h
+                        T,        // scalar
+                        dt,       // dt
+                        kappa,    // D
+                        fluxtop,  // dst
+                        fluxbot); // dsb
   }
 }
 
@@ -131,36 +134,49 @@ event stop (t = tend);
 
 /**
 
-~~~pythonplot
+~~~pythonplot Profile of T with imposed gradient at the top and the bottom of the domain imposed to be the initial stratification: we expect that nothing moves
 import numpy as np
 import matplotlib.pyplot as plt
-# --- load data ---
-data = []
-with open("T_profile.dat") as f:
-    for line in f:
-        line = line.strip()
-        if line.startswith("#") or line == "":
-            continue
-        t, it, layer, T = line.split()
-        data.append((float(t), int(it), int(layer), float(T)))
 
-data = np.array(data)
-
-# --- group by iteration ---
-iterations = np.unique(data[:, 1].astype(int))
+data = np.loadtxt("T_profile.dat")
+nl=30
+nt = data.shape[0]//nl
 
 fig, ax = plt.subplots(figsize=(8, 6))
-cmap = plt.get_cmap("viridis", len(iterations))
+cmap = plt.get_cmap("viridis", nt)
+for t in range(nt):
+    layer=data[t*nl:(t+1)*nl,2]
+    T = data[t*nl:(t+1)*nl,3]
+    ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
+ax.set_xlabel("T")
+ax.set_ylabel("Layer")
+ax.set_title("Temperature profiles")
+ax.set_xlim([19.875,20.025])
+#ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
+plt.tight_layout()
+plt.savefig("T_profiles.png", dpi=150)
+plt.show()
+~~~
 
-for idx, it in enumerate(iterations):
-    mask = data[:, 1].astype(int) == it
-    block = data[mask]
-    layer = block[:, 2]
-    T     = block[:, 3]
-    t_val = block[0, 0]
+~~~pythonplot Profile of T with surface cooling
+import numpy as np
+import matplotlib.pyplot as plt
+import os
 
-    ax.plot(T, layer, color=cmap(idx), marker="+", linestyle="-", label=f"t = {t_val:.1f}")
+script_dir = os.path.dirname(os.path.abspath(__file__))
+data_path = os.path.join(script_dir, "..", "diff_test_H", "T_profile.dat")
 
+data = np.loadtxt("/home/basilisk-wiki/wiki/sandbox/hugoj/test_diffusion_with_bott_neumann/diff_test_H/T_profile.dat")
+
+nl=30
+nt = data.shape[0]//nl
+
+fig, ax = plt.subplots(figsize=(8, 6))
+cmap = plt.get_cmap("viridis", nt)
+for t in range(nt):
+    layer=data[t*nl:(t+1)*nl,2]
+    T = data[t*nl:(t+1)*nl,3]
+    ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
 ax.set_xlabel("T")
 ax.set_ylabel("Layer")
 ax.set_title("Temperature profiles")

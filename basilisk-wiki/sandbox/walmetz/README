@@ -25,6 +25,7 @@ This is, in my case, the simplest way to model superhydrophobicity.
 We want to go as close as possible to reality, bringing up multiphase flows.
 
 - The first step to reality is a ["frozen" bubble around the cylinder](https://basilisk.fr/sandbox/walmetz/multiphase_flow/frozen_bubble.c). In itself, this case is everything but realistic but it will help us for the dynamic bubble case.
+- The first thing I tried was this [dynamic bubble around a cylinder](https://basilisk.fr/sandbox/walmetz/multiphase_flow/dynamic_bubble.c). It didn't work well so I moved on...
 
 
 # To do list

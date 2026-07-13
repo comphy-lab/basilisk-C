@@ -67,4 +67,5 @@ event stop (t = 20) {
     MPI_Barrier (MPI_COMM_WORLD);
 #endif
   }
+  return 1;
 }

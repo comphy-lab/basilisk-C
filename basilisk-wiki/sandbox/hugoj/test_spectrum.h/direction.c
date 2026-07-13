@@ -83,8 +83,8 @@ int main(){
   u = (double *)calloc(N_cells*N_cells*Ndir , sizeof(double));
   v = (double *)calloc(N_cells*N_cells*Ndir , sizeof(double));
   w = (double *)calloc(N_cells*N_cells*Ndir , sizeof(double));
-
-  /** Then, given a 2D spectrum, we build eta and currents */
+  
+  /** Then, given a 2D spectrum, we build eta and surface currents */
   for (int i=0; i<N_cells; i++) {
     x = L/2 + i*dx;
     for (int j=0; j<N_cells; j++){
@@ -92,10 +92,11 @@ int main(){
       for (int d=0; d<Ndir; ++d){
         dir = base_angle * pi * d;
         index_a = i*N_cells*Ndir + j*Ndir + d;
-        eta[index_a] = wave(x, y, N_cells, spectrum[d]); // 
-        u[index_a] = u_x(x, y, eta[index_a], N_cells, spectrum[d]);
-        v[index_a] = u_y(x, y, eta[index_a], N_cells, spectrum[d]);
-        w[index_a] = u_z(x, y, eta[index_a], N_cells, spectrum[d]);
+        eta[index_a] = wave(x, y, spectrum[d]); 
+        coord currents = wave_u(x, y, eta[index_a], spectrum[d]);
+        u[index_a] = currents.x; //u_x(x, y, eta[index_a], N_cells, spectrum[d]);
+        v[index_a] = currents.y; //u_y(x, y, eta[index_a], N_cells, spectrum[d]);
+        w[index_a] = currents.z; //u_z(x, y, eta[index_a], N_cells, spectrum[d]);
 
       }
     }
@@ -119,7 +120,7 @@ int main(){
   free(v);
   free(w);
   for (int d=0; d<Ndir; ++d){
-    free_spectrum(spectrum[d]);
+    free_spectrum(&spectrum[d]);
   }
 }
 

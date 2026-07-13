@@ -3,8 +3,6 @@ CFLAGS += -disable-dimensions # skip dimensions check for now
 CFLAGS += -DDIAG=0
 CFLAGS += -DTRACE=2
 
-CFLAGS += -I. # this allows to include my version of layered/diffusion.h
-
 all: ml_convection/namelist.toml ml_convection.tst
 
 

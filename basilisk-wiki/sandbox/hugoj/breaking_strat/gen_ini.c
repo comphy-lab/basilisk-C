@@ -5,7 +5,7 @@
 
 
 // Default parameters
-char namlist[80] = "namelist.toml";    // file name of namlist
+char namlist[80] = "../namelist.toml";    // file name of namlist
 double P = 0.2;         // energy level 
 int coeff_kpL0 = 10 []; // kpL0 = coeff_kpL0 * pi
 int N_mode = 32 [];     // number of modes in wavenumber space
@@ -39,25 +39,7 @@ int main(int argc, char *argv[]){
   spectrum = spectrum_gen_linear(N_mode, N_power, L, P, kp);
 
   // save files
-  FILE *fptr1 = fopen("F_kxky", "wb");
-  fwrite(spectrum.F_kxky, sizeof(double), N_mode*(N_mode+1), fptr1);
-  fclose(fptr1);
-
-  FILE *fptr2 = fopen("kx", "wb");
-  fwrite(spectrum.kx, sizeof(double), N_mode, fptr2);
-  fclose(fptr2);
-
-  FILE *fptr3 = fopen("ky", "wb");
-  fwrite(spectrum.ky, sizeof(double), N_mode+1, fptr3);
-  fclose(fptr3);
-
-  FILE *fptr4 = fopen("omega", "wb");
-  fwrite(spectrum.omega, sizeof(double), N_mode*(N_mode+1), fptr4);
-  fclose(fptr4);
-
-  FILE *fptr5 = fopen("phase", "wb");
-  fwrite(spectrum.phase, sizeof(double), N_mode*(N_mode+1), fptr5);
-  fclose(fptr5);
+  write_spectrum(spectrum);
   
 }
 

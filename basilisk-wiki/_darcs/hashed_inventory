@@ -1,4 +1,4 @@
-pristine:fae04eb72d20dafc65a238d5bbdf44487a308f36525edbc1bdaec30bb2b946e4
+pristine:71407d8f71f377244cf1774fe321e487a47f2a17018fc97a51ce2f68b48c3e38
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -11582,3 +11582,708 @@ Fanshuo**20260629235028
  Ignore-this: 6cc1aa0d2009ab286c44dcfba2f83d827fb9114e4bf66cbd14711a75f206698948492ba985fed3b1
 ] 
 hash: 0000000279-3f0e554bf79395f3a0b93c67d8c163b3052585f03fa7da786e34caadb13a47c3
+[Added small WSL tips markdown file
+rcaraccio <riccardo.caraccio@polimi.it>**20260701094231
+ Ignore-this: af09bdc7595ec4e59cfcc14809a4720d058515f49805fa47f62e02ee20cd59704651d02fa6a04327
+] 
+hash: 0000004197-fabc6c19e4c80b7dbb7a59fca0d00e5f70ea0011d796124412020c26a92eedb6
+[Fixed typo
+rcaraccio <riccardo.caraccio@polimi.it>**20260701094534
+ Ignore-this: a2a8823a6efe9a48e2719076048ee0bab642a498a31343719d0071ffebd2c2e159ae275b883c4849
+] 
+hash: 0000000211-158e1c7adbe9e9a84b70be8a50ad5dc3e06b9e3197be0f2d7a44e9a6349450f6
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701114112
+ Ignore-this: 951f526def2de7db5fcbcfcb856cfbd00cba80166a49847f6a7126f27b86d3daa000dcc06fa3a2ef
+] 
+hash: 0000019609-5a684e8d1c032ec1527d34cf5f4e00222039fe0d47cb7685944b993bbc2ba4f8
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701114250
+ Ignore-this: 4d2724a50bbfe27e8ace66d4ecc75ca5f07941b856405ce566b57b2be6c93b72558c2d3c80290efb
+] 
+hash: 0000000532-b0d00fb8df2ddfd7a359aa8379a5e7846543ca71744d87c579a896cc8edd91be
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701114756
+ Ignore-this: 6f19b539f7712285cbbb34b6774b0b3200e1563bdc4e0fad735eb584e68b813b572dfe900302a479
+] 
+hash: 0000000703-725db4a772d537ca9b1aae0cfca65b8b3503aef6ab30f1cbcfabad2f5fe7a20b
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701114957
+ Ignore-this: df0682d5b043517d07d11825e47695e9a75ec50f7db830ff9fb59d7b417c3d9164019fef957d2ff
+] 
+hash: 0000000251-2d82ef1e4e731cfc72c8a77c569e9fccb6a8f84074b01a3fa8e84309bac26b5c
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701115308
+ Ignore-this: fc5f4203a64e375a4bb15c7b44890f3e8ce8c4d9d40b2a1248ff57b92e8fe064828c94e22369e0c0
+] 
+hash: 0000001317-18e03ca0e9932aa203bd764ab01956536cc2a79efebfeeaedca3dc8ed9c1df2f
+[First edit
+Savinien Pertant <savinien.pertant@univ-rennes.fr>**20260701132842
+ Ignore-this: e3e9193540d04ad3ea3e573e7cfeaaca9fd952e1df2c66a8d60f0a3896fbb854cd143b2630b39f89
+] 
+hash: 0000000301-71a371b9a39a924d96155e5769ac36adf6fcc4b5f8efe2b4d179f1650ee43a2d
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701205039
+ Ignore-this: 50a741babcd119570c1a496d91f12e97ca6945b67b91fbafd056c9320a88971dfa68b65c568f9ab6
+] 
+hash: 0000000524-ff82a463532ddbfbbc759cd5fff0e18d0c3ba4670642c45acb07d9436ac6dd84
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701205507
+ Ignore-this: b33cbb7ee8777f1e9408ea7f78b0dc1d205db300f4c17d2469df45d2d4cca81038124469bc8a1598
+] 
+hash: 0000000447-13525cb2f40d843cb59e60ccf265b2e8d38ecd460d751da9d3dad65cc00c48ef
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701210428
+ Ignore-this: 7a501dcff03146c4c38f53c4cb37e229e035f214f9488a73883914173bd1de96e247a34275013d9e
+] 
+hash: 0000000468-fea95de3267a7cb3420281497be71831c3568483d12db04c32b9a1b9165aa32f
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701210447
+ Ignore-this: 43c4eef89cb3513cfa34c3dab601008d6c61ae7691467a2c1f10988e891316335e50914c8d531b97
+] 
+hash: 0000000481-d809447f855a8cb710604d7d8a57f104f412fe6487bc00a4825a3ff3d8c5cbc5
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701210535
+ Ignore-this: 3599bd62ad22e8f3233a8f6cf4139866fb95b279837a2ac85228b0e148464d6d03f836ac091c112
+] 
+hash: 0000000480-6b9e0bd6a0df53fded39f6e13ce54860806b82a2460f59e7c9b29411bb3963af
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260701210607
+ Ignore-this: e911ad11b3ab19ace8754e78fe578b6eee4c6e22f0713b939dac3bd6470384b156c699f124418eff
+] 
+hash: 0000000481-96b2e02d7103b3f884a1939f8463225ef69268f2a6fa5c5d95ad78f1590c6abb
+[Update of BMM information
+Tianyang <hantianyang@ucas.ac.cn>**20260702062346
+ Ignore-this: 3dbc69f2142dcf01c48d9cc29a6681dd401abc9dd552ca1eef798cd3cd36a515db4606b41f466870
+] 
+hash: 0000000326-5912af6014be293c9d91ad36e321ef9e84d7ac31a23943d61c8de2d2b5ee1eb1
+[Update of BMM video description
+Tianyang <hantianyang@ucas.ac.cn>**20260702062725
+ Ignore-this: 36aedc92b741b3936770c6f067128693c8c4b95cb7cfe4174073a0260af97d54d41b5820b9d02d4d
+] 
+hash: 0000000553-f9a7948c2c6a4082dcdc01429801d5e5af554d1d49279ddd1a25a7e1a5ffa2b3
+[before/after profiles plots far from mountain
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260630131204
+ Ignore-this: 7dbc376a0ce1eb9a84af18dc0e296f76
+] 
+hash: 0000002134-b6477de6954abc3df3d9c38d2504ba1a92911734275a46cff6c66a4acf75e60d
+[added PI
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260630131253
+ Ignore-this: d324d611731908c5fe9455638df53941
+] 
+hash: 0000000193-12a7dcba0253e433127f59cebcb68ec7ad38873299895ae530fab0ef3b9b3ec2
+[update benchmarks
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260702073928
+ Ignore-this: 5bb072e85e897fea8973fa67a7d34da9
+] 
+hash: 0000331501-a438face4372d1965023a1fafc10a6e721cf0aeec35abfaafb0ffd4233a9509d
+[Implement Neumann condition at top and bottom, with tests
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260702074305
+ Ignore-this: 64fcf480e3114c8e2286bca52c22a486
+] 
+hash: 0000023226-c63d2d9d5427c3089698890a07a76a7694a372e87ab55ab18ddc753dc2a3112e
+[fix plot
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260702075422
+ Ignore-this: 219b515fdc1fdc949ef9b604331d43d7
+] 
+hash: 0000000418-2006d0b782e107a866560503687cf6eed957b4b609e70bd6452a6a809306a44a
+[doc
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260702080156
+ Ignore-this: 89949bbb7945db8aa865ac58773ab09f
+] 
+hash: 0000000614-1914f0534053b00b8215738c1bfbf38ecfab3b273282142c88f5115ef35db7e5
+[typos
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260702080511
+ Ignore-this: 49ef3e8a3e992117f9f510c12ccef8ed
+] 
+hash: 0000000665-bd526f389f5bd9849a9abe1a8632d0ab14209c650f7ecb85531bfd1a1e7e8dfa
+[fix of file path
+hugoj <hugo.jacquet.work@gmail.com>**20260702080741
+ Ignore-this: 4d173854ae6b990cb617f1064498b4cdf13980ee4dcb9e82c0e1adb83d0ccd5de4798be111870ec3
+] 
+hash: 0000000386-35c678aabf541b8c05f60b71a8e9af52d256b673a2f2fc5137f3ab8c58d52dc4
+[simply connected domain decomposition
+Antoonvh <j.a.v.hooft@gmail.com>**20260702102120
+ Ignore-this: 2c58fce3323cc36b425606ca6fa6ddd135b22c60f50d0cd825e61b3e5f905218ed00b4624f7355e3
+] 
+hash: 0000004807-fd1a5b806e6ed2285a6ef8fff0c6058d9d1a26e65bbf95f32d29ab5806d7fbf3
+[modernize Hilbert iterator code
+j.a.v.hooft@gmail.com**20260702135025
+ Ignore-this: 1ba3a4cb0af61e61658851195d04fbdcfcaa56b23b7df7ba0af83ab7fed3ab0757c1e43b55a54c4b
+] 
+hash: 0000059802-9c3d43887eed8961346b77b5384af57f67cd3afd5229c60707d835c1206a0bbd
+[modernizing MPI 
+j.a.v.hooft@gmail.com**20260702182814
+ Ignore-this: f63a5883339e6d771879e58a4dd8042be467737877cea01bd1c8d3a6356a0ede9bf4f5f41d3e9d3e
+] 
+hash: 0000011329-29c246a07b32df939bfb8ad7bc9279fc4f8c7574cf001896bbe435a1ca21f7f8
+[rerun, hoping the parse-errors disappear
+Antoonvh <j.a.v.hooft@gmail.com>**20260702183158
+ Ignore-this: c5e557f935ee2b796d58018dc15028834b41261af72bab97b175f9f9e7db3209e266e1178476fc10
+] 
+hash: 0000000242-7b389d61c5d66aca89895974d77ecbdc4656fea1ee852abb45bb2f72608f7da7
+[more "robust" H indexing on levels
+j.a.v.hooft@gmail.com**20260702191348
+ Ignore-this: 9e46a8b6baab4e8a70d4448291916e306f56f42b7dc7e5f44aa0aba3c05928ff397b2851543a599f
+] 
+hash: 0000001163-6de69d6680b9aa9322a030f9c8bc11ea8f6f4e6a60fb8367963d82e60c2b7261
+[Modify diffusion in layered solver to take into account any kind of boundary condition on free-surface and bottom. Based on pnaanouh sandbox.
+savinien.pertant@univ-rennes.fr**20260703073330
+ Ignore-this: e182bbe65743276492e6c3c66dfbc9c5
+] 
+hash: 0000020118-386fe0a68038bed9cbcf655dc65688115c4961e7d19557aa858e8f55a3f109dc
+[Enable variable surface tension and add interfacial viscosity.
+savinien.pertant@univ-rennes.fr**20260703075130
+ Ignore-this: e41f82d1a3e362537a378521ff23cf59
+] 
+hash: 0000008085-249faed55e9d8523e461497fc2c9699e0d9ed7683025d3c2f4630f44828a39ac
+[Separate advection of u and h to be able to use h^{n+1} prior to velocity u^{n+1} advection.
+savinien.pertant@univ-rennes.fr**20260703080304
+ Ignore-this: fc5348e476b223c347659df48d096042
+] 
+hash: 0000022065-61c241a8e99f5f72264f4a0e067eb894507c893f7eb58af9178cc65f0113d7f8
+[test case for wind input
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260703090917
+ Ignore-this: 5498238b5501cfe42be878488f1b0491
+] 
+hash: 0000004727-8ecf06e7686717b4a54a7232f906179c3ea3ac67d8e4d8383ac4d56f45086572
+[cosmetic
+Bruno Deremble <bruno.deremble@cnrs.fr>**20260703144537
+ Ignore-this: 467bf3e4424017b72012f7971adce407ad24c28aec8f2ab97d13802ca65aac29177cfe854d6d2e53
+] 
+hash: 0000000656-e46a8e0724aee9ccee5fc84921577caca16b82b4b8675f94da8586426e91799c
+[cleaner example, with STOKES and FORCING flags
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260706075259
+ Ignore-this: efdd6ecb10cfb3ca0617993e72f3de04
+] 
+hash: 0000005918-980b983b3e34aaa4d6ee134009e88c455b9dab99cd782c94e54b3ba4b857101d
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260706130522
+ Ignore-this: 9d801591f6d0187973f3329b05049334dc8c252db923d8d1de172e1f7dea4f7502af497cc9d9123c
+] 
+hash: 0000001100-38811950812ea800f14315cef1512e574b232ff0bd718787db8d3a8955bd41c1
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260706131020
+ Ignore-this: fde9b47617c874eceae4f0f9a07dcb3848134d93fd982f6cdc03f1384afcaf1201349593ff3351eb
+] 
+hash: 0000001416-5ee0ae1ace28b5ff640767c1931dbbf911fc682ea77a12a9194de110fba9ac19
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260706131151
+ Ignore-this: b9e9e690ef6401fbc41aa2ced5924302ca3e7422d0277634e0fd671123135bf24e2ce768ccd66ac2
+] 
+hash: 0000000491-b5fa1f429f6c7664e360549d00fbc969405c0b8b8ab16776d8736380c1cecc46
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260706132323
+ Ignore-this: 7e874a0984e1a994bfdced1c1ffea69beb7356ab71f19dedf8e58aba6fa242065ee390ab2eb963d8
+] 
+hash: 0000001538-9ba40886dc78b7fae3b22ebea9f7431b19600eb3186a633386dbd06e2a9c735a
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260706132516
+ Ignore-this: 3aee43a4156b3eeaa6cde1c29d46ce8bd0ab4b203ddf01ba8dd589d93658a37c476ad9ab9bb745ae
+] 
+hash: 0000000261-bf81483a411342c2740aa503be2475985f8d72f1cfb4d3f27ea9cd0406c52708
+[tests
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260706133833
+ Ignore-this: 58e4e9564d8f4b50cee33522814223bf
+] 
+hash: 0000004419-f4dddfd8c7183a6dd508de41312b89d8fc26bb057c868e59495c90338405a5f9
+[v1 de la page
+walmetzm <malo.walmetz@gmail.com>**20260706135125
+ Ignore-this: 80e5bbe69e3547a6bea7c2c1f55cd6f74a2c2ae9ae0e13957e869abfff2ece62a5247cb2e6e1c8a6
+] 
+hash: 0000003892-0a27a47257771c0de30654b0e58e260aa0c87aa0bcd9f8388ee398bad7b29e23
+[commentaire
+walmetzm <malo.walmetz@gmail.com>**20260706135536
+ Ignore-this: e7504b34a614d2a8ecd7c3baff76729a7a9c1f78ef02519c918f25282f61515df78ad4facb036af1
+] 
+hash: 0000000283-9b7e39dae7901fcf7dbd0921f1c350d81ca6d304d3e93eb034516ef9ab4d12ed
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260706150223
+ Ignore-this: b189798b35f373d9b5be4f4ac50200b42f33af733c1b99bddd0778da0c11acafe28546328b14615d
+] 
+hash: 0000007325-3ecfed181b49245759400f9083de9e1df9fb3e608804a629b02adca598565174
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260706150822
+ Ignore-this: 87a75f7ad56fd80ae8c989f9f7126bbc5a91a82b2e11f29e3ef2ac6801e23983c75ffece037ae99e
+] 
+hash: 0000011222-e258ce2d3c2ab3b4d3a7774a14d48c2fe2ccb0ee0d91f4f7a621a099170a8c45
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260706151335
+ Ignore-this: ac1e0657153e4fa3a3f0c18ddd109eb0ef721cd903d7010890e2aea15b23de30d42cba21e9bf5ff9
+] 
+hash: 0000000273-cde9cb8fca798d67dfcee7dce953f80149a27a04f561825b2f5e0c423f3d4c46
+[rajout de dynamic bubble
+walmetzm <malo.walmetz@gmail.com>**20260706173943
+ Ignore-this: 141c0e9e10163a62992022b1b80fb00984097de47dd9f6ccc74762ca353a6535fe402932688028c7
+] 
+hash: 0000000384-0583fe6bb4880610542c25c81d17b9878197fa0d5b0fe277b75609bf370894b3
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260707004320
+ Ignore-this: df924f624c95d2fa80ebee5a43534822fcd2ab3399a111ac46f707ad2076db0fe840f83d2f1d71eb
+] 
+hash: 0000007139-5dcae3acfb384dfb605d1d89de4f0573d2f95378b7ea74acaf81686152c8bbf8
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260707010318
+ Ignore-this: 5a443eedc2a9193732dabbd12872f264488353254891db58f8ef51864f479810f87eba27595e3be7
+] 
+hash: 0000007142-5f828f9a28a975082aca78862596aca981985f7d4b26bbe57e21235cbdd5225c
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260707011155
+ Ignore-this: 1081a82ec8020891a1a5e6e49299205c45803abc6af32cf372d043d1d17230a93cdae43c0033766
+] 
+hash: 0000006435-b8c01abfec8fd63a99ba1e8c1e4afc6ebf02a600199fddfc147b9bb8d0e81810
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260707011813
+ Ignore-this: 4e7c5702d1e04048b7afa5158bc94f042697f0e7f92bcbbb4db012bbea4dfff620c6c75fb124422d
+] 
+hash: 0000005453-340f151b24458ca3bf051fa7ae4cac668a039df4827e3b491d4abc5bdf134437
+[Trying to remove the invalid recipe
+ecipriano <edoardo.cip@gmail.com>**20260707084214
+ Ignore-this: 3037fdd2f7842cd9fc5630a1f9c939e78dd9777b5a75d875d04121a2b6e47c21cc209754f92426ff
+] 
+hash: 0000000254-27e7f6115656b234131c2d058cf1ee506e6bd390fd2b0f4f80fe69298b88d673
+[update convection case with my diffusionH.h
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260707082831
+ Ignore-this: bababec7fe7dd348354954de19612305
+] 
+hash: 0000002393-2a62e4b1791972570417772500f317583385f611bb1a9240443be27a6286c65f
+[fix calling of wave() and wave_u()
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260707085109
+ Ignore-this: 29129a7a3e8f8a7f73127bbaa8660171
+] 
+hash: 0000001833-48cf7af5b2c30d902be0f6b398b1a7e25dce3102a7e930f7d138663b3554ea18
+[add tracing. eta could use iFFTs but not u,v,w
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260707123224
+ Ignore-this: 3959aadf6aaddd4dc0b7b4df8d0ce0f5
+] 
+hash: 0000000770-0390f21d2559cb03a5ca6507e8f56ffbef54e450f84340f40e37a5a63d74b135
+[Add a test case to assess incompressible free surface implementation: relaxation of a soap film with two thicknesses separated by a hyperbolic tangent profile.
+savinien.pertant@univ-rennes.fr**20260707144516
+ Ignore-this: 5d0da2fbe8138b680467b0d5fe6a90d8
+] 
+hash: 0000018480-223093e530846d1a91bede3ed67347fb223a6d5c2cdc43eec37107e63430ac61
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260707150036
+ Ignore-this: cd6b87c15aaefbcb6ef99efd7c8e3f3a02d706c2099bd6392ba274aff6398db0c9475652bf056665
+] 
+hash: 0000006629-43e0be55cf7d4248ff6a72c7aefbdac8aef1853ae0e5afc187bada6310fad79b
+[Deleted using web interface
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260707153630
+ Ignore-this: a91fb9b75caf544263c088137254a8c88e483577507e3501dae3b93b63df1994cee1b267fb8f4e64
+] 
+hash: 0000000276-47130d3497282a996adba9331144f60a8a5220c8a8abd1ed8021768327b07430
+[data
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260707153658
+ Ignore-this: 30bda5625d478e2fb946b21308de548a74612943b9d34bf2a4348d8ccd3d569c7f8c6357d8f86b62
+] 
+hash: 0000089258-94382a4fca33efdfdd0905d7e06db8c0bce33647c3051381ca58c8fe9cdd0258
+[détails sur l'utilité
+walmetzm <malo.walmetz@gmail.com>**20260707172917
+ Ignore-this: 84b8711198a80c2e9c848f215f2ad31045977d5356d9a6bdc450e5cfc1442fb839d3e2a9635c092e
+] 
+hash: 0000001234-9542c9fbcf51eecff5b90441471ad505e045fdc5c2c2d9d729079e025373259b
+[proper alloc/free of spectrum, added write_spectrum, changed examples accordingly
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260708064402
+ Ignore-this: 410ed6e7a37d2a1e551f77b80966e982
+] 
+hash: 0000006143-129dce53b17a559ae0736a325ad28c4808e20fdb5112750959b1ca23df3fe81a
+[fixed memory leak
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260708064833
+ Ignore-this: 635d68d0a215df36401d2768d3e10b0e
+] 
+hash: 0000000234-3bcab445daab8a0b8c7497ffd9091571f0a348dbcc42efd27c46d1cada471208
+[better read_spectrum
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260708075736
+ Ignore-this: 42337647f7ff4b4c8d7887d88ef3a39e
+] 
+hash: 0000003476-bfd07de80fd5ab68d2d565c25268d0aa14df8d2880c28171d9ddbdf6bfff4a91
+[Clean-up in test case to assess interface incompressibility
+savinien.pertant@univ-rennes.fr**20260708090951
+ Ignore-this: 37b374ecf344008db4eed7e846d1cae5
+] 
+hash: 0000008203-e74eeb824772e065315f50e55d88268515e0f0ee95da9eef2045cc0095a84298
+[Flow in a Sandglass / Hourglass / Silo with a bottom orifice  We propose an implementation of the $\mu(I)$ local rheology proposed by MIDI(2004) for the flow in a silo with a bottom orifice.
+yixian**20260708120548
+ Ignore-this: 18cdf78b01c9e0f9d51b00ebb6150181e49655ab5d17203d89d350d89e658c1b6e3d4fd8f30ee615
+] 
+hash: 0000008254-7481fe3695fa4134f282a50deb1b9a44d54e5b55ee98537f2d58c856cecb7565
+[We propose an implementation of the linearised non-local granular fluidity(NGF) model for the flow in a silo with a bottom orifice.
+yixian**20260708120940
+ Ignore-this: a1daadaa4d1b913b1bccbf2ed74eeda35804da75bcf60b3d6e80ac2e90a0435b62349da875477fcb
+] 
+hash: 0000009283-2517cf7fa084f9d3273f28a7e57cbb0a25f5f555e384fcdfd5a00a1e72ced8a1
+[We propose an implementation of the linearised constant non-local granular fluidity(NGF) model for the flow in a silo with a bottom orifice.
+yixian**20260708121026
+ Ignore-this: a6894d829434ad244fd89adfb3e3a923efb389f4ae5cac1c6b86c6cb4a0c794d170c423732129c61
+] 
+hash: 0000008954-6b79cbb261f72da4ec3730f8016526ecae26a164088075c3f97468fa9cae78dc
+[Improved the comments
+yixian**20260708121350
+ Ignore-this: fa5a60e6d968d614460a1d135c7e67bd273390b135530fdc541ed5598c739308a20f7cfc1546a2c
+] 
+hash: 0000000330-0d2e593180940a6edf6291a3d417aa4c321ba1551b5e4599aaa58c709b688bf3
+[ We propose an implementation of the non-local granular fluidity(NGF) model proposed by Kamrin and Koval(2012) for the flow in a silo with a bottom orifice.  
+yixian**20260708121420
+ Ignore-this: ef16008e5c1689ab1996f90ad1117790926bf0aed961d4b618f9e7a4d933907f55edd7f99e3a1b6c
+] 
+hash: 0000012223-7d0c83a64f951b282f3bac81be5895fb14a153fbff5b0a685037291ebd626b7c
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708121458
+ Ignore-this: 44c47d4cc457291276c57dbbe90b314cda5dee08dbb10c8b7bad054e08de413c47c0abda3206d230
+] 
+hash: 0000008126-0721b3185eee4b2f652808f78f830987dec11462f6376d2afba25d64cd3ec69b
+[ We propose an implementation of the $\mu(I,\Theta)$ granular temperature nonlocal rheology proposed by Kim and Kamrin for the flow in a silo with a bottom orifice.
+yixian**20260708121504
+ Ignore-this: 35f759bd6bf2d914a88e838e57a957d9df5cd4f15162241c86876d0165291cf6ab2cdddb407c302f
+] 
+hash: 0000013394-9ce3a4c534695f5a081db3d7f66a840a9c1276f3e2e9d1f39e1f96ae6a58261a
+[ We propose an implementation of the dynamic non-local granular fluidity(dynamic NGF) model proposed by Kamrin and Henann(2015) for the flow in a silo with a bottom orifice.
+yixian**20260708121543
+ Ignore-this: 6b33b02b2418234861850102fd1a2aff2a3fe7a76ce78ec1b65563e85faf5d66efd80bc395aa2005
+] 
+hash: 0000013804-c29cee25bbc5dc1f5f8ad9806f2d029f9ed5fa1ac3c096f5a9fb33e66099b47f
+[Improved the comments.
+yixian**20260708121849
+ Ignore-this: f022c80090e296d15dfdd228eefd4a0360e877297b257512233673c9d8618dd4f2cc7b834f6c2cf6
+] 
+hash: 0000000499-aceec1596dc48b53819bc1848db2b08e554e82fabf80454640f1c45c6b6ab526
+[ We propose an implementation of the constant non-local granular fluidity(NGF) model for the flow in a silo with a bottom orifice.
+yixian**20260708121953
+ Ignore-this: b170d6b1a353a9de8295e5fa6785ea1309d7ab1f8636c146030c5d6e9c1dda7e2fd1ea7f3882e8a7
+] 
+hash: 0000011593-8efa4197c60e3be3c7282d697734f17fd3f00ade1097236a41b15d31593ee541
+[Improved the comments.
+yixian**20260708122758
+ Ignore-this: 48fc4df98cc27757df7614fff2f5227eb117119f05ce75719b2a9a88c60d804b3a830f3f632b81eb
+] 
+hash: 0000000718-7e431f6595441ea8b0d2ed4a08b07abc43126d2ba9a9ff11512095539a79571b
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708122809
+ Ignore-this: 7f41e468e80b74366c0e561bad489bc5c649e97a007e73591bb14cb77d2faa8373bb14262c54df5f
+] 
+hash: 0000001039-db007361ee29f62d288f864a119619de6b578290b68530b3536f805728bcac77
+[data
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708123737
+ Ignore-this: b39291b52e49da2859eead175b21d3a126ddfd9809cc5bd34c9a245273facec62e807d49c81aef30
+] 
+hash: 0000089210-9f90e4b1b979aeacbf6f16c21b2fbdcb9d486456e061b43891b3bcbf7acd32a6
+[Deleted using web interface
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708124524
+ Ignore-this: c241e3f6136fbceba06868303af07bffbeb6beda65ec5bee1137ae072ddff7621adb06e81d5e6dd7
+] 
+hash: 0000089246-e8db11508d2a2853c4e5387825b1433b5980355d1441f09853152d1e09582f14
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708125831
+ Ignore-this: e1fdff4d975bf613800775537f58107ff50606ea282a40dc98b95e43f834c44f2cefb28c5a0b392c
+] 
+hash: 0000042372-693193c87b3f0f9bafc77637552684a8887d8606ec32fc0d46eff17d83384bbc
+[fix T profile initialisation, and other minor improvements
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260708131206
+ Ignore-this: 702e5a4605b797881d26558801e88817
+] 
+hash: 0000006916-14cfb73b2bd8f163bdb6b07049e17389d0b4407b0d34b01771f4800fe8e0a7df
+[base case for no_forcing test case
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260708131406
+ Ignore-this: c4c85dba92a7da3bf15e46c565528683
+] 
+hash: 0000000631-d90c5f30c97f43869436fe833f879e8ba121d3983f70ef4ed2e5bd42e118f68d
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708134231
+ Ignore-this: a55f260f4ab57600f053daac62b5c996496b0236a38c70d42cd0c5173d2ea88b0d200b180a87f1
+] 
+hash: 0000012614-30fbbca4f83cc096a8952b58037a00460097ca0333dacb90b2767d6226d781de
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708135309
+ Ignore-this: 6600bf9cde4cdfe3dbe5b6446633f914cef832861b725ebcacc549e84eee33ac25b53fee31d3657f
+] 
+hash: 0000007260-b2dbd2ebb3f8930388e045fd8a1b7566412a645b385b59d333bd2c66827def93
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708140337
+ Ignore-this: a7153ad602b58980af4bf550996ef7e9cc0434e099db98b54051099eca5add02e39743fbc1fca4e4
+] 
+hash: 0000020380-bc1dd50193b6b42168d12f050241605dbe1499bba9f537d26a7dc67bde40972c
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708141257
+ Ignore-this: e3df2c5674b843576b34278a91413fd66ede868d0780905ce28ba18d986999552506155735e973c7
+] 
+hash: 0000017794-e0fbbf560f3c8cde94423a1175a96b9ade7b4848f737163ccf0a00702d2d543e
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708141606
+ Ignore-this: 2f4f38650fdb1ee64529b526017af6fb1dc9810444217721736f516cc93f9e3a36b7af4be5b4ab4c
+] 
+hash: 0000000510-47227f9a257e8ddc48d02dc5cc4042c8a1a777d3307035ecd70c9d3b24bc8ef1
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708142506
+ Ignore-this: d892f42bda110223c490191e6f70fe4bd4cb72b60f86048e8ae02de4710ce0f17a296bc9ff43928a
+] 
+hash: 0000003035-23c004b2534a4d4cf6167d6a1f8bd103c37958691ebbfb7a6da44d9e733b9ce0
+[creation of my first README
+apalotai <ambre.palotai@gmail.com>**20260708142653
+ Ignore-this: 3eff3aab87abd3ab11c3f59c77a9365b31ea87f49326397447b8fe7d6034796f79dfa29029990dc1
+] 
+hash: 0000000293-ff9ef34d79fc1d5b67708fb0b166ec7160cf6d65c3716f28183677e3abc78db5
+[I've added the lab's logo
+fpicella <francesco.picella@sorbonne-universite.fr>**20260708143050
+ Ignore-this: fa574e7430c22fc86ef027948d75c6581c84e13304f1b5fab732579d19b89134814820f894607e02
+] 
+hash: 0000000433-42cf94a4bbeeac59a1765f47b3d30814436399fd0e56df37eebd1f52f1d44786
+[image removed
+fpicella <francesco.picella@sorbonne-universite.fr>**20260708143217
+ Ignore-this: 92c3b73b1bcf56eb43072372ba3bdaf9a34db70b8f9374d14c86f83cfae7b12b25923d87ae7ed302
+] 
+hash: 0000000386-63c1f3dc998a6563038697a5e88de9efb9a6892531c690c757419cb916033a01
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708143231
+ Ignore-this: b7c10f03fa49da78cc57c011a5d13c25f9af0538ba449a8d31294a632f33b7723bcac874bfa9fdcb
+] 
+hash: 0000003562-d157625db20c0a5323fc4da3345ce04422750182a0f4c0ea61686bd1a5d60d04
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708143736
+ Ignore-this: c0336351ddccaf60e3d2e499e7c0f4f26aa547e63474da5aeaafb5ff9c3fd06fe544f03881dd72a8
+] 
+hash: 0000002992-488f20b1befa3a245459412ad5d9b8614543243f431091b7ea579061c806b5dd
+[added info about my collaborators
+fpicella <francesco.picella@sorbonne-universite.fr>**20260708144619
+ Ignore-this: 37eb72d20d8259ce386622ae7e092ff4dca2e0191131f9519d7436fe60370ce6d2ddefb5bafa0a98
+] 
+hash: 0000000596-5c298b3468efee7b2591bfddaec94d3efc09722b49d79f8e3936ecccdd4c2f07
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708145119
+ Ignore-this: 5c3dc046786193e7def94ee8bc2b847b270b0900b644985ae30d3d5dd6bbcdadcb3ad8f5f2746f62
+] 
+hash: 0000031995-5a568a16a78d74f271e1a9affb4ecc43f20bdd962f671116e266436d1ff8cd81
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708145818
+ Ignore-this: c8e499330cbaea8017a058d3d35fa2c2665b71e9ab3ef05d95e54a4cb050ad013340a54cd764eccc
+] 
+hash: 0000005828-4463104d6c2ff3515cc76507024b60f9c95e3b26dd18a511cc8d0d2d6a9fa58d
+[Deleted using web interface
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708145940
+ Ignore-this: d04ef0b673e581612f4edfc9395d6303db6c96d646a88ccbf743e6ff1a6dffb1ae8e09f55f830834
+] 
+hash: 0000032724-b8de312bbe404a10bec8fd3a52ee7680bca460908d804be61e188c5ff98868a3
+[Start documentation of incompressible interface case
+savinien.pertant@univ-rennes.fr**20260708145719
+ Ignore-this: 8ab9c5be726db5b9e4834883aaf742db
+] 
+hash: 0000002433-80afd126203c618228bc30734ccc0f9a789670a3dab7d6fb2bf49d966082f24f
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708150353
+ Ignore-this: c2d933cb9d67653cdaf0803eb1b045cf8b70257a6dda4f7dafe34b1b0bfb983347dd0e4d182a965e
+] 
+hash: 0000031812-73578377f7379e4c22584159903f4a66966f3691c10bcd1f8867b525ed401cc9
+[Deleted using web interface
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708150446
+ Ignore-this: 1b8bc1e858bb72a9fc2346b53135beb6a6f87755d79398be825543f8b13a55e8a1c832e1839d9e0f
+] 
+hash: 0000031848-f4d8c6c0ed37f0c6b9f2413e9cfc221c7e1f1cf16e6e61e33507c73fedbf9d66
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708152230
+ Ignore-this: 68c2ef4646af54a881534cd476549bafb9bbd522e984bf849eb764f216151e2ba646a10b5c2a5a87
+] 
+hash: 0000000693-1c70fd5ef2c6e0ddac56e5f3a42678937447b71e12dcc58e8961aee0bbd3174e
+[v3
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708181658
+ Ignore-this: b3c6dc6b071e6419ce80bc3b3a892ecf2f4b3a9db00d7d9fbbe8188d5aedc7a35da5be47141fc3ac
+] 
+hash: 0000000455-ddedf7c7ef99591d1bec75b41700a969f0f3073e771a254818d15edbef9aaddf
+[v4
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708181855
+ Ignore-this: 8aa5da269ebfee4e7d0baa8b086aa8cf3bea9acd76b9e510c0236909b41ff5ab61bc185b2dfba621
+] 
+hash: 0000000330-b6e0dc3c7fb7c5b5e594eecfad5cd59a61099f637aea0b3a2b7f324d826fcf9b
+[v5
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708184237
+ Ignore-this: 79284a66f31c680922358d0a60fc4fcfce1107c1c74d942a426a3f3dfbf895b8c3018fb9cf8a422
+] 
+hash: 0000003625-c4fa2838acaf22b0fd9f0e7830d059daffe89b674a5394a05237acd8d1d31a03
+[v6
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708184537
+ Ignore-this: 856bfe8e0651d6af3693cdb8b1cc0343bc117221b7faf16e5aafc83886a86c5c1555c02a0a88545d
+] 
+hash: 0000000610-26b10b7556a003caf21ad4c25c9aa103ce959ce690cc55af0134b4fa5ccce31f
+[v7
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708191218
+ Ignore-this: 6ae4bbee6a8f5b8d304d517e316299570092516933e511194c6a59d78bb5a1191fce56430eb81543
+] 
+hash: 0000000432-12f3d1529faeb5e1d7c7d19432f62ba7a7766d5a9c0c89ad4261a78c75723899
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708192719
+ Ignore-this: 8c1f58f62c8d259f0fb285c8aa4600771797da129088fc39874e5ff04cb1e41df6d7b285ce57df9d
+] 
+hash: 0000038177-e12f75045896d8538572b44cbe2a559023ec4f0ed7230a21fa34ab8c9f3c1b85
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260708193447
+ Ignore-this: b7a1c88a8c2fd286e726c5ceeb1de6536000b3e5b685054abe394484b8bb559a849452a7168b97e6
+] 
+hash: 0000001614-974ce679587576d06f66c2df9234c36a01912b043dc353c37a3034e9f65a7557
+[we set penalization constant lambda = 0
+yixian**20260709065528
+ Ignore-this: e88ca44a7acd4c1e6b4d12a2abae90ccf79d4ea0c5f7697070d52a67e57c0c5b24d654cc380fdde2
+] 
+hash: 0000000266-594ee59155fd25b2f7dd4cace31302ad2fdc11eb0ac78b3057832a4438bdfb8c
+[Improved the comments.
+yixian**20260709071210
+ Ignore-this: 8d87eedf8f4617d1c0b7ba17ce85e11068bf72977dc3ab0078c06746070f863ddf84030e6ba16351
+] 
+hash: 0000000688-5ee6b615376369656719bc0ae32390b5fec3954df5beb4afe34042b639102d00
+[plot pbs
+pyl <pyl@ccr.jussieu.fr>**20260709074155
+ Ignore-this: 54b949b802f5119cc72dfcb339bc267b11fe51e1a461eebd927b7c31e29e6421247f28e8b2324180
+] 
+hash: 0000001348-db581eeaccecf107571573e561662866befa337c8fdd4842573dd6690f9efec0
+[cleanup of switch statements
+j.a.v.hooft@gmail.com**20260709085206
+ Ignore-this: e1cd2dbb3ca55407395d0c7c0fc7fd8a77a62890ccf88b40aef9892ab6f283dffc6277eb0812bee1
+] 
+hash: 0000010714-fc72480da8bc2aa8de4b86df36fe816ddfd32c494e26aa70571972891c265efe
+[Continue documentation of incompressible interface case
+savinien.pertant@univ-rennes.fr**20260709091910
+ Ignore-this: 80c5168d7f43b27e5e3cc78776375e65
+] 
+hash: 0000002652-14df1150e20d52fbd9ea73b2c7219e7ba23be2c24bab9a4339a4f164b7c45b9b
+[fix: division by kmod=0. was evaluated before the if guard (in compiler optimisation on HPC)
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260709093828
+ Ignore-this: 51e8176279ae200c3fa40a472c28ff46
+] 
+hash: 0000001070-ce46b0269fdd0e9cfe94797032c5f68bd7df30bfe8f5becf2e42319f5b03f1d8
+[OK
+pyl <pyl@ccr.jussieu.fr>**20260709094058
+ Ignore-this: b0bbd216b358efa146a5d4c31a3fb5a7bc92625fcedd5ce1063bfa57b6252204e5dd7ac1600d8b75
+] 
+hash: 0000000823-85b053b2052553ec3b4b0bd6ea4c56419a88aade2ccec27e638b5990eb0ca349
+[v1
+pyl <pyl@ccr.jussieu.fr>**20260709094611
+ Ignore-this: 80576e1d1c2662ed8f8541515dd450c7c3bbd5571eaec358820c7265cdea1a28aac06f781d65676d
+] 
+hash: 0000002118-84f7aafcebef8ab3d8c1d6017e9905ecdc27a19c8f09fa620ef3e2edf2e38649
+[v1
+pyl <pyl@ccr.jussieu.fr>**20260709095707
+ Ignore-this: 7d9a22db408634d56208e1408675ee67d415a4d984a54278638c742da476d5df60ea021210b4921b
+] 
+hash: 0000001770-722814f7d73e17cef227de33c78736e8f2f5c2b1767739f4cc9df1ba1b7d3924
+[v2
+pyl <pyl@ccr.jussieu.fr>**20260709100035
+ Ignore-this: c3b8c3e0b09ec3f4ed0c5e33297b2ff21f82be811524626fba8e77a600563a0dd13aea8221994539
+] 
+hash: 0000000761-7b0afcad484ce279060afe5b0115c5178e33aa7d25b954fef3d49f478f0b54eb
+[v3
+pyl <pyl@ccr.jussieu.fr>**20260709100126
+ Ignore-this: 241a85e8ccf53101e3c54cf52bd91015ae27b4708f1d9c4cc03547a98dd5d9179ecd44af415dcc45
+] 
+hash: 0000000547-e4fa051bfc90a21b79b294d45cfb5b72a146cb01523726c82415e6aebd2b44e6
+[v3
+pyl <pyl@ccr.jussieu.fr>**20260709101156
+ Ignore-this: b46102fb60ec15f11958eb99bbd2423fb28c222fc1a9d8107dbf121110452a6017f89282a92f4594
+] 
+hash: 0000001999-b5006c475b3cd502640c2c95183dcd4eb914bb15b2aafcbd76b2c23ed1573b60
+[OK
+pyl <pyl@ccr.jussieu.fr>**20260709101252
+ Ignore-this: 27f741a5dd81af54839a19e567da2e3c24b1804c73a98dc6cf150c50eaa9b6366f77d4fcffd00f11
+] 
+hash: 0000001887-aee2551a2f063ee64387243ac01fd0b8befd997324fcc29351ca90093acaaef5
+[OK
+pyl <pyl@ccr.jussieu.fr>**20260709101500
+ Ignore-this: 5899d469799c9044ccce8b07ae721d91de1fa0a6fd8d3e926975a3e5c656e8d76e2d345650b39516
+] 
+hash: 0000002486-63cd393ab369896cba3a0184b1904155c6f4f01a35a83727bf0f29887fb2f15d
+[OK
+pyl <pyl@ccr.jussieu.fr>**20260709101946
+ Ignore-this: 11e3c1799ff2c926a236272c47e4917e53efc808e247f12f6add0273f7a945abe1d3c069c7a61523
+] 
+hash: 0000002368-34683835661298a753a8ee7fb3ab9105f5dd0453e2383353bacbad684063e982
+[small improvements, doc
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260709121016
+ Ignore-this: 5285ed68d03627a741aa0fce69c5bda7
+] 
+hash: 0000001406-2c558e631aed92b1b1c2702c97e8104527bf640fcb99d8629f17f1f6a217e8a6
+[added missing config file
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260709121829
+ Ignore-this: a2f3641001c34296f4d434a80fe969ad
+] 
+hash: 0000001515-10156b934643e1b465abd9d43f10c9c1be1a5f4d3569edd63f942a5f6af05d28
+[OK
+pyl <pyl@ccr.jussieu.fr>**20260709125831
+ Ignore-this: 31cffa6497f84f5f74f176c3202f8534cc0722cf44063417c8672388eace7910d1064f314fd1ac1a
+] 
+hash: 0000002328-5aacddf4e2ae51957346530132e2377f08b5a750a314731989b2a5233c89dd00
+[v1
+pyl <pyl@ccr.jussieu.fr>**20260709130031
+ Ignore-this: ef924a5baee4608d09a6e6d778eefa7ac1cc93f5c35964d1ab9248ce1fe7a1976426e48d744ef1b3
+] 
+hash: 0000002334-057b443b0efd30bea175a8de2bba3b4054a1e9363e674a69e7f20af27a568415
+[Fixed bug in doc
+Savinien Pertant <savinien.pertant@univ-rennes.fr>**20260709130432
+ Ignore-this: 2bfe7ef9530c24b27e293fb0ee540d6eb282ffc5e2d649c1068cdd5e19ca2a0c5f7f263cd9b48bab
+] 
+hash: 0000000636-795ad070c914bfa1ec950a2bc3a5a51a3797671e73d6336f515afe3251f7593d
+[v2
+pyl <pyl@ccr.jussieu.fr>**20260709131045
+ Ignore-this: fee1ef2f9def15d88cc7d6b33988d26f52b4f337d08a62eef59ab3e7ae356b0232ddbf18b24ed878
+] 
+hash: 0000001977-45f39b4a3796642cace210aa1f214e729db6419dfa3790a97e96cde52eba4601
+[v7
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260709131653
+ Ignore-this: 5654262dea2326bd718bd0f5a0b01f51d78fe7f5bda7a41aefd26d6d7d7a34b1f395e51b03c169d1
+] 
+hash: 0000001734-17e7e8b55162e3e25bbd4086c0f84b89b33dfcda51e51db716e053571bd19067
+[Fixed and improved implementation of mesh-dependent dynamic angle models
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260709153828
+ Ignore-this: 77b39b0d9f05d06579a77b767bcbd2dda54a07875d79538ee67e50bd23401fcbab110ffba824078
+] 
+hash: 0000069798-6f200f8afa3a64b31e5619dbbc89f352bbc1eb31665cdef00e47c858e306262e
+[Fixed conflicts
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260709154225
+ Ignore-this: 1b1d62728d2456278372ed6147702e22
+] 
+hash: 0000000209-1a442c81db66f84ea99e3f4e48fda81c64172b9e506e5d37c69471f8b1780d37
+[Deleted using web interface
+ecipriano <edoardo.cip@gmail.com>**20260709184914
+ Ignore-this: 6ee40b34a602753eba1c6339268adb78a9c116bc01ce23dea146a669c2eda911912bc667630c5ba5
+] 
+hash: 0000003856-0bd7a7566b5682e2cfa1ce6700d014d09d37fee4e7b9f40a55c9fbf6b54696c3
+[Deleted using web interface
+ecipriano <edoardo.cip@gmail.com>**20260709184943
+ Ignore-this: 229d7a6c72ddd911812dc994320c914031f4a9ec77cd941e96fc92ec743e0b3074d9f55be262f4c8
+] 
+hash: 0000001504-0592fcb0e1591abdd3831a403dfb5a53d3b515272a2821d9b71fc959cbf82dda
+[A single run at maxlevel 8
+ecipriano <edoardo.cip@gmail.com>**20260710081217
+ Ignore-this: 2e616475015a12f15d21023236acc6d2e8f673db6f28c292652c15d329455e92e44f4e169704a4c0
+] 
+hash: 0000000259-a5061637bf79b6f925972afc367dbc9f781610dd6377dcc9009a620439c5489f
+[Back to level 7
+ecipriano <edoardo.cip@gmail.com>**20260710083212
+ Ignore-this: 74ef5c9258fa226c8dc0bf9dbcca21cecde5a7911673afa7ec28705c6106e9bcf911c88b700d6d55
+] 
+hash: 0000000248-fc74d2f0ecc4c71e686f1d1aade5de4fbcf4faf244b34bd00cde093fe0610f6a
+[Fixed plot labels
+ecipriano <edoardo.cip@gmail.com>**20260710085510
+ Ignore-this: f4fc48bb7a4f40cd67d699e80d4032b37860645bfe8ccc30532de11b3e4dc1aac1ac5ba49fddafc
+] 
+hash: 0000000683-2617140c6727573fa34e74ee138a04d20d0aeafbce07bea0b186b916f1b68500
+[Fixed inconsistency in model's numbers
+ecipriano <edoardo.cip@gmail.com>**20260710095507
+ Ignore-this: 8e4d65a88f1a8d089e84b86cf5fe6a0f5edbd00326c6dd3fed19a624f3c65fea8970e3600566dc88
+] 
+hash: 0000001004-fce7a8972bd8e942b4c6bfcb7b9052a35c0709925cb79288641d7d916e55da35
+[Deleted using web interface
+ecipriano <edoardo.cip@gmail.com>**20260712203948
+ Ignore-this: 9254247aafbdd97bb73dd50d67442ecd61f275e19357ab03b9ae7638252fae747c1826362ddce9c8
+] 
+hash: 0000001459-460c5ef18ca2c8731504b1cc697b815144bd922f23d5a3993fea8340b08f9983
+[Removed custom targets
+ecipriano <edoardo.cip@gmail.com>**20260712204108
+ Ignore-this: 2aba6034a952cbddf15ffaae697a4483f3afe1dcd16d3f638d89a4e6a5d73fc65ac6237cd881a786
+] 
+hash: 0000000594-45afe2a8acd4492b8ba306e6069348ca52d57aafabe9040d3a9b22873197e495
+[Deleted using web interface
+ecipriano <edoardo.cip@gmail.com>**20260712205254
+ Ignore-this: c8184badcafe5b1f302d01a9db334d771bd30a5cf66173dfd78313610a2594d82faf7e88215890c9
+] 
+hash: 0000003683-53021004fff13684a48de47c8b7f92210e5c56ecb29999318dcbcaebf540c27c
+[Deleted using web interface
+ecipriano <edoardo.cip@gmail.com>**20260712205320
+ Ignore-this: 38d2755b20eb5552a607cdbba8c551add9f03f30f4a39411139d23257e5d33c615cbec963b6c02e7
+] 
+hash: 0000003875-e9837481adf205041373b7a08b074c91c71dae2bb5b9cf4ea56189ef770ef2dc

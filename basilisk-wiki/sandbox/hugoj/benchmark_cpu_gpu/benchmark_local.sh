@@ -5,6 +5,7 @@
 set -x
 
 TODO='allgpu'
+list_backend=('gpu' 'cuda') # cuda hip
 NTHREADS=8
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 
@@ -45,7 +46,7 @@ if [ $TODO = 'cpu' ] || [ $TODO = 'all' ]; then
 fi
 
 list_res=(128 256 512 1024 2048 4096) # 128 256 512 1024
-list_backend=('gpu')                  # 'cuda')           #'hip'
+
 cd $BASILISK/examples
 make clean
 if [ $TODO = 'allgpu' ] || [ $TODO = 'all' ]; then

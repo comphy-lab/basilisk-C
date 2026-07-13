@@ -27,5 +27,3 @@ normalgravity.tst: CFLAGS += -DJUMP=0 -DMOVIE=1 -DMOVIE_EVERY=0.002 -DTEMPERATUR
 	-DPRESSURE=10 -DKINFOLDER=normalgravity.yaml -DGRAVITY=-9.81
 
 burningdroplet.tst: CFLAGS += -DKINFOLDER=burningdroplet.yaml -DMOVIE_EVERY=0.0001
-
-include Makefile.dynamic

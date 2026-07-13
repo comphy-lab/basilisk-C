@@ -11,6 +11,7 @@
 # print all commands
 set -x
 
+
 export BASILISK=/home/jacqhugo/basilisk/src
 cd $BASILISK
 
@@ -25,21 +26,19 @@ source /applis/environments/cuda_env.sh 12.6
 # what is the gpu config
 nvidia-smi
 
-CFLAGS=-I$CUDADIR/include/ # cuda.h and nvrtc.h
+CFLAGS=-I$CUDADIR/include/
 
 # qcc, bview
 ln -sf config.gcc config # fixme: use proper bigfoot config
-make
+make qcc
 
 # gpu (opengl)
-# I need glfw.h that is exposed with the glfw package of the basilisk_profile
 cd $BASILISK/grid/gpu
-CFLAGS=$CFLAGS make
+CFLAGS=$CFLAGS make libgpu.a liberrors.a
 
 # gpu (cuda)
-# I cuda.h and nvrtc.h that are exposed with the cuda_env
 cd $BASILISK/grid/cuda
-CFLAGS=$CFLAGS make
+CFLAGS=$CFLAGS make libbuda.a
 
 # gpu (HIP) --> to do later on dedicated nodes
 #cd $BASILISK/grid/hip

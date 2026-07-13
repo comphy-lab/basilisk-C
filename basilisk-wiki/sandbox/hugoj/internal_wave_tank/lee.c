@@ -97,7 +97,7 @@ We use the 1D (horizontal) non-hydrostatic multilayer solver. */
 The Boussinesq density perturbation is given as a function of the
 "temperature" field $T$. */
 
-double drho0 = 1e-3, T0 = 13.25, T1 = 8., H0 = 100.;
+double drho0 = 1e-3, T0 = 22., T1 = 8., H0 = 100.;
 #define drho(T) (drho0*(T0 - T)/(T0 - T1))
 #define T0(z) (T1 + (T0 - T1)*(z + H0)/H0)
 #include "layered/dr.h"
@@ -132,7 +132,7 @@ int main(int argc, char * argv[])
   if (argc > 1)
     T0 = atoi(argv[1]); // Surface temperature
   else
-    T0 = 13.25;
+    T0 = 22.;
   if (argc > 2)
     N = atoi(argv[2]); // grid point horizontal
   else
@@ -266,7 +266,7 @@ void setup (FILE * fp)
 	   " 0 0.5647 1, 0.375 0.05882 1 0.9333, 0.5 0.5647 1 0.4392, 0.625"
 	   " 1 0.9333 0, 0.75 1 0.4392 0, 0.875 0.9333 0 0, 1 0.498 0 0 )\n"
 	   "unset key\n"
-	   "set cbrange [8:13.5]\n"
+	   "set cbrange [8:22]\n"
 	   "set xlabel 'x (m)'\n"
 	   "set ylabel 'depth (m)'\n"
 	   "set xrange [-1500:2000]\n"

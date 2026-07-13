@@ -56,31 +56,29 @@ int main(){
   /** F(kx,ky) */
   T_Spectrum spectrum;
   spectrum = spectrum_gen_linear(N_mode, N_power, L, P, kp);
-  
+  int Ntmode = N_mode*2+1;
+
   // Writting to file
-  FILE *fptr0 = fopen("F_k_C", "wb");
+  FILE *fptr0 = fopen("F_k", "wb");
   fwrite(F_kmod, sizeof(double), N_kmod, fptr0);
   fclose(fptr0);
 
-  FILE *fptr1 = fopen("F_kxky_C", "wb");
-  fwrite(spectrum.F_kxky, sizeof(double), (N_mode*2+1)*(N_mode*2+1), fptr1);
+  FILE *fptr1 = fopen("kmod", "wb");
+  fwrite(kmod, sizeof(double), N_kmod, fptr1);
   fclose(fptr1);
 
-  FILE *fptr2 = fopen("kx_C", "wb");
-  fwrite(spectrum.kx, sizeof(double), N_mode*2+1, fptr2);
-  fclose(fptr2);
-
-  FILE *fptr3 = fopen("ky_C", "wb");
-  fwrite(spectrum.ky, sizeof(double), N_mode*2+1, fptr3);
-  fclose(fptr3);
-
-  FILE *fptr4 = fopen("kmod_C", "wb");
-  fwrite(kmod, sizeof(double), N_kmod, fptr4);
-  fclose(fptr4);
+  write_spectrum(spectrum);
+  free_spectrum(&spectrum);
 
 
+  /** ## Verification
+   We open the files to check that everything went well
+   */
+  T_Spectrum spectrum2;
+  spectrum2 = read_spectrum(N_mode);
 
-  /** eta*/
+  /** 
+   Computing eta*/
   dx = L/(1.0*N_cells);
   eta = (double *)malloc(N_cells*N_cells * sizeof(double));
   for (int i=0; i<N_cells; i++) {
@@ -88,7 +86,7 @@ int main(){
     for (int j=0; j<N_cells; j++){
       index_a = i*N_cells + j;
       y =  L/2 + j*dx;
-      eta[index_a] = wave(x, y, N_cells, spectrum);
+      eta[index_a] = wave(x, y, spectrum2);
     }
   }
 
@@ -100,26 +98,26 @@ int main(){
   fprintf(stderr,"%f\n", sum);
 
   sum = 0.;
-  double dkx = spectrum.kx[1]-spectrum.kx[0];
-  double dky = spectrum.ky[1]-spectrum.ky[0];
+  double dkx = spectrum2.kx[1]-spectrum2.kx[0];
+  double dky = spectrum2.ky[1]-spectrum2.ky[0];
 
-  for (int i=0; i<2*spectrum.N_mode+1; ++i){
-    for (int k=0; k<2*spectrum.N_mode+1; ++k){
-      sum += spectrum.F_kxky[i*spectrum.N_mode + k]*dkx*dky;
+  for (int i=0; i<2*spectrum2.N_mode+1; ++i){
+    for (int k=0; k<2*spectrum2.N_mode+1; ++k){
+      sum += spectrum2.F_kxky[i*spectrum2.N_mode + k]*dkx*dky;
     }
   }
   fprintf(stderr,"%f\n", sum);
 
-  
-  FILE *fptr5 = fopen("eta_C", "wb");
-  fwrite(eta, sizeof(double), N_cells*N_cells, fptr5);
-  fclose(fptr5);
+  /** Writing eta to plot it later */
+  FILE *fptr7 = fopen("eta_C", "wb");
+  fwrite(eta, sizeof(double), N_cells*N_cells, fptr7);
+  fclose(fptr7);
   
   // free memory
   free(eta);
   free(F_kmod);
   free(kmod);
-  free_spectrum(spectrum);
+  free_spectrum(&spectrum2);
 
 
   /** Executing the python code to work on the binary files */

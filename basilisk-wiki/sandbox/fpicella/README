@@ -3,7 +3,8 @@ Hi, I'm [Francesco](https://sites.google.com/view/francescopicella), and I'm act
 
 ![And yes, I use VI. Comic by [xkcd.](https://xkcd.com/378/)](https://imgs.xkcd.com/comics/real_programmers.png)
 
-For this reason, I'm re-adapting [Arthur Ghigo](/sandbox/ghigo/src/) implementation of moving embedded boundaries.
+- For this reason, I'm re-adapting [Arthur Ghigo](/sandbox/ghigo/src/) implementation of moving embedded boundaries.
+- I work with [Ambre Palotai](/sandbox/apalotai/README) and [Malo Walmetz](/sandbox/walmetz/README) on Robin boundary conditions
 
 ## Forces/Torques on a moving embedded boundary
 - A variation of classic [couette](/src/test/couette.c), but computing torques [couette_torque](test/couette_torque.c)

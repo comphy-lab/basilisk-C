@@ -1,15 +1,15 @@
 
 #define BGHOSTS 2
-#include "grid/multigrid.h"
 #include "vertex-utils.h"
 #include "nodal-poisson.h"
 
-// qcc -lm -DTRASH=1 -disable-dimensions test.c -o test.e
+// qcc -lm -DTRASH=1 -disable-dimensions -grid=multigrid test.c -o test.e
 
 // CC99='mpicc -std=c99' qcc -D_MPI=1  -disable-dimensions -lm test.c -o test.e
 // mpirun -np 4 test.e
 
-
+//GPU on gricad:
+//qcc -grid=cuda/multigrid -O2 test.c -o test.e -lm -L$BASILISK/grid/cuda -lbuda -L$BASILISK/grid/gpu -lerrors -lcuda -L/softs/cuda/12.9.patched/lib64 -lnvrtc
 
 
 

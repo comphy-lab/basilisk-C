@@ -2,31 +2,12 @@
  
  # Wave breaking with stratification (multilayer solver)
 
-
-USAGE
-
-  * Compilation and run (with mpirun)
-  make
-
-  * Compilation and run (gpu)
-  __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia make name.gpu.tst
-
-  * HPC source file generation
-  make _name.c
-
-  * Running on HPC
-
-  -> first compile on hpc with
-  mpicc -std=c99 -O2 _*.c
-
-  -> then run (in a slurm file)
-  srun ./name
-
 */
 const double g_ = 9.81 [1,-2];        // [m.s-2] Gravity
 
-#include "grid/multigrid.h"
+//#include "grid/multigrid.h"
 //#include "grid/multigrid1D.h"
+//#include "grid/cuda/multigrid.h"
 #include "layered/hydro.h"
 #include "layered/nh.h"
 #include "layered/remap.h"
@@ -34,9 +15,10 @@ const double g_ = 9.81 [1,-2];        // [m.s-2] Gravity
 #include "bderembl/libs/extra.h"      // parameters from namlist
 #include "bderembl/libs/netcdf_bas.h" // read/write netcdf files
 #include "hugoj/lib/spectrum.h"       // Initial conditions generation
+#include "hugoj/lib/diffusionH.h"     // Neumann at top and bot
 
-/*
-DEFAULT PARAMETERS
+/**
+## Default parameters
 
 These parameters are changed by the values in the namelist
 
@@ -53,6 +35,7 @@ int N_mode = 32 [];                   // Number of modes in wavenumber space
 int N_power = 5 [];                   // directional spreading coeff
 int F_shape = 0 [];                   // shape of the initial spectrum
 double kp = PI*10/200.0 [-1];         // peak wave number
+double Tp;
 // -> Forcing
 double qt = 100. [-2,-1,0,1];         // [W.m-2] Heat flux
 // -> Domain definition
@@ -69,13 +52,14 @@ int pad = 4 [0];                      // number of 0-padding for ouput files
 int nout = 1 [0];                     // number of the outfile
 char fileout[100];                    // name of outfile
 // -> physical properties
-double nu0 = 0.00025 [2,-1];    // Viscosity for vertical diffusion
+double Re = 1000;                     // Reynolds number Re = sqrt(g*lambda**3)/nu
+double nu0 = 0.00025 [2,-1];          // Viscosity for vertical diffusion
 double thetaH = 0.5 [0];              // theta_h for dumping fast barotropic modes
 // -> stratification related
 double rho0 = 1025. [-3,0,0,0,1];     // [kg.m-3] reference density
 double cp = 4.2e3 [0,0,-1,1,-1];      // [J.kg-1.K-1] heat capacity water
 double betaT = 2e-4 [0,0,-1];         // [K-1] Thermal expansion coeff for water
-double Dtemp = 1.5e-5 [2,-1];         // [m2.s-1] Scalar vertical diffusion coeff
+double Diff_T = 1.5e-5 [2,-1];         // [m2.s-1] Scalar vertical diffusion coeff
 double T0 = 20. [0,0,1];              // [°C] Reference temperature
 double Trand = 0.1 [0,0,1];           // [°C] Random temperature perturbution
 
@@ -90,19 +74,20 @@ double dt_mean = 1.;
 
 static FILE * fp1;
 static FILE * fp2;
-
+scalar T_ini;
 
 
 int main(int argc, char *argv[])  
 {
  
-  // Building a 'params' array with all parameters from the namlist
+  /** Building a 'params' array with all parameters from the namlist */
   params = array_new();
   add_param("N_grid", &N_grid, "int");
   add_param("L", &L, "double");
   add_param("N_layer", &N_layer, "int");
   add_param("h0", &h0, "double");
   add_param("tend", &tend, "double");
+  add_param("Re", &Re, "double");
   add_param("nu0", &nu0, "double");
   add_param("thetaH", &thetaH, "double");
   add_param("dtout", &dtout, "double");
@@ -116,7 +101,7 @@ int main(int argc, char *argv[])
 
   kp = PI * coeff_kpL0 / L; // kpL=coeff x pi peak wavelength
   
-  // Search for the configuration file with a given path or read params.in
+  /** Search for the configuration file with a given path or read params.in */
   if (argc == 2)
     strcpy(file_param, argv[1]);
   else
@@ -125,6 +110,7 @@ int main(int argc, char *argv[])
 
   // Settings solver values from namlist values
   L0 = L;
+  nu0 = sqrt(g_*pow(2*PI/kp, 3))/Re;
   nu = nu0;
   N = 1 << N_grid; // 1*2^N_grid
   nl = N_layer;
@@ -132,6 +118,7 @@ int main(int argc, char *argv[])
   theta_H = thetaH;
   CFL_H = 1; 
   CFL=0.8;
+  Tp = 2*PI/sqrt(g_*kp);
   
   // Boundary condition
   origin (-L0/2., -L0/2.);
@@ -154,49 +141,43 @@ int main(int argc, char *argv[])
 }
 
 event init(i =  0) {
-
+  T_ini = new scalar[nl];
   geometric_beta (1/3., true); // if !=0, varying layer thickness
   
-  //We generate a spectrum using spectrum.h
+  /** We read a spectrum using spectrum.h */
   T_Spectrum spectrum;
   spectrum = read_spectrum(N_mode);
 
-  /** set T. Doing this now instead of later in the code allows for a
-      initial stratitifcation that follows layers.*/
+  /** set eta and h*/
   foreach() {
     zb[] = -h0;
-    double H =  - zb[];
-    double z = zb[];
+    eta[] = wave(x, y, spectrum);
+    double H = eta[] - zb[];
     foreach_layer() {
       h[] = H*beta[point.l];
-      z+=h[]/2.;
-      T[] = Tini(z); // + noise();
-      z+=h[]/2.;
     } 
   }
 
-  // set eta and h
+  /** set a temporary T_ini field that will be used to initialse T at a later
+    time */
   foreach() {
-    eta[] = wave(x, y, N_grid, spectrum);
-    double H = wave(x, y, N_grid, spectrum) - zb[];
+    double z = zb[];
     foreach_layer() {
-      h[] = H*beta[point.l];
+      z+=h0*beta[point.l]/2.;
+      T_ini[] = Tini(z); // + noise();
+      z+=h0*beta[point.l]/2.;
     } 
   }
-  
-  /** we now remap the T field onto the new layer coordinates */
-  vertical_remapping (h, tracers);
 
   /** set currents */
   foreach() {
     double z = zb[];
     foreach_layer() {
       z += h[]/2.;
-      u.x[] = u_x(x, y, z, N_grid, spectrum);
-      u.y[] = u_y(x, y, z, N_grid, spectrum);
-      w[] = u_z(x, y, z, N_grid, spectrum);
-      // T[] = Tini(z);
-      // fprintf(stderr, "l=%d, z=%f, Tini(z)=%f", point.l, z, Tini(z));
+      coord current = wave_u(x,y,z,spectrum);
+      u.x[] = current.x; 
+      u.y[] = current.y; 
+      w[] = current.z; 
       z += h[]/2.;
     }
   }
@@ -208,20 +189,34 @@ event init(i =  0) {
     T_profile[i] = Trand*0.;
     u_profile[i] = L0/DT*0.;
   }
-  // show_dimension (T_profile[0]);
-  // show_dimension (W_profile[0]);
-
-
-  // temporary fix, should use u instead of u.x, u.y
-  create_nc({zb, h, u.x, u.y, w, eta, T}, file_out);
+  create_nc({zb, h, u, w, eta, T}, file_out);
   fprintf (stderr,"Done initialization!\n");
 }
 
 
-// dump outputs
+/** Initialise T after wave spinup 
+ 
+This is a preliminary way of doing the T initialisation.
+I see that on the T field (after about 15s=3*Tp), the left boundary does some
+strange things. tested at N=128 nl=30. I'm testing on N=512 to see if it is
+still the case.
+
+Maybe a problem with boundary condition because I initialise after the fact T ?
+Do I need to reset T to 0 at i=1 or i=2, then initialise at T=3Tp ?
+
+ 
+  */
+event initT(t=3*Tp){
+  foreach() {
+    foreach_layer() {
+      T[] = T_ini[]; // + noise();
+    } 
+  }
+}
+
+/** dump outputs */
 event output(t = 0.; t<= tend+smalltime; t+=dtout){
   write_nc();
-  // regular dump
   char dname[100];
   sprintf (dname, "dump_t%g", t);
   dump(dname);
@@ -229,9 +224,9 @@ event output(t = 0.; t<= tend+smalltime; t+=dtout){
 
 
 
-double* h_avg(scalar var, double* profile){
+double* l_avg(scalar var, double* profile){
   /*
-  This function computes the horizontal average of var.
+  This function computes the layer average of var.
 
   INPUTS:
     var: scalar (C Basilisk), the variable to average.
@@ -273,10 +268,10 @@ int write_profile(char* name, double* profile, FILE* fp){
 
 
 // This event compute layer average of T, w
-event compute_horizontal_avg (t+=dt_mean; t<=tend+smalltime){
+event compute_layer_avg (t+=dt_mean; t<=tend+smalltime){
 
-  T_profile = h_avg(T, T_profile);
-  u_profile = h_avg(u.x, u_profile);
+  T_profile = l_avg(T, T_profile);
+  u_profile = l_avg(u.x, u_profile);
 }
 
 
@@ -301,6 +296,14 @@ event cleanup(t=end){
 }
 
 /**
+## TODO:
+
+- impose initial stratification at bottom for T? -> if I impose a flux at top
+yes, else no. 
+*/
+
+
+/**
 Results: plots
 ~~~gnuplot 
 # Plot the heatmap
@@ -316,6 +319,30 @@ set output 'T_profile.png'
 set size 0.9, 0.9
 splot "T_profile.dat" using 1:2:3 with pm3d
 unset output
+~~~
+
+~~~pythonplot Temperature profile evolution
+import numpy as np
+import matplotlib.pyplot as plt
+
+data = np.loadtxt("T_profile.dat")
+nl=30
+nt = data.shape[0]//nl
+
+fig, ax = plt.subplots(figsize=(8, 6))
+cmap = plt.get_cmap("viridis", nt)
+for t in range(nt):
+    layer=data[t*nl:(t+1)*nl,2]
+    T = data[t*nl:(t+1)*nl,3]
+    ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
+ax.set_xlabel("T")
+ax.set_ylabel("Layer")
+ax.set_title("Temperature profiles")
+ax.set_xlim([19.875,20.025])
+#ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
+plt.tight_layout()
+plt.savefig("T_profiles.png", dpi=150)
+plt.show()
 ~~~
 
 **/

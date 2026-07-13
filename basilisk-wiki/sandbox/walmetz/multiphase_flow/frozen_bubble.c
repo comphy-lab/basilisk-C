@@ -1,5 +1,5 @@
 /**
-This code is about a solid cylinder inside a gas bubble. The solid cylinder don't have any influence, and is only a vestige. Indeed, this is a simplified [Picella's cylinder plastron](https://basilisk.fr/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c), that freeze the dynamic bubble into a static bubble. It creates a first validation case, for which [embed.h](https://basilisk.fr/src/embed.h) works.
+This code is about a solid cylinder inside a gas bubble. The solid cylinder don't have any influence, and is only a vestige. Indeed, this is a simplified [Picella's cylinder plastron](https://basilisk.fr/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c), that freeze the dynamic bubble into a static bubble. It's a first validation case, for which [embed.h](https://basilisk.fr/src/embed.h) works. This has'nt been studied much more since it wasn't usefull. It only tells us that embed doesn't works for the dynamic bubble because of the triple point at the gaz separation.
 */
 
 //#include "grid/multigrid.h"

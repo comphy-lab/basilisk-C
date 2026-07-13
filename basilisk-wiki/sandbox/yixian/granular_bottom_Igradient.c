@@ -136,7 +136,7 @@ event init (t = 0) {
 event properties (i++) {
     trash ({alphav});
     double mus = 0.4,mu2 = 0.68,I0 = 0.4;
-    double lambda = 0.01;
+    double lambda = 0.;
     foreach() {
         eta[] = mug;
         Ifield[]    = 0.;
@@ -323,19 +323,37 @@ set terminal postscript color enhanced
  replot
 
 
+# Links
+[https://basilisk.fr/sandbox/yixian/granular_bottom_NGF.c]()
 
+[https://basilisk.fr/sandbox/yixian/granular_bottom_constantNGF.c]()
 
+[https://basilisk.fr/sandbox/yixian/granular_bottom_dynamicNGF.c]()
+
+[https://basilisk.fr/sandbox/yixian/granular_bottom_linearisedconstantNGF.c]()
+
+[https://basilisk.fr/sandbox/yixian/granular_bottom_linearisedNGF.c]()
+
+[https://basilisk.fr/sandbox/yixian/granular_bottom_Local.c]()
+
+[https://basilisk.fr/sandbox/yixian/granular_bottom_muItheta.c]()
+
+[https://basilisk.fr/sandbox/yixian/granular_bottom_Igradient.c]()
+ 
 # Bibliography
  
- * Y. Zhou PhD
+ * Y. Zhou PhD [https://theses.fr/2016AIXM4731]()
  
- * L. Staron, P.-Y. Lagrée, & S. Popinet (2014)
- "Continuum simulation of the discharge of the granular silo, A validation test for the μ(I) visco-plastic flow law" 
- Eur. Phys. J. E (2014) 37: 5 DOI 10.1140/epje/i2014-14005-6
+  * L. Staron,  <a href="http://www.lmm.jussieu.fr/%7Elagree/TEXTES/PDF/epje130141.pdf">P.-Y. Lagr&eacute;e</a>,   &amp; S. Popinet  (2014)<br>
+"Continuum simulation of the discharge of the granular silo,
+ A validation test for the &#956;(I) visco-plastic flow law"
+<br>
+ Eur. Phys. J. E (2014) 37: 5 DOI 10.1140/epje/i2014-14005-6<br>
  
- * L. Staron, P.-Y. Lagrée & S. Popinet (2012)
- "The granular silo as a continuum plastic flow: the hour-glass vs the clepsydra" 
- Phys. Fluids 24, 103301 (2012); doi: 10.1063/1.4757390  
+ * L. Staron,   <a href="http://www.lmm.jussieu.fr/%7Elagree/TEXTES/PDF/PhysFluids_24_103301.pdf">P.-Y. Lagr&eacute;e</a>  &amp; S. Popinet (2012)<br>
+"The granular silo as a continuum plastic flow: the hour-glass vs the clepsydra"
+<br>Phys. Fluids 24, 103301 (2012); doi: 10.1063/1.4757390 <br>
+ 
 
  * Bouzid, M., Trulsson, M., Claudin, P., Cl ́ement, E. & Andreotti, B. (2013), ‘Nonlocal rheology of granular flows across yield conditions’, Phys. Rev. Lett. 111, 238301. URL: https://link.aps.org/doi/10.1103/PhysRevLett.111.238301
  
