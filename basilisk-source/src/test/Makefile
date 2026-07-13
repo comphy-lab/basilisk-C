@@ -615,17 +615,17 @@ rising-clsvof.gpu.tst: CFLAGS += -DLEVELSET=1 -DCLSVOF=1
 
 # GPUs (CUDA)
 cuda-tests: gpu.cuda.tst gpu-reduce.cuda.tst restriction1.cuda.tst gpu-boundary.cuda.tst \
-	 bump2D-gpu.cuda.tst advection.cuda.tst reversed.cuda.tst
+	 layers.cuda.tst bump2D-gpu.cuda.tst advection.cuda.tst reversed.cuda.tst
 cuda-tests: CFLAGS += -DPRINTNSHADERS
 
 # GPUs (HIP)
 hip-tests: gpu.hip.tst gpu-reduce.hip.tst restriction1.hip.tst gpu-boundary.hip.tst \
-	 bump2D-gpu.hip.tst advection.hip.tst reversed.hip.tst
+	 layers.hip.tst bump2D-gpu.hip.tst advection.hip.tst reversed.hip.tst
 hip-tests: CFLAGS += -DPRINTNSHADERS
 
 # GPUs (OpenCL)
 ocl-tests: gpu.ocl.tst gpu-reduce.ocl.tst restriction1.ocl.tst gpu-boundary.ocl.tst \
-	 bump2D-gpu.ocl.tst advection.ocl.tst reversed.ocl.tst
+	 layers.ocl.tst bump2D-gpu.ocl.tst advection.ocl.tst reversed.ocl.tst
 ocl-tests: CFLAGS += -DPRINTNSHADERS
 
 include ../Makefile.defs

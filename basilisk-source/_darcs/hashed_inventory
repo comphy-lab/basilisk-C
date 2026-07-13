@@ -1,4 +1,4 @@
-pristine:dbd0881b668222ada34dc31c4aa390e2f1bb906a61a1067b9100615728e8ff50
+pristine:051b56b5a22adcb4ca4f5bf9f259a62594018a5ff4b92296a16e5f8c3f13cfac
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -395,3 +395,13 @@ Stephane Popinet <popinet@basilisk.fr>**20260628183924
  Ignore-this: dd000d38858eff44f90589ded7218fcc39f76e25fb5072a71aac95934e5b00c52fa3cc59ed33ed76
 ] 
 hash: 0000014246-131a9e1a763185b95984f727d9566509a232dd174df4d5b50ceaf24bc32d5bd7
+[More GPU benchmarks and some cosmetic changes
+Stephane Popinet <popinet@basilisk.fr>**20260701141851
+ Ignore-this: c5279237fa5a87ab5d8a2389677537463469a89e880f19d5c0db825250b932f0778130cb19ba944c
+] 
+hash: 0000006312-05299d039fd9bbe70034e39f8963e49c5ab5dbf62ccee603884e2b471e1c4914
+[Layers work with CUDA/HIP/OpenCL
+Stephane Popinet <popinet@basilisk.fr>**20260703112802
+ Ignore-this: 1318d87746e8aea859b56f89f8d48b5ea6bbb556bd2310a9c923ffd8cb415f2a0216da269e89396
+] 
+hash: 0000001427-6aae06664607c18c8ac622f82eb9b92e876b08f503089dd1bcc1fb711d84f14a

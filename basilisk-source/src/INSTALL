@@ -63,6 +63,7 @@ If you are using gcc on a UNIX-like system, this should work:
 ~~~bash
 cd basilisk/src
 ln -s config.gcc config
+make -k
 make
 ~~~
 

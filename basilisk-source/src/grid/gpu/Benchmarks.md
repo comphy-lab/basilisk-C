@@ -27,7 +27,7 @@ This is this [test case](/src/test/advection.c) i.e. the [BCG](/src/bcg.h) advec
 
 See [Benchmarks/advection]() for the commands and raw data.
 
-~~~gnuplot Time-reversed advection in a vortex
+~~~gnuplot Time-reversed advection in a vortex {width="100%"}
 set term svg enhanced font ',11' size 1000,500
 c1 = "#99ffff"; c2 = "#4671d5"; c3 = "#ff0000"; c4 = "#f36e00"; c5 = "#2ec95a"
 set auto x
@@ -41,16 +41,8 @@ set logscale y
 set grid
 
 np = 9
-set multiplot layout 1, 2
-set title 'Speed in grid points x timesteps / second'
-plot for [i=2:np] \
-    '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' \
-    using i:xtic(1) title columnhead lt i
-set title 'Speedup relative to 8 x Intel Core i7'
-plot for [i=3:np] \
-    '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' \
-    using (column(i)/$2):xtic(1) title columnhead lt i
-unset multiplot
+input = 'advection'
+call 'bench.gp'
 ~~~
 
 ## Time-reversed VOF advection in a vortex
@@ -61,18 +53,10 @@ than the BCG scheme.
 
 See [Benchmarks/reversed]() for the commands and raw data.
 
-~~~gnuplot Time-reversed VOF advection in a vortex
+~~~gnuplot Time-reversed VOF advection in a vortex {width="100%"}
 np = 9
-set multiplot layout 1, 2
-set title 'Speed in grid points x timesteps / second'
-plot for [i=2:np] \
-    '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' \
-    using i:xtic(1) title columnhead lt i
-set title 'Speedup relative to 8 x Intel Core i7'
-plot for [i=3:np] \
-    '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' \
-    using (column(i)/$2):xtic(1) title columnhead lt i
-unset multiplot
+input = 'reversed'
+call 'bench.gp'
 ~~~
 
 ## Saint-Venant bump
@@ -82,18 +66,10 @@ This is close to this [test case](/src/test/bump2D.c) and tests the
 
 See [Benchmarks/bump2D-gpu]() for the commands and raw data.
 
-~~~gnuplot Saint-Venant bump
+~~~gnuplot Saint-Venant bump {width="100%"}
 np = 8
-set multiplot layout 1, 2
-set title 'Speed in grid points x timesteps / second'
-plot for [i=2:np] \
-    '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' \
-    using i:xtic(1) title columnhead lt i
-set title 'Speedup relative to 8 x Intel Core i7'
-plot for [i=3:np] \
-    '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' \
-    using (column(i)/$2):xtic(1) title columnhead lt i
-unset multiplot
+input = 'bump2D-gpu'
+call 'bench.gp'
 ~~~
 
 ## Lid-driven cavity
@@ -106,18 +82,10 @@ pressure.
 
 See [Benchmarks/lid]() for the commands and raw data.
 
-~~~gnuplot Lid-driven cavity
-np = 7
-set multiplot layout 1, 2
-set title 'Speed in grid points x timesteps / second'
-plot for [i=2:np] \
-    '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' \
-    using i:xtic(1) title columnhead lt i
-set title 'Speedup relative to 8 x Intel Core i7'
-plot for [i=3:np] \
-    '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' \
-    using (column(i)/$2):xtic(1) title columnhead lt i
-unset multiplot
+~~~gnuplot Lid-driven cavity {width="100%"}
+np = 8
+input = 'lid'
+call 'bench.gp'
 ~~~
 
 ## Two-dimensional turbulence
@@ -129,16 +97,8 @@ Poisson solver).
 
 See [Benchmarks/turbulence]() for the commands and raw data.
 
-~~~gnuplot Two-dimensional turbulence
+~~~gnuplot Two-dimensional turbulence {width="100%"}
 np = 9
-set multiplot layout 1, 2
-set title 'Speed in grid points x timesteps / second'
-plot for [i=2:np] \
-    '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' \
-    using i:xtic(1) title columnhead lt i
-set title 'Speedup relative to 8 x Intel Core i7'
-plot for [i=3:np] \
-    '< awk -v findex=3 -v minlevel=7 -f advection.awk turbulence' \
-    using (column(i)/$2):xtic(1) title columnhead lt i
-unset multiplot
+input = 'turbulence'
+call 'bench.gp'
 ~~~
