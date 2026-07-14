@@ -53,6 +53,11 @@ A comprehensive list of numerical simulations in this sandbox, organized by the 
 * [Pinned droplet at different gravity values](run/pinning.c)
 * [Relaxation of a pinned droplet](test/pinning.c)
 
+### Contact angles
+
+* [Small/Large contact angles boundary conditions](patch/contact/sessile-gerris.c)
+* [Mesh-dependent dynamic contact angle (Cox-Voinov)](run/dynamic.c)
+
 ### Boiling
 
 * [Fixed flux bubble growth](run/fixedbubblevelocity.c)
