@@ -256,8 +256,7 @@ install_basilisk() {
 
     printf "\033[0;36mBuilding basilisk (first pass with -k to continue on errors)...\033[0m\n"
     if ! make -k; then
-        printf "\033[0;31mError: make -k failed in $BASILISK_SRC_DIR\033[0m\n" >&2
-        exit 1
+        printf "\033[0;33mBootstrap build reported errors; retrying with the generated dependencies...\033[0m\n"
     fi
 
     printf "\033[0;36mBuilding basilisk (final build)...\033[0m\n"

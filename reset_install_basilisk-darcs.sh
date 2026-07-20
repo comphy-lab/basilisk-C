@@ -240,8 +240,7 @@ install_basilisk() {
         ln -s config.gcc config
     fi
     if ! make -k; then
-        echo "\033[0;31mError: make -k failed in $BASILISK_SRC_DIR\033[0m"
-        exit 1
+        echo "\033[0;33mBootstrap build reported errors; retrying with the generated dependencies...\033[0m"
     fi
     if ! make; then
         echo "\033[0;31mError: make failed in $BASILISK_SRC_DIR\033[0m"

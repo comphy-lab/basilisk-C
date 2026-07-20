@@ -712,8 +712,7 @@ build_basilisk() {
 
     print_cyan "Building basilisk (first pass with -k to continue on errors)..."
     if ! make -k; then
-        print_red "Error: make -k failed in $BASILISK_SRC_DIR"
-        exit 1
+        print_yellow "Bootstrap build reported errors; retrying with the generated dependencies..."
     fi
 
     print_cyan "Building basilisk (final build)..."
