@@ -1,4 +1,4 @@
-pristine:ea8a96c96faa5a3619380f53529bf1b063fc96851224c10b5b858c44bc6dba9f
+pristine:358042b020d2f30829cc6e6e47df0b105aa8bc24ee780204d1b28f0b3d768443
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -12292,3 +12292,53 @@ ecipriano <edoardo.cip@gmail.com>**20260713124731
  Ignore-this: 69d6b86c5ff68ead75eb1755717a43faad2b578fbdbf29288606c266b9bbf16027beb7e399d2a324
 ] 
 hash: 0000000391-6f1a7d72220535ad9b76731aa4d987f649d831fb46c2036ff3d77f97dbbb3f34
+[Update doc
+Savinien Pertant <savinien.pertant@univ-rennes.fr>**20260716082109
+ Ignore-this: 77220a05fa16c92e6240c17ef8bdf0779d9fdfe7e9c0ecd01c60deabdec0a94635e798d8aff93e6
+] 
+hash: 0000018845-7d65ed13e3a0f69cbafb8034d3afb977ff9d1043fee4b49441b4902be4531ff1
+[Clean-up in diffusion solver and doc
+Savinien Pertant <savinien.pertant@univ-rennes.fr>**20260716085002
+ Ignore-this: 4321fe4f575f8f2caf2ad9be9146ac70abd44d197866f55e749988e31deab2a48dc8a3f42e88df26
+] 
+hash: 0000004546-821f17964393913dccccdd7b10c280f4b898b59dba409ed283409cbc57af45f0
+[Correct typo
+Savinien Pertant <savinien.pertant@univ-rennes.fr>**20260716085317
+ Ignore-this: bd247dd53ee1bd7c0e8cd4aa54f6093856087c9218ee13f67a1a3e3144475b91b8b5e18454e87adb
+] 
+hash: 0000001520-104f0df1b0db4fd939c745253a331c426f0e3daf27dc3627320328b2aa09a207
+[Clean-up in hydro-tension and doc
+Savinien Pertant <savinien.pertant@univ-rennes.fr>**20260716090447
+ Ignore-this: 1c38ff0ddd5634f0ca14e2d58644265633887436526523eb547c18ab0d298fb85e456dae95bd51b5
+] 
+hash: 0000003136-ac20d87ecf372550d27ca4a57fcb479a08c98c3a2b5c39526a8f137e2ad92938
+[Clean-up in hydrostatic solver and doc
+Savinien Pertant <savinien.pertant@univ-rennes.fr>**20260716094331
+ Ignore-this: 3a5e81b77422b20fee0e5b1da78d1d49bafd9ce87df0716aca8491fc7a22bd40ff8e6d98691ee499
+] 
+hash: 0000001445-c77c064b17d7a73601ef61921985113f7125deb94b213428b5d2b44ca2814ae9
+[Update README
+Savinien Pertant <savinien.pertant@univ-rennes.fr>**20260716094634
+ Ignore-this: 668f9db299fb79d33efe110b68a64e11af1fc8a2b9101dc52ac5ca1aad01e9baee17bfb24ad4682d
+] 
+hash: 0000000571-c03e95a05313b0ac60477424eadd8e2105515f2bd49b7d19438ec3e640dd2538
+[Add link to an experimental publication
+Savinien Pertant <savinien.pertant@univ-rennes.fr>**20260717085937
+ Ignore-this: 42a0063dea91293916af6965d6122f29c391928f53fc357457c877ad0b0e5c37417126c63f7cbb15
+] 
+hash: 0000000913-5808196d4fe2de91e8088202056af624bc3ad3795995fb6d2374162261679b87
+[Update the bubble-wall code description and add references to the related papers; add a new code for freely rising droplets and a reference to the associated paper.
+pshi <p.shi@hzdr.de>**20260720114436
+ Ignore-this: d2ff33cacaff985a42830813fd7926a41bacd50bdb507eea7cf72e0c4f17964fe99a0f0f13de1c81
+] 
+hash: 0000001224-f76261c9a48926f6f6e3a1b69173b68e24028d7ea36b608ef9bb7988d4c158ed
+[add a code for rising droplet in axisymmetric configuration
+pshi <p.shi@hzdr.de>**20260720114611
+ Ignore-this: 386a9cdae9230018513b1b4008ed202af6456499d017a10b12a36615e68caf24b00b45f162c6c76b
+] 
+hash: 0000007340-f6b8a1100bb976630b29329ec62c38264a13d83b3b68f8c77d087c60523425ee
+[add a code for rising droplet in 3-D configuration
+pshi <p.shi@hzdr.de>**20260720114725
+ Ignore-this: 2c3472a3f6cbe32db2223cc7e18d35bbf6baa8afde430ae5e54d55b6443c2fcf2a8a288ed6f0b59
+] 
+hash: 0000006384-c6bac9ebdd351aa314036df3a8f70098ca0c43cbd126b5adcdec7d60b784058c

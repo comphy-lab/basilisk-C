@@ -7,3 +7,25 @@ Pengyu Shi
 # Bubble rising near wall
 Interaction of a rising bubble with a vertical wall:
 [bubble-wall.c](bubble-wall.c)
+
+It was used for the numerical investigations reported in:
+
+* P. Shi, J. Zhang and J. Magnaudet,  
+  *Lateral migration and bouncing of a deformable bubble rising near a vertical wall. Part 1. Moderately inertial regimes*,  
+  J. Fluid Mech. **998**, A8 (2024).
+
+* P. Shi, J. Zhang and J. Magnaudet,  
+  *Lateral migration and bouncing of a deformable bubble rising near a vertical wall. Part 2. Highly inertial regimes*,  
+  J. Fluid Mech. **1013**, A19 (2025).
+
+
+## Rise regimes of freely rising droplets
+
+The following codes were used for the numerical simulations reported in:
+
+P. Shi, D. Lucas, J. Zhang, É. Climent and D. Legendre,
+[Rise regimes of freely rising droplets with a moderate viscosity ratio](https://arxiv.org/abs/2606.08575),
+arXiv:2606.08575 (2026).
+
+* [Axisymmetric simulation](rising_drop_axi.c)
+* [Three-dimensional simulation](rising_drop_3d.c)
