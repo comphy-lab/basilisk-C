@@ -37,6 +37,7 @@ def input_matrix(file_path):
   return f, n, x, y
 
 
+
 T, _, _, _ = input_matrix("temperature.bin")
 psi, n, x, y = input_matrix("streamfunction.bin")
 

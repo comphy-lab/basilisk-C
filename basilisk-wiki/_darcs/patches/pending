@@ -45,19 +45,6 @@ rmdir ./sandbox/rvilliers
 rmdir ./sandbox/walmetz/simple%20cylinder
 rmdir ./sandbox/walmetz/slip-lenght
 rmdir ./sandbox/zied/culvert_flushing_friction/culvert
-addfile ./sandbox/oystelan/test1_stokes_ml/output_vts_multilayer.h
-addfile ./sandbox/oystelan/test2_temporal_oscillation_modes/output_vts_multilayer.h
-addfile ./sandbox/oystelan/test3_sloshing_river/output_vts_multilayer.h
-hunk ./sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale/Makefile 1
--CFLAGS += -O2
--include $(BASILISK)/Makefile.defs
--
--# "OpenGL" libraries
--
--OPENGLIBS = -lfb_tiny
--# OPENGLIBS = -lfb_osmesa -lOSMesa
--# OPENGLIBS = -lfb_glx -lGLEW -lGL -lX11
-rmfile ./sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale/Makefile
 hunk ./sandbox/Kaustubh/Steel_Melting_Multi-Physics/Dissusion_only_melting 1
 -
 rmfile ./sandbox/Kaustubh/Steel_Melting_Multi-Physics/Dissusion_only_melting
@@ -212,17 +199,6 @@ hunk ./sandbox/Llourenco/feedbackmechanism/baseflow.c 1
 -
 +
 rmfile ./sandbox/Llourenco/feedbackmechanism/baseflow.c
-hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 173
--
--
--/**
--# Visualisations
--
--
--![Animation of the vorticity field](timeSeries/vorticity.mp4)(loop)
--
--![Animation of the velocity field (u.x)](timeSeries/ux.mp4)(loop)
--*/
 hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 1
 -/** # Feedback Mechanism in a Jet Impinging a Flat Plate
 -
@@ -395,6 +371,17 @@ hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 1
 -
 -event adapt (i++) 
 -  adapt_wavelet ({u}, (double[]){1e-3,1e-3}, maxlevel, 4);
+hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 2
+-
+-
+-/**
+-# Visualisations
+-
+-
+-![Animation of the vorticity field](timeSeries/vorticity.mp4)(loop)
+-
+-![Animation of the velocity field (u.x)](timeSeries/ux.mp4)(loop)
+-*/
 rmfile ./sandbox/Llourenco/feedbackmechanism/timeSeries.c
 rmdir ./sandbox/Llourenco/feedbackmechanism
 rmdir ./sandbox/Llourenco
@@ -1700,4 +1687,17 @@ hunk ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h 1
 -}
 rmfile ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h
 rmdir ./sandbox/acastillo/frozen_waves/without_walls
+addfile ./sandbox/oystelan/test1_stokes_ml/output_vts_multilayer.h
+addfile ./sandbox/oystelan/test2_temporal_oscillation_modes/output_vts_multilayer.h
+addfile ./sandbox/oystelan/test3_sloshing_river/output_vts_multilayer.h
+hunk ./sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale/Makefile 1
+-CFLAGS += -O2
+-include $(BASILISK)/Makefile.defs
+-
+-# "OpenGL" libraries
+-
+-OPENGLIBS = -lfb_tiny
+-# OPENGLIBS = -lfb_osmesa -lOSMesa
+-# OPENGLIBS = -lfb_glx -lGLEW -lGL -lX11
+rmfile ./sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale/Makefile
 }
