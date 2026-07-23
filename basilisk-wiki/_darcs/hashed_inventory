@@ -1,4 +1,4 @@
-pristine:b01b431e6d0068d507245f372da5e1844b56741c9aee79e5b81daf5a0a1daf5a
+pristine:64cc2c1d94a488cb02b826e781c7c7a6bbe5294fe719375368cdf9c19bc61f9f
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -12347,3 +12347,13 @@ mvacher <marc.cordelle.vacher@gmail.com>**20260721091200
  Ignore-this: f6935359a2d6cd068c6ab678c908c56b734b091e2ddab359bd4b13cf55df295da27a95d4898e021c
 ] 
 hash: 0000000213-838281962c3c2681c03da6e4e8ad59d3798b3c6c21111ea63a69747d330ee452
+[.
+Louise Gally <louisegally@gmail.com>**20260722095818
+ Ignore-this: 242fa08e3246a3757cb54d81d564b61da67f9e2fb752bd96c457175771d900dd9769ca09281cb7c5
+] 
+hash: 0000000284-7fe5f2189824448deaf072c3462e6db025cfe3cc618a34f36aaafe06e77b3003
+[added instrumented version of my test case, with python script for plotting energy evolution and which limiters is triggered. report is WIP
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260722145142
+ Ignore-this: 76c536437fa79426d31aa3e11733da71
+] 
+hash: 0000075167-89f8e28cb690c54bc76085b88fddce299fce8ffb70d52b0005a641c3c7b75b32

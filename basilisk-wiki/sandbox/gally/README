@@ -5,9 +5,6 @@ Hi, I'm Louise. I'm a fourth year student doing an internship for which I'm impl
 - Stabilisation of a [Kármán Vortex Street](/sandbox/gally/KarmanSFD.c) behind a 2D cylinder
 - Stabilisation of a flow behind a [3D sphere](/sandbox/gally/SphereSFD.c)
 
-## To come soon
-- Baseflow around an edge (edgetone)
-
-# Kármán
+# Instabilities of von Kármán
 - [Strouhal number of the oscillations behind a 2D sphere](/sandbox/gally/KarmanStrouhal.c)
 - First step of the SFD : [filtering the unstable flow](/sandbox/gally/KarmanFiltered.c)
