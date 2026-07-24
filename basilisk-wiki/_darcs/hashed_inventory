@@ -1,4 +1,4 @@
-pristine:64cc2c1d94a488cb02b826e781c7c7a6bbe5294fe719375368cdf9c19bc61f9f
+pristine:93c3b06b7970188c5a504bbf9862446389becb81a819a49661c045d48d0277be
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -12357,3 +12357,123 @@ Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260722145142
  Ignore-this: 76c536437fa79426d31aa3e11733da71
 ] 
 hash: 0000075167-89f8e28cb690c54bc76085b88fddce299fce8ffb70d52b0005a641c3c7b75b32
+[creation
+mvacher <marc.cordelle.vacher@gmail.com>**20260723111149
+ Ignore-this: d6c4b3d06cb88a3eb4628e130ffaf4f3cd06933df26fce3ce47f2e0afc3fde136e9e804ff872d9d5
+] 
+hash: 0000005911-e1e2593a9abcb3609c56955a07ea4c0b99fd1fd850c4999c077613f32f5446a7
+[no streamlines
+mvacher <marc.cordelle.vacher@gmail.com>**20260723112048
+ Ignore-this: 53bc3251d337289ce646eb32bd964b67ce69cd4adf84ed6132d24750a166a225f6f18b26b17be27a
+] 
+hash: 0000000391-02f582a3c0091f7e11c212127291b4ccc0a8f86baa8c6e1d87fae750b2c3df9c
+[from top
+mvacher <marc.cordelle.vacher@gmail.com>**20260723114454
+ Ignore-this: 60adea743ee5733823c805fcdf686f3304e8a51ead66c9fc3763d9cb0bbe165fadc1291e7f71251c
+] 
+hash: 0000008609-50c9ca8adb8b23f27535223fc5571f3318f43babe9c4639a8fdd2729b3ecb371
+[better case
+mvacher <marc.cordelle.vacher@gmail.com>**20260723115157
+ Ignore-this: 7808fc82afb5e6a702eb1765b002d6f79227c1d0dd9b3a77c60feb56bd2b76fb6e3b10471b22a67b
+] 
+hash: 0000008847-3ef759506c1e93a7ffe5befb8a9d92147789964c60b0fe314da71bf88abeb9ff
+[Better case 2
+mvacher <marc.cordelle.vacher@gmail.com>**20260723120137
+ Ignore-this: 75d77367f16d2f06f9f422b5787cb69526a8541dfa69df0fc6084c5040e7840f58aa2e5271bd520a
+] 
+hash: 0000002723-fa806060319a8d35dc79632ea5000d0763fe6ba46153f04bd750454e90bf4ccb
+[different diameters
+mvacher <marc.cordelle.vacher@gmail.com>**20260723123403
+ Ignore-this: 5b24dd5a5d3c9ced3a3cad045824a4679d720391e696381030a23a9f05e21041424c53071ba2fb32
+] 
+hash: 0000003739-fddda991b299441e8c85e0e003935c971a7fa8175332c9e1495141cad6aeb352
+[try
+mvacher <marc.cordelle.vacher@gmail.com>**20260723124119
+ Ignore-this: db74ab56926b54ae90f302ec4eba29d1b6cebba09025f70ff0022f144508a379ccff373ab558a809
+] 
+hash: 0000001386-06ad5d3d274d4edc6258791be59ff897ab952d5f873203e33aa362f96f94714d
+[residuals
+mvacher <marc.cordelle.vacher@gmail.com>**20260723125119
+ Ignore-this: e4f994e15b94739c003f1c13abc268fc1d878ccc738b85d05a76eb97b0eee7f27393625f656e23e4
+] 
+hash: 0000002065-ea6bbdcf56347b0659a00040c4f7373fbb1ad1f2995a73d8a0d70ac06a3ac70f
+[Save changes
+mvacher <marc.cordelle.vacher@gmail.com>**20260723125245
+ Ignore-this: 6706038f8c1f1f609de2ce3172a9c6bc7db5ac41fcc6c2c47ef8825700ea8501e02f1525556753eb
+] 
+hash: 0000000278-b7a78016c0a7e25894b3a483641bf9453404b334b1c8d077ac0dcc852542001d
+[targetting parameters
+mvacher <marc.cordelle.vacher@gmail.com>**20260723125830
+ Ignore-this: f1f64e0c6e365634d1ca8ff2d67137ace1e02a9927fc65bcf8ea87741b06fbb4bf90724b1329e7ee
+] 
+hash: 0000000306-1e2fa0041852b0cff4cf6e766f725dc6e769d62bcd7669c67b3dcd9e9563adf7
+[targetting parameters
+mvacher <marc.cordelle.vacher@gmail.com>**20260723130317
+ Ignore-this: 9eb1d46f3321ff5eb5882a69b29fabf04d8d3909c10e569ad93b00def3ba50041cae378f9e1bf7c2
+] 
+hash: 0000000525-015eeae624e59559e6cfa404d2caed185f71a1e2d976b6685e2f24c53739a8eb
+[no recirculation
+mvacher <marc.cordelle.vacher@gmail.com>**20260723130848
+ Ignore-this: 3730ff54e689f71c506e96c23d4b99dc55ec0076f697a228ee5b6c3bb61a7633de897b88aead58e
+] 
+hash: 0000000438-458f628816896385b4254ddf85004c2a22faead3493a172c7a2c4431d1838bfd
+[walls are better
+mvacher <marc.cordelle.vacher@gmail.com>**20260723131343
+ Ignore-this: 70ee3f3b8cb3d5cd89160864dd1ae7f3012c2e671ea9dcfd21461da6f9ac96d0d83f3bf2f92907a3
+] 
+hash: 0000000452-8c234862b34c0b2882ec7604fb3b56f56206fd597bad751b707d43094412560d
+[tryout with pressure
+mvacher <marc.cordelle.vacher@gmail.com>**20260723132719
+ Ignore-this: 24592491d3e36cfd1d8da71363e5324a68397bedc24ca6184b5cb38e3ffda597a7496c394e72bfae
+] 
+hash: 0000000326-0e9a9c37a30565271e349492a70a6470d6b8395aad6a258dbdd73fd6a581ead1
+[better with the good signs
+mvacher <marc.cordelle.vacher@gmail.com>**20260723140109
+ Ignore-this: e2f134fa7c591b744ff07b67120edea039fda4a53fcfd3dd445c6b599ebc1ef10a348e832ba9fffb
+] 
+hash: 0000000671-8bfb13486af65f9dba970ec47215ae6ffd9d26133306c49d7e910bcd20a8c12f
+[bad constants...
+mvacher <marc.cordelle.vacher@gmail.com>**20260723143532
+ Ignore-this: 716e63215bbc389d5f288af3c4996e1e92f1d681daec36f9beb8b4deccaf90fca406dc1aaf875f0
+] 
+hash: 0000000278-bc544a5edb0d2015ac43164d2c16f87db3e12689ccb138ef59f6694d43733432
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260723144524
+ Ignore-this: 98094ed5d1a4c5b655528de173634fb5be6e6437fc7ed9e064a6c4e9d704cb41927a19e2e7c4
+] 
+hash: 0000000504-005ade26d80d3a6cf548c478b3f2550d2822f590a34723a3985115a17a9e3311
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260723144835
+ Ignore-this: e4268e08065b926ee355f1ff73551855e5758718faa544e5233cfd2e42980bfec7c42b16ee903d56
+] 
+hash: 0000000341-7de64cd9d6a295dc9f9490466e58ae6af859d01a5ef3e59363cf150d60841434
+[test
+mvacher <marc.cordelle.vacher@gmail.com>**20260723145043
+ Ignore-this: f5f6f3b2f1a48d653993d1b1ec986e54aaab47f5e3368b52783c5ca5820346921afd8a98c12af4fb
+] 
+hash: 0000000345-282b7be8aab35f27a507595bd64b9bb2ce738bbb33c9b05d67497e117d69ce47
+[last test
+mvacher <marc.cordelle.vacher@gmail.com>**20260723145209
+ Ignore-this: de32920ac39ded19fb0a2c6c7a86bb5c81177fce4f559e2b5fc651060a5f77137896257daf9de231
+] 
+hash: 0000000485-f104605577b4c5717fa2e7d413199bfadc9a3d3d75b04c0a5e3325b5a3312433
+[longer
+mvacher <marc.cordelle.vacher@gmail.com>**20260723150331
+ Ignore-this: b5317d7f4d034c11d41a29eb057dbd5656e9f371f4485cf5c356b3d68a1cfaf22ccd3869e10352df
+] 
+hash: 0000000410-87f7b897c66b4d8a98b34f44d297618b37555a0685ca980dac5ea3cae94f75b6
+[pressure problem
+mvacher <marc.cordelle.vacher@gmail.com>**20260723153555
+ Ignore-this: 54bd4bc9506501347c670a70607cba75fb73296217dacfb62933c758afc811816aed3a33eedbda27
+] 
+hash: 0000000310-c8e98542680c05baf4adcf04de34b31d89f4cb991c76ad517a93836f372b7878
+[vector graphics please
+Stephane Popinet <popinet@basilisk.fr>**20260723164626
+ Ignore-this: eab8f8c29330b3930a48b858c6065d7d83caedb6eb6a99a57f0351a31d7aa72f4bfb709769872fdc
+] 
+hash: 0000000272-712f4683f786a03283c66a8ef437bbbf4c30093df2fa5c38e7c9dd590c400932
+[Typo
+Stephane Popinet <popinet@basilisk.fr>**20260723164835
+ Ignore-this: 18e87e46b855e5b0cf7afeccc9b6fa612cd4deba46c7a446ccdb519d58f12189076e406c8d7483ed
+] 
+hash: 0000000315-ec1686bedce5858ec84ae093065360d1214945d1cd59e6d486257d7aefe397d4

@@ -2,7 +2,7 @@
 # SFD applied to vortex shedding behind a sphere at Re = 300
 
 ![Animation of the $\lambda_2$ vortices coloured with the vorticity
- component aligned with the flow.](sphere/movie.mp4)(loop)
+ component aligned with the flow.](SphereSFD/movie.mp4)(loop)
 
 We solve the Navier--Stokes equations on an adaptive octree and use
 embedded boundaries to define the sphere. */

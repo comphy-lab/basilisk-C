@@ -145,7 +145,6 @@ plt.ylabel("Velocity")
 #plt.xlim([0, 35])
 plt.legend()
 plt.tight_layout()
-plt.savefig("velocity.png")
-
+plt.savefig("velocity.svg")
 ~~~
 */
