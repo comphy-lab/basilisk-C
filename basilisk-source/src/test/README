@@ -197,6 +197,8 @@ These tests can be run using `make embed-tests`.
 * [Boundary conditions for face fluxes](mpi-flux.c)
 * [Boundary conditions for face vector fields](mpi-interpu.c)
 * [Simple test of Basilisk View](view.c)
+* [Rotation of a circular interface - manual MPI Load Balancing test](balance-rotate.c)
+* [Rotation of a circular interface - automatic MPI Load Balancing test](balance-rotate-auto.c)
 
 ## GPU tests
 

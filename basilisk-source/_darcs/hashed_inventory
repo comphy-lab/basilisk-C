@@ -1,4 +1,4 @@
-pristine:051b56b5a22adcb4ca4f5bf9f259a62594018a5ff4b92296a16e5f8c3f13cfac
+pristine:ffd488ed13e803da9ca0db8d8a96e223f68d2b2b6e3ae7d295e6a8828ce0619b
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -405,3 +405,33 @@ Stephane Popinet <popinet@basilisk.fr>**20260703112802
  Ignore-this: 1318d87746e8aea859b56f89f8d48b5ea6bbb556bd2310a9c923ffd8cb415f2a0216da269e89396
 ] 
 hash: 0000001427-6aae06664607c18c8ac622f82eb9b92e876b08f503089dd1bcc1fb711d84f14a
+[Cell-weighted Load Balancing
+"Riccardo Caraccio <riccardo.caraccio@polimi.it>"**20260727110952
+ Ignore-this: d92d78f15902e5c674da6c014e74095f
+] 
+hash: 0000006912-c2baa3fc6f996d9ded450bd5939ef0d8811f98940f50420b63bd328c883a1521
+[Automatic Load Balancing Weights
+"Riccardo Caraccio <riccardo.caraccio@polimi.it>"**20260727111152
+ Ignore-this: 9a7d59a271dd885b11779c1b6b64a46f
+] 
+hash: 0000002008-693c629ae18e4d14adbeed11ea472701afddc88aedc4bfa815dc5c87fdc303b8
+[Tests for the new Load Balancing algorithm
+"Riccardo Caraccio <riccardo.caraccio@polimi.it>"**20260727111221
+ Ignore-this: 6dd0617d9ae306517e618bd8725d39e
+] 
+hash: 0000096508-52f26b02a3c4474f21e9a85ab3b44030b57e1dca83ad9ecd6e9c3fcbc0a14dd3
+[Merged duplicated balance-rotate.c and balance-rotate-auto.c
+Stephane Popinet <popinet@basilisk.fr>**20260727143947
+ Ignore-this: 434b953b373980f1b877625ff7a2cf702af21754f30602c01afcedb2e298571c8a4fdbd406724d96
+] 
+hash: 0000009429-4d55fae2bda785ffadb5a7f22a0f3264f2927028ef82eaa71cbc58f12c91f424
+[Cosmetics for the load-balancing patches
+Stephane Popinet <popinet@basilisk.fr>**20260727144007
+ Ignore-this: 9282872c6480f09eb681f62cd331dec8afb56863fbbe977a310593894e4c207a30c45616f7202a06
+] 
+hash: 0000002111-187221ffbaaeed4adb5e993539791af5e8e7b2ee354a0ae976fbb788d660c353
+[Updated reference due to changes in load balancing
+Stephane Popinet <popinet@basilisk.fr>**20260727145432
+ Ignore-this: cc7170cbed8eb15ee48b5c6685e1c574a3d80057a2749fa1533a3a0aca52db30651b33580069ea7d
+] 
+hash: 0000000393-63ea8d7591d2dd4754c0c0081ef1aa7553625f68ac9609e19aa16a7e6ec9c47c

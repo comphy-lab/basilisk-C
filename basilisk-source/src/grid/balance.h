@@ -196,8 +196,15 @@ struct {
   true
 };
 
+/**
+This is the weight field used by the load balancer.  By default, we
+assign equal weights, meaning all processors will have the same number
+of cells. */
+
+(const) scalar balance_weights[] = 1.;
+
 trace
-bool balance()
+bool balance ((const) scalar w = unity)
 {
   if (npe() == 1)
     return false;
@@ -239,13 +246,15 @@ bool balance()
   else
     mpi.npe = npe();
 
-  if (nmax - nmin <= 1)
-    return false;
-  
+  boundary ({w});
+
   scalar newpid[];
-  double zn = z_indexing (newpid, mpi.leaves);
-  if (pid() == 0)
-    assert (zn + 1 == nt);
+  double tl = z_weights (newpid, w, mpi.leaves);
+  // We need to know the total load on all processors
+  mpi_all_reduce (tl, MPI_DOUBLE, MPI_MAX);
+ 
+  if (tl <= 0)
+    return false;
   
   FILE * fp = NULL;
 #ifdef DEBUGCOND
@@ -260,7 +269,7 @@ bool balance()
   bool next = false, prev = false;
   foreach_cell_all() {
     if (is_local(cell)) {
-      int pid = balanced_pid (newpid[], nt, mpi.npe);
+      int pid = balanced_pid (newpid[], tl, mpi.npe);
       pid = clamp (pid, cell.pid - 1, cell.pid + 1);
       if (pid == pid() + 1)
 	next = true;
@@ -391,6 +400,48 @@ bool balance()
   return pid_changed;
 }
 
+/**
+## Automatic Load Balancing based on MPI wait time */
+
+#ifdef LB_AUTO
+
+/**
+Each core experience a total time t_wall = t_busy + t_wait. We want to
+extract t_busy = t_wall - t_wait, which is a measure of the computational
+effort carried out by that specific processor.  We exploit 'mpi_time',
+global accumulated time (per processor) of the MPI syncronization and
+communication time. */
+
+void trace_weights (scalar weights) {
+  static double wait_prev = 0., t_prev = -1.;
+  struct timeval tv; gettimeofday (&tv, NULL);
+  double now      = tv.tv_sec + tv.tv_usec/1e6; // wall clock
+  double wait_now = mpi_time;                    // comm+sync since start
+
+  if (t_prev < 0.) { // first call: initialize and return unity
+    t_prev = now; wait_prev = wait_now;
+    foreach()
+      weights[] = 1.;
+    return;
+  }
+  double dt_wall = now - t_prev; t_prev = now;
+  double dt_wait = wait_now - wait_prev; wait_prev = wait_now;
+
+  double t_busy = max (dt_wall - dt_wait, 0.);
+ 
+  // This is approximate but ensures weights > 0 and convergence
+  double per_cell = grid->n > 0 ? t_busy/grid->n : 0.;
+
+  foreach()
+    weights[] = per_cell + 1e-30;
+}
+
+# ifndef LB_ITER
+#  define LB_ITER 1 // refresh weights every LB_ITER steps
+# endif
+
+#endif  // LB_AUTO
+
 void mpi_boundary_update (scalar * list)
 {
   mpi_boundary_update_buffers();
@@ -398,5 +449,22 @@ void mpi_boundary_update (scalar * list)
     set_dirty_stencil (s);
   grid->tn = 0; // so that tree is not "full" for the call below
   boundary (list);
-  while (balance());
+
+#if LB_AUTO
+  /**
+  *weights* remains the constant unity placeholder (i.e. uniform
+  balancing) until trace_weights() is ready to fill it with measured
+  values. Allocating it earlier would leave unset values on cells
+  created by grid changes (e.g. during init_grid() refinement). */
+  
+  static int last = -1;
+  if (iter > 0 && iter >= last + LB_ITER) {
+    if (is_constant (balance_weights))
+      balance_weights = new scalar;
+    last = iter;
+    trace_weights (balance_weights);
+}
+#endif
+
+  while (balance (balance_weights));
 }

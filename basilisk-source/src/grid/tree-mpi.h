@@ -1239,32 +1239,31 @@ static void flag_border_cells()
   }
 }
 
-static int balanced_pid (long index, long nt, int nproc)
-{
-  long ne = max(1, nt/nproc), nr = nt % nproc;
-  int pid = index < nr*(ne + 1) ?
-    index/(ne + 1) :
-    nr + (index - nr*(ne + 1))/ne;
-  return min(nproc - 1, pid);
+static int balanced_pid (double cw, double tw, int nproc) {
+  double il = tw/nproc; // ideal load per process
+  int idx = il > 0. ? (int) (cw/il) : 0;
+  return min (idx, nproc - 1);
 }
 
 // static partitioning: only used for tests
 trace
-void mpi_partitioning()
+void mpi_partitioning ((const) scalar w = unity)
 {
   prof_start ("mpi_partitioning");
 
-  long nt = 0;
+  double tl = 0.;
   foreach (serial)
-    nt++;
+    tl += w[];
 
-  /* set the pid of each cell */
-  long i = 0;
+  double cw = 0.;
   tree->dirty = true;
   foreach_cell_post (is_active (cell))
     if (is_active (cell)) {
       if (is_leaf (cell)) {
-	cell.pid = balanced_pid (i++, nt, npe());
+
+        cell.pid = balanced_pid (cw, tl, npe());
+        cw += w[];
+
 	if (cell.neighbors > 0) {
 	  int pid = cell.pid;
 	  foreach_child()
@@ -1418,58 +1417,85 @@ void restore_mpi (FILE * fp, scalar * list1)
 }
 
 /**
-# *z_indexing()*: fills *index* with the Z-ordering index.
-   
-If `leaves` is `true` only leaves are indexed, otherwise all active
-cells are indexed. 
+## *z_weights()*: fills *cw* with the cumulative z-ordering weights.
 
-On the master process (`pid() == 0`), the function returns the
-(global) maximum index (and -1 on all other processes).
+If `leaves` is `true` only leaves are used, otherwise all active cells.
 
-On a single processor, we would just need something
-like (for leaves)
+On the master process (`pid() == 0`), the function returns the total load
+(and -1 on all other processes).
+
+On a single processor, we would just need something like (for leaves),
+given a weight scalar field w;
 
 ~~~literatec
-double i = 0;
-foreach()
-  index[] = i++;
+scalar w[];
+double rw = 0; // running weight 
+foreach (serial) {
+  cw[] = rw;   // weight of all leaves *before* this one
+  rw += w[];
+}
 ~~~
 
-In parallel, this is a bit more difficult. */
+in parallel, this is a bit more difficult. */
 
 trace
-double z_indexing (scalar index, bool leaves)
+double z_weights (scalar cw, (const) scalar w, bool leaves)
 {
   /**
-  We first compute the size of each subtree. */
+  This function fills 'cw' with the cumulative-weight computed along
+  the z-order for each cell given a weight scalar field 'w' (if 'leaves'
+  is true, only leaves are counted).
+
+  We first compute the weight of each subtree, stored in 'sw'. We
+  accumulate 'w' (the per-cell own weight) into 'sw', the subtree weight,
+  via a (parallel) restriction from fine to coarse. A separate field is
+  required because the indexing loop below needs both the parent's own
+  weight and each child's subtree weight at the same time. */
   
-  scalar size[];
-  subtree_size (size, leaves);
+  scalar sw[];
+  foreach()
+    sw[] = w[]; // own weight (set on leaves)
+
+  boundary_iterate (restriction, {sw}, depth());
+  for (int l = depth() - 1; l >= 0; l--) {
+    foreach_coarse_level(l) {
+      double sum = leaves ? 0. : w[]; // parent's own contribution
+      foreach_child()
+        sum += sw[];
+      sw[] = sum;
+    }
+    boundary_iterate (restriction, {sw}, l);
+  }
 
   /**
-  The maximum index value is the size of the entire tree (i.e. the
-  value of `size` in the root cell on the master process) minus
-  one. */
+  The total load is the weight of the entire tree (i.e. the value of
+  `sw` in the root cell on the master process). */
   
-  double maxi = -1.;
+  double tl = -1.;
   if (pid() == 0)
     foreach_level(0, serial)
-      maxi = size[] - 1.;
+      tl = sw[];
 
   /**
-  fixme: doc */
+  We now push the cumulative offset down the tree, exactly as z_indexing()
+  does with the integer index. 'cw[]' on a cell is the cumulative weight
+  of its subtree; the first child starts at the parent's offset (plus
+  the parent's own weight when indexing all cells), and each subsequent
+  sibling is offset by the preceding sibling's subtree weight 'sw[]'. */
   
+  // seed the root: master cell starts at 0
   foreach_level(0)
-    index[] = 0;
+    cw[] = 0.;
+
   for (int l = 0; l < depth(); l++) {
-    boundary_iterate (restriction, {index}, l);
+    boundary_iterate (restriction, {cw}, l); // sync cw across mpi processes
     foreach_cell() {
       if (level == l) {
 	if (is_leaf(cell)) {
 	  if (is_local(cell) && cell.neighbors) {
-	    int i = index[];
+            double i = cw[]; // ghost children share the offset
 	    foreach_child()
-	      index[] = i;
+              cw[] = i;
 	  }
 	}
 	else { // not leaf
@@ -1480,10 +1506,10 @@ double z_indexing (scalar index, bool leaves)
 		loc = true; break;
 	      }
 	  if (loc) {
-	    int i = index[] + !leaves;
+            double i = cw[] + (leaves ? 0. : w[]); // parent's own slot
 	    foreach_child() {
-	      index[] = i;
-	      i += size[]; 
+              cw[] = i;
+              i += sw[]; // child's subtree weight
 	    }
 	  }
 	}
@@ -1493,7 +1519,33 @@ double z_indexing (scalar index, bool leaves)
 	continue;
     }
   }
-  boundary_iterate (restriction, {index}, depth());
+  boundary_iterate (restriction, {cw}, depth());
 
-  return maxi;
+  return tl;
+}
+
+/**
+# *z_indexing()*: fills *index* with the Z-ordering index.
+
+**Note**: this is just a special case of `z_weights` with unitary weights.
+
+If `leaves` is `true` only leaves are indexed, otherwise all active
+cells are indexed.
+
+On the master process (`pid() == 0`), the function returns the (global)
+maximum index (and -1 on all other processes).
+
+On a single processor, we would just need something like (for leaves):
+
+~~~literatec
+double i = 0;
+foreach (serial)
+  index[] = i++;
+~~~
+*/
+
+trace
+double z_indexing (scalar index, bool leaves) 
+{
+  return z_weights (index, w=unity, leaves=leaves);
 }

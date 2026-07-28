@@ -1,5 +1,6 @@
 * Antoine Aubert: [Piecewise Polynomial Reconstruction in C](layered/remapc.h)
 * Francesco De Vita: [multi-layer Saint-Venant](multilayer.h)
+* [Riccardo Caraccio](/sandbox/rcaraccio/README): [weighted load-balancing](/src/grid/balance.h)
 * Palas Kumar Farsoiya: [Henry's law](henry.h)
 * Nicolas Fintzi: [Einstein summation convention](/src/ast/einstein_sum.h)
 * Jose-Maria Fullana: [Conway's game of life](examples/life.c),

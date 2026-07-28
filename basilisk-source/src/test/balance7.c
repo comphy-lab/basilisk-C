@@ -49,7 +49,7 @@ int main (int argc, char * argv[])
 	assert (s[] == 1);
       foreach_face()
 	assert (u.x[] == 1);
-      while (balance(0)) {
+      while (balance()) {
 	foreach()
 	  foreach_neighbor()
           assert (s[] == 1);

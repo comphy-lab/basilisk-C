@@ -512,13 +512,19 @@ gfsi.tst: gfs.tst gfsi.gfs
 # load-balancing
 
 load-balancing: balance5.tst balance6.tst balance7.tst \
-		bump2Dp.tst bump2Dp-restore.tst vortex.tst axiadvection.tst
+		bump2Dp.tst bump2Dp-restore.tst vortex.tst axiadvection.tst \
+		balance-rotate.tst balance-rotate-auto.tst
 
 balance5.tst: CC = mpicc -D_MPI=9
 balance6.c: balance5.c
 	ln -sf balance5.c balance6.c
 balance6.tst: CC = mpicc -D_MPI=17
 balance7.tst: CC = mpicc -D_MPI=17
+balance-rotate.tst: CC = mpicc -D_MPI=5
+balance-rotate-auto.c: balance-rotate.c
+	ln -sf balance-rotate.c balance-rotate-auto.c
+balance-rotate-auto.tst: CC = mpicc -D_MPI=5
+balance-rotate-auto.tst: CFLAGS += -DLB_AUTO=1
 
 # MPI-parallel multigrid
 
