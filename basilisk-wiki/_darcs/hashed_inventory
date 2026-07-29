@@ -1,4 +1,4 @@
-pristine:4024f0d8957571cfcc74f215b1bccbec075f31726e0f88224f51e24790f36086
+pristine:85fc35bf45d871a5b2eab3cd7ecae83bb14fdbc32ebdcfc042b8163dd00817b0
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -12502,3 +12502,43 @@ cleo**20260727162219
  Ignore-this: eff2a2ee8efd09bd2a24e51d64eab2315da81ba2b1276457ef4afc93b712bfedb137b47c0a152505
 ] 
 hash: 0000000665-cc3e119fe7b606878f50a3f2f47d1835794369afefa3d4b2aee65b7e0cc6fdc0
+[Added MVP of a film case on an inclined, heated wall.
+John <vrionis.yiannis@gmail.com>**20260728124640
+ Ignore-this: 90fa9dba627e80fa011997396f2316302453995804170d9b5681b617082edb79cacbb7de3f2b1db9
+] 
+hash: 0000011210-54784c94522b10e5e3713d0502509c57b4aaa0110af668d0c4a6733407e00945
+[Reduced level to make case smaller
+John <vrionis.yiannis@gmail.com>**20260728124800
+ Ignore-this: 9ed53e7b9c37021ddaf9b3355b06222caf9c70c1d1b13dcdfbf71072ee6d97511c05199deaf916f4
+] 
+hash: 0000000278-878155c7b0fad289d96e241dd5c4d58655d55db7cfa7ef3a2f1eba85db18d4e7
+[Fixed F_TOL flag
+John <vrionis.yiannis@gmail.com>**20260728130320
+ Ignore-this: 7c31b930ed02a81c0bfe9df801faf316e87ae4783d2d0d6b09dd6f13ccd6e4b51cdebaf505a34f9d
+] 
+hash: 0000000667-d5046c3145593b651d54154da150077b1312641825abb92347c8f7c1b04b2dda
+[added paper to bibliography
+oystelan <oystein.lande@dnvgl.com>**20260728194748
+ Ignore-this: 9ad014619a5bc22cbe7b074518856cc9c6f089ee49766792c8563b8a0b41d37ef1fd6365b49c877d
+] 
+hash: 0000000545-3df738ede0e6427844e63984fa504a23a69841262532c0d6dfa4e773a9c3d162
+[added month to bibref
+oystelan <oystein.lande@dnvgl.com>**20260728195143
+ Ignore-this: 1572784d13443671a2b352c3711d45ca2d6555a5dcbfe719eda0d339e40d35b2a20e97ba4ba8f84b
+] 
+hash: 0000000209-22e4d6e25490cfa13a0497971f244ce008027a865b119558303183cdc75c2d4f
+[addded doi
+oystelan <oystein.lande@dnvgl.com>**20260728195721
+ Ignore-this: 57d881de918a54e3711fcf674e3231ebf853b4c5bb54680b381352efab9ded38812dc802e21ce61a
+] 
+hash: 0000000271-dd197d03c1da2454f1d60cfb306935a7e5037813d70f6fc04a91e63f2943fad3
+[fixed label to align with others
+oystelan <oystein.lande@dnvgl.com>**20260728195930
+ Ignore-this: 71fdac30ad84b8885dcd1e659259444f8017908259d6c323b6df9be22b4b56c8e9266c29451228b0
+] 
+hash: 0000000256-4cf6ceeabee5baef26886913e975a8d99104c96333eeb5ee3cd1c0bfeec140b8
+[recent paper added
+oystelan <oystein.lande@dnvgl.com>**20260728205809
+ Ignore-this: 5a1bc0e228cb7c8a23ac1fdbb7be2165d6eff46b2fff8a7a46f44163f8fadaec8a3a061b215556eb
+] 
+hash: 0000000910-a0d63869b0534c48d91f6b28f6356d812b642862d21076337b5cdab2eb5dceeb

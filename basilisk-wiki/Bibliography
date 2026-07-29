@@ -7,6 +7,18 @@ own papers if they use Basilisk. See also [src/references.bib]() for older refer
 
 ### 2026
 ~~~bib
+@article{lande2026,
+  title={A laboratory experiment and procedure for deterministic validation of numerical wave models},
+  author={Lande, {\O}ystein and Jensen, Atle and Johannessen, Thomas B},
+  journal={Journal of Fluid Mechanics},
+  doi={10.1017/jfm.2026.11658},
+  volume={1037},
+  pages={A2},
+  month={June},
+  year={2026},
+  publisher={Cambridge University Press}
+}
+
 @hal{fullana2026, hal-05591630}
 
 @hal{yang2026, hal-05554495}

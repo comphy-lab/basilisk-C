@@ -41,6 +41,18 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{lande2026,
+  title={A laboratory experiment and procedure for deterministic validation of numerical wave models},
+  author={Lande, {\O}ystein and Jensen, Atle and Johannessen, Thomas B},
+  journal={Journal of Fluid Mechanics},
+  doi={10.1017/jfm.2026.11658},
+  volume={1037},
+  pages={A2},
+  month={June},
+  year={2026},
+  publisher={Cambridge University Press}
+}
+
 @article{sykes2026,
   title={Fast droplet impact onto slowly moving deep pools},
   author={Sykes, Thomas C. and Alventosa, Luke and Castrej{\'o}n-Pita, J. Rafael and Cimpeanu, Radu and Harris, Daniel M. and Castrej{\'o}n-Pita, Alfonso A.},
@@ -66,15 +78,5 @@ keywords = {Atomization, Liquid jet in crossflow, Two phase flow, Volume-of-Flui
 }
 
 @hal{blanco2026, hal-05626800}
-
-@article{cardin2026, 
-title={Cylindrical versus spherical self-similar capillary cavity collapse}, 
-volume={1034}, 
-DOI={10.1017/jfm.2026.11463}, 
-journal={Journal of Fluid Mechanics}, 
-author={Cardin, Karl and Josserand, Christophe and Cal, Raúl Bayoán}, year={2026},
-month={April},
-pages={A34}
-}
 
 ~~~
