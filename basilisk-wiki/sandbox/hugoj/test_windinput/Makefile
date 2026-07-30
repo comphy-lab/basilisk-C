@@ -13,9 +13,10 @@ stokes.c: linear_wave_wind_input.c
 	ln -sf linear_wave_wind_input.c stokes.c
 stokes.tst: CFLAGS+="-DSTOKES=1 "
 
-no_forcing_instrumented.tst: CFLAGS+="-DDIAG=1"
+no_forcing_instrumented.tst: CFLAGS+="-DDIAG=1 -fopenmp"
 
 no_forcing_instrumented.c: prep_instrumented
+
 
 prep_instrumented:
 	(	cd modified_layered;\

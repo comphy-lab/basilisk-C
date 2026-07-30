@@ -443,10 +443,10 @@ event pressure (i++)
           w[] += dt*phi[]/h[];
         else
           w[] -= dt*(phi[0,0,1] - phi[])/h[];
-        w_calls++;
+        //w_calls++;
         if (fabs(w[]) > wmax) {
           w[] = (w[] > 0. ? 1. : -1.)*wmax;
-          w_clip++;
+          //w_clip++;
         }
       }
 

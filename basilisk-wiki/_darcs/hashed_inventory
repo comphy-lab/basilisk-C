@@ -1,4 +1,4 @@
-pristine:85fc35bf45d871a5b2eab3cd7ecae83bb14fdbc32ebdcfc042b8163dd00817b0
+pristine:9f658f8170b7249beccc0256749711d2e2ecc2fbdb602ed6685bd47a74528db2
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -12542,3 +12542,38 @@ oystelan <oystein.lande@dnvgl.com>**20260728205809
  Ignore-this: 5a1bc0e228cb7c8a23ac1fdbb7be2165d6eff46b2fff8a7a46f44163f8fadaec8a3a061b215556eb
 ] 
 hash: 0000000910-a0d63869b0534c48d91f6b28f6356d812b642862d21076337b5cdab2eb5dceeb
+[Added visalization
+John <vrionis.yiannis@gmail.com>**20260729073856
+ Ignore-this: 9fdcb3e84148c9d4dbd093f428b198dac37416ce2b41c7f57f64f76ea0d773a2f1168beaa904a4f6
+] 
+hash: 0000000786-e2b4265effeab21aaba54b730113099df732003decbd2e44ce24eef3a97524f8
+[Fixed smaller case to make better visuals.
+John <vrionis.yiannis@gmail.com>**20260729074603
+ Ignore-this: c8090294f0e69b6309dd80cb69e1e0c7bf3caa6afdb8d74a1805a3e6af77019fe289546b53367113
+] 
+hash: 0000002084-1e578c7c41e6d9ab535900fcf57e89c64bf03291dd77acadd94bed5f09990142
+[Fixed temperature max value
+John <vrionis.yiannis@gmail.com>**20260729074823
+ Ignore-this: fa92e06ab974cef87d0525e30849b14a8e57cfe797a50da0a5626de4851f89530640245c6293a9ff
+] 
+hash: 0000000423-75567803473729a4d07c9cdf56fce0cc2ffa5409af45d66a64e06c3ab10a1105
+[Typo
+Stephane Popinet <popinet@basilisk.fr>**20260729103547
+ Ignore-this: 835ba214a45b682c9f85b022ad71a5d3fca2a5f7ff623821a36ee33945cc13ceae0b977dd0e43c61
+] 
+hash: 0000000263-b19bfbdb5967029d6f300ee046d7f33b2a072522d792a706950f816dd47e2654
+[added tool function to build z for layered simulation, and other minor esthetic changes
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260729113254
+ Ignore-this: e383ee5f93205189632cf333a794e114
+] 
+hash: 0000009299-16cfb582cfa054475dfc94ae2d32328d33d58983fcf6b637d3157f6ea4a96a18
+[added plots for ak test, commented limiter counter for openmp compatibility
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260729113500
+ Ignore-this: 8701cb75134a86fcc021bafb164bd0cf
+] 
+hash: 0000002128-ff7ab5752e26b162a32522806ef9dc291bb7cf0272cb331b187acfab35c523ee
+[Creation of my sandbox
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260729223635
+ Ignore-this: 46b2c9c692cfc43f6091fc4e27d232b9c5a46d61688876fcaef8737faeeca9b7eff0004db56a8eb3
+] 
+hash: 0000000224-b864da1ebd4b82dbd8ee9243a8dedaa4e2fd18807ac70775b83914ccf79116e9

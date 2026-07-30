@@ -313,11 +313,11 @@ void advect (scalar * tracers, face vector hu, face vector hf, double dt)
       double hul = hu.x[];
       if (hul*dt/(Delta*cm[-1]) > CFL*h[-1]){
 	      hul = CFL*h[-1]*Delta*cm[-1]/dt;
-        clip_count+=1;
+        //clip_count+=1;
       }
       else if (- hul*dt/(Delta*cm[]) > CFL*h[]){
 	      hul = - CFL*h[]*Delta*cm[]/dt;
-        clip_count+=1;
+        //clip_count+=1;
       }
       
       /**

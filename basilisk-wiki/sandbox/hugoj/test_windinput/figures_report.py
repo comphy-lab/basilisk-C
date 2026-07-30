@@ -117,7 +117,7 @@ def func_plot(folders, thefile, outpath, what):
             params["k_"],
             timeth * params["T0"],
         )
-        if what == "Re" or what == "ak":
+        if what == "Re":
             ax.plot(timeth, Eth, c=colors[i], label="Lamb (1932)", ls="--")
         else:
             if count == 0:
@@ -126,6 +126,7 @@ def func_plot(folders, thefile, outpath, what):
         myplot(folders[res] + thefile, ax, f"{what}={res}", colors[i])
     ax.set_xlabel("t/T0")
     ax.set_ylabel("Total E/E0")
+    ax.set_ylim([0, 1.5])
     ax.set_title(what)
     ax.legend()
     ax.grid()
@@ -203,12 +204,13 @@ def plot_one_case(path, file):
 # ===========================
 # Plotting energy evolution
 # ===========================
-print("> plotting energy for each case")
-basepath = "results_instrumented/"
-folders = list_folders(basepath)
-paths = [basepath + i + "/" for i in folders]
-for folder in paths:
-    plot_one_case(folder, "out")
+if 1:
+    print("> plotting energy for each case")
+    basepath = "results_instrumented/"
+    folders = list_folders(basepath)
+    paths = [basepath + i + "/" for i in folders]
+    for folder in paths:
+        plot_one_case(folder, "out")
 # plt.close("all")
 
 # ======================
@@ -316,12 +318,23 @@ folders = {
 }
 
 outpath = results + "change_of_Re.png"
-func_plot(
-    folders,
-    thefile,
-    outpath,
-    what="Re",
-)
+func_plot(folders, thefile, outpath, what="Re")
+
+# ========================
+# ak
+# ========================
+thefile = "out"
+folders = {
+    "0.01": results + "base/",
+    "0.05": results + "ak_0.05/",
+    "0.08": results + "ak_0.08/",
+    "0.1": results + "ak_0.1/",
+    "0.2": results + "ak_0.2/",
+    "0.3": results + "ak_0.3/",
+}
+
+outpath = results + "change_of_ak.png"
+func_plot(folders, thefile, outpath, what="ak")
 
 
 plt.show()

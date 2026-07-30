@@ -18,7 +18,6 @@ $$
 $$
 
 */
-
 #include "navier-stokes/centered.h"
 #include "two-phase.h"
 #include "tension.h"     // constant-sigma normal (Laplace) force
@@ -31,20 +30,20 @@ $$
 ## Parameters
 */
 double h0 = 1.;                    // flat-film thickness
-double beta0 = 60.*pi/180.;        // inclination angle
+double beta0 = 45.*pi/180.;        // inclination angle
 double k1 = 9.52e-3, k2 = 5e-4;    // conductivities
 double cp1 = 1., cp2 = 1.;
 double Tsat = 0.;                  // saturation temperature
 double DT0 = 1., DT1 = 0.8;        // mean superheat + lateral modulation for **TWALL**
-double sigma0 = 5.;                // constant surface tension
-double sigmaT = 0.05;              // -d(sigma)/dT
-double zc  = 5e-2;                 // kinetic coefficient of J = zc*(Tsat-T)
+double sigma0 = 3.;                // constant surface tension
+double sigmaT = 0.03;              // -d(sigma)/dT
+double zc  = 1e-2;                 // kinetic coefficient of J = zc*(Tsat-T)
 double hlv = 20.;                  // latent heat
 double qin = 1.;                   // run time computable inlet liquid flux
 double V0 = 0., tauV = 8.;         // reference volume
 double gval;
 
-int LEVEL = 6, MINLEVEL = 4;
+int LEVEL = 8, MINLEVEL = 4;
 double TEND = 5.;
 
 
@@ -64,7 +63,7 @@ double TEND = 5.;
 #define TPROFILE(y) ((y) < h0 ? TWALL(0.) + (TI_0 - TWALL(0.))*(y)/h0 : TI_0)
 
 /* volume fraction tolerance */
-#define F_TOL 1e-5
+#define F_TOL 1e-6
 
 
 scalar T[];
@@ -81,9 +80,9 @@ int main()
 	   omp_get_max_threads());
 #endif
 
-  L0 = 10.;
-  rho1 = 1.,  rho2 = 1e-3;
-  mu1 = 1./15., mu2 = mu1/50.;     // nu1 = 1/15 ->  Re = 15
+  L0 = 5.;
+  rho1 = 1.,  rho2 = 1e-2;
+  mu1 = 1./10., mu2 = mu1/50.;     // nu1 = 1/10 ->  Re = 15
   f.sigma = sigma0;
   gval = 3.*(mu1/rho1)/(sq(h0)*sin(beta0));  // Ubar === 1
   N = 1 << LEVEL;
@@ -112,7 +111,7 @@ int main()
 Flat film with a small pertrubation */
 event init (t = 0)
 {
-  fraction (f, h0*(1. + 0.25*cos(8.*pi*x/L0)) - y);
+  fraction (f, h0*(1. + 0.05*cos(8.*pi*x/L0)) - y);
 
   double nu1 = mu1/rho1, gs = gval*sin(beta0);
   foreach() {
@@ -342,12 +341,12 @@ event viewer (t += 0.1)
   clear();
 
   /* top right: temperature */
-  squares ("T", min = Tsat, max = Tsat + Tbg + max(A1, A2),
+  squares ("T", min = Tsat, max = Tsat + DT0 + DT1,
 	   linear = true, map = cool_warm);
   draw_vof ("f", lw = 1.5);
 
   /* bottom right: streamwise velocity */
-  translate (y = -3.5) {
+  translate (y = -3.8) {
     squares ("u.x", min = -0.5, max = 2., linear = true, map = cool_warm);
     draw_vof ("f", lw = 1.5);
   }
@@ -359,18 +358,19 @@ event viewer (t += 0.1)
   }
 
   /* bottom left: mesh */
-  translate (x = -L0 - 0.3, y = -3.5) {
+  translate (x = -L0 - 0.3, y = -3.8) {
     cells (lw = 0.5);
     draw_vof ("f", lw = 1.5);
   }
 
   /* screen-anchored corner labels + time stamp */
   char s[99];
-  draw_string ("f", 1);
   sprintf (s, "T    t = %.1f", t);
-  draw_string (s, 2);
-  draw_string ("cells", 0);
-  draw_string ("u.x", 3);
+
+  draw_string ( s   , 0, size=10, lw=2);
+  draw_string ( "f" , 1, size=10, lw=2);
+  draw_string ( "T" , 2, size=10, lw=2);
+  draw_string ("u.x", 3, size=10, lw=2);
 
   save ("bview.mp4");
 }
@@ -384,24 +384,26 @@ event end (t = TEND);
 ~~~gnuplot Total liquid volume
 set xlabel 't'
 set ylabel 'V'
-plot 'log' u 1:2 w l t 'V(t)'
+plot 'log' u 1:2 w l lw 2 t 'V(t)'
 ~~~
 
-~~~gnuplot Total Evaporation
+~~~gnuplot Net Phase change
 set xlabel 't'
 set ylabel 'integral J/rho_1'
-plot 'log' u 1:3 w l t 'integral J/rho_1'
+plot 'log' u 1:3 w l lw 2 t 'integral J/rho_1'
 ~~~
 
 ~~~gnuplot Maximum film height
 set xlabel 't'
 set ylabel 'h_{max}'
-plot 'log' u 1:4 w l t 'h_{max}(t)'
+plot 'log' u 1:4 w l lw 2 t 'h_{max}(t)'
 ~~~
 
 ~~~gnuplot Mean interface temperature
 set xlabel 't'
 set ylabel 'T_s'
-plot 'log' u 1:5 w l t 'T_s(t)'
+plot 'log' u 1:5 w l lw 2 t 'T_s(t)'
 ~~~
+
+![Film simulation](heated_film/bview.mp4)
 */
