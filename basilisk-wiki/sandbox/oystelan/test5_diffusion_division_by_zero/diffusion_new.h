@@ -139,10 +139,12 @@ void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
       + 2.*lambda_b*(3.*h0*h1 + 2.*sq(h0) + sq(h1));
 
     /**
-    Protect the bottom denominator against vanishing values in very thin cells.
+    Protect the bottom denominator against vanishing values in very
+    thin cells. Note that *den* scales as a length cubed, so the
+    threshold must be *dry* cubed for dimensional consistency.
     */
-    if (fabs (den) < dry)
-      den = (den >= 0. ? dry : -dry);
+    if (fabs (den) < cube(dry))
+      den = (den >= 0. ? cube(dry) : -cube(dry));
 
     b[0] = h0 + 2.*dt*D*(1./h01 +
           (sq(h1) + 3.*h0*h1 + 3.*sq(h0))/den);

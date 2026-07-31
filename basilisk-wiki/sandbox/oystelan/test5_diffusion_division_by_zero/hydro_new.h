@@ -1,5 +1,11 @@
 /**
-# The hydrostatic multilayer solver for free-surface flows
+# The hydrostatic multilayer solver, with protected vertical diffusion
+
+This is a verbatim copy of [/src/layered/hydro.h](/src/layered/hydro.h)
+with a single modification: it includes [diffusion_new.h](), which adds
+division-by-zero protection for dry cells, instead of
+[/src/layered/diffusion.h](/src/layered/diffusion.h). See the
+[division_by_zero.c]() test case for the motivation.
 
 The theoretical basis and main algorithms for this solver are
 described in [Popinet, 2020](/Bibliography#popinet2020). Note however
@@ -411,7 +417,12 @@ scheme). */
 event half_advection (i++, last);
 
 /**
-Vertical diffusion (including viscosity) is added by this code. */
+Vertical diffusion (including viscosity) is added by this code.
+
+This is the only modification relative to
+[/src/layered/hydro.h](/src/layered/hydro.h): we include the protected
+[diffusion_new.h]() instead of
+[/src/layered/diffusion.h](/src/layered/diffusion.h). */
 
 #include "diffusion_new.h"
 

@@ -2,16 +2,25 @@
 # A small pool of water where the seabed is sloping 45 degrees.
 The slope penetrates the surface, so that we have dry cells.
 
-![Initial condition at t=0](division_by_zero/snapshot.png)
+![Initial condition at t=0 (from the *division_by_zero-new* run, since
+images of failing tests are not published)](division_by_zero-new/snapshot.png)
 
-This testcase will not run if viscocity nu > 0, due to lack of protection
-against division by zero in layered/diffusion.h. 
+This testcase will not run if viscosity nu > 0, due to lack of
+protection against division by zero in
+[/src/layered/diffusion.h](/src/layered/diffusion.h).
 
-A modified version of diffusion.h (named diffusion-new.h) includes
-extensive division-by-zero protection and runs fine with with the
+A modified version of diffusion.h (named [diffusion_new.h]()) includes
+extensive division-by-zero protection and runs fine with the
 nonhydrostatic layered solver for all values of nu.
 
+Since layered/hydro.h hard-codes `#include "diffusion.h"` and a header
+cannot be "unloaded" once included, the replacement is done at compile
+time: [hydro_new.h]() is a verbatim copy of layered/hydro.h whose only
+change is to include diffusion_new.h instead. The `switch_solver`
+compilation flag (see the [Makefile]()) selects the solver:
 
+* *division_by_zero*: unmodified solver, fails almost immediately,
+* *division_by_zero-new*: protected diffusion, runs fine.
 */
 
 #include "grid/multigrid1D.h"
@@ -70,25 +79,37 @@ event init (i = 0)
   }
 }
 
-#if 1
+/**
+Note that when compiled with OpenMP (as on the Basilisk servers),
+floating-point exceptions are not trapped (see
+[/src/grid/config.h](/src/grid/config.h)), so the division by zero
+does not crash the simulation but silently fills the fields with
+infinities and NaNs. These cannot be detected by max/min reductions,
+since comparisons with NaN are always false, so we count the
+non-finite values explicitly. In a serial build the unprotected solver
+simply crashes with a floating-point exception. */
+
 event logfile (i += 10; t <= T0)
 {
   double umax = 0, phimax = 0, phimin = 0;
-  foreach (reduction(max:umax) reduction(max:phimax) reduction(min:phimin) ) {
+  int nbad = 0;
+  foreach (reduction(max:umax) reduction(max:phimax) reduction(min:phimin)
+	   reduction(+:nbad)) {
     foreach_layer() {
+      if (!isfinite(u.x[]) || !isfinite(w[]) || !isfinite(phi[]))
+	nbad++;
       double utem = sqrt(sq(w[])+sq(u.x[]));
       if (utem > umax)
         umax = utem;
       if (phi[] > phimax)
         phimax = phi[];
       if (phi[] < phimin)
-        phimin = phi[];      
+        phimin = phi[];
     }
   }
-  fprintf (stderr, "%g %g %g %g\n", t, umax, phimax, phimin);
-  assert (!isnan(umax) && !isnan(phimax) && !isnan(phimin));
+  fprintf (stderr, "%g %g %g %g %d\n", t, umax, phimax, phimin, nbad);
+  assert (nbad == 0);
 }
-#endif
 
 event snapshot (i = 0)
 {
@@ -106,7 +127,8 @@ event snapshot (i = 0)
 	   "set cblabel 'phi'\n"
 	   "set output 'snapshot.png'\n"
 	   "set title 't = %.2f'\n"
-	   "splot [%g:%g][-0.32:0.05] '-' u 1:2:3\n",
+	   "splot [%g:%g][-0.32:0.05] '-' u 1:2:3, "
+	   "'-' u 1:2:3 w l lc rgb 'black' lw 2\n",
 	   t, X0, X0 + L0);
   foreach (serial) {
     double z = zb[];
@@ -117,6 +139,13 @@ event snapshot (i = 0)
     }
     fprintf (fp, "\n");
   }
+  fprintf (fp, "e\n");
+
+  /**
+  The seabed is drawn as a black line on top of the *phi* map. */
+
+  foreach (serial)
+    fprintf (fp, "%g %g 0\n", x, zb[]);
   fprintf (fp, "e\n");
   pclose (fp);
 }

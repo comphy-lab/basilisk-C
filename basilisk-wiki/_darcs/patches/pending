@@ -1687,6 +1687,7 @@ hunk ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h 1
 -}
 rmfile ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h
 rmdir ./sandbox/acastillo/frozen_waves/without_walls
+rmdir ./sandbox/jmerrifield
 addfile ./sandbox/oystelan/test1_stokes_ml/output_vts_multilayer.h
 addfile ./sandbox/oystelan/test2_temporal_oscillation_modes/output_vts_multilayer.h
 addfile ./sandbox/oystelan/test3_sloshing_river/output_vts_multilayer.h

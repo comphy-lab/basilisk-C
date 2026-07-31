@@ -1,4 +1,4 @@
-pristine:9f658f8170b7249beccc0256749711d2e2ecc2fbdb602ed6685bd47a74528db2
+pristine:78203a70ebbf35842ac6c87543f3ce4a5e6e4255d67d8ed36e6bb16185d1ba2c
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -12577,3 +12577,23 @@ jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260729223635
  Ignore-this: 46b2c9c692cfc43f6091fc4e27d232b9c5a46d61688876fcaef8737faeeca9b7eff0004db56a8eb3
 ] 
 hash: 0000000224-b864da1ebd4b82dbd8ee9243a8dedaa4e2fd18807ac70775b83914ccf79116e9
+[Robust NaN detection and dimensional fixes for the division-by-zero test
+oystelan@gmail.com**20260730062219
+ Ignore-this: ac5444cae74fadc27f85d98e8e84dc15
+] 
+hash: 0000004887-2361747f477e103fa26c69445be8895e7ca5fdde116b769e4d8ee8e2ab6b405e
+[Use snapshot from the passing run since failing-test images are not published
+oystelan@gmail.com**20260730063000
+ Ignore-this: d2ac1989d85a94b78e414080cc4bc2e7
+] 
+hash: 0000000452-3402b77b8526affe5c32f36ca1020c367056b4b120bf4b643ecfa092de26d6ce
+[+BagnoldCoh collapse noSV (Balmforth)
+FanshuoMA <mafanshuo12@gmail.com>**20260730175057
+ Ignore-this: f97a24929cfc6019205813ce9d6176b71db6f335e685ee8c50a941ba0e3318391bd4c741b5dbad54
+] 
+hash: 0000005006-48f3aaedcd809dfe762417f99f08ed76a2c25da3dbade0a4e1cc8625d8470142
+[+ Bagnold coh front resolved with  balmforth
+FanshuoMA <mafanshuo12@gmail.com>**20260730175231
+ Ignore-this: 4ada08e1296fc8be0e3f0d87b84a74b4bd435bef8af7411fc2aa027a3c30bc199b73a4017a61c56e
+] 
+hash: 0000005263-67b01c1351625e57b86c39adc128f55ba66c40a22b74f92c16ca6c52e3d758b6
