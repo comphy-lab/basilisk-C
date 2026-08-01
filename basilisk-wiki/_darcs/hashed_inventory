@@ -1,4 +1,4 @@
-pristine:78203a70ebbf35842ac6c87543f3ce4a5e6e4255d67d8ed36e6bb16185d1ba2c
+pristine:e8abda53eeb53d340b25d9e32a858a6d737c817b14552c003ae086e114c33638
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -12597,3 +12597,18 @@ FanshuoMA <mafanshuo12@gmail.com>**20260730175231
  Ignore-this: 4ada08e1296fc8be0e3f0d87b84a74b4bd435bef8af7411fc2aa027a3c30bc199b73a4017a61c56e
 ] 
 hash: 0000005263-67b01c1351625e57b86c39adc128f55ba66c40a22b74f92c16ca6c52e3d758b6
+[fix out-of-bound issue, better test
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260731081731
+ Ignore-this: db304b33b19a93204e04b2b6e0a3801
+] 
+hash: 0000009447-5b93c223ed53700513b567c0c5a80ad00ab281dd972f3e18a8c58b1df635d269
+[added 3D plots scripts, usable in command line or inside a python script
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260731134103
+ Ignore-this: ba8ed018e2f7cf736b64aa3ec6c7f3f1
+] 
+hash: 0000031005-3a79f3bc6f0d3f34ecf572cc110cfdf9d818972927e5ef8b097ec2ea92804bf1
+[added output for Stokes drift estimate, and using smaller parameters for local run
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260731134955
+ Ignore-this: 9e07beb3e4afb7d309aac24b3cfe1b8f
+] 
+hash: 0000002549-322473435309be4adac8b378c1710d8776b6c9384969e34920b79f768ede44ab

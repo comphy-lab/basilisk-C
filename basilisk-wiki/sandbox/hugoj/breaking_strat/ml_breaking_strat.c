@@ -45,6 +45,8 @@ int N_layer = 5;                      // number of layers
 double h0 = 1.0 [1];                  // depth of water
 // -> Runtime parameters
 double tend = 2.0 [0,1];              // end time of simulation
+double tstart_diag = 1.0;
+double tend_diag = 2.0;
 // -> saving outputs
 double dtout = 2.0 [0,1];             // dt for output in netcdf
 double smalltime = 1e-10 [0,1];             // (s) small time increment
@@ -74,7 +76,7 @@ double dt_mean = 1.;
 
 static FILE * fp1;
 static FILE * fp2;
-scalar T_ini;
+scalar T_ini[];
 
 
 int main(int argc, char *argv[])  
@@ -112,7 +114,7 @@ int main(int argc, char *argv[])
   L0 = L;
   nu0 = sqrt(g_*pow(2*PI/kp, 3))/Re;
   nu = nu0;
-  N = 1 << N_grid; // 1*2^N_grid
+  N = N_grid; 
   nl = N_layer;
   G = g_;
   theta_H = thetaH;
@@ -120,6 +122,10 @@ int main(int argc, char *argv[])
   CFL=0.8;
   Tp = 2*PI/sqrt(g_*kp);
   
+  tend = 13*Tp;
+  tstart_diag = 10*Tp;
+  tend_diag = 12*Tp;
+
   // Boundary condition
   origin (-L0/2., -L0/2.);
   periodic (top);
@@ -149,7 +155,7 @@ event init(i =  0) {
   spectrum = read_spectrum(N_mode);
 
   /** set eta and h*/
-  foreach() {
+  foreach(cpu) {
     zb[] = -h0;
     eta[] = wave(x, y, spectrum);
     double H = eta[] - zb[];
@@ -160,17 +166,18 @@ event init(i =  0) {
 
   /** set a temporary T_ini field that will be used to initialse T at a later
     time */
-  foreach() {
+  foreach(cpu) {
     double z = zb[];
     foreach_layer() {
       z+=h0*beta[point.l]/2.;
       T_ini[] = Tini(z); // + noise();
+      T[] = Tini(z);
       z+=h0*beta[point.l]/2.;
     } 
   }
 
   /** set currents */
-  foreach() {
+  foreach(cpu) {
     double z = zb[];
     foreach_layer() {
       z += h[]/2.;
@@ -215,15 +222,25 @@ event initT(t=3*Tp){
 }
 
 /** dump outputs */
-event output(t = 0.; t<= tend+smalltime; t+=dtout){
-  write_nc();
-  char dname[100];
-  sprintf (dname, "dump_t%g", t);
-  dump(dname);
+// event output(t = 0.; t<= tend+smalltime; t+=dtout){
+//   write_nc();
+//   char dname[100];
+//   sprintf (dname, "dump_t%g", t);
+//   dump(dname);
+// }
+
+
+/** dump for Stokes drift */
+#if US_DIAG
+event output(i++, t<=tend){
+  if (t+dt >=0. && t+dt <= Tp){
+    write_nc();
+  }
 }
+#endif US_DIAG
 
 
-
+#if DIAG
 double* l_avg(scalar var, double* profile){
   /*
   This function computes the layer average of var.
@@ -293,6 +310,13 @@ event write_diag(t=0.; t+=dt_mean){
 event cleanup(t=end){
   free(T_profile);
   free(u_profile);
+}
+#endif // DIAG
+
+event final_dump(t=end){
+  char dname[100];
+  sprintf (dname, "dump_t%g", t);
+  dump(dname);
 }
 
 /**

@@ -5,7 +5,7 @@ This file gather expressions of common wave field.
 
 You can look for a surface elevation function, u.x, u.y, u.z
 
-NOTE: g_ has to be either #define or declared !
+NOTE: g_ has to be either #define or declared before #include this file
 
 */
 

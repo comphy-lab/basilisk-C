@@ -20,19 +20,19 @@ coeff_kpL0 = 10.0 # kpL0 = coeff_kpL0 * pi
 N_mode = 32
 N_power = 5
 Re = 40000        # Reynolds number Re = sqrt(g*lambda**3)/nu
-nu0 = 0.000025    # m2 s-2 Viscosity for vertical diffusion
+nu0 = 0.00025     # m2 s-2 Viscosity for vertical diffusion
 #
 # DOMAIN DEFINITION
 #
-N_grid = 9   # 1024=10 2^N_grid, number of x and y gridpoints
+N_grid = 512 # 1024=10 2^N_grid, number of x and y gridpoints
 L = 200.0    # (m) domain size
 N_layer = 30 # number of layers
-h0 = 40.0    # (m) =2pi/kp, depth of water 
+h0 = 50.0    # (m) =2pi/kp, depth of water 
 
 #
 # RUN PARAMETERS
 #
-tend = 30.0  # (s) time to end the simu
+tend = 200.0 # (s) time to end the simu
 dtout = 10.0 # (s) dt for output in netcdf
 
 #
