@@ -1,6 +1,6 @@
 .PHONY: all clean
 
-CFLAGS += -I$(BASILISK) -I.. -DSINGLE_PRECISION -O2
+CFLAGS += -I$(BASILISK) -I.. -DSINGLE_PRECISION -Wno-implicit-int -O2
 
 all: # libhipcuda.a libhipamd.a
 

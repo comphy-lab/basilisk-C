@@ -3,18 +3,23 @@
 function progress()
 {
     echo `find . -name pass | wc -l` passed
-    echo
-    echo `find . -name pid.*tst | wc -l` running
     for f in $(find . -name tspid\.*tst); do
-	id=$(head -n1 $f)
-	SANDBOX=$(tail -n1 $f)
-	status=$(ssh -o 'ControlPath ~/.ssh/controlmasters/%r@%h:%p' -o 'ControlMaster auto' -o 'ControlPersist 1m' \
-		     $SANDBOX "test -f /tmp/$id/progress && ( sed 's/\\r/\\n/g' /tmp/$id/progress | tail -n 1 ) || echo waiting")
-	echo -e ${f%%tspid\.*tst}" $SANDBOX " $status
-	if [ "$1" = "sync" ] && [ "$status" != "waiting" ]; then
-	    rsync -arz --inplace --exclude=$id* --exclude=dump $SANDBOX:/tmp/$id/ ${f%%tspid\.*tst}
-	fi
-    done | column -t
+        if test -f "$f"; then
+	    id=$(head -n1 $f)
+	    SANDBOX=$(tail -n1 $f)
+	    status=$(ssh -o 'ControlPath ~/.ssh/controlmasters/%r@%h:%p' -o 'ControlMaster auto' -o 'ControlPersist 1m' \
+		         $SANDBOX "test -f /tmp/$id/progress && ( sed 's/\\r/\\n/g' /tmp/$id/progress | tail -n 1 ) || echo waiting")
+	    echo -e ${f%%tspid\.*tst}" $SANDBOX " $status
+	    if [ "$1" = "sync" ] && [ "$status" != "waiting" ]; then
+	        rsync -arzq --inplace --exclude=$id* --exclude=dump $SANDBOX:/tmp/$id/ ${f%%tspid\.*tst}
+	    fi
+        fi
+    done | column -t > /tmp/watch-tests
+    echo
+    echo `grep -v waiting /tmp/watch-tests | wc -l` running
+    grep -v waiting /tmp/watch-tests | sort -nr -k3,4
+    echo
+    echo `grep waiting /tmp/watch-tests | wc -l` waiting
     echo
     echo `find . -name fail | wc -l` failed
     find . -name fail

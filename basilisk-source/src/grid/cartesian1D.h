@@ -236,3 +236,6 @@ void cartesian1D_methods()
 {
   cartesian_methods();
 }
+
+#undef _I
+#undef _DELTA

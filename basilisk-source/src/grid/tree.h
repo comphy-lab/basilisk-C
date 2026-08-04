@@ -1745,3 +1745,8 @@ void mpi_boundary_update  (scalar * list) {
   boundary (list);
 }
 @endif // !_MPI
+
+#undef _I
+#undef _J
+#undef _K
+#undef _DELTA

@@ -142,6 +142,7 @@ These tests can be run using `make embed-tests`.
 * [Hydrostatic balance with refined embedded boundaries](hydrostatic2.c)
 * [Hydrostatic balance with refined embedded boundaries in 3D](hydrostatic3.c)
 * [Compatibility of embedded boundaries, axi and VOF](missing_metric.c)
+* [Developping axisymmetric pipe flow with embedded boundaries](pipe-axi-embed.c)
 
 ### Stokes
 

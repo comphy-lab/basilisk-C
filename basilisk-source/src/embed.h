@@ -802,11 +802,6 @@ void update_tracer (scalar f, face vector uf, face vector flux, double dt)
 {
 
   /**
-  Note that the distinction should be made between $c_m$, the cell
-  fraction metric, and $c_s$, the embedded fraction. This is not done
-  now so that embedded boundaries cannot be combined with a metric
-  yet. 
-
   The field *e* will store the "overflowing" sum of fluxes for each cell. */
   
   scalar e[];
@@ -825,7 +820,7 @@ void update_tracer (scalar f, face vector uf, face vector flux, double dt)
     
     else if (cs[] >= 1.) {
       foreach_dimension()
-	f[] += dt*(flux.x[] - flux.x[1])/Delta;
+	f[] += dt*(flux.x[] - flux.x[1])/(Delta*cm[]);
       e[] = 0.;
     }
 
@@ -874,8 +869,8 @@ void update_tracer (scalar f, face vector uf, face vector flux, double dt)
 	f[] += dtmax*F;
 	double scs = 0.;
 	foreach_neighbor(1)
-	  scs += sq(cm[]);  //Correct?
-	e[] = (dt - dtmax)*F*cm[]/scs;
+	  scs += sq(cs[]);
+	e[] = (dt - dtmax)*F*cs[]/scs;
       }
     }
   }

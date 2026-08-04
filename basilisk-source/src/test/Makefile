@@ -571,7 +571,7 @@ embed-tests: neumann.tst dirichlet.tst poiseuille45.tst \
 	couette.tst wannier.tst hydrostatic2.tst cylinders.tst \
 	porous.tst porous1.tst uf.tst starting.tst \
 	neumann3D.tst dirichlet3D.tst hydrostatic3.tst spheres.tst \
-        neumann-axi.tst dirichlet-axi.tst
+        neumann-axi.tst dirichlet-axi.tst pipe-axi-embed.tst
 
 # General Ocean Turbulence Model (GOTM) tests
 

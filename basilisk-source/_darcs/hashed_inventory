@@ -1,4 +1,4 @@
-pristine:ffd488ed13e803da9ca0db8d8a96e223f68d2b2b6e3ae7d295e6a8828ce0619b
+pristine:3987b1975c635e6043700dfc2992af0aea0d5cfc66a5f1aedfb04b3842da308a
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -435,3 +435,25 @@ Stephane Popinet <popinet@basilisk.fr>**20260727145432
  Ignore-this: cc7170cbed8eb15ee48b5c6685e1c574a3d80057a2749fa1533a3a0aca52db30651b33580069ea7d
 ] 
 hash: 0000000393-63ea8d7591d2dd4754c0c0081ef1aa7553625f68ac9609e19aa16a7e6ec9c47c
+[Bug fix for axi + embed
+David Pekker <pekkerd@gmail.com>**20260803131806
+ Ignore-this: a2b53054839854eb1b6fb07ee40e56b9136c6fbc5e58727d20e8525b2f2deafd80a3dda51b21468c
+ 
+ put together with some help from the AIs.
+] 
+hash: 0000011050-876be880b50890d2c5927a69ddddd7b81fee7ed7446fbcd12281a95631c6b6b0
+[Improvements for watch-tests
+Stephane Popinet <popinet@basilisk.fr>**20260729164025
+ Ignore-this: 2ec419f2ac879849bf88ebd3da638310a68e115ad008e9251b0a4f35c9cb12b0713018669baee3f6
+] 
+hash: 0000001584-e490f038be6d50a2a52188f710424fa838ce548ef0148248ec3d583271655168
+[Fixes for compilation with gcc-14
+Stephane Popinet <popinet@basilisk.fr>**20260729164113
+ Ignore-this: 6dd2e4951ef307220736549c96debb1c4eb2530d969affe69b355df5642c339fda7e14dd51e11ba8
+] 
+hash: 0000000574-b7cf6c92d9af4da83fea76d68a555714779fce72ae9747075a04ce4265591ee9
+[Updates to test case and fixes for axi + embed
+Stephane Popinet <popinet@basilisk.fr>**20260803152337
+ Ignore-this: 305ccfd5b29ce5b943633c962e77652f1d6c44e990f837307bf1dbc151fc5e27bba3b4c4874cd228
+] 
+hash: 0000024474-5cc4be43d5bdbf3e577a2fa4100ad0de9f1a2062610fc08cfa5ba7470caa2317

@@ -34,7 +34,7 @@ static void putBigUint32(uint32_t val, uint8_t array[static 4]);
 
 enum TinyPngOut_Status TinyPngOut_init(struct TinyPngOut this[static 1], uint32_t w, uint32_t h, FILE out[static 1]) {
 	// Check arguments
-	if (w == 0 || h == 0 || out == NULL)
+	if (w == 0 || h == 0)
 		return TINYPNGOUT_INVALID_ARGUMENT;
 	this->width = w;
 	this->height = h;
