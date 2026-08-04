@@ -28,12 +28,12 @@ See also [how to create test
 cases](/src/test/README#running-and-creating-test-cases-and-examples).  
 
 # Bugs
+
 * [multigrid3D dump/restart grid depth do not match](my_report_bug.c) 
 * [No inheritance of dimension from scalar to array](https://basilisk.fr/sandbox/hugoj/bug_dimension_of_array/main.c)
 * [Incompatible arguments in _stencil_function with pre-defined input values](args-stencil.c)
 * [Default boundary conditions do not work for face vector fields in MPI](bc_face_vector.c)
 * [Boundary conditions on a single component of a vector field are incorrect on trees](bc_vector.c)
-* [There is a missing metrics cm[] in update_tracer function in embed.h](axi_embed_tracers.c)
 * [Multigrid solver seems to cause MPI errors with axi.h](axi_mg_text.c)
 * [Limited timer resolution can cause a crash](too_fast.c)
 * [No-slip condition violated for viscous Stokes flow with embedded boundary](marginal_embed_2.c)
@@ -73,6 +73,7 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 * [Multilayer vertical diffusion becomes singular if there exist dry cells in the domain](singularity_diffusion.c)
 * [Minor qcc errors when compiling+linking with OpenMPI,Petsc libraries](openmpi_petsc_minimal.c)
 * [Tracer noise when there are embedded boundaries and two viscosities](tracer_noise.c)
+* [Basilisk C is not installable if username starts with ast](install_bug.c)
 
 # [It's not a bug, it's a feature](https://fr.wiktionary.org/wiki/it%E2%80%99s_not_a_bug,_it%E2%80%99s_a_feature)
 
@@ -97,6 +98,7 @@ mistakes.
 
 The bugs below should be fixed in the most recent release.
 
+* [There is a missing metrics cm[] in update_tracer function in embed.h](axi_embed_tracers.c) [03/08/26](/src/?changes=20260803152337)
 * [Compiling qcc in any parent folders containing ".c" or ".h" prevents qcc from transpiling basilisk C code](https://basilisk.fr/sandbox/bugs/qcc-is_code)  [04/06/26](https://basilisk.fr/src/?changes=20260527160025)
 * [Errors when restarting simulations](atomisation_NoEdit.c) [15/04/26](/src/?changes=20260415151613)
 * [Basilisk C parse error with typedef-enum](typedef-enum.c) [01/04/26](/src/?changes=20260401165542)

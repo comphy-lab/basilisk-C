@@ -1,4 +1,4 @@
-pristine:e8abda53eeb53d340b25d9e32a858a6d737c817b14552c003ae086e114c33638
+pristine:eec82809fb6b68e25014a7ef10dcb24b381b78a5947948dea1e820db8001f610
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -12612,3 +12612,88 @@ Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260731134955
  Ignore-this: 9e07beb3e4afb7d309aac24b3cfe1b8f
 ] 
 hash: 0000002549-322473435309be4adac8b378c1710d8776b6c9384969e34920b79f768ede44ab
+[Added deoclecio et al
+Stephane Popinet <popinet@basilisk.fr>**20260803094440
+ Ignore-this: eb7300755f61989a13791d244c4cd34ed198723864d5b186806f3cd3ed2df08537b76145498ba4cd
+] 
+hash: 0000000293-9dcda486ac4f7b0fa7b8a9384fb3fbf94acb17bdd7ba54ad8783bc480779181e
+[Added deoclecio et al
+Stephane Popinet <popinet@basilisk.fr>**20260803094723
+ Ignore-this: 627512a1e33ad276d8de14868e5ebdc339dc1ce4a8368e3c641cb219c74aca8114aeff903eb8161d
+] 
+hash: 0000000581-ca525b3b35ca2d6d93b5ae7123647824fdbea6dbcfe97d53a700b12f53b4eca3
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20260803094741
+ Ignore-this: 1cd72936268787f215f4b335fdcab68e724473c5778224ece4b40ef6ae678df61696f2d4335fabe9
+] 
+hash: 0000000217-56a2e0a90111a1e76799b6cdee2e02c2ff05e45f841cdfb2422cf1db2510ebc7
+[Added Yang et al
+Stephane Popinet <popinet@basilisk.fr>**20260803095145
+ Ignore-this: 39f571802609a68dbcf75d4c840a5298f018d55212abf5b6fb7697fb6380949895955390579314f7
+] 
+hash: 0000000479-44d2d3797234b63ea64ee36b98e3c94ef07cce70624b417e8c04b4d5b0139381
+[Updated
+Stephane Popinet <popinet@basilisk.fr>**20260803101712
+ Ignore-this: 611ea41199f2a0bc4ef1cc95fef0d94af72946cce747fc6841620969c44a53f5bafbe356698fb90a
+] 
+hash: 0000000500-8e817730094cb4e726308063325fc9f8175943ac64e2fa565aa9875628b8fdf6
+[Added installation bug
+larswd <larswd@gmail.com>**20260803123033
+ Ignore-this: 7234b0ca178d02184c1d0004ef4e11b99010d3c95b31bea8f2c4f48d71d051ebc4ee071460d7fb2
+] 
+hash: 0000000269-28f0dbd2ff5d86501fe833b5a9f6ec3fd3d0d0d569fc88a1dc225ed033138331
+[Added bug descriptor
+larswd <larswd@gmail.com>**20260803124700
+ Ignore-this: 3cc79c77e9ca797c649b002609d3c24906b1033a9d184d9bd3105adf68c6b4269e8bc6219e67befa
+] 
+hash: 0000013381-81b8c095a335d6ca7217075e4a4a266e618f3618087f76b5520d9e9a266f59ca
+[Formatting
+larswd <larswd@gmail.com>**20260803125349
+ Ignore-this: d7713c83f373cbb997e4a2817616a280e7a30c8937a9574c31973e41cb3dba07b74ce2cc9015c8f2
+] 
+hash: 0000006535-3a07971a265667298959ab24401ac787113b316afe03f1535e7267b95171bc47
+[   # My Basilisk Sandbox     This sandbox contains the Basilisk codes used for my simulations.     ## Simulations     - [My first simulation](Linear-Stability-Parallet-Flows.c)   
+Maknine <aknine.mustapha@yahoo.com>**20260803143455
+ Ignore-this: a3eab9d0c82a5f36520d37a90147d614fa24a487ec917c7bb22676ef9f16045d22b04e68683303b3
+] 
+hash: 0000000361-54d2bb400ebaa5ee5e5aaf015fb7a25748e33e13e11e83d39e32bd42ac4f36ee
+[Sandbox Creation
+Maknine <aknine.mustapha@yahoo.com>**20260803144339
+ Ignore-this: e455f181e76b422b119e3692724a866058f3010dc3761e51f85d9dbd60d533d6408b97dbb1d0f089
+] 
+hash: 0000000191-cd3f0dc227fa5de67142a70574da3c7611a5b13ab614868f93a61d29c2204221
+[Code Implementation
+Maknine <aknine.mustapha@yahoo.com>**20260803144742
+ Ignore-this: 7df2106bb90a5d547061620a7ee559502b4fa20b100d376db475e1170418042d8d28bc23534fa7ae
+] 
+hash: 0000003535-1fe036022ff9b25873df2ff3fed1b995951669a9b2869d75dd6b1352839901bf
+[Stability code
+Maknine <aknine.mustapha@yahoo.com>**20260803144846
+ Ignore-this: 3cb9b1dcf0788808f207008b69792c09166f55ef9cd62e384608366f620f1d1c58d63337a10c1d0c
+] 
+hash: 0000010291-f991e3c44e58fb1f224c89714925b0f05dddfa5d2252c00aa0d5829426d4e97d
+[AMR code
+Maknine <aknine.mustapha@yahoo.com>**20260803144935
+ Ignore-this: b854d9adc5eacc8a326d3f8eb3114d24f9f79a228388540ce6159e65f11155df8467281bc7b6b57
+] 
+hash: 0000008707-5e4770cc05f491e9d1ff360badb5d386587abde9830bdab479f12d24803e4a3b
+[Linalg
+Maknine <aknine.mustapha@yahoo.com>**20260803145134
+ Ignore-this: 5f392d063650942b5f0a7aff3132e5a3d6162ce7e05a25263e6b4f545f3da8d08067c624fa5c7be2
+] 
+hash: 0000010221-bc018536795d6a87b298a5e6ed75aeff4ea044ca38ed6db7ba8b7b3ec264e7f4
+[Error metric
+Maknine <aknine.mustapha@yahoo.com>**20260803145223
+ Ignore-this: 313749a24bf4de532683d609fa1b728112891cab8b681e69a66e956580d5d4e8400bf563a1ea5b7f
+] 
+hash: 0000021272-e1500b7ec8a7085dddd42b0dcfb0051d73f241e178a633bc64d420b4d7fcd0ed
+[Bug fixed
+Stephane Popinet <popinet@basilisk.fr>**20260803154339
+ Ignore-this: 4443e4478fb15da066fb0518a4ceb13f7ec5f58b26ab6a28df2edd8226d6eaae1a144d1f8b2f026c
+] 
+hash: 0000000486-6c20dcdc9ec7f063f94f1cdf640ece0f0a2648b843142dad28ffa0493260def2
+[Replace all dirty attributes and update the prolongation and restriction functions.
+Jieyun Pan**20260803203144
+ Ignore-this: e2aaf15874d42d429580129fdb684afc
+] 
+hash: 0000005972-ff4e1da4209cac2e9ba12a235d11dc6e6e06987c820e2bbd39a372f0aef6819c

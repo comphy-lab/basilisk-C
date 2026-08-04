@@ -4,8 +4,8 @@
 ## Default parameters and variables
 */
 
-@define exist(val) (val > 0. && val < 1.)
-@define existNeg(val) (val > -1. && val < 0.)
+#define exist(val) (val > 0. && val < 1.)
+#define existNeg(val) (val > -1. && val < 0.)
 #define within(v, vmin, vmax) (v <= vmax && v >= vmin)
 // linear interpolation
 #define DR_L(a) (max(0., 1. - fabs(a)))
@@ -14,6 +14,11 @@
   + y*x*a3 + y*(1. - x)*a4)
 
 #define machine_zero 1.e-16
+
+// for debug
+#define in_square(x, y, x0, y0, dh) (fabs(x - x0) < dh && fabs(y - y0) < dh)
+#define in_cube(x, y, z, x0, y0, z0, dh) (fabs(x - x0) < dh && \
+  fabs(y - y0) < dh && fabs(z - z0) < dh)
 
 #ifndef DIT
 #define DIT 1
@@ -690,12 +695,17 @@ void output_polygon_ebit_mpi (scalar f1, scalar f2, face vector s1, face vector 
 
 #if _MYOUTPUT
 FILE *fp_debug;
-
+int n_breakpoints = 0;
+clock_t time_old = 0., time_new = 0;
 event defaults (i = 0) {
   color_pha.nodump = color_pha_new.nodump = true;
   char name[80];
   sprintf (name, "output_tmp/debug_log_ebit.dat");
   fp_debug = fopen (name, "w");
+
+  n_breakpoints = 0;
+  time_old = clock();
+  time_new = time_old;
 }
 
 void debug_log (int i) {
@@ -708,6 +718,13 @@ void debug_log (int i) {
     fflush (fp_debug);
   }
 
+}
+
+void add_bp (char *mes="") {
+  time_new = clock();
+  printf("Break point %d: %s, telapse:%e\n", n_breakpoints, mes, (double) (time_new - time_old)/CLOCKS_PER_SEC);
+  n_breakpoints++;
+  time_old = time_new;
 }
 
 event debug_end (t = end) {

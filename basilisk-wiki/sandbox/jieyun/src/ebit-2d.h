@@ -476,25 +476,25 @@ static void init_markers (vertex scalar phi) {
   #if TREE
   // must set both prolongation, refine, coarsen, restriction manually
   foreach_dimension() {
-    s.x.restriction = no_restriction;
+    set_restriction (s.x, no_restriction);
+    set_prolongation (s.x, myrefine_face_x);
     s.x.coarsen = no_restriction;
-    s.x.prolongation = myrefine_face_x;
   }
   s.x.refine = refine_face;
-  s.x.restriction = myrestriction_face;
+  set_restriction (s.x, myrestriction_face);
   s.x.coarsen = myrestriction_face;
 
-  // color_pha.restriction = my_restriction_vertex;
+  // set_restriction (color_pha, my_restriction_vertex);
   // color_pha.coarsen = my_restriction_vertex;
-  color_pha.prolongation = refine_vertex_ebit;
+  set_prolongation (color_pha, refine_vertex_ebit);
   color_pha.refine = refine_vertex_ebit;
 
   // central color vertex is refine in color_pha.refine
   // we still need restriction
-  color_pha_cen.prolongation = refine_injection;
+  set_prolongation (color_pha_cen, refine_injection);
   color_pha_cen.refine = refine_injection;
 
-  color_pha_cen.restriction = restriction_conf;
+  set_restriction (color_pha_cen, restriction_conf);
   color_pha_cen.coarsen = restriction_conf;
 
   // for color_pha_cen
@@ -507,8 +507,8 @@ static void init_markers (vertex scalar phi) {
   // we need the refine function to make MPI transfering the data
   // between the ghost cells. Do not use no_restriction for
   // the refine function
-  config_dict.prolongation = no_restriction;
-  config_dict.restriction = restriction_conf;
+  set_prolongation (config_dict, no_restriction);
+  set_restriction (config_dict, restriction_conf);
   // config_dict.refine = no_restriction;
   config_dict.coarsen = no_restriction;
   #endif

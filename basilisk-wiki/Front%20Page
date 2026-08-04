@@ -41,6 +41,8 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@hal{deoclecio2026, hal-05709798}
+
 @article{lande2026,
   title={A laboratory experiment and procedure for deterministic validation of numerical wave models},
   author={Lande, {\O}ystein and Jensen, Atle and Johannessen, Thomas B},
@@ -76,7 +78,4 @@ url = {https://www.sciencedirect.com/science/article/pii/S0045793026002720},
 author = {C. Kieffer-Roth and P. Le Clercq and J.A. {van Hooft} and G. Eckel},
 keywords = {Atomization, Liquid jet in crossflow, Two phase flow, Volume-of-Fluid, Eulerian–Lagrangian coupling, Lagrangian Particle Tracking}
 }
-
-@hal{blanco2026, hal-05626800}
-
 ~~~

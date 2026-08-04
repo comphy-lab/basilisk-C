@@ -13,6 +13,8 @@ I am particularly interested in developing numerical methods for partial differe
 
 Having participated in oceanographic campaigns in the southern ocean (and also in Antarctica) ([Smith et al, 2010](#smith2010)) and having designed field experiments ([Popinet et al, 2004](#popinet2004)) and instrumentation ([Stevens et al, 2005](#stevens2005)) I also have a direct experience of experimental methods.
 
+I am a [Fellow of the European Mechanics Society](https://euromech.org/fellows/fluid-mechanics-fellows/), of the [American Physical Society (DFD)](https://www.aps.org/funding-recognition/aps-fellowship) and a member of the [French Academy of Sciences](https://www.academie-sciences.fr/stephane-popinet).
+
 For a list of publications see below. See also [papers written
 by
 Popinet](http://scholar.google.com/scholar?as_q=&num=10&btnG=Search+Scholar&as_epq=&as_oq=&as_eq=&as_occt=any&as_sauthors=popinet&as_publication=&as_ylo=&as_yhi=&as_allsubj=all&hl=en&lr=)
@@ -24,6 +26,13 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
+@Article{yang2026b,
+author={Rui Yang and Jiarong Wu and Nicolo Scapin and J. Thomas Farrar and Bertrand Chapron and Stéphane Popinet and Luc Deike},
+title={Multilayer simulation of wind-forced breaking wave fields},
+journal={Journal of Fluid Mechanics},
+year={2026}
+}
+
 @Article{lande2026,
 author={Øystein Lande and Stephane Popinet and Odin Gramstad and Thomas Berge Johannessen and Atle Jensen},
 title={Phase-resolved coastal wave modelling using a non-hydrostatic multilayer formulation},
@@ -43,13 +52,6 @@ author={Tian-yang Han and Jie-yun Pan and Chong-sen Huang and Jie Zhang and Ming
 title={Applying contact angles based on a continuously moving contact line in {2D} {VOF} simulations},
 journal={Journal of Computational Physics},
 year={2025}
-}
-
-@Article{deoclecio2025,
-  author = 	 {Deoclecio, Lucas and Thompson, Roney and Popinet, Stéphane and Soares, Edson},
-  title = 	 {Bubble rise and interfacial coalescence initiation in elasto-viscoplastic materials},
-  journal = 	 {Journal of Non-Newtonian Fluid Mechanics},
-  year = 	 {2025}
 }
 ~~~
 
@@ -242,6 +244,8 @@ doi = {10.5194/gmd-11-4727-2018}
 ### Drops and bubbles
 
 ~~~bib
+@hal{deoclecio2026, hal-05709798}
+
 @hal{eshima2025, hal-05419560}
 
 @hal{saini2024, hal-04563704}

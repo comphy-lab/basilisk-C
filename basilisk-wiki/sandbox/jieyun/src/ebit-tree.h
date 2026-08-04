@@ -50,7 +50,7 @@ static inline void restriction_conf (Point point, scalar s) {
 
 // Strange, I get a correct result after copying out this function from
 // multigrid-common.h
-// The function restrition_vertex is very special. The scalar bound with
+// The function restriction_vertex is very special. The scalar bound with
 // restriction_vertex will be treated specially by "tree_boundary_level" function
 // in the tree-common.h. The behavior of automatic boundary condition is not what we want.
 static inline void my_restriction_vertex (Point point, scalar s) {
@@ -99,18 +99,18 @@ static inline void my_restriction_vertex_zero (Point point, scalar s) {
 }
 
 event defaults (i = 0) {
-  mask_intf.restriction = restriction_intf;
-  mask_intf.prolongation = prolongation_intf;
+  set_restriction (mask_intf, restriction_intf);
+  set_prolongation (mask_intf, prolongation_intf);
   mask_intf.refine = refine_injection;
 
   mask_intf.nodump = true;
 }
 
 void set_mask (scalar intf, int n_iter = 1) {
-  intf.restriction = restriction_conf;
+  set_restriction (intf, restriction_conf);
   boundary ({intf});
   scalar mask_tmp[];
-  mask_intf.restriction = restriction_conf;
+  set_restriction (mask_intf, restriction_conf);
   foreach()
     mask_intf[] = intf[];
 
@@ -129,7 +129,7 @@ void set_mask (scalar intf, int n_iter = 1) {
 
     boundary ({mask_intf});
   }
-  mask_intf.restriction = restriction_intf;
+  set_restriction (mask_intf, restriction_intf);
 }
 
 #if dimension == 3
@@ -155,6 +155,14 @@ static void refine_face_injection_x (Point point, scalar s) {
   }
 }
 
+/** All these are used for debugging*/
+static void my_no_restriction_r (Point point, scalar s) {
+  s.stencil.bc = s_centered;
+}
+
+static void my_no_restriction_p (Point point, scalar s) {
+  s.stencil.bc = s_centered;
+}
 #endif
 
 /** Warper function of adapt_wavelet. Add the criteria of the EBIT method and 
@@ -183,8 +191,10 @@ astats adapt_wavelet_ebit (scalar * slist,       // list of scalars
   smax[ns] = 0.02;
   smax[ns + 1] = 1.e-6;
   scalar mask_embed[];
-  mask_embed.restriction = mask_embed.coarsen = restriction_conf;
-  mask_embed.prolongation = mask_embed.refine = refine_injection;
+  set_restriction (mask_embed, restriction_conf);
+  set_prolongation (mask_embed, refine_injection);
+  mask_embed.coarsen = restriction_conf;
+  mask_embed.refine = refine_injection;
 
   foreach() {
     mask_embed[] = cs[] > 0. ? 1. : 0.;

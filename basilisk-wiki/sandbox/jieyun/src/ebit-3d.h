@@ -384,7 +384,7 @@ int get_polygons (Point point, coord *xpoly, int *nv_poly) {
 
 
 /**
- ## Output functions
+## Output functions
  
  * Output interface facets. if tri == true, the polygon will be decomposed into
  * several triangles, and the connecticity is stored in the file_con.
@@ -629,32 +629,35 @@ static void init_markers (vertex scalar phi) {
   // must set both prolongation, refine, coarsen, restriction manually
   foreach_dimension() {
     s.x.refine = my_no_restriction_r;
-    s.x.prolongation = my_no_restriction_p;
     s.x.coarsen = my_no_restriction_r;
-    s.x.restriction = my_restriction_vertex;
+    set_restriction (s.x, my_restriction_vertex);
+    set_prolongation (s.x, my_no_restriction_p);
 
-    color_pha_fcen.x.prolongation = color_pha_fcen.x.refine = no_restriction;
-    color_pha_fcen.x.restriction = color_pha_fcen.x.coarsen = no_restriction;
+    color_pha_fcen.x.refine = no_restriction;
+    color_pha_fcen.x.coarsen = no_restriction;
+    set_restriction (color_pha_fcen.x, no_restriction);
+    set_prolongation (color_pha_fcen.x, no_restriction);
 
     // we need the refine function to make MPI transfering the data
     // between the ghost cells. Do not use no_restriction for
     // the refine function
-    config_fdict.x.prolongation = no_restriction;
-    config_fdict.x.restriction = config_fdict.x.coarsen = no_restriction;
+    config_fdict.x.coarsen = no_restriction;
+    set_restriction (config_fdict.x, no_restriction);
+    set_prolongation (config_fdict.x, no_restriction);
   }
 
-  color_pha.restriction = my_restriction_vertex;
   color_pha.coarsen = my_restriction_vertex;
-  color_pha.prolongation = prolongation_vertex;
   color_pha.refine = prolongation_vertex;
+  set_restriction (color_pha, my_restriction_vertex);
+  set_prolongation (color_pha, prolongation_vertex);
 
   // central color vertex is refine in color_pha.refine
   // we still need restriction
-  color_pha_fcen.x.restriction = restriction_face;
+  set_restriction (color_pha_fcen.x, restriction_face);
   color_pha_fcen.x.coarsen = restriction_face;
   color_pha_fcen.x.refine = refine_face;
   foreach_dimension() {
-    color_pha_fcen.x.prolongation = refine_face_injection_x;
+    set_prolongation (color_pha_fcen.x, refine_face_injection_x);
   }
 
   #endif
@@ -678,7 +681,7 @@ void set_markers() {
 
 
 /**
- ## Front2VOF algorithm
+## Front2VOF algorithm
 
 The representation of the interface with EBIT markers can be used to create
 the associated VOF field. The connectivity of markers and the region of reference phase are 
@@ -831,7 +834,7 @@ double f2vof (coord *xpoly, int npoly, int *nv_poly, int *color_v) {
 }
 
 /** 
- ## Volume fraction computation
+## Volume fraction computation
 */
 void semu2vof() {
   scalar with_faces[];
@@ -1083,8 +1086,8 @@ foreach_dimension()
 
     double kr_max = 5.;
     // unaligned markers on y direction
-    s.y.dirty = false;
-    snew.y.dirty = false;
+    s.y.stencil.bc = s_centered;
+    snew.y.stencil.bc = s_centered;
     foreach_vertex() {
       double y3, y2, y1, x3, x2, x1;
       int withi = (int) with_marker.y[];
@@ -1223,8 +1226,8 @@ foreach_dimension()
     } // end foreach_edge_y, advection of unaligned markers
 
     // unaligned markers on z direction
-    s.z.dirty = false;
-    snew.z.dirty = false;
+    s.z.stencil.bc = s_centered;
+    snew.z.stencil.bc = s_centered;
     foreach_vertex() {
       double y3, y2, y1, x3, x2, x1;
       int withi = (int) with_marker.z[];
