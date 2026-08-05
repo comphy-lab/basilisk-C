@@ -1,4 +1,4 @@
-pristine:3987b1975c635e6043700dfc2992af0aea0d5cfc66a5f1aedfb04b3842da308a
+pristine:1ac87e4d9e9bc90836b0e5762d66fdb029398e4181affa886c73c9cbf3b9808b
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -457,3 +457,25 @@ Stephane Popinet <popinet@basilisk.fr>**20260803152337
  Ignore-this: 305ccfd5b29ce5b943633c962e77652f1d6c44e990f837307bf1dbc151fc5e27bba3b4c4874cd228
 ] 
 hash: 0000024474-5cc4be43d5bdbf3e577a2fa4100ad0de9f1a2062610fc08cfa5ba7470caa2317
+[Global variables cannot be modified by point functions (in parallel)
+Stephane Popinet <popinet@basilisk.fr>**20260804133029
+ Ignore-this: f232edf0436ca1a8dd85b512703275aa5611ed00de4c0880d31bd1a8d1e39eade52c2973e06c02df
+ 
+ This is a source of data races when using OpenMP.
+] 
+hash: 0000000712-1ed00ff136a538fb5b4d2e1a18ef0fe78146de14b6aeb3e17288f9664b8d6ef8
+[The CUDA compiler is not clever enough to recognize constant structures
+Stephane Popinet <popinet@basilisk.fr>**20260804143150
+ Ignore-this: ae0dd902dd325b422a87d342a483f2c2c3252638c6660d5ffd00c22e9ef7183599e8d9870f156a29
+] 
+hash: 0000001530-67d2f0327e3a3d76df05e760ea500b43c48d8abab582263d3acf191472eeb45b
+[Sum reductions on GPUs only worked if the initial sum was zero
+Stephane Popinet <popinet@basilisk.fr>**20260804145611
+ Ignore-this: 5d5984bfbbaacddf5913ff2bf89eb6367dbb3c3f02db566d7dd2b70b205e8b5bc7321b582b620da7
+] 
+hash: 0000002439-d8b76a5548b591d329cf07d9cd3102c33f9e051c88aea7388309d155f9af4662
+[Reductions on global variables now work in CUDA/HIP/OpenCL
+Stephane Popinet <popinet@basilisk.fr>**20260804155603
+ Ignore-this: 2ad555102c9b45f288525dcf12f72667cb72c03bb05dd525032dff057266e3595ae4c30b004e5f2f
+] 
+hash: 0000002455-08a3d911f0c2498a3c89fb9885b719ff4411938da55c9c3660188d459740672a

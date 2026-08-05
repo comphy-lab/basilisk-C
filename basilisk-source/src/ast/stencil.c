@@ -774,6 +774,15 @@ Ast * calling_foreach (Stack * stack)
 static
 void check_missing_reductions (Ast * n, Stack * stack, Ast * scope)
 {
+  AstTerminal * t = ast_left_terminal (scope);
+  if (scope->sym == sym_function_definition &&
+      !ast_parent (n, sym_function_definition)) {
+    fprintf (stderr,
+	     "%s:%d: error: global variable '%s' is modified by this "
+	     "point function\n",
+	     t->file, t->line, ast_terminal (n)->start);
+    exit (1);
+  }
   Ast * list = ast_find (ast_schema (scope, sym_foreach_statement,
 				     2, sym_argument_expression_list),
 			 sym_reduction_list);
@@ -786,7 +795,6 @@ void check_missing_reductions (Ast * n, Stack * stack, Ast * scope)
 		 ast_terminal (n)->start))
       return;
   }
-  AstTerminal * t = ast_left_terminal (scope);
   if (ast_is_foreach_statement (scope))
     fprintf (stderr,
 	     "%s:%d: error: non-local variable '%s' is modified by "

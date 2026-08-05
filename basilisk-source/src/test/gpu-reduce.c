@@ -3,6 +3,8 @@
 
 #include "utils.h"
 
+double global_sum = 1., global_max = -1.;
+
 int main (int argc, char * argv[])
 {
   init_grid (argc > 1 ? atoi(argv[1]) : 1024);
@@ -56,4 +58,24 @@ int main (int argc, char * argv[])
   foreach_level(0, reduction(+:sum))
     sum += s[]*dv();
   fprintf (stderr, "sum: %g %g\n", stat.sum, sum);
+
+  /**
+  Check that sum reductions work also when the initial value is not zero. */
+
+  foreach()
+    s[] = 1.;
+  sum = 1.;
+  foreach (reduction(+:sum))
+    sum += s[];
+  fprintf (stderr, "sum: %f\n", sum);
+
+  /**
+  Check reductions on global variables. */
+
+  foreach (reduction(+:global_sum) reduction(max:global_max)) {
+    global_sum += s[];
+    if (s[] > global_max)
+      global_max = s[];
+  }
+  fprintf (stderr, "global_sum/max: %f %f\n", global_sum, global_max);
 }

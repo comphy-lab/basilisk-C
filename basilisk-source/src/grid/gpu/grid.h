@@ -963,12 +963,18 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
       snprintf (nl, 19, "%d", *((int *)g->pointer));
       fs = str_append (fs, "const int nl = ", nl, ";\n");
     }
-    else if (g->type == sym_INT && g->global && !strcmp (g->name, "bc_period_x"))
-      fs = str_append (fs, "const int bc_period_x = ", Period.x ?
-                       "int(N*Dimensions.x)" : "-1", ";\n");
-    else if (g->type == sym_INT && g->global && !strcmp (g->name, "bc_period_y"))
-      fs = str_append (fs, "const int bc_period_y = ", Period.y ?
-                       "int(N*Dimensions.y)" : "-1", ";\n");
+    else if (g->type == sym_INT && g->global && !strcmp (g->name, "bc_period_x")) {
+      char s[20] = "-1";
+      if (Period.x)
+        snprintf (s, 19, "int(N*%d)", Dimensions.x);
+      fs = str_append (fs, "const int bc_period_x = ", s, ";\n");
+    }
+    else if (g->type == sym_INT && g->global && !strcmp (g->name, "bc_period_y")) {
+      char s[20] = "-1";
+      if (Period.y)
+        snprintf (s, 19, "int(N*%d)", Dimensions.y);
+      fs = str_append (fs, "const int bc_period_y = ", s, ";\n");
+    }
     else if (GPUContext.fragment_shader && (region->n.x > 1 || region->n.y > 1) &&
              g->type == sym_COORD && !strcmp (g->name, "p")) {
 
@@ -992,7 +998,7 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
       }
       fs = str_append (fs, "const ", type_string (g), " ", EXTERNAL_NAME (g), "=", value, ";\n");
     }
-    else if (strcmp (g->name, "Dimensions")) {
+    else if (strcmp (g->name, "Dimensions") && g->reduct != '+') {
 #if !_CUDA
       fs = str_append (fs, "uniform ");
       fs = external_declaration (fs, g);
@@ -1636,8 +1642,11 @@ static Shader * compile_shader (ForeachData * loop,
       shader = external_write (shader, g, loop, region, nwg);    
     if (g->reduct) {
       shader = str_append (shader, type_string (g), " ",
-                           g->global == 2 ? "_loc_" : "", g->name, " = _LOC_VAL_(",
-                           EXTERNAL_NAME (g), ");\n");
+                           g->global == 2 ? "_loc_" : "", g->name, " = ");
+      if (g->reduct == '+')
+        shader = str_append (shader, "0.;\n");
+      else
+        shader = str_append (shader, g->global ? "_GLOB_VAL_(" : "_LOC_VAL_(", EXTERNAL_NAME (g), ");\n");
       shader = str_append (shader, "const scalar ", g->name, "_out_ = ");
       shader = write_scalar (shader, g->s);
       shader = str_append (shader, ";\n");
@@ -1908,11 +1917,20 @@ static bool doloop_on_gpu (ForeachData * loop, const RegionParameters * region,
       fprintf (stderr, "%s:%d: %s %c %g\n",
 	       loop->fname, loop->line, g->name, g->reduct, result);
 #endif
-      if (g->type == sym_DOUBLE) *((double *)g->pointer) = result;
-      else if (g->type == sym_FLOAT) *((float *)g->pointer) = result;
-      else if (g->type == sym_INT) *((int *)g->pointer) = result;
-      else
-	assert (false);
+      if (g->reduct == '+') {
+        if (g->type == sym_DOUBLE) *((double *)g->pointer) += result;
+        else if (g->type == sym_FLOAT) *((float *)g->pointer) += result;
+        else if (g->type == sym_INT) *((int *)g->pointer) += result;
+        else
+          assert (false);
+      }
+      else {
+        if (g->type == sym_DOUBLE) *((double *)g->pointer) = result;
+        else if (g->type == sym_FLOAT) *((float *)g->pointer) = result;
+        else if (g->type == sym_INT) *((int *)g->pointer) = result;
+        else
+          assert (false);
+      }
       delete ({s});
     }
   if (nreductions)
@@ -1931,7 +1949,15 @@ bool gpu_end_stencil (ForeachData * loop,
   if (on_gpu) {
     on_gpu = doloop_on_gpu (loop, region, externals, kernel);
     if (!on_gpu) {
-      fprintf (stderr, "%s:%d: %s: foreach() done on CPU (see GLSL errors above)\n",
+      fprintf (stderr, "%s:%d: %s: foreach() done on CPU (see "
+#if _OPENCL
+               "OpenCL"
+#elif _CUDA
+               "CUDA"
+#else
+               "GLSL"
+#endif
+               " errors above)\n",
 	       loop->fname, loop->line, loop->parallel == 3 ? "error" : "warning");
       if (loop->parallel == 3) // must run on GPU but cannot run
 	exit (1);

@@ -49,7 +49,7 @@ static bool is_normal_variable (const External * g)
 
 static bool is_external_variable (const External * g)
 {
-  if (is_external_constant (g) || !is_normal_variable (g))
+  if (is_external_constant (g) || !is_normal_variable (g) || g->reduct == '+')
     return false;
   if (g->type == sym_INT ||
       g->type == sym_LONG ||

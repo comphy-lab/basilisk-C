@@ -224,16 +224,8 @@ static bool is_global_declaration (const Ast * ref)
 }
 
 static
-bool is_local_declaration (Ast * n, Stack * stack, Ast * scope)
+bool is_reduction_variable (const Ast * n, const Ast * scope)
 {
-  if (!strcmp (ast_terminal (n)->start, "point"))
-    return true;
-  Ast ** d;
-  for (int i = 0; (d = stack_index (stack, i)); i++)
-    if (*d == n)
-      return true;
-    else if (*d == scope)
-      break;
   Ast * list = ast_schema (scope, sym_macro_statement,
                            2, sym_argument_expression_list);
   if (list) {
@@ -247,11 +239,27 @@ bool is_local_declaration (Ast * n, Stack * stack, Ast * scope)
                                      0, sym_IDENTIFIER);
           if (variable && !strcmp (ast_terminal (variable)->start,
                                    ast_terminal (n)->start))
-            return true; // this is a reduction variable
+            return true;
         }
       }
     }
   }
+  return false;
+}
+
+static
+bool is_local_declaration (Ast * n, Stack * stack, Ast * scope)
+{
+  if (!strcmp (ast_terminal (n)->start, "point"))
+    return true;
+  Ast ** d;
+  for (int i = 0; (d = stack_index (stack, i)); i++)
+    if (*d == n)
+      return true;
+    else if (*d == scope)
+      break;
+  if (is_reduction_variable (n, scope))
+    return true;
   return false;
 }
 
@@ -272,7 +280,8 @@ bool can_be_uniform (Ast * ref, Stack * stack, Ast * scope, bool * global)
   if (*global) {
     if (!strcmp (ast_terminal (ref)->start, "N") ||
         !strcmp (ast_terminal (ref)->start, "nl") ||
-        !strcmp (ast_terminal (ref)->start, "Dimensions"))
+        !strcmp (ast_terminal (ref)->start, "Dimensions") ||
+        is_reduction_variable (ref, scope))
       return false;
   }
   else if (is_local_declaration (ref, stack, scope))
@@ -302,6 +311,7 @@ bool can_be_uniform (Ast * ref, Stack * stack, Ast * scope, bool * global)
         strcmp (ast_terminal (def)->start, "bool"))
       return false;
   }
+  
   return true;
 }
 
