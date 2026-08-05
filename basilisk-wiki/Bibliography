@@ -7,6 +7,19 @@ own papers if they use Basilisk. See also [src/references.bib]() for older refer
 
 ### 2026
 ~~~bib
+@article{kieffer2026,
+title = {A coupled Volume-of-Fluid and Lagrangian Point-Particle approach for investigating the plain liquid jet in crossflow atomization},
+journal = {Computers & Fluids},
+volume = {318},
+pages = {107230},
+year = {2026},
+issn = {0045-7930},
+doi = {https://doi.org/10.1016/j.compfluid.2026.107230},
+url = {https://www.sciencedirect.com/science/article/pii/S0045793026002720},
+author = {C. Kieffer-Roth and P. Le Clercq and J.A. {van Hooft} and G. Eckel},
+keywords = {Atomization, Liquid jet in crossflow, Two phase flow, Volume-of-Fluid, Eulerian–Lagrangian coupling, Lagrangian Particle Tracking}
+}
+
 @hal{blanco2026, hal-05626800}
 
 @article{lande2026,

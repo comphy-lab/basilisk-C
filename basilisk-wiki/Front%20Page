@@ -41,6 +41,31 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@article{cattani2026,
+  title={A study of bubble coalescence on solid substrates},
+  author={Cattani, Michele and Forooghi, Pourya},
+  journal={Journal of Fluid Mechanics},
+  volume={1040},
+  pages={A17},
+  year={2026},
+  publisher={Cambridge University Press},
+  doi = {10.1017/jfm.2026.11838}
+}
+
+@article{yang2026,
+  title = {End-pinching and inertial-capillary reopening in viscoplastic liquid ligaments at low Ohnesorge number},
+  author = {Yang, Shu and Mahmood, Fahim Tanfeez and Constante-Amores, C. Ricardo},
+  journal = {Phys. Rev. Fluids},
+  volume = {11},
+  issue = {7},
+  pages = {073303},
+  numpages = {22},
+  year = {2026},
+  month = {Jul},
+  publisher = {American Physical Society},
+  doi = {10.1103/k1wq-ft77}
+}
+
 @hal{deoclecio2026, hal-05709798}
 
 @article{lande2026,
@@ -53,29 +78,5 @@ See also the [POM Gallery]().
   month={June},
   year={2026},
   publisher={Cambridge University Press}
-}
-
-@article{sykes2026,
-  title={Fast droplet impact onto slowly moving deep pools},
-  author={Sykes, Thomas C. and Alventosa, Luke and Castrej{\'o}n-Pita, J. Rafael and Cimpeanu, Radu and Harris, Daniel M. and Castrej{\'o}n-Pita, Alfonso A.},
-  journal={Journal of Fluid Mechanics},
-  doi={10.1017/jfm.2026.11586},
-  volume={1037},
-  pages={A11},
-  month={June},
-  year={2026}
-}
-
-@article{kieffer2026,
-title = {A coupled Volume-of-Fluid and Lagrangian Point-Particle approach for investigating the plain liquid jet in crossflow atomization},
-journal = {Computers & Fluids},
-volume = {318},
-pages = {107230},
-year = {2026},
-issn = {0045-7930},
-doi = {https://doi.org/10.1016/j.compfluid.2026.107230},
-url = {https://www.sciencedirect.com/science/article/pii/S0045793026002720},
-author = {C. Kieffer-Roth and P. Le Clercq and J.A. {van Hooft} and G. Eckel},
-keywords = {Atomization, Liquid jet in crossflow, Two phase flow, Volume-of-Fluid, Eulerian–Lagrangian coupling, Lagrangian Particle Tracking}
 }
 ~~~
