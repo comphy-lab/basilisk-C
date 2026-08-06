@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-visu_3Dmovie — render a 3D PyVista movie from a Basilisk/xarray NetCDF output.
+visu_3Dsnap — render a 3D PyVista snapshot from a Basilisk/xarray NetCDF output.
 
 Usage:
-    visu_3Dmovie file.nc wave
-    visu_3Dmovie file.nc wave --fps 24 --speed-factor 0.5 --method interp
-    visu_3Dmovie file.nc wave --var-top u.x --clim-top -2.5 2.5 --cmap-top bwr
+    visu_3Dsnap file.nc wave
+    visu_3Dsnap file.nc wave --method interp
+    visu_3Dsnap file.nc wave --var-top u.x --clim-top -2.5 2.5 --cmap-top bwr
 
-Run `visu_3Dmovie --help` for the full list of options.
+Run `visu_3Dsnap --help` for the full list of options.
 
 You might need to
-chmod +x visu_3Dmovie.py
+chmod +x visu_3Dsnap.py
 and add it to your PATH
 """
 
@@ -28,8 +28,8 @@ from tools_3Dplots import build_3Dgrid, add_mesh_domain_side, add_ticks
 
 def parse_args(argv=None):
     p = argparse.ArgumentParser(
-        prog="visu_3Dmovie",
-        description="Render a 3D PyVista movie from a NetCDF simulation output.",
+        prog="visu_3Dsnap",
+        description="Render a 3D PyVista snapshot from a NetCDF simulation output.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
@@ -38,38 +38,24 @@ def parse_args(argv=None):
     p.add_argument(
         "output",
         type=str,
-        help="Output movie filename, with or without extension, e.g. 'wave' or 'wave.mp4'",
+        help="Output snapshot filename. Added is the time and format (pdf)",
     )
 
-    # Movie timing
-    p.add_argument(
-        "--fps", type=int, default=30, help="Frames per second of output video"
-    )
-    p.add_argument(
-        "--speed-factor",
-        type=float,
-        default=1.0,
-        help="Playback speed: 1 sim-second = 1/speed_factor video-seconds",
-    )
+    p.add_argument("ttime", type=float, help="specific time to plot the snapshot")
+
     p.add_argument(
         "--method",
         choices=["nearest", "interp"],
         default="nearest",
         help="How to sample simulation time onto the video time axis",
     )
-    p.add_argument(
-        "--t-start",
-        type=float,
-        default=None,
-        help="Start time (default: first available)",
-    )
-    p.add_argument(
-        "--t-end", type=float, default=None, help="End time (default: last available)"
-    )
 
     # Domain geometry
     p.add_argument("--L0", type=float, default=200.0, help="Horizontal domain size (m)")
     p.add_argument("--H0", type=float, default=50.0, help="Vertical domain size (m)")
+    p.add_argument(
+        "--surf-level", type=int, default=-1, help="Level index of the free surface"
+    )
 
     # Fields to plot
     p.add_argument(
@@ -156,19 +142,16 @@ def parse_args(argv=None):
     return p.parse_args(argv)
 
 
-def render_movie(
+def render_snapshot(
     input,
     output,
-    fps=30,
-    speed_factor=1.0,
+    ttime=0.0,
     method="nearest",
-    t_start=None,
-    t_end=None,
     L0=200.0,
     H0=50.0,
     var_top="u.x",
     clim_top=(-2.5, 2.5),
-    cmap_top="bwr",
+    cmap_top="seismic",
     var_side="T",
     clim_side=(19.95, 20.0),
     cmap_side="plasma",
@@ -183,59 +166,33 @@ def render_movie(
     off_screen=False,
     verbose=True,
 ):
-    """
-    Render a 3D PyVista movie from a NetCDF simulation output.
 
-    Same logic as the `visu3D_movie` command-line tool, exposed as a
-    plain function so it can be called from other Python code, e.g.:
-
-        from visu3D_movie import render_movie
-        render_movie("file.nc", "wave", fps=24, speed_factor=0.5)
-
-    Parameters mirror the CLI flags (see `visu3D_movie --help`).
-    Returns the path to the written movie file (str).
-    """
     input_path = Path(input).expanduser()
     if not input_path.exists():
         raise FileNotFoundError(f"input file not found: {input_path}")
-
     output_path = Path(output)
-    filemovie = (
-        str(output_path)
-        if output_path.suffix.lower() in (".mp4", ".avi", ".mov")
-        else f"{output_path}.mp4"
-    )
+    output_path = f"{Path(output)}_t{ttime}.pdf"
 
     vartop = {"name": var_top, "clim": list(clim_top), "cmap": cmap_top}
     varside = {"name": var_side, "clim": list(clim_side), "cmap": cmap_side}
-
     # --- Open dataset ---
     dst = xr.open_dataset(input_path, chunks="auto")
-
-    t0 = t_start if t_start is not None else float(dst.time.values[0])
-    t1 = t_end if t_end is not None else float(dst.time.values[-1])
-    if t1 <= t0:
-        raise ValueError(f"t_end ({t1}) must be greater than t_start ({t0})")
-
-    duration_video = (t1 - t0) / speed_factor
-    nframes = int(np.round(duration_video * fps))
-    if nframes < 1:
-        raise ValueError("computed 0 frames — check fps / speed_factor / time range")
-    target_times = t0 + np.arange(nframes) * (speed_factor / fps)
-
     nx, ny, nz = dst.x.size, dst.y.size, dst.level.size
+    t0 = dst.time.values[0]
+    if "time" not in dst.keys():
+        ds = dst
+    else:
+        ds = dst.sel(time=ttime, method=method)
 
     if verbose:
         print(f"Input:        {input_path}")
-        print(f"Output:       {filemovie}")
-        print(f"Time range:   [{t0}, {t1}]  ({method})")
-        print(f"fps:          {fps}")
-        print(f"Frames:       {nframes}  (video duration: {nframes / fps:.2f} s)")
+        print(f"Output:       {output_path}")
+        print(f"Time:         {t0}")
+        print(f"Method:       {method}")
         print(f"Grid size:    {nx} x {ny} x {nz}")
 
     # --- Plot setup ---
     plotter = pv.Plotter(window_size=tuple(window_size), off_screen=off_screen)
-    plotter.open_movie(filemovie, framerate=fps)
 
     box = pv.Box(bounds=(-L0 / 2, L0 / 2, -L0 / 2, L0 / 2, -H0, 0))
     plotter.add_mesh(box, style="wireframe", color="black", line_width=1)
@@ -248,55 +205,31 @@ def render_movie(
     plotter.enable_3_lights()
     plotter.set_background(background)
 
-    # --- Frame loop ---
-    for it_video, t_target in enumerate(target_times):
-        if method == "interp":
-            ds = dst.interp(time=t_target)
-        else:
-            ds = dst.sel(time=t_target, method="nearest")
+    ds = build_z_ds(ds, "float32")
+    grid = build_3Dgrid(ds)
 
-        ds = build_z_ds(ds, "float32")
-        grid = build_3Dgrid(ds)
+    T = ds[var_side].values.transpose(2, 1, 0)
 
-        T = ds[var_side].values.transpose(2, 1, 0)
+    grid.cell_data[var_side] = T.ravel(order="F")
+    UX = ds[var_top].values.transpose(2, 1, 0)
+    grid.cell_data[var_top] = UX.ravel(order="F")
+    add_mesh_domain_side(grid, (nx, ny, nz), plotter, vartop, varside)
 
-        grid.cell_data[var_side] = T.ravel(order="F")
-        UX = ds[var_top].values.transpose(2, 1, 0)
-        grid.cell_data[var_top] = UX.ravel(order="F")
-
-        plotter.remove_actor("top_surface", render=False)
-        plotter.remove_actor("side_surface", render=False)
-        add_mesh_domain_side(grid, (nx, ny, nz), plotter, vartop, varside)
-
-        plotter.write_frame()
-
-        if verbose and (
-            (it_video + 1) % max(1, nframes // 20) == 0 or it_video == nframes - 1
-        ):
-            pct = 100 * (it_video + 1) / nframes
-            print(
-                f"  frame {it_video + 1}/{nframes} ({pct:.0f}%)", end="\r", flush=True
-            )
-
-    if verbose:
-        print()  # newline after progress
+    plotter.save_graphic(output_path)
     plotter.close()
     if verbose:
-        print(f"Done. Movie written to {filemovie}")
-    return filemovie
+        print(f"Done. Image written to {output_path}")
+    return output_path
 
 
 def main(argv=None):
     args = parse_args(argv)
     try:
-        render_movie(
+        render_snapshot(
             input=args.input,
             output=args.output,
-            fps=args.fps,
-            speed_factor=args.speed_factor,
+            ttime=args.ttime,
             method=args.method,
-            t_start=args.t_start,
-            t_end=args.t_end,
             L0=args.L0,
             H0=args.H0,
             var_top=args.var_top,

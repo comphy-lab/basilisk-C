@@ -33,14 +33,14 @@ FILE * fpmax; //
 
 int main() {
 
-  R_d=0.005; 
+  R_d=0.003; 
   L0=0.4; 
   rho2 = 1.3;
   rho1=1000;
   mu1 = 0.1;
   mu2 = 0.01*mu1;
-  U0=0.6;
-  h=0.1;
+  U0=0.8;
+  h=0.15;
   grav=9.81;
 
   TOLERANCE = 1e-3 [*];

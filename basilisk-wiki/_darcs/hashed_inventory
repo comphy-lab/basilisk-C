@@ -1,4 +1,4 @@
-pristine:fb0750e3e23a90585f5c6d61cec665769f8d4f128d2f6428d2fea4dce803f666
+pristine:67cdcb8d2ea1524c22483a3f30ff97d7ac8e8454d0a0e8707f9dc22b7925b924
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -12712,3 +12712,18 @@ Jieyun Pan**20260804130053
  Ignore-this: fa6017ba688755ec158853496b49e939
 ] 
 hash: 0000001955-d5ba889864d219e9263e6bbae9bfa150874db41075674033d372bd2db14a3684
+[unified data_reader
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260805102629
+ Ignore-this: a666b233fd255e16fee85fae222fa542
+] 
+hash: 0000018788-c25bc05f7c1400ff079ca6384b075d68abb9d7691514f947f55683b4bb47735e
+[better doc for visu_3Dmovie, added visu_3Dsnap for snapshots of context
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260805102936
+ Ignore-this: 852bd33ceaa46d80a6bd053c92642bc9
+] 
+hash: 0000009913-1e820101c298933092739cd6ece783183670c4b219f81704f1209a5900e542ed
+[adapt coefficients for thesis
+mvacher <marc.cordelle.vacher@gmail.com>**20260805203934
+ Ignore-this: d0805b6999c7adb9ec0f473289897930bf681b94630c26ca7460653bf18b7236758c16ab3f2c49c3
+] 
+hash: 0000000335-5855dc6499d219f0625ba2d5a08f82f7a6dde911db17a21a8e14c8286566d463

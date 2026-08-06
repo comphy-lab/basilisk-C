@@ -4,37 +4,31 @@ import numpy as np
 from scipy.interpolate import LinearNDInterpolator, griddata
 
 
-def build_z_at_t(ds_t, dtype="float32"):
-    zb = ds_t.zb[0, 0].values
-    Nl, Ny, Nx = ds_t.w.shape
-    z = np.zeros((Nl, Ny, Nx))
-    z_l = np.zeros((Nl, Ny, Nx))
-    z[0, :, :] += ds_t.h[0, :, :].values / 2
-    for k in range(1, Nl):
-        z[k, :, :] += (
-            z[k - 1, :, :] + ds_t.h[k - 1, :, :].values / 2 + ds_t.h[k, :, :].values / 2
-        )
-        z_l[k, :, :] = np.sum(ds_t.h[:k].values, axis=0)
-    ds_t["z"] = xr.DataArray(z + zb, dims=["level", "y", "x"]).astype(dtype)
-    ds_t["z_l"] = xr.DataArray(z_l + zb, dims=["level", "y", "x"]).astype(dtype)
-    return ds_t
+def build_z(h: xr.DataArray, zb: xr.DataArray, dtype="float32"):
+    Ny = h.sizes["y"]
+    Nx = h.sizes["x"]
+    assert zb.shape[-2:] == (Ny, Nx)  # zb may or may not have a time dim
+
+    h_cumsum = h.cumsum(dim="level")
+    z = zb + h_cumsum - h / 2
+    z_l = zb + h_cumsum.shift(level=1, fill_value=0)
+
+    # enforce dim order: level second, everything else keeps relative order
+    target_order = (
+        ("time", "level", "y", "x") if "time" in h.dims else ("level", "y", "x")
+    )
+    z = z.transpose(*target_order).astype(dtype)
+    z_l = z_l.transpose(*target_order).astype(dtype)
+    return z, z_l
 
 
-def build_z(ds, dtype="float32"):
-    zb = ds.zb[0, 0, 0].values
-    Nt, Nl, Ny, Nx = ds.w.shape
-    z = np.zeros((Nt, Nl, Ny, Nx))
-    z_l = np.zeros((Nt, Nl, Ny, Nx))
-    z[:, 0, :, :] += ds.h[:, 0, :, :].values / 2
-    for k in range(1, Nl):
-        z[:, k, :, :] += (
-            z[:, k - 1, :, :]
-            + ds.h[:, k - 1, :, :].values / 2
-            + ds.h[:, k, :, :].values / 2
-        )
-        z_l[:, k, :, :] = np.sum(ds.h[:, :k].values, axis=1)
-    ds["z"] = xr.DataArray(z + zb, dims=["time", "level", "y", "x"]).astype(dtype)
-    ds["z_l"] = xr.DataArray(z_l + zb, dims=["time", "level", "y", "x"]).astype(dtype)
+def build_z_ds(ds: xr.Dataset, dtype="float32", compute=False):
+    z, z_l = build_z(ds.h, ds.zb, dtype)
+    ds["z"], ds["z_l"] = z, z_l
+
+    if compute:
+        ds["z"] = ds.z.compute()
+        ds["z_l"] = ds.z_l.compute()
     return ds
 
 
