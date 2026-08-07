@@ -10,30 +10,34 @@
 #
 # > THERMIC
 rho0 = 1025.0    # [kg.m-3] reference density
-strat = 0.000002 # s^2
-Ts = 20.0        # °C
+strat = 0.000002 # [s-2] N^2
+Ts = 20.0        # [°C]
 cp = 4.2e3       # [J.kg-1.K-1] heat capacity water
 betaT = 2e-4     # Linear equation of state: drho = betaT*(T0-T) (Vallis 2.4)
+Pr = 1.0         # Prandtl number
 # > DYNAMIC
-P = 0.02          # m/s peak energy of PM spectrum
+P = 0.02          # [m.s-1] peak energy of PM spectrum
 coeff_kpL0 = 10.0 # kpL0 = coeff_kpL0 * pi
 N_mode = 32
 N_power = 5
 Re = 40000        # Reynolds number Re = sqrt(g*lambda**3)/nu
-nu0 = 0.00025     # m2 s-2 Viscosity for vertical diffusion
+nu0 = 0.00025     # [m2.s-2] Viscosity for vertical diffusion
 #
 # DOMAIN DEFINITION
 #
-N_grid = 512 # 1024=10 2^N_grid, number of x and y gridpoints
-L = 200.0    # (m) domain size
-N_layer = 30 # number of layers
-h0 = 50.0    # (m) =2pi/kp, depth of water 
+N_grid = 256 # 1024=10 2^N_grid, number of x and y gridpoints
+N_layer = 60 # number of layers
+L = 200.0    # [m] domain size
+h0 = 50.0    # [m] =2pi/kp, depth of water 
 
 #
 # RUN PARAMETERS
 #
-tend = 200.0 # (s) time to end the simu
-dtout = 10.0 # (s) dt for output in netcdf
+tend = 10.0       # (x Tp) time to end the simu
+tstart_diag = 5.0 # (x Tp) time to start Stokes drift diag
+tend_diag = 10.0  # (x Tp) time to stop Stokes drift diag 
+t_iniT = 1.0      # (x Tp) time to initialise temperature profile
+dtout = 10.0      # [s] dt for output in netcdf
 
 #
 # SOLVER PARAMETERS
@@ -45,9 +49,9 @@ thetaH = 0.51 # theta_h for dumping fast barotropic modes
 #
 # FORCING
 #
-qt = 0.0 # W/m^2
+qt = 0.0 # [W.m-2]
 
 #
 # DIAGNOSTICS
 #
-dt_mean = 10.0 # s
+dt_mean = 10.0 # [s]

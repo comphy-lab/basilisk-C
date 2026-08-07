@@ -70,24 +70,27 @@ def parse_args(argv=None):
         help="Color limits for top-surface variable",
     )
     p.add_argument(
-        "--cmap-top", type=str, default="bwr", help="Colormap for top-surface variable"
+        "--cmap-top",
+        type=str,
+        default="seismic",
+        help="Colormap for top-surface variable",
     )
 
     p.add_argument(
-        "--var-side", type=str, default="T", help="Variable plotted on side surfaces"
+        "--var-side", type=str, default="u.x", help="Variable plotted on side surfaces"
     )
     p.add_argument(
         "--clim-side",
         type=float,
         nargs=2,
-        default=[19.95, 20.0],
+        default=[-2.5, 2.5],
         metavar=("MIN", "MAX"),
         help="Color limits for side-surface variable",
     )
     p.add_argument(
         "--cmap-side",
         type=str,
-        default="plasma",
+        default="seismic",
         help="Colormap for side-surface variable",
     )
 
@@ -152,9 +155,9 @@ def render_snapshot(
     var_top="u.x",
     clim_top=(-2.5, 2.5),
     cmap_top="seismic",
-    var_side="T",
-    clim_side=(19.95, 20.0),
-    cmap_side="plasma",
+    var_side="u.x",
+    clim_side=(-2.5, 2.5),
+    cmap_side="seismic",
     tick_len_min=3.0,
     tick_len_maj=6.0,
     label_offset=10.0,
@@ -178,6 +181,7 @@ def render_snapshot(
     # --- Open dataset ---
     dst = xr.open_dataset(input_path, chunks="auto")
     nx, ny, nz = dst.x.size, dst.y.size, dst.level.size
+    H0 = -dst.zb.values.flatten()[0]  # fixme: works for homogeneous zb only
     t0 = dst.time.values[0]
     if "time" not in dst.keys():
         ds = dst

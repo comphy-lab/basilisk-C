@@ -41,6 +41,8 @@ def parse_args(argv=None):
         help="Output movie filename, with or without extension, e.g. 'wave' or 'wave.mp4'",
     )
 
+    p.add_argument("--skip", type=int, default=0, help="Skip n first steps")
+
     # Movie timing
     p.add_argument(
         "--fps", type=int, default=30, help="Frames per second of output video"
@@ -84,24 +86,27 @@ def parse_args(argv=None):
         help="Color limits for top-surface variable",
     )
     p.add_argument(
-        "--cmap-top", type=str, default="bwr", help="Colormap for top-surface variable"
+        "--cmap-top",
+        type=str,
+        default="seismic",
+        help="Colormap for top-surface variable",
     )
 
     p.add_argument(
-        "--var-side", type=str, default="T", help="Variable plotted on side surfaces"
+        "--var-side", type=str, default="u.x", help="Variable plotted on side surfaces"
     )
     p.add_argument(
         "--clim-side",
         type=float,
         nargs=2,
-        default=[19.95, 20.0],
+        default=[-2.5, 2.5],
         metavar=("MIN", "MAX"),
         help="Color limits for side-surface variable",
     )
     p.add_argument(
         "--cmap-side",
         type=str,
-        default="plasma",
+        default="seismic",
         help="Colormap for side-surface variable",
     )
 
@@ -159,6 +164,7 @@ def parse_args(argv=None):
 def render_movie(
     input,
     output,
+    skip=0,
     fps=30,
     speed_factor=1.0,
     method="nearest",
@@ -168,10 +174,10 @@ def render_movie(
     H0=50.0,
     var_top="u.x",
     clim_top=(-2.5, 2.5),
-    cmap_top="bwr",
-    var_side="T",
-    clim_side=(19.95, 20.0),
-    cmap_side="plasma",
+    cmap_top="seismic",
+    var_side="u.x",
+    clim_side=(-2.5, 2.5),
+    cmap_side="seismic",
     tick_len_min=3.0,
     tick_len_maj=6.0,
     label_offset=10.0,
@@ -210,8 +216,9 @@ def render_movie(
     varside = {"name": var_side, "clim": list(clim_side), "cmap": cmap_side}
 
     # --- Open dataset ---
-    dst = xr.open_dataset(input_path, chunks="auto")
-
+    dst = xr.open_dataset(input_path)
+    dst = dst.isel(time=slice(skip, len(dst.time)))
+    H0 = -dst.zb.values.flatten()[0]
     t0 = t_start if t_start is not None else float(dst.time.values[0])
     t1 = t_end if t_end is not None else float(dst.time.values[-1])
     if t1 <= t0:
@@ -232,6 +239,12 @@ def render_movie(
         print(f"fps:          {fps}")
         print(f"Frames:       {nframes}  (video duration: {nframes / fps:.2f} s)")
         print(f"Grid size:    {nx} x {ny} x {nz}")
+
+    if nframes > len(dst.time):
+        print(
+            "Warning: you asked for {nframes} frames but the file has only {len(dst.time)} points."
+        )
+        print("         results can behave strangely !")
 
     # --- Plot setup ---
     plotter = pv.Plotter(window_size=tuple(window_size), off_screen=off_screen)

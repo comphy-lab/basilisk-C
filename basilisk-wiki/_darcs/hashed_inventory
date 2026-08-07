@@ -1,4 +1,4 @@
-pristine:67cdcb8d2ea1524c22483a3f30ff97d7ac8e8454d0a0e8707f9dc22b7925b924
+pristine:bff49e2763e1665dff4ed0ad78680406f7bb8c2e3e88291c5385c3890ce4a01e
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -12727,3 +12727,28 @@ mvacher <marc.cordelle.vacher@gmail.com>**20260805203934
  Ignore-this: d0805b6999c7adb9ec0f473289897930bf681b94630c26ca7460653bf18b7236758c16ab3f2c49c3
 ] 
 hash: 0000000335-5855dc6499d219f0625ba2d5a08f82f7a6dde911db17a21a8e14c8286566d463
+[cleanup, test of hook
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260806115122
+ Ignore-this: 6ff035d60fad976fa8b8105b51b838d2
+] 
+hash: 0000001748-3590016055c9411b24c1965fb8f49f5b3744f8bb27c85f9646c93247bdec1954
+[fixed a bug where T was not properly initialised, added restart option, comestics
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260804070719
+ Ignore-this: 885fdd8f92c2ba259c0da023c7e50c80
+] 
+hash: 0000011397-78c2194b2d2e949f414cb8e1d414900eac7060fe1eb05d9cbd73fe97f4196887
+[added breaking detection from Jiarong. Added test case, corrected some bugs
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260806151621
+ Ignore-this: 20bdf047ac1aa5b53c16e842f9c8fb4f
+] 
+hash: 0000016878-93c8fcad6d19cd9bd01620cae1766323e4cd17d1e90785b02a6e10cbcc82cf55
+[another way to initialise T, added 3D plot wrapper, better defaults for visu_3Dsnap
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260806151802
+ Ignore-this: 332ccca56d749dba4dbcf352ac44d16
+] 
+hash: 0000005506-e1a9b8fd2b9beb566d2bbcd840eb189f57f0d57837e0db46db94dffbc33f9332
+[better perf for ridge detection with vectorized numpy arrays, added example of a real case that runs fast (1024**2)
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260806154913
+ Ignore-this: 578d4f4124db35ef42102076b9bbc50
+] 
+hash: 0000010499-2020deb0a21e317ad15156909e41f3dffa22573081982d1a196bdea25fb628ec
