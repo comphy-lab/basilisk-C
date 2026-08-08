@@ -1,9 +1,16 @@
 Hi, I'm Louise. I'm a fourth year student doing an internship for which I'm implementing the Selective Frequency Damping (SFD) method into Basilisk.
 
-# SFD module and examples
+![SFD acting on a Kármán Vortex Street (vorticity field)](KarmanSFD/vort.mp4)(loop)
+
+# Selective Frequency Damping method
+## SFD module and examples using centered.h
 - **The [SFD module](/sandbox/gally/SFD.h) to be included in the header of the following file codes**
 - Stabilisation of a [Kármán Vortex Street](/sandbox/gally/KarmanSFD.c) behind a 2D cylinder
 - Stabilisation of a flow behind a [3D sphere](/sandbox/gally/SphereSFD.c)
+
+## SFD module and example using stream.h
+- **The [streamfunction-vorticity SFD module](/sandbox/gally/SFD_stream.h) to be included in the header of the following file code**
+- Stabilisation of [Kelvin-Helmholtz instabilities](/sandbox/gally/KelvinHelmholtzSFD.c)
 
 # Instabilities of von Kármán
 - [Strouhal number of the oscillations behind a 2D sphere](/sandbox/gally/KarmanStrouhal.c)
