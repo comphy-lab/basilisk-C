@@ -45,6 +45,9 @@ rmdir ./sandbox/rvilliers
 rmdir ./sandbox/walmetz/simple%20cylinder
 rmdir ./sandbox/walmetz/slip-lenght
 rmdir ./sandbox/zied/culvert_flushing_friction/culvert
+addfile ./sandbox/oystelan/test1_stokes_ml/output_vts_multilayer.h
+addfile ./sandbox/oystelan/test2_temporal_oscillation_modes/output_vts_multilayer.h
+addfile ./sandbox/oystelan/test3_sloshing_river/output_vts_multilayer.h
 hunk ./sandbox/Kaustubh/Steel_Melting_Multi-Physics/Dissusion_only_melting 1
 -
 rmfile ./sandbox/Kaustubh/Steel_Melting_Multi-Physics/Dissusion_only_melting
@@ -199,6 +202,17 @@ hunk ./sandbox/Llourenco/feedbackmechanism/baseflow.c 1
 -
 +
 rmfile ./sandbox/Llourenco/feedbackmechanism/baseflow.c
+hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 173
+-
+-
+-/**
+-# Visualisations
+-
+-
+-![Animation of the vorticity field](timeSeries/vorticity.mp4)(loop)
+-
+-![Animation of the velocity field (u.x)](timeSeries/ux.mp4)(loop)
+-*/
 hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 1
 -/** # Feedback Mechanism in a Jet Impinging a Flat Plate
 -
@@ -371,17 +385,6 @@ hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 1
 -
 -event adapt (i++) 
 -  adapt_wavelet ({u}, (double[]){1e-3,1e-3}, maxlevel, 4);
-hunk ./sandbox/Llourenco/feedbackmechanism/timeSeries.c 2
--
--
--/**
--# Visualisations
--
--
--![Animation of the vorticity field](timeSeries/vorticity.mp4)(loop)
--
--![Animation of the velocity field (u.x)](timeSeries/ux.mp4)(loop)
--*/
 rmfile ./sandbox/Llourenco/feedbackmechanism/timeSeries.c
 rmdir ./sandbox/Llourenco/feedbackmechanism
 rmdir ./sandbox/Llourenco
@@ -1687,10 +1690,1441 @@ hunk ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h 1
 -}
 rmfile ./sandbox/acastillo/frozen_waves/without_walls/sim_parameters.h
 rmdir ./sandbox/acastillo/frozen_waves/without_walls
-rmdir ./sandbox/jmerrifield
-addfile ./sandbox/oystelan/test1_stokes_ml/output_vts_multilayer.h
-addfile ./sandbox/oystelan/test2_temporal_oscillation_modes/output_vts_multilayer.h
-addfile ./sandbox/oystelan/test3_sloshing_river/output_vts_multilayer.h
+hunk ./sandbox/jmerrifield/Sessile/Makefile 1
+-include $(BASILISK)/Makefile.defs
+-CFLAGS += -O2
++
+rmfile ./sandbox/jmerrifield/Sessile/Makefile
+hunk ./sandbox/jmerrifield/Sessile/sessile_embed_grav.c 1
+-/**
+-# Sessile drop on an embedded boundary
+-~~~gnuplot equilibrium height for $0.001 \leq Bo \leq 100$ and $\theta_e = 130 ^\circ$
+-e_th = 1.24e-02
+-e_inf(Bo) = 2.0*0.01*sin(130*pi/180./2.0)/sqrt(Bo)/e_th
+-
+-set key bottom left
+-
+-set logscale x
+-set yrange [0:1.5]
+-set xlabel "Bo"
+-set ylabel "Epaisseur adimensionnée e*"
+-set grid
+-
+-plot "e_theta_130.dat" u 1:($2/e_th) w lp title "Numérique", \
+-        1. w l lc rgb "black" dt 2 title "Epaisseur théorique géométrique", \
+-	[1e-3:1e2] e_inf(x) w l lc rgb "black" dt 3 title "Epaisseur gravitaire"
+-
+-~~~
+-*/
+-
+-#include "twitkamp/MovingEmbed/embed_navier.h"
+-#include "navier-stokes/centered.h"
+-#include "two-phase.h"
+-#include "tension.h"
+-#include "tavares/contact-embed.h"
+-#include "view.h"
+-#include "jmerrifield/interface_properties.h"
+-
+-//Dimensionless numbers
+-double Bo;
+-double Oh;
+-
+-double ywall;
+-
+-//Physical parameters
+-double rho1, rho2, mu1, mu2;
+-
+-//Geometrical parameters
+-double R0 = 0.01;
+-double h = 0.006;
+-double xc, yc;
+-
+-double r_th, e_th, l_th;
+-double e;
+-double rf, hf;
+-double r;
+-
+-double theta0 = 130.; // Contact angle in degrees
+-
+-double V0 = 0., Vf = 0.;
+-
+-//Slip length
+-double slip = 0.;
+-scalar lambdax[], lambday[];
+-
+-
+-// // Domain parameters
+-int level = 7; 
+-
+-double domainSize = 12; // relative domain size wrt R
+-
+-double endTime = 2.; 
+-
+-SessileData last_contact;
+-
+-face vector muv[];
+-face vector av[];
+-
+-FILE *fp1;
+-FILE *fp2;
+-FILE *fp3;
+-FILE *fp4;
+-FILE *fp5;
+-FILE *fp6;
+-
+-int main()
+-{
+-    //Domain definition
+-    L0 = domainSize*R0;
+-    N = 1 << level;   // <=> N = 2^{minlevel}
+-    origin (-L0/2.,-L0/2.);
+-
+-    //Physical parameters
+-    rho1 = 1000.;
+-    rho2 = 1.;
+-    mu1 = 0.01;
+-    mu2 = 1e-5;
+-
+-    f.sigma = 0.072;
+-    a = av;
+-    mu = muv;
+-
+-    char filename4[100];
+-    sprintf(filename4, "e_theta_%g.dat", theta0);
+-    fp4 = fopen(filename4, "w");
+-    fprintf(fp4, "Bo e \n");
+-
+-    //Angle de contact
+-    const scalar c[] = theta0*pi/180.;
+-    contact_angle = c;
+-
+-    for (Bo=0.001; Bo<=100; Bo*=10)
+-    {
+-	fprintf(stderr,"\n===== Simulation Bo %g =====\n", Bo);
+-        run();
+-    }
+-}
+-
+-//Boundary conditions
+-//Lower conditions
+-u.t[bottom] = dirichlet(0.);
+-
+-//Upper conditions
+-u.t[top]   = dirichlet(0.);
+-
+-//Right conditions
+-u.t[right] = dirichlet(0.);
+-
+-//Left conditions
+-u.t[left] = dirichlet(0.);
+-
+-//Non-slip and non-penetration conditions on the walls
+-u.n[embed] = dirichlet(0.);
+-u.t[embed] = dirichlet(0.);
+-
+-//Initial conditions
+-event init (t = 0)
+-{
+-    ywall = -L0/2. + h;
+-
+-    // Definition of solid walls
+-    solid (cs, fs,
+-       y - ywall);
+-
+-    // Initial position of the liquid
+-    xc = L0/(2.*N);
+-    yc = ywall - L0/(2.*N);
+-    fraction (f,
+-        min(sq(R0) - sq(x - xc) - sq(y - yc),
+-            y-yc));
+-
+-    // Navier slip
+-    foreach()
+-    {
+-        lambdax[] = L0/(2.*N);
+-        lambday[] = 0.;
+-    }
+-    u.x.lambda = lambdax;
+-    u.y.lambda = lambday;
+-    
+-    //Volume conservation
+-    foreach(reduction(+:V0))
+-        V0 += f[]*cs[]*dv();
+-}
+-
+-// File opening
+-event file (t=0)
+-{
+-    //File opening
+-    char filename[100];
+-    sprintf(filename, "properties_theta_%g_Bo_%g.dat", theta0, Bo);
+-    fp1 = fopen(filename, "w");
+-
+-    char filename2[100];
+-    sprintf(filename2, "Ca_theta_%g_Bo_%g.dat", theta0, Bo);
+-    fp2 = fopen(filename2, "w");
+-
+-    char filename3[100];
+-    sprintf(filename3, "data_Bo_%g.dat", Bo);
+-    fp3 = fopen(filename3, "w");
+-    
+-    char filename5[100];
+-    sprintf(filename5, "facets_Bo_%g.dat", Bo);
+-    fp5 = fopen(filename5, "w");
+-    
+-    fp6 = fopen("solids.dat", "w");
+-  
+-    //File definition
+-    fprintf(fp1, "t x_g x_d r U_g U_d theta_g theta_d e \n");
+-    fprintf(fp2, "t Ca_g Ca_d \n");
+-  
+-    Oh = (mu1)/sqrt(rho1*f.sigma*R0);
+-    fprintf(fp3, "Oh = %3.2e \n", Oh);
+-    double t = theta0*pi/180.;
+-    r_th = R0*sqrt(pi/(2*(t - sin(t)*cos(t))));
+-    fprintf(fp3, "R_th = %3.2e \n", r_th);
+-    l_th = 2*r_th*sin(t);
+-    fprintf(fp3, "L_th = %3.2e \n", l_th);
+-    e_th = r_th*(1 - cos(t));
+-    fprintf(fp3, "e_th = %3.2e \n", e_th);
+-
+-    fprintf(fp3, "V0 = %g \n", V0);
+-}
+-
+-/**
+-We set the gravity using the Bond number
+-*/
+-event acceleration (i++, t<=endTime)
+-{
+-    foreach_face(y)
+-        av.y[] -= Bo*f.sigma/(rho1*sq(R0));
+-}
+-
+-
+-event logfile (t+=0.05)
+-{
+-        SessileData c = contact_properties(f, cs, fs, ywall);
+-
+-        r = (c.x_right - c.x_left)/2.;
+-
+-        fprintf(fp1,
+-        "%6.5e %6.5e %6.5e %6.5e %6.5e %6.5e %6.5e %6.5e %6.5e \n",
+-        t,
+-        c.x_left - L0/(2.*N),
+-        c.x_right - L0/(2.*N),
+-        r,
+-        c.U_left,
+-        c.U_right,
+-        c.theta_left,
+-        c.theta_right,
+-        c.height
+-        );
+-
+-        fprintf(fp2, "%6.5e %6.5e %6.5e \n", t, mu1*c.U_left/f.sigma, mu1*c.U_right/f.sigma);
+-
+-	last_contact = contact_properties(f, cs, fs, ywall);
+-}
+-
+-// Actions at the end of the simulation
+-event end (t = end)
+-{
+-    //Interface recuperation
+-    output_facets (f, fp5);
+-    output_facets (cs, fp6);
+-    // Volume conservation
+-    foreach(reduction(+:Vf))
+-        Vf += f[]*cs[]*dv();
+-    fprintf(fp3, "Vf = %g \n", Vf);
+-    
+-    // Height VS Bo
+-    //ContactData c = contact_properties(f, cs, fs, ywall);
+-    fprintf(fp4, "%6.5e %6.5e \n ", Bo, last_contact.height/e_th);
+-
+-    fclose (fp1);
+-}
+-
+-//fixme : see why the file fp4 is empty for the graph
++
+rmfile ./sandbox/jmerrifield/Sessile/sessile_embed_grav.c
+rmdir ./sandbox/jmerrifield/Sessile
+hunk ./sandbox/jmerrifield/Capillary/Makefile 1
+-include $(BASILISK)/Makefile.defs
+-CFLAGS += -O2
++
+rmfile ./sandbox/jmerrifield/Capillary/Makefile
+hunk ./sandbox/jmerrifield/Capillary/capillary_embed_inclined.c 1
+-/**
+-# Inclined capillary with no slip boundary condition
+-
+-Adaptation of the capillary rise [cap](https://basilisk.fr/sandbox/jmerrifield/Capillary/capillary_embed_noslip.c) modified to incline the canal
+-
+-~~~gnuplot Jurin's Height for $\theta_e = 30^\circ$ and $\beta = 10 ^\circ$
+-set grid
+-set key bottom right
+-set yrange [:20.2]
+-set xlabel "Time (s)"
+-set ylabel "Height (mm)"
+-plot for [i=6:8] sprintf("h_interface_maxlevel_%d.dat",i) us 1:2 w lp \
+-        title sprintf("nx = %d, dx = %.2e",2**i,2*0.005/2**i), \
+-        19.9933 w l lc rgb "black" dt 2 title "Hauteur de Jurin 2D", \
+-        19.1538 w l lc rgb "black" title "Hauteur de Jurin 2D corrigée"
+-~~~
+-*/
+-#include "embed.h"
+-#include "navier-stokes/centered.h"
+-#include "two-phase.h"
+-#include "tension.h"
+-#include "tavares/contact-embed.h"
+-#include "view.h"
+-#include "jmerrifield/interface_properties.h"
+-
+-// Dimensionless numbers
+-double Bo;
+-double Oh;
+-double omega;
+-
+-// Physical parameters
+-double rho1, rho2, mu1, mu2;
+-double grav = 4.17;
+-double tens = 0.04;
+-
+-// Geometrical parameters
+-double e;
+-double R = 0.005;
+-double dx, dy;
+-double h_jurin;
+-double h_corr;
+-double h_wash;
+-
+-double V0;
+-double theta0 = 30.;   // Contact angle in degrees
+-double beta = 10.;
+-
+-// Domain parameters
+-int minlevel = 4;
+-int maxlevel;
+-double domainSize = 12.; // relative domain size wrt R
+-
+-double endTime = 2.; 
+-
+-face vector muv[];
+-face vector av[];
+-
+-
+-FILE *fp1;
+-FILE *fp2;
+-FILE *fp3;
+-FILE *fp4;
+-FILE *fp5;
+-FILE *fp6;
+-FILE *fp7;
+-FILE *fp8;
+-
+-int main() {
+-    // Domain definition
+-    L0 = domainSize*R;
+-    N = 1 << minlevel;
+-    origin (0.,0.);
+-    
+-    dx = R/N;
+-    dy = L0/N;
+-    //Wall thickness
+-    e = L0/2. - R;
+-
+-    //Physical parameters
+-    rho1 = 83.1;
+-    rho2 = rho1/1000.;
+-    mu1 = 0.01;
+-    mu2 = mu1/1000.;
+-    f.sigma = tens;
+-    a = av;
+-    mu = muv;
+-  
+-/**
+-We impose the contact angle on the embed boundary
+-*/
+-    const scalar theta[] = theta0*pi/180.;
+-    contact_angle = theta;
+-    for (maxlevel = 6; maxlevel <= 8; maxlevel++)
+-    {
+-        run();
+-    }
+-}
+-
+-/**
+-We set the boundary conditions
+-*/
+-//Lower conditions
+-u.n[bottom]  = neumann(0.);
+-p[bottom] = dirichlet(0.);
+-  
+-//Upper conditions
+-u.n[top] = neumann(0.);
+-p[top] = dirichlet(0.);
+-
+-//Non-slip and non-penetration conditions on the walls
+-u.n[embed] = dirichlet(0.);
+-u.t[embed] = dirichlet(0.);
+-
+-event init (t = 0)
+-{    
+-/**
+-The interior of the canal is refined since it's the zone of th domain where the fluid is. The refined zone is slightly lager than the canal.
+-*/
+-    double R_factor = 1.5;
+-    refine ((x - L0/2)*cos(beta*pi/180) - y*sin(beta*pi/180) > - R*R_factor && 
+-    (x- L0/2)*cos(beta*pi/180) - y*sin(beta*pi/180) < + R*R_factor && level < maxlevel); 
+-    
+-    solid (cs, fs,
+-       min((x - L0/2.)*cos(beta*pi/180) - y*sin(beta*pi/180) + R,
+-           R - ((x - L0/2.)*cos(beta*pi/180) - y*sin(beta*pi/180))));
+-    
+-    fraction (f, y < 2*R &&
+-     (x - L0/2)*cos(beta*pi/180) - y*sin(beta*pi/180) > - R && 
+-     (x - L0/2)*cos(beta*pi/180) - y*sin(beta*pi/180) < + R);
+-	
+-    //Volume conservation
+-    //foreach(reduction(+:V0))
+-    //	V0 += f[]*cs[]*dv();
+-}
+-
+-event file (t=0)
+-{   
+-
+-    //File opening
+-    fp1 = fopen("vitesses_max.dat", "w");
+-        
+-    char filename[100];
+-    sprintf(filename, "angle_maxlevel_%d.dat", maxlevel);
+-    fp2 = fopen(filename, "w");
+-    
+-    char filename2[100];
+-    sprintf(filename2, "h_interface_maxlevel_%d.dat", maxlevel);
+-    fp3 = fopen(filename2, "w");
+-    
+-    fp4 = fopen("data.dat","w");
+-
+-    fprintf(fp1, "t  u.x  u.y \n");
+-    fprintf(fp2, "t  theta \n");
+-    fprintf(fp3, "t  h \n");
+-}
+-
+-event data_recuperation (t=0)
+-{
+-    //Canal length
+-    fprintf(fp4, "L = %g mm \n", 1000*L0);
+-    //Canal radius
+-    fprintf(fp4, "R = %g mm \n", 1000*R);
+-    //Spatial steps
+-    fprintf(fp4, "dx = %g mm \n", 1000*dx);
+-    fprintf(fp4, "dy = %g mm \n", 1000*dy);
+-    //Initial volume
+-    //fprintf(fp4, "V0 = %g mm³\n", pow(1000,3)*V0);
+- 
+-    //Bond number
+-    Bo = (rho1*pow(R,2)*grav)/f.sigma;
+-    fprintf(fp4, "Bo = %g \n", Bo);
+-    //Ohnesorge number
+-    Oh = mu1/(sqrt(rho1*f.sigma*R));
+-    fprintf(fp4, "Oh = %g \n", Oh);
+-    //Omega from Bosanquet equation 
+-    omega = sqrt((9*f.sigma*cos(theta0*pi/180.)*pow(mu1,2))/(pow(rho1,3)*pow(grav,2)*pow(R,5)));
+-    fprintf(fp4, "omega = %g \n", omega);
+-
+-    //2D Jurin height
+-    h_jurin = f.sigma*cos(theta0*pi/180.)/(rho1*grav*R); 
+-    fprintf(fp4, "h_jurin = %g mm \n", 1000*h_jurin);
+-    //Corrected height
+-    h_corr = h_jurin - R/(2*cos(theta0*pi/180.))*(2 - sin(theta0*pi/180.) - asin(cos(theta0*pi/180.))/cos(theta0*pi/180.));
+-    fprintf(fp4, "h_corr = %g mm \n", 1000*h_corr);
+-}
+-/**
+-The gravity is set to be constant
+-*/
+-event acceleration (i++, t<=endTime) 
+-{
+-    foreach_face(y)
+-        av.y[] -= grav;
+-}
+-
+-event logfile (t+=0.05) 
+-{
+-    //Velocity data
+-    stats V = statsf(u.y);
+-    stats U = statsf(u.x);
+-    fprintf(fp1, "%+6.5e %+6.5e %+6.5e\n", t, U.max, V.max);
+-}
+-
+-// Meniscus height
+-event meniscus_height (t+=0.05)
+-{
+-    //Interface data
+-    CapData data = cap_properties (f, cs, beta, R);
+-        
+-    fprintf(fp2, "%+6.5e %+6.5e \n", t, data.theta_right);
+-    fflush(fp2);
+-    fprintf(fp3, "%+6.5e %+6.5e \n", t, 1000*data.h_int);
+-    fflush(fp3);
+-    //fprintf(fp6, "%+6.5e %+6.5e %+6.5e \n", t, pow(1000,3)*V, (data.V - V0)/V0);
+-    
+-    //Washburn height
+-    //h_wash = sqrt((tens*R*cos(theta0*pi/180.))/(2*mu1)*t);
+-    //fprintf(fp5, "%+6.5e %+6.5e %+6.5e \n", t, 1000*h_int, 1000*h_wash);
+-}
+-
+-// Convergence check
+-/*
+-event stop_when_converged (i++) {
+-
+-  CapData data = cap_properties (f, cs, beta, R);
+-  double h_int = data.h_int;
+-
+-  double err_rel = fabs(h - h_old)/(fabs(h) + 1e-12);
+-  
+-  double tol = 1e-6  // à ajuster
+-
+-  if (err _rel < tol)
+-    nstable++;
+-  else
+-    nstable = 0;
+-
+-  h_old = h;
+-
+-  if (nstable > 100) {
+-    fprintf(stderr,
+-            "Convergence atteinte : h = %.12g\n",
+-            h);
+-    return 1;  // arrêt de la simulation
+-  }
+-}
+-*/
+-
+-event end (t = end)
+-{   
+-    //Interface data
+-    CapData data = cap_properties (f, cs, beta, R);
+-    //double V = data.V;
+-    
+-    fprintf(fp4, "============================");
+-    //Final height of the simulation
+-    fprintf(fp4, "h_sim = %g mm \n", 1000*data.h_int);
+-    
+-    //Final contact angle
+-    fprintf(fp4, "theta = %g \n", data.theta_right);
+-
+-    fclose (fp1);
+-    fclose (fp2);
+-    fclose (fp3);
+-    fclose (fp4);
+-}
+-/**
+-~~~gnuplot Contact angle
+-set multiplot layout 1,2
+-
+-set grid
+-unset key
+-set xlabel "Time (s)"
+-set ylabel "Angle à gauche (°)"
+-plot for [i=5:8] sprintf("angle_maxlevel_%d.dat",i) us 1:2 w lp \
+-        title sprintf("nx = %d, dx = %.2e",2**i,2*0.005/2**i), \
+-        30 w l lc rgb "black" title "Angle imposé"
+-
+-set grid
+-set key top right
+-set xlabel "Time (s)"
+-set ylabel "Angle à droite (°)"
+-plot for [i=5:8] sprintf("angle_maxlevel_%d.dat",i) us 1:3 w lp \
+-        title sprintf("nx = %d, dx = %.2e",2**i,2*0.005/2**i), \
+-        30 w l lc rgb "black" title "Angle imposé"
+-~~~
+-*/
+-
+-//fixme :see why there is an error for angle's plot
++
+rmfile ./sandbox/jmerrifield/Capillary/capillary_embed_inclined.c
+hunk ./sandbox/jmerrifield/Capillary/capillary_embed_navier.c 1
+-/**
+-# Capillary with no slip boundary condition
+-
+-Adaptation of the capillary rise [cap](https://basilisk.fr/sandbox/jmerrifield/Capillary/capillary_embed_noslip.c) modified to impose Navier slip BC on the embed boundaries
+-
+-~~~gnuplot Jurin's Height for $\theta_e = 30^\circ$ et $\lambda = 0.1 mm$
+-set grid
+-set key bottom right
+-set yrange [:20.2]
+-set xlabel "Time (s)"
+-set ylabel "Height (mm)"
+-plot for [i=5:8] sprintf("h_interface_maxlevel_%d.dat",i) us 1:2 w lp \
+-        title sprintf("nx = %d, dx = %.2e",2**i,2*0.005/2**i), \
+-        19.9933 w l lc rgb "black" dt 2 title "Hauteur de Jurin 2D", \
+-        19.1538 w l lc rgb "black" title "Hauteur de Jurin 2D corrigée"
+-~~~
+-*/
+-#include "twitkamp/MovingEmbed/embed_navier.h"
+-#include "navier-stokes/centered.h"
+-#include "two-phase.h"
+-#include "tension.h"
+-#include "tavares/contact-embed.h"
+-#include "view.h"
+-#include "jmerrifield/interface_properties.h"
+-
+-// Dimensionless numbers
+-double Bo;
+-double Oh;
+-double omega;
+-
+-// Physical parameters
+-double rho1, rho2, mu1, mu2;
+-double grav = 4.17;
+-double tens = 0.04;
+-
+-// Geometrical parameters
+-double e;
+-double R = 0.005;
+-double dx, dy;
+-double h_jurin;
+-double h_corr;
+-double h_wash;
+-
+-double V0;
+-double theta0 = 30.;   // Contact angle in degrees
+-double beta = 0.;
+-
+-// Slip length
+-double slip = 0.1e-3;
+-scalar lambdax[], lambday[];
+-
+-// Domain parameters
+-int minlevel = 4;
+-int maxlevel;
+-double domainSize = 6.; // relative domain size wrt R
+-
+-double endTime = 2.; 
+-
+-face vector muv[];
+-face vector av[];
+-
+-
+-FILE *fp1;
+-FILE *fp2;
+-FILE *fp3;
+-FILE *fp4;
+-FILE *fp5;
+-FILE *fp6;
+-FILE *fp7;
+-FILE *fp8;
+-
+-int main() {
+-    // Domain definition
+-    L0 = domainSize*R;
+-    N = 1 << minlevel;
+-    origin (0.,0.);
+-    
+-    dx = R/N;
+-    dy = L0/N;
+-    //Wall thickness
+-    e = L0/2. - R;
+-
+-    //Physical parameters
+-    rho1 = 83.1;
+-    rho2 = rho1/1000.;
+-    mu1 = 0.01;
+-    mu2 = mu1/1000.;
+-    f.sigma = tens;
+-    a = av;
+-    mu = muv;
+-  
+-/**
+-We impose the contact angle on the embed boundary
+-*/
+-    const scalar theta[] = theta0*pi/180.;
+-    contact_angle = theta;
+-    for (maxlevel = 5; maxlevel <= 8; maxlevel++)
+-    {
+-        run();
+-    }
+-}
+-
+-/**
+-We set the boundary conditions
+-*/
+-//Lower conditions
+-u.n[bottom]  = neumann(0.);
+-p[bottom] = dirichlet(0.);
+-  
+-//Upper conditions
+-u.n[top] = neumann(0.);
+-p[top] = dirichlet(0.);
+-
+-//Non-slip and non-penetration conditions on the walls
+-u.n[embed] = dirichlet(0.);
+-u.t[embed] = dirichlet(0.);
+-
+-event init (t = 0)
+-{    
+-/**
+-The interior of the canal is refined since it's the zone of th domain where the fluid is. The refined zone is slightly lager than the canal.
+-*/
+-    double R_factor = 1.5;
+-    refine (x > L0/2 - R*R_factor && x < L0/2 + R*R_factor && level < maxlevel); 
+-    solid (cs, fs, min(x - e, (L0 - e) - x));
+-
+-    fraction (f, y < 2*R && x > L0/2 - R && x < L0/2 + R);
+-  
+-    // Navier slip
+-    foreach()
+-    {
+-    	lambdax[] = slip;
+-    	lambday[] = slip;
+-    }
+-    u.x.lambda = lambdax;
+-    u.y.lambda = lambday;
+-  
+-    //Volume conservation
+-    //foreach(reduction(+:V0))
+-    //	V0 += f[]*cs[]*dv();
+-}
+-
+-event file (t=0)
+-{   
+-
+-    //File opening
+-    fp1 = fopen("vitesses_max.dat", "w");
+-        
+-    char filename[100];
+-    sprintf(filename, "angle_maxlevel_%d.dat", maxlevel);
+-    fp2 = fopen(filename, "w");
+-    
+-    char filename2[100];
+-    sprintf(filename2, "h_interface_maxlevel_%d.dat", maxlevel);
+-    fp3 = fopen(filename2, "w");
+-    
+-    fp4 = fopen("data.dat","w");
+-
+-    fprintf(fp1, "t  u.x  u.y \n");
+-    fprintf(fp2, "t  theta \n");
+-    fprintf(fp3, "t  h \n");
+-}
+-
+-event data_recuperation (t=0)
+-{
+-    //Canal length
+-    fprintf(fp4, "L = %g mm \n", 1000*L0);
+-    //Canal radius
+-    fprintf(fp4, "R = %g mm \n", 1000*R);
+-    //Spatial steps
+-    fprintf(fp4, "dx = %g mm \n", 1000*dx);
+-    fprintf(fp4, "dy = %g mm \n", 1000*dy);
+-    //Initial volume
+-    //fprintf(fp4, "V0 = %g mm³\n", pow(1000,3)*V0);
+- 
+-    //Bond number
+-    Bo = (rho1*pow(R,2)*grav)/f.sigma;
+-    fprintf(fp4, "Bo = %g \n", Bo);
+-    //Ohnesorge number
+-    Oh = mu1/(sqrt(rho1*f.sigma*R));
+-    fprintf(fp4, "Oh = %g \n", Oh);
+-    //Omega from Bosanquet equation 
+-    omega = sqrt((9*f.sigma*cos(theta0*pi/180.)*pow(mu1,2))/(pow(rho1,3)*pow(grav,2)*pow(R,5)));
+-    fprintf(fp4, "omega = %g \n", omega);
+-
+-    //2D Jurin height
+-    h_jurin = f.sigma*cos(theta0*pi/180.)/(rho1*grav*R); 
+-    fprintf(fp4, "h_jurin = %g mm \n", 1000*h_jurin);
+-    //Corrected height
+-    h_corr = h_jurin - R/(2*cos(theta0*pi/180.))*(2 - sin(theta0*pi/180.) - asin(cos(theta0*pi/180.))/cos(theta0*pi/180.));
+-    fprintf(fp4, "h_corr = %g mm \n", 1000*h_corr);
+-}
+-/**
+-The gravity is set to be constant
+-*/
+-event acceleration (i++, t<=endTime) 
+-{
+-    foreach_face(y)
+-        av.y[] -= grav;
+-}
+-
+-event logfile (t+=0.05) 
+-{
+-    //Velocity data
+-    stats V = statsf(u.y);
+-    stats U = statsf(u.x);
+-    fprintf(fp1, "%+6.5e %+6.5e %+6.5e\n", t, U.max, V.max);
+-}
+-
+-// Meniscus height
+-event meniscus_height (t+=0.05)
+-{
+-    //Interface data
+-    CapData data = cap_properties (f, cs, beta, R);
+-        
+-    fprintf(fp2, "%+6.5e %+6.5e \n", t, data.theta_right);
+-    fflush(fp2);
+-    fprintf(fp3, "%+6.5e %+6.5e \n", t, 1000*data.h_int);
+-    fflush(fp3);
+-    //fprintf(fp6, "%+6.5e %+6.5e %+6.5e \n", t, pow(1000,3)*V, (data.V - V0)/V0);
+-    
+-    //Washburn height
+-    //h_wash = sqrt((tens*R*cos(theta0*pi/180.))/(2*mu1)*t);
+-    //fprintf(fp5, "%+6.5e %+6.5e %+6.5e \n", t, 1000*h_int, 1000*h_wash);
+-}
+-
+-// Convergence check
+-/*
+-event stop_when_converged (i++) {
+-
+-  CapData data = cap_properties (f, cs, beta, R);
+-  double h_int = data.h_int;
+-
+-  double err_rel = fabs(h - h_old)/(fabs(h) + 1e-12);
+-  
+-  double tol = 1e-6  // à ajuster
+-
+-  if (err _rel < tol)
+-    nstable++;
+-  else
+-    nstable = 0;
+-
+-  h_old = h;
+-
+-  if (nstable > 100) {
+-    fprintf(stderr,
+-            "Convergence atteinte : h = %.12g\n",
+-            h);
+-    return 1;  // arrêt de la simulation
+-  }
+-}
+-*/
+-
+-event end (t = end)
+-{   
+-    //Interface data
+-    CapData data = cap_properties (f, cs, beta, R);
+-    //double V = data.V;
+-    
+-    fprintf(fp4, "============================");
+-    //Final height of the simulation
+-    fprintf(fp4, "h_sim = %g mm \n", 1000*data.h_int);
+-    
+-    //Final contact angle
+-    fprintf(fp4, "theta = %g \n", data.theta_right);
+-
+-    fclose (fp1);
+-    fclose (fp2);
+-    fclose (fp3);
+-    fclose (fp4);
+-}
+-/**
+-~~~gnuplot Contact angle
+-set grid
+-set key top right
+-set xlabel "Time (s)"
+-set ylabel "Angle (°)"
+-plot for [i=5:8] sprintf("angle_maxlevel_%d.dat",i) us 1:2 w lp \
+-        title sprintf("nx = %d, dx = %.2e",2**i,2*0.005/2**i), \
+-        30 w l lc rgb "black" title "Angle imposé"
+-~~~
+-*/
+-
+-//fixme :see why there is an error for angle's plot
++
+rmfile ./sandbox/jmerrifield/Capillary/capillary_embed_navier.c
+hunk ./sandbox/jmerrifield/Capillary/capillary_embed_noslip.c 1
+-/**
+-# Capillary with no slip boundary condition
+-
+-~~~gnuplot Jurin's Height for $\theta_e = 30^\circ$
+-set grid
+-set key bottom right
+-set yrange [:20.2]
+-set xlabel "Time (s)"
+-set ylabel "Height (mm)"
+-plot for [i=5:8] sprintf("h_interface_maxlevel_%d.dat",i) us 1:2 w lp \
+-        title sprintf("nx = %d, dx = %.2e",2**i,2*0.005/2**i), \
+-        19.9933 w l lc rgb "black" dt 2 title "Hauteur de Jurin 2D", \
+-        19.1538 w l lc rgb "black" title "Hauteur de Jurin 2D corrigée"
+-~~~
+-*/
+-#include "embed.h"
+-#include "navier-stokes/centered.h"
+-#include "two-phase.h"
+-#include "tension.h"
+-#include "tavares/contact-embed.h"
+-#include "view.h"
+-#include "jmerrifield/interface_properties.h"
+-
+-// Dimensionless numbers
+-double Bo;
+-double Oh;
+-double omega;
+-
+-// Physical parameters
+-double rho1, rho2, mu1, mu2;
+-double grav = 4.17;
+-double tens = 0.04;
+-
+-// Geometrical parameters
+-double e;
+-double R = 0.005;
+-double dx, dy;
+-double h_jurin;
+-double h_corr;
+-double h_wash;
+-
+-double V0;
+-double theta0 = 30.;   // Contact angle in degrees
+-double beta = 0.;
+-
+-// Domain parameters
+-int minlevel = 4;
+-int maxlevel;
+-double domainSize = 6.; // relative domain size wrt R
+-
+-double endTime = 2.; 
+-
+-face vector muv[];
+-face vector av[];
+-
+-
+-FILE *fp1;
+-FILE *fp2;
+-FILE *fp3;
+-FILE *fp4;
+-FILE *fp5;
+-FILE *fp6;
+-FILE *fp7;
+-FILE *fp8;
+-
+-int main() {
+-    // Domain definition
+-    L0 = domainSize*R;
+-    N = 1 << minlevel;
+-    origin (0.,0.);
+-    
+-    dx = R/N;
+-    dy = L0/N;
+-    //Wall thickness
+-    e = L0/2. - R;
+-
+-    //Physical parameters
+-    rho1 = 83.1;
+-    rho2 = rho1/1000.;
+-    mu1 = 0.01;
+-    mu2 = mu1/1000.;
+-    f.sigma = tens;
+-    a = av;
+-    mu = muv;
+-  
+-/**
+-We impose the contact angle on the embed boundary
+-*/
+-    const scalar theta[] = theta0*pi/180.;
+-    contact_angle = theta;
+-    for (maxlevel = 5; maxlevel <= 8; maxlevel++)
+-    {
+-        run();
+-    }
+-}
+-
+-/**
+-We set the boundary conditions
+-*/
+-//Lower conditions
+-u.n[bottom]  = neumann(0.);
+-p[bottom] = dirichlet(0.);
+-  
+-//Upper conditions
+-u.n[top] = neumann(0.);
+-p[top] = dirichlet(0.);
+-
+-//Non-slip and non-penetration conditions on the walls
+-u.n[embed] = dirichlet(0.);
+-u.t[embed] = dirichlet(0.);
+-
+-event init (t = 0)
+-{    
+-/**
+-The interior of the canal is refined since it's the zone of th domain where the fluid is. The refined zone is slightly lager than the canal.
+-*/
+-    double R_factor = 1.5;
+-    refine (x > L0/2 - R*R_factor && x < L0/2 + R*R_factor && level < maxlevel); 
+-    solid (cs, fs, min(x - e, (L0 - e) - x));
+-
+-    fraction (f, y < 2*R && x > L0/2 - R && x < L0/2 + R);
+-	
+-    //Volume conservation
+-    //foreach(reduction(+:V0))
+-    //	V0 += f[]*cs[]*dv();
+-}
+-
+-event file (t=0)
+-{   
+-
+-    //File opening
+-    fp1 = fopen("vitesses_max.dat", "w");
+-        
+-    char filename[100];
+-    sprintf(filename, "angle_maxlevel_%d.dat", maxlevel);
+-    fp2 = fopen(filename, "w");
+-    
+-    char filename2[100];
+-    sprintf(filename2, "h_interface_maxlevel_%d.dat", maxlevel);
+-    fp3 = fopen(filename2, "w");
+-    
+-    fp4 = fopen("data.dat","w");
+-
+-    fprintf(fp1, "t  u.x  u.y \n");
+-    fprintf(fp2, "t  theta \n");
+-    fprintf(fp3, "t  h \n");
+-}
+-
+-event data_recuperation (t=0)
+-{
+-    //Canal length
+-    fprintf(fp4, "L = %g mm \n", 1000*L0);
+-    //Canal radius
+-    fprintf(fp4, "R = %g mm \n", 1000*R);
+-    //Spatial steps
+-    fprintf(fp4, "dx = %g mm \n", 1000*dx);
+-    fprintf(fp4, "dy = %g mm \n", 1000*dy);
+-    //Initial volume
+-    //fprintf(fp4, "V0 = %g mm³\n", pow(1000,3)*V0);
+- 
+-    //Bond number
+-    Bo = (rho1*pow(R,2)*grav)/f.sigma;
+-    fprintf(fp4, "Bo = %g \n", Bo);
+-    //Ohnesorge number
+-    Oh = mu1/(sqrt(rho1*f.sigma*R));
+-    fprintf(fp4, "Oh = %g \n", Oh);
+-    //Omega from Bosanquet equation 
+-    omega = sqrt((9*f.sigma*cos(theta0*pi/180.)*pow(mu1,2))/(pow(rho1,3)*pow(grav,2)*pow(R,5)));
+-    fprintf(fp4, "omega = %g \n", omega);
+-
+-    //2D Jurin height
+-    h_jurin = f.sigma*cos(theta0*pi/180.)/(rho1*grav*R); 
+-    fprintf(fp4, "h_jurin = %g mm \n", 1000*h_jurin);
+-    //Corrected height
+-    h_corr = h_jurin - R/(2*cos(theta0*pi/180.))*(2 - sin(theta0*pi/180.) - asin(cos(theta0*pi/180.))/cos(theta0*pi/180.));
+-    fprintf(fp4, "h_corr = %g mm \n", 1000*h_corr);
+-}
+-/**
+-The gravity is set to be constant
+-*/
+-event acceleration (i++, t<=endTime) 
+-{
+-    foreach_face(y)
+-        av.y[] -= grav;
+-}
+-
+-event logfile (t+=0.05) 
+-{
+-    //Velocity data
+-    stats V = statsf(u.y);
+-    stats U = statsf(u.x);
+-    fprintf(fp1, "%+6.5e %+6.5e %+6.5e\n", t, U.max, V.max);
+-}
+-
+-// Meniscus height
+-event meniscus_height (t+=0.05)
+-{
+-    //Interface data
+-    CapData data = cap_properties (f, cs, beta, R);
+-        
+-    fprintf(fp2, "%+6.5e %+6.5e \n", t, data.theta_right);
+-    fflush(fp2);
+-    fprintf(fp3, "%+6.5e %+6.5e \n", t, 1000*data.h_int);
+-    fflush(fp3);
+-    //fprintf(fp6, "%+6.5e %+6.5e %+6.5e \n", t, pow(1000,3)*V, (data.V - V0)/V0);
+-    
+-    //Washburn height
+-    //h_wash = sqrt((tens*R*cos(theta0*pi/180.))/(2*mu1)*t);
+-    //fprintf(fp5, "%+6.5e %+6.5e %+6.5e \n", t, 1000*h_int, 1000*h_wash);
+-}
+-
+-// Convergence check
+-/*
+-event stop_when_converged (i++) {
+-
+-  CapData data = cap_properties (f, cs, beta, R);
+-  double h_int = data.h_int;
+-
+-  double err_rel = fabs(h - h_old)/(fabs(h) + 1e-12);
+-  
+-  double tol = 1e-6  // à ajuster
+-
+-  if (err _rel < tol)
+-    nstable++;
+-  else
+-    nstable = 0;
+-
+-  h_old = h;
+-
+-  if (nstable > 100) {
+-    fprintf(stderr,
+-            "Convergence atteinte : h = %.12g\n",
+-            h);
+-    return 1;  // arrêt de la simulation
+-  }
+-}
+-*/
+-
+-event end (t = end)
+-{   
+-    //Interface data
+-    CapData data = cap_properties (f, cs, beta, R);
+-    //double V = data.V;
+-    
+-    fprintf(fp4, "============================");
+-    //Final height of the simulation
+-    fprintf(fp4, "h_sim = %g mm \n", 1000*data.h_int);
+-    
+-    //Final contact angle
+-    fprintf(fp4, "theta = %g \n", data.theta_right);
+-
+-    fclose (fp1);
+-    fclose (fp2);
+-    fclose (fp3);
+-    fclose (fp4);
+-}
+-/**
+-~~~gnuplot Contact angle
+-set grid
+-set key top right
+-set xlabel "Time (s)"
+-set ylabel "Angle (°)"
+-plot for [i=5:8] sprintf("angle_maxlevel_%d.dat",i) us 1:2 w lp \
+-        title sprintf("nx = %d, dx = %.2e",2**i,2*0.005/2**i), \
+-        30 w l lc rgb "black" title "Angle imposé"
+-~~~
+-*/
+-
+-//fixme :see why there is an error for angle's plot
++
+rmfile ./sandbox/jmerrifield/Capillary/capillary_embed_noslip.c
+rmdir ./sandbox/jmerrifield/Capillary
+hunk ./sandbox/jmerrifield/README 1
+-Hi everyone, I'm Jordan MERRIFIELD, student at Sorbonne University (2026).
+-
+-This sandbox is based on my 3-month M1 internship made with Mathilde Tavares and Francesco Picella.
+-
+-During this internship, I studied diphasic flows and their interactions with embed boundaries. 
+-
+-# Headers
+-
+-I used Mathilde Tavares's header to impose the contact angle on the embed boundary [contact-embed](https://basilisk.fr/sandbox/tavares/contact-embed.h) and Théo Witkamp's header to compute the Navier boundary condition [embed_navier](https://basilisk.fr/sandbox/twitkamp/MovingEmbed/embed_navier.h).
+-
+-I made my own header to follow properties of the interface : [interface_properties](https://basilisk.fr/sandbox/jmerrifield/interface_properties.h)
+-
+-# Codes
+-
+-## Capillary rise
+-
+-My first test-case was the capillary rise. I used ([Aghar et al.,2024](https://doi.org/10.1016/j.camwa.2024.12.015)) as a reference.
+-I studied vertical capillary rise with [capillary_navier](https://basilisk.fr/sandbox/jmerrifield/Capillary/capillary_embed_navier.c) and without [capillary_noslip](https://basilisk.fr/sandbox/jmerrifield/Capillary/capillary_embed_noslip.c)  Navier slip condition as well as inclined capillary rise [capillary_inclined](https://basilisk.fr/sandbox/jmerrifield/Capillary/capillary_embed_inclined.c).
+-
+-
+-## Sessile spreading 
+-
+-Following that, I studied the behaviour of spreading of a sessile on embed boundary. First, without gravity, to see the deformation due to capillary effects, and after with gravity to see its influence on the form of the sessile [sessile_grav](https://basilisk.fr/sandbox/jmerrifield/Sessile/sessile_embed_grav.c).
++
+rmfile ./sandbox/jmerrifield/README
+hunk ./sandbox/jmerrifield/interface_properties.h 1
+-/**
+-# Capillary rise function
+-First, we define the type and the function for data recuperation of the meniscus of the capillary rise.
+-*/
+-
+-typedef struct
+-{
+-    double h_int;
+-    double theta_right;
+-    double theta_left;
+-    double V;
+-} CapData;
+-
+-CapData cap_properties (scalar f,
+-                                    scalar cs,
+-                                    double beta,
+-                                    double R)
+-{
+-    CapData d = {nodata, nodata, nodata, 0.};
+-
+-    double ct = cos(beta*pi/180.);
+-    double st = sin(beta*pi/180.);
+-    double xc = L0/2.;
+-
+-    d.h_int = -HUGE;
+-
+-    foreach() 
+-    {
+-
+-        d.V += f[]*cs[]*dv();
+-
+-        if (!interfacial(point,f))
+-            continue;
+-
+-/**
+-We first use the PLIC reconstruction to reconstruct the liquid-gaz interface.
+-*/
+-
+-        coord nf = interface_normal(point, f);
+-        double alpha = plane_alpha(f[], nf);
+-
+-        coord p[2];
+-        if (facets(nf, alpha, p) != 2)
+-            continue;
+-
+-        double nmag = sqrt(sq(nf.x) + sq(nf.y));
+-        if (nmag == 0.)
+-          continue;
+-         nf.x /= nmag;
+-         nf.y /= nmag;
+-
+-/**
+-The facet vertices are converted to global coordinates.
+-*/
+-        double x1 = x + Delta*p[0].x;
+-        double y1 = y + Delta*p[0].y;
+-
+-        double x2 = x + Delta*p[1].x;
+-        double y2 = y + Delta*p[1].y;
+-
+-/**
+-We pass inthe capillary's reference frame.
+-*/
+-
+-        double xp1 = (x1 -xc)*ct - y1*st;
+-        double yp1 = (x1 - xc)*st + y1*ct;
+-
+-        double xp2 = (x2 - xc)*ct - y2*st;
+-        double yp2 = (x2 - xc)*st + y2*ct;
+-
+-/**
+-We search for the intersection of the facets with the axis of the capillary
+-*/
+-        if (xp1*xp2 <= 0. && fabs(xp2 - xp1) > 1e-14) {
+-
+-            double lambda = -xp1/(xp2 - xp1);
+-            double yp = yp1 + lambda*(yp2 - yp1);
+-
+-            if (yp > d.h_int)
+-                d.h_int = yp;
+-        }
+-
+-/**
+-The contact angle is computed with a scalar product between the fluid normal nf of the PLIC reconstruction and the solid normal with its inclinaison.
+-*/
+-
+-        double s = (x - xc)*ct - y*st;
+-	if (fabs(s - R) < Delta/2.)
+-	{
+-		coord ns = {ct, -st};
+-	
+-		double dot = -(nf.x*ns.x + nf.y*ns.y);
+-		dot = clamp(dot, -1., 1.);
+-		
+-		d.theta_right = acos(dot)*180./pi;
+-	}
+-      
+-        if (fabs(s + R) < Delta/2.)
+-        {
+-            coord ns = {-ct, st};
+-
+-            double dot = -(nf.x*ns.x + nf.y*ns.y);
+-            dot = clamp(dot, -1., 1.);
+-
+-            d.theta_left = acos(dot)*180./pi;
+-        }
+-    }
+-    return d;
+-}
+-
+-
+-/**
+-# Sessil spreading function
+-Now, we define the type and the function for data recuperation of the sessile spreading.
+-*/
+-
+-typedef struct
+-{
+-    double x_left;
+-    double x_right;
+-
+-    double U_left;
+-    double U_right;
+-
+-    double theta_left;
+-    double theta_right;
+-
+-    double height;
+-} SessileData;
+-
+-SessileData contact_properties (scalar f,
+-                                scalar cs,
+-                                face vector fs,
+-                                double ywall)
+-{
+-    SessileData c = {HUGE, -HUGE,
+-                     nodata, nodata,
+-                     nodata, nodata,
+-                     0.};
+-
+-    vector n[];
+-    scalar alpha[];
+-
+-    reconstruction (f, n, alpha);
+-
+-    foreach()
+-    {
+-        if (!interfacial(point,f))
+-            continue;
+-
+-        if (!interfacial(point,cs))
+-            continue;
+-
+-        coord nf;
+-
+-        foreach_dimension()
+-            nf.x = n.x[];
+-
+-        double nmag = sqrt(sq(nf.x) + sq(nf.y));
+-
+-        if (nmag == 0.)
+-            continue;
+-
+-        nf.x /= nmag;
+-        nf.y /= nmag;
+-
+-/**
+-We set the solid normal for a horizontal plane
+-*/
+-        coord ns = {0.,1.};
+-
+-        double a = alpha[];
+-
+-        coord p[2];
+-
+-        if (facets(nf,a,p) != 2)
+-            continue;
+-
+-        double x1 = x + Delta*p[0].x;
+-        double y1 = y + Delta*p[0].y;
+-
+-        double x2 = x + Delta*p[1].x;
+-        double y2 = y + Delta*p[1].y;
+-
+-        double yp = ywall;
+-
+-        if ((y1-yp)*(y2-yp) <= 1e-10 &&
+-            fabs(y2-y1) > 1e-14)
+-        {
+-
+-            double lambda = (yp-y1)/(y2-y1);
+-
+-            double X = x1 + lambda*(x2-x1);
+-
+-            double theta;
+-
+-            // left side
+-            if (X < c.x_left)
+-            {
+-                c.x_left = X;
+-
+-
+-/**
+-For the left side, we reverse the normal for it to be the outward normal of the fluid
+-*/
+-
+-                coord nfg = {-nf.x,-nf.y};
+-
+-                double dot = -(nfg.x*ns.x + nfg.y*ns.y);
+-
+-                dot = clamp(dot,-1.,1.);
+-
+-                theta = acos(dot)*180./pi;
+-
+-
+-                c.theta_left = theta;
+-
+-
+-                double eps = 1e-6;
+-
+-                c.U_left =
+-                    interpolate(u.x,
+-                                X,
+-                                ywall + eps);
+-            }
+-
+-
+-            // right side
+-            if (X > c.x_right)
+-            {
+-                c.x_right = X;
+-
+-
+-                double dot = nf.x*ns.x + nf.y*ns.y;
+-
+-                dot = clamp(dot,-1.,1.);
+-
+-                theta = acos(dot)*180./pi;
+-
+-
+-                c.theta_right = theta;
+-
+-
+-                double eps = 1e-6;
+-
+-                c.U_right =
+-                    interpolate(u.x,
+-                                X,
+-                                ywall + eps);
+-            }
+-        }
+-    }
+-
+-/**
+-Height of the sessile
+-*/
+-    foreach()
+-    {
+-        if (!interfacial(point, f))
+-            continue;
+-
+-        coord nf;
+-        double a;
+-
+-        foreach_dimension()
+-            nf.x = n.x[];
+-
+-        double nmag = sqrt(sq(nf.x) + sq(nf.y));
+-        if (nmag == 0.)
+-            continue;
+-
+-        nf.x /= nmag;
+-        nf.y /= nmag;
+-
+-        a = alpha[];
+-
+-        coord p[2];
+-
+-        if (facets(nf, a, p) != 2)
+-            continue;
+-
+-        //double x1 = x + Delta*p[0].x;
+-        double y1 = y + Delta*p[0].y;
+-
+-        //double x2 = x + Delta*p[1].x;
+-        double y2 = y + Delta*p[1].y;
+-
+-        double h = max(y1, y2) - ywall;
+-
+-        if (h > c.height)
+-            c.height = h;
+-    }
+-    return c;
+-}
++
+rmfile ./sandbox/jmerrifield/interface_properties.h
 hunk ./sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale/Makefile 1
 -CFLAGS += -O2
 -include $(BASILISK)/Makefile.defs

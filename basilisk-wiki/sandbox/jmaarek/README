@@ -1,0 +1,27 @@
+
+# Sandbox of Jacob Maarek
+
+
+# A semi-implicit surface tension method based on Spectral Surface Viscosity (SSV)
+
+## Publications
+
+## Header files
+
+The main header files can be found on the following pages:
+
+* [Filtered curvature computation](surface_tension_ssvm/src/mycurvature.h)
+* [Spectral Surface viscosity](surface_tension_ssvm/src/viscosity-and-semi-implicit-tension.h)
+* [Semi-implicit surface tension](surface_tension_ssvm/src/mytension.h)
+
+## Verification test cases
+
+Verification test cases can be found on the following pages:
+
+### Benchmark test cases with the SSVM
+* [Circular droplet in equilibrium](surface_tension_ssvm/test/spurious_implicit.c)
+* [Translating droplet]()
+* [Capillary wave]()
+* [Rising bubble]()
+
+# Other projects
