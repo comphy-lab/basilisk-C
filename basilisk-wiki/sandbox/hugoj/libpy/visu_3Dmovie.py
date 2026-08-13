@@ -164,7 +164,7 @@ def parse_args(argv=None):
 def render_movie(
     input,
     output,
-    skip=0,
+    skip=1,
     fps=30,
     speed_factor=1.0,
     method="nearest",
@@ -242,7 +242,7 @@ def render_movie(
 
     if nframes > len(dst.time):
         print(
-            "Warning: you asked for {nframes} frames but the file has only {len(dst.time)} points."
+            f"Warning: you asked for {nframes} frames but the file has only {len(dst.time)} points."
         )
         print("         results can behave strangely !")
 
@@ -260,6 +260,15 @@ def render_movie(
     plotter.camera.azimuth = azimuth
     plotter.enable_3_lights()
     plotter.set_background(background)
+
+    # better view of the simu, with space for colorbar
+    shiftV = 1 / 3 * H0
+    shiftH = 1 / 5 * H0
+    pos = plotter.camera.position
+    fp = plotter.camera.focal_point
+    plotter.camera.focal_point = (fp[0] + shiftH, fp[1], fp[2] - shiftV)
+    plotter.camera.position = (pos[0] + shiftH, pos[1], pos[2] - shiftV)
+    plotter.camera.view_angle = 35
 
     # --- Frame loop ---
     for it_video, t_target in enumerate(target_times):

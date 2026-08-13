@@ -45,14 +45,14 @@ def read_data(filename, chunks="auto", dtype="float32"):
     return read_bas_data(filename, chunks, dtype)
 
 
-def build_grid(ds):
+def build_grid(ds, zvar="level"):
     # xgcm grid
     grid = Grid(
         ds,
         coords={
             "X": {"center": "x", "left": "x_l"},
             "Y": {"center": "y", "left": "y_l"},
-            "Z": {"center": "level", "left": "level_l"},
+            "Z": {"center": zvar, "left": zvar + "_l"},
         },
         autoparse_metadata=False,
         # periodic={'X':'True','Y':'True','Z':'False'},

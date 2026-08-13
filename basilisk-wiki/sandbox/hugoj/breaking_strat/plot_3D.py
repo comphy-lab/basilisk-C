@@ -54,6 +54,7 @@ if False:
         myfile,
         "wave",
         skip=1,
+        speed_factor=2.0,
         var_side="T",
         clim_side=(19.98, 20.0),
         cmap_side="plasma",

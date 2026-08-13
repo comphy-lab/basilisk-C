@@ -209,6 +209,15 @@ def render_snapshot(
     plotter.enable_3_lights()
     plotter.set_background(background)
 
+    # better view of the simu, with space for colorbar
+    shiftV = 1 / 3 * H0
+    shiftH = 1 / 5 * H0
+    pos = plotter.camera.position
+    fp = plotter.camera.focal_point
+    plotter.camera.focal_point = (fp[0] + shiftH, fp[1], fp[2] - shiftV)
+    plotter.camera.position = (pos[0] + shiftH, pos[1], pos[2] - shiftV)
+    plotter.camera.view_angle = 35
+
     ds = build_z_ds(ds, "float32")
     grid = build_3Dgrid(ds)
 

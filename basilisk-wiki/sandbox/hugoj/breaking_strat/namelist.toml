@@ -16,12 +16,12 @@ cp = 4.2e3       # [J.kg-1.K-1] heat capacity water
 betaT = 2e-4     # Linear equation of state: drho = betaT*(T0-T) (Vallis 2.4)
 Pr = 1.0         # Prandtl number
 # > DYNAMIC
-P = 0.02          # [m.s-1] peak energy of PM spectrum
-coeff_kpL0 = 10.0 # kpL0 = coeff_kpL0 * pi
+P = 0.02       # [m.s-1] peak energy of PM spectrum
+coeff_kpL0 = 5 # kpL0 = coeff_kpL0 * 2pi * L0
 N_mode = 32
 N_power = 5
-Re = 40000        # Reynolds number Re = sqrt(g*lambda**3)/nu
-nu0 = 0.00025     # [m2.s-2] Viscosity for vertical diffusion
+Re = 300000    # Reynolds number Re = sqrt(g*lambda**3)/nu
+nu0 = 0.00025  # [m2.s-2] Viscosity for vertical diffusion
 #
 # DOMAIN DEFINITION
 #

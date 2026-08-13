@@ -132,6 +132,8 @@ def add_mesh_domain_side(grid, sizes, plotter, vartop, varside):
         scalar_bar_args={
             "title": vartop["name"],
             "fmt": "%.3f",
+            "position_x": 0.25,
+            "width": 0.5,
         },
     )
     plotter.add_mesh(
@@ -143,6 +145,8 @@ def add_mesh_domain_side(grid, sizes, plotter, vartop, varside):
         scalar_bar_args={
             "title": varside["name"],
             "fmt": "%.3f",
+            "position_x": 0.25,
+            "width": 0.5,
         },
     )
     plotter.add_mesh(
@@ -186,6 +190,8 @@ def add_ticks(plotter, L0, H0, tick_len_min, tick_len_maj, label_offset):
         show_ylabels=False,
         show_zlabels=False,
     )
+
+    # plotter.show_axes()
 
     # x-axis
     for x in np.arange(xmin, xmax + 1, 10):

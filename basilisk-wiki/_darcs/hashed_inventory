@@ -1,4 +1,4 @@
-pristine:f53bc3b841b13d865075c6463dadfcfa1fa8f418db815d0be07fa167a9725b6d
+pristine:fa57e294fafe827eb34f793363effa152b3be2ca05083d2c78a8fe2d8b7f6431
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -13111,3 +13111,23 @@ Jieyun Pan**20260810090039
  Ignore-this: 4166b860847c0f58f6d3783c221fa0cc
 ] 
 hash: 0000000265-71722d1dc5f27ac1923b8af3dbb03938f41a11fdb94ae1b905a349cea12e164b
+[better camera position and colorbar
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260811092005
+ Ignore-this: bcea625ae6c37a5e388f2cf0705fdc86
+] 
+hash: 0000000835-6a0b7b350eea5c5d1d6c739b86193569b902dd5bfb6acbdadc99041a9388d540
+[clearer parameters
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260812142143
+ Ignore-this: 813e98e933939b5255052513f249b222
+] 
+hash: 0000002097-e5691c9f91364adfdfc1789fb27960eaa0c164f9c0529b54fe8e5a3f336b4fb5
+[better camera placement
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260812142222
+ Ignore-this: 10566cb23c670002864d79e9b3daf977
+] 
+hash: 0000001368-dd0dd02c3f4299d20ec2813a762c9fb8b7aa6d4eceb4476d9950b35ad4630aa6
+[more general helpers, added h_divergence, added L2_makers, added an example script on how to use the added functions
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260812142347
+ Ignore-this: a57e579be75829c28c36fcb4bd64281e
+] 
+hash: 0000018211-10c4b7bd491e07369d50cd84f4259a843bc870d6bb937eb3f61ab7bc9e984463

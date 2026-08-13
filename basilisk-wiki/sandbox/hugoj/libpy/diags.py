@@ -8,7 +8,30 @@ import xarray as xr
 from scipy.interpolate import interp1d
 
 
-def grad_velocities(ds, grid, compute=False):
+def h_divergence(ds, grid, ux="u.x", uy="u.y", zvar="z", compute=False):
+    dx = ds.x[1] - ds.x[0]
+    dy = ds.y[1] - ds.y[0]
+
+    if len(ds[zvar].shape) > 1:
+        dzdx = grid.interp(grid.diff(ds[zvar], "X"), "X") / dx
+        dzdy = grid.interp(grid.diff(ds[zvar], "Y"), "Y") / dy
+        dzdzl = grid.interp(grid.diff(ds[zvar], "Z"), "Z")
+    else:
+        dzdx, dzdy, dzdzl = 0.0, 0.0, 1.0
+
+    dudzl = grid.interp(grid.diff(ds[ux], "Z"), "Z")
+    dvdzl = grid.interp(grid.diff(ds[uy], "Z"), "Z")
+    dudx = grid.interp(grid.diff(ds[ux], "X"), "X") / dx
+    dvdy = grid.interp(grid.diff(ds[uy], "Y"), "Y") / dy
+    ds["dudz"] = dudzl / dzdzl
+    ds["dvdz"] = dvdzl / dzdzl
+    ds["dudx"] = dudx - ds["dudz"] * dzdx
+    ds["dvdy"] = dvdy - ds["dvdz"] * dzdy
+
+    return -(ds["dudx"] + ds["dvdy"])
+
+
+def grad_velocities(ds, grid, uname=["u.x", "u.y", "u.z"], zvar="z", compute=False):
     """
     Computes the gradient of velocities from a velocity field named u.x u.y u.z
 
@@ -26,30 +49,33 @@ def grad_velocities(ds, grid, compute=False):
 
     if update:
         delta = ds.x[1] - ds.x[0]
-        dudx = grid.interp(grid.diff(ds["u.x"], "X"), "X") / delta
-        dudy = grid.interp(grid.diff(ds["u.x"], "Y"), "Y") / delta
-        dudzl = grid.interp(grid.diff(ds["u.x"], "Z"), "Z")
-        dvdx = grid.interp(grid.diff(ds["u.y"], "X"), "X") / delta
-        dvdy = grid.interp(grid.diff(ds["u.y"], "Y"), "Y") / delta
-        dvdzl = grid.interp(grid.diff(ds["u.y"], "Z"), "Z")
-        dwdx = grid.interp(grid.diff(ds["u.z"], "X"), "X") / delta
-        dwdy = grid.interp(grid.diff(ds["u.z"], "Y"), "Y") / delta
-        dwdzl = grid.interp(grid.diff(ds["u.z"], "Z"), "Z")
+        dudx = grid.interp(grid.diff(ds[uname[0]], "X"), "X") / delta
+        dudy = grid.interp(grid.diff(ds[uname[0]], "Y"), "Y") / delta
+        dudzl = grid.interp(grid.diff(ds[uname[0]], "Z"), "Z")
+        dvdx = grid.interp(grid.diff(ds[uname[1]], "X"), "X") / delta
+        dvdy = grid.interp(grid.diff(ds[uname[1]], "Y"), "Y") / delta
+        dvdzl = grid.interp(grid.diff(ds[uname[1]], "Z"), "Z")
+        dwdx = grid.interp(grid.diff(ds[uname[2]], "X"), "X") / delta
+        dwdy = grid.interp(grid.diff(ds[uname[2]], "Y"), "Y") / delta
+        dwdzl = grid.interp(grid.diff(ds[uname[2]], "Z"), "Z")
 
-        dzdx = grid.interp(grid.diff(ds.z, "X"), "X") / delta
-        dzdy = grid.interp(grid.diff(ds.z, "Y"), "Y") / delta
-        dzdzl = grid.interp(grid.diff(ds.z, "Z"), "Z")
+        if len(ds[zvar].shape) > 1:
+            dzdx = grid.interp(grid.diff(ds.z, "X"), "X") / delta
+            dzdy = grid.interp(grid.diff(ds.z, "Y"), "Y") / delta
+            dzdzl = grid.interp(grid.diff(ds.z, "Z"), "Z")
+        else:
+            dzdx, dzdy, dzdzl = 0.0, 0.0, 1.0
         # print('Fields interpolated!')
 
-        ds["dudz"] = (dudzl / dzdzl).compute()
-        ds["dudy"] = (dudy - ds["dudz"] * dzdy).compute()
-        ds["dudx"] = (dudx - ds["dudz"] * dzdx).compute()
-        ds["dvdz"] = (dvdzl / dzdzl).compute()
-        ds["dvdy"] = (dvdy - ds["dvdz"] * dzdy).compute()
-        ds["dvdx"] = (dvdx - ds["dvdz"] * dzdx).compute()
-        ds["dwdz"] = (dwdzl / dzdzl).compute()
-        ds["dwdy"] = (dwdy - ds["dwdz"] * dzdy).compute()
-        ds["dwdx"] = (dwdx - ds["dwdz"] * dzdx).compute()
+        ds["dudz"] = dudzl / dzdzl
+        ds["dudy"] = dudy - ds["dudz"] * dzdy
+        ds["dudx"] = dudx - ds["dudz"] * dzdx
+        ds["dvdz"] = dvdzl / dzdzl
+        ds["dvdy"] = dvdy - ds["dvdz"] * dzdy
+        ds["dvdx"] = dvdx - ds["dvdz"] * dzdx
+        ds["dwdz"] = dwdzl / dzdzl
+        ds["dwdy"] = dwdy - ds["dwdz"] * dzdy
+        ds["dwdx"] = dwdx - ds["dwdz"] * dzdx
 
         if compute:
             ds.compute()
@@ -183,9 +209,9 @@ def interpz(z, data, znew, fill_value):
         z,
         data,  # both (time, y, x, zl)
         kwargs={"znew": znew, "fill_value": fill_value},
-        input_core_dims=[["zl"], ["zl"]],  # operate along zl
+        input_core_dims=[["level"], ["level"]],  # operate along zl
         output_core_dims=[["znew"]],  # output has new dim
-        exclude_dims=set(("zl",)),  # zl disappears
+        exclude_dims=set(("level",)),  # zl disappears
         dask="parallelized",
         vectorize=True,  # loop over time,y,x
         output_dtypes=[float],

@@ -30,7 +30,7 @@ char file_out[20] = "out.nc";          // file name of output
 double strat = 0.000002 [0,-2];       // [s-2] N^2 stratification
 double Ts = 20. [0,0,1];              // [K] Surface temperature (arbitrary)
 double P = 0.2 [1, -1];               // energy level (estimated so that kpHs is reasonable)
-int coeff_kpL0 = 10 [];               // kpL0 = coeff_kpL0 * pi
+int coeff_kpL0 = 5 [];               // kpL0 = coeff_kpL0 * pi
 int N_mode = 32 [];                   // Number of modes in wavenumber space
 int N_power = 5 [];                   // directional spreading coeff
 int F_shape = 0 [];                   // shape of the initial spectrum
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
   add_param("qt", &qt, "double");
   add_param("dt_mean", &dt_mean, "double");
 
-  kp = PI * coeff_kpL0 / L; // kpL=coeff x pi peak wavelength
+  kp = 2*PI * coeff_kpL0 / L; // kpL=coeff x 2pi x domain size
   
   /** Search for the configuration file with a given path or read params.in */
   if (argc == 2)
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
   // Settings solver values from namlist values
   L0 = L;
   nu0 = sqrt(g_*pow(2*PI/kp, 3))/Re;
-  nu = nu0;
+  //nu = nu0;
   N = N_grid; 
   nl = N_layer;
   G = g_;
@@ -225,7 +225,7 @@ event init(i =  0) {
 }
 
 /** vertical diffusion on T and u,w */
-event viscous_term (i++)
+event viscous_term (i++; t<=tend)
 {
   foreach()
     // vertical_diffusion2 (point, h, T, dt, diff_T, qt/(diff_T*rho0*cp), strat/(g_*betaT));
@@ -278,13 +278,15 @@ event initT(t=t_iniT){
   }
 }
 
+#if DUMPS
 /** dump outputs */
-// event output(t = 0.; t<= tend+smalltime; t+=dtout){
-//   write_nc();
-//   char dname[100];
-//   sprintf (dname, "dump_t%g", t);
-//   dump(dname);
-// }
+event output(t = 0.; t<= tend+smalltime; t+=dtout){
+  write_nc();
+  char dname[100];
+  sprintf (dname, "dump_t%g", t);
+  dump(dname);
+}
+#endif // DUMPS
 
 
 /** dump for Stokes drift */

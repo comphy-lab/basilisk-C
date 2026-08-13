@@ -25,12 +25,12 @@ ml_breaking_strat.cuda.tst: _prep_cuda
 #ml_breaking_strat.gpu.tst: CFLAGS+="-fopenmp"
 
 # We want to run on HPC
-#_ml_breaking_strat.c: CFLAGS += -D_MPI=1
+_ml_breaking_strat.c: CFLAGS +="-D_MPI=1 -DDUMPS"
 #_ml_breaking_strat.c: CFLAGS += -grid=cuda/multigrid
 hpc_run: _ml_breaking_strat.c
 	mkdir -p ml_breaking_strat.hpc
 	mv _ml_breaking_strat.c ml_breaking_strat.hpc/
-	ln -sf ../namelist.toml ml_breaking_strat.hpc/namelist.toml
+	cp namelist.toml ml_breaking_strat.hpc/namelist.toml
 	$(foreach f,$(INI_FILES), cp gen_ini/$(f) ml_breaking_strat.hpc/;)
 
 _prep_ini:
