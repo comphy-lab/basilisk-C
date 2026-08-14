@@ -1,0 +1,296 @@
+# Patch: comphy-bview
+# Author: Vatsal Sanjay <vatsal.sanjay@comphy-lab.org>
+# Date: 2026-08-14
+# Description: Adds bview-comphy2D/3D, which bind loopback by default and take
+#              their client and websocket URLs from the environment.
+#
+# Upstream bview serves two purposes that are hard to separate: it is the
+# visualisation server, and it advertises where the javascript client lives.
+# The client URL is fixed at compile time (basilisk.ida.upmc.fr), and the
+# server binds every interface with no way to change it -- src/display.h
+# defines DISPLAY_HOST and then never uses it, while wsServer hardcodes
+# INADDR_ANY.
+#
+# That second point matters. The websocket protocol carries no authentication,
+# and display_onmessage() passes client text straight to process_line(), which
+# interprets drawing commands inside the running solver. Any peer able to reach
+# the port can therefore drive that interpreter. Upstream's own documentation
+# assumes an SSH tunnel, which implies a loopback listener, but the code does
+# not enforce it.
+#
+# This patch adds two new binaries rather than changing the existing ones:
+#
+#   bview-comphy2D, bview-comphy3D
+#
+# They are built from the same src/bview.c with -DCOMPHY_BVIEW, which:
+#
+#   * binds DISPLAY_HOST, defaulting to 127.0.0.1 rather than every interface;
+#   * defaults the client URL to http://localhost:8000/three.js/editor/index.html
+#     (see github.com/comphy-lab/bview-local-client);
+#   * reads BVIEW_BIND_HOST to override the bind address at runtime;
+#   * reads BVIEW_CLIENT_URL and BVIEW_WS_TEMPLATE at runtime, so a deployment
+#     address never has to be compiled in. {port} in BVIEW_WS_TEMPLATE expands
+#     to the port actually bound.
+#
+# bview2D, bview3D and bview2Dm are unchanged in behaviour and still print the
+# upstream URL. ws_socket_open() keeps its signature and its all-interfaces
+# behaviour; the new ws_socket_open_on() takes an explicit bind address.
+#
+# To listen on every interface instead, set BVIEW_BIND_HOST at runtime:
+#   BVIEW_BIND_HOST=0.0.0.0 bview-comphy2D dump
+#
+# The bind address and the advertised address are distinct. 0.0.0.0 means
+# "every interface" and is not connectable, so it is never printed: the URL
+# falls back to localhost. For genuine cross-machine access set
+# BVIEW_WS_TEMPLATE to the address clients should really use.
+#
+# Example:
+#   export BVIEW_CLIENT_URL='https://example.internal/three.js/editor/index.html'
+#   export BVIEW_WS_TEMPLATE='wss://example.internal:{port}'
+#   bview-comphy2D dump
+#
+# Note: GitHub Release tarballs intentionally exclude this patch.
+#       Enable via installer flag: --comphy-bview
+#
+# Related: https://github.com/comphy-lab/bview-local-client
+# Platform: All
+# Files: src/display.h, src/Makefile, src/wsServer/src/ws.c,
+#        src/wsServer/include/ws.h
+#
+diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
+--- old-basilisk/src/display.h	2026-08-14 16:46:22.228922798 +0100
++++ new-basilisk/src/display.h	2026-08-14 18:35:03.663464311 +0100
+@@ -66,11 +66,69 @@
+ */
+ 
+ #ifndef DISPLAY_JS
+-# define DISPLAY_JS "http://basilisk.ida.upmc.fr/three.js/editor/index.html"
++# ifdef COMPHY_BVIEW
++/**
++The comphy-lab build defaults to a locally-served client rather than the
++upstream one. Both halves of the printed URL can be overridden at runtime
++through the environment, so the deployment address never has to be compiled
++in:
++
++* `BVIEW_CLIENT_URL`  where the javascript client is served from;
++* `BVIEW_WS_TEMPLATE` the websocket address, where `{port}` is replaced by
++  the port this server actually bound.
++*/
++#  define DISPLAY_JS "http://localhost:8000/three.js/editor/index.html"
++# else
++#  define DISPLAY_JS "http://basilisk.ida.upmc.fr/three.js/editor/index.html"
++# endif
+ #endif
+ 
+ #ifndef DISPLAY_HOST
+-# define DISPLAY_HOST "localhost"
++# ifdef COMPHY_BVIEW
++/**
++Upstream defines DISPLAY_HOST but never uses it, so the server always binds
++every interface. The comphy-lab build binds the loopback address instead: the
++websocket protocol carries no authentication, and any peer able to reach the
++port can drive the drawing-command interpreter inside the running solver.
++Cross-machine access should be arranged deliberately, by an SSH tunnel or a
++reverse proxy, rather than by listening on every interface by default.
++
++Compile with -DDISPLAY_HOST='"0.0.0.0"' to restore the upstream behaviour.
++*/
++#  define DISPLAY_HOST "127.0.0.1"
++# else
++#  define DISPLAY_HOST "localhost"
++# endif
++#endif
++
++#ifdef COMPHY_BVIEW
++
++/**
++The address to bind. DISPLAY_HOST is the compile-time default; BVIEW_BIND_HOST
++overrides it at runtime. Use `BVIEW_BIND_HOST=0.0.0.0` to listen on every
++interface, bearing in mind that the protocol is unauthenticated and that any
++peer able to reach the port can drive the drawing-command interpreter.
++*/
++static const char * display_bind_host (void)
++{
++  const char * h = getenv ("BVIEW_BIND_HOST");
++  return (h && *h) ? h : DISPLAY_HOST;
++}
++
++/**
++The address to advertise, which is not the same thing. 0.0.0.0 means "every
++interface" and is not something a client can connect to, so it must never
++appear in the printed URL; fall back to localhost. For genuine cross-machine
++access set BVIEW_WS_TEMPLATE to the address clients should really use.
++*/
++static const char * display_advertised_host (void)
++{
++  const char * h = display_bind_host();
++  if (!h || !*h || !strcmp (h, "0.0.0.0") || !strcmp (h, "::"))
++    return "localhost";
++  return h;
++}
++
+ #endif
+ 
+ #ifndef DISPLAY_RANGE
+@@ -692,8 +750,44 @@
+   return nmsg;
+ }
+ 
++/**
++Opens the display socket, honouring DISPLAY_HOST where the build supports it.
++*/
++static int display_socket_open (uint16_t port)
++{
++#ifdef COMPHY_BVIEW
++  return ws_socket_open_on (display_bind_host(), port);
++#else
++  return ws_socket_open (port);
++#endif
++}
++
+ void display_url (FILE * fp)
+ {
++#ifdef COMPHY_BVIEW
++
++  /**
++  Both halves of the URL are independently overridable, so a deployment
++  address is never compiled in. `{port}` in BVIEW_WS_TEMPLATE expands to the
++  port actually bound, which is not known until display_init() has run. */
++
++  const char * client = getenv ("BVIEW_CLIENT_URL");
++  const char * wstmpl = getenv ("BVIEW_WS_TEMPLATE");
++  fputs (client && *client ? client : DISPLAY_JS, fp);
++  fputc ('?', fp);
++  if (wstmpl && *wstmpl) {
++    for (const char * q = wstmpl; *q;) {
++      if (!strncmp (q, "{port}", 6))
++	fprintf (fp, "%d", Display.port), q += 6;
++      else
++	fputc (*q++, fp);
++    }
++  }
++  else
++    fprintf (fp, "ws://%s:%d", display_advertised_host(), Display.port);
++
++#else // !COMPHY_BVIEW
++
+   char hostname[1024];
+   hostname[1023] = '\0';
+   gethostname (hostname, 1023);
+@@ -704,6 +798,8 @@
+ 	     LINENO, hostname);
+   fprintf (fp, DISPLAY_JS "?ws://%s:%d", h ? h->h_name : "127.0.0.1",
+ 	   Display.port);
++
++#endif
+ }
+ 
+ int display_usage = 20; // use 20% of runtime, maximum
+@@ -746,14 +842,14 @@
+   if (pid() == 0) {
+     const char * port = DISPLAY_RANGE;
+     if (!strchr (port, ':'))
+-      Display.sock = ws_socket_open (atoi (port));
++      Display.sock = display_socket_open (atoi (port));
+     else {
+       char * s = strdup (port);
+       char * s1 = strchr (s, ':');
+       *s1++ = '\0';
+       int pmax = atoi(s1);
+       Display.port = atoi(s);
+-      while ((Display.sock = ws_socket_open (Display.port)) < 0 &&
++      while ((Display.sock = display_socket_open (Display.port)) < 0 &&
+ 	     Display.port < pmax)
+ 	Display.port++;
+       free (s);
+diff -rN -u old-basilisk/src/Makefile new-basilisk/src/Makefile
+--- old-basilisk/src/Makefile	2026-08-14 16:46:22.231123931 +0100
++++ new-basilisk/src/Makefile	2026-08-14 16:48:05.562031002 +0100
+@@ -11,7 +11,8 @@
+ 
+ .PHONY: subdirs $(SUBDIRS) $(TOPTARGETS)
+ 
+-all: subdirs qcc literatec bview2D bview3D bview2Dm
++all: subdirs qcc literatec bview2D bview3D bview2Dm \
++	bview-comphy2D bview-comphy3D
+ 	@chmod +x ppm2mpeg ppm2mp4 ppm2ogv ppm2gif runtest page2html
+ 	@test -f xyz2kdt || ln -s kdt/xyz2kdt
+ 	@test -f kdtquery || ln -s kdt/kdtquery
+@@ -63,6 +64,16 @@
+ bview2Dm: bview.c
+ 	./qcc $(CFLAGS) -autolink -grid=multigrid bview.c -o bview2Dm -lfb_tiny -lm
+ 
++# comphy-lab variants. Same source, built with -DCOMPHY_BVIEW so they bind
++# DISPLAY_HOST (loopback by default) and take their client and websocket
++# URLs from BVIEW_CLIENT_URL and BVIEW_WS_TEMPLATE. The stock bview2D,
++# bview3D and bview2Dm above are untouched.
++bview-comphy2D: bview.c
++	./qcc $(CFLAGS) -DCOMPHY_BVIEW -autolink bview.c -o bview-comphy2D -lfb_tiny -lm
++
++bview-comphy3D: bview.c
++	./qcc $(CFLAGS) -DCOMPHY_BVIEW -autolink -grid=octree bview.c -o bview-comphy3D -lfb_tiny -lm
++
+ alltags:
+ 	cd navier-stokes && $(MAKE) tags
+ 	cd layered && $(MAKE) tags
+diff -rN -u old-basilisk/src/wsServer/include/ws.h new-basilisk/src/wsServer/include/ws.h
+--- old-basilisk/src/wsServer/include/ws.h	2026-08-14 16:46:22.235474768 +0100
++++ new-basilisk/src/wsServer/include/ws.h	2026-08-14 16:46:59.730285260 +0100
+@@ -225,6 +225,7 @@
+ 
+ 	/* Forward declarations. */
+         extern int ws_socket_open (uint16_t port);
++        extern int ws_socket_open_on (const char *bindaddr, uint16_t port);
+ 	extern int get_handshake_accept(char *wsKey, unsigned char **dest);
+ 	extern int get_handshake_response(char *hsrequest, char **hsresponse);
+ 	extern char *ws_getaddress(int fd);
+diff -rN -u old-basilisk/src/wsServer/src/ws.c new-basilisk/src/wsServer/src/ws.c
+--- old-basilisk/src/wsServer/src/ws.c	2026-08-14 16:46:22.233294287 +0100
++++ new-basilisk/src/wsServer/src/ws.c	2026-08-14 16:46:59.730619912 +0100
+@@ -1231,7 +1231,7 @@
+  *
+  * @return the socket.
+  */
+-int ws_socket_open (uint16_t port)
++int ws_socket_open_on (const char *bindaddr, uint16_t port)
+ {
+ 	int sock;                  /* Current socket.        */
+ 	struct sockaddr_in server; /* Server.                */
+@@ -1247,7 +1247,14 @@
+ 
+ 	/* Prepare the sockaddr_in structure. */
+ 	server.sin_family      = AF_INET;
+-	server.sin_addr.s_addr = INADDR_ANY;
++	if (bindaddr && *bindaddr) {
++		if (inet_pton(AF_INET, bindaddr, &server.sin_addr) != 1) {
++			close(sock);
++			return -1;
++		}
++	}
++	else
++		server.sin_addr.s_addr = INADDR_ANY;
+ 	server.sin_port        = htons(port);
+ 
+ 	/* Bind. */
+@@ -1265,6 +1272,21 @@
+ }
+ 
+ /**
++ * @brief Opens a listening socket on every interface.
++ *
++ * Retained unchanged for source compatibility. New code should prefer
++ * ws_socket_open_on() with an explicit bind address.
++ *
++ * @param port Port to listen on.
++ *
++ * @return The socket, or -1 on failure.
++ */
++int ws_socket_open (uint16_t port)
++{
++	return ws_socket_open_on(NULL, port);
++}
++
++/**
+  * @brief Polls a WebSocket.
+  *
+  * @param sock The WebSocket (as returned by ws_socket_open()).

@@ -11,6 +11,7 @@ set -euo pipefail
 
 HARD_RESET=false
 LOCAL_BVIEW=false
+COMPHY_BVIEW=false
 SHOW_HELP=false
 REF_PROVIDED=false
 REF=""
@@ -23,6 +24,9 @@ for arg in "$@"; do
     --local-bview)
       LOCAL_BVIEW=true
       ;;
+    --comphy-bview)
+      COMPHY_BVIEW=true
+      ;;
     --help|-h)
       SHOW_HELP=true
       ;;
@@ -32,6 +36,15 @@ for arg in "$@"; do
       ;;
   esac
 done
+
+# Both optional bview patches rewrite the same regions of src/display.h, so
+# they cannot be applied together. --comphy-bview is the superset: it also
+# provides a runtime-overridable client URL.
+if [[ "$LOCAL_BVIEW" == true && "$COMPHY_BVIEW" == true ]]; then
+  echo "Error: --local-bview and --comphy-bview are mutually exclusive." >&2
+  echo "       --comphy-bview supersedes --local-bview; use one or the other." >&2
+  exit 1
+fi
 
 print_green() { printf "\033[0;32m%s\033[0m\n" "$1"; }
 print_red() { printf "\033[0;31m%s\033[0m\n" "$1"; }
@@ -56,6 +69,10 @@ Options:
   --help, -h      Show this help message
   --hard          Force reinstall (removes existing basilisk directory)
   --local-bview   Apply optional local-bview convenience patch (enables `bview --local` URL output for bview-local-client)
+  --comphy-bview  Apply optional comphy-bview patch. Adds bview-comphy2D and
+                  bview-comphy3D, which bind loopback by default and take their
+                  client/websocket URLs from BVIEW_CLIENT_URL and
+                  BVIEW_WS_TEMPLATE. Mutually exclusive with --local-bview.
   --ref=REF       Optional. GitHub Release tag in comphy-lab/basilisk-C
                   If omitted, installs the latest GitHub release.
 
@@ -63,6 +80,7 @@ Examples:
   ./reset_install_basilisk-ref-locked.sh --hard
   ./reset_install_basilisk-ref-locked.sh --ref=v2026-01-13 --hard
   ./reset_install_basilisk-ref-locked.sh --ref=v2026-01-13 --local-bview --hard
+  ./reset_install_basilisk-ref-locked.sh --comphy-bview --hard
 
 Remote:
   curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | bash -s -- --hard
@@ -70,7 +88,8 @@ Remote:
   curl -sL https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/reset_install_basilisk-ref-locked.sh | zsh  -s -- --ref=v2026-01-13 --hard
 
 Notes:
-  - GitHub Release tarballs intentionally exclude the local-bview patch; `--local-bview` downloads and applies it for the resolved release ref (latest if `--ref` is omitted, pinned if provided).
+  - GitHub Release tarballs intentionally exclude the optional bview patches; `--local-bview` and `--comphy-bview` download and apply theirs for the resolved release ref (latest if `--ref` is omitted, pinned if provided).
+  - `--comphy-bview` leaves bview2D/bview3D/bview2Dm untouched; it only adds bview-comphy2D and bview-comphy3D.
 EOF
 }
 
@@ -123,7 +142,7 @@ check_prerequisites() {
   check_tool "curl" || missing_tools+=("curl")
   check_tool "tar" || missing_tools+=("tar")
   check_tool "gawk" || missing_tools+=("gawk")
-  if [[ "$LOCAL_BVIEW" == "true" ]]; then
+  if [[ "$LOCAL_BVIEW" == "true" || "$COMPHY_BVIEW" == "true" ]]; then
     check_tool "patch" || missing_tools+=("patch")
   fi
 
@@ -216,6 +235,7 @@ apply_patches_from_dir() {
   local target_dir="$1"
   local patches_dir="$2"
   local apply_local_bview="${3:-false}"
+  local apply_comphy_bview="${4:-false}"
   local patch_failed=false
 
   print_cyan "Applying comphy-lab patches (from pinned ref)..."
@@ -242,6 +262,10 @@ apply_patches_from_dir() {
 
     if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
       echo "  Skipping $patch_name (use --local-bview to apply)"
+      continue
+    fi
+    if [[ "$patch_name" == *"-comphy-bview.patch" ]] && [[ "$apply_comphy_bview" != "true" ]]; then
+      echo "  Skipping $patch_name (use --comphy-bview to apply)"
       continue
     fi
     if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
@@ -271,6 +295,7 @@ write_lock_stamp() {
   local ref="$2"
   local patches_dir="$3"
   local apply_local_bview="$4"
+  local apply_comphy_bview="${5:-false}"
 
   local patch_files=()
   local applied_patches=()
@@ -289,6 +314,10 @@ write_lock_stamp() {
       skipped_patches+=("$patch_name")
       continue
     fi
+    if [[ "$patch_name" == *"-comphy-bview.patch" ]] && [[ "$apply_comphy_bview" != "true" ]]; then
+      skipped_patches+=("$patch_name")
+      continue
+    fi
     if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
       skipped_patches+=("$patch_name")
       continue
@@ -301,6 +330,7 @@ write_lock_stamp() {
     printf "os=%s\n" "$([[ "$OSTYPE" == "darwin"* ]] && echo "darwin" || echo "linux")"
     printf "created_utc=%s\n" "$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)"
     printf "local_bview=%s\n" "$apply_local_bview"
+    printf "comphy_bview=%s\n" "$apply_comphy_bview"
     printf "patches_applied=%s\n" "${applied_patches[*]:-}"
     printf "patches_skipped=%s\n" "${skipped_patches[*]:-}"
   } > "$lock_file"
@@ -509,15 +539,31 @@ if [[ "$HARD_RESET" == true ]] || [[ ! -d "$BASILISK_DIR" ]]; then
     exit 1
   fi
 
-  if [[ "$LOCAL_BVIEW" == true ]]; then
-    print_cyan "Applying local-bview patch (from pinned ref)..."
+  # Release tarballs intentionally exclude the optional bview patches, so they
+  # are fetched from the pinned ref on demand.
+  fetch_and_apply_optional_patch() {
+    local suffix="$1" label="$2"
+    local patches_api_url_ref raw_base_url patch_listing patch_file
+
+    print_cyan "Applying ${label} patch (from pinned ref)..."
 
     patches_api_url_ref="${PATCHES_API_URL}?ref=${REF}"
     raw_base_url="https://raw.githubusercontent.com/comphy-lab/basilisk-C/${REF}/patches"
-    patch_file="$(curl -s "$patches_api_url_ref" | grep -o '\"name\": \"[^\"]*\.patch\"' | sed 's/\"name\": \"//;s/\"//' | grep -E -- '-local-bview\.patch$' | head -n 1)"
+
+    # Fetch and parse separately. A failed request would otherwise parse to an
+    # empty string and be reported as a missing patch, sending the user looking
+    # for a file that is not the problem.
+    if ! patch_listing="$(curl -fsSL "$patches_api_url_ref")"; then
+      print_red "Error: Failed to list patches at ref '$REF' (network, rate limit, or bad ref)"
+      print_red "       Tried: $patches_api_url_ref"
+      rm -rf "$temp_dir"
+      exit 1
+    fi
+
+    patch_file="$(printf '%s\n' "$patch_listing" | grep -o '"name": "[^"]*\.patch"' | sed 's/"name": "//;s/"//' | grep -E -- "$suffix" | head -n 1)"
 
     if [[ -z "$patch_file" ]]; then
-      print_red "Error: Could not find a *-local-bview.patch file at ref '$REF'"
+      print_red "Error: Could not find a ${label} patch file at ref '$REF'"
       rm -rf "$temp_dir"
       exit 1
     fi
@@ -533,9 +579,17 @@ if [[ "$HARD_RESET" == true ]] || [[ ! -d "$BASILISK_DIR" ]]; then
       rm -rf "$temp_dir"
       exit 1
     fi
+  }
+
+  if [[ "$LOCAL_BVIEW" == true ]]; then
+    fetch_and_apply_optional_patch '-local-bview\.patch$' "local-bview"
   fi
 
-  write_lock_stamp "$LOCK_FILE" "$REF" "$patches_dest" "$LOCAL_BVIEW"
+  if [[ "$COMPHY_BVIEW" == true ]]; then
+    fetch_and_apply_optional_patch '-comphy-bview\.patch$' "comphy-bview"
+  fi
+
+  write_lock_stamp "$LOCK_FILE" "$REF" "$patches_dest" "$LOCAL_BVIEW" "$COMPHY_BVIEW"
   rm -rf "$temp_dir"
 
   build_basilisk

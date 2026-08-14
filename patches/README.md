@@ -88,6 +88,92 @@ bview3D --local=3000 dump
 
 ---
 
+### 2026-08-14-comphy-bview.patch
+
+**Platform:** All
+**Files modified:** `src/display.h`, `src/Makefile`, `src/wsServer/src/ws.c`, `src/wsServer/include/ws.h`
+**Related:** [bview-local-client](https://github.com/comphy-lab/bview-local-client)
+**Mutually exclusive with:** `2026-01-06-local-bview.patch`
+
+Adds two new binaries, `bview-comphy2D` and `bview-comphy3D`, built from the
+same `src/bview.c` with `-DCOMPHY_BVIEW`. The stock `bview2D`, `bview3D` and
+`bview2Dm` are left completely unchanged, including their default URL.
+
+**What it changes, in the new binaries only:**
+
+- **Binds loopback by default.** Upstream defines `DISPLAY_HOST` in
+  `src/display.h` and then never uses it, while wsServer hardcodes
+  `INADDR_ANY`, so every bview server listens on every interface. The patch
+  makes `DISPLAY_HOST` real and defaults it to `127.0.0.1`.
+
+  This matters because the websocket protocol carries no authentication:
+  `display_onmessage()` passes client text to `process_line()`, which
+  interprets drawing commands inside the running solver. Any peer that can
+  reach the port can drive that interpreter. Upstream's own documentation
+  assumes an SSH tunnel — which implies a loopback listener — but the code
+  never enforced it.
+
+- **Runtime-overridable URLs.** Neither half of the printed URL is compiled
+  in:
+
+  | Variable | Meaning | Default |
+  |---|---|---|
+  | `BVIEW_CLIENT_URL` | where the javascript client is served from | `http://localhost:8000/three.js/editor/index.html` |
+  | `BVIEW_WS_TEMPLATE` | websocket address; `{port}` expands to the bound port | `ws://<advertised host>:<port>` |
+  | `BVIEW_BIND_HOST` | address to bind | `DISPLAY_HOST` (`127.0.0.1`) |
+
+**Usage:**
+```shell
+# Purely local, matching bview-local-client's deploy.sh
+bview-comphy2D dump
+
+# Served elsewhere, e.g. behind a reverse proxy that terminates TLS
+export BVIEW_CLIENT_URL='https://example.internal/three.js/editor/index.html'
+export BVIEW_WS_TEMPLATE='wss://example.internal:{port}'
+bview-comphy2D dump
+```
+
+**Listening on every interface** is a runtime choice, not a rebuild:
+```shell
+BVIEW_BIND_HOST=0.0.0.0 bview-comphy2D dump
+```
+
+Note that `qcc` strips quotes from `-D` arguments, so a compile-time
+`-DDISPLAY_HOST='"0.0.0.0"'` does not work — it expands to a bare `0.0.0.0`
+and fails to compile. Use `BVIEW_BIND_HOST` instead.
+
+**Bind address and advertised address are distinct.** `0.0.0.0` means "every
+interface" and is not something a client can connect to, so it is never
+printed: the URL falls back to `localhost`. For real cross-machine access set
+`BVIEW_WS_TEMPLATE` to the address clients should actually use, for example
+behind a proxy that terminates TLS:
+
+```shell
+export BVIEW_WS_TEMPLATE='wss://example.internal:{port}'
+```
+
+`{port}` expands to the port the bview server actually bound, so this form is
+only correct when the proxy exposes that same port externally — as a
+port-preserving TLS terminator does. Where the external port differs, write it
+literally instead:
+
+```shell
+export BVIEW_WS_TEMPLATE='wss://example.internal:8443'
+```
+
+**wsServer compatibility:** `ws_socket_open()` keeps its signature and its
+all-interfaces behaviour. The patch adds `ws_socket_open_on(bindaddr, port)`
+alongside it, so nothing else linking against wsServer is affected.
+
+**Rebuild note:** the patch modifies `src/wsServer/src/ws.c`, so `libws.a` must
+be rebuilt. A full `make` handles this; patching a tree with a prebuilt
+`libws.a` and rebuilding only the bview targets produces an
+`undefined reference to ws_socket_open_on` link error.
+
+**Packaging note:** Our GitHub Release tarballs intentionally exclude this patch. To enable it during installation, pass `--comphy-bview` to the installer. It cannot be combined with `--local-bview`; the installer refuses both, since the two patches rewrite the same regions of `src/display.h`.
+
+---
+
 ## Applying Patches Manually
 
 To apply a patch to an existing Basilisk installation:
