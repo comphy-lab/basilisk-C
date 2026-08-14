@@ -1,3 +1,3 @@
 include $(BASILISK)/Makefile.defs
 
-CFLAGS += -O2 -I../src
+CFLAGS += -O2 -I../src -I../../src

@@ -64,4 +64,21 @@ int main(){
   output_xmf_slice({f,p}, {u}, "slice_z", (coord){0,0,1}, 0);
 #endif
 
+  /**
+  Same verification as `test_output_xmf.c`, on the periodic variant: `u` must
+  reproduce the centroid of each cell recomputed from the connectivity, and
+  `f` must match the refinement level. The report goes to stderr, i.e. to the
+  `log` that Basilisk diffs against `test_output_xmf2.ref`.
+
+  The reference was recorded with the 4 MPI ranks `run_tests.py` uses; the
+  point count depends on the decomposition, since vertices shared by two ranks
+  are written twice. */
+  if (pid() == 0) {
+    system ("python3 ../test_output_xmf.py --check domain.xmf 1>&2");
+#if dimension > 2
+    system ("python3 ../test_output_xmf.py --check --plane=x=0 slice_x.xmf 1>&2");
+    system ("python3 ../test_output_xmf.py --check --plane=y=0 slice_y.xmf 1>&2");
+    system ("python3 ../test_output_xmf.py --check --plane=z=0 slice_z.xmf 1>&2");
+#endif
+  }
 }

@@ -251,6 +251,7 @@ bool disk (struct _disk inp) {
 struct _sphere {
   double R;      //Radius
   coord C;       //centre
+  bool shading;
   struct Material mat;
 };
 
@@ -292,6 +293,21 @@ void sphere (struct _sphere inp) {
   }
   slist[functot] = inp;
   functot++;
+  // add sphere to list of sphere for shading
+  if (inp.shading == true) {
+    // maybe init list of spheres
+    if (spheres == NULL) {
+      spheres = realloc (spheres, sizeof(a_sphere));
+      spheres[0].radius = -1;
+    }
+    int ns = 0;
+    while (spheres[ns].radius > 0)
+      ns++;
+    spheres = realloc (spheres, sizeof(a_sphere)*(ns + 2));
+    spheres[ns].radius = inp.R;
+    spheres[ns].pos = inp.C;
+    spheres[ns + 1].radius = -1;
+  }
 }
 /**
 ## Equiplane
@@ -328,7 +344,7 @@ double get_pixel_equiplane (struct _equiplane inp, ray r, double DG, unsigned ch
     if (_dist < d) {
       double vals[2];
       for (int i = 0; i < 2; i++) 
-	vals[i] = interpolate(s, _a[i].x, _a[i].y, _a[i].z);
+	vals[i] = interpolate_linear(point, s, _a[i].x, _a[i].y, _a[i].z);
       if ((vals[0] - inp.val) * (vals[1] - inp.val) < 0.) {
 	double w = fabs(vals[0] - inp.val)/fabs((vals[0] - inp.val) - (vals[1] - inp.val));
 	if (w < 0 || w > 1)
@@ -342,9 +358,9 @@ double get_pixel_equiplane (struct _equiplane inp, ray r, double DG, unsigned ch
 	    d = (a.x - r.O.x)/r.dir.x;
 	  }
 	}
-	n.x = interpolate (v.x, a.x, a.y, a.z); 
-	n.y = interpolate (v.y, a.x, a.y, a.z); 
-	n.z = interpolate (v.z, a.x, a.y, a.z);
+	n.x = interpolate_linear (point, v.x, a.x, a.y, a.z); 
+	n.y = interpolate_linear (point, v.y, a.x, a.y, a.z); 
+	n.z = interpolate_linear (point, v.z, a.x, a.y, a.z);
       }
     }
   }
@@ -803,6 +819,8 @@ void plain (void) {
   functot = 0;
   free (shading);
   shading = NULL;
+  free (spheres);
+  spheres = NULL;
   sketch_a_volume = false;
 }
 

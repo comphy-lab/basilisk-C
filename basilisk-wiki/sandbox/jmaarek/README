@@ -10,9 +10,9 @@
 
 The main header files can be found on the following pages:
 
-* [Filtered curvature computation](surface_tension_ssvm/src/mycurvature.h)
-* [Spectral Surface viscosity](surface_tension_ssvm/src/viscosity-and-semi-implicit-tension.h)
-* [Semi-implicit surface tension](surface_tension_ssvm/src/mytension.h)
+* [Filtered curvature computation](surface_tension_ssvm/src/curvature-hp.h)
+* [Spectral Surface viscosity](surface_tension_ssvm/src/viscosity-ssvm.h)
+* [Semi-implicit surface tension](surface_tension_ssvm/src/tension-ssvm.h)
 
 ## Verification test cases
 

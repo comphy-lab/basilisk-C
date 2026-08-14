@@ -57,13 +57,18 @@ A list of sketch functions is stored. Rendering takes place when an
 image is `store()`d.
  */
 
+typedef struct {
+  double radius;
+  coord pos;
+} a_sphere;
+
 #define N_SKETCH 256          // Maximum sketch functions
 typedef double (*sketch)();   // a Sketch function prototype   
 sketch sketch_list[N_SKETCH]; // List sketching functions
 int functot;                  // number of sketching function calls
 scalar * shading = NULL;      // VOF objects that cast shade
 scalar smoke;                 // Concentration field that cast shade
-//Prim * Obj  = NULL;         // Primitives should cast a shade as well
+a_sphere * spheres  = NULL;     // Spheres should cast a shade as well
 int max_ray_depth = 5;        // Number of ray recasts
 attribute {                   // attenuation coefficient of smoke fields  
   double att;                 
@@ -485,8 +490,9 @@ bool colormap_pigmentation (unsigned char c[3], double cmap[NCMAP][3],
 /**
 ## Lightning
 
-Lights can be shaded by vof facets (in `shading`) and should be
-reflected by reflectors (in `rlist`)
+Lights can be shaded by vof facets (in `shading`) and spheres (in
+spheres), further, they should be reflected by reflectors (in
+`rlist`), but are not at the moment.
  */
 bool shaded (coord start, light source) {
   ray l;
@@ -496,6 +502,16 @@ bool shaded (coord start, light source) {
   for (scalar c in shading) 
     foreach_ray_facet_intersection(l, c)
       return true;
+  if (spheres != NULL) {
+    int i = 0;
+    while (spheres[i].radius > 0) {
+      coord a, n;
+      double d = ray_sphere_intersect (l, spheres[i].pos, spheres[i].radius, &a, &n);
+      if (d < HUGE && d/spheres[i].radius > 1) //?
+	return true;
+      i++;
+    }
+  }
   return false;
 }
 

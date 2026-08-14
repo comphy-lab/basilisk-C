@@ -63,4 +63,20 @@ int main(){
   output_slice_vtu({f,p}, {u}, "slice_z", (coord){0,0,1}, 0);
 #endif
 
+  /**
+  Verify the file that was just written against the analytical fields set
+  above: `u` must reproduce the centroid of each cell recomputed from the
+  connectivity, and `f` must match the refinement level. The report goes to
+  stderr, i.e. to the `log` that Basilisk diffs against `test_output_vtu.ref`,
+  so this is what makes the test pass or fail. */
+  if (pid() == 0) {
+    system ("python3 ../test_output_vtu.py --check domain.vtu 1>&2");
+#if dimension > 2
+    /** The slices are checked against the plane they were asked for, in
+    addition to the analytical fields. */
+    system ("python3 ../test_output_vtu.py --check --plane=x=0 slice_x.vtu 1>&2");
+    system ("python3 ../test_output_vtu.py --check --plane=y=0 slice_y.vtu 1>&2");
+    system ("python3 ../test_output_vtu.py --check --plane=z=0 slice_z.vtu 1>&2");
+#endif
+  }
 }

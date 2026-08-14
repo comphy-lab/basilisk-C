@@ -67,7 +67,7 @@ int main() {
 scalar kappa_test2[];
 
 event end_timestep(i++){
- fprintf(ferr, "stability %12e %12e %12e\n", dt, sqrt(1.0*pow(L0/(1 << grid->maxdepth), 3)/M_PI/f.sigma), MU/f.sigma*L0/(1 << grid->maxdepth));
+ fprintf(fout, "stability %12e %12e %12e\n", dt, sqrt(1.0*pow(L0/(1 << grid->maxdepth), 3)/M_PI/f.sigma), MU/f.sigma*L0/(1 << grid->maxdepth));
  //weight_kappa = (double)(i%10 == 0 ? 1 : 0.2);
  curvature (f, kappa_test2, 1, add = false);
 }
@@ -101,7 +101,8 @@ event init (i = 0) {
     cn[] = f[];
 }
 
-event logfile (i++; t <= TMAX)
+// event logfile (i++; t <= TMAX)
+event logfile (i++; i <= 200)
 {
   /**
   At every timestep, we check whether the volume fraction field has

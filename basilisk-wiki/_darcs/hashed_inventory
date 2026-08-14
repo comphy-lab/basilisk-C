@@ -1,4 +1,4 @@
-pristine:fa57e294fafe827eb34f793363effa152b3be2ca05083d2c78a8fe2d8b7f6431
+pristine:69f7a7eee39a400d06cae9bdc69f3c97eb83e55a66e7a2c5f30a375d36341770
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -13131,3 +13131,104 @@ Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260812142347
  Ignore-this: a57e579be75829c28c36fcb4bd64281e
 ] 
 hash: 0000018211-10c4b7bd491e07369d50cd84f4259a843bc870d6bb937eb3f61ab7bc9e984463
+[sphere can cast a shade for the eclipse example
+j.a.v.hooft@gmail.com**20260813091818
+ Ignore-this: b0d63cc791b77b8bc5fc3aa6d9e3bd42d8a7778c739ea45ff4be3d381db37faeb44f94529679ae63
+] 
+hash: 0000004517-b9ef51fea378e86254338f010660ea52f4dc239d6c2343186ba2b22c34506572
+[compile at the rist of dimensional inconsistency
+Antoonvh <j.a.v.hooft@gmail.com>**20260813094001
+ Ignore-this: 8b2c8258a1fe24ab8dcdfc550ee344f3076bdbbabb758fc33efb248ea18b4e416402afdf461207b6
+] 
+hash: 0000000275-bfa70459676589a727bcc4628f5046b7471a45b7b84e9a8f395e5b0f162e1f79
+[added a faster way to initialise eta using ffts, and example that shows the speedup
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260813100520
+ Ignore-this: 8995df98687136fcd82d334147bd3d22
+] 
+hash: 0000007722-601fc39d4c8e2ded68d32a8f50464f270860668c352cddf532cc55b40fe88b9f
+[Try to resolve the error.
+Jieyun Pan**20260813150051
+ Ignore-this: 69655c5773fc85489f7b34eb3c31ae3f
+ 
+ Reupload viscosity- header file.
+] 
+hash: 0000079866-3af5fb5c7a73c87b19ed7aa1e6bad85aa147afe0cde8a82fd22616ea23fc250e
+[Remove src
+Jieyun Pan**20260813151605
+ Ignore-this: af986d4fbf75d45ae7f75c779bcff635
+] 
+hash: 0000084254-e93dab22abfa169e2b12fb18cda73c79370d077a3fe37f194edff3787d1c7064
+[Reupload src
+Jieyun Pan**20260813151812
+ Ignore-this: 3384ebc9572bec374dc261edf4487513
+] 
+hash: 0000084263-e15a1ae4330bf6c21c4072ce6c53d605d98f413a1d881f1884bc6b379738b2f9
+[Remove test
+Jieyun Pan**20260813184413
+ Ignore-this: 2ba3434bd4f809a1fc7453938d0d9ac5
+] 
+hash: 0000006312-0fafa1e0d74fe1ee05c25eb849efa5eb90fc78cd4a6155ec73251a34015bf805
+[Reupload test
+Jieyun Pan**20260813184500
+ Ignore-this: 81c97ed66d551305ed043e519ac06229
+] 
+hash: 0000006317-2bdecb553fa1a966f75db26bd89fbebdae7afb1144541876991e60b32aa824d9
+[Change header file inclusions.
+Jieyun Pan**20260813185033
+ Ignore-this: 563fe87ac81a14a085398f31dce17938
+] 
+hash: 0000000303-c37fe150da0f1a62b93ae686cd245ba9f6f802de706a06ad526ba825e362a3d9
+[Modify searching path in the Makefile.
+Jieyun Pan**20260813185925
+ Ignore-this: d0ba93706f3eb4f0cf9e125f471afd44
+] 
+hash: 0000000431-f200cf6c378cb645eafc4479e10df1f911aa58d7c556ff0205947f99a8566496
+[Fix the arithmetic exception.
+Jieyun Pan**20260813190357
+ Ignore-this: 59f18788815f7ee4a3d09e7954ef70c4
+] 
+hash: 0000000276-8fa62405895f0d4d8e47198f4dc00f109ea638f3335e4d9e911c88590eabc30e
+[Spline is now cache, nice speedup
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260610203720
+ Ignore-this: 64bba231f5bcc700ca03bbeb0e9cc5d5348abca51f4599c6dc8a0a1465afb5bc1c28163441d3e284
+] 
+hash: 0000011759-e22e5859f446fbb0d85b23bba4cbd39f0e69686d515861aafe3a4ccced7e0d99
+[Verify VTU test output against the analytical fields
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260813203658
+ Ignore-this: c947014443be6ea4ce17a99ef3524fff974f014abb3dd9727017a306d1f53294f8f1cfb0fa486b5a
+ 
+ The VTU tests had no reference files, so they only checked that the program did
+ not crash. The tests set analytical fields, so the output can be verified:
+ test_output_vtu.py now checks the topology, the VTK vertex ordering, that u
+ reproduces each cell centroid, that f matches the refinement level, the box and
+ slice constraints, and that the facets lie on the cardioid.
+ 
+ Each test runs the checker on the file it just wrote, so the report reaches the
+ log that Basilisk diffs against the reference. References recorded for the 2D
+ and 3D runs. run_tests.py drives groups of tests through make <test>.tst.
+] 
+hash: 0000033980-bfa7da0dae03bb1fe46f2dd6bcf236333521221d00495615ae80d845507b402d
+[Verify the xmf tests against their analytical fields
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260813211752
+ Ignore-this: d04da96181ce8a5e429b9fd7f67ef0e3d6767a2d4ba933ec588032e058be35163b00f00c4d98cbd5
+ 
+ Each test checks the file it wrote with test_output_xmf.py and diffs the
+ report against a reference recorded at 4 MPI ranks. Adds a cardioid check
+ and a Mixed-topology decoder; MAXLEVEL aligned with the vtu tests.
+] 
+hash: 0000029923-b6338dcddf3d5a7e8a57f6ee2f5c607bd6e2c2de9eb5128b5cbb70afaf821f6c
+[Verify the vtkhdf tests against their analytical fields
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260813212825
+ Ignore-this: e40fed88041920724dded84a703309f673d218730d747115aa66ce5630aba150b1504862444dd8b7
+ 
+ Each test checks the file it wrote with test_output_vtkhdf.py and diffs the
+ report against a reference recorded at 4 MPI ranks. The reader now stitches
+ the per-rank partitions together, which it read as one before; MAXLEVEL
+ aligned with the vtu tests.
+] 
+hash: 0000026399-0594d79677aa12f645596f728bcccb3d175626482911ed0f12950fc49392a50e
+[Drop marker.dirty, removed from Basilisk
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260813213055
+ Ignore-this: 3934066509f36777848f2b01fc30b35b797ef034ed08a1c988700941a66f6aca82d894b28dc094a
+] 
+hash: 0000000388-bea11e95c042214cb919332403b059a82b6aaefd252609ba3ef394abf9b5a572

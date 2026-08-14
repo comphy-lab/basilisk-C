@@ -1,0 +1,14 @@
+compute_chunk_size: 22, nchunks 1
+--- domain.hdf
+points                 168
+cells                  88
+cell types             QUAD=88
+connectivity in range  OK
+offsets consistent     OK
+orphan points          OK
+vertex ordering        OK
+u == cell centroid     OK
+levels present         [3, 4]
+f == cell level        OK
+p (pid) values         [0, 1, 2, 3]
+verdict                PASS

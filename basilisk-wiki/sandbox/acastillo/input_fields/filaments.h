@@ -136,6 +136,23 @@ geometry and orientation of the filament.
 */
 
 #include "PointTriangle.h"
+#pragma autolink -lgsl -lgslcblas
+#include <gsl/gsl_spline.h>
+
+struct filament_splines {
+  gsl_interp_accel *acc;
+  gsl_spline *C[3];
+  gsl_spline *Tvec[3];
+  gsl_spline *Nvec[3];
+  gsl_spline *Bvec[3];
+  gsl_spline *s;
+  gsl_spline *sigma;
+  gsl_spline *kappa;
+  gsl_spline *tau;
+  gsl_spline *theta0;
+  gsl_spline *a;
+};
+
 struct vortex_filament{
   int     nseg;     // number of segments
   double* phi;    // arbitrary parametrisation of C  
@@ -159,8 +176,93 @@ struct vortex_filament{
   coord*  U;        // 
   coord*  Uprev;    // 
   double* vol;      // Initial volume 
-  
+  void*   splines;  // Cached splines (filament_splines struct pointer)
 };
+
+// Function to free memory for the cached splines
+void free_filament_splines(void* splines_ptr) {
+  if (splines_ptr == NULL) return;
+  struct filament_splines* s = (struct filament_splines*)splines_ptr;
+  for (int d = 0; d < 3; d++) {
+    if (s->C[d]) gsl_spline_free(s->C[d]);
+    if (s->Tvec[d]) gsl_spline_free(s->Tvec[d]);
+    if (s->Nvec[d]) gsl_spline_free(s->Nvec[d]);
+    if (s->Bvec[d]) gsl_spline_free(s->Bvec[d]);
+  }
+  if (s->s) gsl_spline_free(s->s);
+  if (s->sigma) gsl_spline_free(s->sigma);
+  if (s->kappa) gsl_spline_free(s->kappa);
+  if (s->tau) gsl_spline_free(s->tau);
+  if (s->theta0) gsl_spline_free(s->theta0);
+  if (s->a) gsl_spline_free(s->a);
+  if (s->acc) gsl_interp_accel_free(s->acc);
+  free(s);
+}
+
+// Function to allocate and initialize splines for the filament
+void setup_filament_splines(struct vortex_filament* filament) {
+  if (filament == NULL) return;
+  if (filament->splines != NULL) {
+    free_filament_splines(filament->splines);
+    filament->splines = NULL;
+  }
+
+  struct filament_splines* s = malloc(sizeof(struct filament_splines));
+  s->acc = gsl_interp_accel_alloc();
+
+  double* temp = malloc(filament->nseg * sizeof(double));
+
+  for (int d = 0; d < 3; d++) {
+    // C
+    for (int i = 0; i < filament->nseg; i++) {
+      temp[i] = (d == 0 ? filament->C[i].x : (d == 1 ? filament->C[i].y : filament->C[i].z));
+    }
+    s->C[d] = gsl_spline_alloc(gsl_interp_cspline, filament->nseg);
+    gsl_spline_init(s->C[d], filament->phi, temp, filament->nseg);
+
+    // Tvec
+    for (int i = 0; i < filament->nseg; i++) {
+      temp[i] = (d == 0 ? filament->Tvec[i].x : (d == 1 ? filament->Tvec[i].y : filament->Tvec[i].z));
+    }
+    s->Tvec[d] = gsl_spline_alloc(gsl_interp_cspline, filament->nseg);
+    gsl_spline_init(s->Tvec[d], filament->phi, temp, filament->nseg);
+
+    // Nvec
+    for (int i = 0; i < filament->nseg; i++) {
+      temp[i] = (d == 0 ? filament->Nvec[i].x : (d == 1 ? filament->Nvec[i].y : filament->Nvec[i].z));
+    }
+    s->Nvec[d] = gsl_spline_alloc(gsl_interp_cspline, filament->nseg);
+    gsl_spline_init(s->Nvec[d], filament->phi, temp, filament->nseg);
+
+    // Bvec
+    for (int i = 0; i < filament->nseg; i++) {
+      temp[i] = (d == 0 ? filament->Bvec[i].x : (d == 1 ? filament->Bvec[i].y : filament->Bvec[i].z));
+    }
+    s->Bvec[d] = gsl_spline_alloc(gsl_interp_cspline, filament->nseg);
+    gsl_spline_init(s->Bvec[d], filament->phi, temp, filament->nseg);
+  }
+
+  s->s = gsl_spline_alloc(gsl_interp_cspline, filament->nseg);
+  gsl_spline_init(s->s, filament->phi, filament->s, filament->nseg);
+
+  s->sigma = gsl_spline_alloc(gsl_interp_cspline, filament->nseg);
+  gsl_spline_init(s->sigma, filament->phi, filament->sigma, filament->nseg);
+
+  s->kappa = gsl_spline_alloc(gsl_interp_cspline, filament->nseg);
+  gsl_spline_init(s->kappa, filament->phi, filament->kappa, filament->nseg);
+
+  s->tau = gsl_spline_alloc(gsl_interp_cspline, filament->nseg);
+  gsl_spline_init(s->tau, filament->phi, filament->tau, filament->nseg);
+
+  s->theta0 = gsl_spline_alloc(gsl_interp_cspline, filament->nseg);
+  gsl_spline_init(s->theta0, filament->phi, filament->theta0, filament->nseg);
+
+  s->a = gsl_spline_alloc(gsl_interp_cspline, filament->nseg);
+  gsl_spline_init(s->a, filament->phi, filament->a, filament->nseg);
+
+  free(temp);
+  filament->splines = (void*)s;
+}
 
 // Function to allocate memory for the *members* of a vortex_filament struct
 // Assumes the struct itself has already been created (e.g., on the stack or
@@ -174,6 +276,7 @@ void allocate_vortex_filament_members(struct vortex_filament* filament, int nseg
 
   filament->nseg  = nseg;
   filament->pcar  = (coord) {0.0, 0.0, 0.0};
+  filament->splines = NULL;
 
   // Allocate memory for the double arrays
   filament->phi = malloc(nseg * sizeof(double));  
@@ -233,6 +336,11 @@ void free_vortex_filament_members(struct vortex_filament* filament) {
   free(filament->Umutual);  filament->Umutual = NULL;
   free(filament->U);        filament->U = NULL;
   free(filament->Uprev);    filament->Uprev = NULL;
+
+  if (filament->splines != NULL) {
+    free_filament_splines(filament->splines);
+    filament->splines = NULL;
+  }
 }
 
 struct local_filament{  
@@ -281,8 +389,6 @@ The arguments and their descriptions are:
 
 */
 
-#pragma autolink -lgsl -lgslcblas
-#include <gsl/gsl_spline.h>
 coord gsl_interp1d_vector( int nseg, double* phi0, coord * V0, double phiq){
   coord Vq;
   gsl_interp_accel *acc = gsl_interp_accel_alloc();
@@ -373,14 +479,40 @@ vectors.
 double frenet_projection (double phiq, void *params){
   struct vortex_filament *p = (struct vortex_filament *) params;
 
-  coord ccar, frenet[3];
-  ccar = gsl_interp1d_vector( p->nseg, p->phi, p->C, phiq);
+  double phi_min = p->phi[0];
+  double phi_max = p->phi[p->nseg - 1];
 
-  frenet[0] = gsl_interp1d_vector( p->nseg, p->phi, p->Tvec, phiq);
-  frenet[1] = gsl_interp1d_vector( p->nseg, p->phi, p->Nvec, phiq);
-  frenet[2] = gsl_interp1d_vector( p->nseg, p->phi, p->Bvec, phiq);
+  // Detect periodicity by checking if the endpoints of C are close
+  bool is_periodic = (vecdist2(p->C[0], p->C[p->nseg - 1]) < 1e-6);
+  if (is_periodic) {
+    double len = phi_max - phi_min;
+    if (len > 0.0) {
+      double wrapped = phiq - phi_min;
+      wrapped = fmod(wrapped, len);
+      if (wrapped < 0.0) wrapped += len;
+      phiq = phi_min + wrapped;
+    }
+  } else {
+    if (phiq < phi_min) phiq = phi_min;
+    if (phiq > phi_max) phiq = phi_max;
+  }
 
-  return vecdot(vecdiff(p->pcar, ccar), frenet[0]); 
+  coord ccar, Tvec;
+  if (p->splines != NULL) {
+    struct filament_splines* s = (struct filament_splines*)p->splines;
+    ccar.x = gsl_spline_eval(s->C[0], phiq, s->acc);
+    ccar.y = gsl_spline_eval(s->C[1], phiq, s->acc);
+    ccar.z = gsl_spline_eval(s->C[2], phiq, s->acc);
+
+    Tvec.x = gsl_spline_eval(s->Tvec[0], phiq, s->acc);
+    Tvec.y = gsl_spline_eval(s->Tvec[1], phiq, s->acc);
+    Tvec.z = gsl_spline_eval(s->Tvec[2], phiq, s->acc);
+  } else {
+    ccar = gsl_interp1d_vector( p->nseg, p->phi, p->C, phiq);
+    Tvec = gsl_interp1d_vector( p->nseg, p->phi, p->Tvec, phiq);
+  }
+
+  return vecdot(vecdiff(p->pcar, ccar), Tvec); 
 }
 
 /**
@@ -415,16 +547,31 @@ vectors.
 #include <gsl/gsl_errno.h>
 double frenet_projection_min(struct vortex_filament params, double r) {
 
-  int status, verbose = 0;
-  int iter = 0, max_iter = 100;
-  const gsl_root_fsolver_type *T;
-  gsl_root_fsolver *s;
+  // Use a dynamic search window proportional to the parameter spacing
+  double dphi = (params.nseg > 1) ? (params.phi[1] - params.phi[0]) : 0.25;
+  double window = 4.0 * dphi;
+  if (window < 0.01) window = 0.01;
+  if (window > 0.5) window = 0.5;
 
-  double x_lo = r - 0.25, x_hi = r + 0.25;
+  double x_lo = r - window, x_hi = r + window;
   gsl_function F;
 
   F.function = &frenet_projection;
   F.params = &params;
+
+  // Evaluate endpoints to verify if they bracket a root
+  double f_lo = frenet_projection(x_lo, &params);
+  double f_hi = frenet_projection(x_hi, &params);
+
+  // If not bracketed, return r (the closest segment point) directly to avoid solver failure
+  if (f_lo * f_hi >= 0.0) {
+    return r;
+  }
+
+  int status, verbose = 0;
+  int iter = 0, max_iter = 100;
+  const gsl_root_fsolver_type *T;
+  gsl_root_fsolver *s;
 
   T = gsl_root_fsolver_brent;
   s = gsl_root_fsolver_alloc (T);
@@ -518,14 +665,54 @@ struct local_filament get_local_coordinates(int spatial_period, double max_dista
     // Find the value of xi
     double phi = frenet_projection_min(*vortex, min_phi);
 
-    // Find the Cartesian coordinates of point O(xi)
-    coord Ocar = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->C, phi);
+    coord Ocar, Tvec, Nvec, Bvec;
+    double torsion_angle;
+    double s, sigma, kappa, tau, a;
+    
+    if (vortex->splines != NULL) {
+      struct filament_splines* s_cache = (struct filament_splines*)vortex->splines;
+      Ocar.x = gsl_spline_eval(s_cache->C[0], phi, s_cache->acc);
+      Ocar.y = gsl_spline_eval(s_cache->C[1], phi, s_cache->acc);
+      Ocar.z = gsl_spline_eval(s_cache->C[2], phi, s_cache->acc);
 
-    // Compute the Frenet-Serret frame vectors at the projected phi
-    coord Tvec, Nvec, Bvec;
-    Tvec = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->Tvec, phi);
-    Nvec = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->Nvec, phi);
-    Bvec = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->Bvec, phi);
+      Tvec.x = gsl_spline_eval(s_cache->Tvec[0], phi, s_cache->acc);
+      Tvec.y = gsl_spline_eval(s_cache->Tvec[1], phi, s_cache->acc);
+      Tvec.z = gsl_spline_eval(s_cache->Tvec[2], phi, s_cache->acc);
+
+      Nvec.x = gsl_spline_eval(s_cache->Nvec[0], phi, s_cache->acc);
+      Nvec.y = gsl_spline_eval(s_cache->Nvec[1], phi, s_cache->acc);
+      Nvec.z = gsl_spline_eval(s_cache->Nvec[2], phi, s_cache->acc);
+
+      Bvec.x = gsl_spline_eval(s_cache->Bvec[0], phi, s_cache->acc);
+      Bvec.y = gsl_spline_eval(s_cache->Bvec[1], phi, s_cache->acc);
+      Bvec.z = gsl_spline_eval(s_cache->Bvec[2], phi, s_cache->acc);
+
+      torsion_angle = gsl_spline_eval(s_cache->theta0, phi, s_cache->acc);
+
+      s     = gsl_spline_eval(s_cache->s, phi, s_cache->acc);
+      sigma = gsl_spline_eval(s_cache->sigma, phi, s_cache->acc);
+      kappa = gsl_spline_eval(s_cache->kappa, phi, s_cache->acc);
+      tau   = gsl_spline_eval(s_cache->tau, phi, s_cache->acc);
+      a     = gsl_spline_eval(s_cache->a, phi, s_cache->acc);
+    } else {
+      // Find the Cartesian coordinates of point O(xi)
+      Ocar = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->C, phi);
+
+      // Compute the Frenet-Serret frame vectors at the projected phi
+      Tvec = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->Tvec, phi);
+      Nvec = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->Nvec, phi);
+      Bvec = gsl_interp1d_vector(vortex->nseg, vortex->phi, vortex->Bvec, phi);
+
+      // Compute the torsion angle
+      torsion_angle = gsl_interp1d_scalar(vortex->nseg, vortex->phi, vortex->theta0, phi);
+
+      // Then, we compute the other properties
+      s       = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->s,       phi);
+      sigma   = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->sigma,   phi);
+      kappa   = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->kappa,   phi);
+      tau     = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->tau,     phi);    
+      a       = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->a,       phi);    
+    }
     
     // Compute local coordinates in the Frenet-Serret frame
     cart_coord.x = vecdot(vecdiff(vortex->pcar, Ocar), Tvec); // x_T (must be zero) 
@@ -536,20 +723,10 @@ struct local_filament get_local_coordinates(int spatial_period, double max_dista
     local_radial_coord = sqrt(vecdot(cart_coord, cart_coord));
     local_angular_coord = atan2(cart_coord.z, cart_coord.y);
     
-    // Compute the torsion angle
-    double torsion_angle = gsl_interp1d_scalar(vortex->nseg, vortex->phi, vortex->theta0, phi);
-
     // Set radial coordinates
     radial_coord.x = cart_coord.x;
     radial_coord.y = local_radial_coord;
     radial_coord.z = local_angular_coord - torsion_angle;
-
-    // Then, we compute the other properties
-    double s       = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->s,       phi);
-    double sigma   = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->sigma,   phi);
-    double kappa   = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->kappa,   phi);
-    double tau     = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->tau,     phi);    
-    double a       = gsl_interp1d_scalar( vortex->nseg, vortex->phi, vortex->a,       phi);    
 
     local_coordinates = (struct local_filament){1, phi, Ocar, Tvec, Nvec, Bvec, 
       s, vortex->pcar, sigma, kappa, tau, torsion_angle, a, cart_coord, radial_coord, 
@@ -673,7 +850,6 @@ at this order.
 
 */
 
-#pragma autolink -lgsl -lgslcblas
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_errno.h>
 
@@ -915,7 +1091,7 @@ batchelor_vortex calculate_vortex_flow(struct local_filament* vortex, double U_c
   double S0 = rho * results.w0_th / results.u0_th; 
   double denom = 1.0 - g_rho;
   double dS0_dr = (3.0 * rho2 - 2.0 * sq(rho2) / a2) * g_rho / denom
-                - (2.0 * sq(rho2) / a2) * g_rho / (denom * denom);
+                - (2.0 * sq(rho2) / a2) * sq(g_rho) / (denom * denom);
   dS0_dr *= 2.0 * U_c / a2;
 
   // --- First-Order Perturbations (u1, w1) ---
@@ -927,8 +1103,11 @@ batchelor_vortex calculate_vortex_flow(struct local_filament* vortex, double U_c
   results.u1_xi = results.u0_xi + S0*A/rho2;
 
   results.w1_r  = -S0*A/cube(rho);
-  results.w1_th = results.w0_th + S0*A/cube(rho) - S0*dA/rho2 - dS0_dr*A/rho2;
+  results.w1_th = results.w0_th + S0*A/cube(rho) - dS0_dr*A/rho2 - S0*dA/rho2 ;
+  //double dw0_xi_dr = -2.0 * rho * results.w0_xi / a2;
+  //results.w1_xi = -results.w0_xi - dw0_xi_dr * A / ((results.u0_th + 1e-18) * rho) + 2.0 * S0 * results.u0_xi / rho;
   results.w1_xi = results.u0_th/rho + results.w0_xi - d2A/rho - dA/rho2 + A/cube(rho);
+
   
   results.u1_r  *= kappa * rho * sin_phi;
   results.u1_th *= kappa * rho * cos_phi; 

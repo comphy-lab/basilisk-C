@@ -37,8 +37,17 @@ Note: g_ has to be defined before #include spectrum.h !
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <gsl/gsl_fft_complex.h>
+//#include <string.h>
 #include "hugoj/lib/interpolate.h"
 #define PI 3.14159265358979323846
+
+#ifndef REAL
+#define REAL(z,i) ((z)[2*(i)])
+#define IMAG(z,i) ((z)[2*(i)+1])
+#endif
+
+#pragma autolink -lgsl
 
 #define CHECK_ALLOC(ptr, name) \
     if ((ptr) == NULL) { \
@@ -396,8 +405,9 @@ Strictly speaking we look for a solution that is the sum of linear modes, no
 need for the  hypothesis of linear theory)
 */
 trace
-double wave (double x, double y, T_Spectrum spec)
+double wave_v1 (double x, double y, T_Spectrum spec)
 {
+  // Legacy function, use 'wave'
   double eta = 0.;
   double dkx = spec.kx[1] - spec.kx[0];
   double dky = spec.ky[1] - spec.ky[0];
@@ -433,8 +443,9 @@ $k=\sqrt{k_{x,i}^2+k_{y,j}^2}$ and $\phi_{rand}$ and random phase in $[-\pi,\pi)
 
 // Velocities following the linear wave theory
 trace
-coord wave_u (double x, double y, double z, T_Spectrum spec) 
+coord wave_u_v1 (double x, double y, double z, T_Spectrum spec) 
 {
+  // Legacy function, use 'wave_u'
   coord u = {0.,0.,0.};
   double dkx = spec.kx[1] - spec.kx[0];
   double dky = spec.ky[1] - spec.ky[0];
@@ -463,6 +474,113 @@ coord wave_u (double x, double y, double z, T_Spectrum spec)
   
   return u;
 }
+
+// Plan for new version of ini:
+// - generate currents on a cartesian grid using iFFT (check Parceval !)
+// - interpolate on a layered grid
+
+/** ## Inverse FFT 
+ see the original version from Andrés [here](https://basilisk.fr/sandbox/acastillo/input_fields/initial_conditions_dimonte_fft2.h)
+*/
+void ifft2D(double *data, int NI, int NJ){  
+  
+  // Inverse FFT along rows 
+  for (int i = 0; i < NI; ++i){
+    gsl_fft_complex_radix2_backward(data + 2 * i * NJ, 1, NJ);
+  }
+
+  // Inverse FFT along columns
+  double *column = malloc(2 * NI * sizeof(double));
+  for (int j = 0; j < NJ; ++j){
+    for (int i = 0; i < NI; ++i){
+      REAL(column,i) = REAL(data, i*NJ + j);
+      IMAG(column,i) = IMAG(data, i*NJ + j);
+    }
+    gsl_fft_complex_radix2_backward(column, 1, NI);
+    for (int i = 0; i < NI; ++i)
+    {
+      REAL(data, i*NJ + j) = REAL(column,i);
+      IMAG(data, i*NJ + j) = IMAG(column,i);
+    }
+  }
+  free(column);
+}
+
+// --- scatter T_Spectrum onto an FFT-ordered, zero-padded Nx*Nx grid ---
+trace
+static void eta_spectrum_scatter (double *data, T_Spectrum spec, int Nx)
+{
+  int N_mode = spec.N_mode;
+  int Ntmode = 2*N_mode + 1;
+  double dkx = spec.kx[1] - spec.kx[0];
+  double dky = spec.ky[1] - spec.ky[0];
+
+  memset(data, 0, 2*Nx*Nx*sizeof(double));
+
+  for (int i = 0; i < Ntmode; i++) {
+    int m  = i - N_mode;
+    int bi = (m >= 0) ? m : Nx + m;
+    for (int j = 0; j < Ntmode; j++) {
+      int n  = j - N_mode;
+      int bj = (n >= 0) ? n : Nx + n;
+      int index = i*Ntmode + j;
+
+      double ampl = sqrt(2.*spec.F_kxky[index]*dkx*dky);
+      int o = bi*Nx + bj;
+      REAL(data, o) = ampl*cos(spec.phase[index]);
+      IMAG(data, o) = ampl*sin(spec.phase[index]);
+    }
+  }
+}
+
+// --- full driver: spectrum -> FFT grid -> Basilisk scalar field ---
+trace
+void initial_condition_wave_fft (scalar eta_field, T_Spectrum spec, int Nx)
+{
+  double dx = L0/Nx;
+  double *zdata = malloc(Nx*Nx*sizeof(double));
+
+  if (pid() == 0) {
+    double *data = malloc(2*Nx*Nx*sizeof(double));
+    eta_spectrum_scatter(data, spec, Nx);
+    ifft2D(data, Nx, Nx);
+
+    double norm = 1.0/((double)Nx*Nx);   // two unnormalized radix2_backward passes
+    for (int n = 0; n < Nx*Nx; n++)
+      zdata[n] = REAL(data, n)*norm;
+
+    free(data);
+  }
+
+  @ if _MPI
+    MPI_Bcast(zdata, Nx*Nx, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+  @endif
+
+  foreach() {
+    int i = (int)round((x - X0)/dx);
+    int j = (int)round((y - Y0)/dx);
+    // periodic wrap in case of roundoff pushing i,j out of [0,Nx)
+    i = (i % Nx + Nx) % Nx;
+    j = (j % Nx + Nx) % Nx;
+    eta_field[] = zdata[i*Nx + j];
+  }
+
+  free(zdata);
+}
+
+// trace
+// double wave (double x, double y, T_Spectrum spec)
+// {
+//
+// }
+//
+//
+// trace
+// coord wave_u (double x, double y, double z, T_Spectrum spec) 
+// {
+//
+// }
+
 
 /**
  

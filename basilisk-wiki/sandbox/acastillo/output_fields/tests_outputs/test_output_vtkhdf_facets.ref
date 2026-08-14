@@ -1,0 +1,14 @@
+compute_chunk_size: 55, nchunks 1
+compute_chunk_size: 110, nchunks 1
+compute_chunk_size: 110, nchunks 1
+--- Interface_vtkhdf.hdf
+points                 440
+cells                  220
+cell types             POLY_LINE=220
+connectivity in range  OK
+offsets consistent     OK
+orphan points          OK
+facet width (max)      0.015625
+vertices on cardioid   OK (within one cell)
+kappa finite           OK
+verdict                PASS

@@ -79,5 +79,5 @@ event acceleration(i++) {
 /**
 Include any header files here to test the code
 */
-#include "navier-stokes/perfs.h"
-#include "viscosity-and-semi-implicit-tension.h"
+// #include "navier-stokes/perfs.h"
+#include "viscosity-ssvm.h"

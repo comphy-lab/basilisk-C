@@ -209,6 +209,42 @@ bool draw_paramterization (double rad, double ts, double te,  coord (*my_fun)(do
   return true;
 }
 
+
+bool draw_surface (double ur[2], double vr[2],
+		   coord (*my_fun)(double, double), int un=20, int vn=20, float fc[3]) {
+  double du = (ur[1] - ur[0]) / un;
+  double dv = (ur[1] - ur[0]) / vn;
+  bview * view = draw();
+  glColor3f(fc[0], fc[1], fc[2]);
+  glShadeModel (GL_SMOOTH);
+  for (int i = 0; i < un; i++)
+    for (int j = 0; j < vn; j++) {
+      double u = ur[0]+i*du;
+      double v = vr[0]+j*dv;
+      coord r0 = my_fun(u + du/2, v + dv/2);
+      coord r1 = my_fun(u, v);
+      coord r2 = my_fun(u + du, v);
+      coord r3 = my_fun(u +du, v + dv);
+      coord r4 = my_fun(u, v + dv);
+      coord n = cross (coord_diff (r2, r1), coord_diff(r4, r1));
+      glnormal3d (view, n.x, n.y, n.z);
+      glnormal3d (view, n.x, n.y, n.z);
+	glBegin (GL_POLYGON);
+	//color_facet();
+	glvertex3d (view, r1.x, r1.y, r1.z);
+	//color_facet();
+	glvertex3d (view, r2.x, r2.y, r2.z);
+	//color_facet();
+	glvertex3d (view, r3.x, r3.y, r3.z);
+	//color_facet();
+	glvertex3d (view, r4.x, r4.y, r4.z);
+	glEnd ();
+    }
+      return true;
+      
+}
+
+
 /**
    
 ## Test

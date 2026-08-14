@@ -62,4 +62,11 @@ int main(){
   #endif
   output_vtu_box({f,p}, {u}, "domain", box);
 
+  /**
+  Verify the written file against the analytical fields, and additionally check
+  that no cell outside the requested box was emitted. The report goes to
+  stderr, i.e. to the `log` diffed against `test_output_vtu_box.ref`. */
+  if (pid() == 0)
+    system ("python3 ../test_output_vtu.py --check "
+            "--box=-0.25,-0.25,0.25,0.25 domain.vtu 1>&2");
 }

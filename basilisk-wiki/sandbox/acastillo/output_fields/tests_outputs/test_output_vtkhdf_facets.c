@@ -4,7 +4,7 @@
 In this example use the sample results to test the output routines. 
 */
 
-#define MAXLEVEL 9
+#define MAXLEVEL 8
 #define ASPECTRATIO 8
 vector h[];
 
@@ -46,4 +46,12 @@ int main(){
   scalar kappa[];
   curvature (f, kappa);
   output_facets_vtkhdf(f, kappa, "Interface_vtkhdf.hdf");
+
+  /**
+  Verify the interface that was just written: every facet vertex must lie on
+  the cardioid used to initialise the volume fraction, to within one cell. The
+  report goes to stderr, i.e. to the `log` diffed against
+  `test_output_vtkhdf_facets.ref`. */
+  if (pid() == 0)
+    system ("python3 ../test_output_vtkhdf.py --cardioid Interface_vtkhdf.hdf 1>&2");
 }

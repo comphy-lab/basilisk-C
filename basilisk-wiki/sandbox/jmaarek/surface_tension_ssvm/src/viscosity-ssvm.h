@@ -810,7 +810,7 @@ mgstats viscosity_st (vector u, face vector mu, scalar rho, scalar f, double sig
 	nn += sq(sigma_n_sq_dirac.x[]);
      }
      foreach_dimension(){
-        sigma_n_sq_dirac.x[] /= sqrt(nn);}
+        sigma_n_sq_dirac.x[] /= max(sqrt(nn), 1.e-32);}
      //foreach_dimension()
      // temp1.x[] = sigma_n_sq_dirac.x[];
  
@@ -1047,7 +1047,7 @@ event end_timestep (i++){
     foreach_dimension()
       u.x[] += dt*g_temp.x[];*/
  
-  fprintf(ferr, "mgpv.i %d mgpv.nrelax %d mgps.i %d mgps.nrelax %d\n", mgpv.i, mgpv.nrelax, mgps.i, mgps.nrelax);
+  fprintf(fout, "mgpv.i %d mgpv.nrelax %d mgps.i %d mgps.nrelax %d\n", mgpv.i, mgpv.nrelax, mgps.i, mgps.nrelax);
  
  
 }

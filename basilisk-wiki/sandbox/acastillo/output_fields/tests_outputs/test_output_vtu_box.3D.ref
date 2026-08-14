@@ -1,0 +1,15 @@
+VTU Box Output: 609 points, 288 cells
+--- domain.vtu
+points                 609
+cells                  288
+cell types             HEXAHEDRON=288
+connectivity in range  OK
+offsets consistent     OK
+orphan points          OK
+vertex ordering        OK
+u == cell centroid     OK
+levels present         [3, 4]
+f == cell level        OK
+p (pid) values         [0]
+cells inside box       OK
+verdict                PASS

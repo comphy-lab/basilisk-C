@@ -1,0 +1,55 @@
+--- domain.vtu
+points                 1681
+cells                  960
+cell types             HEXAHEDRON=960
+connectivity in range  OK
+offsets consistent     OK
+orphan points          OK
+vertex ordering        OK
+u == cell centroid     OK
+levels present         [3, 4]
+f == cell level        OK
+p (pid) values         [0]
+verdict                PASS
+--- slice_x.vtu
+points                 183
+cells                  112
+cell types             QUAD=112
+connectivity in range  OK
+offsets consistent     OK
+orphan points          OK
+vertex ordering        OK
+points on plane x=0    OK
+u == cell centroid     OK
+levels present         [3, 4]
+f == cell level        OK
+p (pid) values         [0]
+verdict                PASS
+--- slice_y.vtu
+points                 183
+cells                  112
+cell types             QUAD=112
+connectivity in range  OK
+offsets consistent     OK
+orphan points          OK
+vertex ordering        OK
+points on plane y=0    OK
+u == cell centroid     OK
+levels present         [3, 4]
+f == cell level        OK
+p (pid) values         [0]
+verdict                PASS
+--- slice_z.vtu
+points                 137
+cells                  88
+cell types             QUAD=88
+connectivity in range  OK
+offsets consistent     OK
+orphan points          OK
+vertex ordering        OK
+points on plane z=0    OK
+u == cell centroid     OK
+levels present         [3, 4]
+f == cell level        OK
+p (pid) values         [0]
+verdict                PASS

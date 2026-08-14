@@ -64,4 +64,16 @@ int main(){
   output_vtkhdf_slice({f,p}, {u}, "slice_z.hdf", (coord){0,0,1}, 0);
 #endif
 
+  /**
+  Same verification as `test_output_vtkhdf.c`, on the periodic variant, with
+  the report diffed against `test_output_vtkhdf2.ref`. The reference was
+  recorded with the 4 MPI ranks `run_tests.py` uses. */
+  if (pid() == 0) {
+    system ("python3 ../test_output_vtkhdf.py --check domain.hdf 1>&2");
+#if dimension > 2
+    system ("python3 ../test_output_vtkhdf.py --check --plane=x=0 slice_x.hdf 1>&2");
+    system ("python3 ../test_output_vtkhdf.py --check --plane=y=0 slice_y.hdf 1>&2");
+    system ("python3 ../test_output_vtkhdf.py --check --plane=z=0 slice_z.hdf 1>&2");
+#endif
+  }
 }

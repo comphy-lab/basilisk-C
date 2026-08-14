@@ -59,4 +59,12 @@ int main(){
   scalar kappa[];
   curvature (f, kappa);
   output_facets_vtu(f, kappa, "Interface");
+
+  /**
+  Verify the interface that was just written: every facet vertex must lie on
+  the cardioid used to initialise the volume fraction, to within one cell. The
+  report goes to stderr, i.e. to the `log` diffed against
+  `test_output_vtu_facets.ref`. */
+  if (pid() == 0)
+    system ("python3 ../test_output_vtu.py --cardioid Interface.vtu 1>&2");
 }

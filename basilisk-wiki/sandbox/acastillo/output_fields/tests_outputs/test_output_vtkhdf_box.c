@@ -16,7 +16,7 @@ data = test_output_vtkhdf.print_vtkhdf_info('domain.hdf')
 */
 
 #include "acastillo/output_fields/vtkhdf/output_vtkhdf.h"
-#define MAXLEVEL 8
+#define MAXLEVEL 4
 #define ASPECTRATIO 8
 #define r2 (sq(x) + sq(y))
 
@@ -62,4 +62,12 @@ int main(){
   #endif
   output_vtkhdf_box({f,p}, {u}, "domain.hdf", box);
 
+  /**
+  Verify the written file against the analytical fields, and additionally check
+  that no cell outside the requested box was emitted. The report goes to
+  stderr, i.e. to the `log` diffed against `test_output_vtkhdf_box.ref`,
+  recorded with the 4 MPI ranks `run_tests.py` uses. */
+  if (pid() == 0)
+    system ("python3 ../test_output_vtkhdf.py --check "
+            "--box=-0.25,-0.25,0.25,0.25 domain.hdf 1>&2");
 }

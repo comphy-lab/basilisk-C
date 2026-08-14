@@ -49,4 +49,12 @@ int main(){
   scalar kappa[];
   curvature (f, kappa);
   output_facets_xmf(f, kappa, "Interface_xmf");
+
+  /**
+  Verify the interface that was just written: every facet vertex must lie on
+  the cardioid used to initialise the volume fraction, to within one cell. The
+  report goes to stderr, i.e. to the `log` diffed against
+  `test_output_xmf_facets.ref`. */
+  if (pid() == 0)
+    system ("python3 ../test_output_xmf.py --cardioid Interface_xmf.xmf 1>&2");
 }

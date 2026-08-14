@@ -64,3 +64,5 @@ color_cube.tst: CFLAGS += -fopenmp
 heating.tst: CFLAGS += -fopenmp
 
 impinging2.tst: CFLAGS += -fopenmp
+
+eclipse.tst: CFLAGS += -disable-dimensions

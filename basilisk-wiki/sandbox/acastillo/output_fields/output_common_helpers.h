@@ -152,7 +152,8 @@ void initialize_marker(vertex scalar marker, hsize_t *offset, hsize_t accumulate
     marker[] = num_points_iter + offset[0]*accumulate;
     num_points_iter++;
   }
-  marker.dirty = true;
+  // The 'dirty' field attribute has been removed
+  // marker.dirty = true;
 }
 
 void initialize_marker_box(vertex scalar marker, vertex scalar vertex_needed, hsize_t *offset, hsize_t accumulate = 1) {

@@ -1,0 +1,11 @@
+--- Interface.vtu
+points                 108396
+cells                  27088
+cell types             POLYGON=27088
+connectivity in range  OK
+offsets consistent     OK
+orphan points          OK
+facet width (max)      0.015625
+vertices on cardioid   OK (within one cell)
+kappa finite           OK
+verdict                PASS

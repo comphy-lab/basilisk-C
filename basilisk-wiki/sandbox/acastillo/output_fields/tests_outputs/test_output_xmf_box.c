@@ -5,7 +5,7 @@ Tests XDMF output functions constrained by a box region.
 */
 
 #include "acastillo/output_fields/xdmf/output_xdmf.h"
-#define MAXLEVEL 8
+#define MAXLEVEL 4
 #define ASPECTRATIO 8
 #define r2 (sq(x) + sq(y))
 
@@ -51,4 +51,14 @@ int main(){
   #endif
   output_xmf_box({f,p}, {u}, "domain_xmf", box);
 
+  /**
+  Verify the written file against the analytical fields, and additionally check
+  that no cell outside the requested box was emitted. The report goes to
+  stderr, i.e. to the `log` diffed against `test_output_xmf_box.ref`.
+
+  As for the other xmf tests the reference is recorded with the 4 MPI ranks
+  `run_tests.py` uses, since the point count depends on the decomposition. */
+  if (pid() == 0)
+    system ("python3 ../test_output_xmf.py --check "
+            "--box=-0.25,-0.25,0.25,0.25 domain_xmf.xmf 1>&2");
 }
