@@ -152,6 +152,15 @@ behind a proxy that terminates TLS:
 export BVIEW_WS_TEMPLATE='wss://example.internal:{port}'
 ```
 
+`{port}` expands to the port the bview server actually bound, so this form is
+only correct when the proxy exposes that same port externally — as a
+port-preserving TLS terminator does. Where the external port differs, write it
+literally instead:
+
+```shell
+export BVIEW_WS_TEMPLATE='wss://example.internal:8443'
+```
+
 **wsServer compatibility:** `ws_socket_open()` keeps its signature and its
 all-interfaces behaviour. The patch adds `ws_socket_open_on(bindaddr, port)`
 alongside it, so nothing else linking against wsServer is affected.
