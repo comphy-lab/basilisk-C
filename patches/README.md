@@ -119,7 +119,8 @@ same `src/bview.c` with `-DCOMPHY_BVIEW`. The stock `bview2D`, `bview3D` and
   | Variable | Meaning | Default |
   |---|---|---|
   | `BVIEW_CLIENT_URL` | where the javascript client is served from | `http://localhost:8000/three.js/editor/index.html` |
-  | `BVIEW_WS_TEMPLATE` | websocket address; `{port}` expands to the bound port | `ws://<DISPLAY_HOST>:<port>` |
+  | `BVIEW_WS_TEMPLATE` | websocket address; `{port}` expands to the bound port | `ws://<advertised host>:<port>` |
+  | `BVIEW_BIND_HOST` | address to bind | `DISPLAY_HOST` (`127.0.0.1`) |
 
 **Usage:**
 ```shell
@@ -132,9 +133,23 @@ export BVIEW_WS_TEMPLATE='wss://example.internal:{port}'
 bview-comphy2D dump
 ```
 
-**Restoring all-interfaces listening** in a comphy build:
+**Listening on every interface** is a runtime choice, not a rebuild:
 ```shell
-qcc -DCOMPHY_BVIEW -DDISPLAY_HOST='"0.0.0.0"' ...
+BVIEW_BIND_HOST=0.0.0.0 bview-comphy2D dump
+```
+
+Note that `qcc` strips quotes from `-D` arguments, so a compile-time
+`-DDISPLAY_HOST='"0.0.0.0"'` does not work — it expands to a bare `0.0.0.0`
+and fails to compile. Use `BVIEW_BIND_HOST` instead.
+
+**Bind address and advertised address are distinct.** `0.0.0.0` means "every
+interface" and is not something a client can connect to, so it is never
+printed: the URL falls back to `localhost`. For real cross-machine access set
+`BVIEW_WS_TEMPLATE` to the address clients should actually use, for example
+behind a proxy that terminates TLS:
+
+```shell
+export BVIEW_WS_TEMPLATE='wss://example.internal:{port}'
 ```
 
 **wsServer compatibility:** `ws_socket_open()` keeps its signature and its

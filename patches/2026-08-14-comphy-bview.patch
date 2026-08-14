@@ -27,6 +27,7 @@
 #   * binds DISPLAY_HOST, defaulting to 127.0.0.1 rather than every interface;
 #   * defaults the client URL to http://localhost:8000/three.js/editor/index.html
 #     (see github.com/comphy-lab/bview-local-client);
+#   * reads BVIEW_BIND_HOST to override the bind address at runtime;
 #   * reads BVIEW_CLIENT_URL and BVIEW_WS_TEMPLATE at runtime, so a deployment
 #     address never has to be compiled in. {port} in BVIEW_WS_TEMPLATE expands
 #     to the port actually bound.
@@ -35,8 +36,13 @@
 # upstream URL. ws_socket_open() keeps its signature and its all-interfaces
 # behaviour; the new ws_socket_open_on() takes an explicit bind address.
 #
-# To restore all-interfaces listening in a comphy build:
-#   qcc -DCOMPHY_BVIEW -DDISPLAY_HOST='"0.0.0.0"' ...
+# To listen on every interface instead, set BVIEW_BIND_HOST at runtime:
+#   BVIEW_BIND_HOST=0.0.0.0 bview-comphy2D dump
+#
+# The bind address and the advertised address are distinct. 0.0.0.0 means
+# "every interface" and is not connectable, so it is never printed: the URL
+# falls back to localhost. For genuine cross-machine access set
+# BVIEW_WS_TEMPLATE to the address clients should really use.
 #
 # Example:
 #   export BVIEW_CLIENT_URL='https://example.internal/three.js/editor/index.html'
@@ -53,8 +59,8 @@
 #
 diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
 --- old-basilisk/src/display.h	2026-08-14 16:46:22.228922798 +0100
-+++ new-basilisk/src/display.h	2026-08-14 16:47:40.847647750 +0100
-@@ -66,11 +66,39 @@
++++ new-basilisk/src/display.h	2026-08-14 18:35:03.663464311 +0100
+@@ -66,11 +66,69 @@
  */
  
  #ifndef DISPLAY_JS
@@ -93,10 +99,40 @@ diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
 +# else
 +#  define DISPLAY_HOST "localhost"
 +# endif
++#endif
++
++#ifdef COMPHY_BVIEW
++
++/**
++The address to bind. DISPLAY_HOST is the compile-time default; BVIEW_BIND_HOST
++overrides it at runtime. Use `BVIEW_BIND_HOST=0.0.0.0` to listen on every
++interface, bearing in mind that the protocol is unauthenticated and that any
++peer able to reach the port can drive the drawing-command interpreter.
++*/
++static const char * display_bind_host (void)
++{
++  const char * h = getenv ("BVIEW_BIND_HOST");
++  return (h && *h) ? h : DISPLAY_HOST;
++}
++
++/**
++The address to advertise, which is not the same thing. 0.0.0.0 means "every
++interface" and is not something a client can connect to, so it must never
++appear in the printed URL; fall back to localhost. For genuine cross-machine
++access set BVIEW_WS_TEMPLATE to the address clients should really use.
++*/
++static const char * display_advertised_host (void)
++{
++  const char * h = display_bind_host();
++  if (!h || !*h || !strcmp (h, "0.0.0.0") || !strcmp (h, "::"))
++    return "localhost";
++  return h;
++}
++
  #endif
  
  #ifndef DISPLAY_RANGE
-@@ -692,8 +720,44 @@
+@@ -692,8 +750,44 @@
    return nmsg;
  }
  
@@ -106,7 +142,7 @@ diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
 +static int display_socket_open (uint16_t port)
 +{
 +#ifdef COMPHY_BVIEW
-+  return ws_socket_open_on (DISPLAY_HOST, port);
++  return ws_socket_open_on (display_bind_host(), port);
 +#else
 +  return ws_socket_open (port);
 +#endif
@@ -134,14 +170,14 @@ diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
 +    }
 +  }
 +  else
-+    fprintf (fp, "ws://%s:%d", DISPLAY_HOST, Display.port);
++    fprintf (fp, "ws://%s:%d", display_advertised_host(), Display.port);
 +
 +#else // !COMPHY_BVIEW
 +
    char hostname[1024];
    hostname[1023] = '\0';
    gethostname (hostname, 1023);
-@@ -704,6 +768,8 @@
+@@ -704,6 +798,8 @@
  	     LINENO, hostname);
    fprintf (fp, DISPLAY_JS "?ws://%s:%d", h ? h->h_name : "127.0.0.1",
  	   Display.port);
@@ -150,7 +186,7 @@ diff -rN -u old-basilisk/src/display.h new-basilisk/src/display.h
  }
  
  int display_usage = 20; // use 20% of runtime, maximum
-@@ -746,14 +812,14 @@
+@@ -746,14 +842,14 @@
    if (pid() == 0) {
      const char * port = DISPLAY_RANGE;
      if (!strchr (port, ':'))
