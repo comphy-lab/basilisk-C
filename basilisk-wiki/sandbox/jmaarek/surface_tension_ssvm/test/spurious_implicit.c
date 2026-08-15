@@ -8,7 +8,7 @@ We use the Navier--Stokes solver with VOF interface tracking and
 surface tension. */
 
 #define GAUSS_SEIDEL 1
-#define LB_HP_FILTER 0
+#define LB_HP_FILTER 1
 
 #include "grid/quadtree.h"
 #include "navier-stokes/centered.h"
@@ -48,7 +48,7 @@ int main() {
 
   size(1);
   //origin(-L0/2, -L0/2);
-
+  double ratios[2] = {1., 15.};
   ratio_dt_st = 15.;
 
   DT = HUGE [0];
@@ -60,7 +60,12 @@ int main() {
   LAPLACE = 12000; DC = 1e-10;
   mu1 = mu2 = MU;
   N = 1 << LEVEL;
-      run();
+
+  for (int i = 0; i <= 1; i++) {
+    ratio_dt_st = ratios[i];
+    run();
+  }
+
   return 1;
 }
 
@@ -87,7 +92,7 @@ event init (i = 0) {
   spurious currents for the various LAPLACE, LEVEL combinations... */
 
   char name[80];
-  sprintf (name, "La-%g-%d", LAPLACE, LEVEL);
+  sprintf (name, "La-%g-%d-%d", LAPLACE, LEVEL, (int) ratio_dt_st);
   if (fp)
     fclose (fp);
   fp = fopen (name, "w");
@@ -101,8 +106,8 @@ event init (i = 0) {
     cn[] = f[];
 }
 
-// event logfile (i++; t <= TMAX)
-event logfile (i++; i <= 200)
+event logfile (i++; t <= 0.1*TMAX)
+// event logfile (i++; i <= 200)
 {
   /**
   At every timestep, we check whether the volume fraction field has
@@ -185,34 +190,14 @@ The maximum velocity converges toward machine zero for a wide range of
 Laplace numbers on a timescale comparable to the viscous dissipation
 timescale, as expected.
 
-Evolution of the amplitude of the capillary currents $\max(|\mathbf{u}|)(D/\sigma)^{1/2}$ as a function of non-dimensional time $\tau=t\mu/D^2$ for the range of Laplace numbers indicated in the legend.
+Evolution of the amplitude of the capillary currents $\max(|\mathbf{u}|)(D/\sigma)^{1/2}$ as a function of non-dimensional time $\tau=t\mu/D^2$ for the range of timesteps.
 
 ~~~gnuplot Evolution of the amplitude of the capillary currents
 set xlabel 't{/Symbol m}/D^2'
 set ylabel 'U(D/{/Symbol s})^{1/2}'
 set logscale y
-plot 'La-120-5' w l t "La=120", 'La-1200-5' w l t "La=1200", \
-  'La-12000-5' w l t "La=12000"
-~~~
-
-The equilibrium shape and curvature converge toward the exact shape
-and curvature at close to second-order rate.
-
-~~~gnuplot Convergence of the error on the equilibrium shape of the droplet with resolution. The diameter is given in number of grid points.
-set xlabel 'D'
-set ylabel 'Shape error'
-set logscale x
-set xtics 2
-set pointsize 1
-plot [5:120]'< sort -n -k1,2 log' u (0.8*2**$1):5 w lp t "RMS", \
-            '< sort -n -k1,2 log' u (0.8*2**$1):6 w lp t "Max", \
-             0.2/(x*x) t "Second order"
-~~~
-
-~~~gnuplot Convergence of the relative error on the equilibrium curvature value with resolution. The diameter is given in number of grid points.
-set ylabel 'Relative curvature error'
-plot [5:120]'< sort -n -k1,2 log' u (0.8*2**$1):($7/2.5) w lp t "Max", \
-             0.6/(x*x) t "Second order"
+plot 'La-12000-6-1' w l t "{/Symbol D} t = {/Symbol D} t_{ST}, SSVM", \
+  'La-12000-6-15' w l t "{/Symbol D} t = 15 {/Symbol D} t_{ST}, SSVM"
 ~~~
 
 ## See also

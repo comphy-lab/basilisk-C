@@ -1,4 +1,4 @@
-pristine:69f7a7eee39a400d06cae9bdc69f3c97eb83e55a66e7a2c5f30a375d36341770
+pristine:0432f5f70e92bbc006eb9a756ecaf3b492f149184f14acd89917977d3384373e
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -13232,3 +13232,84 @@ Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**2026081321305
  Ignore-this: 3934066509f36777848f2b01fc30b35b797ef034ed08a1c988700941a66f6aca82d894b28dc094a
 ] 
 hash: 0000000388-bea11e95c042214cb919332403b059a82b6aaefd252609ba3ef394abf9b5a572
+[fixed: eta was assigned without translation of origin point. Added CHECK_PARSEVAL flag. updated comments and the example
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260814100044
+ Ignore-this: 67d75d9f828e37a6cb40703dd3c7f2a
+] 
+hash: 0000011577-62ca8729923a2838901dbd48e0b947e31f6e7a75ba1574aed1898439561371b4
+[cleaner assignement, added initialisation of currents too (using interpolation), minor cosmetics
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260814143203
+ Ignore-this: 85009895569f90fd6148b2a9061c279b
+] 
+hash: 0000010982-fd81931a5cdcc79d62d974ae55d933426adacc410770cd18403afebc62c6c5c5
+[local copy of easystab cases, first block
+fpicella <francesco.picella@sorbonne-universite.fr>**20260814143647
+ Ignore-this: e8cc06930ca920ab70bd70a4558ce91e126a4c0ef636621414d6dabee34d92b7304b7a2de36babe5
+] 
+hash: 0000001732-32489ffc6b539fe4a3b2e6a2cebb0dbc345b553c680cec816cd1a075351ecdba
+[easystab, part 2
+fpicella <francesco.picella@sorbonne-universite.fr>**20260814143755
+ Ignore-this: c8cdb526fa613e92be54ddebd5438371541a2a9bba052af87a68e02500ee66cc413719232104afeb
+] 
+hash: 0000000591-8667ea68a54dbd30cc716f4d410d1883dedbd1be6c5d5205e4b1e151cba2c20b
+[easystab for kh_hermite 3
+fpicella <francesco.picella@sorbonne-universite.fr>**20260814143859
+ Ignore-this: 16a4cef9cb1a163a5ffda2fa0e1f436ac2727228399a163c61d23212825dec571ed8891d7182d5bd
+] 
+hash: 0000003292-b52627fdaaddaad572daa20e08a1d1d3e109511df0acef9efa6fd59b92b99d30
+[Added case for isolated rising bubble.
+francesco.picella@sorbonne-universite.fr**20260413100350
+ Ignore-this: a239f9690369559f755d407993ac2fa0
+ Velocity field is used to advect inertial and non-inertial particles.
+] 
+hash: 0000013097-4f1ae95a8fb7f03972a019e9cb7326993ddd3c63ce4c08137d8ab9d7515c3edc
+[removed local easystab
+francesco.picella@sorbonne-universite.fr**20260814145043
+ Ignore-this: 8f35fec9317319db50e2399d1df6be77
+] 
+hash: 0000005364-ebb49c34497b69fd0f29a5182134ef95128ec3c6949b92fc5a217deadecfdaf7
+[Add the reference file
+Jieyun Pan**20260814153552
+ Ignore-this: 15bed96ba0313754220bf7dc20a9080d
+] 
+hash: 0000002768-20e844a56b90ee95ee78964effe7ee49ae07db79aa34d625eb27f0adc52812f5
+[use high pass lower tolerance
+jmaarek <maarekj98@gmail.com>**20260814183834
+ Ignore-this: 4e359aef8c17e44fc58dce70afa973e1c4bcd1a269f9ff503522c11aa656cb65e2892c0e7966a89f
+] 
+hash: 0000000416-77d4676db5b861dcd3cb52fcc9c958f2e759f8505097059747648f9a8ee7672d
+[redid the comments
+jmaarek <maarekj98@gmail.com>**20260814191155
+ Ignore-this: 167139bbb846e4c7fd48b2928ce142df8271c9b47ed2ce5abed94881cbe879cb285885fd2fc0218e
+] 
+hash: 0000027261-a9bbc90caaa3a5db7df9f6bacc611541ce693627787149892327cab59cdb83af
+[first upload
+jmaarek <maarekj98@gmail.com>**20260814210952
+ Ignore-this: ba3accf64349a25be0c813666e89964f1f97ae0ac78f351a71f90b5ab4b2b26c59861ad9bb54946a
+] 
+hash: 0000002351-d57b89b1e5ea500bb403b3198242003a290e09e0a8f457fc7c0569d274ce8515
+[add figure
+jmaarek <maarekj98@gmail.com>**20260814211827
+ Ignore-this: a3824505099911236bcc4f046c566cd2e676cad1f308813d30f0454a80f6fcd436f81c3356ba02ec
+] 
+hash: 0000000795-6d3466e6054d24ecc90697a9dc2a9d1aa785e5a21aab4edcd11db1b7690bebfe
+[upload prosperetti.h locally
+jmaarek <maarekj98@gmail.com>**20260814212519
+ Ignore-this: 8a2ca5cf16241d2a0204145e6fb52d1d8ed524f0dc6d8a7784d0746f40a533c82303b3294e04f8f7
+] 
+hash: 0000020273-80c81cf0b9d7a4277b7a8930e45bf2bb49ba03f3a7cd7d5a9b92cbff9e026034
+[add reference to figure
+jmaarek <maarekj98@gmail.com>**20260814212602
+ Ignore-this: f52b67fc164545e189493cf1c2670930916081de95e2805d3f15342986ec4928b11d846539b02a42
+] 
+hash: 0000000429-5f290fc886c164c08f5458a57b4b037bfce672290aaa74c16881b8101a342780
+[add reference to figure
+jmaarek <maarekj98@gmail.com>**20260814212812
+ Ignore-this: 23064482fafebc0f334afde6ae4e551b83434245fc1919c19f8f6201410a5d1d888e18e1082eb131
+] 
+hash: 0000000335-78558fb41d2215214d45c4959e9cdcd2c9603ad4dbdccd61eb4fc5c658da2342
+[first upload
+jmaarek <maarekj98@gmail.com>**20260814213328
+ Ignore-this: fcf763ec6a4bacaa7b20a3fcb22b3d5afcc96c1c0129862b478b5a22f55b634f4089cb436016e7df
+] 
+hash: 0000002993-55b97ad57c0271d5d24392dbc2f127134d1440762eec7c1b8ed83d8a246813a9

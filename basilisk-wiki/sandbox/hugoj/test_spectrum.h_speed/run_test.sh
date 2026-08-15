@@ -11,10 +11,10 @@ NAME=speed_wave_ini
 make -k clean
 rm -r $NAME
 
-list_N=(128 256 512)
+list_N=(256 512)
 list_nl=(10 30 50 70 90)
 NLD=5
-ND=64
+ND=128
 # run once for compile and default res
 CFLAGS="-DTRACE=2" make $NAME.tst
 mv $NAME/out $NAME/out_N${ND}_nl${NLD}

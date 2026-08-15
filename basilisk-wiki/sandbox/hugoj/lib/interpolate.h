@@ -6,7 +6,7 @@
 #include <assert.h>
 
 
-void find_ibounds(double arr[], int length, double target, int* low, int* high){
+void find_ibounds(const double *arr, int length, double target, int* low, int* high){
   /* This function finds the bounds in 'arr' that closely match 'target'
    *
    * we assume that 'target' is inside the range of 'arr'
@@ -28,8 +28,6 @@ void find_ibounds(double arr[], int length, double target, int* low, int* high){
 
   *low = lo;
   *high = hi;
-
-
 }
 
 
