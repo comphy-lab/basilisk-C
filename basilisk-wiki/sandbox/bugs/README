@@ -74,6 +74,7 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 * [Minor qcc errors when compiling+linking with OpenMPI,Petsc libraries](openmpi_petsc_minimal.c)
 * [Tracer noise when there are embedded boundaries and two viscosities](tracer_noise.c)
 * [Basilisk C is not installable if username starts with ast](install_bug.c)
+* [restore() fails on multigrid when dimensions() is not a power of two](dump_restore_dimensions.c)
 
 # [It's not a bug, it's a feature](https://fr.wiktionary.org/wiki/it%E2%80%99s_not_a_bug,_it%E2%80%99s_a_feature)
 

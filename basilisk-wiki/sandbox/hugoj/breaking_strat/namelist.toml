@@ -25,10 +25,10 @@ nu0 = 0.00025  # [m2.s-2] Viscosity for vertical diffusion
 #
 # DOMAIN DEFINITION
 #
-N_grid = 256 # 1024=10 2^N_grid, number of x and y gridpoints
-N_layer = 60 # number of layers
-L = 200.0    # [m] domain size
-h0 = 50.0    # [m] =2pi/kp, depth of water 
+N_grid = 1024 # 1024=10 2^N_grid, number of x and y gridpoints
+N_layer = 60  # number of layers
+L = 200.0     # [m] domain size
+h0 = 50.0     # [m] =2pi/kp, depth of water 
 
 #
 # RUN PARAMETERS

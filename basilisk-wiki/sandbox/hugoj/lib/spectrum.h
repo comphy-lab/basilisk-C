@@ -379,7 +379,32 @@ T_Spectrum read_spectrum(int N_mode) {
 
   return spectrum;
 }
+/** ## Inverse FFT 
+ see the original version from Andrés [here](https://basilisk.fr/sandbox/acastillo/input_fields/initial_conditions_dimonte_fft2.h)
+*/
+void ifft2D(double *data, int NI, int NJ){  
+  
+  // Inverse FFT along rows 
+  for (int i = 0; i < NI; ++i){
+    gsl_fft_complex_radix2_backward(data + 2 * i * NJ, 1, NJ);
+  }
 
+  // Inverse FFT along columns
+  double *column = malloc(2 * NI * sizeof(double));
+  for (int j = 0; j < NJ; ++j){
+    for (int i = 0; i < NI; ++i){
+      REAL(column,i) = REAL(data, i*NJ + j);
+      IMAG(column,i) = IMAG(data, i*NJ + j);
+    }
+    gsl_fft_complex_radix2_backward(column, 1, NI);
+    for (int i = 0; i < NI; ++i)
+    {
+      REAL(data, i*NJ + j) = REAL(column,i);
+      IMAG(data, i*NJ + j) = IMAG(column,i);
+    }
+  }
+  free(column);
+}
 
 /**
 
@@ -407,33 +432,6 @@ void transpose_NxN_inplace(double *A, int N)
             A[i*N + j] = tmp;
         }
     }
-}
-
-/** ## Inverse FFT 
- see the original version from Andrés [here](https://basilisk.fr/sandbox/acastillo/input_fields/initial_conditions_dimonte_fft2.h)
-*/
-void ifft2D(double *data, int NI, int NJ){  
-  
-  // Inverse FFT along rows 
-  for (int i = 0; i < NI; ++i){
-    gsl_fft_complex_radix2_backward(data + 2 * i * NJ, 1, NJ);
-  }
-
-  // Inverse FFT along columns
-  double *column = malloc(2 * NI * sizeof(double));
-  for (int j = 0; j < NJ; ++j){
-    for (int i = 0; i < NI; ++i){
-      REAL(column,i) = REAL(data, i*NJ + j);
-      IMAG(column,i) = IMAG(data, i*NJ + j);
-    }
-    gsl_fft_complex_radix2_backward(column, 1, NI);
-    for (int i = 0; i < NI; ++i)
-    {
-      REAL(data, i*NJ + j) = REAL(column,i);
-      IMAG(data, i*NJ + j) = IMAG(column,i);
-    }
-  }
-  free(column);
 }
 
 /**
@@ -489,7 +487,7 @@ static void eta_spectrum_scatter (double *data, T_Spectrum spec, int N)
 
 }
 
-//  spectrum -> FFT grid -> Basilisk scalar field 
+/** spectrum -> FFT grid -> Basilisk scalar field */
 trace
 void initial_condition_wave_fft (scalar eta, T_Spectrum spec, int N)
 {
@@ -525,7 +523,7 @@ void initial_condition_wave_fft (scalar eta, T_Spectrum spec, int N)
     variance_spectral /= 2.0;
     #endif // CHECK_PARSEVAL
 
-    /** spectral space -> physical space, change 'data' in place */
+    // spectral space -> physical space, change 'data' in place 
     ifft2D(data, N, N);
     for (int n = 0; n < N*N; n++)
       zdata[n] = REAL(data, n);
@@ -574,12 +572,11 @@ void initial_condition_wave_fft (scalar eta, T_Spectrum spec, int N)
   free(zdata);
 }
 
-
+/** Legacy function, use 'initial_condition_wave_fft' */
 trace
 double wave_v1 (double x, double y, T_Spectrum spec)
 {
-  // Legacy function, use 'initial_condition_wave_fft'
-  double eta = 0.;
+    double eta = 0.;
   double dkx = spec.kx[1] - spec.kx[0];
   double dky = spec.ky[1] - spec.ky[0];
   int N_mode = spec.N_mode;
@@ -598,7 +595,7 @@ double wave_v1 (double x, double y, T_Spectrum spec)
 
 /** 
  
-## U current
+## Currents
 
 $$
 \begin{aligned}
@@ -754,9 +751,9 @@ T_UStack ustack_build (T_Spectrum spec, int N, double zmin, double zmax, int Nz)
   }
 
   #if _MPI
-    MPI_Bcast(S->Ux, Nz*N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(S->Uy, Nz*N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Bcast(S->Uz, Nz*N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(S.Ux, Nz*N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(S.Uy, Nz*N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Bcast(S.Uz, Nz*N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
   #endif
 
   return S;
@@ -779,7 +776,7 @@ void initial_condition_u_fft (vector u,
   double dx = L0/N;
   double dy = dx;
   
-  foreach() {
+  foreach(cpu) {
     int i = (int)floor(x/dx)+1;
     int j = (int)floor(y/dy)+1;
     i = (i % N + N) % N; // X cyclic
@@ -803,11 +800,10 @@ void initial_condition_u_fft (vector u,
 
 
 
-// Velocities following the linear wave theory
+/** Legacy function, use 'wave_u' */
 trace
 coord wave_u_v1 (double x, double y, double z, T_Spectrum spec) 
 {
-  // Legacy function, use 'wave_u'
   coord u = {0.,0.,0.};
   double dkx = spec.kx[1] - spec.kx[0];
   double dky = spec.ky[1] - spec.ky[0];
@@ -836,84 +832,6 @@ coord wave_u_v1 (double x, double y, double z, T_Spectrum spec)
   
   return u;
 }
-
-// trace
-// void initial_condition_u_fft (vector u, T_Spectrum spec, int N)
-// {
-//
-//   // LOOP ON Z
-//
-//   double dx = L0/N;
-//   double *zdata = malloc(N*N*sizeof(double));
-//   if (pid() == 0) {
-//     double *datau = malloc(2*N*N*sizeof(double));
-//     memset(datau, 0, 2*N*N*sizeof(double));
-//     double *datav = malloc(2*N*N*sizeof(double));
-//     memset(datav, 0, 2*N*N*sizeof(double));
-//     double *dataw = malloc(2*N*N*sizeof(double));
-//     memset(dataw, 0, 2*N*N*sizeof(double));
-//
-//     u_spectrum_scatter(datau, datav, dataw, z, spec, N);
-//
-//     /** spectral space -> physical space, change 'data' in place */
-//     ifft2D(datau, N, N);
-//     ifft2D(datav, N, N);
-//     ifft2D(dataw, N, N);
-//
-//     for (int n = 0; n < N*N; n++)
-//       zdata[n] = REAL(datau, n);
-//       // zdata[n] = REAL(datav, n);
-//       // zdata[n] = IMAG(dataw, n);
-//
-//     free(data);
-//   }
-//
-//
-//   #if _MPI
-//   // Broadcast to other mpi processes
-//   MPI_Bcast(zdata, N*N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-//   #endif // _MPI
-//
-//   // INTERPOLATION ON LAYERS
-//
-//
-//
-//   // Assign to eta
-//   foreach(cpu) {
-//     int i = (int)floor((x - X0)/dx)+1;
-//     int j = (int)floor((y - Y0)/dx)+1;
-//     i = (i % N + N) % N ;
-//     j = (j % N + N) % N ;
-//     eta[] = zdata[i*N + j];
-//   }
-//
-//   free(zdata);
-// }
-
-
-
-
-
-
-
-// Plan for new version of ini:
-// - generate currents on a cartesian grid using iFFT (check Parceval !)
-// - interpolate on a layered grid
-
-
-
-// trace
-// double wave (double x, double y, T_Spectrum spec)
-// {
-//
-// }
-//
-//
-// trace
-// coord wave_u (double x, double y, double z, T_Spectrum spec) 
-// {
-//
-// }
 
 
 /**

@@ -27,7 +27,7 @@ int main() {
   The domain is 2x2 to minimise finite-size effects. The surface
   tension is one and the viscosity is constant. */
   
-  double ratios[5] = {1., 2., 4., 8., 15.};
+  double ratios[5] = {15., 8., 4., 2., 1.};
   ratio_dt_st = 15.;
 
   size (2. [1]);

@@ -1,4 +1,4 @@
-pristine:0432f5f70e92bbc006eb9a756ecaf3b492f149184f14acd89917977d3384373e
+pristine:5924e1efb384b83b59544351222db66c1582ca0621eb547d55a53021823128bb
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -13313,3 +13313,490 @@ jmaarek <maarekj98@gmail.com>**20260814213328
  Ignore-this: fcf763ec6a4bacaa7b20a3fcb22b3d5afcc96c1c0129862b478b5a22f55b634f4089cb436016e7df
 ] 
 hash: 0000002993-55b97ad57c0271d5d24392dbc2f127134d1440762eec7c1b8ed83d8a246813a9
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815065314
+ Ignore-this: f7c012c61f117d3feb995d15556e253faec807b09cb02a914254c7a0d8d318a84da6f6bc9dce833b
+] 
+hash: 0000000306-0502ffe5dde3e0bfb4af8a9371b007e1aa35dd3c14265d2dfcf5c3551153c766
+[add of a fixme
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815070522
+ Ignore-this: edacdf599ad7a4349e8a15913ac8e16d6b20b7f0a0fc2483fa3220175e04493eb4d03237baa0b941
+] 
+hash: 0000000363-605f1804644bd3de9e9aa46def9ec4fca54380f725370b67fe00cecc1c87f3b6
+[input_fields: use GSL mixed-radix FFT so NX need not be a power of two
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260814173604
+ Ignore-this: 4389aade0876fb8188d217f892456b4324ba2cbc3ec02958e2d629a7e37022bc1ffc7cc7efd3d431
+ 
+ gsl_fft_complex_radix2_backward() aborts with "n is not a power of 2"
+ for any other transform length. Replace it with gsl_fft_complex_backward(),
+ which accepts arbitrary lengths at the cost of a wavetable and a workspace.
+ 
+ In fft2D() the wavetables are allocated once per direction and reused
+ across all rows and columns rather than per transform.
+] 
+hash: 0000003227-c94ee434fa2e325adc72797dd877ad12faad271141e906bdd6e5ca41bf9476e9
+[input_fields: fix row stride when copying the 2D perturbation into zdata (NX -> NY)
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260814174128
+ Ignore-this: 519a3706bc4c84b238e77c2172fb7fa908ddbf50fd679f57f3ba0d8a2951c123b9b4e89feab0a507
+] 
+hash: 0000000405-61b3900a7775c17562f455df80836f19b86e03a149c45d1ea79d7e6418bd98e2
+[restore() fails on multigrid when dimensions() is not a power of two
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260815083456
+ Ignore-this: 43dbe4196180674ccf1fed163372c50354edea49f527aa5c7c1d981be08378cf61f089ceafe8a719
+] 
+hash: 0000003331-1e6797fe7f7a73f174837fa2a020264a97bd684ba0f0a80382978533c33e5547
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815163247
+ Ignore-this: 6ee303f352bab9df3439685245b6a5c6f8827384771815c074a9197cfd3b566ac73b93aa6b9c5022
+] 
+hash: 0000000560-dad54ebad4d63580fd1bad3e89cc1ee367c522918566543f4eb4250e2739a3c4
+[add of a comment
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815164730
+ Ignore-this: a3c51b6c0fe82668013c71ecf04c6a9c891494107f71b7e2ec51c415fc5cdbe353e776623d0c0dd5
+] 
+hash: 0000000652-4745c4068a48491dc265dd691d55e4db591a5d768e12897c03a92cc2044a14a9
+[Transcription of the graphe from french to english
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815165448
+ Ignore-this: ff4eb39cbc7e653ee99613e0d94b95d662503106f27f05c95929c6a068190f651dfffbcdf7f6f424
+] 
+hash: 0000000917-ac2b47bd25b30e5902e0357fc9830ffc4468bec385a61f749e5ea79f604215b0
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815165759
+ Ignore-this: 1b56a12a36b2dfa569bacdfca190e53a790872fc77b9645bded9a0dde6cb1f7a175affef0f62b026
+] 
+hash: 0000000393-c2bcb79e1ec5d8054844f487f26b67e1640e828b2c942b9128491648364f4e33
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815170040
+ Ignore-this: a9773b677ad8b8aa1a88eaafdbea1d5781b629cc128dac92707f3c9aef4f2bd495331ff201d0cb3a
+] 
+hash: 0000000528-4c912923df68f2c5ff8d5f7a997e419003ed145b77561e425ed067524666701c
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815170322
+ Ignore-this: 36811dc48896b7c0b7e48feac32db02f0da4619089e677791487e16f6ee59df8d0e7f5615bc78119
+] 
+hash: 0000000526-39225e31323d444f9c2c30dc0965b5e50337e00b09db1bd4d1b3a9934f46ed79
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815170335
+ Ignore-this: d6e142528847fa625fba8b6414eddc7f3e8dd3f484e0746c54c4be605035a3e8cbdbc85c6a38fde5
+] 
+hash: 0000000526-982ea4cdcd7139868e29df295a173e7a7750a1b6d6aef5b9fa1c85823df55579
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815172128
+ Ignore-this: 1d52574d4cd6e48442393eb6ae4cb754b495c5422d396d9af472022f8c9357d53dfc91caaaa1a0e9
+] 
+hash: 0000000380-c4afc84d5104003f3c63044c77c51da2b03d9bf19f220c4af7487aeb532b2a9f
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815172206
+ Ignore-this: 8a58c2e40345d9bdc2ebcf82c1710d90c3ce30ec1ca466941f0593f752e409ee13096d5a71e8450a
+] 
+hash: 0000000378-58da801f04d4c23eb84714f49534bf483d9046de0973a768e13f669d53a3b35c
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260815172213
+ Ignore-this: 7866cd46936f7bff17337f07eb56e95c3a28d2968807b25c6e7e884272b0d8370963cabe6204543e
+] 
+hash: 0000000378-6c02c9888a72e61d32d82c24b2658ca0a0ad516be16f12acfece58f241d1a072
+[non-dimensionalized cosineargument and added 4th parmeter to mybiruqdratic function
+thakurdesaikaustubh <thakurdesaikaustubh@gmail.com>**20260816122252
+ Ignore-this: ddfde17d8a60bac353464e11343e1826122b42b7e5eb65550e39939aa1648984f4c22a7a5cb60f5
+] 
+hash: 0000000539-1bfb9dd886a70ff41df056ee565304f6682fb2665782cc6804921c26c597652e
+[typos
+pyl <pyl@ccr.jussieu.fr>**20260816132125
+ Ignore-this: cc514749bb5472dfc5c144d0f75769e3dfd747a6620612a39c0f156d6432da46261275a79a1ef557
+] 
+hash: 0000000389-c53fe3eece98595a5cc893e89dfa5f794fc50d68840694faf93e35ca918c819e
+[OK
+pyl <pyl@ccr.jussieu.fr>**20260816132219
+ Ignore-this: 217a7b0b11d2cfaad7821939a3ad2e0a2bf5449b5ec0e47162c4d6c3c1ffe8705fe1340e4dd7b04a
+] 
+hash: 0000000377-dbb049b930872fbd29107de2f49a450a05f30c5b840005031a4cd7a6b06249a9
+[typo + non local
+pyl <pyl@ccr.jussieu.fr>**20260816132503
+ Ignore-this: a84e098c9ff25e2e573cae4701dc2efcb57ee020bbe9a5470dd04a7f3918223035380887eb085cc2
+] 
+hash: 0000001208-5bd6845997d3192c42a554c6a7c3169d07f41f6ac01e1897b5977f1d016a249f
+[new code
+Louise Gally <louisegally@gmail.com>**20260817141211
+ Ignore-this: 9ac7ada784d9ae9114a3f75052aa417e7cae45020f4107886cee21319133b35e0aa179cb100ed385
+] 
+hash: 0000005869-499a4d3ac16f9d41e73922c64625de57f3e415483bb9f7744ffa3800a256cb0a
+[test g flag
+jmaarek <maarekj98@gmail.com>**20260817172428
+ Ignore-this: 948fc20dce0634c038170e9b60e351c1faa003d9a3532315f7dd14cfdb1ee4da22cb949e7f3e04f3
+] 
+hash: 0000000290-e1671190eac866fcb8e478bb3b6338d50b7f4f491f80ffa0a17a5c19698b89fe
+[revert
+jmaarek <maarekj98@gmail.com>**20260817172612
+ Ignore-this: 72b6b47d89374d36d00ebf49b496dd1ebaf028963bfdeb2a192fbf29778778e8756b2af111ce3cec
+] 
+hash: 0000000285-cbad12d110c45a84ddd232543ab12a276fbc4257f333c235fc3166ca3aa9b829
+[try gnu99
+jmaarek <maarekj98@gmail.com>**20260817172736
+ Ignore-this: a1e0de5ca99b087357a55720ee6cee2427a33b93ecf666044c8273427a9871f507c3d6e63d6855c7
+] 
+hash: 0000000307-390744134dd469bf4a7004b0ab1b6b1c0b4eeb6cf5765a2a2146d2825de3c511
+[rever
+jmaarek <maarekj98@gmail.com>**20260817173012
+ Ignore-this: 430029c9d53d03ece461105f73f7f3664b1a9c13c976405c6fca07d6b5bbad8d6343e6642e3ff9df
+] 
+hash: 0000000303-8c336bacdcd5be8f8bf5fe8be62d0c800db9c0d73c63d2e69c1d75642b1cfc7a
+[change order
+jmaarek <maarekj98@gmail.com>**20260817173713
+ Ignore-this: e80329fc350330ee7d4ec3dee5e0093db9baa201db1da3fa5acc50e654f97bf5625c061beabd6a27
+] 
+hash: 0000000313-b6beb655a338878144128ab17ac0fd8874ef9099c23945cf6b412d9c769e2f05
+[gcc c99 std
+jmaarek <maarekj98@gmail.com>**20260817174449
+ Ignore-this: 447da5c4dd4e039a99f3d81ce04fed1ee3b00d5a14720aa7a6a1c96d49fabcee23d3dd97f9d6a60a
+] 
+hash: 0000000308-59a33cbe33e8e6adf331eb000f8f37835bac646cb1c383469e5a2c61eb722da1
+[different lines
+jmaarek <maarekj98@gmail.com>**20260817174918
+ Ignore-this: 8cd43e8c5f8854d1bb312fb9ea1435ad9e94a1a6371c21ee764030e097db8047a783c2fafc59af43
+] 
+hash: 0000000333-a3d9ce7abd56e53e6995d41a7c227182bf01aba6d8f9aef747871efa848952ea
+[test
+jmaarek <maarekj98@gmail.com>**20260817175017
+ Ignore-this: c5a3f1f0beb3bd7f728d39b0895ecb31302adb2499369663a904ecffa59608dc1d873eaba568fc2e
+] 
+hash: 0000000283-cf28a5243d4ba4dc28fe5402db83516fabbafbf926153699046c6e023c530a8d
+[try gnu99
+jmaarek <maarekj98@gmail.com>**20260817175043
+ Ignore-this: 33da716c17a6ba0d579a0205ff484013e5e1a82a72b3aefdc6f28a7d59dc7d2013b9bce4944845
+] 
+hash: 0000000255-66a14970224bb59c9803ee5a246c59d1be519479b44c12ad95c4e8c15abdbb01
+[try gnu99
+jmaarek <maarekj98@gmail.com>**20260817175244
+ Ignore-this: 634e649637be366ad4f360dab6b55813a325033cb13d3846fa9fc1340e923f7c2c1543420bf7538e
+] 
+hash: 0000000288-86238273b547d908640b09462a85802a5fd5ea394d3eb7ab5827153e9b46c1ba
+[revert
+jmaarek <maarekj98@gmail.com>**20260817175720
+ Ignore-this: df68b4ca438d7655a1f329e726705a327bdf26c805db1f69e5c221991b71ddef07e4078dcb3782d8
+] 
+hash: 0000000233-1043b5a40ec52cb8be69056efb98441089d0c263259be2866b34c147fdc362a6
+[save
+jmaarek <maarekj98@gmail.com>**20260817180627
+ Ignore-this: 4feca2e63c72ea38bd61846eafb3c9a834bb2c060fc66c89381ccd88f75d917e506d8bcda3d6e1ac
+] 
+hash: 0000000271-6a233d6fe6ef7b3cde083f38841df6dd2466bb1454b7bd37e80ad7df86099085
+[revert
+jmaarek <maarekj98@gmail.com>**20260817180725
+ Ignore-this: b02e59d4d0f41d7c82dbbb6c41c3e658c0426eb8b1ef0ef3cf2bd3aff78ca50de529fa2426503e86
+] 
+hash: 0000000273-a05a8e3d26b27404ef571607622a6018c2b58e4739457237170a41e11bd03082
+[use g flage
+jmaarek <maarekj98@gmail.com>**20260817180748
+ Ignore-this: f71d4eec05cbf300e1b4801fc054724ad0616ef6dfe2ba3a502af9dbbf4926db2f85f9cecc009055
+] 
+hash: 0000000286-147e1fb7038ae17f6afe9a4b312ba1800c16cf4751c8431b9cd71b9c230b8e33
+[revert
+jmaarek <maarekj98@gmail.com>**20260817180931
+ Ignore-this: 1ea2126ed286733a22dd10805eb107e144c2ff141628abf7b851aced1ed4bd0124e04bfaf5287cb5
+] 
+hash: 0000000281-1885a4d95baea6db4c638d3a8286408179eeaf5ab18ceadfdfe8c643d0c18e05
+[use standard redistance
+jmaarek <maarekj98@gmail.com>**20260817182121
+ Ignore-this: 31d0a0082ec61e68b883aad7baa0c6c49e99c33b69a38d0849419d4de4aa1759fe15f669c89b63df
+] 
+hash: 0000000286-e7be85269191d1fdc91f4555190a8112a7c38e2b3ecbbde044a6860cc7d48edb
+[Deleted using web interface
+jmaarek <maarekj98@gmail.com>**20260817182138
+ Ignore-this: df0d45f02cf7de052307f97d0737f604fe056a5bd41037e4e08f266298570f8d02d5953752a8709
+] 
+hash: 0000010648-f0d0f9f5f27326e10ee8d5d6414795d512d0cd2d2b226b3a0f39798196f7a76f
+[upload redistance.h locally
+jmaarek <maarekj98@gmail.com>**20260817182635
+ Ignore-this: 7ddc95ee7e957a2c50338fc6b6ab35d80e766235122a4191465d3f71866f72baa213b0ac3607d1ac
+] 
+hash: 0000010654-bf4112eff867db62c0092a751f99153471a2cde9bac39388460240c9328540e1
+[leave a note saying there is currently an issue with results when running on Basilisk server
+jmaarek <maarekj98@gmail.com>**20260817190721
+ Ignore-this: ff75f803b40a44ace47e822e941228cdbacc3f2571e9ac020c5771674be7e9688f44983623a4684
+] 
+hash: 0000000451-575d7d702cdf9569d453220a1d5d3247d6b60895d0f33c5ea9fa2693d2d8c9ca
+[leave a note saying there is currently an issue with results when running on Basilisk server
+jmaarek <maarekj98@gmail.com>**20260817190825
+ Ignore-this: 39f40c94c87813a4b8568fac151f8a37671702c70aaea2963bb33c99a9732ea5d509646ab21b22b6
+] 
+hash: 0000000455-82551e9f2a34612842d13175c09505ca9e25d1856669015c51c3858c95b3b308
+[leave a note saying there is currently an issue with results when running on Basilisk server
+jmaarek <maarekj98@gmail.com>**20260817192025
+ Ignore-this: 9cd4002b14b3f20be5c6d80aac898d586a31abfd61416a64260dde09db573019e2d33c13c9b76c3d
+] 
+hash: 0000000451-f05a9c6c6f7dfcb3c76d7d6f0e0645c93a3e210875de43b9f2ab86941ccd4fec
+[revert
+jmaarek <maarekj98@gmail.com>**20260818144525
+ Ignore-this: 870c24311fb6ccc9c22a8ffdf6372affc144917d4a553c7b67dad9804ed026ad8c583d614200198
+] 
+hash: 0000000281-f6fdf44fafcea5183f8dd2586b6cd19c75795278b2af3834b9011747b4961998
+[test version
+jmaarek <maarekj98@gmail.com>**20260818145345
+ Ignore-this: f2c14a4f23b9ad3f5f1ec454330f182617809675b151ef1b502b678d475897de426cdf76db6749c0
+] 
+hash: 0000000407-a37bce4ac791f19fca83d7431f032087c62445b1f1b101a72035fa2a71e71f47
+[compiler version
+jmaarek <maarekj98@gmail.com>**20260818145630
+ Ignore-this: 40b8c73cda91b7f321e44653254923e1369366cc9a1c92a12a06ac7f2eb796e7aa9da0c93ef1c69c
+] 
+hash: 0000000311-183aa48257b9932f21b3bdd01c88d69fe41256a9b2a8903e0f8f60eb661cdffb
+[add log
+jmaarek <maarekj98@gmail.com>**20260818160442
+ Ignore-this: 43d75e8af4c2068e3f26b3dcd6ba174bc33646d7b70254f04f00413670128f4ce9dcaa24354ebdb9
+] 
+hash: 0000000254-fce8f834c27875f6822a669aabb93fa63b612de1a26b5f6fa7449794c1081bc7
+[simplify
+jmaarek <maarekj98@gmail.com>**20260818160529
+ Ignore-this: ab2ce80fa0fc974a950f70db6dec3ab593a61d80cebd49ce63f6e73d6b408c55734215a1e21f183e
+] 
+hash: 0000000304-75b4bdd81799b0ec41d30486945584b6eb3f1eaede24435745726a0a13cf1087
+[Deleted using web interface
+jmaarek <maarekj98@gmail.com>**20260818160734
+ Ignore-this: 4004944c2b3f7ef7b8f4926c98b63c7b2c30adaded210adb032c771cee1c6c740e825d62724564c2
+] 
+hash: 0000000466-1eb5f7bab68fbf56909c89750c75287af8abe19fea1c55d8026bcc589f2e86e9
+[change compiler flag
+jmaarek <maarekj98@gmail.com>**20260818164208
+ Ignore-this: d93aa0246aa02cd43e4193dbb43fd67b2fb0f263d3df595e37240dfeb30a16f649a2edadf6bc6971
+] 
+hash: 0000000350-1fa0580988c19d02eed67d64755bf86b0b3d950fd32ac1bca1c0d78bf91f25f7
+[change compiler flag
+jmaarek <maarekj98@gmail.com>**20260818164543
+ Ignore-this: 72f62820504322c1398f44c85c1586f7369a112e89dae5a49b8309f7398e8e8a1a5aed49dcabe840
+] 
+hash: 0000000402-e93ccca902ecaf0068427bdcb4855f749c04f9edd0626626ef8aadc27aad1cae
+[change compiler flag
+jmaarek <maarekj98@gmail.com>**20260818164714
+ Ignore-this: 6fca72a674fb22e20a2a87fb8635dd74a2cc354d1fd7dfc02a123150fd48e143406b282c72755592
+] 
+hash: 0000000402-1ea5a7d5e7d8f87a5271edbf36ea7029e9db09a4930b7b70e5a40a467f4f6f25
+[change compiler flag
+jmaarek <maarekj98@gmail.com>**20260818165005
+ Ignore-this: 7f413eaccc02bca4b78acb3209fe9ae967d57770b1001e5bae20be3cd793bc97474c904e124b108f
+] 
+hash: 0000000402-8f80926451300a1a6d5263a52069ed6cc93f7ac00cf1f5d6498f709d9cfc9d2c
+[run all
+jmaarek <maarekj98@gmail.com>**20260818165751
+ Ignore-this: 95ba976df5d6261fc3afcc0bed17a26bd23a9b6a964761a8ef48f630ff31c86b15ebd9b48307df0f
+] 
+hash: 0000000286-322f1b69cf6bc5e4675a30c8fe4219b3e8db9aab739623f0a5f2377554b1c12a
+[run all
+jmaarek <maarekj98@gmail.com>**20260818170513
+ Ignore-this: dff386f23eec0b39811e3273476c4c30aa0ca95bb462b119dcb6727097466a5b833af70f619ef4ba
+] 
+hash: 0000000303-8f78d77ebff6589c5050d42e1ed723f69a183b97e658511ad3e47c7c342eeb1b
+[run all
+jmaarek <maarekj98@gmail.com>**20260818173526
+ Ignore-this: 502ed3af3b6aae8809fc4cc73ec7d6d964dd088b221c42468cc437f40f886ad1ac4d9a160ac31f47
+] 
+hash: 0000000450-200a5ab8d128a19f3de2f0893b1e91ebf5be4349fdd7e0e1779a5ac3cbe45e11
+[Creating my sandbox
+mnunez <ms.nunezaguayo@ugto.mx>**20260818175415
+ Ignore-this: 18953b09aa031e4f0aa114ecc12fb1aa18c71dcc4e05d77a1644ce642dd73e956ea77256849e336a
+] 
+hash: 0000000307-b1eb1c99f3b5987bf0fddca1a7664152b4fadb0f8e97e48c2327f17e32981a87
+[first upload
+jmaarek <maarekj98@gmail.com>**20260818175512
+ Ignore-this: 6bacf0f152b22914f47f5c4262e9d60d3839f77d1f88b1429f30d876e59afdd16858c4584dc3da15
+] 
+hash: 0000005613-dfff2429c79c4ce9b8a4bdf0fd0a71071182379326c3fc3fc8ba0cce81d89f8d
+[change figure
+jmaarek <maarekj98@gmail.com>**20260818175634
+ Ignore-this: fcdd432d4da1f8df5059673588bbce011fd991b652f44aa1269ccccfba34febefad722d8c4913e56
+] 
+hash: 0000000523-6da2bf905bb58151d7f05af18bb351b02a3caa4a7aa9fedc6d1b329c7f283cf3
+[add fixme note explaining compiler dependent results
+jmaarek <maarekj98@gmail.com>**20260818184351
+ Ignore-this: 13b04a0f4dd3a0b38b60849518ba910987be8c878806c83cd0e5c7fd0c5c8a8b79b3587eaf82dc11
+] 
+hash: 0000001020-cb5e12df1263168ffff4a6df55350e1165ffef354f568cf92cab7af8e16bb7bf
+[add fixme note explaining compiler dependent results
+jmaarek <maarekj98@gmail.com>**20260818184417
+ Ignore-this: 2801e1d58fb3ca9fe6db1aec98dfb6404cad8aebc18edaebca79e58cc6b03316a5e1149568d25728
+] 
+hash: 0000001093-68cdee094289a5ae39c048e2ec1f179e1950d4f4c945be13662e775943131af7
+[add fixme note explaining compiler dependent results
+jmaarek <maarekj98@gmail.com>**20260818184442
+ Ignore-this: 1afe4adce4b9c5ad66511b5b4a406a089e3d851ab803e5e9787d60b9b57176a97ccc3cb79d32b3dd
+] 
+hash: 0000001030-20c8121f4b0f63a62eeafd7eb8b71eb68b4d6c428cce93c7b91e26c9b7b39279
+[add fixme note explaining compiler dependent results
+jmaarek <maarekj98@gmail.com>**20260818184508
+ Ignore-this: 42ec6ac1adfdf4793aebac507e9dc0113261b5b21e5fa3196e3205b6e7058e247d2e8881d185a26a
+] 
+hash: 0000001035-7ca60c21d44fadcdf897d7ac09786f6d2465c616cb1078b1c0b76e245c7de802
+[change comments
+jmaarek <maarekj98@gmail.com>**20260818223457
+ Ignore-this: 745c89928c86567e3fbf0eb9f9b786bae8540e8dd731a4abfb799148761e36e4e2890fe9204cc337
+] 
+hash: 0000000621-fc08762dfc3eec83c0d172734448be012f4e48c4a390eec6f9930ece166922b8
+[change comments at  the top
+jmaarek <maarekj98@gmail.com>**20260818224213
+ Ignore-this: 39cc2ab7f9072ab82804d3911188d12844367304ff377578c1bb2b175556c78b17aac940e0509b37
+] 
+hash: 0000001196-8c7430c1cf80c34b8f9c66a2f960a359f67f2917af8359cd91ecf88935d68192
+[fixed some typos in explanation
+jmaarek <maarekj98@gmail.com>**20260818224351
+ Ignore-this: 3bedb7fd5bfa1f8f702d7a4dc50f1ce9ed51c9c3fd23c578c9b699389d772a4933ec969ccb54e5a6
+] 
+hash: 0000000981-e675f628985359d849ab7c7d29100f00a41961077594658f3f94ad04a2981d59
+[Deleted using web interface
+jmaarek <maarekj98@gmail.com>**20260818224447
+ Ignore-this: 87e07fc0b7429ee9e59ceba3be72390a076c7c4d8c16196bee9bb9f18a4f594e6bbb77d778010222
+] 
+hash: 0000010653-626563f46d07c98411a6798c383a175e620d0414d621836afb6dae644cf03f03
+[updated my code for new init method, small tweak in spectrum.h, fixed Lagrangian case of post proc
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260817112558
+ Ignore-this: 964711de2804627d3313f26018e8f6b2
+] 
+hash: 0000002053-ea277ebae63be06cae3ddb351cb28c38ff3d187d9cd79a910d559d78752cd493
+[better comments
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260819070011
+ Ignore-this: d69d2c9241bd17823c5d984d39688387
+] 
+hash: 0000003977-954de3e41a70d145c394703dd1b565c722cdfb205f280681ec17851dc1f54bc4
+[string example
+j.a.v.hooft@gmail.com**20260819092038
+ Ignore-this: 2bcca96f28699e7878d28ee6b634344fb133e80f05138e75749fe18516f8ecc5993aa9e4f1573d8a
+] 
+hash: 0000002211-a930ea9f3ca9109c65bf7149f83ab4f9a294b384f4a8fc5108bd9abb1a5f36eb
+[link image
+Antoonvh <j.a.v.hooft@gmail.com>**20260819093638
+ Ignore-this: 4d8dd9f5ab9e7c86a5a134f50a11d694e736d46c2145247ee6400ce631b229d4812edf56262679d0
+] 
+hash: 0000000352-f0e3127f0d0f631cc80ab4df702699e338d916d8bd34a211b43412a204cbb22c
+[60 fps movie 
+j.a.v.hooft@gmail.com**20260820074201
+ Ignore-this: 3e97baae48b1b7647a465ddec58750bbe41297e9fc7b77df2f6a7a5025c84b96c2e24476aa0b5c5a
+] 
+hash: 0000000535-3441f18a6b89122b7d4c0328b14ab012c8746857bbde34e63fdd8b077c7dc318
+[2 more instruments
+j.a.v.hooft@gmail.com**20260820123624
+ Ignore-this: a5aaed18f20c15138dc779cd8e6ad0812b0c271e82dd9979be5ec1702117a91a5feb7e0b43fa6928
+] 
+hash: 0000003771-34e20ec78899b8b2ab9d2fc5e9ea2493910fb2edaf4971258b084acc82b33242
+[added attack analysis
+Antoonvh <j.a.v.hooft@gmail.com>**20260820124833
+ Ignore-this: 850f07040b7c44a8a0b73ec664582914c00ab542bf85a6d01a55fd5aeeb808022aa812a21d4a1d15
+] 
+hash: 0000000436-d5097a70e53d3b0fce9f99054a5d259649670c8fcef81c785325cf9bf3102d2e
+[found bug that caused compiler dependent results. wrote note explaining fix
+jmaarek <maarekj98@gmail.com>**20260820202246
+ Ignore-this: a44464f0db0554e205c3b4a90172a08cedb8106da8f68114447222471992b524f606abb1e9dd1b3e
+] 
+hash: 0000013137-544345c9f81514affee3d6fe8635b6ee1f2b6322f9db11a427fa2794c4b4b59a
+[remove compilation flags
+jmaarek <maarekj98@gmail.com>**20260820202430
+ Ignore-this: 6799f6337a3cb2778be006bc5293ba316ec537adec88e22b1cbe9af3e49f8fd4a0fb5ab5908c16bf
+] 
+hash: 0000000352-ced12cd478ab1061a498d7fdddc378fa3b751c18c682297fde73eda3fef85447
+[found bug that caused compiler dependent results
+jmaarek <maarekj98@gmail.com>**20260820202535
+ Ignore-this: 66a008a5d15915922a37520545b29a80720f0df9b8a301b85521c2f070ffdbaf6fe0a4cd674d4eb2
+] 
+hash: 0000000895-d14e69f61852bbc336974cd7c0142c6d594e5319670f09927be6bdd0f5dc1fb0
+[found bug that caused compiler dependent results
+jmaarek <maarekj98@gmail.com>**20260820202908
+ Ignore-this: 99e00e3841bd5fc19c58a7cde0c790c004b144bc7ccb81e55ba49eb7f6b6d0b1fe3938be18ebf06f
+] 
+hash: 0000000896-cfbe909ad9643204006150379d1f5ca92358166eb16935f2e20d1c0031a62058
+[found bug that caused compiler dependent results
+jmaarek <maarekj98@gmail.com>**20260820203523
+ Ignore-this: d1cfb798b8e4262c4474cc854f83e4110f2678ff83d25ac70446865ad234867a714ea8e8e22f8c9b
+] 
+hash: 0000000905-884ce90e84fbb4c1f3df12cda81c614fdb0f029a56b61a2201a1f4052b56f85c
+[found bug that caused compiler dependent results
+jmaarek <maarekj98@gmail.com>**20260820203837
+ Ignore-this: 459bebb6192cd988602c5da93cad71040f23b5e447521670724368646b89c45e201a5ae33d550824
+] 
+hash: 0000000900-2fc6054888126a7cd902a802fffc1b2bbce4b0b1ffe9da7c5f7cd38b16d0ba42
+[creation of 3d cylinder code
+walmetzm <malo.walmetz@gmail.com>**20260821105114
+ Ignore-this: b41d638641e78b40365acc387631faa6d429c754d93da6e979fa71e16b11bb8f0740e989e33c9d9a
+] 
+hash: 0000008692-9f9f926cc71b05ac31f05d38008efeaf0fb14bbf30c688e1996a1e49c1cd315d
+[creation of notch code
+walmetzm <malo.walmetz@gmail.com>**20260821105902
+ Ignore-this: 954ddd43cb783fc1bbc8a17d505c6e1eb1b9f9e7e6ad535fbe6df1c16b78c1c29db8580ae36a437c
+] 
+hash: 0000007051-93b7e4a68445224ba099c143563f309cff279d705a2dfab51f2c62bca173eb5a
+[ajout de notch et 3d cylinder
+walmetzm <malo.walmetz@gmail.com>**20260821110717
+ Ignore-this: 780704277dea33bfa8dab7ef5ad190a4a69e0288e0efa614655804e016d9e458a614c9ba17f85b7d
+] 
+hash: 0000001188-117bfa9fed03adaab76c1e725bbc313a1b3fbf16c1bed86f4e50b6e9d1621a4e
+[First iteration of personal sandbox repository
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821173421
+ Ignore-this: 465a050dacf7bad5fbe8f57a2615eaf5558902c25466cec8bcdbfad6b274b9f20969682ee1388881
+] 
+hash: 0000000516-7bc72a7a702617cf0b95f4e0a83bef62ecf8ed8538b20ccd4c7b1ef902ae12dc
+[Deleted using web interface
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821180735
+ Ignore-this: e26ce1b4c841ea6dc5f46f855c4301ba81b123627d01beb157fea61df1e016ecbe8ab95d3509ea69
+] 
+hash: 0000000496-7fc83907c18f94c0df7125529635c73aad673c2cf5b8fb17f61fe1103e3ddc32
+[Creation of project page for Hele-Shaw flow in curved channel
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821180743
+ Ignore-this: 223e7d8fd0ea771cc80039441d9695bed771df4d445bedcffbdd8a25a6f27c832e66376fff7c7270
+] 
+hash: 0000001450-70d684228bf064203268328973ee38b0d740c1488c2d2e1a19de14f9ab0e0153
+[Deleted using web interface
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821182719
+ Ignore-this: a1e6279a159d8b0001b856ef5d72736dc6156d8366f0913724aeb2dc196384eb122e186ff6a25ad
+] 
+hash: 0000001378-e33d47bee6468fc7f583c2847c153e0f25233cf34ebe7ae67befe41f4e6148f6
+[Creation of anicolassoutourina sandbox
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821183600
+ Ignore-this: 76de87e58c28dc4f968e6964fd46a3039bcd406995c13790be8087f8c593cec6ab3fdfb2c7084089
+] 
+hash: 0000000643-3c50a64923507c52f9f118aeb8e1f5d20ba923f252c7caad32fa4a37b4ce408b
+[Creation of project directory for curved Hele-Shaw bubble flow project
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821185539
+ Ignore-this: b08bcec0fbeacfb4224cb029f4086eb7c66a2b8fac92368f1ff818145420211cb7ff12b20b86f8e6
+] 
+hash: 0000000297-d6a21362495540377f7cf0b7ac3bd1122e3a6b90be303bd2667aa6d3b146f61e
+[Upload of raw code for 3D Curbved Hele-Shaw code
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821190402
+ Ignore-this: 3c40f0a8df2c2732b1dc084562c0a31fb59b91ab8dbadcf67b5671eeed2ba3c9b2edb604b568b8ec
+] 
+hash: 0000016568-955efe162093b9bc4c047b13b108bafee8becb281429c3f9689e02c2e8b558d2
+[Upload of raw code of helper functions for tracking of bubble center in 3D
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821190535
+ Ignore-this: ba9446cd42ddf703cf8da32095ca07733a512d5aea21b181253c75ad4e983bd83a79f5b7db31ed01
+] 
+hash: 0000006978-6500c24dcf695c08d874b7a568cdc80e1b738387ecbe14943bae76ae9b8e0cad
+[Upload of raw code of helper functions for tracking of bubble center in 3D
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821190653
+ Ignore-this: 3a3a858890859cf387e997c0d30740a2ed56bc103fb91a2bd4ed382897a324abbe3716c934ff1862
+] 
+hash: 0000007095-8af0aa81e63408517ecadda45cfd3ef9654de3ebdeedcb4a86a5f1315e52198c
+[Upload of raw code for 3D validation in a Hele-Shaw straight channel
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821190903
+ Ignore-this: 89d6b8b78b81117d3c795ecb38b805d135d13c9ac04ddac4437cc8e542e9872105610e1de1f154e3
+] 
+hash: 0000015442-cbc57fe698457541fc28b64b9e20ab45cd2f3a013b67d2c397943fa20e327fa7
+[Upload of raw code for 2D Curved Hele-Shaw bubble flows
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821191128
+ Ignore-this: 34a49349411a2b2031af222f51837725aa428d4054676f7364cff040275a147ed710c493cb11c285
+] 
+hash: 0000014090-be0d06a08d70d785590aae17c459bcb822715f27561b46c5a24f5cac4e4f5fbd
+[Upload of raw code for 2D Curved Hele-Shaw bubble flows
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821191321
+ Ignore-this: 2ded2288212a1a1a5c225d9ac25c48f9001bc7ba944d6d3a38dcffb33a71025c1b34ce796698bd89
+] 
+hash: 0000017047-447ec5e2119615bee127b7e017846815a398c0c039c77f77130528d7170953b9
+[Upload of raw code used for the 2.5D Hele-Shaw model
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821191733
+ Ignore-this: dbf79c2eec8ca3cf39c7fbed5175c4bfe91a4d823cf1803368b18d293d72eb3dca0c79e7712d1c4b
+] 
+hash: 0000016734-df5b1cd6f5b266cf221d0069e9ca3fe0f4cf1ee1ddcd6f645a6054fcbafcca58
+[First draft of description of curved Hele-Shaw project
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821195512
+ Ignore-this: 656bea9b9426386b045c16a8cc56475b0f1d41c708175afe7513480fccb3718c5718360c3de63197
+] 
+hash: 0000003099-23cd0dd1b6d05743c914721dab94ae9cb9a8db4f265132ac6e1145bfa9e60085
+[Correction of broken link
+anicolassoutourina <alexandre.nicolas-soutourina@espci.org>**20260821195723
+ Ignore-this: 8e912712634769fc627f5b68927e698d22075c6432c47f48fb20257fcc862f652cd6960512a0739e
+] 
+hash: 0000000367-2e54946a1b12a879f889e0050e618dcca2e1b9d936d5af8f0f834ebd9d49150e

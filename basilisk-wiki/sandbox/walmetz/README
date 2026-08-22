@@ -11,6 +11,8 @@ If you need a further look at anyone of my graph, checkout my [GitHub](https://g
 This parti is only made to validate the classical 2D cylinder flow, and for me to understand how Basilisk works.
 
 - Validation of a modified version of [Picella's code](https://basilisk.fr/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c) based on the (Cd,Re) diagram : [2D_cylinder](https://basilisk.fr/sandbox/walmetz/simple_cylinder/2D_cylinder.c)
+- An extension of Antoon's 3D cylinder, to try to study modes A and B ([in this code](https://basilisk.fr/sandbox/walmetz/simple_cylinder/3D_cylinder.c)). But it's not precise... maybe it would be with an extreme mesh :|
+
 
 ## About slip-length
 [link to slip-length folder](https://basilisk.fr/sandbox/walmetz/slip-length/)
@@ -26,28 +28,5 @@ We want to go as close as possible to reality, bringing up multiphase flows.
 
 - The first step to reality is a ["frozen" bubble around the cylinder](https://basilisk.fr/sandbox/walmetz/multiphase_flow/frozen_bubble.c). In itself, this case is everything but realistic but it will help us for the dynamic bubble case.
 - The first thing I tried was this [dynamic bubble around a cylinder](https://basilisk.fr/sandbox/walmetz/multiphase_flow/dynamic_bubble.c). It didn't work well so I moved on...
-
-
-# To do list
-This part is only for myself ;)
-
-Pour tous les cas : analyse de longueur de recirculation pour comparaison avec Enzo.
-Se renseigner sur paraview.
-
-SLIP 2D :
-
-- plot Cd=f(Re) 
-- bifurcation ?
- 
-NO SLIP 3D :
-
- - !! Pouvoir faire tourner haut L0, haut maxlevel !!
-
- - plot Cf=f(Re)
- - Etude modale ? Référer à Williamson
- - Condition d'arrêt
- - maxlevel variable en fonction de convergence (donc cond d'arrêt)
-
-
-SLIP 3D :
+- The last thing I tried is a ["notch"](https://basilisk.fr/sandbox/walmetz/multiphase_flow/notch.c). It needs an experimental reference (check out Santoromito's PhD). It isn't superhydrophobic but we created it to study the influence of external pressure.
 

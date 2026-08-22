@@ -20,7 +20,7 @@ void get_interp(Point point, coord * p_interp, double xinterp, double yinterp){
 #define Pi 3.14159265358979323846
 double ref_function(double x, double y){
   // return (x-0.2)*(x-0.4)*(x-0.45)*(x+0.1);
-  return cos(6.2*Pi*x+60);
+  return cos(6.2*Pi*x/L0+60);
 }
 
 int main(){
@@ -78,7 +78,7 @@ to use the proper stencil for interpolation.
       double coeff[4];
       double f_temp2 = mybilin( point , s, Stencil, p_interp, coeff);
       sumlin += fabs(f_temp2 -ref_function(xinterp,yinterp));
-      double f_temp3 = mybiquadratic( point , s, p_interp);
+      double f_temp3 = mybiquadratic( point , s, p_interp,0);
 /**
 Here we do a simple correction where needed, the coefficient for the central
 value of the interpolated field is : $(1-x^2)(1-y^2)$.

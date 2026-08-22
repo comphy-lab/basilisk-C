@@ -1,128 +1,156 @@
-/** 
-# Edge tone's baseflow calculated with the Selective Frequency Method.
+/**
+# Edgetone's baseflow calculated with the Selective Frequency method.
+Original code from [Lourenco](https://basilisk.fr/sandbox/Llourenco/)
 */
 
+#include "embed.h"
 #include "navier-stokes/centered.h"
-#include "utils.h"
+#include "view.h"
 #include "SFD.h"
 
-bid inner;
-
 double Reynolds = 150; 
-int maxlevel = 9;
-double b = 1.;  // jet diameter
-double U0 = 1.; // for top hat
-double W=10.;   // edge-distance
+int maxlevel = 10;
+double b = 1.;   // jet diameter
+double U0 = 1.;  // for top hat
+double W = 5.;   // edge-distance
+double freq = 0.067;
+double OMEG ;
+double eps = 1e-3;
+double delta_erf;
+double h, R;
+double Tramp;
+double tau;
+double ramp;
 
-/**
-We set the SFD parameters. */
-double freq_SFD = 0.0373;
+double freq_SFD = 0.1;
+
 bool SFD_toggle;
 event adapt_toggle (i++)
   SFD_toggle = (t >= 0.);
 
 scalar omega[];
 scalar base[];
-scalar fluct[];
 scalar un[];
 face vector muv[];
-double cf = 0.;
+double cf = 0.; 
 double du;
-double Tend = 800;
+double Tend = 2000;
 
-int main(int argc, char * argv[])
-{
-  if (argc > 4) {
-    maxlevel = atof (argv[1]);
-    Reynolds = atof (argv[2]);
-    cf = atof (argv[3]);
-    Tend = atof (argv[4]);
-  }
+FILE * fp;
+
+int main(int argc, char * argv[]) {
+
   display_control(Reynolds,0,1000);
   display_control(cf,0,1);
   display_control(maxlevel,0,15);
-  L0 = 32; 
+
+  cf = 0.;
+  L0 = 50; 
   origin (0., -L0/2.);
-  N = 64;
-  init_grid (N);
+  N =512; 
   mu = muv;
+  delta_erf = b/10.;
+  OMEG = 2*M_PI*freq;
+  Tramp = 50;
+  tau = 0.5;
+ 
+  init_grid (N);
+
+  fp = fopen("data.dat","w");
+    
+  dt = 0.1;
+  DT = 0.1;
   
   run();
 }
 
-event init (i = 0) {  
-  
-  refine(level < 9  && (fabs(y) < Delta));
-  mask (fabs(y) <= L0/(1 << 9) && x > W ? inner : none);
-  foreach() {
-    if (x < 0.1*W && fabs(y) < 0.1)
-      u.y[] = 1e-1; // starting the instability
-    base[] = omega[];
-  }
-
-/**
-We set initial conditions. */  
-  foreach()
-    u.x[] = 0.;
-}
-
 event properties (i++) {
   foreach_face()
-    muv.x[] = fm.x[]*(b*U0)/Reynolds; 
+    muv.x[] = fm.x[]*(b*U0)/Reynolds;
   vorticity (u, omega);
-  refine (x < W/4. && fabs(y) < 1. && level < maxlevel);
+  refine(x > 0.8*W && fabs(y) < h && level < maxlevel);
 }
 
-/**
-We set boundary conditions. */
-
-u.n[left]  = dirichlet(fabs(y) > b/2. ? cf : 1.);
-u.t[left]  = dirichlet(0.) ;
-
-p[left]    = neumann(0.);
-pf[left]   = neumann(0.);
+u.n[left] = dirichlet( (min(t/Tramp,1.))*(cf + (1-cf)*0.5*(erf((y+b/2.)/delta_erf)-erf((y-b/2.)/delta_erf))));
+u.t[left] = dirichlet(min(t/Tramp,1.));
 
 u.n[right] = neumann(0.);
 p[right]   = dirichlet(0.);
 pf[right]  = dirichlet(0.);
 
-u.n[top] = neumann(0.);
-u.t[top] = neumann(0.);
+u.n[top] = dirichlet(0.);
+u.t[top] = dirichlet(0.);
 
-u.n[bottom] = neumann(0.);
-u.t[bottom] = neumann(0.);
+u.n[bottom] = dirichlet(0.);
+u.t[bottom] = dirichlet(0.);
 
-u.n[inner] = x < W ? neumann(0.) : dirichlet(0.);
-u.t[inner] = x < W ? dirichlet(1.) : dirichlet(0.);
+u.n[embed] = dirichlet(0.); 
+u.t[embed] = dirichlet(0.);
 
+event init (t = 0) {
+  h=0.1;
+  R=h/2;
+
+  refine(x > 0.8*W && fabs(y) < h && level < maxlevel);
+  solid (cs, fs,
+         min(
+             max(max(W - x, x - L0),
+                 max(y - h/2., -y - h/2.)),
+
+             max(sq(x - W) + sq(y) - sq(R),
+                 x - W)
+         ));
+}
 
 event logfile (i++, t<=Tend) {
-  fprintf (stderr, "%d %g %g %g %g\n", i, t, dt, interpolate(u.y, 0.1*W, 0.), interpolate(u.y, 0.9*W, 0.));
-  foreach()
-    fluct[] = omega[] - base[];
+  vorticity(u,omega);
+
+  fprintf (stderr, "%d %g %g %g %g %g %g %g %g\n", 
+           i, t, dt, 
+           interpolate(u.y, 0.1*W, 0.), 
+           interpolate(u.y, 0.9*W, 0.),
+           interpolate(u.x, 0.05*W, 0.),
+           interpolate(p, 0.9*W, W/2),
+           interpolate(p, 0.9*W, -W/2),
+           interpolate(omega, 0.9*W, 0.));  
+
+  fprintf (fp, "%d %g %g %g %g %g %g %g %g\n", 
+           i, t, dt, 
+           interpolate(u.y, 0.1*W, 0.), 
+           interpolate(u.y, 0.9*W, 0.),
+           interpolate(u.x, 0.05*W, 0.),
+           interpolate(p, 0.9*W, W/2),
+           interpolate(p,0.9*W, -W/2),
+           interpolate(omega, 0.9*W, 0.));
 }
 
 event movie (t += 2; t <= Tend) {
-  
   scalar m[];
+
   foreach()
-    m[] = (fabs(y) <= L0/(1 << 9) && x > W) ? 0 : 1;
-  
-  output_ppm (omega, file="vorticity_baseflow.mp4", n=512,
-              box={{0,-W*0.75},{L0,W*0.75}},
-              min=-3, max=3, linear=true, mask=m);
-  output_ppm (u.x, file="ux_baseflow.mp4", n=512,
-              box={{0,-W*0.75},{L0,W*0.75}},
-              min=-0.5, max=1.5, linear=true, mask=m);
+    m[] = cs[];
+
+  vorticity (u, omega);
+
+  output_ppm (omega,
+              file = "vorticity.mp4",
+              n = N,
+              min = -0.5, max = 0.5,
+              linear = true,
+              mask = m);
 }
 
-event adapt (i++) 
-  adapt_wavelet ({u}, (double[]){1e-3,1e-3}, maxlevel, 4);
+event field_export (t = Tend) {
 
-/**
+  static FILE * fp = NULL;
+  if (!fp)
+    fp = fopen("edgetonefield.dat", "w");
 
-![Animation of the vorticity field](EdgeToneSFD/vorticity_baseflow.mp4)(loop)
+  vorticity (u, omega);
 
-![Animation of the horizontal velocity field](EdgeToneSFD/ux_baseflow.mp4)(loop)
+  for (double xp = 0; xp <= 50; xp += 0.05)
+    for (double yp = -10; yp <= 10; yp += 0.05)
+      fprintf(fp, "%g %g %g\n", xp, yp, interpolate(omega, xp, yp));
 
-*/
+  fclose(fp);
+}

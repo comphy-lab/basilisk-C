@@ -57,8 +57,8 @@ int main() {
     numerical solution
      */
     FILE *  fpc = fopen("Fcsilo.txt", "w");
-    for (double x =-L0/2 ; x <= L0/2; x += dx){
-        for (double y = -L0/2 ; y <= L0/2; y += dy){
+    for (double x =-L0/2 ; x < L0/2; x += dx){
+        for (double y = -L0/2 ; y < L0/2; y += dy){
             fprintf (fpc, "%g %g %g \n",
                      x, y,   interpolate (c, x, y));}
         fprintf (fpc,"\n");}
@@ -69,16 +69,16 @@ int main() {
 
 
 /**
-##Run
+## Run
  Then compile and run:
  
  ~~~bash
  qcc -O2 -Wall -o silo silo.c -lm; ./silo
  ~~~
-##Results
+## Results
  
  
- ~~~gnuplot  3D plot of analycal solution and numerical solution
+~~~gnuplot  3D plot of analycal solution and numerical solution
  set hidden3d
 sp 'Fcsilo.txt'
  ~~~

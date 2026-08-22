@@ -177,8 +177,15 @@ void initial_condition_dimonte_fft(vertex scalar phi, double amplitude=1, int NX
     init_1D_complex(data, NX, kmin, kmax, eta0_target=amplitude);
     save_data_for_gnuplot_complex(data, NX, "initial_spectra.dat");
 
-    // Perform the FFT2D 
-    gsl_fft_complex_radix2_backward(data, 1, NX);
+    /** Perform the inverse FFT. We use the mixed-radix routine rather than
+    `gsl_fft_complex_radix2_backward()` since the latter requires *NX* to be a
+    power of two. The mixed-radix version accepts any *NX*, at the cost of
+    allocating a wavetable and a workspace. */
+    gsl_fft_complex_wavetable *wavetable = gsl_fft_complex_wavetable_alloc(NX);
+    gsl_fft_complex_workspace *workspace = gsl_fft_complex_workspace_alloc(NX);
+    gsl_fft_complex_backward(data, 1, NX, wavetable, workspace);
+    gsl_fft_complex_wavetable_free(wavetable);
+    gsl_fft_complex_workspace_free(workspace);
     save_data_for_gnuplot_complex(data, NX, "final_deformation.dat");
 
     // Save the results into a 2D array

@@ -165,11 +165,13 @@ event init(i =  0) {
     T_Spectrum spectrum;
     spectrum = read_spectrum(N_mode);
 
+    /** set eta */
+    initial_condition_wave_fft (eta, spectrum, N);
+
     /** set eta and h*/
     geometric_beta (1/3., true); // if !=0, varying layer thickness
     foreach(cpu) {
       zb[] = -h0;
-      eta[] = wave(x, y, spectrum);
       double H = eta[] - zb[];
       foreach_layer() {
         h[] = H*beta[point.l];
@@ -181,26 +183,14 @@ event init(i =  0) {
     foreach(cpu) {
       double z = zb[];
       foreach_layer() {
-        // z+=h0*beta[point.l]/2.;
         z += h[]/2.;
         T[] = Tini(z);
         z += h[]/2.;
-        //z+=h0*beta[point.l]/2.;
       } 
     }
 
     /** set currents */
-    foreach(cpu) {
-      double z = zb[];
-      foreach_layer() {
-        z += h[]/2.;
-        coord current = wave_u(x,y,z,spectrum);
-        u.x[] = current.x; 
-        u.y[] = current.y; 
-        w[] = current.z; 
-        z += h[]/2.;
-      }
-    }
+    initial_condition_u_fft (u, spectrum, -h0, 2., N);
 
     // initializing diag arrays
     //T_profile[0] = Trand; // <- this passes the dimensional analysis
@@ -211,6 +201,7 @@ event init(i =  0) {
     }
     
     fprintf (stderr,"Done initialization!\n");
+    free_spectrum(&spectrum);
   }
   else {
   // Restarting from file 'restart'
@@ -221,7 +212,7 @@ event init(i =  0) {
   }
   create_nc({zb, h, u, w, eta, T}, file_out);
   write_nc();
-    
+ 
 }
 
 /** vertical diffusion on T and u,w */

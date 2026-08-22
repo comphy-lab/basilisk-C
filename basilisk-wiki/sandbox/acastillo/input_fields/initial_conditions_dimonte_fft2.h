@@ -204,23 +204,34 @@ void init_2D_complex(double *data, int n0, int n1, double kmin, double kmax, dou
 }
 
 /** 
-### *fft2D()*: uses the radix-2 routines to return to physical space
+### *fft2D()*: uses the mixed-radix routines to return to physical space
+
+We use the mixed-radix routines rather than `gsl_fft_complex_radix2_backward()`
+since the latter requires the transform length to be a power of two. The
+mixed-radix version accepts any length, at the cost of a wavetable and a
+workspace, which we allocate once and reuse across all rows and columns.
 */
-void fft2D(double *data, int n0, int n1){  
-  
-  // Inverse FFT along rows 
+void fft2D(double *data, int n0, int n1){
+
+  // Inverse FFT along rows
+  gsl_fft_complex_wavetable *wt_row = gsl_fft_complex_wavetable_alloc(n1);
+  gsl_fft_complex_workspace *ws_row = gsl_fft_complex_workspace_alloc(n1);
   for (int i = 0; i < n0; ++i){
-    gsl_fft_complex_radix2_backward(data + 2 * i * n1, 1, n1);
+    gsl_fft_complex_backward(data + 2 * i * n1, 1, n1, wt_row, ws_row);
   }
+  gsl_fft_complex_wavetable_free(wt_row);
+  gsl_fft_complex_workspace_free(ws_row);
 
   // Inverse FFT along columns
+  gsl_fft_complex_wavetable *wt_col = gsl_fft_complex_wavetable_alloc(n0);
+  gsl_fft_complex_workspace *ws_col = gsl_fft_complex_workspace_alloc(n0);
   double *column = malloc(2 * n0 * sizeof(double));
   for (int j = 0; j < n1; ++j){
     for (int i = 0; i < n0; ++i){
       REAL(column,i) = REAL(data, i*n1 + j);
       IMAG(column,i) = IMAG(data, i*n1 + j);
     }
-    gsl_fft_complex_radix2_backward(column, 1, n0);
+    gsl_fft_complex_backward(column, 1, n0, wt_col, ws_col);
     for (int i = 0; i < n0; ++i)
     {
       REAL(data, i*n1 + j) = REAL(column,i);
@@ -228,6 +239,8 @@ void fft2D(double *data, int n0, int n1){
     }
   }
   free(column);
+  gsl_fft_complex_wavetable_free(wt_col);
+  gsl_fft_complex_workspace_free(ws_col);
 }
 
 /** 
@@ -305,7 +318,7 @@ void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int N
     // Save the results into a 2D array
     for (int i = 0; i < NX; i++){
       for (int j = 0; j < NY; j++){
-        int index = i * NX + j;
+        int index = i * NY + j;
         zdata[index] = REAL(data,index);
       }
     }

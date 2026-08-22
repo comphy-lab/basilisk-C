@@ -1,0 +1,30 @@
+This project was carried out during an internship at Prof. Howard A. Stone's Complex Fluids Group, at Princeton University, from May to August 2026. The code uploaded currently reflects the advance of the coding project as of the end of this internship.
+
+This was my first experience with Basilisk, therefore I expect the code to not be up to the highest standards, and to be overly commented at times.
+
+# Description of the problem
+
+The objective of this work is to describe bubbles flowing in curved Hele-Shaw channels: while travelling through this curved arm, the bubbles are exposed to centrifugal forces, which create induced buyancy effects, bringing the bubbles closer to the inner wall of the curved channel.
+
+However, since the bubbles also deform during their motion in these curved Hele-Shaw channels, it is unclear whether that deformation is the leading cause of the drift, a consequence of the inward motion of the bubbles, or a more complex coupled effect. Likewise, the effects of the inlet velocity and surface tension are difficult to isolate experimentally, which motivated this numerical project.
+
+*TODO: Add graphs and/or videos of simulation results for visualisation*
+
+# Modelling in Basilisk
+
+*TODO: Add proper equations etc*
+
+## [Pure 2D model](pure_2d/)
+
+The first model implemented, for simplicity's sake, was a pure 2D model, i.e. solving the incompressible Volume-of-Fluid Navier-Stokes equations with surface tension, in the 2D (XY) plane of motion. Here, no effects of the Hele-Shaw geometry are implemented, only the curved channel aspect is.
+
+## [Pure 3D model](pure_3d/)
+
+The first model that took into account the effects of the Hele-Shaw geometry was a pure 3D model, i.e., the same incompressible Volume-of-Fluid Navier-Stokes equations with surface tension as above, but in the full 3D geometry, thus simulating the flow with the vertical confinement it has in the Z direction.
+
+## ["2.5D" model](bretherton-brinkman-corrected_2d/)
+
+To try to overcome the high computing costs of the 3D simulations, while still simulating the effects of the Hele-Shaw geometry, a "2.5D" model was attempted, i.e. solving the 2D incompressible Volume-of-Fluid Navier-Stokes equations with an adjusted surface tension *(add Meiburg reference, and Stone, Booth, Wu reference)*, a Brinkman correction to capture the effects of the vertical confinement on the liquid in the form of a Darcy-like friction force, and an interfacial Bretherton force meant to simulate the behavior of the advancing and retreating meniscii of the bubble, along with the effect of the thin films above and below the bubble *(Stone, Booth, Wu reference, again)*
+
+# Results ?
+*TODO: Not sure how much should be put here yet*

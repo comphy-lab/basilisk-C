@@ -27,7 +27,7 @@ characteristic viscous damping timescale. */
 
 #define DIAMETER 0.8
 #define MU sqrt(DIAMETER/LAPLACE)
-#define TMAX max(2*sq(DIAMETER)/MU, 100)
+#define TMAX max(1.2*sq(DIAMETER)/MU, 100)
 
 /**
 We will vary the number of levels of refinement (to study the
@@ -106,7 +106,7 @@ event init (i = 0) {
     cn[] = f[];
 }
 
-event logfile (i++; t <= 0.1*TMAX)
+event logfile (i++; t <= TMAX)
 // event logfile (i++; i <= 200)
 {
   /**

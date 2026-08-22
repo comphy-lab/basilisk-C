@@ -1,5 +1,96 @@
 #include "heights.h"
-#include "redistance2.h"
+#include "redistance.h"
+
+/**
+## Determinism helper
+
+`slp_barrier()` routes a value through a `volatile` temporary so the
+compiler cannot fold, reassociate, or SLP-vectorize it together with
+neighbouring operations (the standard requires volatile accesses to
+occur exactly as written). Several short, fixed-length accumulations
+below (squared-normal norms, weighted averages of `qx`/`qy`/`qz`)
+feed directly into the returned closest-point vector `p`, which
+becomes the signed distance `dist[]` -- and `dist[]` in turn gates a
+hard threshold comparison in `viscosity_st.h`. Reordering by SLP
+auto-vectorization can therefore flip that branch between otherwise
+equivalent compiler versions, producing large result differences
+rather than small rounding noise. Wrapping the sensitive
+accumulations fixes their evaluation order regardless of compiler or
+optimisation level. Guarded so this header and `viscosity_st.h` can
+both be included without a redefinition error, whichever is included
+first.
+
+## Compiler-dependence: what was actually happening, and how it was found
+
+Test cases in this project produced substantially different results
+when built with GCC 9.4 versus GCC 15.2 on otherwise-matched hardware
+and flags. `-march`, `-ffp-contract=off`, and the multigrid sweep
+order (Gauss-Seidel vs. red/black) were all ruled out in turn; the
+divergence tracked exactly with `-ftree-slp-vectorize` (SLP
+"superword-level parallelism" auto-vectorization), enabled by
+default at `-O2` in both compiler versions but evidently exercising a
+different, version-specific cost model. Disabling it alone
+(`-fno-tree-slp-vectorize`) fixed the discrepancy.
+
+SLP vectorization does not require a loop: it packs any two (or more)
+*isomorphic* statements sitting in the same basic block -- same
+shape, same operators, differing only in which operand/field they
+touch -- into a single vector instruction, whether or not those
+statements originated from a `foreach_dimension()` expansion. Two
+consequences made this dangerous here rather than merely a rounding
+curiosity:
+
+1. Several such statement pairs feed a `sqrt`/`pow` call (e.g. the
+   `a`/`b` transverse-slope weights in `height_closest`, 2D and 3D).
+   A compiler is free to satisfy these via a vectorized math-library
+   routine instead of two scalar `libm` calls, and vector math
+   implementations are not guaranteed bit-identical to their scalar
+   counterparts -- so packing can change the *value*, not just the
+   arithmetic order, of intermediate quantities.
+2. Every one of these statement pairs ultimately contributes to the
+   returned point `p`, which becomes `dist[]`, which is compared
+   against a hard threshold
+   (`fabs(dist[]) < 2.*L0/((double)(1 << grid->maxdepth))`) in
+   `viscosity_st.h` to decide whether a cell receives surface-tension
+   coefficients at all. A last-bit difference here does not stay a
+   last-bit difference: it can flip that branch at a handful of
+   cells, handing the multigrid solve a structurally different linear
+   system rather than the same system solved to marginally different
+   precision -- which is why the resulting discrepancy was large
+   rather than small.
+
+Bisection (function-level, via
+`__attribute__((optimize("no-tree-slp-vectorize")))` on candidate
+functions, confirmed by inspecting the qcc-generated intermediate
+source to ensure the attribute actually survived macro expansion)
+localised the effect specifically to `height_closest()` -- not
+`height_closest_x`/`_y`/`_z`, not `residual_viscosity_st`, not
+`relax_viscosity_st` (which turned out not to be SLP-vectorized by
+either compiler at all), and not `redistance.h`. Within
+`height_closest()`, every isomorphic statement pair that feeds the
+returned `p` -- the transverse-slope weight blocks, the
+normal-normalisation sum, and the final weighted-average / fallback
+assignments, in both the 2D and 3D branches -- has been rewritten
+below using `slp_barrier()` to fix its evaluation to a specific
+scalar order, which is functionally equivalent to
+`-fno-tree-slp-vectorize` but scoped only to the handful of
+expressions that actually matter, leaving the rest of the file free
+for the compiler to vectorize normally. With these fixes in place,
+results are compiler-independent under default flags (no
+`-fno-tree-slp-vectorize` required). If retested against a different
+compiler/version and a divergence reappears, treat any adjacent pair
+of similarly-shaped statements -- reduction or plain assignment,
+looped or hand-written -- as a suspect, not just explicit
+accumulation loops. */
+
+#ifndef SLP_BARRIER_DEFINED
+#define SLP_BARRIER_DEFINED
+static inline double slp_barrier (double x)
+{
+  volatile double tmp = x;
+  return tmp;
+}
+#endif
 
 double minimum (double a, double b, double c, double x)
 {
@@ -68,17 +159,29 @@ coord height_closest (Point point, vector h, scalar c, int * s)
     *s = (orientation(h.x[]) ? height(h.x[]) < 0. : height(h.x[]) > 0.) ? 1 : -1;
     if (qy.x != nodata) {
       /* Slope of each height function in its transverse direction.
-         nodata neighbor → 1e11 (interface out of stencil ≡ very steep slope). */
-      double a = (h.x[0,1] != nodata && h.x[0,-1] != nodata) ?
-                 fabs (h.x[0,1] - h.x[0,-1])/2. : 1e6;
-      double b = (h.y[1]   != nodata && h.y[-1]   != nodata) ?
-                 fabs (h.y[1]   - h.y[-1])  /2. : 1e6;
-      a /= sqrt (1. + a*a);    /* sin(theta_x) = |ny|     */
-      b /= sqrt (1. + b*b);    /* sin(theta_y) = |nx|     */
-      a = pow (1. - a, 4);     /* weight for QX           */
-      b = pow (1. - b, 4);     /* weight for QY           */
+         nodata neighbor → 1e11 (interface out of stencil ≡ very steep slope).
+         The three pairs of statements below (a/b computed, normalised,
+         then weighted) are structurally identical, differing only in
+         which field (h.x vs h.y) they touch -- exactly the isomorphic-
+         statement shape SLP auto-vectorization targets even without a
+         loop. If the compiler packs a/b into a vectorized sqrt/pow
+         call pair, it can use a different (less precise) vector math
+         implementation than the scalar libm call, changing the actual
+         VALUES of a and b, not just their combination order -- so
+         barrier-fixing only the final weighted average (as done
+         previously) was not sufficient. Each stage is barrier-wrapped
+         here to force scalar evaluation throughout. */
+      double a = slp_barrier ((h.x[0,1] != nodata && h.x[0,-1] != nodata) ?
+                 fabs (h.x[0,1] - h.x[0,-1])/2. : 1e6);
+      double b = slp_barrier ((h.y[1]   != nodata && h.y[-1]   != nodata) ?
+                 fabs (h.y[1]   - h.y[-1])  /2. : 1e6);
+      a = slp_barrier (a / slp_barrier (sqrt (1. + a*a)));    /* sin(theta_x) = |ny|     */
+      b = slp_barrier (b / slp_barrier (sqrt (1. + b*b)));    /* sin(theta_y) = |nx|     */
+      a = slp_barrier (pow (slp_barrier (1. - a), 4));     /* weight for QX           */
+      b = slp_barrier (pow (slp_barrier (1. - b), 4));     /* weight for QY           */
       foreach_dimension()
-        p.x = (a*qx.x + b*qy.x)/(a + b);   /* weighted average */
+        p.x = slp_barrier (a*qx.x + b*qy.x)/(a + b);   /* weighted average,
+							   order-fixed */
     }
     else
       p = qx;
@@ -92,9 +195,9 @@ coord height_closest (Point point, vector h, scalar c, int * s)
 	coord nn = interface_normal (point, c);
 	double alpha = plane_alpha (c[], nn);
         double nn2 = 0.;
-    	foreach_dimension() nn2 += sq(nn.x);
+    	foreach_dimension() nn2 = slp_barrier (nn2 + slp_barrier (sq(nn.x)));
 	foreach_dimension()
-		p.x = alpha / nn2 * nn.x * Delta;
+		p.x = slp_barrier (alpha / nn2 * nn.x * Delta);
 	*s = (c[] > 0.5) ? 1 : -1;
 
      }
@@ -394,56 +497,77 @@ coord height_closest (Point point, vector h, scalar c, int *s)
 
   /* Weights from h-function STENCIL SLOPES, not from the returned p-vector.
      Missing neighbor → 1e11 (nodata means interface moves sharply out of
-     stencil range, implying the column is nearly tangent to the interface). */
+     stencil range, implying the column is nearly tangent to the interface).
+
+     Each block below computes two transverse slope terms via
+     structurally identical ternary expressions (e.g. sy/sz), then
+     combines them into a single weight. This is the same isomorphic-
+     statement-pair shape that turned out to be the actual source of
+     compiler-dependent divergence in the 2D height_closest() (the
+     a/b slope block there) -- SLP auto-vectorization can pack two
+     adjacent, similarly-shaped statements even with no loop present,
+     potentially using a different (less precise) vectorized sqrt/pow
+     implementation than the scalar path. Barrier-wrapped throughout
+     for the same reason. */
   double wx = 0., wy = 0., wz = 0.;
 
   if (qx.x != nodata) {
     /* QX: col=x, t1=y, t2=z */
-    double sy = (h.x[0, 1,0] != nodata && h.x[0,-1,0] != nodata) ?
-                fabs (h.x[0,1,0] - h.x[0,-1,0]) / 2. : 1e11;
-    double sz = (h.x[0,0, 1] != nodata && h.x[0,0,-1] != nodata) ?
-                fabs (h.x[0,0,1] - h.x[0,0,-1]) / 2. : 1e11;
-    double slope = sqrt (sq(sy) + sq(sz));
-    wx = pow (1. - slope/sqrt (1. + sq(slope)), 4);
+    double sy = slp_barrier ((h.x[0, 1,0] != nodata && h.x[0,-1,0] != nodata) ?
+                fabs (h.x[0,1,0] - h.x[0,-1,0]) / 2. : 1e11);
+    double sz = slp_barrier ((h.x[0,0, 1] != nodata && h.x[0,0,-1] != nodata) ?
+                fabs (h.x[0,0,1] - h.x[0,0,-1]) / 2. : 1e11);
+    double slope = slp_barrier (sqrt (slp_barrier (sq(sy) + sq(sz))));
+    wx = slp_barrier (pow (slp_barrier (1. - slope/slp_barrier (sqrt (1. + sq(slope)))), 4));
     wx = max (wx, 1e-8);
   }
 
   if (qy.x != nodata) {
     /* QY: col=y, t1=z, t2=x */
-    double sz = (h.y[0,0, 1] != nodata && h.y[0,0,-1] != nodata) ?
-                fabs (h.y[0,0,1] - h.y[0,0,-1]) / 2. : 1e11;
-    double sx = (h.y[ 1,0,0] != nodata && h.y[-1,0,0] != nodata) ?
-                fabs (h.y[1,0,0] - h.y[-1,0,0]) / 2. : 1e11;
-    double slope = sqrt (sq(sz) + sq(sx));
-    wy = pow (1. - slope/sqrt (1. + sq(slope)), 4);
+    double sz = slp_barrier ((h.y[0,0, 1] != nodata && h.y[0,0,-1] != nodata) ?
+                fabs (h.y[0,0,1] - h.y[0,0,-1]) / 2. : 1e11);
+    double sx = slp_barrier ((h.y[ 1,0,0] != nodata && h.y[-1,0,0] != nodata) ?
+                fabs (h.y[1,0,0] - h.y[-1,0,0]) / 2. : 1e11);
+    double slope = slp_barrier (sqrt (slp_barrier (sq(sz) + sq(sx))));
+    wy = slp_barrier (pow (slp_barrier (1. - slope/slp_barrier (sqrt (1. + sq(slope)))), 4));
     wy = max (wy, 1e-8);
   }
 
   if (qz.x != nodata) {
     /* QZ: col=z, t1=x, t2=y */
-    double sx = (h.z[ 1,0,0] != nodata && h.z[-1,0,0] != nodata) ?
-                fabs (h.z[1,0,0] - h.z[-1,0,0]) / 2. : 1e11;
-    double sy = (h.z[0, 1,0] != nodata && h.z[0,-1,0] != nodata) ?
-                fabs (h.z[0,1,0] - h.z[0,-1,0]) / 2. : 1e11;
-    double slope = sqrt (sq(sx) + sq(sy));
-    wz = pow (1. - slope/sqrt (1. + sq(slope)), 4);
+    double sx = slp_barrier ((h.z[ 1,0,0] != nodata && h.z[-1,0,0] != nodata) ?
+                fabs (h.z[1,0,0] - h.z[-1,0,0]) / 2. : 1e11);
+    double sy = slp_barrier ((h.z[0, 1,0] != nodata && h.z[0,-1,0] != nodata) ?
+                fabs (h.z[0,1,0] - h.z[0,-1,0]) / 2. : 1e11);
+    double slope = slp_barrier (sqrt (slp_barrier (sq(sx) + sq(sy))));
+    wz = slp_barrier (pow (slp_barrier (1. - slope/slp_barrier (sqrt (1. + sq(slope)))), 4));
     wz = max (wz, 1e-8);
   }
 
-  double wtot = wx + wy + wz;
+  /* wtot and the weighted blend of qx/qy/qz below feed directly into
+     the returned closest-point vector p, which becomes dist[] in
+     height_distance() -- and dist[] gates the interfacial-band
+     threshold comparison in viscosity_st.h. The three accumulation
+     statements below (one per direction, each touching all of
+     p.x/p.y/p.z via foreach_dimension()) are structurally identical
+     and sit in the same basic block, which is exactly the pattern
+     SLP auto-vectorization targets for reassociation. Each addition
+     is barrier-fixed to a left-to-right order so the result is the
+     same regardless of compiler/SLP heuristics. */
+  double wtot = slp_barrier (slp_barrier (wx + wy) + wz);
   int n = 0;
   foreach_dimension() p.x = 0.;
 
   if (qx.x != nodata) {
-    foreach_dimension() p.x += wx * qx.x;
+    foreach_dimension() p.x = slp_barrier (p.x + slp_barrier (wx * qx.x));
     n++;
   }
   if (qy.x != nodata) {
-    foreach_dimension() p.x += wy * qy.x;
+    foreach_dimension() p.x = slp_barrier (p.x + slp_barrier (wy * qy.x));
     n++;
   }
   if (qz.x != nodata) {
-    foreach_dimension() p.x += wz * qz.x;
+    foreach_dimension() p.x = slp_barrier (p.x + slp_barrier (wz * qz.x));
     n++;
   }
 
@@ -480,9 +604,9 @@ coord height_closest (Point point, vector h, scalar c, int *s)
         coord nn = interface_normal (point, c);
         double alpha = plane_alpha (c[], nn);
         double nn2 = 0.;
-        foreach_dimension() nn2 += sq(nn.x);
+        foreach_dimension() nn2 = slp_barrier (nn2 + slp_barrier (sq(nn.x)));
         foreach_dimension()
-                p.x = alpha / nn2 * nn.x * Delta;
+                p.x = slp_barrier (alpha / nn2 * nn.x * Delta);
      }
   }
 
