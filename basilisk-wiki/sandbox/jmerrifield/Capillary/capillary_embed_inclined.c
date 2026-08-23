@@ -284,4 +284,5 @@ plot for [i=5:8] sprintf("angle_maxlevel_%d.dat",i) us 1:3 w lp \
 ~~~
 */
 
-//fixme :see why there is an error for angle's plot
+//fixme : see why there is an error for angle's plot
+//fiwm : try to impose a dynamic contact angle

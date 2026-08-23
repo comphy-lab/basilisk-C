@@ -7,7 +7,7 @@ If you need a further look at anyone of my graph, checkout my [GitHub](https://g
 
 # Codes 
 
-## About the simple 2D cylinder in a fluid flow
+## About the no-slip cylinder
 This parti is only made to validate the classical 2D cylinder flow, and for me to understand how Basilisk works.
 
 - Validation of a modified version of [Picella's code](https://basilisk.fr/sandbox/fpicella/cylinder_plastron/cylinder_plastron_online.c) based on the (Cd,Re) diagram : [2D_cylinder](https://basilisk.fr/sandbox/walmetz/simple_cylinder/2D_cylinder.c)
