@@ -1,4 +1,12 @@
 /**
+# Modifications
+
+Module based on [hydrostatic solver](/src/layered/hydro.h). The modifications consist in :
+
+* The definition of flags to choose the bottom and top boundary conditions, based on [Paul-Peter Naanouh sandbox](/sandbox/pnaanouh/Film_Drainage/Solver/hydro.h).
+
+* The splitting of the advection of $h^{n+1}$ and $\bm{u}^{n+1}$. In the original code, $h$ and $u$ are advected in the same event pressure, in the routine advect. However, the advection term in transport of $h$ is explicit, i.e. uses $\bm{u}^n$. Thus $h^{n+1}$ can be computed prior to computation of $\bm{u}^{n+1}$, which is useful for the simulation of incompressible free-surfaces as done in [this test case](/sandbox/spertant/Ovale_3D_incompressible_interface_larger_scale/Ovale_3D.c). This is what is done here.  
+
 # The hydrostatic multilayer solver for free-surface flows
 
 The theoretical basis and main algorithms for this solver are
@@ -46,7 +54,7 @@ in which case the tracers list is empty). */
 #include "utils.h"
 
 scalar zb[], eta, h, h_pdt;
-vector u; //, u_tmp;
+vector u;
 double G = 1., dry = 1e-12, CFL_H = 1e40;
 double (* gradient) (double, double, double) = minmod2;
 
@@ -140,9 +148,7 @@ event defaults (i = 0)
     CFL_H = 0.5 [0];
   
   u = new vector[nl];
-  //u_tmp = new vector[nl];
   reset ({u}, 0.);
-  //reset ({u_tmp}, 0.);
     
   if (!linearised)
     foreach_dimension()
@@ -557,7 +563,6 @@ must be freed at the end of the run. */
 event cleanup (t = end, last)
 {
   delete ({eta, eta_r, h, u});
-  //delete ({eta, eta_r, h, u, u_tmp});
   free (tracers), tracers = NULL;
 }
 

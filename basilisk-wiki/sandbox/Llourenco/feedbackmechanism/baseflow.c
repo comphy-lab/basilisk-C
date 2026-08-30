@@ -4,7 +4,6 @@
 
 This simulation establishes the baseflow definition of our system, acting as a stepping stone to launch the full simulations required to study the feedback mechanism
 
-![Horizontal Velocity Field ](baseflow/velocity_x.png)
 
 */
 #include "navier-stokes/centered.h"
@@ -24,7 +23,7 @@ scalar un[];
 face vector muv[];
 double cf=0.1; 
 double du;
-double Tend = 500;
+double Tend = 1000;
 /**You can pass command-line arguments to the program to easily run parametric studies and test different configurations.*/
 
 int main(int argc, char * argv[])
@@ -126,3 +125,29 @@ event dump(t=end)
   fclose(fp);
   dump();
 }
+
+
+
+event movie (t += 2; t <= Tend) {
+  scalar m[];
+  foreach()
+    m[] = (fabs(y) <= L0/(1 << 9) && x > W) ? 0 : 1;
+  
+  output_ppm (omega, file="vorticity.mp4", n=512,
+              box={{0,-16.0},{L0,16.0}},
+              min=-3, max=3, linear=true, mask=m);
+  output_ppm (u.x, file="ux.mp4", n=512,
+              box={{0,-W*0.75},{L0,W*0.75}},
+              min=-0.5, max=1.5, linear=true, mask=m);
+}
+
+
+/**
+# Visualisations
+
+
+![Animation of the vorticity field](baseflow/vorticity.mp4)(loop)
+
+![Animation of the velocity field (u.x)](baseflow/ux.mp4)(loop)
+*/
+

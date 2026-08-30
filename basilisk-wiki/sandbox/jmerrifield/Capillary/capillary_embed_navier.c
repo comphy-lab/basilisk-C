@@ -3,7 +3,7 @@
 
 Adaptation of the capillary rise [cap](https://basilisk.fr/sandbox/jmerrifield/Capillary/capillary_embed_noslip.c) modified to impose Navier slip BC on the embed boundaries
 
-~~~gnuplot Jurin's Height for $\theta_e = 30^\circ$ et $\lambda = 0.1 mm$
+~~~gnuplot Jurin's Height for $\theta_e = 30^\circ$ and $\lambda = 0.1 ~ mm$
 set grid
 set key bottom right
 set yrange [:20.2]
@@ -11,8 +11,8 @@ set xlabel "Time (s)"
 set ylabel "Height (mm)"
 plot for [i=5:8] sprintf("h_interface_maxlevel_%d.dat",i) us 1:2 w lp \
         title sprintf("nx = %d, dx = %.2e",2**i,2*0.005/2**i), \
-        19.9933 w l lc rgb "black" dt 2 title "Hauteur de Jurin 2D", \
-        19.1538 w l lc rgb "black" title "Hauteur de Jurin 2D corrigée"
+        19.9933 w l lc rgb "black" dt 2 title "2D Jurin's height", \
+        19.1538 w l lc rgb "black" title "Corrected 2D Jurin's height"
 ~~~
 */
 #include "twitkamp/MovingEmbed/embed_navier.h"
@@ -281,4 +281,4 @@ plot for [i=5:8] sprintf("angle_maxlevel_%d.dat",i) us 1:2 w lp \
 ~~~
 */
 
-//fixme :see why there is an error for angle's plot
+//fixme :see why the angle's plot doesn't display

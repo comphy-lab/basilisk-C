@@ -1,0 +1,23 @@
+Hi everyone, I'm Jordan MERRIFIELD, student at Sorbonne University (2026).
+
+This sandbox is based on my 3-month M1 internship made with Mathilde Tavares and Francesco Picella.
+
+During this internship, I studied diphasic flows and their interactions with embed boundaries. 
+
+# Headers
+
+I used Mathilde Tavares's header to impose the contact angle on the embed boundary [contact-embed](https://basilisk.fr/sandbox/tavares/contact-embed.h) and Théo Witkamp's header to compute the Navier boundary condition [embed_navier](https://basilisk.fr/sandbox/twitkamp/MovingEmbed/embed_navier.h).
+
+I made my own header to follow properties of the interface : [interface_properties](https://basilisk.fr/sandbox/jmerrifield/interface_properties.h)
+
+# Codes
+
+## Capillary rise
+
+My first test-case was the capillary rise. I used ([Aghar et al.,2024](https://doi.org/10.1016/j.camwa.2024.12.015)) as a reference.
+I studied vertical capillary rise with [capillary_navier](https://basilisk.fr/sandbox/jmerrifield/Capillary/capillary_embed_navier.c) and without [capillary_noslip](https://basilisk.fr/sandbox/jmerrifield/Capillary/capillary_embed_noslip.c)  Navier slip condition as well as inclined capillary rise [capillary_inclined](https://basilisk.fr/sandbox/jmerrifield/Capillary/capillary_embed_inclined.c).
+
+
+## Sessile spreading 
+
+Following that, I studied the behaviour of spreading of a sessile on embed boundary. First, without gravity, to see the deformation due to capillary effects, and after with gravity to see its influence on the form of the sessile [sessile_grav](https://basilisk.fr/sandbox/jmerrifield/Sessile/sessile_embed_grav.c).

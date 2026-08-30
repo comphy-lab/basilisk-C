@@ -292,3 +292,6 @@ Height of the sessile
     }
     return c;
 }
+
+
+//fixme : these two functions could be assemebled in one if we remove the dependency with the geometrical parameters

@@ -1,4 +1,8 @@
 /**
+# Modifications
+
+Module based on [surface-tension module](/src/layered/hydro-tension.h). The only modifications are the possibility to use a non-uniform surface tension and the call to our modified version of the [hydrostatic solver](/sandbox/spertant/Solver_modified/hydro.h). 
+
 # Multilayer solver with surface tension
 
 This file adds surface tension to the [multilayer
@@ -100,12 +104,10 @@ decoupling. */
 		eta[i+1,-1] - eta[i-1,1]))/sq(Delta))
 #endif // dimension == 2
 
-#define p_baro(eta,i) (- G*eta[i] +    sigma_kappa(eta, i))  
+#define p_baro(eta,i) (- G*eta[i] +	sigma_kappa(eta, i))
 #define a_baro(eta, i)						\
   (gmetric(i)*(p_baro (eta, i) - p_baro (eta, i - 1))/Delta)
 
-// #include "hydro.h"
-// Ne change rien, prend le hydro.h dans le meme dossier
 #include "../Solver_modified/hydro.h"
 
 /**
@@ -182,65 +184,3 @@ event pressure (i++) {
   delete ((scalar *){sigma_d});
 #endif  
 }
-
-
-/** Marangoni flows */
-
-// /**
-//vector du[];
-//scalar us[];
-double eta_s = 0.;
-
-/**
-event viscous_term (i++) 
-{
-
-  if (nl == 1) {
-    foreach(){
-      foreach_layer()
-        foreach_dimension()
-	  u.x[] += dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);
-      us[] = u.x[0,0,0] + dub.x[0,0,0]*h[0,0,0]/6 + dut.x[0,0,0]*h[0,0,0]/3;
-    }
-  }  
-  else {
-    foreach(){
-      foreach_layer()
-        foreach_dimension()
-	  u.x[] += dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);
-
-      double A12 = eta[] - h[0,0,nl-1]/2.;
-      double A13 = sq(eta[]) - eta[]*h[0,0,nl-1] + sq(h[0,0,nl-1])/3.; 
-      double A22 = eta[] - h[0,0,nl-1] - h[0,0,nl-2]/2.;
-      double A23 = sq(eta[]-h[0,0,nl-1]) - (eta[]-h[0,0,nl-1])*h[0,0,nl-2] + sq(h[0,0,nl-2])/3.;
-      double A32 = eta[] - h[0,0,nl-1] - h[0,0,nl-2] - h[0,0,nl-3]/2.;
-      double A33 = sq(eta[]-h[0,0,nl-1]-h[0,0,nl-2]) - (eta[]-h[0,0,nl-1]-h[0,0,nl-2])*h[0,0,nl-3] + sq(h[0,0,nl-3])/3.;
-
-      double anm3 = (A12*A23-A13*A22)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-      double anm2 = (A32*A13-A12*A33)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-      double anm1 = (A22*A33-A32*A23)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-
-      double bnm3 = (A13-A23)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);	
-      double bnm2 = (A33-A13)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-      double bnm1 = (A23-A33)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-        
-      double cnm3 = (A22-A12)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-      double cnm2 = (A12-A32)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-      double cnm1 = (A32-A22)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-
-      us[] = u.x[0,0,nl-3]*(anm3+bnm3*eta[]+cnm3*sq(eta[])) + u.x[0,0,nl-2]*(anm2+bnm2*eta[]+cnm2*sq(eta[])) + u.x[0,0,nl-1]*(anm1+bnm1*eta[]+cnm1*sq(eta[]));
-    }
-  }
-
-  //if (nu > 0 && !is_constant(sigma) && !navier_surface) {
-  if (nu > 0 && !is_constant(sigma)) {
-    foreach()
-      foreach_dimension() {
-        du.x[] = (sigma[1] - sigma[-1])/(2*Delta*nu) + eta_s/nu*(us[1]-2*us[]+us[-1])/sq(Delta);
-        }
-    dut = du;
-
-  }
-}
-
-*/

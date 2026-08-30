@@ -1,0 +1,11 @@
+# My Sandbox
+
+This sandbox gathers my research work on multiphase flow simulations and multiphysics modelling using the Basilisk framework.
+
+The primary focus is the numerical simulation of moving-interface problems, including diffusion-driven phase change and solidification phenomena.
+
+Future developments will include multiphysics models of the iron-pellet melting process relevant to steelmaking applications.
+
+The repository is actively maintained and will be updated with new solvers, validation cases, and application studies.
+
+Codes to be uploaded soon !!!

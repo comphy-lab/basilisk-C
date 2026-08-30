@@ -19,14 +19,17 @@ where $\mathbf{M}$ is a
 The lower, principal and upper diagonals are *a*, *b* and *c* respectively. 
 
 Boundary conditions on the top and bottom layers need to be added to close the
-system. We chose to impose a Neumann condition on the free-surface i.e.
+system. By default, we chose to impose a Neumann condition on the free-surface i.e.
 $$
 \partial_z s |_t = \dot{s}_t
 $$
 and a Navier slip condition on the bottom i.e.
 $$
 s|_b = s_b + \lambda_b \partial_z s|_b
-$$ */
+$$
+But other combinations of boundary conditions have been added, based on [Paul-Peter Naanouh sandbox](/sandbox/pnaanouh/Film_Drainage/Solver/cap_diffusion.h).
+A slight modification is done here, since layer thicknesses $h^{n+1}$ are transported prior to vertical diffusion of velocity, which is not the case in the main source code and in Paul-Peter Naanouh sandbox. As a consequence, to be consistent with the original diffusion solver, the thickness used in the diffusion solver must be the one at previous iteration, i.e. $h^n$, saved in the variable h_pdt in [modified hydrostatic solver](/sandbox/spertant/Solver_modified/hydro.h). 
+*/
 
 void vertical_diffusion (Point point, scalar h, scalar s, double dt, double D,
 			 double dst, double s_b, double lambda_b)
@@ -415,7 +418,6 @@ i.e. $\dot{\mathbf{u}}_t = 0$, $\mathbf{\lambda}_b = 0$, $\mathbf{u}_b
 = 0$. */
 
 double nu = 0.;
-// (const) vector lambda_b[] = {0,0,0}, dut[] = {0,0,0}, u_b[] = {0,0,0};
 vector lambda_t[] = {0,0,0}, u_t[] = {0,0,0}, dut[] = {0,0,0}, lambda_b[] = {0,0,0}, u_b[] = {0,0,0}, dub[] = {0,0,0} ;
 
 /**
@@ -426,102 +428,37 @@ into account, we first apply the acceleration of the previous
 timestep, apply vertical viscosity and then substract the previous
 acceleration. */
 
-/**
-double eta_s = 0.;
-scalar us[];
-scalar us_pdt[];
-*/
-
-vector us_poisson[];
-vector us[];
-
 event viscous_term (i++,last)
 {
   if (nu > 0.) {	  
-    /**	  
-    foreach() 
-      us_pdt[] = us[];	
-    */  
     
-    if (!is_constant(sigma)) {
-      foreach()
-        foreach_dimension() {
-          //u_t.x[] = us_poisson.x[];
-          u_t.x[] = us.x[];
-        }
-    }
-
     foreach() {
-      // /**	    
       foreach_layer()
 	foreach_dimension()
 	  u.x[] += dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);
-      // */
       
-      /**	    
-      if (!is_constant(sigma)){ 
-        lambda_t.x[] = nu*sq(Delta)/eta_s;
-        u_t.x[] = - (sigma[1] - sigma[-1])/(2*Delta)*sq(Delta)/eta_s + 2*us[-1] - us[-2]; 
-      }
-      */
       foreach_dimension()
 	if (symmetric_bathymetry){
 	  if(navier_surface){
-	    /**vertical_diffusion_NavierNeumann (point, h, u.x, dt, nu,
-					      u_t.x[], lambda_t.x[], dub.x[]);
-            */
 	    vertical_diffusion_NavierNeumann (point, h_pdt, u.x, dt, nu,
 					      u_t.x[], lambda_t.x[], dub.x[]);
 	  }
 	  else{
-	    /**vertical_diffusion_NeumannNeumann (point, h, u.x, dt, nu,
-					       dut.x[], dub.x[]);
-            */					       
 	    vertical_diffusion_NeumannNeumann (point, h_pdt, u.x, dt, nu,
 					       dut.x[], dub.x[]);
 	  }
 	}
 	else{
 	  if(navier_surface){
-	    /**vertical_diffusion_NavierNavier (point, h, u.x, dt, nu, 
-                                              u_t.x[], lambda_t.x[], u_b.x[], lambda_b.x[]);
-	    */				      
 	    vertical_diffusion_NavierNavier (point, h_pdt, u.x, dt, nu, 
                                               u_t.x[], lambda_t.x[], u_b.x[], lambda_b.x[]);
 	  }
 	  else{
-            /**vertical_diffusion (point, h, u.x, dt, nu,
-			        dut.x[], u_b.x[], lambda_b.x[]);
-	    */			
             vertical_diffusion (point, h_pdt, u.x, dt, nu,
 			        dut.x[], u_b.x[], lambda_b.x[]);
 	  }
 	}
 
-      // Compute interface velocity after diffusion 
-      /** 
-      double A12 = eta[] - h[0,0,nl-1]/2.;
-      double A13 = sq(eta[]) - eta[]*h[0,0,nl-1] + sq(h[0,0,nl-1])/3.; 
-      double A22 = eta[] - h[0,0,nl-1] - h[0,0,nl-2]/2.;
-      double A23 = sq(eta[]-h[0,0,nl-1]) - (eta[]-h[0,0,nl-1])*h[0,0,nl-2] + sq(h[0,0,nl-2])/3.;
-      double A32 = eta[] - h[0,0,nl-1] - h[0,0,nl-2] - h[0,0,nl-3]/2.;
-      double A33 = sq(eta[]-h[0,0,nl-1]-h[0,0,nl-2]) - (eta[]-h[0,0,nl-1]-h[0,0,nl-2])*h[0,0,nl-3] + sq(h[0,0,nl-3])/3.;
-
-      double anm3 = (A12*A23-A13*A22)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-      double anm2 = (A32*A13-A12*A33)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-      double anm1 = (A22*A33-A32*A23)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-
-      double bnm3 = (A13-A23)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);	
-      double bnm2 = (A33-A13)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-      double bnm1 = (A23-A33)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-        
-      double cnm3 = (A22-A12)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-      double cnm2 = (A12-A32)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-      double cnm1 = (A32-A22)/(A32*A13+A12*A23-A32*A23-A12*A33-A13*A22+A33*A22);
-
-      us[] = u.x[0,0,nl-3]*(anm3+bnm3*eta[]+cnm3*sq(eta[])) + u.x[0,0,nl-2]*(anm2+bnm2*eta[]+cnm2*sq(eta[])) + u.x[0,0,nl-1]*(anm1+bnm1*eta[]+cnm1*sq(eta[]));
-      */
-      
       foreach_layer()
 	foreach_dimension()
 	  u.x[] -= dt*(ha.x[] + ha.x[1])/(hf.x[] + hf.x[1] + dry);

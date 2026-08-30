@@ -9,8 +9,8 @@ set xlabel "Time (s)"
 set ylabel "Height (mm)"
 plot for [i=5:8] sprintf("h_interface_maxlevel_%d.dat",i) us 1:2 w lp \
         title sprintf("nx = %d, dx = %.2e",2**i,2*0.005/2**i), \
-        19.9933 w l lc rgb "black" dt 2 title "Hauteur de Jurin 2D", \
-        19.1538 w l lc rgb "black" title "Hauteur de Jurin 2D corrigée"
+        19.9933 w l lc rgb "black" dt 2 title "2D Jurin's height", \
+        19.1538 w l lc rgb "black" title "Corrected 2D Jurin's height"
 ~~~
 */
 #include "embed.h"

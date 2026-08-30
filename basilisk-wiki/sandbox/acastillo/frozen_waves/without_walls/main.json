@@ -1,0 +1,37 @@
+{
+  "domain": {
+    "width": 300.0,
+    "height": 150.0,
+    "depth": 75.0
+  },
+  "dimensionless": {
+    "atwood": 0.5,
+    "reynolds": 43.62,
+    "froude": 64.05,
+    "weber": 604.80,
+    "viscosity": 11.5
+  },
+  "forcing": {
+    "ramp_start": 100.0,
+    "ramp_slope": 0.04
+  },
+  "initial_conditions": {
+    "amplitude": 0.50,
+    "kmin": 15.0,
+    "kmax": 30.0
+  },
+  "contact": {
+    "theta0": 90.0
+  },
+  "numerics": {
+    "level": 9,
+    "cfl": 0.25,
+    "dt": 0.1,
+    "tolerance": 1e-4,
+    "nitermin": 1
+  },
+  "runtime": {
+    "walltime": 3600.0,
+    "endtime": 1000.0
+  }
+}
