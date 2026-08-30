@@ -16,6 +16,12 @@ SHOW_HELP=false
 REF_PROVIDED=false
 REF=""
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+if [[ -f "$SCRIPT_DIR/scripts/comphy-patch-contract.sh" ]]; then
+  # shellcheck source=scripts/comphy-patch-contract.sh
+  . "$SCRIPT_DIR/scripts/comphy-patch-contract.sh"
+fi
+
 for arg in "$@"; do
   case "$arg" in
     --hard)
@@ -37,10 +43,11 @@ for arg in "$@"; do
   esac
 done
 
-# Both optional bview patches rewrite the same regions of src/display.h, so
-# they cannot be applied together. --comphy-bview is the superset: it also
-# provides a runtime-overridable client URL.
-if [[ "$LOCAL_BVIEW" == true && "$COMPHY_BVIEW" == true ]]; then
+if type comphy_require_exclusive_bview_flags >/dev/null 2>&1; then
+  if ! comphy_require_exclusive_bview_flags "$LOCAL_BVIEW" "$COMPHY_BVIEW"; then
+    exit 1
+  fi
+elif [[ "$LOCAL_BVIEW" == true && "$COMPHY_BVIEW" == true ]]; then
   echo "Error: --local-bview and --comphy-bview are mutually exclusive." >&2
   echo "       --comphy-bview supersedes --local-bview; use one or the other." >&2
   exit 1
@@ -260,17 +267,25 @@ apply_patches_from_dir() {
     local patch_name
     patch_name=$(basename "$patch_file")
 
-    if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-      echo "  Skipping $patch_name (use --local-bview to apply)"
-      continue
-    fi
-    if [[ "$patch_name" == *"-comphy-bview.patch" ]] && [[ "$apply_comphy_bview" != "true" ]]; then
-      echo "  Skipping $patch_name (use --comphy-bview to apply)"
-      continue
-    fi
-    if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
-      echo "  Skipping $patch_name (macOS-specific patch)"
-      continue
+    local skip_reason=""
+    if type comphy_patch_skip_reason >/dev/null 2>&1; then
+      if skip_reason="$(comphy_patch_skip_reason "$patch_name" "$apply_local_bview" "$apply_comphy_bview")"; then
+        echo "  Skipping $patch_name ($skip_reason)"
+        continue
+      fi
+    else
+      if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
+        echo "  Skipping $patch_name (use --local-bview to apply)"
+        continue
+      fi
+      if [[ "$patch_name" == *"-comphy-bview.patch" ]] && [[ "$apply_comphy_bview" != "true" ]]; then
+        echo "  Skipping $patch_name (use --comphy-bview to apply)"
+        continue
+      fi
+      if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+        echo "  Skipping $patch_name (macOS-specific patch)"
+        continue
+      fi
     fi
 
     echo "  Applying $patch_name..."
@@ -310,17 +325,24 @@ write_lock_stamp() {
     local patch_name
     patch_name=$(basename "$patch_file")
 
-    if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-      skipped_patches+=("$patch_name")
-      continue
-    fi
-    if [[ "$patch_name" == *"-comphy-bview.patch" ]] && [[ "$apply_comphy_bview" != "true" ]]; then
-      skipped_patches+=("$patch_name")
-      continue
-    fi
-    if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
-      skipped_patches+=("$patch_name")
-      continue
+    if type comphy_patch_skip_reason >/dev/null 2>&1; then
+      if comphy_patch_skip_reason "$patch_name" "$apply_local_bview" "$apply_comphy_bview" >/dev/null; then
+        skipped_patches+=("$patch_name")
+        continue
+      fi
+    else
+      if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
+        skipped_patches+=("$patch_name")
+        continue
+      fi
+      if [[ "$patch_name" == *"-comphy-bview.patch" ]] && [[ "$apply_comphy_bview" != "true" ]]; then
+        skipped_patches+=("$patch_name")
+        continue
+      fi
+      if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+        skipped_patches+=("$patch_name")
+        continue
+      fi
     fi
     applied_patches+=("$patch_name")
   done

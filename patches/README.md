@@ -246,6 +246,7 @@ When creating a new patch for this repository:
 |-------|-------------------|--------|
 | macos-mman-compatibility | No | comphy-lab maintained |
 | local-bview | No | comphy-lab maintained |
+| comphy-bview | No | comphy-lab maintained |
 
 Patches marked as "comphy-lab maintained" are specific to our workflow or haven't been submitted upstream yet. If you believe a patch should be submitted to the main Basilisk project, please open an issue.
 

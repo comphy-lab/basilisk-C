@@ -26,9 +26,15 @@ PATCHES_RAW_URL="https://raw.githubusercontent.com/comphy-lab/basilisk-C/main/pa
 
 HARD_RESET=false
 LOCAL_BVIEW=false
+COMPHY_BVIEW=false
 SHOW_HELP=false
 MODE=""
 REF=""
+
+if [[ -f "$SCRIPT_DIR/scripts/comphy-patch-contract.sh" ]]; then
+    # shellcheck source=scripts/comphy-patch-contract.sh
+    . "$SCRIPT_DIR/scripts/comphy-patch-contract.sh"
+fi
 
 for arg in "$@"; do
     case "$arg" in
@@ -37,6 +43,9 @@ for arg in "$@"; do
             ;;
         --local-bview)
             LOCAL_BVIEW=true
+            ;;
+        --comphy-bview)
+            COMPHY_BVIEW=true
             ;;
         --help|-h)
             SHOW_HELP=true
@@ -49,6 +58,22 @@ for arg in "$@"; do
             ;;
     esac
 done
+
+if type comphy_require_exclusive_bview_flags >/dev/null 2>&1; then
+    if ! comphy_require_exclusive_bview_flags "$LOCAL_BVIEW" "$COMPHY_BVIEW"; then
+        exit 1
+    fi
+elif [[ "$LOCAL_BVIEW" == true && "$COMPHY_BVIEW" == true ]]; then
+    echo "Error: --local-bview and --comphy-bview are mutually exclusive." >&2
+    echo "       --comphy-bview supersedes --local-bview; use one or the other." >&2
+    exit 1
+fi
+
+if [[ "$SHOW_HELP" != true ]] && ! type comphy_patch_skip_reason >/dev/null 2>&1; then
+    echo "Error: missing $SCRIPT_DIR/scripts/comphy-patch-contract.sh" >&2
+    echo "       Run this script from a full checkout of the repository." >&2
+    exit 1
+fi
 
 # ============================================================================
 # Help function
@@ -65,6 +90,10 @@ Options:
   --help, -h      Show this help message
   --hard          Force reinstall (removes existing basilisk directory)
   --local-bview   Apply optional local-bview convenience patch (enables `bview --local` URL output for bview-local-client)
+  --comphy-bview  Apply optional comphy-bview patch. Adds bview-comphy2D and
+                  bview-comphy3D, which bind loopback by default and take their
+                  client/websocket URLs from BVIEW_CLIENT_URL and
+                  BVIEW_WS_TEMPLATE. Mutually exclusive with --local-bview.
   --mode=N        Select installation mode non-interactively (1-4)
   --ref=REF       Pinned tag (release) for mode 4 only
 
@@ -90,12 +119,14 @@ Examples:
   ./reset_install_basilisk.sh --mode=1           # Use default mode
   ./reset_install_basilisk.sh --mode=2 --hard    # Reinstall using wget
   ./reset_install_basilisk.sh --mode=1 --local-bview  # Include local-bview patch
+  ./reset_install_basilisk.sh --mode=1 --comphy-bview # Include comphy-bview patch
   ./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --hard  # Ref-locked install (from release assets)
   ./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --local-bview --hard  # Ref-locked + local-bview patch
+  ./reset_install_basilisk.sh --mode=4 --ref=v2026-01-13 --comphy-bview --hard # Ref-locked + comphy-bview patch
 
 Notes:
-  - The local-bview patch is optional and not applied by default.
-  - GitHub Release tarballs intentionally exclude it; `--local-bview` downloads and applies the patch for the same `--ref`.
+  - Optional bview patches are not applied by default and are mutually exclusive.
+  - GitHub Release tarballs intentionally exclude both; `--local-bview` or `--comphy-bview` downloads and applies that patch for the same `--ref`.
 
 For more information, visit: https://github.com/comphy-lab/basilisk-C
 EOF
@@ -217,7 +248,7 @@ check_prerequisites() {
             check_tool "curl" || missing_tools+=("curl")
             check_tool "tar" || missing_tools+=("tar")
             check_tool "gawk" || missing_tools+=("gawk")
-            if [[ "$LOCAL_BVIEW" == true ]]; then
+            if [[ "$LOCAL_BVIEW" == true || "$COMPHY_BVIEW" == true ]]; then
                 check_tool "patch" || missing_tools+=("patch")
             fi
             ;;
@@ -332,6 +363,7 @@ write_lock_stamp() {
     local ref="$2"
     local patches_dir="$3"
     local apply_local_bview="$4"
+    local apply_comphy_bview="${5:-false}"
 
     local patch_files=()
     local applied_patches=()
@@ -339,14 +371,10 @@ write_lock_stamp() {
 
     patch_files=($(ls "$patches_dir"/*.patch 2>/dev/null | sort))
     for patch_file in "${patch_files[@]}"; do
-        local patch_name
+        local patch_name skip_reason
         patch_name=$(basename "$patch_file")
 
-        if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-            skipped_patches+=("$patch_name")
-            continue
-        fi
-        if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
+        if skip_reason="$(comphy_patch_skip_reason "$patch_name" "$apply_local_bview" "$apply_comphy_bview")"; then
             skipped_patches+=("$patch_name")
             continue
         fi
@@ -358,6 +386,7 @@ write_lock_stamp() {
         printf "os=%s\n" "$([[ "$OSTYPE" == "darwin"* ]] && echo "darwin" || echo "linux")"
         printf "created_utc=%s\n" "$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || date)"
         printf "local_bview=%s\n" "$apply_local_bview"
+        printf "comphy_bview=%s\n" "$apply_comphy_bview"
         printf "patches_applied=%s\n" "${applied_patches[*]:-}"
         printf "patches_skipped=%s\n" "${skipped_patches[*]:-}"
     } > "$lock_file"
@@ -367,6 +396,7 @@ apply_patches_from_dir() {
     local target_dir="$1"
     local patches_dir="$2"
     local apply_local_bview="${3:-false}"
+    local apply_comphy_bview="${4:-false}"
     local patch_failed=false
 
     print_cyan "Applying comphy-lab patches (from pinned ref)..."
@@ -388,12 +418,9 @@ apply_patches_from_dir() {
         local patch_name
         patch_name=$(basename "$patch_file")
 
-        if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-            echo "  Skipping $patch_name (use --local-bview to apply)"
-            continue
-        fi
-        if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
-            echo "  Skipping $patch_name (macOS-specific patch)"
+        local skip_reason
+        if skip_reason="$(comphy_patch_skip_reason "$patch_name" "$apply_local_bview" "$apply_comphy_bview")"; then
+            echo "  Skipping $patch_name ($skip_reason)"
             continue
         fi
 
@@ -422,6 +449,7 @@ apply_patches_from_dir() {
 apply_patches_github() {
     local target_dir="$1"
     local apply_local_bview="${2:-false}"
+    local apply_comphy_bview="${3:-false}"
     local patch_failed=false
 
     print_cyan "Applying comphy-lab patches..."
@@ -440,14 +468,9 @@ apply_patches_github() {
             for patch_file in "${patch_files[@]}"; do
                 local patch_name=$(basename "$patch_file")
 
-                # Skip local-bview patch unless --local-bview flag was provided
-                if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-                    echo "  Skipping $patch_name (use --local-bview to apply)"
-                    continue
-                fi
-                # Skip macOS-specific patches on non-macOS systems
-                if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
-                    echo "  Skipping $patch_name (macOS-specific patch)"
+                local skip_reason
+                if skip_reason="$(comphy_patch_skip_reason "$patch_name" "$apply_local_bview" "$apply_comphy_bview")"; then
+                    echo "  Skipping $patch_name ($skip_reason)"
                     continue
                 fi
 
@@ -478,14 +501,9 @@ apply_patches_github() {
             # Download and apply each patch
             while read -r patch_file; do
                 if [[ -n "$patch_file" ]]; then
-                    # Skip local-bview patch unless --local-bview flag was provided
-                    if [[ "$patch_file" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-                        echo "  Skipping $patch_file (use --local-bview to apply)"
-                        continue
-                    fi
-                    # Skip macOS-specific patches on non-macOS systems
-                    if [[ "$patch_file" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
-                        echo "  Skipping $patch_file (macOS-specific patch)"
+                    local skip_reason
+                    if skip_reason="$(comphy_patch_skip_reason "$patch_file" "$apply_local_bview" "$apply_comphy_bview")"; then
+                        echo "  Skipping $patch_file ($skip_reason)"
                         continue
                     fi
                     echo "  Downloading $patch_file..."
@@ -659,34 +677,39 @@ install_basilisk_ref_locked() {
         exit 1
     fi
 
-    if [[ "$LOCAL_BVIEW" == true ]]; then
-        print_cyan "Applying local-bview patch (from pinned ref)..."
-
+    fetch_optional_bview_patch() {
+        local pattern="$1"
+        local label="$2"
         local patches_api_url_ref="${PATCHES_API_URL}?ref=${ref}"
         local raw_base_url="https://raw.githubusercontent.com/comphy-lab/basilisk-C/${ref}/patches"
         local patch_file
-        patch_file="$(curl -s "$patches_api_url_ref" | grep -o '\"name\": \"[^\"]*\.patch\"' | sed 's/\"name\": \"//;s/\"//' | grep -E -- '-local-bview\.patch$' | head -n 1)"
-
+        print_cyan "Applying $label patch (from pinned ref)..."
+        patch_file="$(curl -s "$patches_api_url_ref" | grep -o '\"name\": \"[^\"]*\.patch\"' | sed 's/\"name\": \"//;s/\"//' | grep -E -- "$pattern" | head -n 1)"
         if [[ -z "$patch_file" ]]; then
-            print_red "Error: Could not find a *-local-bview.patch file at ref '$ref'"
+            print_red "Error: Could not find a *$label.patch file at ref '$ref'"
             rm -rf "$temp_dir"
             exit 1
         fi
-
         if ! curl -s -f -L "$raw_base_url/$patch_file" -o "$patches_dest/$patch_file"; then
             print_red "Error: Failed to download $patch_file from pinned ref"
             rm -rf "$temp_dir"
             exit 1
         fi
-
         if ! (cd "$BASILISK_DIR" && patch -p1 < "$patches_dest/$patch_file"); then
             print_red "Error: Failed to apply $patch_file"
             rm -rf "$temp_dir"
             exit 1
         fi
+    }
+
+    if [[ "$LOCAL_BVIEW" == true ]]; then
+        fetch_optional_bview_patch '-local-bview\.patch$' "local-bview"
+    fi
+    if [[ "$COMPHY_BVIEW" == true ]]; then
+        fetch_optional_bview_patch '-comphy-bview\.patch$' "comphy-bview"
     fi
 
-    write_lock_stamp "$lock_file" "$ref" "$patches_dest" "$LOCAL_BVIEW"
+    write_lock_stamp "$lock_file" "$ref" "$patches_dest" "$LOCAL_BVIEW" "$COMPHY_BVIEW"
 
     rm -rf "$temp_dir"
 }
@@ -844,21 +867,21 @@ if [[ "$HARD_RESET" == true ]] || [[ ! -d "$BASILISK_DIR" ]]; then
     case "$MODE" in
         1)  # default: darcs + GitHub patches
             install_basilisk_darcs
-            if ! apply_patches_github "$BASILISK_DIR" "$LOCAL_BVIEW"; then
+            if ! apply_patches_github "$BASILISK_DIR" "$LOCAL_BVIEW" "$COMPHY_BVIEW"; then
                 print_red "Error: Failed to apply patches"
                 exit 1
             fi
             ;;
         2)  # remote-fr: wget + GitHub patches
             install_basilisk_wget
-            if ! apply_patches_github "$BASILISK_DIR" "$LOCAL_BVIEW"; then
+            if ! apply_patches_github "$BASILISK_DIR" "$LOCAL_BVIEW" "$COMPHY_BVIEW"; then
                 print_red "Error: Failed to apply patches"
                 exit 1
             fi
             ;;
         3)  # remote-comphy: git sparse checkout + GitHub patches
             install_basilisk_git
-            if ! apply_patches_github "$BASILISK_DIR" "$LOCAL_BVIEW"; then
+            if ! apply_patches_github "$BASILISK_DIR" "$LOCAL_BVIEW" "$COMPHY_BVIEW"; then
                 print_red "Error: Failed to apply patches"
                 exit 1
             fi

@@ -6,6 +6,15 @@
 # Check for flags
 HARD_RESET=false
 LOCAL_BVIEW=false
+COMPHY_BVIEW=false
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$SCRIPT_DIR"
+if [[ -f "$SCRIPT_DIR/scripts/comphy-patch-contract.sh" ]]; then
+    # shellcheck source=scripts/comphy-patch-contract.sh
+    . "$SCRIPT_DIR/scripts/comphy-patch-contract.sh"
+fi
 
 for arg in "$@"; do
     case "$arg" in
@@ -15,12 +24,27 @@ for arg in "$@"; do
         --local-bview)
             LOCAL_BVIEW=true
             ;;
+        --comphy-bview)
+            COMPHY_BVIEW=true
+            ;;
     esac
 done
 
-# Get the directory where this script is located
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$SCRIPT_DIR"
+if type comphy_require_exclusive_bview_flags >/dev/null 2>&1; then
+    if ! comphy_require_exclusive_bview_flags "$LOCAL_BVIEW" "$COMPHY_BVIEW"; then
+        exit 1
+    fi
+elif [[ "$LOCAL_BVIEW" == true && "$COMPHY_BVIEW" == true ]]; then
+    echo "Error: --local-bview and --comphy-bview are mutually exclusive." >&2
+    echo "       --comphy-bview supersedes --local-bview; use one or the other." >&2
+    exit 1
+fi
+
+if ! type comphy_patch_skip_reason >/dev/null 2>&1; then
+    echo "Error: missing $SCRIPT_DIR/scripts/comphy-patch-contract.sh" >&2
+    echo "       Run this script from a full checkout of the repository." >&2
+    exit 1
+fi
 PROJECT_CONFIG="$REPO_ROOT/.project_config"
 BASILISK_DIR="$REPO_ROOT/basilisk"
 BASILISK_SRC_DIR="$BASILISK_DIR/src"
@@ -97,6 +121,7 @@ check_prerequisites() {
 apply_patches() {
     local target_dir="$1"
     local apply_local_bview="${2:-false}"
+    local apply_comphy_bview="${3:-false}"
     local patch_failed=false
 
     printf "\033[0;36mApplying comphy-lab patches...\033[0m\n"
@@ -115,14 +140,9 @@ apply_patches() {
             for patch_file in "${patch_files[@]}"; do
                 local patch_name=$(basename "$patch_file")
 
-                # Skip local-bview patch unless --local-bview flag was provided
-                if [[ "$patch_name" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-                    echo "  Skipping $patch_name (use --local-bview to apply)"
-                    continue
-                fi
-                # Skip macOS-specific patches on non-macOS systems
-                if [[ "$patch_name" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
-                    echo "  Skipping $patch_name (macOS-specific patch)"
+                local skip_reason
+                if skip_reason="$(comphy_patch_skip_reason "$patch_name" "$apply_local_bview" "$apply_comphy_bview")"; then
+                    echo "  Skipping $patch_name ($skip_reason)"
                     continue
                 fi
 
@@ -157,14 +177,9 @@ apply_patches() {
             # Download and apply each patch
             while read -r patch_file; do
                 if [[ -n "$patch_file" ]]; then
-                    # Skip local-bview patch unless --local-bview flag was provided
-                    if [[ "$patch_file" == *"-local-bview.patch" ]] && [[ "$apply_local_bview" != "true" ]]; then
-                        echo "  Skipping $patch_file (use --local-bview to apply)"
-                        continue
-                    fi
-                    # Skip macOS-specific patches on non-macOS systems
-                    if [[ "$patch_file" == *"-macos-"* ]] && [[ "$OSTYPE" != "darwin"* ]]; then
-                        echo "  Skipping $patch_file (macOS-specific patch)"
+                    local skip_reason
+                    if skip_reason="$(comphy_patch_skip_reason "$patch_file" "$apply_local_bview" "$apply_comphy_bview")"; then
+                        echo "  Skipping $patch_file ($skip_reason)"
                         continue
                     fi
                     echo "  Downloading $patch_file..."
@@ -236,7 +251,7 @@ install_basilisk() {
     rm -rf "$TEMP_DIR"
 
     # Apply comphy-lab patches (macOS only)
-    if ! apply_patches "$BASILISK_DIR" "$LOCAL_BVIEW"; then
+    if ! apply_patches "$BASILISK_DIR" "$LOCAL_BVIEW" "$COMPHY_BVIEW"; then
         printf "\033[0;31mError: Failed to apply comphy-lab patches in $BASILISK_DIR\033[0m\n" >&2
         exit 1
     fi

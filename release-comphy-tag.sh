@@ -7,7 +7,8 @@
 # - Produces two tarballs:
 #     basilisk-mac.tar.gz   (includes macOS patches + all non-macOS patches)
 #     basilisk-linux.tar.gz (includes all non-macOS patches)
-#   The local-bview patch is NOT applied to either tarball.
+#   Optional bview patches (local-bview and comphy-bview) are NOT applied to
+#   either tarball.
 #
 # This script also runs install tests:
 # - On macOS: tests macOS install natively and Linux install in Docker
@@ -104,6 +105,9 @@ copy_basilisk_source_to_stage() {
   tar -C "$REPO_ROOT/basilisk-source" -cf - --exclude "_darcs" . | tar -C "$stage_basilisk_dir" -xf -
 }
 
+# shellcheck source=scripts/comphy-patch-contract.sh
+. "$REPO_ROOT/scripts/comphy-patch-contract.sh"
+
 copy_selected_patches() {
   local platform="$1" # mac | linux
   local dest_patches_dir="$2"
@@ -114,10 +118,7 @@ copy_selected_patches() {
     local patch_name
     patch_name="$(basename "$patch_file")"
 
-    if [[ "$patch_name" == *"-local-bview.patch" ]]; then
-      continue
-    fi
-    if [[ "$platform" == "linux" ]] && [[ "$patch_name" == *"-macos-"* ]]; then
+    if ! comphy_release_include_patch "$platform" "$patch_name"; then
       continue
     fi
 
@@ -195,6 +196,8 @@ run_host_install_test() {
   print_cyan "Running host install test in: $test_dir"
   cp "$REPO_ROOT/reset_install_basilisk.sh" "$test_dir/"
   cp -R "$REPO_ROOT/patches" "$test_dir/patches"
+  mkdir -p "$test_dir/scripts"
+  cp "$REPO_ROOT/scripts/comphy-patch-contract.sh" "$test_dir/scripts/"
   chmod +x "$test_dir/reset_install_basilisk.sh"
 
   (cd "$test_dir" && ./reset_install_basilisk.sh --mode=1 --hard)
@@ -220,6 +223,8 @@ run_linux_install_test_in_docker() {
     mkdir -p /work && cd /work && \
     cp /repo/reset_install_basilisk.sh . && \
     cp -R /repo/patches ./patches && \
+    mkdir -p scripts && \
+    cp /repo/scripts/comphy-patch-contract.sh scripts/ && \
     chmod +x reset_install_basilisk.sh && \
     ./reset_install_basilisk.sh --mode=1 --hard \
   "
@@ -308,11 +313,7 @@ if [[ "$DRY_RUN" == true ]]; then
 fi
 
 print_cyan "Syncing basilisk-source from upstream darcs..."
-if [[ ! -d "$REPO_ROOT/basilisk-source/_darcs" ]]; then
-  print_red "Error: Missing darcs repo at basilisk-source/_darcs"
-  exit 1
-fi
-(cd "$REPO_ROOT/basilisk-source" && darcs pull --all)
+"$REPO_ROOT/scripts/sync-darcs-mirrors.sh" --repo-root "$REPO_ROOT" source
 
 # In test-only mode, don't commit - just note if there are changes
 if [[ "$TEST_ONLY" == true ]]; then
@@ -362,8 +363,8 @@ cat > "$release_notes" <<EOF
 Ref-locked Basilisk release \`$TAG\`.
 
 Assets:
-- \`basilisk-mac.tar.gz\`: Basilisk source (darcs snapshot) + comphy-lab patches for macOS (local-bview not applied)
-- \`basilisk-linux.tar.gz\`: Basilisk source (darcs snapshot) + comphy-lab patches for Linux (local-bview not applied)
+- \`basilisk-mac.tar.gz\`: Basilisk source (darcs snapshot) + comphy-lab patches for macOS (optional bview patches not applied)
+- \`basilisk-linux.tar.gz\`: Basilisk source (darcs snapshot) + comphy-lab patches for Linux (optional bview patches not applied)
 
 Install (ref-locked):
 - \`./reset_install_basilisk-ref-locked.sh --hard\` (latest release)

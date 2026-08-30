@@ -145,7 +145,7 @@ This script:
 1. Downloads the OS-specific tarball attached to the Release tag (`basilisk-mac.tar.gz` or `basilisk-linux.tar.gz`)
 2. Builds Basilisk and writes a lock stamp to `basilisk/.comphy-lock`
 
-**Requirements**: `curl`, `tar`, `make`, `gcc`, `gawk` (plus `patch` only if using `--local-bview`)
+**Requirements**: `curl`, `tar`, `make`, `gcc`, `gawk` (plus `patch` only if using `--local-bview` or `--comphy-bview`)
 
 ### Creating a Ref-Locked Release (Maintainers)
 
@@ -158,13 +158,13 @@ This repo includes `release-comphy-tag.sh` to create a reproducible, ref-locked 
 ```
 
 This script:
-1. Pulls the latest upstream Basilisk snapshot into `basilisk-source/` using `darcs`
+1. Replaces `basilisk-source/` with a fresh lazy Darcs checkout via `scripts/sync-darcs-mirrors.sh`
 2. Runs install tests (`reset_install_basilisk.sh --mode=1 --hard`):
    - macOS: tests macOS natively + Linux in Docker (`darcs-test` image)
    - Linux: tests Linux natively
 3. Builds and uploads GitHub Release assets:
-   - `basilisk-mac.tar.gz` (+ `.sha256`): upstream snapshot + macOS + common patches (**local-bview not applied**)
-   - `basilisk-linux.tar.gz` (+ `.sha256`): upstream snapshot + common patches (**local-bview not applied**, macOS patches excluded)
+   - `basilisk-mac.tar.gz` (+ `.sha256`): upstream snapshot + macOS + common patches (**optional bview patches not applied**)
+   - `basilisk-linux.tar.gz` (+ `.sha256`): upstream snapshot + common patches (**optional bview patches not applied**, macOS patches excluded)
 
 ### Clean Reinstall
 
@@ -275,7 +275,8 @@ Our fork maintains a set of patches in the `patches/` directory that fix issues 
 | Patch | Platform | Description |
 |-------|----------|-------------|
 | `2025-11-03-macos-mman-compatibility.patch` | macOS | Fixes memory mapping compilation errors |
-| `2026-01-06-local-bview.patch` | All | Adds `--local` flag to bview for offline visualization |
+| `2026-01-06-local-bview.patch` | All | Optional. Adds `--local` flag to bview for offline visualization |
+| `2026-08-14-comphy-bview.patch` | All | Optional. Adds `bview-comphy2D`/`bview-comphy3D` with loopback bind and runtime URL overrides. Mutually exclusive with local-bview |
 
 ### Applying Patches Manually
 
@@ -361,6 +362,6 @@ The visualization URL has two parts:
 
 The local-bview patch only changes where the JS client is served from—the websocket always connects to your local bview process regardless.
 
-**Note:** Our GitHub Release tarballs (`basilisk-mac.tar.gz` / `basilisk-linux.tar.gz`) intentionally exclude `2026-01-06-local-bview.patch`. If you want `bview --local` with a ref-locked install, pass `--local-bview` so the installer downloads and applies the patch for the resolved release ref (latest if `--ref` is omitted, pinned if `--ref` is provided).
+**Note:** Our GitHub Release tarballs (`basilisk-mac.tar.gz` / `basilisk-linux.tar.gz`) intentionally exclude both optional bview patches. Pass `--local-bview` or `--comphy-bview` (not both) so the installer downloads and applies that patch for the resolved release ref (latest if `--ref` is omitted, pinned if `--ref` is provided).
 
 For more details, see the [bview-local-client repository](https://github.com/comphy-lab/bview-local-client).
