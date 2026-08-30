@@ -8,5 +8,9 @@ logs/
 .darcs-sync-staging.*
 basilisk-source/_darcs/index
 basilisk-source/_darcs/index.old
+basilisk-source/_darcs/patches/unrevert
+basilisk-source/_darcs/patches/*.tentative
 basilisk-wiki/_darcs/index
 basilisk-wiki/_darcs/index.old
+basilisk-wiki/_darcs/patches/unrevert
+basilisk-wiki/_darcs/patches/*.tentative
