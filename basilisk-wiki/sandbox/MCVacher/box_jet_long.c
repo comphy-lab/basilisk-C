@@ -125,7 +125,7 @@ event ppm_output (t = 0; t += 0.01; t <= 10) { //t_max
   
   char name3[80];
   sprintf (name3, "p.mp4");
-  output_ppm (p, file = name3, n = 512, min = -1/2*U0*U0, max = 1/2*U0*U0 , linear = true, box = {{xmin, ymin}, {xmax, ymax}});
+  output_ppm (p, file = name3, n = 512, linear = true, box = {{xmin, ymin}, {xmax, ymax}});
 }
 
 /**

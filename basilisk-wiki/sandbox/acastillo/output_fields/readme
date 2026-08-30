@@ -19,17 +19,96 @@ and [`heating.c`](tests_quantities/heating.c).
 
 ---
 
-### `profile_foreach_region()`
-**Location:** [`profiles_foreach_region.h`](profiles_foreach_region.h) 
+### `probability_distribution_1D()` and `probability_distribution_2D()`
+**Location:** [`histograms1D.h`](histograms1D.h) and
+[`histograms2D.h`](histograms2D.h)
 
 **Description:**
-Extracts profiles from specified regions of the computational domain. Adapted
-from [Antoon's profile
-utilities](/sandbox/Antoonvh/profile5c.h).
+Histogram, PDF and (in 1D) CDF of a scalar field, volume- or `f`-weighted,
+via GSL. `available_potential.h` and `available_potential_vof.h` both build on
+the 1D version. The 2D version stores no CDF, a joint histogram having no
+single natural cumulative distribution.
+
+**Example:**
+Examples are available in [`tests_histograms/`](tests_histograms/).
+
+---
+
+### `strain_rate_sq()`
+**Location:** [`strain_rate.h`](strain_rate.h)
+
+**Description:**
+Squared magnitude of the strain-rate tensor, $S^2 = S_{ij}S_{ij}$, from
+centred differences on the cell-centred velocity, mainly for dissipation
+diagnostics ($\varepsilon = 2\mu S_{ij}S_{ij}$). Metric factors are not
+included, so this is Cartesian-only; the trace is not removed, consistent with
+$\nabla\cdot\mathbf{u} = 0$.
 
 **Example:**
 Examples are available in
-[`test_profiles_foreach_region.c`](tests_quantities/test_profiles_foreach_region.c).
+[`test_strain_rate_affine.c`](tests_quantities/test_strain_rate_affine.c)
+(exactness on an affine field) and
+[`test_strain_rate_smooth.c`](tests_quantities/test_strain_rate_smooth.c)
+(second-order convergence).
+
+---
+
+### `count_phase()`
+**Location:** [`count_phase.h`](count_phase.h)
+
+**Description:**
+Tags the connected regions of one phase of a VOF field `f` and writes, per
+region, its volume, centre of mass, volume-weighted average velocity and
+interfacial area (perimeter in 2D). `above` selects droplets (`f > threshold`)
+or bubbles (`f < threshold`). Works in 2D and 3D; uses the globals `f` and `u`.
+
+**Example:**
+Examples are available in
+[`test_count_phase.c`](tests_quantities/test_count_phase.c) and
+[`test_count_phase_bubbles.c`](tests_quantities/test_count_phase_bubbles.c).
+
+---
+
+### `spectrum_scalar_stack()` and `spectrum_vector_stack()`
+**Location:** [`spectra/spectra.h`](spectra/spectra.h)
+
+**Description:**
+Shell-averaged horizontal spectra of a list of fields, on one or more planes
+of constant $z$, written as ASCII or appended to a single HDF5 file along its
+time axis. A plane is sampled onto a regular lattice with
+[`spectra_sample.h`](spectra/spectra_sample.h), transformed with GSL and
+binned in $|k|$ by [`spectra_shell.h`](spectra/spectra_shell.h); bin 0 holds
+the squared mean, so $\sum_k E(k)$ is the mean square of the plane exactly.
+Requires GSL, and HDF5 for the second writer. 3D only, and for a bi-periodic
+domain: the planes cover one period, so no window and no detrending are
+needed.
+
+Sample at the finest grid size, `m = 1 << maxlevel`, and keep the planes
+inside the refined region. Any coarser lattice lands on cell faces rather than
+centres, and on an adaptive grid the resulting displacement varies across the
+plane, so it does not cancel in $|\hat c|^2$.
+
+**Example:**
+Examples are available in [`tests_spectra/`](tests_spectra/), covering the
+sampling ([`test_spectra_sample.c`](tests_spectra/test_spectra_sample.c)), the
+transform and binning
+([`test_spectra_modes.c`](tests_spectra/test_spectra_modes.c)), the sampling
+rule above ([`test_spectra_amr.c`](tests_spectra/test_spectra_amr.c)) and the
+two writers ([`test_spectra_ascii.c`](tests_spectra/test_spectra_ascii.c) and
+[`test_spectra_hdf5.c`](tests_spectra/test_spectra_hdf5.c)).
+
+---
+
+### `profile_foreach_region()`, `profile_product_foreach_region()`, `profile_dissipation_foreach_region()`, `profile_dissipation_scalar_foreach_region()`
+**Location:** [`profiles/profiles.h`](profiles/profiles.h)
+
+**Description:**
+Extracts profiles (mean, product, velocity-gradient/strain-rate dissipation)
+from specified regions of the computational domain. Adapted from [Antoon's
+profile utilities](/sandbox/Antoonvh/profile5c.h).
+
+**Example:**
+Examples are available in [`tests_profiles/`](tests_profiles/).
 
 ---
 
@@ -127,6 +206,34 @@ containing datasets for points, connectivity, and field data.
 
 **Examples:**
 Examples are available in [`tests_outputs/test_output_vtkhdf*.c`](tests_outputs/).
+
+---
+
+## Running the tests
+
+[`tests_profiles/`](tests_profiles/), [`tests_quantities/`](tests_quantities/)
+and [`tests_spectra/`](tests_spectra/) each carry a `run_tests.py` driver:
+
+~~~bash
+load_gcc
+cd tests_quantities && ./run_tests.py all
+~~~
+
+It is only a driver: each test is still run by `make <test>.tst`, which stays
+the single source of truth for how a test is compiled, executed and compared
+against its reference. A test may be run against several grids, the grid name
+selecting the dimension too (`multigrid3D`/`octree` are 3D); each combination
+has its own frozen `<test>.<grid>.ref`, since a coarser grid legitimately
+resolves some quantities less well. Note that `multigrid3D` decomposes the
+domain into octants and so requires `8^i` MPI ranks.
+
+The tests themselves compute their norms in C, using `foreach` reductions so
+that the numbers do not depend on the rank count, and write them to a small
+table. The thresholds, convergence orders and structural checks live in a
+Python checker beside the sources, whose report is what the `.ref` freezes. A
+test whose dependencies are missing is skipped by the driver rather than
+allowed to build into a different program: `tests_spectra/` skips its HDF5
+test when `hdf5.h` is not on the include path.
 
 ---
 

@@ -1,0 +1,3 @@
+--- count_droplets.asc
+Processed 3 regions in 2D (above = 1). Max relative error: volume 0.00124, area 0.000386. Max absolute error: b 3e-06, u 5e-06
+PASS: count_phase matches the sphere closed form.

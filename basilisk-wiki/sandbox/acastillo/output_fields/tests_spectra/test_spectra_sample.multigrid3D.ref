@@ -1,0 +1,4 @@
+coarse   m    8  holes 0  err_c 0.0924  dz 0
+face     m   32  holes 0  err_c 0  dz 0.09817
+uniform  m   32  holes 0  err_c 0  dz 0
+PASS: sample_scalar_plane matches the cell-centre displacement.

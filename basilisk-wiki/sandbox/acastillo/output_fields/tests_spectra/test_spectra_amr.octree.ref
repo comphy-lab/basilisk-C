@@ -1,0 +1,3 @@
+matched    exact   m  128  levels 7-7  E 0.500000000000  leak 0.00e+00  Parseval 3.89e-16
+straddling leaky   m  128  levels 7-8  E 0.499069271015  leak 7.22e-04  Parseval 2.94e-15
+PASS: the plane is exact at one level and leaks across two.

@@ -177,3 +177,5 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int mode = HD
 #endif
 #include "output_xdmf_box.h"
 #include "output_xdmf_facets.h"
+#include "output_xdmf_facets_list.h"
+#include "output_xdmf_facets_box.h"

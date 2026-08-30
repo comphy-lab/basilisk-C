@@ -1,0 +1,9 @@
+--- profiles_scalar3D.asc
+Processed 16 profile heights. Max error: 0.0172
+PASS: profile_foreach_region matches 3D two-phase closed form.
+--- profiles_product3D.asc
+Processed 16 profile heights. Max error: 0.0072
+PASS: profile_product_foreach_region matches 3D two-phase closed form.
+--- profiles_dissipation3D.asc
+Processed 16 profile heights. Max error: 9.55e-15
+PASS: profile_dissipation_foreach_region matches 3D two-phase closed form.

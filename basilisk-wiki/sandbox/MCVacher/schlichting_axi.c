@@ -66,6 +66,21 @@ int main() {
   run();
 }
 
+face vector u_old[];
+scalar p_old[];
+
+event init (t = 0)
+{
+  foreach_face()
+    u_old.x[] = u.x[];
+
+  foreach()
+    p_old[] = p[];
+}
+
+/**
+We choose the viscosity so that it matches the Re.
+*/
 
 event properties (i++)
 {
@@ -73,16 +88,123 @@ event properties (i++)
     muv.x[] = fm.x[]*U0*R_d/Re;
 }
 
+/**
+At each iteration, we calculate the RMS difference between
+two successive velocity and pressure fields to monitor
+numerical convergence. The residuals are defined as
 
-event logfile (i++) { 
-  fprintf (stderr, "%d %g \n", i, t); 
-  fprintf (fpmax, "%d %g\n", i, t);
+$$
+R^{(n)}(u) =
+\sqrt{
+\frac{1}{N^2}
+\sum_{i=1}^{N}
+\sum_{j=1}^{N}
+\left[
+\left(u_{i,j}^{(n+1)}-u_{i,j}^{(n)}\right)^2
++
+\left(v_{i,j}^{(n+1)}-v_{i,j}^{(n)}\right)^2
+\right]
 }
+$$
+
+and
+
+$$
+R^{(n)}(p) =
+\sqrt{
+\frac{1}{N^2}
+\sum_{i=1}^{N}
+\sum_{j=1}^{N}
+\left(p_{i,j}^{(n+1)}-p_{i,j}^{(n)}\right)^2
+}
+$$
+
+The residuals are saved in "log.dat".
+*/
+
+double res_u = 0.;
+double res_p = 0.;
+
+event logfile (i++)
+{
+  double sum_res_u = 0.;
+  double sum_res_p = 0.;
+
+  foreach_face()
+    sum_res_u += sq(u.x[] - u_old.x[]);
+
+  foreach()
+    sum_res_p += sq(p[] - p_old[]);
+
+  res_u = sqrt(sum_res_u/(N*N));
+  res_p = sqrt(sum_res_p/(N*N));
+
+  fprintf (stderr, "%d %g %g %g\n",
+           i, t, res_u, res_p);
+
+  fprintf (fpmax, "%d %g %g %g\n",
+           i, t, res_u, res_p);
+
+  foreach_face()
+    u_old.x[] = u.x[];
+
+  foreach()
+    p_old[] = p[];
+}
+
+/**
+~~~pythonplot Residuals
+import matplotlib.pyplot as plt
+
+list_t = []
+list_res_u = []
+list_res_p = []
+
+with open('log.dat', encoding='utf8') as file:
+    for line in file:
+        if line.strip():
+            temp = line.split()
+
+            list_t.append(float(temp[1]))
+            list_res_u.append(float(temp[2]))
+            list_res_p.append(float(temp[3]))
+
+plt.figure()
+
+plt.semilogy(
+    list_t,
+    list_res_u,
+    'r-',
+    label=r'$R^{(n)}(u)$'
+)
+
+plt.semilogy(
+    list_t,
+    list_res_p,
+    'g-',
+    label=r'$R^{(n)}(p)$'
+)
+
+plt.xlabel(r'$t$')
+plt.ylabel('Residual')
+plt.legend()
+plt.grid(True, which='both', linestyle='--', alpha=0.4)
+
+plt.tight_layout()
+plt.savefig('residuals.png')
+~~~
+
+Residuals are converged around t=100.
+*/
+
+/**
+We plot the vertical velocity as well as a passive tracer to observe the establishment of the flow.
+*/
 
 //Ask Antoon what is going on, but it works !
 #define vertex_value(b) ((b[] + b[-1] + b[0,-1] + b[-1,-1])/4.)
 
-event movie_streamlines (t += 0.05; t <= 30) {
+event movie_streamlines (t += 0.05; t <= 50) {
   scalar omega[];
   vertex scalar stream[];
   scalar psi[];
@@ -115,7 +237,7 @@ event movie_streamlines (t += 0.05; t <= 30) {
   save("streamlines.mp4");
 }
 
-event ppm_output (t = 0; t += 0.05; t <= 30) {
+event ppm_output (t = 0; t += 0.05; t <= 50) {
 
     char name1[80];
     sprintf (name1, "uX.mp4");

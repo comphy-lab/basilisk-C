@@ -1,5 +1,20 @@
 /**
-# 3D Single Vortex with the EBIT method */
+# 3D deformation test with the EBIT method
+
+The test, analogous to the 2D single voertex test, was first proposed
+by [Enright, 2002](#enright2002).
+
+A divergence-free velocity field
+
+$\left(u, v, w \right) = \cos(t / T)\left[ \begin{matrix}
+2 \sin^2(\pi x) \sin(2\pi y) \sin(2\pi z) \\
+-\sin(2\pi x) \sin^2(\pi y) \sin(2\pi z)\\
+-\sin(2\pi x) \sin(2\pi y) \sin^2(\pi z)
+\end{matrix} \right]^T, \quad T = 3$,
+
+is imposed throught the domain, which combines deformation in the $x-y$ plane
+with deformation in the $x - z$ plane.
+*/
 
 #define ADAPT 1
 
@@ -16,12 +31,13 @@ int level = 6, maxlvl, minlvl;
 double Cfl = 0.125 [0], R = 0.15, xcenter, ycenter, zcenter, \
   ddt = 1. [0,1], EndT = 1. [0,1];
 int IT;
+double vol_ave = 0. [3];
 
 int main(int argc, char * argv[]) {
   if (argc > 1)
     level = atoi (argv[1]);
   maxlvl = level;
-  minlvl = max(level - 4, 3);
+  minlvl = max(level - 4, 2);
 
   init_grid (1 << level);
 
@@ -38,7 +54,6 @@ int main(int argc, char * argv[]) {
   run();
 }
 
-
 event init (i = 0) {
   vertex scalar phi[];
   foreach_vertex() {
@@ -49,6 +64,7 @@ event init (i = 0) {
 
   semu2vof();
   volume0 = volume;
+  vol_ave = 0.;
 }
 
 /** The timestep `dt` and the velocity field are set. */
@@ -74,53 +90,50 @@ event adapt (i++) {
 }
 #endif
 
-// event interface_out (i++, last) {
-//   if (2*(i + 1) % (int) max(IT, 1) == 0){
-//     int ii = 2*(i + 1)/max(IT, 1);
-//     char name[80], name_fem[80], name_con[80];
+/**
+Output the interface segments for visualization, as well as the time history
+of the volume fraction to a reference file.
 
-//     sprintf (name, "%s%s_%d_%d_%d.dat", OUTPUTPATH, "vortex_3d_ebit", N, (int) EndT, ii);
-//     sprintf (name_fem, "%s%s_%d_%d_%d_fem.dat", OUTPUTPATH, "vortex_3d_ebit", N, (int) EndT, ii);
-//     sprintf (name_con, "%s%s_%d_%d_%d_con.dat", OUTPUTPATH, "vortex_3d_ebit", N, (int) EndT, ii);
+Use the [python script](/sandbox/jieyun/others/interface.py) to generate
+a Tecplot file for visulizing the interface as triangular elements. */
 
-//     output_facets_semushin (name);
-//     output_facets_semushin (name_fem, tri = true, file_con = name_con);
-//   }
-// }
+event interface_out (i++, last) {
+  // if (2*(i + 1) % (int) max(IT, 1) == 0){
+  //   int ii = 2*(i + 1)/max(IT, 1);
+  //   char name[80], name_fem[80], name_con[80];
 
-/**  
- We can compute the shape error $E_{shape}=\max_{i}|$`dist`$(\boldsymbol{x}_i)|$.
- For the tests where the reference solution is a 
- circle centered in $(x_c,y_c)$ and with radius $R$, we have 
- `dist`$(\boldsymbol{x}_i)=\sqrt{(x_i-x_c)^2+(y_i-y_c)^2}-R$
- */
+  //   sprintf (name, "%s%s_%d_%d_%d.dat", OUTPUTPATH, "vortex_3d_ebit", N, (int) EndT, ii);
+  //   sprintf (name_fem, "%s%s_%d_%d_%d_fem.dat", OUTPUTPATH, "vortex_3d_ebit", N, (int) EndT, ii);
+  //   sprintf (name_con, "%s%s_%d_%d_%d_con.dat", OUTPUTPATH, "vortex_3d_ebit", N, (int) EndT, ii);
+
+  //   output_facets_semushin (name);
+  //   output_facets_semushin (name_fem, tri = true, file_con = name_con);
+  // }
+
+  fprintf (stderr, "%.8e %.12e %.12e %.12e\n", (i + 1)*dt, volume, volume_int,
+    (volume - volume0)/volume0);
+  vol_ave += fabs(volume - volume0)/IT;
+}
+
+/**
+We compute the time-averaged mass error
+
+$E_\text{mass} = \frac{\int_0 ^{T}|V(t) - V(0)| dt}{V(0)} =
+\frac{\sum_{j=1}^{N_t} \left| \sum_{i=1}^{N_\text{cell}}
+\left[ C_i(t_j) - C_i(0) \right] \right|}{N_{t}\sum_{i=1} ^{N_\text{cell}} C_i(0)},$
+
+and the shape error
+
+$E_\text{shape} = \frac{\sum_{i=1}^{N_\text{cell}} \left| C_i(T) - C_i(0)\right|}
+{\sum_{i=1}^{N_\text{cell}} C_i(0)}.$
+*/
+
 event calc_infty_norm (t = end) {
   // This event is correct only if there is no markers on the computational boundary
   #if ADAPT
   refine (fabs(x - xcenter) <= 0.25*L0 && fabs(y - ycenter) <= 0.25*L0
   && fabs(z - zcenter) <= 0.25*L0 && level < maxlvl);
   #endif
-
-  double l_inf = 0.;
-  foreach(serial, reduction(max:l_inf)) {
-    coord xo = {x - 0.5*Delta, y - 0.5*Delta, z - 0.5*Delta}, \
-      xcen = {xcenter, ycenter, zcenter};
-    double dist = 0.;
-
-    foreach_dimension() {
-      if (with_marker.x[] > 0.) {
-        dist = sq(s.x[]*Delta + xo.x - xcen.x) + sq(xo.y - xcen.y) + sq(xo.z - xcen.z);
-        dist = fabs(sqrt(dist) - R);
-        if (dist > l_inf )
-          l_inf = dist;
-      }
-    }
-  }
-
-  if (pid() == 0) {
-    printf ("l-Infty norm is %e\n", l_inf);
-    printf ("volume0: %e  volume: %e; Error %e\n", volume0, volume, fabs(volume0 - volume)/volume0);
-  }
 
   // Initial shape
   vertex scalar phi[];
@@ -145,7 +158,37 @@ event calc_infty_norm (t = end) {
     delta_v += fabs(f[] - f0[])*dv();
   }
   if (pid() == 0) {
-    printf ("vol0: %e vol: %e\n", v0, v1);
+    printf ("Volume:t0: %e T: %e\n", v0, v1);
     printf ("E_m Error: %.8e, E_g Error: %.8e\n", fabs(v0 - v1)/v0, delta_v/v0);
+    printf ("Time-averaged mass Error: %.8e\n", vol_ave/v0);
   }
 }
+
+/**
+## Results
+
+Time history of the mass error: $E_m (t) = \left( V(t) - V(0) \right) / V(0)$.
+
+~~~gnuplot Time history of the mass error ($N = 64$).
+reset
+set xlabel 't'
+set ylabel 'E_m'
+plot 'log' u 1:4 w l lw 3 t 'EBIT'
+~~~
+
+## References
+
+~~~bib
+@article{enright2002,
+  title={A hybrid particle level set method for improved
+  interface capturing},
+  author={Douglas Enright and Ronald Fedkiw and Joel Ferziger and Ian Mitchell},
+  journal={Journal of Computational Physics},
+  volume={183},
+  pages={83--116},
+  year={2002},
+  publisher={Elsevier},
+  doi={10.1006/jcph.2002.7166}
+}
+~~~
+*/

@@ -1,0 +1,9 @@
+--- profiles_scalar.asc
+Processed 32 profile heights. Max error: 0.00882
+PASS: profile_foreach_region matches two-phase closed form.
+--- profiles_product.asc
+Processed 32 profile heights. Max error: 0.00375
+PASS: profile_product_foreach_region matches two-phase closed form.
+--- profiles_dissipation.asc
+Processed 32 profile heights. Max error: 1.67e-15
+PASS: profile_dissipation_foreach_region matches two-phase closed form.

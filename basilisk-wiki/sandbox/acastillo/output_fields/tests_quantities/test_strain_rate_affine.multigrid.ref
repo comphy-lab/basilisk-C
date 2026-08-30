@@ -1,0 +1,3 @@
+--- strain_rate_affine.asc
+Processed 3 resolutions. Relative error: 1.83e-15, 3.85e-15, 8.61e-15
+PASS: strain_rate_sq exact to roundoff on an affine field.

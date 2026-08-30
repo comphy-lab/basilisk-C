@@ -354,7 +354,7 @@ macro2 foreach_visible_plane (bview * view, coord n1, double alpha1)
 {
   {
     coord _n = {(n1).x, (n1).y, (n1).z};
-    double _alpha = 0.9999999*(alpha1);
+    double _alpha = 0.9999999*(alpha1) + 1.1e-9;
     {
       double norm = sqrt(sq(_n.x) + sq(_n.y) + sq(_n.z));
       if (!norm)
@@ -366,7 +366,8 @@ macro2 foreach_visible_plane (bview * view, coord n1, double alpha1)
     foreach_cell() {
       POINT_VARIABLES();
       // fixme: coordinate mapping
-      double _r = Delta*0.87, alpha = (_alpha - _n.x*x - _n.y*y - _n.z*z)/Delta;
+      coord n = _n;
+      double _r = Delta*0.87, alpha = (_alpha - n.x*x - n.y*y - n.z*z)/Delta;
       if (fabs(alpha) > 0.87 ||
 	  (VertexBuffer.visible &&
 	   !sphere_in_frustum (x, y, z, _r, &(view)->frustum)))

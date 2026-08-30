@@ -71,6 +71,21 @@ def vertex_coordinates(x):
     return xv
 
 
+def coordinate_to_index(position, coord):
+    return np.argmin(np.abs(coord - position))
+
+
+def clip_physical_to_index(physical_clip, xv, yv, zvm):
+    xmin, xmax, ymin, ymax, zmin, zmax = physical_clip
+    imin = coordinate_to_index(xmin, xv)
+    imax = coordinate_to_index(xmax, xv)
+    jmin = coordinate_to_index(ymin, yv)
+    jmax = coordinate_to_index(ymax, yv)
+    kmin = coordinate_to_index(zmin, zvm)
+    kmax = coordinate_to_index(zmax, zvm)
+    return (imin, imax, jmin, jmax, kmin, kmax)
+
+
 def build_3Dgrid(ds):
     # Build vertices
     xv = vertex_coordinates(ds.x.values)  # 1D
@@ -89,10 +104,10 @@ def build_3Dgrid(ds):
     Z = zv.transpose(2, 1, 0)
     # Build the grid object
     grid = pv.StructuredGrid(X, Y, Z)
-    return grid
+    return grid, xv, yv, zv
 
 
-def surface_extractor(grid, size, which="top", tuple=None):
+def surface_extractorOLD(grid, size, which="top", bounds=None):
     nx, ny, nz = size  # Pyvista convention
     if which == "top":
         surface = grid.extract_subset((0, nx, 0, ny, nz, nz))
@@ -107,22 +122,69 @@ def surface_extractor(grid, size, which="top", tuple=None):
     elif which == "ymax":
         surface = grid.extract_subset((0, nx, ny, ny, 0, nz))
     else:
-        surface = grid.extract_subset(tuple)
+        surface = grid.extract_subset(bounds)
     return surface
 
 
-def surfaces_domain(grid, size):
-    top = surface_extractor(grid, size, which="top")
-    xmin = surface_extractor(grid, size, which="xmin")
-    xmax = surface_extractor(grid, size, which="xmax")
-    ymin = surface_extractor(grid, size, which="ymin")
-    ymax = surface_extractor(grid, size, which="ymax")
+def surface_extractor(
+    grid,
+    which="top",
+    clip=None,
+):
+    nx, ny, nz = grid.dimensions
+
+    # Full domain if no clipping is requested
+    if clip is None:
+        i_min, i_max = 0, nx - 1
+        j_min, j_max = 0, ny - 1
+        k_min, k_max = 0, nz - 1
+    else:
+        i_min, i_max, j_min, j_max, k_min, k_max = clip
+
+    if which == "top":
+        surface = grid.extract_subset((i_min, i_max, j_min, j_max, k_max, k_max))
+
+    elif which == "bottom":
+        surface = grid.extract_subset((i_min, i_max, j_min, j_max, k_min, k_min))
+
+    elif which == "xmin":
+        surface = grid.extract_subset((i_min, i_min, j_min, j_max, k_min, k_max))
+
+    elif which == "xmax":
+        surface = grid.extract_subset((i_max, i_max, j_min, j_max, k_min, k_max))
+
+    elif which == "ymin":
+        surface = grid.extract_subset((i_min, i_max, j_min, j_min, k_min, k_max))
+
+    elif which == "ymax":
+        surface = grid.extract_subset((i_min, i_max, j_max, j_max, k_min, k_max))
+
+    else:
+        raise ValueError(f"Unknown surface: {which}")
+
+    return surface
+
+
+def surfaces_domain(grid, bounds=None):
+    if bounds is None:
+        top = surface_extractor(grid, which="top")
+        xmin = surface_extractor(grid, which="xmin")
+        xmax = surface_extractor(grid, which="xmax")
+        ymin = surface_extractor(grid, which="ymin")
+        ymax = surface_extractor(grid, which="ymax")
+    else:
+        top = surface_extractor(grid, which="top", clip=bounds)
+        xmin = surface_extractor(grid, which="xmin", clip=bounds)
+        xmax = surface_extractor(grid, which="xmax", clip=bounds)
+        ymin = surface_extractor(grid, which="ymin", clip=bounds)
+        ymax = surface_extractor(grid, which="ymax", clip=bounds)
+
     return top, xmin, xmax, ymin, ymax
 
 
-def add_mesh_domain_side(grid, sizes, plotter, vartop, varside):
-    nx, ny, nz = sizes
-    top, xmin, xmax, ymin, ymax = surfaces_domain(grid, (nx, ny, nz))
+def add_mesh_domain_side(grid, plotter, vartop, varside, index_clip=None):
+
+    top, xmin, xmax, ymin, ymax = surfaces_domain(grid, bounds=index_clip)
     plotter.add_mesh(
         top,
         name="top_surface",
@@ -172,13 +234,16 @@ def add_mesh_domain_side(grid, sizes, plotter, vartop, varside):
     )
 
 
-def add_ticks(plotter, L0, H0, tick_len_min, tick_len_maj, label_offset):
-    xmin = -L0 / 2
-    xmax = L0 / 2
-    ymin = xmin
-    ymax = xmax
-    zmin = -H0
-    zmax = 0
+def add_ticks(plotter, L0, H0, tick_len_min, tick_len_maj, label_offset, clip=None):
+    if clip is None:
+        xmin = -L0 / 2
+        xmax = L0 / 2
+        ymin = xmin
+        ymax = xmax
+        zmin = -H0
+        zmax = 0
+    else:
+        xmin, xmax, ymin, ymax, zmin, zmax = clip
 
     plotter.show_bounds(
         bounds=(xmin, xmax, ymin, ymax, zmin, zmax),

@@ -2,7 +2,7 @@
 # Three-dimensional bubble merging
 
 This setup was adapted from [Unverdi](#Unverdi_1992_100).
-See also [Shin](#Shin_2002_180) for different setups.
+See also [Sussman](#Sussman_2000_162) for the same setup.
 
 The flow is characterized by the Morton number (M) and Eotvos number
 (Eo, or Bond number Bo) 
@@ -20,9 +20,7 @@ face vector av[];
 #include "tag.h"
 
 /**
-We make sure there is no flow through the top and bottom boundary,
-otherwise the compatibility condition for the Poisson equation can be
-violated. */
+Free-slip boundary conditions are imposed at all domain boundaries. */
 
 uf.n[top] = 0.;
 uf.n[bottom] = 0.;
@@ -63,7 +61,6 @@ int main (int argc, char * argv[]) {
   a = av;
 
   run();
-  fclose (fp_vel);
 }
 
 event init (i = 0) {
@@ -78,12 +75,7 @@ event init (i = 0) {
     phi[] = min(phi1, phi2);
   }
 
-  char name[80];
-
   init_markers (phi);
-  sprintf (name, "%srising_merge_3d_ebit_dis_case%d_%d.dat",
-    OUTPUTPATH, case_id, N);
-  fp_vel = fopen (name, "w");
 
   eo = rho1*gra*sq(2.*R)/f.sigma;
   mo = gra*sq(mu1)*sq(mu1)/rho1/cube(f.sigma);
@@ -104,16 +96,9 @@ event acceleration (i++) {
   boundary ((scalar *) {av});
 }
 
-event monitor (i++, last) {
-  if (pid() == 0 && i % 100 == 0) {
-    printf ("i: %d  Time: %g\n", i, t);
-  }
-}
-
 /**
-We log the position of the center of mass of the bubble, its velocity
-and volume as well as convergence statistics for the multigrid
-solvers. */
+We log the position of the center of mass of the bubbles and their velocities. */
+
 bool has_merged = false;
 
 event logfile (i+=4) {
@@ -161,17 +146,15 @@ event logfile (i+=4) {
   }
 
   if (pid() == 0) {
-    fprintf (fp_vel, "%g %g %.5e %.5e %.5e %.5e %.5e %.5e %g\n",
-      t, sb, yb/sb, vb/sb, yb_s[0]/sb_s[0], vb_s[0]/sb_s[0],
-      yb_s[1]/sb_s[1], vb_s[1]/sb_s[1], dt);
-    fflush (fp_vel);
+    fprintf (stderr, "%.8e %.8e %.8e %.8e %.8e\n",
+      t, yb_s[0]/sb_s[0], vb_s[0]/sb_s[0], yb_s[1]/sb_s[1], vb_s[1]/sb_s[1]);
   }
 }
 
 /**
 Output the shape of the bubble at diffrent time instants. */
 
-event interface (t = {0., 0.5, 1., 1.5, 1.7, 2., 2.2, 2.5}) {
+event interface (t = {0., 0.5, 1., 1.5, 1.7, 2.}) {
   // char name[80], name_con[80];
   // if (pid() == 0)
   //   printf ("Save interface (mesh) at time step:%d\n", i);
@@ -188,18 +171,29 @@ event interface (t = {0., 0.5, 1., 1.5, 1.7, 2., 2.2, 2.5}) {
 }
 
 /**
+## Results
+
+~~~gnuplot Rise velocity as a function of time for test case 1.
+set term pop
+reset
+set grid
+set xlabel 't'
+set key bottom right
+plot [0:2.][0:] 'log' u 1:3 w l t 'Bubble 1', 'log' u 1:5 w l dt 2 t 'Bubble 2'
+~~~
+
 ## References
 
 ~~~bib
-@article{Shin_2002_180,
-  title={Modeling Three-Dimensional Multiphase Flow Using a Level Contour Reconstruction
-    Method for Front Tracking without Connectivity},
-  author={Shin, Seungwon and Juric, Damir},
-  journal={Journal of Computational Physics},
-  volume={180},
-  pages={427-470},
-  year={2002},
-  publisher={Elsevier}
+@article{Sussman_2000_162,
+title = {A Coupled Level Set and Volume-of-Fluid Method for Computing {3D} and Axisymmetric Incompressible Two-Phase Flows},
+journal = {Journal of Computational Physics},
+volume = {162},
+number = {2},
+pages = {301-337},
+year = {2000},
+doi = {https://doi.org/10.1006/jcph.2000.6537},
+author = {Mark Sussman and Elbridge Gerry Puckett}
 }
 
 @article{Unverdi_1992_100,

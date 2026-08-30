@@ -1,5 +1,5 @@
 /**
-# Sessile drop on an embedded boundary
+# Sessile drop subject to gravity on an embedded boundary
 ~~~gnuplot equilibrium height for $0.001 \leq Bo \leq 100$ and $\theta_e = 130 ^\circ$
 e_th = 1.24e-02
 e_inf(Bo) = 2.0*0.01*sin(130*pi/180./2.0)/sqrt(Bo)/e_th
@@ -19,6 +19,17 @@ plot "e_theta_130.dat" u 1:($2/e_th) w lp title "Numérique", \
 ~~~
 */
 
+v v v v v v v
+// fixme :  voir pourquoi la récupération des données pour le graphe en fonction de Bo ne focntionne pas et donne des données différentes dans fp4 que dans fp2
+
+
+=============
+*************
+// fixme :  voir pourquoi la récupération des données pour le graphe en fonction 
+// de Bo ne fonctionne pas et donne des données différentes dans fp4 que dans fp2
+
+
+^ ^ ^ ^ ^ ^ ^
 #include "twitkamp/MovingEmbed/embed_navier.h"
 #include "navier-stokes/centered.h"
 #include "two-phase.h"

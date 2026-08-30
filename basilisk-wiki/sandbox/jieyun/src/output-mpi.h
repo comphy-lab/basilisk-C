@@ -194,12 +194,3 @@ void output_polygon_mpi (scalar f1, scalar f2, char *file,
   #endif
 }
 #endif
-
-/**
-# Cell number statistic
-*/
-event profile_vof (t = end) {
-  int nc = grid -> n, tnc = grid -> tn;
-  printf ("\n# Total number of (leaf) cells. This process (PID:%d): %d.\
-    All processes: %d\n", pid(), nc, tnc);
-}

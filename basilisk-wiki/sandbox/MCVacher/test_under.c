@@ -36,7 +36,7 @@ FILE * fpmax;
 
 int main()
 {
-  Re=30;                    // rho_1*U0*R_d/mu1
+  Re=10;                    // rho_1*U0*R_d/mu1
   rhob=1./1000.;           // air/water
   mub= 0.000018/0.001;     // air/water
   box_ratio=0.1;          // R_d/L0
@@ -44,7 +44,7 @@ int main()
   L0=0.4; 
   R_d=box_ratio*L0; 
   
-  U0=2;
+  U0=1;
   
   u.n[top] = neumann(0);
   p[top] = dirichlet(0);
@@ -65,7 +65,7 @@ int main()
  
   G.x = 9.81;
   
-  f.sigma=0.001;
+  f.sigma=0.01;
   
   N = 128;
   init_grid(N);

@@ -1,0 +1,4 @@
+block 0: t 0.00  nz 4  nk 24  fields a,b  z [-0.49087, 0.68722]
+block 1: t 0.25  nz 4  nk 24  fields a,b  z [-0.49087, 0.68722]
+vector: t 0.50  nz 1  nk 24  fields v.x,v.y,v.z  z [0.09817, 0.09817]
+PASS: the ASCII blocks are laid out as documented.

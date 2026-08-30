@@ -304,20 +304,33 @@ def check_analytical_fields(data, box=None):
 
   # the box variant must not emit anything outside its region
   if box is not None:
-    outside = 0
-    for c in range(data['num_cells']):
-      verts = cell_vertices(data, c)
-      centroid = [sum(v[d] for v in verts) / len(verts) for d in range(3)]
-      ndim = len(box[0])
-      if any(not (box[0][d] <= centroid[d] <= box[1][d]) for d in range(ndim)):
-        outside += 1
-    print(f"cells inside box       "
-          f"{'OK' if outside == 0 else f'FAIL ({outside} outside)'}")
-    failures += outside > 0
+    failures += check_cells_inside_box(data, box)
   return failures
 
 
-def check_cardioid(data, a=0.15):
+def check_cells_inside_box(data, box):
+  """Verify that no cell's centroid lies outside `box = (lo, hi)`.
+
+  Shared by `check_analytical_fields()` (regular field export) and
+  `check_cardioid()` (VOF facets export) -- both `output_vtkhdf_box()` and
+  `output_facets_vtkhdf_box()` restrict on the same cell-center-in-box test,
+  so one check covers both writers.
+
+  Returns the number of failed checks (0 or 1).
+  """
+  outside = 0
+  for c in range(data['num_cells']):
+    verts = cell_vertices(data, c)
+    centroid = [sum(v[d] for v in verts) / len(verts) for d in range(3)]
+    ndim = len(box[0])
+    if any(not (box[0][d] <= centroid[d] <= box[1][d]) for d in range(ndim)):
+      outside += 1
+  print(f"cells inside box       "
+        f"{'OK' if outside == 0 else f'FAIL ({outside} outside)'}")
+  return outside > 0
+
+
+def check_cardioid(data, a=0.15, box=None):
   """Verify the interface written by `test_output_vtkhdf_facets.c`.
 
   That test builds a VOF fraction from the cardioid
@@ -370,6 +383,10 @@ def check_cardioid(data, a=0.15):
   else:
     print("kappa finite           FAIL (no curvature attribute)")
     failures += 1
+
+  # the box variant must not emit anything outside its region
+  if box is not None:
+    failures += check_cells_inside_box(data, box)
   return failures
 
 
@@ -406,7 +423,7 @@ def check(filename, box=None, cardioid=False, plane=None):
   if plane is not None:
     failures += check_plane(data, plane[0], plane[1])
   if cardioid:
-    failures += check_cardioid(data)
+    failures += check_cardioid(data, box=box)
   else:
     failures += check_analytical_fields(data, box=box)
 

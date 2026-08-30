@@ -794,17 +794,18 @@ void display_init()
 
 event refresh_display (i++, last)
 {
-  do {
-    if (display_play)
-      display_update (i);
-    if (display_poll (display_play ? - 1 : 0))
-      display_update (i);
-  } while (display_play < 0);
-
+  display_poll (0);
+  if (display_play == 1) // Step
+    display_play = -1;
+  while (display_play == -1) { // Paused
+    display_update (i);
+    display_poll (-1);
+  }
   static timer global_timer = {0};
   static double poll_elapsed = 0.;
-  int refresh = (poll_elapsed <=
-		 display_usage/100.*timer_elapsed (global_timer));
+  double elapsed = timer_elapsed (global_timer);
+  bool refresh = (poll_elapsed <= display_usage/100.*elapsed &&
+                  elapsed > 1./50.); // 50 Hz max
 #if _MPI
   MPI_Bcast (&refresh, 1, MPI_INT, 0, MPI_COMM_WORLD);
 #endif

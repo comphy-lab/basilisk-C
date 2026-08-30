@@ -304,6 +304,7 @@ static void relax_viscosity_st (scalar * a, scalar * b, int l, void * data)
   vector axi_corr[];
   foreach_level_or_leaf (l) {
     double sigma_dirac = sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[];
+    if (sigma_dirac > 0){
     axi_corr.x[] = sq(dt)*sigma_dirac*(u.x[0,1] - u.x[0,-1])*Delta
                    /(2.*max(y, Delta/2.))
 #if LB_HP_FILTER
@@ -319,6 +320,11 @@ static void relax_viscosity_st (scalar * a, scalar * b, int l, void * data)
                    /(4.*max(y, Delta/2.))
 #endif
                    ;
+   }
+   else{
+	axi_corr.x[] = 0;
+	axi_corr.y[] = 0;
+   }
   }
 #endif
 
@@ -333,6 +339,7 @@ static void relax_viscosity_st (scalar * a, scalar * b, int l, void * data)
   vector axi_corr[];
   foreach_level_or_leaf (l) {
     double sigma_dirac = sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[];
+    if (sigma_dirac > 0){
     axi_corr.x[] = sq(dt)*sigma_dirac*(u.x[0,1] - u.x[0,-1])*Delta
                    /(2.*max(y, Delta/2.))
 #if LB_HP_FILTER
@@ -348,123 +355,205 @@ static void relax_viscosity_st (scalar * a, scalar * b, int l, void * data)
                    /(4.*max(y, Delta/2.))
 #endif
                    ;
+   }
+   else{
+        axi_corr.x[] = 0;
+        axi_corr.y[] = 0;
+   }
   }
 #endif
 
   foreach_level_or_leaf (l)
 #endif
-  {
-    foreach_dimension()
-      w.x[] = (r.x[]*sq(Delta) 
-
+ {
+    /* === GATE: the single check driving everything below. Computed
+       ONCE per cell (not per dimension -- sigma_n_sq_dirac's sum
+       doesn't depend on which component w.x/w.y/w.z we're solving
+       for), then reused inside foreach_dimension() for every
+       component. */
+    double sigma_gate_sum = sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[]
+#if dimension == 3
+      + sigma_n_sq_dirac.z[]
+#endif
+      ;
+    bool st_active = fabs (sigma_gate_sum) > 0.0;
+ 
+    foreach_dimension() {
+ 
+      /* === GATE: ST-specific numerator and denominator contributions
+	 only get computed (the expensive field reads and all) when
+	 st_active is true; otherwise they stay at their initialised
+	 0. Every term below is IDENTICAL to what previously lived
+	 directly inside the w.x[] expression -- nothing about the
+	 physics changed, only whether it gets evaluated. On CPUS
+	 using conditional logic is signficantly more efficient than 
+	 evaluating the surface laplacian and multiplying by zero far
+	 from the interface.*/
+      double st_num = 0., st_denom = 0.;
+      if (st_active) {
+ 
+	st_num =
+ 
+	  /**
+	  Diagonal terms $(1-n_i^2)u_{ii}$: contribution of the two
+	  direct neighbours in each direction. Under the HP filter the
+	  wide-stencil neighbours carry weight $-1/4$, from
+	  $(u[2]-2u[]+u[-2])/4$. */
+ 
+#if LB_HP_FILTER
+	  /* HP diagonal: full - smooth (wide-stencil) Laplacian off-centre values */
+	  sq(dt)*sigma_n_sq_dirac.x[]*((u.x[1]+u.x[-1]) - 0.25*(ua.x[2]+ua.x[-2]))
+	  + sq(dt)*sigma_n_sq_dirac.y[]*((u.x[0,1]+u.x[0,-1]) - 0.25*(ua.x[0,2]+ua.x[0,-2]))
+#else
+	  sq(dt)*sigma_n_sq_dirac.x[]*(u.x[1]+u.x[-1])
+	  + sq(dt)*sigma_n_sq_dirac.y[]*(u.x[0,1]+u.x[0,-1])
+#endif
+	  #if dimension == 3
+#if LB_HP_FILTER
+	  + sq(dt)*sigma_n_sq_dirac.z[]*((u.x[0,0,1]+u.x[0,0,-1]) - 0.25*(ua.x[0,0,2]+ua.x[0,0,-2]))
+#else
+	  + sq(dt)*sigma_n_sq_dirac.z[]*(u.x[0,0,1]+u.x[0,0,-1])
+#endif
+	  #endif
+ 
+	  /**
+	  Cross-derivative term $-2n_1n_2u_{xy}$. All four corner values
+	  are read from `ua`: they are never guaranteed to be updated in
+	  the current sweep, and freezing them keeps the sweep
+	  deterministic. */
+ 
+	  #if dimension == 2
+	  - sq(dt)/2*sigma_off_diag_dirac.x[]*((ua.x[1,1]-ua.x[-1,1])-(ua.x[1,-1]-ua.x[-1,-1]))
+#if LB_HP_FILTER
+	  /* HP off-diagonal smooth: unconditional 12-point stencil.
+	     HP/full = (2-cos kx - cos ky)/4 in [0,1]: no anti-damping at any level.
+	     minlevel=1 in mg_solve prevents this stencil from reaching level 0. */
+	  + sq(dt)*sigma_off_diag_dirac.x[]*(
+	      4*(ua.x[1,1]-ua.x[-1,1]-ua.x[1,-1]+ua.x[-1,-1])
+	     +(ua.x[1,2]-ua.x[-1,2]-ua.x[1,-2]+ua.x[-1,-2])
+	     +(ua.x[2,1]-ua.x[-2,1]-ua.x[2,-1]+ua.x[-2,-1]))/16.
+#endif
+#if LB_HP_FILTER
+	  /* HP curvature-gradient 2D consistent with face-vector residual.
+	     Face-vector HP: K*(3*(u[]-u[-1]) - (u[1]-u[-2]))/(4*sq(Delta))
+	     Main term:       K_x+*(3u[1])/4  - live, same GS coupling as original.
+	     Cross-coupling:  K_x+*ua[-1]/4   - frozen (deferred correction). During
+	     the black GS pass ua[-1] would be a fresh red cell; keeping it frozen
+	     prevents asymmetric intra-sweep feedback that can push rho(M) > 1.
+	     Smooth:          -K_x+*ua[2]/4   - frozen (even offset, must be ua). */
+	  - sq(dt)/2*4/(fm.x[1]+fm.x[]+fm.y[0,1]+fm.y[])
+	    *(fm.x[1]*sigma_kappa_gradf.x[1]*(3.*u.x[1]+u.x[-1]-ua.x[2])/4.
+	     -fm.x[]*sigma_kappa_gradf.x[]*(3.*u.x[-1]+u.x[1]-ua.x[-2])/4.
+	     +fm.y[0,1]*sigma_kappa_gradf.y[0,1]*(3.*u.x[0,1]+u.x[0,-1]-ua.x[0,2])/4.
+	     -fm.y[]*sigma_kappa_gradf.y[]*(3.*u.x[0,-1]+u.x[0,1]-ua.x[0,-2])/4.)
+#else
+	  /* Curvature correction, fm-weighted average of the two opposite
+	     faces in each direction, matching the face averaging used for
+	     the explicit balanced-force CSF term. */
+	  - sq(dt)/2*4/(fm.x[1]+fm.x[]+fm.y[0,1]+fm.y[])*(fm.x[1]*sigma_kappa_gradf.x[1]*u.x[1]-fm.x[]*sigma_kappa_gradf.x[]*u.x[-1]
+							  + fm.y[0,1]*sigma_kappa_gradf.y[0,1]*u.x[0,1] - fm.y[]*sigma_kappa_gradf.y[]*u.x[0,-1])
+#endif
+	  #else
+ 
+	  /* Three cross-derivative pairs in 3D: .z pairs with 2u_xy,
+	     .y with 2u_xz, .x with 2u_yz. */
+ 
+	  - sq(dt)/2*sigma_off_diag_dirac.z[]*(ua.x[1,1,0]-ua.x[-1,1,0]-ua.x[1,-1,0]+ua.x[-1,-1,0])
+	  - sq(dt)/2*sigma_off_diag_dirac.y[]*(ua.x[1,0,1]-ua.x[-1,0,1]-ua.x[1,0,-1]+ua.x[-1,0,-1])
+	  - sq(dt)/2*sigma_off_diag_dirac.x[]*(ua.x[0,1,1]-ua.x[0,-1,1]-ua.x[0,1,-1]+ua.x[0,-1,-1])
+#if LB_HP_FILTER
+	  /* HP 3D off-diagonal (xy pair): unconditional 12-point stencil. */
+	  + sq(dt)*sigma_off_diag_dirac.z[]*(
+	      4*(ua.x[1,1,0]-ua.x[-1,1,0]-ua.x[1,-1,0]+ua.x[-1,-1,0])
+	     +(ua.x[1,2,0]-ua.x[-1,2,0]-ua.x[1,-2,0]+ua.x[-1,-2,0])
+	     +(ua.x[2,1,0]-ua.x[-2,1,0]-ua.x[2,-1,0]+ua.x[-2,-1,0]))/16.
+	  + sq(dt)*sigma_off_diag_dirac.y[]*(
+	      4*(ua.x[1,0,1]-ua.x[-1,0,1]-ua.x[1,0,-1]+ua.x[-1,0,-1])
+	     +(ua.x[1,0,2]-ua.x[-1,0,2]-ua.x[1,0,-2]+ua.x[-1,0,-2])
+	     +(ua.x[2,0,1]-ua.x[-2,0,1]-ua.x[2,0,-1]+ua.x[-2,0,-1]))/16.
+	  + sq(dt)*sigma_off_diag_dirac.x[]*(
+	      4*(ua.x[0,1,1]-ua.x[0,-1,1]-ua.x[0,1,-1]+ua.x[0,-1,-1])
+	     +(ua.x[0,1,2]-ua.x[0,-1,2]-ua.x[0,1,-2]+ua.x[0,-1,-2])
+	     +(ua.x[0,2,1]-ua.x[0,-2,1]-ua.x[0,2,-1]+ua.x[0,-2,-1]))/16.
+#endif
+#if LB_HP_FILTER
+	  /* HP curvature-gradient 3D: same frozen-cross-coupling principle as 2D.
+	     Main terms 3*u[.] live; cross-coupling ua[opposite] and smooth ua[2x] frozen. */
+	  - sq(dt)/2*6/(fm.x[1]+fm.x[]+fm.y[0,1]+fm.y[]+fm.z[0,0,1]+fm.z[])
+	    *(fm.x[1]*sigma_kappa_gradf.x[1]*(3.*u.x[1]+u.x[-1]-ua.x[2])/4.
+	     -fm.x[]*sigma_kappa_gradf.x[]*(3.*u.x[-1]+u.x[1]-ua.x[-2])/4.
+	     +fm.y[0,1]*sigma_kappa_gradf.y[0,1]*(3.*u.x[0,1]+u.x[0,-1]-ua.x[0,2])/4.
+	     -fm.y[]*sigma_kappa_gradf.y[]*(3.*u.x[0,-1]+u.x[0,1]-ua.x[0,-2])/4.
+	     +fm.z[0,0,1]*sigma_kappa_gradf.z[0,0,1]*(3.*u.x[0,0,1]+u.x[0,0,-1]-ua.x[0,0,2])/4.
+	     -fm.z[]*sigma_kappa_gradf.z[]*(3.*u.x[0,0,-1]+u.x[0,0,1]-ua.x[0,0,-2])/4.)
+#else
+	  - sq(dt)/2*6/(fm.x[1]+fm.x[]+fm.y[0,1]+fm.y[] + fm.z[0,0,1]+fm.z[])*(fm.x[1]*sigma_kappa_gradf.x[1]*u.x[1]-fm.x[]*sigma_kappa_gradf.x[]*u.x[-1]
+									  + fm.y[0,1]*sigma_kappa_gradf.y[0,1]*u.x[0,1] - fm.y[]*sigma_kappa_gradf.y[]*u.x[0,-1]
+									  + fm.z[0,0,1]*sigma_kappa_gradf.z[0,0,1]*u.x[0,0,1] - fm.z[]*sigma_kappa_gradf.z[]*u.x[0,0,-1])
+#endif
+ 
+	  #endif
+	  ;
+ 
+	/**
+	Denominator: diagonal of the combined operator. The surface
+	tension diagonal is $2(1-n_i^2)$ summed over directions, which
+	equals $2$ in 2D and $4$ in 3D since $\sum_i(1-n_i^2) = d-1$.
+	Under the HP filter the centre coefficient of $u_{xx}^{HP}$ is
+	$-(2-1/2) = -3/2$ instead of $-2$, and the curvature term
+	likewise carries $3/4$ of its unfiltered weight. */
+ 
+	st_denom =
+#if LB_HP_FILTER
+	  /* HP filter: centre coefficient of u_xx^HP = -(2-1/2) = -3/2 */
+	  1.5*sq(dt)*(sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[]
+	  #if dimension == 3
+	  + sigma_n_sq_dirac.z[]
+	  #endif
+	  )
+#else
+	  2*sq(dt)*(sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[]
+	  #if dimension == 3
+	  + sigma_n_sq_dirac.z[]
+	  #endif
+	  )
+#endif
+#if LB_HP_FILTER
+   #if INCLUDE_CURVATURE_CORRECTION
+	  + (3./4.)*sq(dt)/2*(
+	      (fm.x[1]*sigma_kappa_gradf.x[1] + fm.x[]*sigma_kappa_gradf.x[])/(fm.x[1] + fm.x[])
+	    + (fm.y[0,1]*sigma_kappa_gradf.y[0,1] + fm.y[]*sigma_kappa_gradf.y[])/(fm.y[0,1] + fm.y[])
+	  #if dimension == 3
+	    + (fm.z[0,0,1]*sigma_kappa_gradf.z[0,0,1] + fm.z[]*sigma_kappa_gradf.z[])/(fm.z[0,0,1] + fm.z[])
+	  #endif
+	  )
+	  #endif
+#else
+   #if INCLUDE_CURVATURE_CORRECTION
+	  + sq(dt)/2*(
+	      (fm.x[1]*sigma_kappa_gradf.x[1] + fm.x[]*sigma_kappa_gradf.x[])/(fm.x[1] + fm.x[])
+	    + (fm.y[0,1]*sigma_kappa_gradf.y[0,1] + fm.y[]*sigma_kappa_gradf.y[])/(fm.y[0,1] + fm.y[])
+	  #if dimension == 3
+	    + (fm.z[0,0,1]*sigma_kappa_gradf.z[0,0,1] + fm.z[]*sigma_kappa_gradf.z[])/(fm.z[0,0,1] + fm.z[])
+	  #endif
+	  )
+	  #endif
+#endif
+	  ;
+      }
+ 
+      w.x[] = (r.x[]*sq(Delta)
+ 
 #if AXI
         + axi_corr.x[]
 #endif
-
-	/**
-	Diagonal terms $(1-n_i^2)u_{ii}$: contribution of the two
-	direct neighbours in each direction. Under the HP filter the
-	wide-stencil neighbours carry weight $-1/4$, from
-	$(u[2]-2u[]+u[-2])/4$. */
-
-#if LB_HP_FILTER
-	/* HP diagonal: full - smooth (wide-stencil) Laplacian off-centre values */
-	+ sq(dt)*sigma_n_sq_dirac.x[]*((u.x[1]+u.x[-1]) - 0.25*(ua.x[2]+ua.x[-2]))
-	+ sq(dt)*sigma_n_sq_dirac.y[]*((u.x[0,1]+u.x[0,-1]) - 0.25*(ua.x[0,2]+ua.x[0,-2]))
-#else
-	+ sq(dt)*sigma_n_sq_dirac.x[]*(u.x[1]+u.x[-1])
-	+ sq(dt)*sigma_n_sq_dirac.y[]*(u.x[0,1]+u.x[0,-1])
-#endif
-	#if dimension == 3
-#if LB_HP_FILTER
-	+ sq(dt)*sigma_n_sq_dirac.z[]*((u.x[0,0,1]+u.x[0,0,-1]) - 0.25*(ua.x[0,0,2]+ua.x[0,0,-2]))
-#else
-	+ sq(dt)*sigma_n_sq_dirac.z[]*(u.x[0,0,1]+u.x[0,0,-1])
-#endif
-	#endif
-
-	/**
-	Cross-derivative term $-2n_1n_2u_{xy}$. All four corner values
-	are read from `ua`: they are never guaranteed to be updated in
-	the current sweep, and freezing them keeps the sweep
-	deterministic. */
-
-	#if dimension == 2
-	- sq(dt)/2*sigma_off_diag_dirac.x[]*((ua.x[1,1]-ua.x[-1,1])-(ua.x[1,-1]-ua.x[-1,-1]))
-#if LB_HP_FILTER
-	/* HP off-diagonal smooth: unconditional 12-point stencil.
-	   HP/full = (2-cos kx - cos ky)/4 in [0,1]: no anti-damping at any level.
-	   minlevel=1 in mg_solve prevents this stencil from reaching level 0. */
-	+ sq(dt)*sigma_off_diag_dirac.x[]*(
-	    4*(ua.x[1,1]-ua.x[-1,1]-ua.x[1,-1]+ua.x[-1,-1])
-	   +(ua.x[1,2]-ua.x[-1,2]-ua.x[1,-2]+ua.x[-1,-2])
-	   +(ua.x[2,1]-ua.x[-2,1]-ua.x[2,-1]+ua.x[-2,-1]))/16.
-#endif
-#if LB_HP_FILTER
-	/* HP curvature-gradient 2D consistent with face-vector residual.
-	   Face-vector HP: K*(3*(u[]-u[-1]) - (u[1]-u[-2]))/(4*sq(Delta))
-	   Main term:       K_x+*(3u[1])/4  - live, same GS coupling as original.
-	   Cross-coupling:  K_x+*ua[-1]/4   - frozen (deferred correction). During
-	   the black GS pass ua[-1] would be a fresh red cell; keeping it frozen
-	   prevents asymmetric intra-sweep feedback that can push rho(M) > 1.
-	   Smooth:          -K_x+*ua[2]/4   - frozen (even offset, must be ua). */
-        - sq(dt)/2*4/(fm.x[1]+fm.x[]+fm.y[0,1]+fm.y[])
-	  *(fm.x[1]*sigma_kappa_gradf.x[1]*(3.*u.x[1]+u.x[-1]-ua.x[2])/4.
-	   -fm.x[]*sigma_kappa_gradf.x[]*(3.*u.x[-1]+u.x[1]-ua.x[-2])/4.
-	   +fm.y[0,1]*sigma_kappa_gradf.y[0,1]*(3.*u.x[0,1]+u.x[0,-1]-ua.x[0,2])/4.
-	   -fm.y[]*sigma_kappa_gradf.y[]*(3.*u.x[0,-1]+u.x[0,1]-ua.x[0,-2])/4.)
-#else
-	/* Curvature correction, fm-weighted average of the two opposite
-	   faces in each direction, matching the face averaging used for
-	   the explicit balanced-force CSF term. */
-        - sq(dt)/2*4/(fm.x[1]+fm.x[]+fm.y[0,1]+fm.y[])*(fm.x[1]*sigma_kappa_gradf.x[1]*u.x[1]-fm.x[]*sigma_kappa_gradf.x[]*u.x[-1]
-							+ fm.y[0,1]*sigma_kappa_gradf.y[0,1]*u.x[0,1] - fm.y[]*sigma_kappa_gradf.y[]*u.x[0,-1])
-#endif
-	#else
-
-	/* Three cross-derivative pairs in 3D: .z pairs with 2u_xy,
-	   .y with 2u_xz, .x with 2u_yz. */
-
-	- sq(dt)/2*sigma_off_diag_dirac.z[]*(ua.x[1,1,0]-ua.x[-1,1,0]-ua.x[1,-1,0]+ua.x[-1,-1,0])
-	- sq(dt)/2*sigma_off_diag_dirac.y[]*(ua.x[1,0,1]-ua.x[-1,0,1]-ua.x[1,0,-1]+ua.x[-1,0,-1])
-	- sq(dt)/2*sigma_off_diag_dirac.x[]*(ua.x[0,1,1]-ua.x[0,-1,1]-ua.x[0,1,-1]+ua.x[0,-1,-1])
-#if LB_HP_FILTER
-	/* HP 3D off-diagonal (xy pair): unconditional 12-point stencil. */
-	+ sq(dt)*sigma_off_diag_dirac.z[]*(
-	    4*(ua.x[1,1,0]-ua.x[-1,1,0]-ua.x[1,-1,0]+ua.x[-1,-1,0])
-	   +(ua.x[1,2,0]-ua.x[-1,2,0]-ua.x[1,-2,0]+ua.x[-1,-2,0])
-	   +(ua.x[2,1,0]-ua.x[-2,1,0]-ua.x[2,-1,0]+ua.x[-2,-1,0]))/16.
-	+ sq(dt)*sigma_off_diag_dirac.y[]*(
-	    4*(ua.x[1,0,1]-ua.x[-1,0,1]-ua.x[1,0,-1]+ua.x[-1,0,-1])
-	   +(ua.x[1,0,2]-ua.x[-1,0,2]-ua.x[1,0,-2]+ua.x[-1,0,-2])
-	   +(ua.x[2,0,1]-ua.x[-2,0,1]-ua.x[2,0,-1]+ua.x[-2,0,-1]))/16.
-	+ sq(dt)*sigma_off_diag_dirac.x[]*(
-	    4*(ua.x[0,1,1]-ua.x[0,-1,1]-ua.x[0,1,-1]+ua.x[0,-1,-1])
-	   +(ua.x[0,1,2]-ua.x[0,-1,2]-ua.x[0,1,-2]+ua.x[0,-1,-2])
-	   +(ua.x[0,2,1]-ua.x[0,-2,1]-ua.x[0,2,-1]+ua.x[0,-2,-1]))/16.
-#endif
-#if LB_HP_FILTER
-	/* HP curvature-gradient 3D: same frozen-cross-coupling principle as 2D.
-	   Main terms 3*u[.] live; cross-coupling ua[opposite] and smooth ua[2x] frozen. */
-	- sq(dt)/2*6/(fm.x[1]+fm.x[]+fm.y[0,1]+fm.y[]+fm.z[0,0,1]+fm.z[])
-	  *(fm.x[1]*sigma_kappa_gradf.x[1]*(3.*u.x[1]+u.x[-1]-ua.x[2])/4.
-	   -fm.x[]*sigma_kappa_gradf.x[]*(3.*u.x[-1]+u.x[1]-ua.x[-2])/4.
-	   +fm.y[0,1]*sigma_kappa_gradf.y[0,1]*(3.*u.x[0,1]+u.x[0,-1]-ua.x[0,2])/4.
-	   -fm.y[]*sigma_kappa_gradf.y[]*(3.*u.x[0,-1]+u.x[0,1]-ua.x[0,-2])/4.
-	   +fm.z[0,0,1]*sigma_kappa_gradf.z[0,0,1]*(3.*u.x[0,0,1]+u.x[0,0,-1]-ua.x[0,0,2])/4.
-	   -fm.z[]*sigma_kappa_gradf.z[]*(3.*u.x[0,0,-1]+u.x[0,0,1]-ua.x[0,0,-2])/4.)
-#else
-	- sq(dt)/2*6/(fm.x[1]+fm.x[]+fm.y[0,1]+fm.y[] + fm.z[0,0,1]+fm.z[])*(fm.x[1]*sigma_kappa_gradf.x[1]*u.x[1]-fm.x[]*sigma_kappa_gradf.x[]*u.x[-1]
-                                                        + fm.y[0,1]*sigma_kappa_gradf.y[0,1]*u.x[0,1] - fm.y[]*sigma_kappa_gradf.y[]*u.x[0,-1]
-							+ fm.z[0,0,1]*sigma_kappa_gradf.z[0,0,1]*u.x[0,0,1] - fm.z[]*sigma_kappa_gradf.z[]*u.x[0,0,-1])
-#endif
-
-	#endif
-
+	+ st_num
+ 
 	/* Viscous off-diagonal contributions, unchanged from
-	   viscosity.h. Corner values of the transverse components use
-	   ua for the same determinism reason as above. */
-
+	   viscosity.h -- ALWAYS computed, never gated: this is the
+	   ordinary viscosity term, not surface-tension-localised, and
+	   is needed everywhere regardless of interface proximity. */
+ 
 	+ dt/rho[]*(2.*mu.x[1]*u.x[1] + 2.*mu.x[]*u.x[-1]
 #if dimension > 1
 					   + mu.y[0,1]*(u.x[0,1] +
@@ -483,53 +572,10 @@ static void relax_viscosity_st (scalar * a, scalar * b, int l, void * data)
 						     (ua.z[-1,0,-1] + u.z[-1,0,0])/4.)
 #endif
 					   ))/
-
-      /**
-      Denominator: diagonal of the combined operator. The surface
-      tension diagonal is $2(1-n_i^2)$ summed over directions, which
-      equals $2$ in 2D and $4$ in 3D since $\sum_i(1-n_i^2) = d-1$.
-      Under the HP filter the centre coefficient of $u_{xx}^{HP}$ is
-      $-(2-1/2) = -3/2$ instead of $-2$, and the curvature term
-      likewise carries $3/4$ of its unfiltered weight. */
-
-      (lambda.x*sq(Delta)
-#if LB_HP_FILTER
-	/* HP filter: centre coefficient of u_xx^HP = -(2-1/2) = -3/2 */
-	+ 1.5*sq(dt)*(sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[]
-	#if dimension == 3
-	+ sigma_n_sq_dirac.z[]
-	#endif
-	)
-#else
-	+ 2*sq(dt)*(sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[]
-	#if dimension == 3
-	+ sigma_n_sq_dirac.z[]
-	#endif
-	)
-#endif
-#if LB_HP_FILTER
- #if INCLUDE_CURVATURE_CORRECTION
-  + (3./4.)*sq(dt)/2*(
-      (fm.x[1]*sigma_kappa_gradf.x[1] + fm.x[]*sigma_kappa_gradf.x[])/(fm.x[1] + fm.x[])
-    + (fm.y[0,1]*sigma_kappa_gradf.y[0,1] + fm.y[]*sigma_kappa_gradf.y[])/(fm.y[0,1] + fm.y[])
-  #if dimension == 3
-    + (fm.z[0,0,1]*sigma_kappa_gradf.z[0,0,1] + fm.z[]*sigma_kappa_gradf.z[])/(fm.z[0,0,1] + fm.z[])
-  #endif
-  )
-  #endif
-
-#else
- #if INCLUDE_CURVATURE_CORRECTION
-  + sq(dt)/2*(
-      (fm.x[1]*sigma_kappa_gradf.x[1] + fm.x[]*sigma_kappa_gradf.x[])/(fm.x[1] + fm.x[])
-    + (fm.y[0,1]*sigma_kappa_gradf.y[0,1] + fm.y[]*sigma_kappa_gradf.y[])/(fm.y[0,1] + fm.y[])
-  #if dimension == 3
-    + (fm.z[0,0,1]*sigma_kappa_gradf.z[0,0,1] + fm.z[]*sigma_kappa_gradf.z[])/(fm.z[0,0,1] + fm.z[])
-  #endif
-  )
-  #endif
-#endif
-	+ dt/rho[]*(2.*mu.x[1] + 2.*mu.x[]
+ 
+	(lambda.x*sq(Delta)
+	 + st_denom
+	 + dt/rho[]*(2.*mu.x[1] + 2.*mu.x[]
 #if dimension > 1
 				      + mu.y[0,1] + mu.y[]
 #endif
@@ -537,7 +583,9 @@ static void relax_viscosity_st (scalar * a, scalar * b, int l, void * data)
 				      + mu.z[0,0,1] + mu.z[]
 #endif
 				      ));
+    }
   }
+
 
 #if JACOBI
   foreach_level_or_leaf (l)
@@ -579,7 +627,8 @@ boundaries. Four face fields are built per velocity component:
 Taking the divergence of each in the subsequent `foreach()` loop then
 gives the corresponding term of the operator. */
 
-static double residual_viscosity_st (scalar * a, scalar * b, scalar * resl, 
+static
+double residual_viscosity_st (scalar * a, scalar * b, scalar * resl, 
 				  void * data)
 {
   struct Viscosity_with_implicit_ST * p = (struct Viscosity_with_implicit_ST *) data;
@@ -593,14 +642,14 @@ static double residual_viscosity_st (scalar * a, scalar * b, scalar * resl,
   double maxres = 0.;
 #if TREE
   /* conservative coarse/fine discretisation (2nd order) */
-
+ 
   /**
   We manually apply boundary conditions, so that all components are
   treated simultaneously. Otherwise (automatic) BCs would be applied
   component by component before each foreach_face() loop. */
   
   boundary ({u});
-
+ 
 /*if (!Period.x){
    foreach_boundary(right){
       u.x[2,0] = -u.x[-1,0];
@@ -621,12 +670,12 @@ static double residual_viscosity_st (scalar * a, scalar * b, scalar * resl,
       u.y[0,-2] = -u.y[0,1];
     }
    }*/
-
+ 
   /**
   Axisymmetric $u_r/r$ term of the surface Laplacian, evaluated with a
   centred difference and regularised on the axis by
   $\max(y,\Delta/2)$. */
-
+ 
 #if AXI
   vector axi_res[];
   foreach() {
@@ -648,8 +697,8 @@ static double residual_viscosity_st (scalar * a, scalar * b, scalar * resl,
                   ;
   }
 #endif
-
-
+ 
+ 
   foreach_dimension() {
     face vector taux[];
     face vector st_diagx[]; //diagonal component
@@ -661,6 +710,23 @@ static double residual_viscosity_st (scalar * a, scalar * b, scalar * resl,
     
     foreach_face(x){
       taux.x[] = 2.*mu.x[]*(u.x[] - u.x[-1])/Delta;
+ 
+      /* === GATE: face-level check -- either adjacent cell having a
+	 non-negligible sigma_n_sq_dirac sum is enough to keep the
+	 ST-specific face quantities on for this face. taux above is
+	 NEVER gated -- it's the ordinary viscous flux, needed
+	 everywhere regardless of interface proximity. === */
+      double sigma_here = sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[]
+#if dimension == 3
+	+ sigma_n_sq_dirac.z[]
+#endif
+	;
+      double sigma_there = sigma_n_sq_dirac.x[-1] + sigma_n_sq_dirac.y[-1]
+#if dimension == 3
+	+ sigma_n_sq_dirac.z[-1]
+#endif
+	;
+      if (fabs (sigma_here) > 0.0 || fabs (sigma_there) > 0.0) {
 #if LB_HP_FILTER
       /* --- HP diagonal (x-face) ---
          Smooth face gradient at face i-1/2: (u[i+1]+u[i]-u[i-1]-u[i-2])/(4dx)
@@ -694,12 +760,32 @@ static double residual_viscosity_st (scalar * a, scalar * b, scalar * resl,
       #endif
       st_curvx.x[] = sigma_kappa_gradf.x[]*(u.x[] - u.x[-1])/sq(Delta);
 #endif
+      }
+      else {
+	st_diagx.x[] = st_off_diagx1.x[] = st_curvx.x[] = 0.;
+#if dimension == 3
+	st_off_diagx2.x[] = 0.;
+#endif
+      }
     }
     #if dimension > 1
       foreach_face(y){
 	taux.y[] = mu.y[]*(u.x[] - u.x[0,-1] +
 			   (u.y[1,-1] + u.y[1,0])/4. -
 			   (u.y[-1,-1] + u.y[-1,0])/4.)/Delta;
+ 
+      /* === GATE: same face-level check, y-face === */
+      double sigma_here = sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[]
+#if dimension == 3
+	+ sigma_n_sq_dirac.z[]
+#endif
+	;
+      double sigma_there = sigma_n_sq_dirac.x[0,-1] + sigma_n_sq_dirac.y[0,-1]
+#if dimension == 3
+	+ sigma_n_sq_dirac.z[0,-1]
+#endif
+	;
+      if (fabs (sigma_here) > 0.0 || fabs (sigma_there) > 0.0) {
 #if LB_HP_FILTER
        /* HP diagonal (y-face): smooth gradient (u[0,1]+u[]-u[0,-1]-u[0,-2])/(4dx) */
        st_diagx.y[] = (u.x[] - u.x[0,-1])/Delta
@@ -725,12 +811,24 @@ static double residual_viscosity_st (scalar * a, scalar * b, scalar * resl,
        st_curvx.y[] = sigma_kappa_gradf.y[]*(u.x[] - u.x[0,-1])/sq(Delta);
 #endif
       }
+      else {
+	st_diagx.y[] = st_off_diagx1.y[] = st_curvx.y[] = 0.;
+#if dimension == 3
+	st_off_diagx2.y[] = 0.;
+#endif
+      }
+      }
     #endif
     #if dimension > 2
       foreach_face(z){
 	taux.z[] = mu.z[]*(u.x[] - u.x[0,0,-1] +
 			   (u.z[1,0,-1] + u.z[1,0,0])/4. -
 			   (u.z[-1,0,-1] + u.z[-1,0,0])/4.)/Delta;
+ 
+      /* === GATE: same face-level check, z-face === */
+      double sigma_here = sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[] + sigma_n_sq_dirac.z[];
+      double sigma_there = sigma_n_sq_dirac.x[0,0,-1] + sigma_n_sq_dirac.y[0,0,-1] + sigma_n_sq_dirac.z[0,0,-1];
+      if (fabs (sigma_here) > 0.0 || fabs (sigma_there) > 0.0) {
 #if LB_HP_FILTER
 	/* HP diagonal (z-face): smooth gradient (u[0,0,1]+u[]-u[0,0,-1]-u[0,0,-2])/(4dx) */
 	st_diagx.z[] = (u.x[] - u.x[0,0,-1])/Delta
@@ -755,40 +853,68 @@ static double residual_viscosity_st (scalar * a, scalar * b, scalar * resl,
 	st_curvx.z[] = sigma_kappa_gradf.z[]*(u.x[] - u.x[0,0,-1])/sq(Delta);
 #endif
       }
+      else {
+	st_diagx.z[] = st_off_diagx1.z[] = st_curvx.z[] = 0.;
+#if dimension == 3
+	st_off_diagx2.z[] = 0.;
+#endif
+      }
+      }
     #endif
-
+ 
     /**
     Divergence of the face fields. `d` accumulates the viscous stress
     divergence and `d2` the diagonal surface tension terms; `off_diag`
     collects the cross-derivative divergences, each component pairing
     with the matching component of `sigma_off_diag_dirac`. */
-
+ 
     foreach (reduction(max:maxres)) {
       double d = 0.;
       double d2 = 0.;
-
+ 
+      /* === GATE: per-cell check, same criterion as relax_viscosity_st,
+	 for the FINAL combination step. Even though the face fields
+	 above were already gated, this ALSO guards the sigma_off_diag_
+	 dirac/curvature terms below, which are separate coefficients
+	 not covered by the sigma_n_sq_dirac face check above. === */
+      double sigma_gate_sum = sigma_n_sq_dirac.x[] + sigma_n_sq_dirac.y[]
+#if dimension == 3
+	+ sigma_n_sq_dirac.z[]
+#endif
+	;
+      bool st_active = fabs (sigma_gate_sum) > 0.0;
+ 
       foreach_dimension(){
 	d += taux.x[1] - taux.x[];
-	d2 += sigma_n_sq_dirac.x[]*(st_diagx.x[1] - st_diagx.x[]);
+	if (st_active)
+	  d2 += sigma_n_sq_dirac.x[]*(st_diagx.x[1] - st_diagx.x[]);
       }
       #if dimension == 2
 	coord off_diag = (coord){0,0};
-	off_diag.x = (st_off_diagx1.x[1,0] - st_off_diagx1.x[] + st_off_diagx1.y[0,1] - st_off_diagx1.y[]);
+	if (st_active)
+	  off_diag.x = (st_off_diagx1.x[1,0] - st_off_diagx1.x[] + st_off_diagx1.y[0,1] - st_off_diagx1.y[]);
  
       #else
 	/* off_diag.z -> 2u_xy, off_diag.y -> 2u_xz, off_diag.x -> 2u_yz */
 	coord off_diag = (coord){0,0,0};
+	if (st_active) {
 	off_diag.z = (st_off_diagx1.x[1,0,0] - st_off_diagx1.x[] + st_off_diagx1.y[0,1,0] - st_off_diagx1.y[]);
 	off_diag.y = (st_off_diagx2.x[1,0,0] - st_off_diagx2.x[] + st_off_diagx1.z[0,0,1] - st_off_diagx1.z[]);
 	off_diag.x = (st_off_diagx2.y[0,1,0] - st_off_diagx2.y[0,0,0] + st_off_diagx2.z[0,0,1] - st_off_diagx2.z[]);
+	}
 	
       #endif 
-
+ 
       /**
       Assembled residual: right-hand side, minus the diagonal term,
       plus the viscous divergence, plus the three groups of surface
-      tension terms, plus the axisymmetric correction. */
-
+      tension terms, plus the axisymmetric correction. The three ST
+      groups (d2, off_diag, curvature) are already zero when
+      st_active is false, so no separate guard is needed on the
+      lines below -- adding zero is cheap; it's the field reads
+      inside st_curvx that were the expensive part, and those are
+      already skipped upstream. */
+ 
       res.x[] = r.x[] - lambda.x*u.x[] + dt/rho[]*d/Delta
 		+ sq(dt)*d2/Delta
 		#if dimension == 2
@@ -803,15 +929,15 @@ static double residual_viscosity_st (scalar * a, scalar * b, scalar * resl,
 		#if dimension == 3
 		- sq(dt)*(st_curvx.z[0,0,1]*fm.z[0,0,1] + st_curvx.z[]*fm.z[])/(fm.z[0,0,1] + fm.z[])
 		#endif
-
+ 
 #if AXI
 	+ axi_res.x[]
 #endif
 	;
-
+ 
       if (fabs (res.x[]) > maxres)
 	maxres = fabs (res.x[]);
-
+ 
 #ifdef PRINT_LB
       /**
       Print coordinates and individual terms of the Laplace-Beltrami operator contribution to the
@@ -878,6 +1004,7 @@ static double residual_viscosity_st (scalar * a, scalar * b, scalar * resl,
 #endif
   return maxres;
 }
+
 
 #undef lambda
 

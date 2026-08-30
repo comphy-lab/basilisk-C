@@ -1,0 +1,4 @@
+--- strain_rate_smooth.asc
+Processed 3 resolutions.
+PASS: max-norm error 0.0353, 0.00898, 0.00226, order 1.97, 1.99.
+PASS: L2-norm error 0.0193, 0.00476, 0.00119, order 2.02, 2.00.

@@ -72,6 +72,18 @@ int main() {
   run();
 }
 
+face vector u_old[];
+scalar p_old[];
+
+event init (t = 0)
+{
+  foreach_face()
+    u_old.x[] = u.x[];
+
+  foreach()
+    p_old[] = p[];
+}
+
 /**
 We choose the viscosity so that it matches the Re.
 */
@@ -82,63 +94,109 @@ event properties (i++)
     muv.x[] = fm.x[]*U0*R_d/Re;
 }
 
-
 /**
-At each iteration, we calculate residuals to see if the solution has converged. They are saved in "log.dat".
+At each iteration, we calculate the RMS difference between
+two successive velocity and pressure fields to monitor
+numerical convergence. The residuals are defined as
+
+$$
+R^{(n)}(u) =
+\sqrt{
+\frac{1}{N^2}
+\sum_{i=1}^{N}
+\sum_{j=1}^{N}
+\left[
+\left(u_{i,j}^{(n+1)}-u_{i,j}^{(n)}\right)^2
++
+\left(v_{i,j}^{(n+1)}-v_{i,j}^{(n)}\right)^2
+\right]
+}
+$$
+
+and
+
+$$
+R^{(n)}(p) =
+\sqrt{
+\frac{1}{N^2}
+\sum_{i=1}^{N}
+\sum_{j=1}^{N}
+\left(p_{i,j}^{(n+1)}-p_{i,j}^{(n)}\right)^2
+}
+$$
+
+The residuals are saved in "log.dat".
 */
 
-double sum_u = 0.;
-double sum_u_t = 0.;
 double res_u = 0.;
-double sum_p = 0.;
-double sum_p_t = 0.;
 double res_p = 0.;
 
-event logfile (i++) { 
-  sum_u_t=0.;
-  sum_p_t=0.;
+event logfile (i++)
+{
+  double sum_res_u = 0.;
+  double sum_res_p = 0.;
 
-  foreach_face(){
-    sum_u_t += sqrt(sq(u.x[]) + sq(u.y[]));
-  }
-  foreach(){
-    sum_p_t += p[];
-  }
-  res_u = fabs(sum_u_t - sum_u);
-  res_p = fabs(sum_p_t - sum_p);
+  foreach_face()
+    sum_res_u += sq(u.x[] - u_old.x[]);
 
-  sum_u=sum_u_t;
-  sum_p=sum_p_t;
+  foreach()
+    sum_res_p += sq(p[] - p_old[]);
 
-  fprintf (stderr, "%d %g %g %g\n", i, t, res_u,res_p); 
-  fprintf (fpmax, "%d %g %g %g\n", i, t, res_u,res_p);
+  res_u = sqrt(sum_res_u/(N*N));
+  res_p = sqrt(sum_res_p/(N*N));
+
+  fprintf (stderr, "%d %g %g %g\n",
+           i, t, res_u, res_p);
+
+  fprintf (fpmax, "%d %g %g %g\n",
+           i, t, res_u, res_p);
+
+  foreach_face()
+    u_old.x[] = u.x[];
+
+  foreach()
+    p_old[] = p[];
 }
 
 /**
 ~~~pythonplot Residuals
 import matplotlib.pyplot as plt
-import numpy as np
 
-list_t=[]
-list_res_u=[]
-list_res_p=[]
+list_t = []
+list_res_u = []
+list_res_p = []
 
-with open('log.dat', encoding='utf8') as File:
-    for line in File:
-        if line.isspace()==0:
-            temp=line.split()
-            t=float(temp[1])
-            list_t.append(t)
-            norm_u=float(temp[2])
-            list_res_u.append(norm_u)
-            p=float(temp[3])
-            list_res_p.append(p)
-    File.close()
+with open('log.dat', encoding='utf8') as file:
+    for line in file:
+        if line.strip():
+            temp = line.split()
+
+            list_t.append(float(temp[1]))
+            list_res_u.append(float(temp[2]))
+            list_res_p.append(float(temp[3]))
 
 plt.figure()
-plt.semilogy(list_t,list_res_p,'g-',label= r'Res. $p$')
-plt.semilogy(list_t,list_res_u,'r-',label= r'Res. $|u|$')
+
+plt.semilogy(
+    list_t,
+    list_res_u,
+    'r-',
+    label=r'$R^{(n)}(u)$'
+)
+
+plt.semilogy(
+    list_t,
+    list_res_p,
+    'g-',
+    label=r'$R^{(n)}(p)$'
+)
+
+plt.xlabel(r'$t$')
+plt.ylabel('Residual')
 plt.legend()
+plt.grid(True, which='both', linestyle='--', alpha=0.4)
+
+plt.tight_layout()
 plt.savefig('residuals.png')
 ~~~
 

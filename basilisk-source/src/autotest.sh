@@ -3,7 +3,7 @@
 while true; do
     cd $HOME/wiki
     date
-    for d in `darcs show files --no-files | sort`; do
+    for d in `darcs show files --no-pending --no-files | sort`; do
 	if test -d $d -a -f $d/Makefile.tests; then
 	    alltests=$(cat <<EOF | make -s -f - target | sort
 include $d/Makefile.tests

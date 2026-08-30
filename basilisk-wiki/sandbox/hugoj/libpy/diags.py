@@ -4,6 +4,7 @@
 
 import numpy as np
 import gc
+import xgcm
 import xarray as xr
 from scipy.interpolate import interp1d
 
@@ -31,6 +32,55 @@ def h_divergence(ds, grid, ux="u.x", uy="u.y", zvar="z", compute=False):
     return -(ds["dudx"] + ds["dvdy"])
 
 
+def grad_dir(
+    var: xr.DataArray,
+    ds: xr.Dataset,
+    grid: xgcm.Grid,
+    dir="X",
+    zvar="z",
+) -> xr.DataArray:
+    """
+    This function computes the gradient of 'var'. Direction can be chosen to be 'X','Y' or 'Z'.
+    This function takes into account the slope term in the multilayer framework.
+    If used with a cartesian grid (i.e. zvar is of dimension 1), then this function is
+    the regular gradient (still using the xgcm grid)
+
+    INPUTS:
+        - var: the variable to differenciate
+        - ds: dataset with x,y and 'zvar' variables
+        - grid: the xgcm grid associated with 'var'
+        - zvar: what variable to use for vertical coordinate
+    OUTPUS:
+        - the differentiated array
+    """
+
+    delta = ds.x[1] - ds.x[0]
+    dzdh = 1
+    if len(ds[zvar].shape) > 1:
+        dzdzl = grid.interp(grid.diff(ds.z, "Z"), "Z")
+        dzdx = grid.interp(grid.diff(ds.z, "X"), "X") / delta
+        dzdy = grid.interp(grid.diff(ds.z, "X"), "X") / delta
+    else:
+        dzdx, dzdy, dzdzl = 0.0, 0.0, 1.0
+
+    dvdzl = grid.interp(grid.diff(var, "Z"), "Z")
+    dvdz = dvdzl / dzdzl
+
+    if dir in ["X", "Y"]:
+        if dir == "X":
+            dzdh = dzdx
+        elif dir == "Y":
+            dzdh = dzdy
+        dvdh = grid.interp(grid.diff(var, dir), dir) / delta
+        dvdh = dvdh - dvdz * dzdh
+        return dvdh
+    elif dir == "Z":
+        return dvdz
+
+    else:
+        raise Exception(f"The direction {dir} is not recognized")
+
+
 def grad_velocities(ds, grid, uname=["u.x", "u.y", "u.z"], zvar="z", compute=False):
     """
     Computes the gradient of velocities from a velocity field named u.x u.y u.z
@@ -42,10 +92,10 @@ def grad_velocities(ds, grid, uname=["u.x", "u.y", "u.z"], zvar="z", compute=Fal
         ds: xr.Dataset, the updated dataset
         update: bool, whether the dataset has been modified or not
     """
-    if "dudx" not in ds.keys():
-        update = True
-    else:
-        update = False
+    update = False
+    for var in ["dudz", "dudy", "dudx", "dvdz", "dvdy", "dvdx", "dwdz", "dwdy", "dwdx"]:
+        if var not in ds.keys():
+            update = True
 
     if update:
         delta = ds.x[1] - ds.x[0]

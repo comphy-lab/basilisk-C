@@ -26,7 +26,8 @@ face vector muv[];
 
 int main() {
 
-  // Flow parameters (Re=80 and R_d=0.03 works also well
+  // Flow parameters (Re=80 and R_d=0.03 works also well)
+  
   Re      = 53;      // Reynolds number 
   R_d     = 0.015;   // Jet radius 
   L0      = 1.;      // Box size
@@ -34,8 +35,6 @@ int main() {
   
   TOLERANCE = 1e-3 [*];
 
-  
-  
   // Boundary conditions
   
   // Bottom inlet: top-hat velocity profile

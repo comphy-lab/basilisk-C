@@ -236,6 +236,7 @@ trace void output_vtkhdf(scalar *list, vector *vlist, char *name = "domain.vtkhd
 #endif
 #include "output_vtkhdf_box.h"
 #include "output_vtkhdf_facets.h"
+#include "output_vtkhdf_facets_box.h"
 
 /** ## postamble: delete macros */
 #undef shortcut_slice

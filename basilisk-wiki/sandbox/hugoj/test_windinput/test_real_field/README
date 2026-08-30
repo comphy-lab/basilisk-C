@@ -1,0 +1,9 @@
+Ce dossier met en place une simulation avec un champ de vague réaliste et forcage de vent.
+
+26/08/26
+Pour l'instant l'implémentation du forcage ne peut se faire qu'avec une très grosse résolution (nb pt/longueur d'onde et nb pt/période).
+La simulation d'un champ de vague réel n'est pas réalisable avec ce genre de résolution.
+Je teste quand même pour voir si la simulation donne quelque chose.
+
+Les tests avec les paramètres de Rui sont dans ../test_forcing_HR
+Avec ou sans forcing, vers t=6s ca crash

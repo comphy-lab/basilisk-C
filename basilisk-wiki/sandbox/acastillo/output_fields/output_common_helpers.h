@@ -6,6 +6,17 @@
   if (fabs(alpha) > 0.87)                                        \
     continue;
 
+#if dimension == 2
+#define IN_BOX_CC(box) \
+  (x >= (box)[0].x && x < (box)[1].x && \
+   y >= (box)[0].y && y < (box)[1].y)
+#else
+#define IN_BOX_CC(box) \
+  (x >= (box)[0].x && x < (box)[1].x && \
+   y >= (box)[0].y && y < (box)[1].y && \
+   z >= (box)[0].z && z < (box)[1].z)
+#endif
+
 /** ### Count points and cells in each subdomain and total */
 void count_points_and_cells(long *num_points_glob, long *num_cells_glob, long *num_points, long *num_cells, scalar per_mask) {
   foreach_vertex(serial, noauto){

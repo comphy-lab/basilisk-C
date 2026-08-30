@@ -24,7 +24,7 @@ int main()
   system ("test -f distance.stl || "
 	  "(wget http://www.cc.gatech.edu/data_files/large_models/horse.ply.gz && "
 	  "gunzip -f horse.ply.gz && "
-	  "DISPLAY=:0 meshlabserver -i horse.ply -o distance.stl)");
+	  "assimp export horse.ply distance.stl -fstlb)");
 
   /**
   We read the STL file, compute the bounding box of the model and set

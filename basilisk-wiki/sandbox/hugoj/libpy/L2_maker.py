@@ -6,13 +6,14 @@ from pathlib import Path
 
 from diags import grad_velocities, interpz
 from data_reader import build_grid
+import warnings
 
 
 def check_var_in(ds, list_var):
     # fast check
     for var in list_var:
         if var not in ds.keys():
-            raise Exception(f"{var} is not in the dataset you provided ! Aborting ...")
+            warnings.warn(f"{var} is not in the dataset you provided !")
 
 
 def common_diags(
@@ -36,7 +37,8 @@ def common_diags(
     # flux
     for uj in var_vec2:
         for ui in var_vec2:
-            ds[uj + ui] = ds[uj + "_f"] * ds[ui + "_f"]
+            if (uj + ui not in ds.keys()) and (ui + uj not in ds.keys()):
+                ds[uj + ui] = ds[uj + "_f"] * ds[ui + "_f"]
 
     # tke
     tke = ds[u_vec[0]] * 0.0
@@ -84,6 +86,7 @@ def make_L2_layer(
 
         check_var_in(ds, ["u.x", "u.y", "u.z", "T"])
 
+        with_T = "T" in ds.keys()
         # let's gather names of variables in the initial dataset
         list_var_ini = list(ds.keys())
 
@@ -92,8 +95,12 @@ def make_L2_layer(
 
         u_vec = ["u.x", "u.y", "u.z"]
         u_vec2 = ["u", "v", "w"]
-        var_vec = u_vec + ["T"]
-        var_vec2 = u_vec2 + ["T"]
+        var_vec = u_vec
+        var_vec2 = u_vec2
+
+        if with_T:
+            var_vec = var_vec + ["T"]
+            var_vec2 = var_vec2 + ["T"]
 
         ds = common_diags(ds, var_vec, var_vec2, u_vec, u_vec2)
 
@@ -101,7 +108,7 @@ def make_L2_layer(
         # ds, _ = grad_velocities(ds, grid, compute=False)
 
         # make the dataset lighter by removing already saved on disk variables
-        dsL2 = ds.drop_vars(list_var_ini).drop_vars("time")
+        dsL2 = ds.drop_vars(list_var_ini)  # .drop_vars("time")
 
         # save also z
         dsL2["z"] = ds.z
@@ -160,9 +167,13 @@ def make_L2_eulerian(
             print("-> Building L2 file !\n")
         check_var_in(ds, ["u.x", "u.y", "u.z", "T"])
 
+        with_T = "T" in ds.keys()
+
         # _____________________________________
         # step 1: interpolate on cartesian grid
-        l_to_interp = ["u.x", "u.y", "u.z", "T"]
+        l_to_interp = ["u.x", "u.y", "u.z"]
+        if with_T:
+            l_to_interp += ["T"]
 
         for var in l_to_interp:
             ds[var + "i"] = interpz(ds.z, ds[var], znew, fill_value=fill_value)
@@ -174,16 +185,17 @@ def make_L2_eulerian(
             }
         )
 
-        # vertical coordinate is now znew so rebuilding grid
-        # gridnew = build_grid(ds, zvar="znew")
-
         # _____________________
         # step 2: compute diags
 
         u_vec = ["u.xi", "u.yi", "u.zi"]
         u_vec2 = ["u", "v", "w"]
-        var_vec = u_vec + ["Ti"]
-        var_vec2 = u_vec2 + ["T"]
+        var_vec = u_vec
+        var_vec2 = u_vec2
+
+        if with_T:
+            var_vec = var_vec + ["Ti"]
+            var_vec2 = var_vec2 + ["T"]
 
         ds = common_diags(ds, var_vec, var_vec2, u_vec, u_vec2)
 
@@ -192,7 +204,9 @@ def make_L2_eulerian(
 
         # _________________________
         # step 3: cleanup, renaming
-        l_to_drop = ["u.x", "u.y", "u.z", "z", "z_l", "h", "T", "level", "level_l"]
+        l_to_drop = ["u.x", "u.y", "u.z", "z", "z_l", "h", "level", "level_l"]
+        if with_T:
+            l_to_drop += ["T"]
         dsL2 = ds.drop_vars(l_to_drop)  # remove var from initial dataset
         dsL2 = dsL2.transpose(
             "znew", "y", "x", "znew_l", "y_l", "x_l", ...
@@ -200,8 +214,10 @@ def make_L2_eulerian(
         dsL2.attrs["Note"] = (
             f"z coord: interpolated from semi-Lagrangian to cartesian z, with fill_value={fill_value}"
         )
-
-        dsL2 = dsL2.rename({"u.xi": "u.x", "u.yi": "u.y", "u.zi": "u.z", "Ti": "T"})
+        torename = {"u.xi": "u.x", "u.yi": "u.y", "u.zi": "u.z"}
+        if with_T:
+            torename["Ti"] = "T"
+        dsL2 = dsL2.rename(torename)
         # ______________________
         # save file
         if save:

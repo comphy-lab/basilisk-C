@@ -26,11 +26,14 @@ GROUPS = {
   'xmf':      (['test_output_xmf',
                 'test_output_xmf2',
                 'test_output_xmf_box',
-                'test_output_xmf_facets'], True),
+                'test_output_xmf_facets',
+                'test_output_xmf_facets_list',
+                'test_output_xmf_facets_box'], True),
   'vtkhdf':   (['test_output_vtkhdf',
                 'test_output_vtkhdf2',
                 'test_output_vtkhdf_box',
-                'test_output_vtkhdf_facets'], True),
+                'test_output_vtkhdf_facets',
+                'test_output_vtkhdf_facets_box'], True),
   'catalyst': (['test_output_catalyst'], False),
 }
 

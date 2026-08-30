@@ -19,8 +19,7 @@ face vector av[];
 #include "tension.h"
 
 /**
-The boundary conditions are slip lateral walls (the default) and
-no-slip on the right and left walls. */
+Free-slip boundary conditions are imposed at all domain boundaries. */
 
 uf.n[top] = 0.;
 uf.n[bottom] = 0.;
@@ -32,7 +31,6 @@ int case_id = 1;
 double R = 0.25, width = 2. [1];
 double eo, mo;
 double gra = 0.98;
-FILE *fp_vel;
 
 int main(int argc, char * argv[]) {
   if (argc > 1)
@@ -64,7 +62,6 @@ int main(int argc, char * argv[]) {
   a = av;
 
   run();
-  fclose (fp_vel);
 }
 
 event init (i = 0) {
@@ -74,19 +71,16 @@ event init (i = 0) {
   foreach_vertex()
     phi[] = sq(x - xc.x) + sq(y - xc.y) + sq(z - xc.z) - sq(R);
 
-  char name[80];
-
   init_markers (phi);
-  sprintf (name, "%srising_3d_ebit_dis_case%d_%d.dat", OUTPUTPATH, case_id, N);
-
-  fp_vel = fopen (name, "w");
 
   eo = rho1*gra*sq(2.*R)/f.sigma;
   mo = gra*sq(mu1)*sq(mu1)/rho1/cube(f.sigma);
   if (pid() == 0) {
+    printf ("Physical properties:\n");
+    printf ("Density: %.4e %.4e, viscosity: %.4e %.4e\n", rho1, rho2, mu1, mu2);
+    printf ("Surface tension: %.4e, gravity:%.4e\n", f.sigma, gra);
     printf ("Morton num.: %g  Eotvos num.: %g\n", mo, eo);
   }
-  dump();
 }
 
 /**
@@ -98,17 +92,9 @@ event acceleration (i++) {
   boundary ((scalar *) {av});
 }
 
-/** The timestep `dt` and the velocity field are set. */
-event monitor (i++, last) {
-  if (pid() == 0 && i % 1000 == 0) {
-    printf ("i: %d  Time: %g\n", i, t);
-  }
-}
-
 /**
 We log the position of the center of mass of the bubble, its velocity
-and volume as well as convergence statistics for the multigrid
-solvers. */
+and volume. */
 
 event logfile (i++) {
   double yb = 0., vb = 0., sb = 0.;
@@ -120,15 +106,14 @@ event logfile (i++) {
   }
 
   if (pid() == 0) {
-    fprintf (fp_vel, "%g %g %g %g %g\n", t, sb, yb/sb, vb/sb, dt);
-    fflush (fp_vel);
+    fprintf (stderr, "%.8e %.8e %.8e %.8e\n", t, sb, yb/sb, vb/sb);
   }
 }
 
 /**
 Output the shape of the bubble at diffrent time instants. */
 
-event interface (t = {0., 1., 1.5, 2., 3., 4.}) {
+event interface (t = {0., 1., 1.5}) {
   // char name[80], name_con[80];
   // if (pid() == 0)
   //   printf ("Save interface (mesh) at time step:%d\n", i);
@@ -143,3 +128,41 @@ event interface (t = {0., 1., 1.5, 2., 3., 4.}) {
   //   OUTPUTPATH, case_id, N, t);
   // output_facets_semushin (name, tri = true, file_con = name_con);
 }
+
+/**
+## Results
+
+~~~gnuplot Rise velocity as a function of time for test case 1.
+set term pop
+reset
+set grid
+set xlabel 't'
+set key bottom right
+plot [0:1.5][0:] 'log' u 1:4 w l t 'EBIT'
+~~~
+
+## References
+
+~~~bib
+@article{Shin_2002_180,
+  title={Modeling Three-Dimensional Multiphase Flow Using a Level Contour Reconstruction
+    Method for Front Tracking without Connectivity},
+  author={Shin, Seungwon and Juric, Damir},
+  journal={Journal of Computational Physics},
+  volume={180},
+  pages={427-470},
+  year={2002},
+  publisher={Elsevier}
+}
+
+@article{Unverdi_1992_100,
+  title={A front-tracking method for viscous, incompressible, multi-fluid flows},
+  author={Unverdi, Salih Ozen and Tryggvason, Gr\'{e}tar},
+  journal={Journal of Computational Physics},
+  volume={100},
+  pages={25-37},
+  year={1992},
+  publisher={Elsevier}
+}
+~~~
+*/

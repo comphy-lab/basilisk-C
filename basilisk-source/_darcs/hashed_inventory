@@ -1,4 +1,4 @@
-pristine:1ac87e4d9e9bc90836b0e5762d66fdb029398e4181affa886c73c9cbf3b9808b
+pristine:51b98f1fcd2f3f52604f4631c72957213ad914af93f604119e3aeef62cf522e5
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -479,3 +479,33 @@ Stephane Popinet <popinet@basilisk.fr>**20260804155603
  Ignore-this: 2ad555102c9b45f288525dcf12f72667cb72c03bb05dd525032dff057266e3595ae4c30b004e5f2f
 ] 
 hash: 0000002455-08a3d911f0c2498a3c89fb9885b719ff4411938da55c9c3660188d459740672a
+[darcs "pending" files could cause trouble with the dependencies
+Stephane Popinet <popinet@basilisk.fr>**20260817155329
+ Ignore-this: 91de36fa907d73e0135db56d9d4a72e923d518f661bbca6f636351d72fd1c7c89612ce017815c75f
+] 
+hash: 0000000694-6a8bfa32aa6b80bde7dd875161e08331c96a887e74dc5f6083f6092032577804
+[Do not send display frames at more than 50 Hz
+Stephane Popinet <popinet@basilisk.fr>**20260819201711
+ Ignore-this: ffa22b3fd6f7c57aa23c137e9dbcdf0677acc82d582bdcfd3bfe5fbab8f14e2e486aadf55a3bc2d5
+] 
+hash: 0000000477-dcff412851a01f2fffff4a56b8a215a7835f856b99a4faaa465c29a47a51f75f
+[Fixed 'pause/step' logic for display.h
+Stephane Popinet <popinet@basilisk.fr>**20260822135544
+ Ignore-this: 150dc4440ea14a2673e4bef272ae9236e2fc22c9d381831202f2ce77dfb92162edc383ee875831d
+] 
+hash: 0000000556-a8ece4e0e00eb2dcd8b7ab95f8f38354aeb42144c34098b4b1b21eb1086192ea
+[Fix for cut planes in view.h
+Stephane Popinet <popinet@basilisk.fr>**20260827170141
+ Ignore-this: 2b1247469a7b264251949815f5b286c99bcdb6b9eef5381300f31e678f548462f389c0e615503d
+] 
+hash: 0000000496-c0e5212f6591d3bb93cf28c3d8edbad61e0348ca698044d0ada9e81fca2f7ebf
+[Updated reference
+Stephane Popinet <popinet@basilisk.fr>**20260828130736
+ Ignore-this: da8877bddc72c2ced70cb5ba0bbee6135b4903d723f03024b98749c2784913981959ebe173e16f8d
+] 
+hash: 0000000262-bf8912cd3c723faa9d0190b59cb96035c47e9f95c8cdac99ebd73727ece5c2d6
+[Use 'assimp' rather than meshlabserver for ply to stl conversion
+Stephane Popinet <popinet@basilisk.fr>**20260828170013
+ Ignore-this: 27d024963e7e057b771995168f439070470c0920260bacfd50f1c9862611a5f69a26ad086ecc65ce
+] 
+hash: 0000000367-3056380b2eb02df6cb80fb7b3184690daa5d1b9dae522a881ba73dd65f83ac05

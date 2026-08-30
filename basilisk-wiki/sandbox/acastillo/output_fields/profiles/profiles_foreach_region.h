@@ -1,6 +1,12 @@
 /**
 # Profile functions
 
+**Deprecated.** Superseded by `profiles_scalar.h` (included via `profiles.h`),
+which shares `PROFILE_PARAMS`/`SETUP_PROFILE_PLANE` with the other
+`profiles_*.h` files instead of duplicating them. Not included anywhere in
+this directory; kept around for reference only. Do not include alongside
+`profiles_scalar.h` -- both define `profile_foreach_region()`.
+
 ## *average_foreach_region()*: Averages over a specified region.
 
 This function calculates the average of a list of scalar fields within a

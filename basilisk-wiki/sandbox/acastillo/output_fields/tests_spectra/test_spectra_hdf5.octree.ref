@@ -1,0 +1,2 @@
+nt 3  nz 4  nk 24  24 spectra  z spans 0.5890, 0.9817, 1.3744
+PASS: the HDF5 file stores the blocks on the axes it documents.

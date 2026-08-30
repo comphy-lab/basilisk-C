@@ -1,0 +1,7 @@
+constant   exact   m   32  bin   0 (exp   0)  E 9.000000000000 (exp 9.0000)  leak 0.00e+00  Parseval 0.00e+00  sum 9.000000000000
+axial      exact   m   32  bin   5 (exp   5)  E 0.500000000000 (exp 0.5000)  leak 0.00e+00  Parseval 1.33e-15  sum 0.500000000000
+oblique    exact   m   32  bin   5 (exp   5)  E 0.500000000000 (exp 0.5000)  leak 0.00e+00  Parseval 5.55e-17  sum 0.500000000000
+twomode    exact   m   32  bin   3 (exp   3)  E 2.000000000000 (exp 2.0000)  leak 8.88e-16  Parseval 1.78e-15  sum 2.500000000000
+diagonal   exact   m   32  bin   1 (exp   1)  E 0.500000000000 (exp 0.5000)  leak 0.00e+00  Parseval 0.00e+00  sum 0.500000000000
+subsampled leaky   m   16  bin   1 (exp   1)  E 0.496104581678 (exp 0.5000)  leak 3.90e-03  Parseval 2.22e-16  sum 0.500000000000
+PASS: single modes land in the right shell, and Parseval holds.

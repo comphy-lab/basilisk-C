@@ -1,8 +1,8 @@
 /**
-# 3D Edge Based Interface Tracking solver
+# 3D Edge-Based Interface Tracking (EBIT) solver
 
 We wish to advect an interface identified by marker points that are constrained
-to move only along the grid lines. There is at most one markers per edge. */
+to move only along the grid lines. There is at most one marker per edge. */
 
 static scalar * _interface = NULL;
 
@@ -201,7 +201,6 @@ foreach_dimension()
     }
   }
 
-
 static void update_color_fcen() {
   foreach_face() {
     int p1 = (int) color_pha_new[];
@@ -223,34 +222,6 @@ static void update_color_fcen() {
   }
   
 }
-
-/** Update the topology dictionary based on the color vertex.
- Be careful inside the foreach_dimension iterator.
- We need different results for different directions, so we use foreach_dimension*/
-foreach_dimension()
-  static double get_cdict_x (Point point) {
-    int p1, p2, p3, p4, pc;
-    double conf = 0.; // Without interface
-
-    p1 = (int) color_pha[];
-    p2 = (int) color_pha[0,1];
-    p3 = (int) color_pha[0,1,1];
-    p4 = (int) color_pha[0,0,1];
-    pc = (int) (color_pha_fcen.x[]);
-
-    conf = get_dict_ind (p1, p2, p3, p4, pc);
-    return conf;
-  }
-
-// all the three functions produce the same result, which is different to that in 2D
-foreach_dimension()
-  static void update_dict_x() {
-    foreach_face()
-      config_fdict.x[] = get_cdict_x (point);
-
-    boundary ((scalar *) {config_fdict});
-  }
-
 
 event defaults (i = 0) {
   // It's not consistent with the boundary condition of ss_tmp
@@ -279,10 +250,53 @@ event defaults (i = 0) {
   }
 }
 
+/**
+## Interface segments reconstruction */
+
+/** 
+Construct the topology dictionary based on the Color Vertex (CV) field
+
+A dictionary field defined on the cube faces is first computed from the CV field.
+Then, using the 2D dictionary table, the interface connectivity on all faces
+can be retrieved.
+
+Special care is needed inside the foreach_dimension iterator to ensure
+a consistent ordering of the vertices. Add a figure to illustrate
+the vertex ordering and the corresponding dictionary definitions
+on the x-, y-, and z-faces. */
+
+foreach_dimension()
+  static double get_cdict_x (Point point) {
+    int p1, p2, p3, p4, pc;
+    double conf = 0.; // Without interface
+
+    p1 = (int) color_pha[];
+    p2 = (int) color_pha[0,1];
+    p3 = (int) color_pha[0,1,1];
+    p4 = (int) color_pha[0,0,1];
+    pc = (int) (color_pha_fcen.x[]);
+
+    conf = get_dict_ind (p1, p2, p3, p4, pc);
+    return conf;
+  }
+
+// all the three functions produce the same result, which is different to that in 2D
+foreach_dimension()
+  static void update_dict_x() {
+    foreach_face()
+      config_fdict.x[] = get_cdict_x (point);
+
+    boundary ((scalar *) {config_fdict});
+  }
+
+/**
+Reconstruct interface segments within each cell based on the dictionary field
+on its six cube faces. */
 
 int get_polygons (Point point, coord *xpoly, int *nv_poly) {
   int cv, flag_edge[12], polygon[4][12], config_f[6], color_v[8];
 
+  // CV field defined at cell corners
   cv = 0;
   for (int kk = 0; kk < 2; kk++)
     for (int jj = 0; jj < 2; jj++)
@@ -291,9 +305,10 @@ int get_polygons (Point point, coord *xpoly, int *nv_poly) {
         color_v[iv] = (int) color_pha[ii,jj,kk];
         cv += color_v[iv];
       }
-  if (cv == 8 || cv == 0)
+  if (cv == 8 || cv == 0) // an empty/full cell
     return 0;
 
+  // topology dictionary on six faces of the cube
   int iface = 0;
   foreach_dimension() {
     config_f[iface] = (int) config_fdict.x[];
@@ -301,12 +316,23 @@ int get_polygons (Point point, coord *xpoly, int *nv_poly) {
     iface += 2;
   }
 
+  /**
+  There are at most 12 vertices for each polygon, since a cube has only 12 edges.
+  At this stage, we allow at most four polygons within each cube, which may not
+  be sufficient for more complicated configurations. This restriction should be
+  removed in a future revision.
+
+  Since there is at most one marker on each edge, an edge that has already been
+  visited during the traversal is marked as 1 in flag_edge.
+  */
+
   for (int ii = 0; ii < 12; ii++) {
     flag_edge[ii] = 0;
     polygon[0][ii] = polygon[1][ii] = -1;
     polygon[2][ii] = polygon[3][ii] = -1;
   }
 
+  // number of polygons, i.e. closed loops, within the cell
   int npoly = 0;
   for (int ii = 0; ii < 6; ii++) {
     int conf = config_f[ii];
@@ -315,24 +341,34 @@ int get_polygons (Point point, coord *xpoly, int *nv_poly) {
       int ind_markers[4], ind_f;
       ind_f = ii; // initial face index
 
+      // 0-1, 2-3: two endpoints of the intersection lines on the cube face
       for (int iind = 0; iind < 4; iind++)
         ind_markers[iind] = dict_to_edge[conf][iind];
+
+      /**
+      We start from an arbitrary vertex (cube edge) and traverse the remaining
+      vertices belonging to the same polygon. */
 
       for (int iv = 0; iv < 4; iv += 2) {
         int with_new = 0;
         if (ind_markers[iv] != -1) {
           int ie1 = ind_markers[iv], ie2 = ind_markers[iv + 1];
-          // we have found two markers, the following part will find out the rest
           for (int ie_poly = 0; ie_poly < 12; ie_poly++) {
+            // from local 2D edge index to 3D edge index: 0-3 -> 0-11
             int ie_cube = edge_face_to_cube[ind_f][ie1];
             if (flag_edge[ie_cube] == 0) {
-
+              // an edge that has not been visited
               int ind_fn, conf_n;
               with_new = 1; // find a new polygon
 
               polygon[npoly][ie_poly] = ie_cube;
               flag_edge[ie_cube] = 1;
-              // edge on next cell face
+
+              /**
+              'ind_fn': index of the cube face that shares edge ie2 with the current face;
+              'ie1': local 2D edge index of ie2 on face ind_fn;
+              'ie2': local 2D index of the edge connected to ie1. */
+
               ind_fn = face_to_face[ind_f][ie2][3];
               ie1 = face_to_face[ind_f][ie2][4];
 
@@ -341,7 +377,7 @@ int get_polygons (Point point, coord *xpoly, int *nv_poly) {
               ind_f = ind_fn;
             }
             else {
-              // we have found all the edges of a closed polygon
+              // we have found all the vertices of a closed polygon
               break;
             }
           }
@@ -353,8 +389,7 @@ int get_polygons (Point point, coord *xpoly, int *nv_poly) {
     }
   } // finish searching six cell faces
 
-  // local coordinates of vertex of the polygon
-
+  // Compute the coordinates of the vertices for each polygon.
   for (int ip = 0; ip < npoly; ip++) {
     int nv = 12;
 
@@ -377,7 +412,7 @@ int get_polygons (Point point, coord *xpoly, int *nv_poly) {
         break;
       }
     }
-    nv_poly[ip] = nv;
+    nv_poly[ip] = nv; // number of vertices in polygon ip
   }
   return npoly;
 }
@@ -386,9 +421,9 @@ int get_polygons (Point point, coord *xpoly, int *nv_poly) {
 /**
 ## Output functions
  
- * Output interface facets. if tri == true, the polygon will be decomposed into
- * several triangles, and the connecticity is stored in the file_con.
- */
+Output the interface facets. If 'tri == true', each polygon is decomposed into
+several triangles, and the connectivity information is stored in 'file_con'. */
+
 void output_facets_semushin (char *file, bool tri = false, \
   char *file_con = "connectivity.dat") {
   char name[strlen(file) + 2], name_con[strlen(file_con) + 2];
@@ -417,6 +452,9 @@ void output_facets_semushin (char *file, bool tri = false, \
   // use three scalar to avoid index rotation.
   scalar sx = s.x, sy = s.y, sz = s.z;
   if (!tri) {
+    /**
+    Output the intersection lines on each face separately. */
+
     int idim = -2;
     coord dx = {0., 1., 1.};
 
@@ -475,14 +513,20 @@ void output_facets_semushin (char *file, bool tri = false, \
               }
             }
 
-            fprintf (fp1, "%g %g %g %d\n%g %g %g %d\n\n", xx[0], yy[0], zz[0], pid(), xx[1], yy[1], zz[1], pid());
+            fprintf (fp1, "%g %g %g %d\n%g %g %g %d\n\n", xx[0], yy[0], zz[0],
+              pid(), xx[1], yy[1], zz[1], pid());
           }
         }
       }
     }
   }
   else {
-    // nvertex, nelement: numbers of vertices and triangular elements from previous process
+    /**
+    Output the facets as triangular elements.
+
+    nvertex, nelement: numbers of vertices and triangular elements received from
+    the previous process, required in MPI runs to record the correct connectivity. */
+
     if (pid() == 0) {
       nvertex = nelement = 0;
     }
@@ -490,11 +534,13 @@ void output_facets_semushin (char *file, bool tri = false, \
       nvertex = sign_mpi[0];
       nelement = sign_mpi[1];
     }
+
     foreach(serial, noauto) {
       coord xo = {x - 0.5*Delta, y - 0.5*Delta, z - 0.5*Delta};
       coord xpoly[48];
       int npoly, nv_poly[4];
       npoly = get_polygons(point, xpoly, nv_poly);
+
       for (int ip = 0; ip < npoly; ip++) {
         int nv = nv_poly[ip];
         double xc = 0, yc = 0, zc = 0;
@@ -509,6 +555,7 @@ void output_facets_semushin (char *file, bool tri = false, \
         xc /= nv; yc /= nv; zc /= nv;
 
         if (nv > 3) {
+          // Decompose the polygon into triangles.
           fprintf (fp1, "%g %g %g %d\n", xc, yc, zc, pid());
           for (int iv = 0; iv < nv; iv++) {
             fprintf (fp2, "%d %d %d\n", nvertex + iv, nvertex + (iv + 1) % nv, nvertex + nv);
@@ -517,6 +564,7 @@ void output_facets_semushin (char *file, bool tri = false, \
           nelement += nv;
         }
         else {
+          // We do not further decompose triangles.
           fprintf (fp2, "%d %d %d\n", nvertex, nvertex + 1, nvertex + 2);
           nvertex += nv;
           nelement++;
@@ -541,10 +589,10 @@ void output_facets_semushin (char *file, bool tri = false, \
   #endif
 }
 
+/**
+Output the interface, Color Vertex field, and mesh. Since this operation is
+very time-consuming, it should be used for debugging purposes only. */
 
-/** Output interface, color vertex and mesh. Since it is very time consuming, 
- * it should be used for debugging purpose only.
-*/
 #if _MYOUTPUT
 static void output_intf (int i) {
   char out[100], out_test[100], out_color[100];
@@ -560,10 +608,22 @@ static void output_intf (int i) {
 }
 #endif
 
-/** Initialize the marker position based on the level-set function "phi". */
+/**
+## Marker initialization
+
+Initialize the marker positions and the Color Vertex field based on a given
+level-set function, ‘phi’. */
+
 static void init_markers (vertex scalar phi) {
   boundary ({phi});
-  fractions (phi, f); // we need this to for the stability events.
+
+  /**
+  We need `f` to compute `alpham` for the stability events in tension.h.
+  Since `f` is only required to prevent the code from crashing, we use
+  a simplified method to compute it. */
+
+  fractions (phi, f);
+
   // copy from fraction.h
   double val = 0.;
   foreach_edge_i() {
@@ -578,7 +638,9 @@ static void init_markers (vertex scalar phi) {
 
   boundary ((scalar *) {snew});
 
-  // Initialize the color vertex
+  /**
+  Initialize the color vertex field defined at cell corners. */
+
   foreach_vertex() {
     if (phi[] >= 0.) // remember the equal sign
       color_pha[] = 1.; // Reference phase
@@ -588,9 +650,9 @@ static void init_markers (vertex scalar phi) {
     color_pha_new[] = color_pha[];
   }
 
-  // For the color_pha_cen[] is undefined (-1) when only two consecutive color vertices
-  // are the same color. When more then two vertices are the same color, we change the
-  // color of central color point.
+  /**
+  Initialize the color vertex field defined at cell centers. */
+
   foreach_face()
     color_pha_fcen.x[] = -1.;
 
@@ -601,9 +663,16 @@ static void init_markers (vertex scalar phi) {
     with_marker.x[] = 0.;
   }
 
-  // Different values of color vertex at the two end of edge means there is a marker on the edge.
-  // This method can deal with the corner case (interface pass through the cell vertex) correctly.
-  // with_marker : number of markers on each edge
+  /**
+  Compute the marker positions based on the Color Vertex field and the results
+  from the `fraction` function.
+
+  Different Color Vertex values at the two endpoints of an edge indicate that
+  a marker lies on that edge. This method correctly handles corner cases where
+  the interface passes through a cell vertex.
+
+  `with_marker`: number of markers on each edge. */
+
   boundary ((scalar *) {color_pha});
   foreach_edge_i() {
     int with_face = fabs(color_pha[] - color_pha[1]) > machine_zero;
@@ -618,8 +687,9 @@ static void init_markers (vertex scalar phi) {
   }
 
   boundary ((scalar *) {s});
-  // output the initial interface for test
+
   #if _MYDEBUG
+  // output the initial interface for debugging
   output_intf (-1);
   #endif
 
@@ -659,36 +729,46 @@ static void init_markers (vertex scalar phi) {
   foreach_dimension() {
     set_prolongation (color_pha_fcen.x, refine_face_injection_x);
   }
-
   #endif
 }
 
+/**
+## Topology change
+
+Remove markers that move onto the same edge, resulting in topology changes on
+each face and, consequently, 3D topology changes within the cell. */
 
 void set_markers() {
-  // determine the number of markers on edge based on color vertex, this is a robust method for corner case,
-  // it can be generalized to double-Semushin easily in the furture.
+  /**
+  Determine the number of markers on edge based on color vertex, different values
+  of color vertex on two endponints of an edge indicates that there is one marker
+  on this edge. */
+
   foreach_edge_i() {
     int with_face = fabs(color_pha[] - color_pha[1]) > machine_zero;
     if (with_face) {
       with_marker.x[] = 1.;
     }
-    else { // without interface or with two interface
+    else { // without marker or with two markers
       with_marker.x[] = 0.;
       s.x[] = 0.;
     }
   }
 }
 
-
 /**
-## Front2VOF algorithm
+## Volume fraction computation
 
-The representation of the interface with EBIT markers can be used to create
-the associated VOF field. The connectivity of markers and the region of reference phase are 
-idenfied by the "color vertex". 
-The Front-to-VOF algorithm is employed to calculate the volume of reference*/
+From the EBIT markers and the Color Vertex field, the volume fraction of
+the reference phase can be computed geometrically using the Front2VOF algorithm.
 
-// How to determine the right sign of the normal direction
+### Front2VOF (F2V) algorithm
+
+The F2V algorithm developed by [Pan et al., 2026](#pan2026) computes the volume
+enclosed by a cube and an arbitrary number of triangulated surfaces.
+Here, we use a simplified version in which polygon segmentation is not required,
+since all markers are located on cell edges. */
+
 double f2vof (coord *xpoly, int npoly, int *nv_poly, int *color_v) {
   double frac = 0.;
   coord f_p = {0., 0., 0.}, fs_p = {0., 0., 0.};
@@ -699,6 +779,7 @@ double f2vof (coord *xpoly, int npoly, int *nv_poly, int *color_v) {
     coord xcen = {0., 0., 0.}, xx_poly[13];
     int np = nv_poly[ipoly];
 
+    // Decompose a polygon into triangles.
     for (int ip = 0; ip < np; ip++) {
       foreach_dimension() {
         xx_poly[ip].x = xpoly[12*ipoly + ip].x;
@@ -711,7 +792,7 @@ double f2vof (coord *xpoly, int npoly, int *nv_poly, int *color_v) {
       xcen.x /= np;
     }
 
-    // calculate the average normal vector
+    // Calculate the average normal vector
     double ds_total = 0.;
     coord dn_ave = {0., 0., 0.};
 
@@ -748,8 +829,20 @@ double f2vof (coord *xpoly, int npoly, int *nv_poly, int *color_v) {
       foreach_dimension()
         dn_ave_cell.x = dn_ave.x;
     }
-    // identify the reference phase
-    // not correct for corner case, fix this
+
+    /**
+    The vertices should be ordered counter-clockwise with respect to the
+    unit normal vector pointing outward from the reference phase. However,
+    the polygons constructed from the EBIT markers do not necessarily follow
+    this convention. We therefore introduce an additional variable, sig_n,
+    to indicate the ordering of the vertices.
+
+    'iref[0]/iref[1]': the phase that the normal vector n points toward/away from.
+
+    Fixme: This version is not sufficiently robust for cases where the polygon
+    passes exactly through a cell vertex. Consider implementing the complete
+    version described in the paper later. */
+
     int iref[2] = {-1, -1}, ind_ref = 0;
     double sig_n = 1.;
     for (int kk = 0; kk < 2; kk++)
@@ -765,6 +858,11 @@ double f2vof (coord *xpoly, int npoly, int *nv_poly, int *color_v) {
 
           iside = sig > 0. ? 0 : 1;
 
+          /**
+          This part correctly handles cases with multiple polygons within a
+          single cell. However, the implementation is somewhat complicated
+          and should be refactored later. */
+
           if (iref[iside] < 0)
             iref[iside] = icol;
           else if (iref[iside] != icol)
@@ -773,7 +871,9 @@ double f2vof (coord *xpoly, int npoly, int *nv_poly, int *color_v) {
 
     sig_n = (ind_ref == iref[ind_ref]) ? 1. :-1.;
 
-    // start front-to-vof
+    /**
+    Contribution of the current polygon to the edge/face/volume integrals. */
+
     for (int ip = 0; ip < np; ip++) {
       coord dx[3], p1, p2, dn, xc;
       double x1, x2, x3;
@@ -782,7 +882,7 @@ double f2vof (coord *xpoly, int npoly, int *nv_poly, int *color_v) {
         x1 = xx_poly[ip].x;
         x2 = xx_poly[ip + 1].x;
         x3 = xcen.x;
-        if (sig_n < 0)
+        if (sig_n < 0) // correct the order of the vertices
           swap(double, x1, x2);
         p1.x = x1;
         p2.x = x2;
@@ -814,8 +914,9 @@ double f2vof (coord *xpoly, int npoly, int *nv_poly, int *color_v) {
         f_p.x += dn.x*xc.x;
       }
     }
-  }
+  } // End of loop for the contribution from one polygon
 
+  // Select the integration direction corresponding to the largest component of the normal vector
   coord m2 = {fabs(dn_ave_cell.x), fabs(dn_ave_cell.y), fabs(dn_ave_cell.z)};
   int dir = (m2.x > m2.y) ? (m2.x > m2.z ? 0 : 2) : (m2.y > m2.z ? 1 : 2);
 
@@ -834,8 +935,11 @@ double f2vof (coord *xpoly, int npoly, int *nv_poly, int *color_v) {
 }
 
 /** 
-## Volume fraction computation
-*/
+### Volume fraction field computation
+
+In this function, we construct the polygons within each cell and call the
+'f2vof' function to compute the volume fraction. */
+
 void semu2vof() {
   scalar with_faces[];
   update_dict_x();
@@ -853,11 +957,15 @@ void semu2vof() {
       f[] = 0.;
   }
 
+  /**
+  Construct the polygons. This part is identical to the get_polygons function
+  and can therefore be replaced with a call to that function during refactoring. */
+
   foreach(noauto) {
     int with_f = (int) (with_faces[]);
 
-    if (with_f != 0) { // interfacial cell, cv is used for identifying the reference phase
-      // find out the polygons within the cell (at most 2)
+    if (with_f != 0) {
+      // find out the polygons within the interfacial cell (at most 4)
       int flag_edge[12], polygon[4][12], config_f[6], iface, color_v[8];
 
       for (int kk = 0; kk < 2; kk++)
@@ -958,7 +1066,7 @@ void semu2vof() {
           }
         }
         nv_poly[ip] = nv;
-      }
+      } // end of the construction of polygons
 
       fpoly = f2vof (xpoly, npoly, nv_poly, color_v);
 
@@ -966,8 +1074,12 @@ void semu2vof() {
     }
   }
 
-
   boundary ({f});
+
+  /**
+  Statistics computation: 'volume': total volume of the reference phase;
+  'volume_ini': volume contribution from interfacial cells only. */
+
   volume = 0.;
   volume_int = 0.;
   foreach(reduction(+:volume) reduction(+:volume_int)) {
@@ -979,13 +1091,23 @@ void semu2vof() {
 }
 
 /**
-  This event perform the 1-D advection of the EBIT marker points. */
+## One-dimensional advection
+
+Similar to the 2D EBIT method, a directionally split scheme is used for
+interface advection, allowing full reuse of the algorithms developed for the
+2D version. The advect_x, advect_y, and advect_z functions perform advection
+along the x-, y-, and z-directions, respectively. */
+
 foreach_dimension()
   void advect_x (vector u, int ind = 0) {
+    #if _MYDEBUG
     double idir = iadv.x;
+    #endif
+
     boundary ((scalar *) {u});
 
-    scalar ux = u.x; // use this to get rid of rotation in foreach_dimension(), check this
+    // Prevent index rotation in foreach_dimension() when advecting unaligned markers.
+    scalar ux = u.x;
 
     set_markers();
 
@@ -1000,7 +1122,11 @@ foreach_dimension()
     foreach_vertex()
       color_pha_new[] = color_pha[];
 
-     // This performs the horizontal advection, for both aligned and unaligned markers
+    /**
+    Perform horizontal advection along the x-direction for both aligned and
+    unaligned markers. and correspondingly, along y- and z-directions
+    in 'advect_y' and 'advect_z', respectively. */
+
     foreach_dimension()
       foreach_vertex() {
         double um, u1, xx;
@@ -1017,7 +1143,7 @@ foreach_dimension()
         }
         #endif
 
-        ss_tmp.x[] = um*dt/Delta;
+        ss_tmp.x[] = um*dt/Delta; // displacement
       }
 
     // final position of aligned markers
@@ -1032,22 +1158,29 @@ foreach_dimension()
       }
     }
 
+    /**
+    Recompute 'snew' when a marker moves outside the current edge or when
+    new markers move onto it.
+
+    When two markers move onto the same edge, 'snew' denotes the new marker and
+    'ss_tmp' the old one. In the simple Semushin method, these two markers are
+    removed at the final stage based on the Color Vertex field. */
+
     foreach_vertex() {
-      if (snew.x[] > 1. || snew.x[] < 0.) {  // The point is crossing a vertical line
+      if (snew.x[] > 1. || snew.x[] < 0.) {
+        // move outside
         snew.x[] = 0.;
         with_marker.x[] -= 1;
       }
     }
     boundary ((scalar *) {ss_tmp});
 
-    // When there are two markers on the same edge, snew for the old one, s_tmp for the new one
-    // For the simple Semushin method, We will remove these two markers on the
-    // final stage based on the color vertex.
     foreach_vertex() {
       int withi = (int) with_marker.x[], withr, withl;
       withr = ss_tmp.x[1] < 0.;
       withl = ss_tmp.x[-1] > 1.;
       if (withi == 0) {
+        // move onto
         if (ss_tmp.x[-1] > 1.)
           snew.x[] = ss_tmp.x[-1] - 1.;
         else if (ss_tmp.x[1] < 0.)
@@ -1072,20 +1205,14 @@ foreach_dimension()
       with_marker.x[] += (withl + withr);
     }
 
-    // Change the color of vertex when marker moves across the grid line
-    boundary ((scalar *) {color_pha});
-    foreach_vertex() {
-      if (ss_tmp.x[-1] > 1.)
-        color_pha_new[] = color_pha[-1];
-      else if (ss_tmp.x[] < 0.) {
-        color_pha_new[] = color_pha[1];
-      }
-    }
+    /**
+    Decompose the 3D advection problem into two 2D advection problems on the cube faces.
 
-    boundary ((scalar *) {color_pha_new});
+    2D advection on the x-y (y-z, z-x) plane. Compute the new positions of
+    the unaligned markers on edges along the y-direction, and correspondingly
+    along the z- and x-directions in 'advect_y' and 'advect_z', respectively. */
 
     double kr_max = 5.;
-    // unaligned markers on y direction
     s.y.stencil.bc = s_centered;
     snew.y.stencil.bc = s_centered;
     foreach_vertex() {
@@ -1094,15 +1221,13 @@ foreach_dimension()
       with_marker.y[] = 0.; // should be removed
 
       if (fabs(ss_tmp.y[]) < machine_zero && withi) {
-        // For markers at the physical boundary (for symmetric boundary)
+        // For markers on the left and right boundaries (symmetric boundaries)
         snew.y[] = s.y[];
         with_marker.y[] = 1.; // should be removed
       }
       else {
         for (int is = 0; is < 2; is++) {
-          // is=0 for the cell on the right, is=1 for the cell on the left
-          // reconnect the markers and calculate the intersection basing on
-          // the topology of cells on the both side of the cell face (last time step)
+          // `is = 0, 1` indicates the faces on the −x and +x sides of the edge, respectively.
           double xy_edge[4][2], y0, y0c;
           int ind_markers[4] = {-1, -1, -1, -1};
 
@@ -1133,15 +1258,14 @@ foreach_dimension()
                 x2 = xy_edge[ie2][0];
                 y2 = xy_edge[ie2][1];
 
-                y0 = my_intersect (x1, y1, x2, y2, 0.); // y0 == -1 means no intersection
+                // y0 == -1 indicates no intersection
+                y0 = my_intersect (x1, y1, x2, y2, 0.);
 
                 if (y0 >= 0.) {
                   snew.y[] = y0;
                   with_marker.y[] += 1.; // for checking the numner of markers
 
                   #ifdef CIRCLE_FIT
-                  // find out the four markers used for circle fit
-                  // Current version of implementation: the intersection point is the average of two circle fits
                   int iee[2] = {ie1, ie2}, ipx, ipy, conn, ipps, ippe, nsec = 0;
                   double yave = 0., kp[2] = {0., 0.}, ycyc_int[2] = {HUGE, HUGE};
                   for (int ipe = 0; ipe < 2; ipe++) {
@@ -1185,15 +1309,15 @@ foreach_dimension()
                     y0c = intersection_circle (xrc, yrc, rc, 0.);
 
                     if (rc > 0.) {
-                      // sign is not correct
+                      // We only care about the absolute value of the curvature
                       kp[ipe] = 1./rc;
                     }
-                    // If the intersection point is outside [0., 1.], we abandon the result
+                    // If the intersection point lies outside [0., 1.], discard the result
                     ycyc_int[ipe] = y0;
                     if (rc > 0. && y0c > 0.) {
                       xmin = min(min(x1, x2), x3);
                       xmax = max(max(x1, x2), x3);
-                      // we don't use the result of extrapolation
+                      // We do not use the extrapolated result
                       if (xmin <= 0. && xmax >= 0.) {
                         ycyc_int[ipe] = y0c;
                         yave += y0c;
@@ -1202,16 +1326,15 @@ foreach_dimension()
                     }
                   }
 
-                  // curvature ratio of two circle fittings
+                  // In regions with large curvature gradients, choose the fit that yields
+                  // the smaller curvature (or the linear fit)
                   double kr = max(fabs(kp[0]), fabs(kp[1]))/(min(fabs(kp[0]), fabs(kp[1])) + 1.e-32);
                   if (nsec == 2 && kr > kr_max) {
-                    // for the region with large gradient of curvature, choose the fitting
-                    // resulting in smaller curvature (or linear fitting)
                     yave = fabs(kp[0]) < fabs(kp[1]) ? nsec*ycyc_int[0]:  nsec*ycyc_int[1];
                   }
 
                   if (nsec > 0) {
-                    // We revert to straight line fit if all the circle fits fail
+                    // Revert to a straight-line fit if all circle fits fail
                     yave /= nsec;
                     snew.y[] = yave;
                   }
@@ -1223,9 +1346,13 @@ foreach_dimension()
 
         }
       }
-    } // end foreach_edge_y, advection of unaligned markers
+    } // End of advection on the x–y plane.
 
-    // unaligned markers on z direction
+    /**
+    2D advection on the x-z (y-x, z-y) plane. Compute the new positions of
+    the unaligned markers on edges along the z-direction, and correspondingly
+    along the x- and y-directions in 'advect_y' and 'advect_z', respectively. */
+
     s.z.stencil.bc = s_centered;
     snew.z.stencil.bc = s_centered;
     foreach_vertex() {
@@ -1234,7 +1361,6 @@ foreach_dimension()
       with_marker.z[] = 0.; // should be removed
 
       if (fabs(ss_tmp.z[]) < machine_zero && withi) {
-        // For markers at the physical boundary (for symmetric boundary)
         snew.z[] = s.z[];
         with_marker.z[] = 1.; // should be removed
       }
@@ -1322,10 +1448,9 @@ foreach_dimension()
                     y0c = intersection_circle (xrc, yrc, rc, 0.);
 
                     if (rc > 0.) {
-                      // sign is not correct
                       kp[ipe] = 1./rc;
                     }
-                    // If the intersection point is outside [0., 1.], we abandon the result
+
                     ycyc_int[ipe] = y0;
                     if (rc > 0. && y0c > 0.) {
                       xmin = min(min(x1, x2), x3);
@@ -1338,11 +1463,8 @@ foreach_dimension()
                     }
                   }
 
-                  // curvature ratio of two circle fittings
                   double kr = max(fabs(kp[0]), fabs(kp[1]))/(min(fabs(kp[0]), fabs(kp[1])) + 1.e-32);
                   if (nsec == 2 && kr > kr_max) {
-                    // for the region with large gradient of curvature, choose the fitting
-                    // resulting in smaller curvature (or linear fitting)
                     yave = fabs(kp[0]) < fabs(kp[1]) ? nsec*ycyc_int[0]:  nsec*ycyc_int[1];
                   }
 
@@ -1358,18 +1480,31 @@ foreach_dimension()
 
         }
       }
-    } // end foreach_edge_z, advection of unaligned markers
+    } // End of advection on the x–z plane.
 
-    // Update the color vertex, don't change the function call order
+    /**
+    Update the Color Vertex field. Do not change the order of the function calls. */
+
+    // Change the color of vertex when marker moves across the grid line
+    boundary ((scalar *) {color_pha});
+    foreach_vertex() {
+      if (ss_tmp.x[-1] > 1.)
+        color_pha_new[] = color_pha[-1];
+      else if (ss_tmp.x[] < 0.) {
+        color_pha_new[] = color_pha[1];
+      }
+    }
+    boundary ((scalar *) {color_pha_new});
+
     update_color_cen_x();
     foreach_vertex()
       color_pha[] = color_pha_new[];
 
     boundary ((scalar *) {color_pha});
-    // determine the number of markers on edge based on color vertex, robust method for corner case,
-    // it can be generalized to double-Semushin easily in the furture.
-    // without noauto, it trigger the prolongation of color_pha, then onsameside give a floating
-    // point exception, should check this later !!!
+
+    /**
+    Topology changes are handled here. */
+
     foreach_edge_i() {
       int with_face = fabs(color_pha[] - color_pha[1]) > machine_zero;
       if (with_face) {
@@ -1381,14 +1516,20 @@ foreach_dimension()
       }
     }
 
+    /**
+    Final positions of the markers */
+
     foreach_edge_b()
       s.x[] = snew.x[];
-
-    // We should take care of the vertex vector filed on the resolution boundary manually?
     boundary ((scalar *) {s});
 
-    // Output the information of cell face with odd number of markers, for debugging
-    // we need noauto, the boundary() produces strange result
+    /**
+    Perform consistency checks for debugging purposes. Output cell faces with
+    an odd number of markers and edges with more than two markers.
+
+    We need `noauto` here; otherwise, the automatic boundary conditions produce
+    unexpected results. */
+
     foreach_face(z, x, y, noauto) {
       int ii = 0;
       ii += with_marker.x[] + with_marker.x[0,1] + with_marker.y[] + with_marker.y[1];
@@ -1414,7 +1555,11 @@ foreach_dimension()
   }
 
 /**
-## Multi-dimensional EBIT marker advection */
+## Multi-dimensional advection
+
+We can either alternate the advection order among different directions,
+as commonly done in VOF methods to reduce phase errors, or simply use a
+fixed x-y-z sequence. */
 
 void ebit_advection (vector u, int i) {
   void (* sweep[dimension]) ();
@@ -1429,8 +1574,15 @@ void ebit_advection (vector u, int i) {
   #endif
   }
 
+  semu2vof(); // Compute the volume fraction field
+
+  /**
+  Mark the cells within a 5 × 5 stencil around the interfacial cells for
+  refinement to the maximum level. In principle, only a 3 × 3 stencil
+  is required. The larger stencil is imposed by the 'vertex vector' data structure
+  used in the current implementation. */
+
   #ifdef ADAPT
-  // marks the interfacial cell
   scalar with_intf[];
 
   foreach() {
@@ -1443,13 +1595,8 @@ void ebit_advection (vector u, int i) {
     with_intf[] = (cv == 8 || cv == 0) ? 0. : 1.;
   }
 
-  /* We only need to refine two adjacent layers of the interfacial cell
-  to the maximum level, since vertex vertex is used to store with_markers,
-  which is different to the 2D version. */
   set_mask (with_intf, 2);
   #endif
-
-  semu2vof();
   
   #if _MYOUTPUT
   debug_log (i);
@@ -1461,7 +1608,10 @@ void ebit_advection (vector u, int i) {
   #endif
 }
 
-/** EBIT marker advection, we use the name "vof" to achieve consistency with VOF solver in Basilisk */
+/**
+EBIT marker advection. We use the event name `vof` for consistency with the
+VOF solver in Basilisk. This event can be overridden by setting `u_ebit = NULL`,
+which is useful when coupling with phase-change solvers. */
 
 event vof (i++) {
   for (vector u in u_ebit)
@@ -1479,3 +1629,21 @@ event adapt (i++) {
   #endif
 }
 #endif
+
+/**
+## References
+
+~~~bib
+@article{pan2026,
+  title={Exact Computation of the Color Function for Triangular Element Interfaces},
+  author={Pan, Jieyun and Koffi Bi, D\'{e}sir-Andr\'{e} and Kottilingal,
+  Ahmed Basil and Costanzo, Serena and Lu, Jiacai and Ling, Yue and Scardovelli,
+  Ruben and Tryggvason, Gr\'{e}tar and Zaleski, St\'{e}phane},
+  journal={International Journal for Numerical Methods in Fluids},
+  volume={n/a},
+  year={2026},
+  publisher={Wiley},
+  doi={https://doi.org/10.1002/fld.70086}
+}
+~~~
+*/

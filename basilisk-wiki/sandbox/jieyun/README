@@ -1,5 +1,5 @@
 
-# Sandbox of Jieyun
+# Sandbox of [Jieyun Pan](https://scholar.google.com/citations?user=gEhNMeEAAAAJ&hl=fr)
 
 # Correct way to use the code from my sandbox
 
@@ -39,7 +39,7 @@ In the EBIT method, the markers are located on the grid edges and
 the interface can be reconstructed without storing the connectivity of the markers. This feature
 allows almost automatic parallelization on a quad/octree grid.
 
-## Publications
+## References
 
 ~~~bib
 @article{chirco2022,
@@ -51,30 +51,6 @@ allows almost automatic parallelization on a quad/octree grid.
   year={2022},
   publisher={Wiley},
   doi={https://doi.org/10.1002/fld.5144}
-}
-
-@article{pan2024,
-  title={An edge-based interface tracking ({EBIT}) method for multiphase-flow simulation with surface tension},
-  author={Pan, Jieyun and Long, Tian and Chirco, Leonardo and Scardovelli, Ruben and Popinet St\'{e}phane and Zaleski St\'{e}phane},
-  journal={Journal of Computational Physics},
-  volume={508},
-  pages={113016},
-  year={2024},
-  publisher={Elsevier},
-  doi={https://doi.org/10.1016/j.jcp.2024.113016},
-  pdf={https://arxiv.org/pdf/2309.00338}
-}
-
-@article{long2024,
-  title={An Edge-based Interface Tracking ({EBIT}) method for multiphase flows with phase change},
-  author={Long, Tian and Pan, Jieyun and Zaleski St\'{e}phane},
-  journal={Journal of Computational Physics},
-  volume={513},
-  pages={113159},
-  year={2024},
-  publisher={Elsevier},
-  doi={https://doi.org/10.1016/j.jcp.2024.113159},
-  pdf={https://arxiv.org/pdf/2402.13677}
 }
 ~~~
 
@@ -110,7 +86,7 @@ Verification test cases can be found on the following pages:
 * [Rising bubble](test/rising_3d_ebit.c)
 * [Bubble merging](test/merging_3d_ebit.c)
 
-### Benchmark test cases with the EBIT method (Unsplit)
+### Benchmark test cases with the 2D EBIT method (Unsplit)
 * [Single vortex](test/vortex_ebit_unsplit.c)
 * [Zalesak's disk](test/zalesak_ebit_unsplit.c)
 
@@ -134,3 +110,83 @@ I spent some time reading the source code to figure out how the tagging function
 I added some comments and figures to the tag.h to make it clearer.
 
 * [Tagging function in Basilisk source code](tag/tag.h)
+
+# Publications
+
+~~~bib
+@article{pan2025_3debit,
+  title={A Three-dimensional Edge-Based Interface Tracking ({EBIT}) Method for Multiphase-flow Simulations},
+  author={Jieyun Pan and Tian Long and Ruben Scardovelli and St\'{e}phane Popinet and St\'{e}phane Zaleski},
+  year={2025, arXiv preprint},
+  url={https://arxiv.org/abs/2509.26361}
+}
+
+@article{pan2026_IJNMF,
+  title={Exact Computation of the Color Function for Triangular Element Interfaces},
+  author={Pan, Jieyun and Koffi Bi, D\'{e}sir-Andr\'{e} and Kottilingal,
+  Ahmed Basil and Costanzo, Serena and Lu, Jiacai and Ling, Yue and Scardovelli,
+  Ruben and Tryggvason, Gr\'{e}tar and Zaleski, St\'{e}phane},
+  journal={International Journal for Numerical Methods in Fluids},
+  volume={n/a},
+  year={2026},
+  publisher={Wiley},
+  doi={https://doi.org/10.1002/fld.70086}
+}
+
+@article{pan2026114838,
+title = {An unsplit scheme for interface advection in the edge-based interface tracking ({EBIT}) method},
+journal = {Journal of Computational Physics},
+volume = {557},
+pages = {114838},
+year = {2026},
+issn = {0021-9991},
+doi = {https://doi.org/10.1016/j.jcp.2026.114838},
+author = {Jieyun Pan and Tian Long and Ruben Scardovelli and St\'{e}phane Zaleski}
+}
+
+@article{Long2025,
+title={Direct numerical simulation of nucleate boiling with a resolved microlayer and conjugate heat transfer},
+journal={Journal of Fluid Mechanics},
+volume={1020},
+pages={A30},
+year={2025},
+doi={10.1017/jfm.2025.10542},
+author={Long, Tian and Pan, Jieyun and Cipriano, Edoardo and Bucci, Matteo and Zaleski, St\'{e}phane}
+}
+
+@article{chen2025,
+  author = {Chen, Xiangbin and Han, Tianyang and Pan, Jieyun and Fuster, Daniel and Zaleski, St\'{e}phane},
+  title = {Volume-conserving method for dynamic contact line on complex surfaces},
+  journal = {Physics of Fluids},
+  volume = {37},
+  number = {2},
+  pages = {023392},
+  year = {2025},
+  issn = {1070-6631},
+  doi = {10.1063/5.0254089}
+}
+
+@article{pan2024,
+  title={An edge-based interface tracking ({EBIT}) method for multiphase-flow simulation with surface tension},
+  author={Pan, Jieyun and Long, Tian and Chirco, Leonardo and Scardovelli, Ruben and Popinet St\'{e}phane and Zaleski St\'{e}phane},
+  journal={Journal of Computational Physics},
+  volume={508},
+  pages={113016},
+  year={2024},
+  publisher={Elsevier},
+  doi={https://doi.org/10.1016/j.jcp.2024.113016},
+  pdf={https://arxiv.org/pdf/2309.00338}
+}
+
+@article{long2024,
+  title={An Edge-based Interface Tracking ({EBIT}) method for multiphase flows with phase change},
+  author={Long, Tian and Pan, Jieyun and Zaleski St\'{e}phane},
+  journal={Journal of Computational Physics},
+  volume={513},
+  pages={113159},
+  year={2024},
+  publisher={Elsevier},
+  doi={https://doi.org/10.1016/j.jcp.2024.113159},
+  pdf={https://arxiv.org/pdf/2402.13677}
+}
+~~~

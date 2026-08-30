@@ -23,7 +23,12 @@ import pyvista as pv
 import xarray as xr
 
 from tools import build_z_ds
-from tools_3Dplots import build_3Dgrid, add_mesh_domain_side, add_ticks
+from tools_3Dplots import (
+    build_3Dgrid,
+    add_mesh_domain_side,
+    add_ticks,
+    clip_physical_to_index,
+)
 
 
 def parse_args(argv=None):
@@ -158,6 +163,31 @@ def parse_args(argv=None):
         "--off-screen", action="store_true", help="Render off-screen (no window popup)"
     )
 
+    p.add_argument(
+        "--xclip",
+        type=float,
+        nargs=2,
+        default=None,
+        metavar=("xmin", "xmax"),
+        help="X direction clip. Default is full domain",
+    )
+    p.add_argument(
+        "--yclip",
+        type=float,
+        nargs=2,
+        default=None,
+        metavar=("ymin", "ymax"),
+        help="Y direction clip. Default is full domain",
+    )
+    p.add_argument(
+        "--zclip",
+        type=float,
+        nargs=2,
+        default=None,
+        metavar=("zmin", "zmax"),
+        help="Z direction clip. Default is full domain. The clip is made by guessing an index from the averaged height z",
+    )
+
     return p.parse_args(argv)
 
 
@@ -188,6 +218,9 @@ def render_movie(
     window_size=(1024, 1024),
     off_screen=False,
     verbose=True,
+    xclip=None,
+    yclip=None,
+    zclip=None,
 ):
     """
     Render a 3D PyVista movie from a NetCDF simulation output.
@@ -219,6 +252,22 @@ def render_movie(
     dst = xr.open_dataset(input_path)
     dst = dst.isel(time=slice(skip, len(dst.time)))
     H0 = -dst.zb.values.flatten()[0]
+
+    # Clipping
+    if xclip is None:
+        xmin, xmax = -L0 / 2, L0 / 2
+    else:
+        xmin, xmax = xclip
+    if yclip is None:
+        ymin, ymax = -L0 / 2, L0 / 2
+    else:
+        ymin, ymax = yclip
+    if zclip is None:
+        zmin, zmax = -H0, 0.0
+    else:
+        zmin, zmax = zclip
+    physical_clip = xmin, xmax, ymin, ymax, zmin, zmax
+
     t0 = t_start if t_start is not None else float(dst.time.values[0])
     t1 = t_end if t_end is not None else float(dst.time.values[-1])
     if t1 <= t0:
@@ -239,6 +288,10 @@ def render_movie(
         print(f"fps:          {fps}")
         print(f"Frames:       {nframes}  (video duration: {nframes / fps:.2f} s)")
         print(f"Grid size:    {nx} x {ny} x {nz}")
+        print("Domain size:")
+        print(f"    X: [{xmin}, {xmax}] m")
+        print(f"    Y: [{ymin}, {ymax}] m")
+        print(f"    Z: [{zmin}, {zmax}] m")
 
     if nframes > len(dst.time):
         print(
@@ -250,11 +303,15 @@ def render_movie(
     plotter = pv.Plotter(window_size=tuple(window_size), off_screen=off_screen)
     plotter.open_movie(filemovie, framerate=fps)
 
-    box = pv.Box(bounds=(-L0 / 2, L0 / 2, -L0 / 2, L0 / 2, -H0, 0))
+    # nice box around domain, default is full domain
+    box = pv.Box(bounds=(xmin, xmax, ymin, ymax, zmin, zmax))
     plotter.add_mesh(box, style="wireframe", color="black", line_width=1)
 
-    add_ticks(plotter, L0, H0, tick_len_min, tick_len_maj, label_offset)
+    add_ticks(
+        plotter, L0, H0, tick_len_min, tick_len_maj, label_offset, clip=physical_clip
+    )
 
+    # Camera position
     plotter.camera_position = camera_position
     plotter.camera.elevation = elevation
     plotter.camera.azimuth = azimuth
@@ -262,6 +319,8 @@ def render_movie(
     plotter.set_background(background)
 
     # better view of the simu, with space for colorbar
+    # increase shiftV : cube goes up
+    # increase shiftH : cube goes left
     shiftV = 1 / 3 * H0
     shiftH = 1 / 5 * H0
     pos = plotter.camera.position
@@ -278,7 +337,7 @@ def render_movie(
             ds = dst.sel(time=t_target, method="nearest")
 
         ds = build_z_ds(ds, "float32")
-        grid = build_3Dgrid(ds)
+        grid, xv, yv, zv = build_3Dgrid(ds)
 
         T = ds[var_side].values.transpose(2, 1, 0)
 
@@ -286,9 +345,19 @@ def render_movie(
         UX = ds[var_top].values.transpose(2, 1, 0)
         grid.cell_data[var_top] = UX.ravel(order="F")
 
+        # Clipping
+        if physical_clip is None:
+            iclip = None
+        else:
+            zvm = np.mean(zv, axis=(1, 2))
+            iclip = clip_physical_to_index(physical_clip, xv, yv, zvm)
+
+        # Disable surface from previous timestep
         plotter.remove_actor("top_surface", render=False)
         plotter.remove_actor("side_surface", render=False)
-        add_mesh_domain_side(grid, (nx, ny, nz), plotter, vartop, varside)
+
+        # Add mesh on the sides and the top
+        add_mesh_domain_side(grid, plotter, vartop, varside, index_clip=iclip)
 
         plotter.write_frame()
 
@@ -336,6 +405,9 @@ def main(argv=None):
             background=args.background,
             window_size=args.window_size,
             off_screen=args.off_screen,
+            xclip=args.xclip,
+            yclip=args.yclip,
+            zclip=args.zclip,
         )
     except (FileNotFoundError, ValueError) as e:
         print(f"Error: {e}", file=sys.stderr)

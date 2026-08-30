@@ -21,7 +21,7 @@ The corresponding profile is shown below
 ~~~gnuplot (Spatial) cumulative probability function
 set ylabel 'y'
 set xlabel 'c'
-p "reference_state_gsl_0.asc" u 2:3
+p "reference_state_gsl.asc" u 2:4
 ~~~
 
 */

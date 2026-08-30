@@ -1,4 +1,4 @@
-pristine:a21d85e09108113a5217e019a43be6d5f4092420ad6baa33c4637a34d3b28135
+pristine:790d697e58ea4fb78ff1c57de88f9ef431ac7e0be9d7e229a103e237d62ed5b4
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -13815,3 +13815,413 @@ Llourenco <leo.lourenco@etu.sorbonne-universite.fr>**20260823141056
  Ignore-this: 6a2dea6574f05978d87e60237df2a8ad6e81d89a02c6f0b2abab7b111a33e3987c2d2474b4fd24aa
 ] 
 hash: 0000005645-58e1552c1adcdff272064943f48068387d8c213c6fcd864d6b12656d089df696
+[GRL
+Stephane Popinet <popinet@basilisk.fr>**20260824115611
+ Ignore-this: e122cd0698aedae0857d88703ea374524c036ba79ca70216021a12c150f4df75a5f1677781728df2
+] 
+hash: 0000000259-fef75438b8a28eb648094434302e78e5548d6cf20d68b69e037d22bd6540a74c
+[Add output_facets_xmf_list() routine and test case
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260824121800
+ Ignore-this: 606d7452435b9a78e8a85374c383a31bc60f30ba62cb6c5c3481c7c3a3c8829a0a5402fb4f7d43c4
+] 
+hash: 0000010983-fbe2a23d1275caceb5b3d60ba4459ec07db9cb3a7b1d6350ea452308a096f7e2
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260824225540
+ Ignore-this: b108861f39456064106f1c9b6fe704d510e1685dee6dbad98abf8780301fca6f97ed4d3a558b9b9b
+] 
+hash: 0000000331-4d86b7f63ceb4dcac49b3ee1abcab138603d6c90124e35012792a0fa27967ea7
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260824225648
+ Ignore-this: 408ac28300e88a5276fee7416418f9b2ba75daf31f00a985f653ccf74970c0320f4156b8f87664f2
+] 
+hash: 0000000570-71115fb2e047c864f3ba5262f7e294ddeac7d35e9d67f97936ad53faa4ee9c6a
+[Creation of the sessile + embed code
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260825000418
+ Ignore-this: 2ac893792a0d6c5e30cf87ece126e3eb87b46ec56a0e8f6bac5730ed2f4e6350463388a88a477747
+] 
+hash: 0000006285-decfdb72cbcb75e104e6b4c772357fcd9f81ce9b6f1bd7999ace9ea454d7a4fb
+[Added adapted stokes particle code
+JulesR <e.relyveld@gmail.com>**20260825100308
+ Ignore-this: b5f42816e8f6d60ceca58894f51b81ca8597504c52fa590449651fbb3c707e1573d5b3495df4380b
+] 
+hash: 0000006213-398fa8e83187363db00d2a0fb713265652f5eb3c3f75bdee168a86c472ab4271
+[correction of the implementation
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260825102429
+ Ignore-this: fc284cf32bfeb1ff4c004ca9b66d1583929e1cd203e21aff7d9e104eb95be4b1aca12226bbc0702b
+] 
+hash: 0000000631-8d0bc647da8bc504ba461ca540a6fa08ea05ca1e5c2c9f588b676e9a9bee545b
+[add of the thickness graph
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260825103535
+ Ignore-this: 26657a365ba0bdcf0c7273fc7e4ccf21b1741d2271c496e48322fffd06164600829c83601beb575
+] 
+hash: 0000001850-4535474f1e49d6ee1e267ec6861bba9b7ff963a0ef189d19af0a5da6e5e4f786
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260825103719
+ Ignore-this: d6d640f7e7e9a1d7d94f209a61eaeaf147dfdbd43f1eb2c1a671073ec124faf49ae9a4e3ff5a8b73
+] 
+hash: 0000000529-58d1d2a7cde5e9e63acc6413def98f47a789584615c1b8aaf9ace71d93f3629c
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260825103840
+ Ignore-this: 435c83c2e0d2ad8aab035a8f19df7baf3f77328abd87761b8c2378dbb19085132dee927e4cd62a52
+] 
+hash: 0000000780-4b1ab0cc87cfad5f61509b87c85803e8f67fd6f87f81ae06967412c4a95a5d9f
+[add of the table of parameters for the different line contact models
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260825155218
+ Ignore-this: cfe47a08517776b56658eb94c74be799f7eae852d14eb612b4af2f041593c5fedc9f993e5648244f
+] 
+hash: 0000001776-2d77b95d22de39a8993e19701a695d55b813fea1a42f8301b9993e6e790c6104
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260825155456
+ Ignore-this: 5295e1feed3386ba5bd5141bc5436b0fc71f7ecde160800445c4f6ea2e4028b59e216bec6a68350c
+] 
+hash: 0000000287-02e6dafa81194f4794f8b267176e1c5d507687d92409c68ff7a7aa8b393e3d7a
+[Improve documentations of the 3D EBIT method
+Jieyun Pan**20260826083913
+ Ignore-this: aa9b28cb2d03893ee9b13f82ce1b83fe
+] 
+hash: 0000023483-1aca4c8d1cc99064a482d59bc8ac21b4f93ffc69af3b73ae0e102c651349b3ad
+[typo
+mvacher <marc.cordelle.vacher@gmail.com>**20260826085022
+ Ignore-this: e81018e599be4efe872d72fa0f5a7f5bf4c22b766a4b524b337948890dcbc511aeddde341636e9d7
+] 
+hash: 0000000366-9751997cb85a5844ccaad5054fb2441fcfbca0e5915b280857d7f06e2ae5a0a4
+[Deleted using web interface
+mvacher <marc.cordelle.vacher@gmail.com>**20260826085630
+ Ignore-this: 52d29b127685fffcf7447d92ded0d341eeea8b161185484f3942c25641cf47d3d9f177ac01b09d74
+] 
+hash: 0000002285-01100b59028dafd5915d52769e19350938937fe39fc073d43fe8eebde099e86c
+[auto-adjust pressure
+mvacher <marc.cordelle.vacher@gmail.com>**20260826085816
+ Ignore-this: 9fe435a73b3c3057ef289c86c6b09f2566b8c76424cdc22742b9632c3eca99ea0446fd00a79cf42c
+] 
+hash: 0000000440-a1fe404aa49c5fb9602c1d891008480e2ff9e6ac425ad2afa3a7cae4af1903df
+[Deleted using web interface
+mvacher <marc.cordelle.vacher@gmail.com>**20260826090316
+ Ignore-this: a2fb781a95506fa8622943a9cd6eedd4af841058484e8575ea8cc0a2d37ed1c5b611931ec5d58ba9
+] 
+hash: 0000004888-a7f7352e0de379088be3ebff36a863eeec0defb8665b7c49b3ad9c9c18edbf0f
+[residuals
+mvacher <marc.cordelle.vacher@gmail.com>**20260826094821
+ Ignore-this: 28b0c13722952415bbfb908a1487de83efca3b365d2f744a0b9be9316d8b68a90b28a0d07d2c9627
+] 
+hash: 0000003147-dedc6e413cfe25d72b06831cbfc01c1a7a07d38eae5a0118562182c7cb6482f9
+[new test
+mvacher <marc.cordelle.vacher@gmail.com>**20260826094857
+ Ignore-this: 6dc3cfba20b156593d9d04c44f702c7105a6c3412981ae6791b36a4c9439647badb7457ce0b1bac5
+] 
+hash: 0000000375-c27ce75e728b852468ea51b81d8502784505fd85951f3a57ebdf848bd2ae4887
+[new test
+mvacher <marc.cordelle.vacher@gmail.com>**20260826111651
+ Ignore-this: 39ee9ac5ab5ef3aa96a7b5c3bbc947be763d73979ebcd2ad9f0eb99213df4ee18fd81330f2c6070e
+] 
+hash: 0000000358-50f8d843dce40944d702f66279210ee65e7954ca16fffecf85810c038b7466f6
+[smaller image
+mvacher <marc.cordelle.vacher@gmail.com>**20260826111838
+ Ignore-this: 986643e56b107640026e822cabd584da261a1f6bdc1edeead39a9f82c1c3f2de988afd64a4697646
+] 
+hash: 0000000279-e3dd6f1f35ae58951f04017162c0a54af37039cf7bf008d7090620727acef896
+[Add reference files for 3D kinematic tests
+Jieyun Pan**20260826122839
+ Ignore-this: 58eb19b58672c13718cc0cd6fdfacc7f
+] 
+hash: 0000145572-ade6ede83743e12915bdeffeeaf279a69990d0b2b3b7224a2dc0d2ac32f963e7
+[Fix readme
+Jieyun Pan**20260826130706
+ Ignore-this: 6e9000d8e179ab62e4c5c5f66183d4f8
+] 
+hash: 0000001658-54b8cf38f4f9dab67c00f137828064fe10ab43d6d59da3a2ebcd1c1375dab095
+[add test case at HR (still blowing up), and a real test (with the new init method, runs fine)
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260826142937
+ Ignore-this: 11a3a1c4ed2cdc38186b099d31bde8de
+] 
+hash: 0000011261-3a9a47775473a64f14e6aad7379f625db5e41789b52fcc2a0007ab46f490cce8
+[added a first diag for coherent structures, skeleton of a layer aware gradient function, small correction on how I build my L2 files
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260826143117
+ Ignore-this: 6945ee3e708a4bacbb7426e3cc2bf1f9
+] 
+hash: 0000009230-f9ef49ab714cf56a68ccf7db32947737d0eb0937d8645e4b6ddee722a54b847e
+[new
+Llourenco <leo.lourenco@etu.sorbonne-universite.fr>**20260826144310
+ Ignore-this: cba3bdffaf9cc3d76083c88b80d75a13826a7b7388349d913d14efc616485333b3ec8fb1af5731c8
+] 
+hash: 0000000654-4f05f6f7f1ee831c3016e8e28cc308d53c25b182fbae3d900638c46745e189de
+[run2
+Llourenco <leo.lourenco@etu.sorbonne-universite.fr>**20260826150512
+ Ignore-this: f39e01201bd08ad6a0ce414ddbdf48601e5c83752ca545d7475f5a0bf6a1d60363e5ac2a2a1db16e
+] 
+hash: 0000000493-361b4e41a0f84579247ca07bbaa5bc62acf1b026eab8141c78e9914800d3d9f9
+[run4
+Llourenco <leo.lourenco@etu.sorbonne-universite.fr>**20260826154350
+ Ignore-this: c3a41d4c1ab234dadf9f437d480e2e95448ed45c269fa49bf516efc9c0b13b6d2a5dbc9bc772e9c7
+] 
+hash: 0000000282-2be922672ddb4d47646ac28cdde1ed5638d1a93c31a65ae9408a81a514eb41b5
+[Add reference files of the dynamic tests
+Jieyun Pan**20260826201631
+ Ignore-this: 258331ca7c4374e3efb340c18add636c
+] 
+hash: 0000136298-f9eab2e6d080628ae945cee952b0f1142675e7f773880192a07cd64e5b05909d
+[Init change
+aiberl <andreas.iberl@unibw.de>**20260827092850
+ Ignore-this: d3cfa87f0ecadd9766bfb5399b9b460f0807676d2ed0a6fca0745d58359da76bb41a56deb011abab
+] 
+hash: 0000000263-2d0d8bf328aebfff7e9b702739c4138dea6607e66c9067be932cec765243eb95
+[Remove H1
+aiberl <andreas.iberl@unibw.de>**20260827092912
+ Ignore-this: 5b4a5ea3a11c8974ed40661cc23d467c1882b704e91b401bfbeda1481bb5f131c939724f3d391d05
+] 
+hash: 0000000217-06a96f1b6d18fcb7b4ae00f9b9f3f9a673fc49695528940799858b0ecf86d887
+[Removed generic name
+aiberl <andreas.iberl@unibw.de>**20260827092940
+ Ignore-this: 98d3b6c41ea40fa254a390ddf083058b55c3cb4ee3f0717d9e5dc83990ae0bf888fec1bbdd9c0b98
+] 
+hash: 0000000223-9f98e80ace78884fa3649cc61a3fa1d469a36842421107dde3b4463b2d7f7986
+[text + formula
+mvacher <marc.cordelle.vacher@gmail.com>**20260827143117
+ Ignore-this: bd415ab5db3e00697f0b5fdd4cd820db24c51ec0b94300405f4f337cef35486f81a51a4e6a2e3904
+] 
+hash: 0000000904-8fc08b63c7ad68462eca0e0fb00fa6d28e4fde76e7fc275e13655ef331acff06
+[text+formula
+mvacher <marc.cordelle.vacher@gmail.com>**20260827143756
+ Ignore-this: 91e071ce99e3dc12cfb22a1c6b2184fad327556e5e9c3dde092e32f2f060dd2eb3eb05086a10bea2
+] 
+hash: 0000002594-1cce519cf11276a8468cfe846979ed2dc1b6198dbc3ddfcd75f427f23ff143c5
+[t_lim
+mvacher <marc.cordelle.vacher@gmail.com>**20260827144019
+ Ignore-this: 467e8d71c87d0e2d3b499a1e3c13d69761de628d42f13a5d7f3c372e150acf7926c67faf37345d06
+] 
+hash: 0000000426-9689974931ed2af8062dff2e117686bc757567f9c1e55d978c1cdf625e9024b5
+[t_lim
+mvacher <marc.cordelle.vacher@gmail.com>**20260827144445
+ Ignore-this: e21702ed5c4a53eb3e776a01c88de075ca04ea7455a22eae84e7786cabe9f7e27c8df855e134fdae
+] 
+hash: 0000000302-49892aef5d878a24250c6ec25ca3e4f84531ff4dac2c80f7bee3ec164fceaf5d
+[text + residuals
+mvacher <marc.cordelle.vacher@gmail.com>**20260827145539
+ Ignore-this: 2fb963d3e9548c53adff4b88f88afacdb28e2344b9a2cbdc5a0e0ab151eff360921e5fecfeaa4965
+] 
+hash: 0000003912-16ee2946afa063a6f1c86ea5629f98ce4762867d54ab7cb6a677e29d78cb3d95
+[output_fields: add output_facets_xmf_box() and share its helpers
+andres.castillo_castellanos@ens-paris-saclay.fr**20260828122810
+ Ignore-this: 8aa041e1d2628035eb46e752f4b7ba9a485686c46f7c9eebcfc609f57b601223e6fc7c6adcc4a242
+ 
+ Adds output_facets_xmf_box() (xdmf/output_xdmf_facets_box.h), which exports
+ the VOF interface restricted to a bounding box, using the same
+ cell-center-in-box inclusion test as output_xmf_box().
+ 
+ Rather than forking the count/populate helpers locally, the box-filtered
+ logic is folded into the existing shared helpers, alongside their
+ non-box counterparts:
+   - IN_BOX_CC macro -> output_common_helpers.h (next to shortcut_slice)
+   - count_vertices_and_facets_box -> output_common_helpers_facets.h
+   - populate_{points,topo,scalar}_dset_facets_xdmf_box -> xdmf/output_xdmf_facets_populate.h
+ 
+ Wires the new test (test_output_xmf_facets_box) into run_tests.py, and
+ factors the box cell-centroid check in test_output_xmf.py into
+ check_cells_inside_box() so it is shared between the regular-field and
+ VOF-facets box exports.
+] 
+hash: 0000017584-9ee069a21ab1bd8b0802490cf49abb48dd07fa65561b1fc5fe77e6af1d5d333b
+[output_fields: add output_facets_vtkhdf_box(), matching the xdmf box facets writer
+andres.castillo_castellanos@ens-paris-saclay.fr**20260828124002
+ Ignore-this: 53761cc6e0b0d0869099a7b0b7fb3b6006afecd76115b0fdd81a6666129fc3b547ae7edce41e8354
+ 
+ Adds output_facets_vtkhdf_box() (vtkhdf/output_vtkhdf_facets_box.h), exporting
+ the VOF interface restricted to a bounding box for the VTKHDF backend, giving
+ it parity with output_facets_xmf_box() on the xdmf side. Uses the same
+ cell-center-in-box inclusion test (IN_BOX_CC / count_vertices_and_facets_box)
+ already shared via output_common_helpers.h and output_common_helpers_facets.h.
+ 
+ The box-filtered populate helpers (points, offsets, connectivity, scalar) are
+ added to vtkhdf/output_vtkhdf_facets_populate.h alongside their non-box
+ counterparts, following the same layout used on the xdmf side.
+ 
+ Wires the new test (test_output_vtkhdf_facets_box) into run_tests.py, and
+ factors the box cell-centroid check in test_output_vtkhdf.py into
+ check_cells_inside_box(), threaded through check_cardioid(), mirroring the
+ equivalent refactor already done in test_output_xmf.py.
+] 
+hash: 0000017825-8bfc7337df089b2b08bda4d465a239cfeba907b9ff06a1c3fb071f803b071fc7
+[add the option to xclip, yclip, zclip for snapshot and movie rendering
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260828131135
+ Ignore-this: 82645f2db5fa4e78d01747d1463918d2
+] 
+hash: 0000010429-a81d7707a762f3ec84bd807867821cc7e281db43cad5e6332074460f66335be0
+[output_fields: add tests_profiles/, testing profiles.h against a two-phase shear flow
+andres.castillo_castellanos@ens-paris-saclay.fr**20260828145419
+ Ignore-this: a8b13296193462faaa2469a79977e1381902df4ba3720c9d400d129a0f4788033f8b79db54048ff0
+ 
+ Adds closed-form regression tests for profile_*_foreach_region() in
+ profiles/profiles.h, following the generate-then-verify-via-python pattern
+ used in tests_outputs/:
+ 
+   - test_profiles.c (2D) / test_profiles3D.c (3D): scalar, product and
+     dissipation profiles on a two-phase shear flow split by an interface,
+     with beta_i chosen so shear stress is continuous across it. Each run
+     against both a non-adaptive and an adaptive grid, with its own .ref --
+     multigrid resolves the dissipation profile less well without AMR near
+     the interface, and that is captured, not papered over.
+   - test_profiles_weighted.c: same field, weighted by rho instead of unity,
+     to exercise the weighted code path (rho is constant per plane here, so
+     the numbers coincide with the unweighted case by construction).
+   - test_average_bias.c / test_profile_bias.c, moved here from
+     tests_quantities/ (darcs mv) and extended to run in 3D too.
+   - test_profiles.py: shared checker, one function per routine/dimension.
+   - run_tests.py: drives every test/grid combination via EXTRA_CFLAGS=-grid=...
+ 
+ Also deletes tests_quantities/test_profile_product.c (subsumed by
+ test_profiles.c) and tests_quantities/test_profiles_foreach_region.c (last
+ user of the deprecated profiles_foreach_region.h), and updates readme to
+ point at profiles/profiles.h and tests_profiles/.
+] 
+hash: 0000040928-bf9d31f407b721e760309bfc5eb02f26c75d3f00fb157b25afc199785d3da14a
+[output_fields: add histograms1D.h, consolidate available_potential*.h onto it
+andres.castillo_castellanos@ens-paris-saclay.fr**20260828155312
+ Ignore-this: f00bc59ec403977904225a6d14c957031667a8eee200b9a05820e1bb9fdb5661a637f3b10f5a9198
+ 
+ Factors the histogram/PDF/CDF code shared by available_potential.h and
+ available_potential_vof.h into histograms1D.h
+ (probability_distribution_1D[_weighted]()), fixing a race in the GSL
+ accumulate loop and a stale per-pid output filename along the way. Both
+ available_potential*.h now call into it instead of duplicating it.
+ 
+ Adds tests_histograms/, testing both entry points against a tanh field with
+ a closed-form CDF.
+] 
+hash: 0000027250-49d5bca443959a57e2bffcb5e506cc965538249bc77b6bfa473ee1482bb8d808
+[output_fields: add histograms2D.h, joint PDF of two scalars
+andres.castillo_castellanos@ens-paris-saclay.fr**20260828161116
+ Ignore-this: 3423a2e4afdf4753e9da3616d9d7eeac2def79f5d13cac0dc1eca0265f52406de53817a3071b2fbe
+ 
+ Adds probability_distribution_2D[_weighted](), the 2D analog of
+ histograms1D.h: joint histogram/PDF of two scalar fields via
+ gsl_histogram2d, volume- (or f-) weighted. No CDF is stored, since a 2D
+ joint histogram has no single natural cumulative distribution.
+ 
+ Adds tests_histograms/test_histograms2D[_weighted].c, testing both entry
+ points against two independent tanh fields with a closed-form joint PDF
+ (product of marginals).
+] 
+hash: 0000019787-494a64f54360e76c9646a3b230e7fef96eb934e30dc1c9eef97dbe337c52bed5
+[output_fields: add strain_rate.h with strain_rate_sq()
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260828194034
+ Ignore-this: e9dbdaebf331c852a20eeaa773ace8b39cabc41c852ec20f32d40bb96dcbaed81fda53c59c4e06cd
+] 
+hash: 0000002090-0357e2c517ba878fe6bb739f5eed87e3e9c931e9a8154ad184a7e14cb894fe16
+[output_fields: add count_phase.h with MPI reduction on area
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260828194848
+ Ignore-this: 85728ec2a144d239f78320f0f381817bbcff3928677b28773cc88d00fe404bcad9813189f2c25016
+] 
+hash: 0000003203-f7e264e581925141aedf7ca87b75ae8b444e773c29416a7f8e3d7aa6b9e64dab
+[output_fields: make count_phase() work in 2D, add a column header
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260828204848
+ Ignore-this: 2447151e22e42694de62bd4759c95f6ef83161b4e9a964c8cb41e4d9ab9b77244b516379cc9ba579
+ 
+ Accumulates per component through foreach_dimension(), keeps the z
+ accumulators 3D-only, and names the reduction clause once as
+ COUNT_PHASE_REDUCTIONS. Columns in 2D drop bz and uz, and `area` is a
+ perimeter there. Writes a `#` header naming the columns on the first call.
+ Renames the local `v` to `volume`.
+] 
+hash: 0000004889-6de54c0cafd9a4a849d451982a44f233ad539336c8f8b2fc6905c0df09062eb5
+[output_fields: add tests_quantities/test_strain_rate_*, testing strain_rate.h
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260828204914
+ Ignore-this: 62eb168562b5634d557b467598c3397522fc0f56b4aa784a4310c6603b5be8aed7617381a2e60366
+ 
+ One source per analytical solution, sharing test_strain_rate.py: an affine
+ field, where the constant gradient makes the centred differences exact and
+ isolates the algebra, and a smooth one (stream function with k1 != k2 in 2D,
+ ABC flow in 3D) checking second-order convergence. Norms come from foreach
+ reductions, tolerances and orders from the checker.
+ 
+ Adds run_tests.py and puts -disable-dimensions and EXTRA_CFLAGS in the
+ Makefile, as in tests_profiles/. multigrid3D needs 8^i MPI ranks.
+] 
+hash: 0000018063-7b3048f2fc7ea579cf868dfc9b18f2bb1c289f0c8fc8488ea0b90442c664d374
+[output_fields: add tests_quantities/test_count_phase*, testing count_phase.h
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260828204930
+ Ignore-this: dab81a195fa7a2477144482c9be9a175d083c68c61f6ef4bcb49967ab21a58806b71d647bbe85558
+ 
+ Three disjoint spheres of distinct radii in u = U0 + Omega z_hat x r, which
+ gives every column a closed form: 4/3 pi R^3, the centre, 4 pi R^2, and
+ U0 + Omega z_hat x c, the last exact since a sphere is symmetric about its
+ centre. Distinct radii let the checker match regions to spheres by volume,
+ tag() numbering them in traversal order. The same centres and radii give three
+ discs in 2D.
+ 
+ test_count_phase.c covers above = 1, test_count_phase_bubbles.c above = 0 on
+ inverted f. The two agree bit for bit, which confirms that passing fval with a
+ normal taken from f reconstructs the mirror plane and so leaves the area
+ correct.
+ 
+ Only the tree grids are registered: on multigrid the refinement is skipped and
+ the coarse base level would freeze a failure with nothing to learn from it.
+] 
+hash: 0000013520-b43a07e930a02e20f042bfc4cf6ef136ec7dc8f5255556c00f42469e3fc32d84
+[output_fields: document strain_rate.h, count_phase.h and the histograms in the readme
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260828204940
+ Ignore-this: 50e6f0732368558a4815da161e16eac9a08a480fcd5d43bb7535737c0cf3611f2ba618ef2fcb0789
+ 
+ Adds entries for strain_rate_sq(), count_phase() and
+ probability_distribution_1D/2D(), the last having been undocumented since
+ available_potential*.h was consolidated onto it. Adds a section on running the
+ tests through run_tests.py.
+] 
+hash: 0000003181-f031d7fb355127bdae53b0a31e548939772e5ed8ebc82e6172b99928f44baef9
+[add conditional logic to improve efficiency
+jmaarek <maarekj98@gmail.com>**20260829135558
+ Ignore-this: 419370cf3c82ed6b0f4ea241cf6f55fcd414ae354ee96537f2af2ba2d829ac7f01297a84f842cd21
+] 
+hash: 0000021486-4c44e57315aa66c14e23dcee5d7aef30d4f144714ef50619b7efcc856d472618
+[use 3rd-order subcell correction
+jmaarek <maarekj98@gmail.com>**20260829141735
+ Ignore-this: 33c6dffde9d44c1fe128b451f60a176ccadf25ef27b00effe7a31463fe71ada4f73b84e2ab6f193b
+] 
+hash: 0000008007-9a5f3fd57f007bcef3a882728126920177ff6d5878c8d3e74aa818fe2510e92c
+[rerun
+jmaarek <maarekj98@gmail.com>**20260829142114
+ Ignore-this: 41d17b0425cf8256d49442b686c199b9ee2890a95c0fa48e17c7e73453c2142a658f6e6e2853bc34
+] 
+hash: 0000000376-4b1e94cb902f85d211748aadcb1151c86fe681a3419b1f680b602ae423c49684
+[upload test case
+jmaarek <maarekj98@gmail.com>**20260829144903
+ Ignore-this: 51bb4b37c9dc1e06ecf19c21e1f2e522a291cbd14672a08251706de1643d58b819e0f6dafe77ebe0
+] 
+hash: 0000003205-938671839f50d75b87b981c1ed5b46aba5e91c111a4162d9d3d3d171c4a81c29
+[upload topology aware multigrid
+jmaarek <maarekj98@gmail.com>**20260829145756
+ Ignore-this: e218245ca1100f3d9e0db3299aa99cc13a2dd4a0b8bf88c00b29cb3a0e3507fcc88e21124ff399a0
+] 
+hash: 0000008724-cb73f60a51d385551cb72b3955a7979212e234df3f4246e24511e30a250a8779
+[modify comment
+jmaarek <maarekj98@gmail.com>**20260829150413
+ Ignore-this: f3b1e6563da9498ebbcd241adeb4cb775f70b1384154260ebb15d71113987ee8ab0b9e70fc7ec5c9
+] 
+hash: 0000000544-7026f7eb4e429959bca623d8d1135aed99b54332f471af49cdaca9b0ac0d6443
+[output_fields: add spectra/, horizontal spectra on planes
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260829181949
+ Ignore-this: d88793eca07fdca1a09e6b978e05af39ac72951cd596e3f5c5aae98fc5df2300972419bf61e0c136
+ 
+ Shell-averaged spectra of a field list on planes of constant z, written as
+ ASCII or appended to one HDF5 file along its time axis. Sampling, transform
+ and binning, and the two writers are in separate headers.
+] 
+hash: 0000020059-c8bea6258385b7089ed4173eecc0e00453b47547bc945787f81a2095f0cbc62b
+[output_fields: add tests_spectra/, testing spectra/
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260829181955
+ Ignore-this: e43c4ee30eaf401ecfa7c1dc21e820827d15bcfcdf08d3965a21cb5f44ad2feba1effc0b6dc6d6f9
+ 
+ Five tests, run on octree and multigrid3D under MPI: the sampling and its
+ cell-centre rule, the transform and shell binning, the cost of straddling a
+ refinement boundary, and the two writers. Norms are computed in C, thresholds
+ and structural checks in test_spectra.py. The HDF5 test is skipped when
+ hdf5.h is absent.
+] 
+hash: 0000043158-80984af3e5f5834f8d0de5a2b0879b06058e0300a338560298ad4ae0667fceac
+[output_fields: document the spectra routines in the readme
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260829181956
+ Ignore-this: bb56325956bf76e540356ecf7c6fafd361aacf4ccad53ebadf09e13bd635f1c4e9e5f54359774193
+ 
+ Also records the convention the three test directories now share: norms in C,
+ thresholds in Python, the checker's report frozen as the reference.
+] 
+hash: 0000002848-ec5c2c2ee235393e509d9260cafd8ab2712d0379b89a7f3131ca278b57c4763e

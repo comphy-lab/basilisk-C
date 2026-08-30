@@ -3,6 +3,7 @@
 
 #include "geometry.h"
 #include "fractions.h"
+#include "acastillo/output_fields/output_common_helpers.h"
 
 #if dimension == 1
 coord mycs(Point point, scalar c)
@@ -37,6 +38,25 @@ void count_vertices_and_facets(scalar c, long *nverts, long *nfacets) {
     if ((c[] > 1e-6 && c[] < 1. - 1e-6) && cs[] == 1)
     #else
     if (c[] > 1e-6 && c[] < 1. - 1e-6)
+    #endif
+    {
+      shortcut_facets
+      for (int i = 0; i < m; i++)(*nverts)++;
+      if (m > 0)
+        (*nfacets)++;
+    }
+  }
+}
+
+/** ### Count the number of vertices and facets within a box
+
+Cell-center-in-box variant of `count_vertices_and_facets()`. */
+void count_vertices_and_facets_box(scalar c, coord box[2], long *nverts, long *nfacets) {
+  foreach (serial, noauto){
+    #if EMBED
+    if ((c[] > 1e-6 && c[] < 1. - 1e-6) && cs[] == 1 && IN_BOX_CC(box))
+    #else
+    if (c[] > 1e-6 && c[] < 1. - 1e-6 && IN_BOX_CC(box))
     #endif
     {
       shortcut_facets

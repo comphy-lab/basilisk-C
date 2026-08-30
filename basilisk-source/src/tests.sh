@@ -17,7 +17,7 @@ showfiles()
     else
 	ROOT=`darcsroot`
 	DIR=`echo $PWD | sed "s|$ROOT|.|"`
-	darcs show files | grep '\'$DIR'/[^/ ]*\.'$1'$' | \
+	darcs show files --no-pending | grep '\'$DIR'/[^/ ]*\.'$1'$' | \
 	    sed -e 's|'$DIR'/\(.*\)|	\1 \\|g'
     fi
 }
@@ -29,7 +29,7 @@ showpages()
     else
 	ROOT=`darcsroot`
 	DIR=`echo $PWD | sed "s|$ROOT|.|"`
-	files=`darcs show files | grep '\'$DIR'/[^/ ]*'$1'$' | sed "s|$DIR/||g"`
+	files=`darcs show files --no-pending | grep '\'$DIR'/[^/ ]*'$1'$' | sed "s|$DIR/||g"`
     fi
     for f in $files; do
 	case "$f" in

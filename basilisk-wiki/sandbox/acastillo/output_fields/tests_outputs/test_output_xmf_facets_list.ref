@@ -1,0 +1,16 @@
+compute_chunk_size: 220, nchunks 1
+compute_chunk_size: 110, nchunks 1
+compute_chunk_size: 55, nchunks 1
+--- Interface_xmf_list.xmf
+points                 440
+cells                  220
+topology type          Mixed
+cell types             Polyline=220
+points per cell        OK
+connectivity in range  OK
+orphan points          OK
+facet width (max)      0.015625
+vertices on cardioid   OK (within one cell)
+kappa finite           OK
+phi finite             OK
+verdict                PASS
