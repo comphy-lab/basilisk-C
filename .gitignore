@@ -5,3 +5,8 @@ restart
 display.html
 PLAN-*.md
 logs/
+.darcs-sync-staging.*
+basilisk-source/_darcs/index
+basilisk-source/_darcs/index.old
+basilisk-wiki/_darcs/index
+basilisk-wiki/_darcs/index.old
