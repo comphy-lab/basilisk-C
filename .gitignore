@@ -10,7 +10,13 @@ basilisk-source/_darcs/index
 basilisk-source/_darcs/index.old
 basilisk-source/_darcs/patches/unrevert
 basilisk-source/_darcs/patches/*.tentative
+basilisk-source/_darcs/rebase.tentative
+basilisk-source/_darcs/tentative_hashed_inventory
+basilisk-source/_darcs/tentative_pristine
 basilisk-wiki/_darcs/index
 basilisk-wiki/_darcs/index.old
 basilisk-wiki/_darcs/patches/unrevert
 basilisk-wiki/_darcs/patches/*.tentative
+basilisk-wiki/_darcs/rebase.tentative
+basilisk-wiki/_darcs/tentative_hashed_inventory
+basilisk-wiki/_darcs/tentative_pristine

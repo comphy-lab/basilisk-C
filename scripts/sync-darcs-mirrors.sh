@@ -182,9 +182,15 @@ assert_no_oversized_git_files() {
 
 normalize_darcs_cache() {
   local repo="$1"
-  # Rebuildable working-tree caches and revert undo state. Leaving them in
-  # Git produces host-specific churn or commits a transient unrevert file.
-  rm -f "$repo/_darcs/index" "$repo/_darcs/index.old" "$repo/_darcs/lock"
+  # Rebuildable working-tree caches and revert/rebase undo state. Leaving
+  # them in Git produces host-specific churn after every sync.
+  rm -f \
+    "$repo/_darcs/index" \
+    "$repo/_darcs/index.old" \
+    "$repo/_darcs/lock" \
+    "$repo/_darcs/rebase.tentative" \
+    "$repo/_darcs/tentative_hashed_inventory" \
+    "$repo/_darcs/tentative_pristine"
   if [[ -d "$repo/_darcs/patches" ]]; then
     "$FIND_BIN" "$repo/_darcs/patches" -maxdepth 1 -type f \
       \( -name unrevert -o -name '*.tentative' \) -delete

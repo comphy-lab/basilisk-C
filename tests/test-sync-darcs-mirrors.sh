@@ -68,6 +68,7 @@ if grep -q 'darcs pull --all' "$ROOT/release-comphy-tag.sh"; then
 fi
 grep -q 'dont-allow-conflicts' "$HELPER" || fail "existing-repo pull is not fail-closed on conflicts"
 grep -q 'size +90M' "$HELPER" || fail "helper does not reject oversized Git blobs"
+grep -q 'tentative_hashed_inventory' "$HELPER" || fail "helper does not strip Darcs tentative inventory files"
 pass "helper, workflow, and release script have no interactive darcs pull"
 
 sync_one_and_check() {
@@ -113,7 +114,7 @@ sync_one_and_check() {
   run_closed_stdin --repo-root "$work" "$name"
   [[ ! -e "$work/$rel_dir/second-pass.c.~0~" ]] || fail "$name incremental sync retained backup files"
   [[ ! -e "$work/$rel_dir/_darcs/patches/unrevert" ]] || fail "$name incremental sync left unrevert state"
-  if find "$work/$rel_dir/_darcs/patches" -name '*.tentative' -print | grep -q .; then
+  if find "$work/$rel_dir/_darcs" \( -name '*.tentative' -o -name 'tentative_*' \) -print | grep -q .; then
     fail "$name incremental sync left tentative Darcs state"
   fi
   if find "$work/$rel_dir" \( -name '.*.~[0-9]*~' -o -name '*.~[0-9]*~' \) -print | grep -q .; then
@@ -153,7 +154,7 @@ sync_existing_hashed_source() {
   run_closed_stdin --repo-root "$work" source
   [[ ! -e "$work/basilisk-source/hashed-pass.c.~0~" ]] || fail "hashed incremental sync retained backup files"
   [[ ! -e "$work/basilisk-source/_darcs/patches/unrevert" ]] || fail "hashed incremental sync left unrevert state"
-  if find "$work/basilisk-source/_darcs/patches" -name '*.tentative' -print | grep -q .; then
+  if find "$work/basilisk-source/_darcs" \( -name '*.tentative' -o -name 'tentative_*' \) -print | grep -q .; then
     fail "hashed incremental sync left tentative Darcs state"
   fi
   if find "$work/basilisk-source" -type f -size +90M -print | grep -q .; then
