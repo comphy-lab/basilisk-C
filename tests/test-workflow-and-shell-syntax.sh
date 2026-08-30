@@ -26,6 +26,8 @@ grep -q 'sync-darcs-mirrors.sh wiki' "$workflow" || fail "workflow does not sync
 grep -q 'Auto-update basilisk-source from Darcs repository' "$workflow" || fail "workflow lost the source commit message"
 grep -q 'Auto-update basilisk-wiki from Darcs repository' "$workflow" || fail "workflow lost the wiki commit message"
 grep -q 'git push' "$workflow" || fail "workflow no longer pushes after separate commits"
+grep -q 'git diff --cached --quiet -- basilisk-source' "$workflow" || fail "workflow can fail on an empty source commit"
+grep -q 'git diff --cached --quiet -- basilisk-wiki' "$workflow" || fail "workflow can fail on an empty wiki commit"
 if grep -q 'darcs pull' "$workflow"; then
   fail "workflow still uses darcs pull"
 fi

@@ -322,9 +322,14 @@ if [[ "$TEST_ONLY" == true ]]; then
   fi
 else
   if [[ -n "$(git status --porcelain basilisk-source)" ]]; then
-    print_cyan "Committing basilisk-source changes..."
+    print_cyan "Staging basilisk-source changes..."
     git add basilisk-source
-    git commit -m "Update basilisk-source from Darcs ($TAG)"
+    if git diff --cached --quiet -- basilisk-source; then
+      print_cyan "No committable basilisk-source changes."
+    else
+      print_cyan "Committing basilisk-source changes..."
+      git commit -m "Update basilisk-source from Darcs ($TAG)"
+    fi
   fi
 fi
 

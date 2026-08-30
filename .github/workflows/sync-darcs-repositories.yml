@@ -59,15 +59,23 @@ jobs:
         if: steps.check_changes.outputs.changes == 'true'
         run: |
           if [ -n "$(git status --porcelain basilisk-source)" ]; then
-            echo "Committing changes in basilisk-source directory..."
+            echo "Staging basilisk-source..."
             git add basilisk-source
-            git commit -m "Auto-update basilisk-source from Darcs repository"
+            if git diff --cached --quiet -- basilisk-source; then
+              echo "No committable basilisk-source changes."
+            else
+              git commit -m "Auto-update basilisk-source from Darcs repository"
+            fi
           fi
 
           if [ -n "$(git status --porcelain basilisk-wiki)" ]; then
-            echo "Committing changes in basilisk-wiki directory..."
+            echo "Staging basilisk-wiki..."
             git add basilisk-wiki
-            git commit -m "Auto-update basilisk-wiki from Darcs repository"
+            if git diff --cached --quiet -- basilisk-wiki; then
+              echo "No committable basilisk-wiki changes."
+            else
+              git commit -m "Auto-update basilisk-wiki from Darcs repository"
+            fi
           fi
 
           git push
