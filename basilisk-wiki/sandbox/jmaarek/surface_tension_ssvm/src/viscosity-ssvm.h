@@ -1040,9 +1040,118 @@ testing. */
 //scalar kappa_test[];
 double TOLERANCE_MU = 0.;
 
+
+/**
+## Linear extrapolation of the initial guess for the viscous solve
+
+### Motivation
+
+The implicit viscous solve is the dominant cost of a timestep in the
+semi-implicit surface tension method, and its cost grows with the
+timestep in two independent ways that compound.
+
+#### The initial guess degrades as the timestep grows
+
+Basilisk's `viscosity()` uses the same field for both the right-hand
+side and the initial guess:
+
+~~~literatec
+vector r[];
+foreach() foreach_dimension()
+  r.x[] = u.x[];
+mg_solve ((scalar *){u}, (scalar *){r}, ...);
+~~~
+
+The velocity passed in is the post-advection, pre-viscous field
+$\boldsymbol{u}^\star$, so the solver starts from $\boldsymbol{u}^\star$
+and must find the entire viscous increment
+$\boldsymbol{u}^{n+1} - \boldsymbol{u}^\star$ from scratch on every
+timestep. The magnitude of that increment scales as
+$$
+\frac{\mu\,\Delta t}{\rho\,\Delta^2},
+$$
+so the larger the timestep, the further the initial guess sits from the
+solution. In a viscous-dominated (Stokes) regime this term is large by
+definition; increasing the timestep by a factor of 15, as the
+semi-implicit surface tension treatment permits, makes it larger still.
+
+#### The operator simultaneously becomes harder to solve
+
+The system being solved has the form
+$$
+\left(\lambda - \frac{\Delta t}{\rho}\nabla\cdot\mu\nabla\right)
+\boldsymbol{u}^{n+1} = \boldsymbol{r},
+$$
+in which the Laplacian carries an explicit factor of $\Delta t$. As the
+timestep grows, the diffusive term increasingly dominates the reaction
+term $\lambda$, and the operator moves away from being diagonally
+dominant toward a pure (and more poorly conditioned) elliptic problem.
+Multigrid convergence per cycle degrades accordingly.
+
+#### The two effects compound
+
+These are not independent penalties applied to the same solve; they
+multiply. A larger timestep means the solver starts further from the
+solution *and* removes error more slowly per iteration, while the
+prescribed tolerance is unchanged. Iteration count therefore rises
+faster than linearly with the timestep, which erodes the benefit the
+semi-implicit surface tension treatment was introduced to provide.
+
+### The extrapolated guess
+
+Rather than starting from $\boldsymbol{u}^\star$, the viscous increment
+from previous timesteps is reused. The quantity stored is the force
+density
+$$
+\boldsymbol{F} = \frac{\rho\,\delta\boldsymbol{u}}{\Delta t},
+\qquad
+\delta\boldsymbol{u} = \boldsymbol{u}^{n+1} - \boldsymbol{u}^\star,
+$$
+rather than $\delta\boldsymbol{u}$ itself. This normalisation matters:
+$\boldsymbol{F}$ is the physical force density appearing in the momentum
+balance and is therefore independent of both the timestep and the local
+density, whereas $\delta\boldsymbol{u}$ inherits variation from both. In
+a two-phase flow with a large density ratio, $\delta\boldsymbol{u}$ at a
+fixed cell changes by that full ratio as the interface sweeps through
+it, while $\boldsymbol{F}$ does not.
+
+With $\boldsymbol{F}_1$ and $\boldsymbol{F}_2$ the stored force densities
+from the two previous timesteps, the predicted force density is obtained
+by linear extrapolation,
+$$
+\boldsymbol{F}^{\mathrm{pred}} = \boldsymbol{F}_1
++ \frac{\Delta t_n}{\Delta t_{n-1}}
+\left(\boldsymbol{F}_1 - \boldsymbol{F}_2\right),
+$$
+and converted back to a velocity increment using the current timestep
+and density,
+$$
+\boldsymbol{u}_{\mathrm{guess}} = \boldsymbol{u}^\star
++ \frac{\Delta t_n}{\rho}\boldsymbol{F}^{\mathrm{pred}}.
+$$
+The ratio $\Delta t_n / \Delta t_{n-1}$ accounts for a varying timestep
+exactly, rather than assuming uniform spacing.
+
+Linear extrapolation of the initial guess has been observed to reduce the
+cost of the viscous + implicit surface tension term by approximately 33%.
+It is included by default but can be turned off by including 
+#define INITIAL_GUESS_LIN_EXTRAP 0 in the c file.
+*/
+
+
+#ifndef INITIAL_GUESS_LIN_EXTRAP
+# define  INITIAL_GUESS_LIN_EXTRAP 1
+#endif
+
+#if INITIAL_GUESS_LIN_EXTRAP
+vector Fvisc1[], Fvisc2[];        /* F at t_n and t_{n-1} */
+double dt_visc_prev = 1.;
+#endif
+
+
 trace
 mgstats viscosity_st (vector u, face vector mu, scalar rho, scalar f, double sigma, double dt,
-		   int nrelax = 4, scalar * res = NULL)
+		   int nrelax = 4, scalar * res = NULL, int ii)
 {
   
   /**
@@ -1195,9 +1304,33 @@ mgstats viscosity_st (vector u, face vector mu, scalar rho, scalar f, double sig
 
   
   vector r[];
+  #if INITIAL_GUESS_LIN_EXTRAP
+  double ratio = dt/dt_visc_prev; 
+  double tol = TOLERANCE_MU ? TOLERANCE_MU : TOLERANCE;
+  #endif
   foreach()
-    foreach_dimension()
-      r.x[] = u.x[];  
+    foreach_dimension(){
+      r.x[] = u.x[];
+     #if INITIAL_GUESS_LIN_EXTRAP
+      if (ii > 2){
+
+	double dF = Fvisc1.x[] - Fvisc2.x[];
+    	double eps_F = 1.414*rho[]*tol/dt_visc_prev;   /* noise floor on dF */
+
+    /* Soft limiter: scale the extrapolation term by how much of dF is
+       real signal vs noise. |dF| >> eps_F -> full second-order term;
+       |dF| ~ eps_F -> falls back smoothly to first-order (constant
+       extrapolation), which is the safe default. Continuous rather
+       than a hard cutoff, so there's no discontinuity in the guess
+       as a cell crosses the threshold. */
+    	double w = sq(dF)/(sq(dF) + sq(eps_F));
+
+    	double Fpred = Fvisc1.x[] + w*ratio*dF;
+    	u.x[] += dt*Fpred/rho[];
+
+      }
+     #endif
+    }
 
   /**
   We need $\mu$, $\rho$ and the interface fields on all levels of the
@@ -1210,8 +1343,19 @@ mgstats viscosity_st (vector u, face vector mu, scalar rho, scalar f, double sig
   residual_viscosity_st ((scalar *){u}, (scalar *){u}, (scalar *){r}, &p);
   return (mgstats){0};
   #else
-  return mg_solve ((scalar *){u}, (scalar *){r}, residual_viscosity_st, relax_viscosity_st, &p, nrelax, res, tolerance = TOLERANCE_MU ? TOLERANCE_MU : TOLERANCE, minlevel = 1);
-  //return (mgstats){0};
+  mgstats mg_temp = mg_solve ((scalar *){u}, (scalar *){r}, residual_viscosity_st, relax_viscosity_st, &p, nrelax, res, tolerance = TOLERANCE_MU ? TOLERANCE_MU : TOLERANCE, minlevel = 1);
+
+
+#if INITIAL_GUESS_LIN_EXTRAP
+foreach() foreach_dimension() {
+  Fvisc2.x[] = Fvisc1.x[];
+  Fvisc1.x[] = rho[]*(u.x[] - r.x[])/dt;
+}
+dt_visc_prev = dt;
+#endif
+
+
+  return mg_temp;
   #endif
 }
 
@@ -1388,7 +1532,7 @@ term a second time. */
 event viscous_term (i++){
 
   correction (dt);
-  mgu = viscosity_st (u, mu, rho, f, M_PI/2.*f.sigma, dt, mgu.nrelax);
+  mgu = viscosity_st (u, mu, rho, f, M_PI/2.*f.sigma, dt, mgu.nrelax, ii = i);
   //mgu = viscosity_st (u, mu, rho, f, 0.0, dt, mgu.nrelax);
   correction (-dt);
 

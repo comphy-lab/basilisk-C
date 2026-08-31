@@ -1,4 +1,4 @@
-pristine:790d697e58ea4fb78ff1c57de88f9ef431ac7e0be9d7e229a103e237d62ed5b4
+pristine:9769f704cd5037f34caae3f9136bafc7d5d7921a4367e114923191c570c4ca0b
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -14225,3 +14225,8 @@ Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**2026082918195
  thresholds in Python, the checker's report frozen as the reference.
 ] 
 hash: 0000002848-ec5c2c2ee235393e509d9260cafd8ab2712d0379b89a7f3131ca278b57c4763e
+[include linear extrapolation for initial guess
+jmaarek <maarekj98@gmail.com>**20260830170004
+ Ignore-this: 48164864ef03f3e4ba26e8d66217d5179e036087b2f35831d83cc2ec63b7395a26fa4459aa511acd
+] 
+hash: 0000006547-d5303457ce7230157d8a2649226fd9f41a8c7950549dfe1c7f508f07a6d0d707
