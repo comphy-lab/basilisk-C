@@ -2,6 +2,13 @@
 # Dry granular flow on a slope
 
 <p align="justify">
+This code was developed as part of a first-year Master's internship on the
+numerical modelling of granular landslides. It forms one part of a broader
+study devoted to shallow-layer models, friction laws, model validation and
+parametric investigations of deposit mobility.
+</p>
+
+<p align="justify">
 This program simulates in one dimension a **pile of glass beads** initially
 held back by a gate, then released onto an inclined slope followed by a
 horizontal section. The geometry and initial dimensions correspond to the
@@ -758,7 +765,7 @@ unset output
 ## Comparison with the experiment and HySEA
 
 <p align="justify">
-Figure 3 compares the result obtained with Basilisk against experimental profiles and the non-hydrostatic HySEA result reported by Poulain et al. The objective is not only to show the final position but also to verify whether the model reproduces the same **overall motion** at various time steps. The fluid mass simulated with Basilisk remains virtually identical to that simulated with HySEA, thereby **validating the code**. However, both codes still diverge from the experimental data—particularly in **the transitional phase**—which is to be expected for a simplified non-hydrostatic an hydrostatic shallow-water model.
+Figure 3 compares the result obtained with Basilisk against experimental profiles and the non-hydrostatic HySEA result reported by Poulain et al. The objective is not only to show the final position but also to verify whether the model reproduces the same **overall motion** at various time steps. The fluid mass simulated with Basilisk remains virtually identical to that simulated with HySEA, thereby **validating the code**. However, both codes still diverge from the experimental data—particularly in **the transitional phase**—which is to be expected for a simplified non-hydrostatic shallow-water model.
 </p>
 
 ~~~gnuplot Figure 3 - Dry 35 degrees granular collapse: Basilisk shallow-water result compared with experimental profiles and non-hydrostatic HySEA backgrounds at t = 0, 0.2, 0.4 and 3 s
@@ -792,7 +799,7 @@ set label 101 "z (m)" at screen 0.030,0.490 center rotate by 90 front font "Libe
 set arrow 201 from screen 0.105,0.965 to screen 0.155,0.965 nohead front lw 2.2 lc rgb "#000000"
 set label 201 "Basilisk topography" at screen 0.160,0.955 left front font "Liberation Sans,9"
 set arrow 202 from screen 0.420,0.965 to screen 0.470,0.965 nohead front lw 2.6 dt 2 lc rgb "#d8a72e"
-set label 202 "Hydrostatic Basilisk" at screen 0.475,0.955 left front font "Liberation Sans,9"
+set label 202 "Basilisk shallow-water" at screen 0.475,0.955 left front font "Liberation Sans,9"
 set arrow 203 from screen 0.105,0.935 to screen 0.155,0.935 nohead front lw 2.4 lc rgb "#40549b"
 set label 203 "Experimental profile" at screen 0.160,0.925 left front font "Liberation Sans,9"
 set arrow 204 from screen 0.420,0.935 to screen 0.470,0.935 nohead front lw 2.4 dt 2 lc rgb "#32a852"
@@ -845,6 +852,7 @@ unset output
 /**
 # References
 
+* POLGE POULICHET, K. (2026). *Numerical modelling of landslides under different mechanical conditions*. First-year Master's internship report, Sorbonne Université, Institut Jean le Rond d'Alembert. [Full report (PDF)](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/ressources/Rapport_POLGE_POULICHET_Kilian.pdf)
 * [P. Poulain *et al.*, *Performance and limits of a shallow-water model for landslide-generated tsunamis: from laboratory experiments to simulations of flank collapses at Montagne Pelée (Martinique)*, Geophysical Journal International, 233, 796--825, 2023.](https://www.ipgp.fr/~mangeney/poulain-etal_gji-2023.pdf)
 * [O. Pouliquen & Y. Forterre, *Friction law for dense granular flows: application to the motion of a mass down a rough inclined plane*, Journal of Fluid Mechanics, 453, 133--151, 2002.](https://yoelforterre.wordpress.com/wp-content/uploads/2016/09/jfmmoire02.pdf)
 */

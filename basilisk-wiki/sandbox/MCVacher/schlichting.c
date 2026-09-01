@@ -77,8 +77,10 @@ scalar p_old[];
 
 event init (t = 0)
 {
-  foreach_face()
+  foreach_face(){
     u_old.x[] = u.x[];
+    u_old.y[] = u.y[];
+  }
 
   foreach()
     p_old[] = p[];
@@ -137,7 +139,7 @@ event logfile (i++)
   double sum_res_p = 0.;
 
   foreach_face()
-    sum_res_u += sq(u.x[] - u_old.x[]);
+    sum_res_u += sq(u.x[] - u_old.x[]) + sq(u.y[] - u_old.y[]);
 
   foreach()
     sum_res_p += sq(p[] - p_old[]);
@@ -151,8 +153,10 @@ event logfile (i++)
   fprintf (fpmax, "%d %g %g %g\n",
            i, t, res_u, res_p);
 
-  foreach_face()
+  foreach_face(){
     u_old.x[] = u.x[];
+    u_old.y[] = u.y[];
+  }
 
   foreach()
     p_old[] = p[];

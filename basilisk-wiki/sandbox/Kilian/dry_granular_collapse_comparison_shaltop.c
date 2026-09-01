@@ -1,6 +1,15 @@
 /**
 # Dry granular flow with a SHALTOP-type topographic correction
 
+## Introduction
+
+<p align="justify">
+This code was developed as part of a first-year Master's internship on the
+numerical modelling of granular landslides. It forms one part of a broader
+study devoted to shallow-layer models, friction laws, model validation and
+parametric investigations of deposit mobility.
+</p>
+
 <p align="justify">
 This program simulates in one dimension a **pile of glass beads** initially
 held back by a gate, then released onto an inclined slope followed by a
@@ -21,9 +30,10 @@ in the basal friction term.
 </p>
 
 <p align="justify">
-This is therefore not the official SHALTOP code. It is a Basilisk version kept
-as close as possible to the previously commented HySEA-comparison file, so that
-the output files, plotting blocks and comparison workflow remain almost
+This is therefore not the official SHALTOP code. It is a Basilisk
+implementation kept as close as possible to the previously documented
+[HySEA-comparison version](https://basilisk.fr/sandbox/Kilian/dry_landslide_comparison_hysea.c),
+so that the numerical framework and comparison workflow remain almost
 unchanged.
 </p>
 
@@ -42,17 +52,26 @@ Figure 1 introduces the main geometric notations used in the following, in parti
 *Figure 1 - Sketch of the initial geometry used in the simulations: horizontal bottom, smoothed transition, slope of angle $\theta$, initial granular pile and main geometric quantities of the domain.*
 </p>
 
-## Solved equations
+## SHALTOP local geometry
 
 <p align="justify">
-The SHALTOP model is written using the avalanche thickness $h_n$ measured in
-the direction normal to the bed. If $b(x)$ is the topography,
+The physical topography is denoted by $z_b(x)$. The SHALTOP model is written
+using the avalanche thickness $h_n$ measured in the direction normal to this
+bed. The local geometric factor and its derivative are
 </p>
 
 $$
 \displaystyle
-b_x=\frac{\partial b}{\partial x},\qquad
-c=\cos\theta_{\rm loc}=\frac{1}{\sqrt{1+b_x^2}}.
+c
+=
+\cos\theta_{\rm loc}
+=
+\frac{1}{\sqrt{1+\left(\partial_x z_b\right)^2}},
+\qquad
+c_x
+=
+-\left(\partial_x z_b\right)
+ \left(\partial_{xx}z_b\right)c^3.
 $$
 
 <p align="justify">
@@ -74,8 +93,32 @@ $$
 \displaystyle
 h_{\rm vert}=h_n c=c^2 q,
 \qquad
-z_s=b+h_{\rm vert}=b+c^2q.
+z_s=z_b+h_{\rm vert}=z_b+c^2q.
 $$
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/ressources/schema_topographie_shaltop.png"
+       width="40%">
+</p>
+
+<p align="center">
+*Figure 2 - Local SHALTOP geometry. The avalanche thickness $h_n$ is measured
+normal to the bed $z_b(x)$, while $u_t$ is the tangential velocity. The local
+angle determines the geometric factor $c=\cos\theta_{\rm loc}$.*
+</p>
+
+<p align="justify">
+The local cosine is not specific to SHALTOP. The granular Froude number used
+in the Pouliquen--Forterre law already contains the factor $\cos\theta$ for a
+uniform inclined plane. In the
+[HySEA-comparison code](https://basilisk.fr/sandbox/Kilian/dry_landslide_comparison_hysea.c),
+this angle is evaluated locally from the bed slope. In the present
+SHALTOP-type formulation, however, the same geometric factor $c$ also enters
+the definition of the normal thickness, the velocity variables, the pressure
+terms and the curvature correction.
+</p>
+
+## Solved equations
 
 <p align="justify">
 The conservative mass equation becomes
@@ -96,9 +139,12 @@ $$
 \displaystyle
 \frac{\partial v}{\partial t}+v\frac{\partial v}{\partial x}
 = c\,c_x\,u_t^2
--Gc^2\frac{\partial}{\partial x}\left(b+c^2q\right)
+-Gc^2\frac{\partial}{\partial x}\left(z_b+c^2q\right)
 -G\mu(h_n,Fr)c^2\,\mathrm{sign}(v)
-\left[1+\frac{b_{xx}u_t^2}{Gc}\right]_+.
+\left[
+1+
+\frac{(\partial_{xx}z_b)u_t^2}{Gc}
+\right]_+.
 $$
 
 <p align="justify">
@@ -176,7 +222,7 @@ double break_position, smoothing_start, smoothing_end;
 double grain_scale_length;
 double friction_1, friction_2, friction_3;
 
-// The real SHALTOP topography is kept here only for clarity and output.
+// The physical SHALTOP topography is recorded here for clarity and output.
 // The Saint-Venant bottom zb[] is set to zero so that the Cartesian source
 // term of saint-venant.h is not added on top of the SHALTOP source terms.
 
@@ -193,16 +239,16 @@ static void write_animation_profile (int frame_index);
 ## Smoothed topography and SHALTOP geometric quantities
 
 <p align="justify">
-The physical bed $b(x)$ is horizontal downstream and then connected to a
+The physical bed $z_b(x)$ is horizontal downstream and then connected to a
 $35^\circ$ slope by a quadratic transition. For SHALTOP, the code also needs
 its first and second derivatives:
 </p>
 
 $$
 \displaystyle
-b_x=\partial_x b,
+\partial_x z_b,
 \qquad
-b_{xx}=\partial_{xx} b.
+\partial_{xx} z_b.
 $$
 
 <p align="justify">
@@ -211,13 +257,28 @@ The local geometric factors are
 
 $$
 \displaystyle
-c=(1+b_x^2)^{-1/2},
+c
+=
+\frac{1}{\sqrt{1+\left(\partial_x z_b\right)^2}},
 \qquad
-c_x=-b_xb_{xx}c^3.
+c_x
+=
+-\left(\partial_x z_b\right)
+ \left(\partial_{xx}z_b\right)c^3.
 $$
+
+<p align="justify">
+Here $z_b(x)$ always denotes the physical topography. In the C code,
+`physical_bottom[]` stores this physical bed, and
+`shaltop_bottom_geometry()` evaluates the same geometry for the explicit
+SHALTOP source terms. By contrast, `zb[]` is the internal bottom field of
+`saint-venant.h` and is deliberately kept equal to zero. Assigning the
+physical topography to `zb[]` would add the Cartesian topographic source a
+second time.
+</p>
 */
 
-// This function defines b(x), b_x(x) and b_xx(x) using a smoothed transition.
+// This function defines z_b(x), its slope and its curvature using a smoothed transition.
 
 static void shaltop_bottom_geometry (double xp,
                                      double * bottom,
@@ -252,7 +313,7 @@ static double local_cosine (double bottom_slope)
   return 1./sqrt(1. + sq(bottom_slope));
 }
 
-// This function returns c_x from b_x and b_xx.
+// This function returns c_x from the first and second derivatives of z_b.
 
 static double local_cosine_slope (double bottom_slope,
                                   double bottom_curvature,
@@ -265,14 +326,18 @@ static double local_cosine_slope (double bottom_slope,
 ## Pouliquen--Forterre friction law
 
 <p align="justify">
-The same Pouliquen--Forterre law as in the HySEA-comparison file is used, but
-with the SHALTOP thickness $h_n$ measured normal to the bed. The local Froude
-number is evaluated as
+The same granular Froude-number definition derived from the Pouliquen
+experiments is used here, evaluated with the tangential velocity $u_t$ and the
+normal thickness $h_n$. The local Froude number is
 </p>
 
 $$
 \displaystyle
-Fr=\frac{|u_t|}{\sqrt{G h_n c}}.
+Fr
+=
+\frac{|u_t|}{\sqrt{G h_n c}},
+\qquad
+c=\cos\theta_{\rm loc}.
 $$
 
 The law contains three regimes:
@@ -281,15 +346,28 @@ $$
 \mu(h_n,Fr)=
 \begin{cases}
 \displaystyle
-\mu_1 + \frac{\mu_2-\mu_1}{1+\beta h_n/(LFr)}, & Fr\geq\beta,\\[0.8em]
+\mu_1+
+\dfrac{\mu_2-\mu_1}{1+\beta h_n/(LFr)},
+& Fr\geq\beta,\\[1.2em]
 \displaystyle
-\mu_3 + \frac{\mu_2-\mu_1}{1+h_n/L}
-+ \left(\mu_1 + \frac{\mu_2-\mu_1}{1+h_n/L}-\mu_3 - \frac{\mu_2-\mu_1}{1+h_n/L}\right)
-\left(\frac{Fr}{\beta}\right)^\xi,
-& 0<Fr<\beta,\\[0.8em]
+\mu_3+
+\dfrac{\mu_2-\mu_1}{1+h_n/L}
++
+\left[
+\mu_1+
+\dfrac{\mu_2-\mu_1}{1+h_n/L}
+-\mu_3-
+\dfrac{\mu_2-\mu_1}{1+h_n/L}
+\right]
+\left(\dfrac{Fr}{\beta}\right)^\xi,
+& 0<Fr<\beta,\\[1.2em]
 \displaystyle
-\min\left(\mu_3 + \frac{\mu_2-\mu_1}{1+h_n/L},
-\left|\partial_x(b+c h_n)\right|\right), & Fr=0.
+\min\left(
+\mu_3+
+\dfrac{\mu_2-\mu_1}{1+h_n/L},
+\left|\partial_x\left(z_b+c h_n\right)\right|
+\right),
+& Fr=0.
 \end{cases}
 $$
 
@@ -440,12 +518,12 @@ z_s(0)=z_{\rm gate}+H_{\rm pile}.
 $$
 
 <p align="justify">
-Since $z_s=b+c^2q$, the initial value imposed in the pile is
+Since $z_s=z_b+c^2q$, the initial value imposed in the pile is
 </p>
 
 $$
 \displaystyle
-q=\frac{z_s-b}{c^2}.
+q=\frac{z_s-z_b}{c^2}.
 $$
 */
 
@@ -457,7 +535,7 @@ event init (i = 0)
 
     double bottom_cosine = local_cosine(bottom_slope);
 
-    physical_bottom[] = bottom;                                        // Real SHALTOP topography used for output only.
+    physical_bottom[] = bottom;                                        // Physical topography z_b stored separately from Basilisk's zb[].
     zb[] = 0.;                                                         // Disable the Cartesian topographic source term of saint-venant.h.
 
     double inside_initial_pile =                                       // Cell located inside the initial pile footprint.
@@ -478,7 +556,8 @@ event init (i = 0)
 ## SHALTOP geometric correction
 
 <p align="justify">
-With `zb[] = 0`, the Saint-Venant solver advances
+With `zb[] = 0`, the internal Cartesian topographic source is disabled and the
+Saint-Venant solver advances
 </p>
 
 $$
@@ -493,7 +572,7 @@ The SHALTOP-type pressure and geometric terms require instead
 $$
 \displaystyle
 \partial_t v+v\partial_xv=
--Gc^2\partial_x(b+c^2q)+c c_x u_t^2.
+-Gc^2\partial_x(z_b+c^2q)+c c_x u_t^2.
 $$
 
 <p align="justify">
@@ -502,7 +581,7 @@ The event below therefore adds only the missing correction
 
 $$
 \displaystyle
-G\partial_xq-Gc^2\partial_x(b+c^2q)+c c_x u_t^2.
+G\partial_xq-Gc^2\partial_x(z_b+c^2q)+c c_x u_t^2.
 $$
 */
 
@@ -521,7 +600,7 @@ event shaltop_geometry (i++)
     double bottom_cosine_slope =
       local_cosine_slope(bottom_slope, bottom_curvature, bottom_cosine);
 
-    // Physical surface elevation E = b + c^2 q, evaluated with neighboring local cosines.
+    // Physical surface elevation E = z_b + c^2 q, evaluated with neighboring local cosines.
 
     double bottom_minus, slope_minus, curvature_minus;
     double bottom_plus, slope_plus, curvature_plus;
@@ -535,7 +614,7 @@ event shaltop_geometry (i++)
     double surface_plus = bottom_plus + sq(cosine_plus)*h[1];
 
     double conserved_height_slope = (h[1] - h[-1])/(2.*Delta);         // d_x q.
-    double surface_slope = (surface_plus - surface_minus)/(2.*Delta);  // d_x(b + c^2 q).
+    double surface_slope = (surface_plus - surface_minus)/(2.*Delta);  // d_x(z_b + c^2 q).
 
     double tangential_velocity = u.x[]/(bottom_cosine + 1e-30);         // u_t = v/c.
 
@@ -562,7 +641,10 @@ $$
 \displaystyle
 \partial_t v
 =-G\mu(h_n,Fr)c^2\,\mathrm{sign}(v)
-\left[1+\frac{b_{xx}u_t^2}{Gc}\right]_+.
+\left[
+1+
+\frac{(\partial_{xx}z_b)u_t^2}{Gc}
+\right]_+.
 $$
 
 <p align="justify">
@@ -591,7 +673,7 @@ event friction (i++)
     double froude_number =
       tangential_speed/(sqrt(G*normal_height*bottom_cosine) + 1e-30);   // Fr = |u_t|/sqrt(G h_n c).
 
-    // Static branch: slope of the physical free surface b + c^2 q.
+    // Static branch: slope of the physical free surface z_b + c^2 q.
 
     double bottom_minus, slope_minus, curvature_minus;
     double bottom_plus, slope_plus, curvature_plus;
@@ -706,10 +788,11 @@ event stop (t = simulation_end_time)
 /**
 ## Comparison resources and saved profiles
 
-The four PNG backgrounds are downloaded at startup from the GitHub repository.
-The CSV file containing the experimental profiles is also retrieved automatically.
-The first three experimental profiles are extracted into separate `.dat` files
-so that Gnuplot can overlay them on the final comparison.
+The four PNG backgrounds containing the reference SHALTOP profiles from the
+article are downloaded at startup from the GitHub repository. The CSV file
+containing the experimental profiles is also retrieved automatically. The
+first three experimental profiles are extracted into separate `.dat` files so
+that Gnuplot can overlay them on the final comparison.
 */
 
 // Files used for the results.
@@ -728,13 +811,6 @@ const char * experimental_csv_url =
   "https://basilisk.fr/sandbox/Kilian/ressource/data_article_poulain.csv";
 
 const char * experimental_csv_file = "data_article_poulain.csv";
-
-const char * comparison_profile_files[] = {
-  "profile_dry35_t0.dat",
-  "profile_dry35_t02.dat",
-  "profile_dry35_t04.dat",
-  "profile_dry35_t30.dat"
-};
 
 const char * experimental_profile_files[] = {
   "exp_profile_t0.dat",
@@ -899,7 +975,7 @@ static void write_stderr_profile (double physical_time)
   }
 }
 
-// Columns: x as displayed in the article, b, b+h_vertical, h_vertical and tangential velocity.
+// Columns: x as displayed in the article, z_b, z_b+h_vertical, h_vertical and tangential velocity.
 static void write_comparison_profile (const char * filename)
 {
   FILE * fp = fopen (filename, "w");
@@ -965,7 +1041,7 @@ This animation shows the granular pile starting to **move on the slope**.
 The topography is plotted in black, while the upper contour of the pile is
 plotted in sand yellow.
 
-~~~gnuplot Figure 2 - Time animation of the dry granular pile with the SHALTOP-type correction
+~~~gnuplot Figure 3 - Time animation of the dry granular pile with the SHALTOP-type correction
 set terminal gif animate delay 5 loop 0 size 850,672 enhanced font "Liberation Sans,12"
 set output "animate_dry35_muv_shaltop.gif"
 
@@ -995,18 +1071,18 @@ do for [k=0:150] {
 unset output
 ~~~
 
-## Comparison with the experiment and HySEA background
+## Comparison with the experiment and reference SHALTOP profiles
 
-Figure 3 compares the Basilisk SHALTOP-type computation with the **backgrounds
-extracted** from Poulain *et al.*. The Basilisk topography is plotted in black,
-the SHALTOP-type Basilisk pile outline in sand yellow, the experimental profile in blue
-and the non-hydrostatic HySEA solution already present in the background is
-shown by the background image for the first three times.
+Figure 4 compares the Basilisk SHALTOP-type computation with the **reference
+SHALTOP profiles extracted** from Poulain *et al.*. The Basilisk topography is
+plotted in black, the SHALTOP-type Basilisk pile outline in sand yellow, the
+experimental profile in blue and the reference SHALTOP result from the article
+in dashed red.
 
-~~~gnuplot Figure 3 - Superposition of Basilisk SHALTOP-type, experimental and non-hydrostatic HySEA profiles
+~~~gnuplot Figure 4 - Superposition of Basilisk SHALTOP-type, experimental and reference SHALTOP profiles
 reset session
 set terminal pngcairo size 850,672 enhanced font "Liberation Sans,10"
-set output "comparison_dry35_shaltop_red.png"
+set output "comparison_dry35_shaltop.png"
 
 unset key
 unset border
@@ -1037,8 +1113,8 @@ set arrow 202 from screen 0.420,0.965 to screen 0.470,0.965 nohead front lw 2.6 
 set label 202 "Basilisk SHALTOP-type" at screen 0.475,0.955 left front font "Liberation Sans,9"
 set arrow 203 from screen 0.105,0.935 to screen 0.155,0.935 nohead front lw 2.4 lc rgb "#40549b"
 set label 203 "Experimental profile" at screen 0.160,0.925 left front font "Liberation Sans,9"
-set arrow 204 from screen 0.420,0.935 to screen 0.470,0.935 nohead front lw 2.4 dt 2 lc rgb "#32a852"
-set label 204 "HySEA background" at screen 0.475,0.925 left front font "Liberation Sans,9"
+set arrow 204 from screen 0.420,0.935 to screen 0.470,0.935 nohead front lw 2.4 dt 2 lc rgb "#d62728"
+set label 204 "SHALTOP (Poulain et al.)" at screen 0.475,0.925 left front font "Liberation Sans,9"
 
 set multiplot
 set size 0.455,0.410
@@ -1087,6 +1163,8 @@ unset output
 /**
 # References
 
+* POLGE POULICHET, K. (2026). *Numerical modelling of landslides under different mechanical conditions*. First-year Master's internship report, Sorbonne Université, Institut Jean le Rond d'Alembert. [Full report (PDF)](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/ressources/Rapport_POLGE_POULICHET_Kilian.pdf)
 * [P. Poulain *et al.*, *Performance and limits of a shallow-water model for landslide-generated tsunamis: from laboratory experiments to simulations of flank collapses at Montagne Pelée (Martinique)*, Geophysical Journal International, 233, 796--825, 2023.](https://www.ipgp.fr/~mangeney/poulain-etal_gji-2023.pdf)
 * [O. Pouliquen & Y. Forterre, *Friction law for dense granular flows: application to the motion of a mass down a rough inclined plane*, Journal of Fluid Mechanics, 453, 133--151, 2002.](https://yoelforterre.wordpress.com/wp-content/uploads/2016/09/jfmmoire02.pdf)
+* [M. Peruzzetto *et al.*, *Topography curvature effects in thin-layer models for gravity-driven flows without bed erosion*, Journal of Geophysical Research: Earth Surface, 126(4), e2020JF005657, 2021.](https://doi.org/10.1029/2020JF005657)
 */

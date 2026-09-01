@@ -25,19 +25,19 @@ $\rho_\Sigma = (\rho_1+\rho_2)/2$ rather than the local density (which
 distributes the velocity update evenly on both sides of the interface
 and is required for stability at large density ratios), this reads
 $$
--\frac{\rho}{\Delta t}\boldsymbol{u}_{n+1}
-+ \boldsymbol{\nabla}\cdot\left[\mu\left(\boldsymbol{\nabla u} +
+-\boldsymbol{u}_{n+1}
++ \frac{\Delta t}{\rho}\boldsymbol{\nabla}\cdot\left[\mu\left(\boldsymbol{\nabla u} +
 \boldsymbol{\nabla u}^T\right)\right]_{n+1}
-+ \frac{\pi}{2}\frac{\sigma\,\Delta t}{\rho_\Sigma}\,\delta_\Sigma\,
++ \frac{\pi}{2}\frac{\sigma\,\Delta t^2}{\rho_\Sigma}\,\delta_\Sigma\,
 \underline{\Delta}\,\boldsymbol{u}_{n+1}
-= -\frac{\rho}{\Delta t}\boldsymbol{u}_n,
+= -\boldsymbol{u}_n,
 $$
 and thus has the form
 $$
 L(\boldsymbol{a}) =
-\boldsymbol{\nabla}\cdot\left[\mu\left(\boldsymbol{\nabla a} +
+\frac{\Delta t}{\rho}\boldsymbol{\nabla}\cdot\left[\mu\left(\boldsymbol{\nabla a} +
 \boldsymbol{\nabla a}^T\right)\right]
-+ \frac{\pi}{2}\frac{\sigma\,\Delta t}{\rho_\Sigma}\,\delta_\Sigma\,
++ \frac{\pi}{2}\frac{\sigma\,\Delta t^2}{\rho_\Sigma}\,\delta_\Sigma\,
 \underline{\Delta}\,\boldsymbol{a}
 = \boldsymbol{b},
 $$

@@ -1,12 +1,22 @@
 /**
 # 3D drop oscillation
 
-This setup was adapted from [Shin](#Shin_2002_180).
-According to Lamb's analytic solution, the oscillation frequency
-of an inviscid droplet is
-$$ \omega_n^2 = \frac{n (n + 1) (n - 1) (n + 2) \sigma}{[(n + 1) \rho_1 + n \rho_2] r^3} $$
-and amplitude of a viscous droplet would decay as
-$$ a_n(t) = a_0 \exp^{-t/\tau}, \tau = \frac{r_0^2}{(n - 1)(2n + 1)\nu}$$ */
+This benchmark has been widely used to assess numerical surface-tension models.
+In most studies, the Lamb solution, derived from a normal-mode analysis,
+is used as thereference. The drop oscillation is described as a damped harmonic
+motion, with oscillation frequency
+
+$\omega_n^2 = \frac{n (n + 1) (n - 1) (n + 2)
+\sigma}{[(n + 1) \rho_1 + n \rho_2] r^3}$,
+
+and exponentially decaying amplitude
+$a_n(t) = a_0 \exp^{-t/\tau}, \tau = \frac{r_0^2}{(n - 1)(2n + 1)\nu}$
+
+However, the motion of a deformed drop initially released from a
+quiescent velocity field is more accurately described by the Prosperetti solution,
+which is obtained by solving the corresponding initial-value problem.
+The Prosperetti solution can be computed using this
+[Python script](/sandbox/jieyun/others/oscillation_analytical.py). */
 
 #include "grid/octree.h"
 #include "navier-stokes/centered.h"
@@ -20,14 +30,14 @@ uf.n[right] = 0.;
 uf.n[back] = 0.;
 uf.n[front] = 0.;
 
-int level = 5, maxlvl, minlvl;
+int level = 6, maxlvl, minlvl;
 const double R = 1.;
-const double EPSR = 0.005;
+const double EPSR = 0.025;
 double la = 1. [0];
 
-FILE * fp;
 double tp_max = 1. [0,1];
 double t_step = 1. [0,1];
+
 int main(int argc, char * argv[]) {
   if (argc > 1)
     level = atoi (argv[1]);
@@ -39,15 +49,15 @@ int main(int argc, char * argv[]) {
   mu1 = 5.e-2;
   mu2 = 5.e-4;
 
-  f.sigma = 10.;
-  // f.sigma = 0.1;
+  // f.sigma = 10.;
+  f.sigma = 0.1;
 
   int no = 2;
   double omega2 = no*(no-1)*(no+1)*(no+2)*f.sigma/((no+1)*rho1 + no*rho2)/cube(R);
   double omega = sqrt(omega2);
   la = 2.*rho1*R*f.sigma/sq(mu1);
 
-  tp_max = 4.*2.*pi/omega;
+  tp_max = 2.*2.*pi/omega;
 
   TOLERANCE = 1e-6 [*];
   CFL = 0.1;
@@ -56,11 +66,9 @@ int main(int argc, char * argv[]) {
   origin (-L0/2., -L0/2., -L0/2.);
   init_grid (1 << maxlvl);
 
-  DT = 2.*pi/omega/(1 << 10);
+  DT = 2.*pi/omega/(1 << 9);
   t_step = DT;
   run();
-
-  fclose(fp);
 }
 
 /**
@@ -72,7 +80,7 @@ and the second-order mode is investigated here. */
 event init (i = 0) {
   vertex scalar phi[];
   foreach_vertex() {
-    double cth, sth, dr2, rth, pn;
+    double cth, dr2, rth, pn;
     dr2 = sq(z) + sq(y) + sq(x);
     cth = z/(sqrt(dr2) + 1.e-32);
     pn = 0.5*(3.*sq(cth) - 1.);
@@ -80,15 +88,8 @@ event init (i = 0) {
     phi[] = rth - sqrt(dr2);
   }
 
-  char name[80];
-  int npr = (int) ((1 << maxlvl)*R/L0);
-
   char method_name[] = "EBIT";
   init_markers (phi);
-  sprintf (name, "%sdroplet_3d_dr_ebit_%d_%d_La%d.dat",
-    OUTPUTPATH, npr, (int) L0, (int) ceil(la));
-
-  fp = fopen (name, "w");
 
   if (pid() == 0)
     printf ("%s R:%g, Sigma:%g, La:%g DT:%.5e\n", method_name, R, f.sigma, la, DT);
@@ -112,30 +113,48 @@ event logfile (t += t_step; t <= tp_max) {
   zmax -= R;
   zmin += R;
 
-  fprintf (fp, "%.8e %.12e %.12e %.12e %.12e\n", t, zmax, zmin, volume, ke);
-
-  fflush (fp);
+  fprintf (stderr, "%.8e %.8e %.8e %.8e %.8e\n", t, zmax, zmin, volume, ke);
+  fflush (stderr);
 }
 
-event monitor (i++, last) {
-  if (pid() == 0 && i % 1000 == 0) {
-    printf ("i: %d Time: %g\n", i, t);
-  }
-}
 
 /**
+## Results
+
+The numerical results obtained at $\textrm{La} = 800, N_x = 64$ are compared
+with both the Lamb solution and Prosperetti solution.
+
+~~~gnuplot Time history of the amplitude.
+set term pop
+reset
+set grid
+set ylabel 'a_n/a_0'
+set xlabel 't/T_0'
+set key bottom right
+plot [0:2][-1.1:1.1] 'log' u ($1/22.288):($2/0.025) w l t 'EBIT', \
+'../ref_solutions/droplet_ana_800.dat' u ($1/22.288):($2/0.025) w l dt 2 t 'Lamb', \
+'../ref_solutions/droplet_ana_800.dat' u ($1/22.288):($3/0.025) w l dt 2 t 'Prosperetti'
+~~~
+
 ## References
 
 ~~~bib
-@article{Shin_2002_180,
-  title={Modeling Three-Dimensional Multiphase Flow Using a Level Contour Reconstruction
-    Method for Front Tracking without Connectivity},
-  author={Shin, Seungwon and Juric, Damir},
-  journal={Journal of Computational Physics},
-  volume={180},
-  pages={427-470},
-  year={2002},
-  publisher={Elsevier}
+@Book{lamb1932,
+  title={Hydrodynamics},
+  author={Lamb, Horace},
+  year={1932},
+  publisher={Dover}
+}
+
+@article{prosperetti1980,
+  title={Free oscillations of drops and bubbles: the initial-value problem},
+  author={Andrea Prosperetti},
+  journal={J. Fluid Mech.},
+  volume={100},
+  pages={333-347},
+  year={1980},
+  publisher={Cambridge University Press},
+  doi={https://doi.org/10.1017/S0022112080001188}
 }
 ~~~
 */

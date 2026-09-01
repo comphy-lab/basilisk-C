@@ -1,7 +1,7 @@
 /**
 # Stable jet under a free-surface
 
-This is part of Chpater~6 of my Ph.D thesis. We (me and Fabian Kiss during his M1 internship) have done the study of the stable state of the self-induced sloshing induced instability. It consists in a jet impinging on a free-surface. The important parameters are : $h_0/L = 0.375$, $Re_j = 24$, $Fr = 0.33 < 0.6$. This case is the the referecne case before the parametric study.
+This is part of Chapter~6 of my Ph.D thesis. We (me and Fabian Kiss during his M1 internship) have done the study of the stable state of the self-induced sloshing induced instability. It consists in a jet impinging on a free-surface. The important parameters are : $h_0/L = 0.375$, $Re_j = 24$, $Fr = 0.33 < 0.6$. This case is the the reference case before the parametric study.
 */
 
 #include "grid/multigrid.h"
@@ -53,7 +53,7 @@ int main() {
   u.t[left] = y < R_d ? neumann(0.) : dirichlet(0.);
   u.t[right] = y < R_d ? neumann(0.) : dirichlet(0.);
  
-  N=256;
+  N=512;
   origin (-L0/2, 0);
   init_grid(N);
   
@@ -74,8 +74,10 @@ scalar p_old[];
 event init (t = 0) {
   fraction (f, y<h);
   
-  foreach_face()
+  foreach_face(){
     u_old.x[] = u.x[];
+    u_old.y[] = u.y[];
+  }
 
   foreach()
     p_old[] = p[];
@@ -132,7 +134,7 @@ event logfile (i++)
   double sum_res_p = 0.;
 
   foreach_face()
-    sum_res_u += sq(u.x[] - u_old.x[]);
+    sum_res_u += sq(u.x[] - u_old.x[]) + sq(u.y[] - u_old.y[]);
 
   foreach()
     sum_res_p += sq(p[] - p_old[]);
@@ -146,8 +148,10 @@ event logfile (i++)
   fprintf (fpmax, "%d %g %g %g\n",
            i, t, res_u, res_p);
 
-  foreach_face()
+  foreach_face(){
     u_old.x[] = u.x[];
+    u_old.y[] = u.y[];
+  }
 
   foreach()
     p_old[] = p[];
@@ -210,7 +214,7 @@ event profile (t = end) {
 }
 
 int isave1 = 1;
-event res_save (t += 1; t <= 100) {
+event res_save (t += 1; t <= 10) {
   char name[80];
   
   sprintf (name, "interface-%d.txt", isave1);
@@ -224,7 +228,7 @@ event res_save (t += 1; t <= 100) {
 /**
 To visualize both the surface and the jet, we can follow lagrangian trajectories using a passive tracer. We generate videos:
 */
-event ppm_output (t = 0; t += 0.5; t <= 100) {
+event ppm_output (t = 0; t += 0.05; t <= 10) {
   char name[80];
   sprintf (name, "f.mp4");
   output_ppm (f, file = name, n = 512, min = 0, max = 1, linear = true);
@@ -239,7 +243,7 @@ event ppm_output (t = 0; t += 0.5; t <= 100) {
   output_ppm (s, file = name2, n = 512, min = 0., max = U0, linear = true);
 }
 
-event movie_streamlines (t += 0.5; t <= 100)
+event movie_streamlines (t += 0.05; t <= 10)
 {
   scalar omega[];
   vertex scalar stream[];
