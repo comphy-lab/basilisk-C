@@ -238,3 +238,77 @@ test when `hdf5.h` is not on the include path.
 ---
 
 **Note:** Routines in the [`deprecated/`](deprecated/) folder may be outdated and are provided for compatibility purposes only.
+## Writing large snapshots quickly: stripe the output directory
+
+`dump()` on a Lustre filesystem is limited by the **stripe count of the
+directory the file is created in**, and on TGCC/irene scratch that default is
+**1** — every dump lands on a single OST no matter how many ranks write it.
+Measured on `sirene1`, level 11 `multigrid3D`, 1024 ranks, 192 GiB per dump:
+
+| `lfs setstripe -c` | OSTs used | `dump()` | |
+|---|---|---|---|
+| 1 (the default) | 1 | 239.7 s | 820 MiB/s |
+| 8 | 8 | 56.1 s | 3500 MiB/s |
+| -1 (all in pool) | 8 | 48.5 s | 4050 MiB/s |
+
+**4.3x, for one line in the job script**, and nothing to compile:
+
+~~~bash
+mkdir -p $OUTDIR
+lfs setstripe -c 8 $OUTDIR      # BEFORE anything is written into it
+~~~
+
+Lustre fixes a file's layout when the file is **created**, and the layout is
+inherited from the parent directory. Striping a directory that already holds
+files does not restripe them, so this has to run before the first dump — in
+the job script, next to the `mkdir`.
+
+`-c -1` asks for every OST in the directory's pool, which is not necessarily
+every OST in the filesystem: `sirene1` has 40, but pool `t0_D0da23` exposes
+8, so `-c 8` and `-c -1` are the same request there. Check with
+
+~~~bash
+lfs getstripe -d $OUTDIR        # what a new file will inherit
+lfs df . | grep -c OST          # how many OSTs the pool offers
+~~~
+
+The same applies to any large output — VTU, XDMF, HDF5 — not just to `dump()`.
+
+Two cautions. Striping widely is right for a few large files and wrong for
+many small ones, where it multiplies metadata cost; the rule of thumb is one
+stripe per gigabyte or so, capped by the pool. And these numbers were single
+unrepeated samples taken while the filesystem was otherwise idle: the 8 vs -1
+difference is within their noise, so read the table as *1 is slow, more than 1
+is much better*, not as a ranking of 8 against -1.
+
+### Three things learned getting there
+
+This recipe is what survived an attempt to make `dump()` faster by rewriting
+it — a packed, chunked, collective MPI-IO writer that reached the point of
+being byte-identical to `dump()` at 1024 ranks and was then **30x slower**
+(1462 s against 49 s for a 192 GiB dump). It was abandoned. What is worth
+carrying forward:
+
+**Measure the machine before believing a diagnosis.** The rewrite was
+justified by a production figure of 71 MiB/s. Stock `dump()` on the target
+filesystem measures **1000–4300 MiB/s**; the 71 was striping and contention,
+not the access pattern. Reproducing that one number first — an afternoon, no
+code — would have prevented the whole project.
+
+**A rank's cells are contiguous in Z-order.** On trees as much as on
+multigrids, `z_indexing()` gives each rank one unbroken run, so stock
+`dump()` does *one* seek per rank, not one per cell. Any optimisation
+premised on scattered per-cell seeks is aimed at something that does not
+happen.
+
+**How to time a writer on a shared filesystem.** One job at a time — two
+jobs overlapping made each the other's noise and produced a result that was
+later retracted. `fsync()` inside the timed region, or the clock stops when
+the bytes reach the page cache and you measure memcpy. Alternate which writer
+runs first. Repeat. Applying all four reversed the sign of every earlier
+number.
+
+The code, its tests, the full measurement log and the plan are archived
+outside this repository, in `basilisk_faramix2/diagnostics/dump/`.
+
+---

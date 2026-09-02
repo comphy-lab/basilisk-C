@@ -215,7 +215,6 @@ def render_snapshot(
     dst = xr.open_dataset(input_path, chunks="auto")
     nx, ny, nz = dst.x.size, dst.y.size, dst.level.size
     H0 = -dst.zb.values.flatten()[0]  # fixme: works for homogeneous zb only
-    t0 = dst.time.values[0]
 
     # Clipping
     if xclip is None:
@@ -232,12 +231,16 @@ def render_snapshot(
         zmin, zmax = zclip
     physical_clip = xmin, xmax, ymin, ymax, zmin, zmax
 
+    # clean up initial instant dublicate
+    if dst.time[0] == dst.time[1]:
+        dst = dst.isel(time=slice(1, len(dst.time)))
+
     # Select a timestamp
     if "time" not in dst.keys():
         ds = dst
     else:
         ds = dst.sel(time=ttime, method=method)
-
+    t0 = ds.time.values
     if verbose:
         print(f"Input:        {input_path}")
         print(f"Output:       {output_path}")

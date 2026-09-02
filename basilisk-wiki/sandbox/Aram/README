@@ -1,0 +1,48 @@
+# Numerical Simulation of Roll Waves and Coarsening Phenomena
+
+Documentation and C simulation scripts for the **Basilisk** open-source solver, developed at **Institut Jean Le Rond d'Alembert** (Sorbonne Université / CNRS) under the supervision of Pierre-Yves Lagrée during my M1 internship.
+
+This repository explores free-surface flow instabilities in inclined channels, ranging from open-channel hydraulics (turbulent clear water) to dry granular flows governed by non-Newtonian depth-averaged rheologies ($\mu(I)$).
+
+[**Report – PDF**](https://raw.githubusercontent.com/aramhandian28-ctrl/Stage-M1/f4180e3d1cfbd0b58342ca762a1dce80f58a98cf/StageM1_HANDIAN_Aram.pdf)
+
+---
+
+## Technical Overview & Governing Equations
+
+The numerical framework solves the one-dimensional depth-averaged Saint-Venant equations:
+
+$$
+\frac{\partial h}{\partial t}
++
+\frac{\partial (hu)}{\partial x}
+=
+0
+$$
+
+$$
+\frac{\partial (hu)}{\partial t}
++
+\frac{\partial}{\partial x}
+\left(
+hu^2 + \frac{g}{2}h^2
+\right)
+=
+-gh\frac{\partial f}{\partial x}
+-\frac{\tau_x}{\rho}
+$$
+
+## Included Codes
+
+### Clear-Water Hydraulics
+* **[`dw2.c`](dw2.c)**  (Darcy-Weisbach) \
+  Simulates turbulent roll waves on a cartesian grid (`saint-venant.h`). Implements an explicit friction source term and automated Python post-processing (`pythonplot`) to invert the implicit Dressler profile equation, matching numerical shock waves with analytical theory at $Fr = 2.5$.
+  
+* **[`manning.c`](manning.c)**  (manning) \
+  Models open-channel flow instabilities with Manning friction ($n = 0.02 \text{ s}\cdot\text{m}^{-1/3}$).
+
+### Granular Dynamics & Coarsening
+* **[`coarsening.c`](coarsening.c)**  
+  Integrates the Pouliquen–Forterre friction law with Gray & Edwards longitudinal stress gradients ($\partial_x (\nu h^{3/2} \partial_x u)$). Initialized with white noise perturbations on the height $h(x,0)$, the script models shock interactions, tracks local wave peaks $N(t)$, and simulates the decay toward *arrested coarsening*. Includes integrated Gnuplot scripts for static profiles and animated GIFs.
+
+  > **Note:** While the code is set up with white noise by default to induce coarsening, the initial condition in `event init` can be modified to a sinusoidal perturbation ($h_0(1 + \epsilon \sin(kx))$).

@@ -4,26 +4,25 @@ This sandbox contains Basilisk simulations developed during my M1 internship at 
 
 The objective is to model dry granular landslides using depth-averaged approaches and to compare the results with other numerical models and experimental data.
 
+The complete internship report is available here:
+[**M1 internship report – PDF**](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/ressources/Rapport_POLGE_POULICHET_Kilian.pdf)
+
 ## 1D simulations
 
-* [Dry granular collapse – comparison with HySEA](dry_landslide_comparison_hysea.c)
+* [Dry granular collapse – comparison with HySEA](dry_landslide_comparison_hysea.c)  
   Saint-Venant simulation of the dry granular collapse experiment of Poulain et al. (2023), using the Pouliquen–Forterre basal friction law. Results are compared with experimental data and the non-hydrostatic HySEA model.
 
-* [Dry granular collapse – comparison with SHALTOP](dry_landslide_comparison_shaltop.c)
+* [Dry granular collapse – comparison with SHALTOP](dry_landslide_comparison_shaltop.c)  
   Basilisk implementation of a SHALTOP-type formulation for the same granular collapse configuration, including topographic and curvature corrections. Results are compared with reference SHALTOP profiles.
 
 ## 2D simulations
 
-* **2D granular landslide – in preparation**
-  Extension of the granular landslide simulations to two dimensions.
-
-## Context
-
-These simulations were developed as part of a study on numerical modelling of granular landslides and their possible application to landslide-generated waves.
+* [2D granular landslide](https://basilisk.fr/sandbox/Kilian/dry_granular_collapse_2D.c)  
+  Extension of the granular landslide simulations to two dimensions to account for lateral spreading of the granular mass.
 
 ## Contact
 
-Kilian Polge-Poulichet
+Kilian Polge-Poulichet  
 [Kilian.Polge_Poulichet@etu.sorbonne-universite.fr](mailto:Kilian.Polge_Poulichet@etu.sorbonne-universite.fr)
 
 

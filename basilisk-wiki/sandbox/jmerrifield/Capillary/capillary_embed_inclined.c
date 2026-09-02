@@ -217,7 +217,7 @@ event meniscus_height (t+=0.05)
     
     //Washburn height
     //h_wash = sqrt((tens*R*cos(theta0*pi/180.))/(2*mu1)*t);
-    //fprintf(fp5, "%+6.5e %+6.5e %+6.5e \n", t, 1000*h_int, 1000*h_wash);
+    //fprintf(fp5, "%+6.5e %+6.5e %+6.5e \n", t, 1000*data.h_int, 1000*h_wash);
 }
 
 // Convergence check

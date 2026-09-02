@@ -53,7 +53,6 @@ double dtout = 2.0 [0,1];             // [s] dt for output in netcdf
 double smalltime = 1e-10 [0,1];       // [s] small time increment
 // -> physical properties
 double Re = 1000;                     // Reynolds number Re = sqrt(g*lambda**3)/nu
-double nu0 = 0.00025 [2,-1];          // Viscosity for vertical diffusion of momentum
 double thetaH = 0.5 [0];              // theta_h for dumping fast barotropic modes
 // -> stratification related
 double rho0 = 1025. [-3,0,0,0,1];     // [kg.m-3] reference density
@@ -82,6 +81,7 @@ int main(int argc, char *argv[])
 {
   /** Building a 'params' array with all parameters from the namlist */
   params = array_new();
+  add_param("P", &P, "double");
   add_param("N_grid", &N_grid, "int");
   add_param("L", &L, "double");
   add_param("N_layer", &N_layer, "int");
@@ -91,7 +91,6 @@ int main(int argc, char *argv[])
   add_param("tend_diag", &tend_diag, "double");
   add_param("t_iniT", &t_iniT, "double");
   add_param("Re", &Re, "double");
-  add_param("nu0", &nu0, "double");
   add_param("thetaH", &thetaH, "double");
   add_param("dtout", &dtout, "double");
   add_param("strat", &strat, "double");
@@ -114,13 +113,12 @@ int main(int argc, char *argv[])
 
   // Settings solver values from namlist values
   L0 = L;
-  nu0 = sqrt(g_*pow(2*PI/kp, 3))/Re;
-  //nu = nu0;
+  nu = sqrt(g_*kp)*2*PI/kp/Re; // Re = c*lambda/nu
   N = N_grid; 
   nl = N_layer;
   G = g_;
   theta_H = thetaH;
-  diff_T = nu0/Pr;
+  diff_T = nu/Pr;  
   CFL_H = 1; 
   CFL=0.8;
   Tp = 2*PI/sqrt(g_*kp);
@@ -163,7 +161,8 @@ event init(i =  0) {
     
     /** We read a spectrum using spectrum.h */
     T_Spectrum spectrum;
-    spectrum = read_spectrum(N_mode);
+    // spectrum = read_spectrum(N_mode);
+    spectrum = spectrum_gen_linear(N_mode, N_power, L, P, kp);  
 
     /** set eta */
     initial_condition_wave_fft (eta, spectrum, N);
@@ -182,10 +181,11 @@ event init(i =  0) {
       time */
     foreach(cpu) {
       double z = zb[];
+      double H = - zb[];
       foreach_layer() {
-        z += h[]/2.;
+        z += H*beta[point.l]/2.;
         T[] = Tini(z);
-        z += h[]/2.;
+        z += H*beta[point.l]/2.;
       } 
     }
 
@@ -225,57 +225,57 @@ event viscous_term (i++; t<=tend)
   horizontal_diffusion ({u, w}, nu, dt);
 }
 
-double* l_avg(scalar var, double* profile){
-  /*
-  This function computes the layer average of var.
-
-  INPUTS:
-    var: scalar (C Basilisk), the variable to average.
-    profile: array of double of length nl
-  OUTPUTS:
-    an array of double with the average values inside
-   */
-  foreach(reduction(+:profile[:nl]), cpu)
-    foreach_layer(){
-    #if dimension==1
-      profile[point.l] += var[] / N;// (N*N); // * dt / dt_mean;
-    #else
-      profile[point.l] += var[] / (N*N);
-    #endif
-    }
-  return profile;
-}
+// double* l_avg(scalar var, double* profile){
+//   /*
+//   This function computes the layer average of var.
+//
+//   INPUTS:
+//     var: scalar (C Basilisk), the variable to average.
+//     profile: array of double of length nl
+//   OUTPUTS:
+//     an array of double with the average values inside
+//    */
+//   foreach(reduction(+:profile[:nl]), cpu)
+//     foreach_layer(){
+//     #if dimension==1
+//       profile[point.l] += var[] / N;// (N*N); // * dt / dt_mean;
+//     #else
+//       profile[point.l] += var[] / (N*N);
+//     #endif
+//     }
+//   return profile;
+// }
 
 /** Initialise T after wave spinup */
-event initT(t=t_iniT){
-  // Compute z mean
-  double etam=0.;
-  foreach(reduction(+:etam)){
-    etam += eta[];
-  }
-  etam = etam / (N*N);
-  hm = l_avg(h, hm); 
-  zm[0] = -h0;
-  for (int k=1; k < nl; k++){
-    zm[k] = zm[k-1] + hm[k-1]/2. + hm[k]/2.;
-    fprintf(stderr, "zm[%d]=%g\n", k, zm[k]);
-  }
-  fprintf(stderr, "<eta>=%g\n",etam);
-  // Set T at z mean
-  foreach() {
-    foreach_layer() {
-      T[] = Tini(zm[point.l]); 
-    } 
-  }
-}
+// event initT(t=t_iniT){
+//   // Compute z mean
+//   double etam=0.;
+//   foreach(reduction(+:etam)){
+//     etam += eta[];
+//   }
+//   etam = etam / (N*N);
+//   hm = l_avg(h, hm); 
+//   zm[0] = -h0;
+//   for (int k=1; k < nl; k++){
+//     zm[k] = zm[k-1] + hm[k-1]/2. + hm[k]/2.;
+//     fprintf(stderr, "zm[%d]=%g\n", k, zm[k]);
+//   }
+//   fprintf(stderr, "<eta>=%g\n",etam);
+//   // Set T at z mean
+//   foreach() {
+//     foreach_layer() {
+//       T[] = Tini(zm[point.l]); 
+//     } 
+//   }
+// }
 
 #if DUMPS
 /** dump outputs */
 event output(t = 0.; t<= tend+smalltime; t+=dtout){
   write_nc();
-  char dname[100];
-  sprintf (dname, "dump_t%g", t);
-  dump(dname);
+  // char dname[100];
+  // sprintf (dname, "dump_t%g", t);
+  // dump(dname);
 }
 #endif // DUMPS
 
@@ -295,53 +295,53 @@ event output(i++, t<=tend){
 }
 #endif //US_DIAG
 
-#if DIAG
-int write_profile(char* name, double* profile, FILE* fp){
-  /*
-  docstring
-
-  */
-  // main worker is writing the file
-  if (pid()==0) {
-    fp  = fopen(name,"a");
-    if (fp == NULL){
-      fprintf(stderr, "Error opening file %s", name);
-      return 2;
-    }
-    for (int i=0; i<nl; ++i) {
-      fprintf (fp, "%f %d %g\n", t, i, profile[i]);
-    }
-    fprintf(fp,"\n");
-    fclose(fp);
-  }
-  return 0;
-}
-
-// This event compute layer average of T, w
-event compute_layer_avg (t+=dt_mean; t<=tend+smalltime){
-
-  T_profile = l_avg(T, T_profile);
-  u_profile = l_avg(u.x, u_profile);
-}
-
-// This even writes to a file the layer average
-event write_diag(t=0.; t+=dt_mean){
-
-    write_profile("T_profile.dat", T_profile, fp1);
-    write_profile("u_profile.dat", u_profile, fp2);
-
-    // Reset the profile for all workers
-    for (int i=0; i<nl; ++i) {
-      T_profile[i] = 0.0;
-      u_profile[i] = 0.0;
-    }
-}
-
-event cleanup(t=end){
-  free(T_profile);
-  free(u_profile);
-}
-#endif // DIAG
+// #if DIAG
+// int write_profile(char* name, double* profile, FILE* fp){
+//   /*
+//   docstring
+//
+//   */
+//   // main worker is writing the file
+//   if (pid()==0) {
+//     fp  = fopen(name,"a");
+//     if (fp == NULL){
+//       fprintf(stderr, "Error opening file %s", name);
+//       return 2;
+//     }
+//     for (int i=0; i<nl; ++i) {
+//       fprintf (fp, "%f %d %g\n", t, i, profile[i]);
+//     }
+//     fprintf(fp,"\n");
+//     fclose(fp);
+//   }
+//   return 0;
+// }
+//
+// // This event compute layer average of T, w
+// event compute_layer_avg (t+=dt_mean; t<=tend+smalltime){
+//
+//   T_profile = l_avg(T, T_profile);
+//   u_profile = l_avg(u.x, u_profile);
+// }
+//
+// // This even writes to a file the layer average
+// event write_diag(t=0.; t+=dt_mean){
+//
+//     write_profile("T_profile.dat", T_profile, fp1);
+//     write_profile("u_profile.dat", u_profile, fp2);
+//
+//     // Reset the profile for all workers
+//     for (int i=0; i<nl; ++i) {
+//       T_profile[i] = 0.0;
+//       u_profile[i] = 0.0;
+//     }
+// }
+//
+// event cleanup(t=end){
+//   free(T_profile);
+//   free(u_profile);
+// }
+// #endif // DIAG
 
 
 

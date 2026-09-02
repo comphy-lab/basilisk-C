@@ -1,4 +1,4 @@
-pristine:b89eff84f52a68aeaa2a1cbb06afa045a5fe1f9a39f78a222f324c5a5d07690f
+pristine:0514df47afccea897cf2300d1736135dd814e30c4acf7535197c7818fb2f97f0
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -14350,3 +14350,124 @@ kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260831234438
  Ignore-this: dcc73e24e1b9671666357697cc78eae739bdc4a3326f31353e0a768e410b037fda4333442cd71a58
 ] 
 hash: 0000005401-d212438202c3572441bbc7d5058829cf790eae35a8b3fcad9c55ec5e9cf283fb
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260901013302
+ Ignore-this: 498a141a433ced5467e1ae800b0d5649bff9c47f49e9ddf42b9574ecc62e4658c65774df8df230fa
+] 
+hash: 0000001462-64bbd4e37800fb8a0bad162d0ff15f28ed2f27d68f7180ca64bf8cbf2bb13cdc
+[fix bug
+Chongsen <chongsenhuang@gmail.com>**20260901035130
+ Ignore-this: 3cfc0b0d878655b5a89af1e162f5431d061bec6612cf763f7a253408b7c44f62c1881d38278147a4
+] 
+hash: 0000000482-821e46417f0e4af757526221828dddb1728413e3dac03e28c5e660b0a5cbd82f
+[resolution
+mvacher <marc.cordelle.vacher@gmail.com>**20260901054246
+ Ignore-this: 56fc4a0bf751ee8cafcf20f5ba2e8dbd8f12a6744ed5b8205af090551c441ed9e6399dd6af680289
+] 
+hash: 0000000632-bbf27977c0f0bd1fc91cb624b627df2af3faba2124e33c9814f2223bc5b1aaf8
+[another initialisation
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260901060416
+ Ignore-this: 266b12e28d37fbb484c59310049dd5fb
+] 
+hash: 0000007752-685e5f9b56c42f7ad5a3e2a7667a963b24865619567c6f36327568f0c89f3e9b
+[output_fields: stripe the output directory before writing large snapshots
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260901083611
+ Ignore-this: 251baf16e1f84aee87e453d80a517cec41fed3c45fd82e253d1b9227e2bab1b19ea4fcc594f9ab1f
+ 
+ dump() on Lustre is limited by the stripe count of the directory the file is
+ created in, and the TGCC/irene scratch default is 1: every dump lands on a
+ single OST however many ranks write it. Measured on sirene1, level 11
+ multigrid3D, 1024 ranks, 192 GiB per dump:
+ 
+   lfs setstripe -c    OSTs   dump()
+        1 (default)      1    239.7 s    820 MiB/s
+        8                8     56.1 s   3500 MiB/s
+       -1                8     48.5 s   4050 MiB/s
+ 
+ 4.3x for one line in a job script and nothing to compile:
+ 
+   mkdir -p $OUTDIR
+   lfs setstripe -c 8 $OUTDIR      # before anything is written into it
+ 
+ Lustre fixes a file's layout at creation and inherits it from the parent, so
+ this has to run before the first write; restriping a directory does not move
+ files already in it. -c -1 means every OST in the directory's *pool*, which
+ is not the whole filesystem: sirene1 has 40 but pool t0_D0da23 exposes 8, so
+ -c 8 and -c -1 are the same request there. Applies to any large output in this
+ module, not only to dump().
+ 
+ The caveats travel with the numbers: single unrepeated samples on an idle
+ filesystem, so 8 vs -1 is within noise and the table means "1 is slow, more
+ than 1 is much better"; and striping widely is wrong for many small files,
+ where it multiplies metadata cost.
+ 
+ Also recorded, because it is what the measurement cost to obtain: three
+ lessons from an attempt to replace dump() with a packed collective MPI-IO
+ writer, which reached byte-identity at 1024 ranks and was then 30x slower
+ (1462 s against 49 s for 192 GiB) and was abandoned.
+ 
+   - Measure the machine before believing a diagnosis. The rewrite was
+     justified by a 71 MiB/s production figure; stock dump() on the target
+     filesystem does 1000-4300 MiB/s. Reproducing that one number first would
+     have prevented the project.
+ 
+   - A rank's cells are contiguous in Z-order, on trees as much as multigrids.
+     Stock dump() does one seek per rank, not one per cell, so an optimisation
+     premised on scattered per-cell seeks is aimed at nothing.
+ 
+   - How to time a writer on a shared filesystem: one job at a time (two
+     overlapping jobs made each the other's noise and produced a result that
+     had to be retracted), fsync inside the timed region (or the clock stops at
+     the page cache and you measure memcpy), alternate which writer goes first,
+     and repeat. Applying all four reversed the sign of every earlier number.
+ 
+ The writer, its tests, the full patch log and the plan are archived outside
+ this repository in basilisk_faramix2/diagnostics/dump/, and are not worth
+ carrying here.
+] 
+hash: 0000006422-8f0b27d1f121fa72c2a04b0efb751d531ce2e647714aac5c62ae055fe44fa199
+[HR example crashes after ~4 periods
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260901131602
+ Ignore-this: ececddb5a95fbc7be20b9ba5dafd0cb5
+] 
+hash: 0000003073-bbe364f33050885ddfa1eb506b2a95dd4a10ff4c03f02d6745b2786b7a699374
+[fixed: initial state is saved two time in the .nc, small tweak of for verbose
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260901131724
+ Ignore-this: dbd25ecdb48793c419585029aa4d5ebe
+] 
+hash: 0000000514-1e0d5a5f4add2900cfa95c73848699c8b94e0449fb0fc826918ee8d2e76b25e6
+[README
+AramH**20260901135242
+ Ignore-this: 61f75d98715e5a1cf62580a9d77d35dbaad41b892d066c40f93321b7481bc8a113894ec49f8d5fdd
+] 
+hash: 0000002507-10fefb5b8bd3fbbd38dc98b8734ef9b08f0fa3b208ec018d12dd6d7c794d0b5c
+[README
+AramH**20260901135319
+ Ignore-this: d6558fa5ed679a67188974a9ece86cde51d669b5f2497b0dbd71106de99c0a61f20be04a4208e795
+] 
+hash: 0000000245-0263360757f455ac9bbf811eca23724b1f8e3e14541f22266261e9ead4bce125
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260901154914
+ Ignore-this: bdff44e62b395498f0b90b0f4fdc5c4793b8130554ed4a4e9958e6a196fb29a8254d375900083b08
+] 
+hash: 0000001134-7b2173e16623a57ab9ec99d24a163f4fe77752513c02482bb85c5014a99d61b7
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260901160514
+ Ignore-this: 958702809b1729ce28955bd495f8d77c14f8a0e85af5b5bc956e1e9462ac9c0981a58f3faaad00a5
+] 
+hash: 0000010588-6a0f665536159135c1c004d06ac4255e84800fd38b31acc5f4ccc31855a4e658
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260901162029
+ Ignore-this: 8a4fbc886cda62c0a553162465b5ce111279c1aa4746c1d0aeab9f32a49165c3a233e26a0209c44c
+] 
+hash: 0000000399-03968dfca95ded4774d70f34c2926cb3fcb38921780d071075dd9a4e55f92f3e
+[Add of the Washburn height to check the transitory behaviour
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260901162041
+ Ignore-this: 39852ce1bd63345f7f7dd23920a1fb2dccd6edf9b1a1f67aa614347c5921b5fb493f00eefe73cd02
+] 
+hash: 0000000690-691d15f565f16210755a378082ac5fe7ac4fa3ff20190529a503306d2d63cf39
+[ Add of the Washburn height to check the transitory behaviour
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260901162044
+ Ignore-this: 3ab47e639342c8a5458c9aa8baab32eac18ff715db4ccee10dd235c383b1651cef0505d1eaae62ac
+] 
+hash: 0000001231-7c6217a6148cbd06be86d87c53c9cb53dbbfba6775e6db2c0d2e8c5d02a20fa2

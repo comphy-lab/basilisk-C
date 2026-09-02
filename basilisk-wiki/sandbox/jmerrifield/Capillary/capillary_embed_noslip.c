@@ -140,6 +140,7 @@ event file (t=0)
     fp3 = fopen(filename2, "w");
     
     fp4 = fopen("data.dat","w");
+    fp5 = fopen("Washburn.dat","w");
 
     fprintf(fp1, "t  u.x  u.y \n");
     fprintf(fp2, "t  theta \n");
@@ -205,8 +206,8 @@ event meniscus_height (t+=0.05)
     //fprintf(fp6, "%+6.5e %+6.5e %+6.5e \n", t, pow(1000,3)*V, (data.V - V0)/V0);
     
     //Washburn height
-    //h_wash = sqrt((tens*R*cos(theta0*pi/180.))/(2*mu1)*t);
-    //fprintf(fp5, "%+6.5e %+6.5e %+6.5e \n", t, 1000*h_int, 1000*h_wash);
+    h_wash = sqrt((tens*R*cos(theta0*pi/180.))/(2.*mu1)*t);
+    fprintf(fp5, "%+6.5e %+6.5e %+6.5e \n", t, 1000*data.h_int, 1000*h_wash);
 }
 
 // Convergence check
@@ -263,6 +264,23 @@ set ylabel "Angle (°)"
 plot for [i=5:8] sprintf("angle_maxlevel_%d.dat",i) us 1:2 w lp \
         title sprintf("nx = %d, dx = %.2e",2**i,2*0.005/2**i), \
         30 w l lc rgb "black" title "Angle imposé"
+~~~
+
+~~~gnuplot Washburn's height
+set grid 
+set key bottom right
+set xlabel "Time (s)"
+set ylabel "Height (mm)"
+set xrange [0:0.5]
+
+set title "h_{interface} en fonction du temps"
+
+set grid
+
+plot "Washburn.dat" us 1:2 w lp lc rgb "red" title "h_{interface}", \
+     "Washburn.dat" us 1:3 w lp lc rgb "blue" title "h_{Washburn}", \
+     19.9933 w l lc rgb "black" dt 2 title "2D Jurin's height", \
+     19.1538 w l lc rgb "black" title "Corrected 2D Jurin's height"  
 ~~~
 */
 

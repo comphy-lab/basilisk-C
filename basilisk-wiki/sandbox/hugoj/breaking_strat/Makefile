@@ -19,13 +19,12 @@ ml_breaking_strat.tst: CC = mpicc -D_MPI=16
 
 # GPU run
 ml_breaking_strat.gpu.tst: _prep_gpu
-ml_breaking_strat.gpu.tst: CFLAGS+="-fopenmp"
 
 ml_breaking_strat.cuda.tst: _prep_cuda
-#ml_breaking_strat.gpu.tst: CFLAGS+="-fopenmp"
+ml_breaking_strat.cuda.tst: CFLAGS += -DDUMPS=1
 
 # We want to run on HPC
-_ml_breaking_strat.c: CFLAGS +="-D_MPI=1 -DDUMPS"
+_ml_breaking_strat.c: CFLAGS += -D_MPI=1 -DDUMPS=1
 #_ml_breaking_strat.c: CFLAGS += -grid=cuda/multigrid
 hpc_run: _ml_breaking_strat.c
 	mkdir -p ml_breaking_strat.hpc

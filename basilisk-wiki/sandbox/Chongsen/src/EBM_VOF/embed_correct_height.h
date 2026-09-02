@@ -275,13 +275,14 @@ void embed_h(scalar c, scalar cs, vector mc, vector ms, scalar alphacs, scalar c
     for (int i = -2; i <= 2; i++)
       foreach_dimension(){
         if (tmp_h.x[i]==50)
-          tmp_h.x[] = 50;
+          tmp_h.x[] = 49;
       }
-  }
+  }  
+
 
   foreach(){
     foreach_dimension()
-      if (tmp_h.x[]==50)
+      if (tmp_h.x[]==50 || tmp_h.x[]==49)
         tmp_h.x[]=nodata;
   }
   
