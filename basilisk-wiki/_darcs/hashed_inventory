@@ -1,4 +1,4 @@
-pristine:0514df47afccea897cf2300d1736135dd814e30c4acf7535197c7818fb2f97f0
+pristine:feaaa1fbcf63bb1bf2f2c4a4b48baf12da9ac4de90f7c9d0adc87fe10f15a74e
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -14471,3 +14471,8 @@ jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260901162044
  Ignore-this: 3ab47e639342c8a5458c9aa8baab32eac18ff715db4ccee10dd235c383b1651cef0505d1eaae62ac
 ] 
 hash: 0000001231-7c6217a6148cbd06be86d87c53c9cb53dbbfba6775e6db2c0d2e8c5d02a20fa2
+[Added safeguards to histograms1d
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260902065056
+ Ignore-this: 46d606f4abce9b20f4965e0069f2fe320b7a21ea7c927a6150d9c1410f30ec4959daccef8796c28a
+] 
+hash: 0000001717-06dcd5fc9e6047a52843b737a3061b21227cdb8a0399b88f1c974a95f5ab63e4

@@ -56,6 +56,7 @@ so that repeated calls (e.g. one per timestep, or for different scalars) can
 be told apart when appended to the same file.
 */
 
+#include <gsl/gsl_errno.h>
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_histogram.h>
 #pragma autolink -lgsl -lgslcblas
@@ -85,15 +86,20 @@ void probability_distribution_1D(scalar c, double cmin=0, double cmax=1,
   double vol_cells=0.0, vol_cells_pid=0.0;
   foreach(serial, noauto)
   #if EMBED
-    vol_cells_pid += dv()*cs[];
+    vol_cells_pid += (c[] != nodata) ? dv()*cs[] : 0;
   #else
-    vol_cells_pid += dv();
+    vol_cells_pid += (c[] != nodata) ? dv() : 0;
   #endif
 
   /* Populate a 1D histogram using fields weighted by volume.
      gsl_histogram_accumulate() mutates h in place with no reduction clause
      Basilisk could parallelize around, so this loop must stay serial -- a
-     plain foreach() here would race on h->bin[] under OpenMP. */
+     plain foreach() here would race on h->bin[] under OpenMP.
+     c[] can be nodata (HUGE) on cells where the field is undefined (e.g.
+     curvature away from the interface); accumulate() returns GSL_EDOM for
+     out-of-range x, which with GSL's default error handler aborts. Check
+     the return and skip those cells instead. */
+  gsl_error_handler_t * gsl_prev_handler = gsl_set_error_handler_off();
   if (vol_cells_pid > 0){
     foreach(serial, noauto)
     #if EMBED
@@ -116,6 +122,7 @@ void probability_distribution_1D(scalar c, double cmin=0, double cmax=1,
     gsl_histogram_pdf_free (p);
   }
   gsl_histogram_free (h);
+  gsl_set_error_handler (gsl_prev_handler);
 
   /* Sum the values over the ensemble of sub-domains */
 @if _MPI
@@ -206,7 +213,10 @@ void probability_distribution_1D_weighted(scalar f, scalar c, double cmin=0,
   /* Populate a 1D histogram using fields weighted by f times the cell volume.
      gsl_histogram_accumulate() mutates h in place with no reduction clause
      Basilisk could parallelize around, so this loop must stay serial -- a
-     plain foreach() here would race on h->bin[] under OpenMP. */
+     plain foreach() here would race on h->bin[] under OpenMP.
+     c[] can be nodata (HUGE) on cells where the field is undefined; see the
+     comment in probability_distribution_1D() above. */
+  gsl_error_handler_t * gsl_prev_handler = gsl_set_error_handler_off();
   if (vol_cells_pid > 0){
     foreach(serial, noauto)
     #if EMBED
@@ -229,6 +239,7 @@ void probability_distribution_1D_weighted(scalar f, scalar c, double cmin=0,
     gsl_histogram_pdf_free (p);
   }
   gsl_histogram_free (h);
+  gsl_set_error_handler (gsl_prev_handler);
 
   /* Sum the values over the ensemble of sub-domains */
 @if _MPI
