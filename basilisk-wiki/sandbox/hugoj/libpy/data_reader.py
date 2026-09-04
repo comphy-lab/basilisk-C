@@ -38,6 +38,12 @@ def read_bas_data(filename, chunks="auto", dtype="float32"):
 
     # xgcm grid
     grid = build_grid(ds)
+
+    # fix: sometimes Basilisk simulation has 2 times the initial timestamp.
+    #       This removes the first one so that .sel() works properly
+    if ds.time[0] == ds.time[1]:
+        ds = ds.isel(time=slice(1, len(ds.time)))
+
     return ds, grid
 
 

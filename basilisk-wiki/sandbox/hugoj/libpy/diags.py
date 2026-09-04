@@ -267,3 +267,34 @@ def interpz(z, data, znew, fill_value):
         output_dtypes=[float],
         dask_gufunc_kwargs={"output_sizes": {"znew": len(znew)}},
     )
+
+
+def compute_us_Kenyon1969(phi_k, k, z):
+    """
+    IN:
+        phi_k: azimuth integrated spectrum (see 'get_spec_1D' from libpy/fftlib)
+        k: wavenumber array
+        z: 1D depth array
+
+    OUT:
+        float, Stokes drift at z
+
+    REFERENCES
+        -> wavenumber spectrum expression
+        Wu, J., Popinet, S., & Deike, L. (2023). Breaking wave field statistics
+        with a multi-layer model. Journal of Fluid Mechanics, 968, A12.
+        https://doi.org/10.1017/jfm.2023.522
+
+        -> Frequency spectrum expression
+        Kenyon, K. E. (1969). Stokes drift for random gravity waves. Journal of
+        Geophysical Research, 74(28), 6991–6994.
+        https://doi.org/10.1029/JC074i028p06991
+    """
+    g = 9.81
+    us = np.zeros(len(z))
+    dk = np.roll(k, -1) - k
+    for i in range(len(z)):
+        us[i] = (
+            2 * g ** (1 / 2) * np.sum(k ** (3 / 2) * phi_k * np.exp(2 * k * z[i]) * dk)
+        )
+    return us

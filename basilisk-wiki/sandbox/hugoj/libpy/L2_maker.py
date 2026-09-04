@@ -126,7 +126,11 @@ def make_L2_layer(
         else:
             print("saving skipped !")
     else:
-        dsL2 = xr.open_dataset(outpath + outfile)
+        dsL2 = xr.open_dataset(
+            outpath + outfile, chunks={"x": ds.chunks["x"], "y": ds.chunks["y"]}
+        )
+        if dsL2.time[0] == dsL2.time[1]:
+            dsL2 = dsL2.isel(time=slice(1, len(dsL2.time)))
 
     return dsL2
 
@@ -239,5 +243,6 @@ def make_L2_eulerian(
             outpath + outfile,
             chunks={"znew": -1, "x": ds.chunks["x"], "y": ds.chunks["y"]},
         )
-
+        if dsL2.time[0] == dsL2.time[1]:
+            dsL2 = dsL2.isel(time=slice(1, len(dsL2.time)))
     return dsL2
