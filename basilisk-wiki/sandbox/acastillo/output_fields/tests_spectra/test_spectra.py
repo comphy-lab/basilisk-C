@@ -3,11 +3,14 @@
 Checkers for the tests here, one subcommand each. The norms are computed in C;
 what happens here is the thresholds and the structural checks.
 
-  python3 test_spectra.py sample spectra_sample.asc
-  python3 test_spectra.py modes  spectra_modes.asc
-  python3 test_spectra.py amr    spectra_amr.asc
-  python3 test_spectra.py ascii  spec.asc spec_u.asc
-  python3 test_spectra.py hdf5   spectra_hdf5.asc
+  python3 test_spectra.py sample         spectra_sample.asc
+  python3 test_spectra.py modes          spectra_modes.asc
+  python3 test_spectra.py cross          spectra_cross.asc
+  python3 test_spectra.py foliate_sample spectra_foliate_sample.asc
+  python3 test_spectra.py foliate        spectra_foliate.asc spectra_foliate_cross.asc
+  python3 test_spectra.py amr            spectra_amr.asc
+  python3 test_spectra.py ascii          spec.asc spec_u.asc
+  python3 test_spectra.py hdf5           spectra_hdf5.asc
 
 Each prints one line per case then PASS or FAIL, and exits non-zero on
 failure. The constants mirror the .c sources and are kept in step by hand.
@@ -146,6 +149,147 @@ def check_modes(filename):
     failures.append('no rows read')
   return verdict(failures,
                  'single modes land in the right shell, and Parseval holds.')
+
+
+# ----------------------------------------------------------------- cross ---
+#
+# `tag kind m holes bexp E Eexp leak sum`. `exact` rows pin one bin the way
+# `modes` does; `zero` rows check the *total* cross power, since two fields on
+# disjoint Fourier modes must cross to zero everywhere, not just off the bin
+# a peak-finder would have picked.
+
+def check_cross(filename):
+  failures, seen = [], 0
+  for w in rows_of(filename):
+    tag, kind = w[0], w[1]
+    m, holes, bexp = (int(v) for v in w[2:5])
+    E, Eexp, leak, total = (float(v) for v in w[5:9])
+    seen += 1
+
+    print(f'{tag:<11}{kind:<7} m {m:4d}  bin {bexp:3d}  E {E:.12f} '
+          f'(exp {Eexp:.4f})  leak {leak:.2e}  sum {total:.12f}')
+
+    if holes:
+      failures.append(f'{tag}: {holes} unfilled lattice points')
+
+    if kind == 'exact':
+      if abs(E - Eexp) > TOL:
+        failures.append(f'{tag}: E {E:.12g}, expected {Eexp:g}')
+      if leak > TOL:
+        failures.append(f'{tag}: {leak:.3g} of cross power outside bin {bexp}')
+    elif kind == 'zero':
+      if abs(total) > TOL:
+        failures.append(f'{tag}: total cross power {total:.3g}, expected 0 '
+                        f'(orthogonal modes)')
+    else:
+      failures.append(f'{tag}: unknown kind {kind!r}')
+
+  if not seen:
+    failures.append('no rows read')
+  return verdict(failures,
+                 'cross_shell_average matches the auto-spectrum on identical '
+                 'fields and vanishes on orthogonal modes.')
+
+
+# --------------------------------------------------------- foliate_sample ---
+#
+# `tag m nz holes err`. Each row's expected sum is analytic, exact to
+# roundoff since every case lands on cell centres -- so all three rows share
+# `sample`'s TOL rather than needing a case-specific tolerance.
+
+FOLIATE_REQUIRED = ('zero_mean', 'offset_mean', 'wrong_mean')
+
+
+def check_foliate_sample(filename):
+  failures, seen = [], set()
+  for w in rows_of(filename):
+    tag = w[0]
+    m, nz, holes = (int(v) for v in w[1:4])
+    err = float(w[4])
+    seen.add(tag)
+
+    print(f'{tag:<12} m {m:4d}  nz {nz}  holes {holes}  err {err:.3g}')
+
+    if holes:
+      failures.append(f'{tag}: {holes} unfilled lattice points')
+    if err > TOL:
+      failures.append(f'{tag}: err {err:.3g}, expected <= {TOL:g}')
+
+  failures += [f'missing row: {t}' for t in FOLIATE_REQUIRED if t not in seen]
+  return verdict(failures,
+                 'sample_scalar_stack_sum foliates to the analytic anomaly '
+                 'sum, linear in the supplied per-slab means.')
+
+
+# --------------------------------------------------------------- foliate ---
+#
+# `spectrum_scalar_foliated()`/`cross_spectrum_scalar_foliated()` reuse the
+# writer and the transform, both already checked by `ascii` and `modes`; this
+# checks only the foliation and its plumbing through them, against three
+# blocks (`a`, `b`, `c`) in one ASCII file and one row in a separate cross
+# file. `read_blocks()` is shared with `ascii`, defined further down.
+
+FOLIATE_NZ = 4
+FOLIATE_TAGS = ('a', 'b', 'c')
+# tag -> {bin: expected E}; bins not listed must carry (near) no power
+FOLIATE_EXPECTED = {'a': {}, 'b': {5: 0.5*FOLIATE_NZ**2},
+                    'c': {0: float (FOLIATE_NZ**2), 5: 0.5*FOLIATE_NZ**2}}
+
+
+def check_foliate(ascii_file, cross_file):
+  failures = []
+  blocks = read_blocks(ascii_file)
+  if len(blocks) != len(FOLIATE_TAGS):
+    failures.append(f'{len(blocks)} blocks in {ascii_file}, '
+                    f'expected {len(FOLIATE_TAGS)}')
+
+  for tag, (meta, names, rows) in zip(FOLIATE_TAGS, blocks):
+    exp = FOLIATE_EXPECTED[tag]
+    if meta['nz'] != 1:
+      failures.append(f'{tag}: nz = {meta["nz"]}, expected 1 (one folded block)')
+    if names != [tag]:
+      failures.append(f'{tag}: columns {names}, expected [{tag!r}]')
+      continue
+    if len(rows) != meta['nk']:
+      failures.append(f'{tag}: {len(rows)} rows, expected {meta["nk"]}')
+      continue
+
+    zmid = 0.5*(meta['hmin'] + meta['hmax'])
+    z = rows[0][1]
+    if abs(z - zmid) > TOL:
+      failures.append(f'{tag}: stored z {z:.6g}, expected the midpoint '
+                      f'{zmid:.6g}')
+
+    E = {int(r[2]): r[4] for r in rows}
+    total = sum(r[4] for r in rows)
+    for b, Eexp in exp.items():
+      if abs(E.get(b, 0.) - Eexp) > TOL:
+        failures.append(f'{tag}: bin {b} = {E.get(b, 0.):.12g}, '
+                        f'expected {Eexp:.12g}')
+    leak = total - sum(exp.values())
+    if abs(leak) > TOL:
+      failures.append(f'{tag}: {leak:.3g} of power outside '
+                      f'{sorted(exp) or "no bins (should be all-zero)"}')
+
+    print(f'{tag}: nz {meta["nz"]}  z {z:.4f}  bins {sorted(exp) or "none"}  '
+          f'total {total:.12f}')
+
+  seen = 0
+  for w in rows_of(cross_file):
+    holes, bexp = int(w[0]), int(w[1])
+    E, Eexp = float(w[2]), float(w[3])
+    seen += 1
+    print(f'cross_self: bin {bexp}  E {E:.12f} (exp {Eexp:.4f})  holes {holes}')
+    if holes:
+      failures.append(f'cross_self: {holes} unfilled lattice points')
+    if abs(E - Eexp) > TOL:
+      failures.append(f'cross_self: E {E:.12g}, expected {Eexp:g}')
+  if not seen:
+    failures.append(f'no rows read from {cross_file}')
+
+  return verdict(failures,
+                 'the foliated sum, its spectrum and its cross-spectrum all '
+                 'match the analytic anomaly.')
 
 
 # ------------------------------------------------------------------- amr ---
@@ -422,6 +566,9 @@ def check_hdf5(filename):
 
 
 CHECKS = {'sample': (check_sample, 1), 'modes': (check_modes, 1),
+          'cross': (check_cross, 1),
+          'foliate_sample': (check_foliate_sample, 1),
+          'foliate': (check_foliate, 2),
           'amr': (check_amr, 1), 'ascii': (check_ascii, 2),
           'hdf5': (check_hdf5, 1)}
 

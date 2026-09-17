@@ -4,7 +4,7 @@
 In this code, I wanted to compare different contact angle models : simplified Cox-Voinov and Afkhami model for dynamic contact angle models and static contact angle model
 
 ## Cox-Voinov Law
-Cox gives a formula for dynamic contact :
+Cox gives a formula for dynamic contact that simplifies to the formula below if $\theta_d < 3 \pi /4$ :
 $$
 \theta_d^3 = \theta_S^3 + 9Ca\ln\left(\frac{L}{\lambda}\right)
 $$
@@ -14,18 +14,6 @@ Afkhami proposed a model based for 2D simulations and Cox expression that reduce
 $$
 \cos\theta_d = \cos\theta_S + 5.63 Ca \ln\left(\frac{K}{\Delta/2}\right)
 $$
-
-### Numerical models for contact line dynamics
-| **Model name** | **Contact angle** | **Navier condition** |
-|:------------------|:---------------------|-------------------------:|
-| Stat1 | $\theta_w=\theta_S$ | $\lambda_N=0$ |
-| Stat2 | $\theta_w=\theta_S$ | $\lambda_N=\Delta/2$ |
-| Stat3 | $\theta_w=\theta_S$ | $\lambda_N=\Delta_{32}/2$ |
-| Dyn1 | $\theta_w=\theta_d$ (Eq. [Simplified Cox-Voinov](#Cox-Voinov Law)) with $L=10^{-6}$, $\lambda=10^{-9}\,\mathrm{m}$ | $\lambda_N=0$ |
-| Dyn2 | $\theta_w=\theta_d$ (Eq. [Simplified Cox-Voinov](#Cox-Voinov Law)) with $L=\Delta/2$, $\lambda=10^{-9}\,\mathrm{m}$ | $\lambda_N=0$ |
-| Dyn3 | $\theta_w=\theta_d$ (Eq. [Simplified Cox-Voinov](#Cox-Voinov Law)) with $L=\Delta/2$, $\lambda=10^{-9}\,\mathrm{m}$ | $\lambda_N=\Delta/2$ |
-| Dyn4 | $\theta_w=\theta_d$ (Eq. [Afkhami 2009](#Afkhami model)) | $\lambda_N=\Delta/2$ |
-
 
 ~~~gnuplot Convergence comparison of the half width for different contact angle models
 r_th = 1.38/2.
@@ -74,7 +62,20 @@ typedef struct {
 #define SLIP_HALF    1
 #define SLIP_32_HALF 2
 
+/**
+## Definition of the test cases
+The different test cases are listed below.
 
+| **Model name** | **Contact angle** | **Navier condition** |
+|:------------------|:---------------------|-------------------------:|
+| Stat1 | $\theta_w=\theta_S$ | $\lambda_N=0$ |
+| Stat2 | $\theta_w=\theta_S$ | $\lambda_N=\Delta/2$ |
+| Stat3 | $\theta_w=\theta_S$ | $\lambda_N=\Delta_{32}/2$ |
+| Dyn1 | $\theta_w=\theta_d$ (Eq. [Simplified Cox-Voinov](#Cox-Voinov Law)) with $L=10^{-6}$, $\lambda=10^{-9}\,\mathrm{m}$ | $\lambda_N=0$ |
+| Dyn2 | $\theta_w=\theta_d$ (Eq. [Simplified Cox-Voinov](#Cox-Voinov Law)) with $L=\Delta/2$, $\lambda=10^{-9}\,\mathrm{m}$ | $\lambda_N=0$ |
+| Dyn3 | $\theta_w=\theta_d$ (Eq. [Simplified Cox-Voinov](#Cox-Voinov Law)) with $L=\Delta/2$, $\lambda=10^{-9}\,\mathrm{m}$ | $\lambda_N=\Delta/2$ |
+| Dyn4 | $\theta_w=\theta_d$ (Eq. [Afkhami 2009](#Afkhami model)) | $\lambda_N=\Delta/2$ |
+*/
 Case cases[7] = {
 
   {"Stat1", STATIC,    0.,        SLIP_NONE},
@@ -87,9 +88,9 @@ Case cases[7] = {
 
   {"Dyn4",  AFKHAMI,   0.,        SLIP_HALF}
 };
+
 //Dimensionless numbers
 double Ca_g, Ca_d;
-double Bo;
 double Oh;
 //double La;
 //double We;
@@ -103,7 +104,6 @@ double ywall;
 
 //Physical parameters
 double rho1, rho2, mu1, mu2;
-double grav = 0.;
 
 //Geometrical parameters
 double R0 = 0.5;
@@ -119,7 +119,7 @@ double theta0 = 60.; // Contact angle in degrees
 double V0;
 
 //Slip length
-double slip = 0.;
+double slip;
 scalar lambdax[], lambday[];
 
 int level = 6;
@@ -188,7 +188,12 @@ int main()
   }
 }
   
-//Boundary conditions
+/**
+## Boundary conditions
+
+We set the boundary conditions for a sessile that can slip partially at the embed boundary.
+*/
+
 //Lower conditions
 u.t[bottom] = dirichlet(0.);
 
@@ -221,7 +226,10 @@ event init (t = 0)
             min(sq(R0) - sq(x - xc) - sq(y - yc),
             y-yc));
 
-  // Navier slip
+/**
+## Navier slip
+We set here the slip length used for the partial slip.
+*/
   foreach()
   {
     lambdax[] = slip;
@@ -244,8 +252,6 @@ event file (t=0)
   //File definition
   fprintf(fp1, "t x_g x_d r U_g U_d theta_g theta_d e \n");
   
-  Bo = (rho1*pow(R0,2)*grav)/f.sigma;
-  fprintf(fp3, "Bo = %3.2e \n", Bo);
   Oh = (mu1)/sqrt(rho1*f.sigma*R0);
   fprintf(fp3, "Oh = %3.2e \n", Oh);
   double t = theta0*pi/180.;
@@ -256,48 +262,43 @@ event file (t=0)
   e_th = r_th*(1 - cos(t));
   fprintf(fp3, "e_th = %3.2e \n", e_th);
 }
-  
-/*
-We set a constant gravity
-*/
-event acceleration (i++, t<=endTime)
-{
-  foreach_face(y)
-    av.y[] -= grav;
-}
 
-/*
-We compute the contact angle with multiple contact angle models.
+/**
+## Dynamic contact angle
+We compute the contact angle at the embed boundary with multiple contact angle models (static and dynamic).
 */
 
-event switch_angle (i++)
+event switch_angle (i++, t<=endTime)
 {
   if (contact_model == STATIC)
   {
     const scalar theta[] = theta0*pi/180.;
     contact_angle = theta;
   }  
-       
-  SessileData c = contact_properties(f, cs, fs, ywall);
-  double Ca = fabs(mu1*c.U_right/f.sigma);
   
-  if (contact_model == COXVOINOV)
+  else
   {
-    double lambda = 1e-9;
-    double a = pow((theta0*pi/180.),3) + fabs(Ca)*log(cas.L/lambda);
-    double theta_dyn = pow(a, 1./3.);
-    const scalar theta[] = theta_dyn;
-    contact_angle = theta;
-  }
+    SessileData c = contact_properties(f, cs, fs, ywall);
+    double Ca = fabs(mu1*c.U_right/f.sigma);
   
-  if (contact_model == AFKHAMI)
-  {
-    double K = 0.04*R0;
-    double a = cos(theta0*pi/180.) + 5.63*fabs(Ca)*log(K/(L0/(2.*N)));
-    double b = max(-1., min(1.,a));
-    double theta_dyn = acos(b);
-    const scalar theta[] = theta_dyn;
-    contact_angle = theta;
+    if (contact_model == COXVOINOV)
+    {
+      double lambda = 1e-9;
+      double a = pow((theta0*pi/180.),3) + fabs(Ca)*log(cas.L/lambda);
+      double theta_dyn = pow(a, 1./3.);
+      const scalar theta[] = theta_dyn;
+      contact_angle = theta;
+    }
+  
+    if (contact_model == AFKHAMI)
+    {
+      double K = 0.04*R0;
+      double a = cos(theta0*pi/180.) + 5.63*fabs(Ca)*log(K/(L0/(2.*N)));
+      double b = max(-1., min(1.,a));
+      double theta_dyn = acos(b);
+      const scalar theta[] = theta_dyn;
+      contact_angle = theta;
+    }
   }
 }
 
@@ -326,3 +327,22 @@ event end (t = end)
   fclose (fp1);
   fclose (fp3);
 }
+
+/**
+## References
+~~~bib
+@article{legendre_comparison_2015,
+  title = {Comparison between Numerical Models for the Simulation of Moving Contact Lines},
+  author = {Legendre, D. and Maglio, M.},
+  year = 2015,
+  month = may,
+  journal = {Computers \& Fluids},
+  volume = {113},
+  pages = {2--13},
+  issn = {00457930},
+  doi = {10.1016/j.compfluid.2014.09.018},
+  url = {https://linkinghub.elsevier.com/retrieve/pii/S0045793014003557},
+  langid = {english}
+}
+~~~
+*/

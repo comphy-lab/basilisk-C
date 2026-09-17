@@ -1,0 +1,6 @@
+--- interfacial_power_static.asc
+Processed 3 resolutions.
+PASS: uniform velocity gives zero power: 0.00041, 1.2e-06, 2.66e-08
+PASS: radial error 0.0123, 0.0025, 0.000615, order 2.31, 2.02.
+PASS: the output field integrates to the return value, below 1e-12.
+PASS: Psi_sigma is linear in u, below 1e-12.

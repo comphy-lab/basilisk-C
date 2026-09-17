@@ -69,3 +69,46 @@ double snap_to_cell (double h, int m)
   double del = L0/m;
   return Z0 + (floor ((h - Z0)/del) + 0.5)*del;
 }
+
+/**
+# Foliating a stack of planes
+
+Sum, over `nz` planes evenly spaced across `[hmin, hmax]`, the anomaly of each
+field to a caller-supplied per-slab mean -- the $z$-integration a foliated
+spectrum needs (Poujade & Peybernes 2010, Soulard 2024). Slab heights follow
+the same `snap_to_cell()` convention as `spectrum_scalar_stack()` in
+[spectra.h](spectra.h), and are returned through `z` so the caller can compute
+`means` at the matching heights; this function does not compute means itself,
+so it stays agnostic of whatever profile reduction the caller uses.
+
+`means` is laid out as `means[iz*len + k]` for field `k` at slab `iz`, the same
+convention `spectrum_scalar_stack()` uses for `E`. `plane` accumulates
+`sum_iz (q(x,y,z_iz) - means[iz,k])`, laid out as `sample_scalar_plane()`'s
+output. Returns the number of unfilled lattice points, summed over slabs.
+*/
+
+int sample_scalar_stack_sum (scalar * list, double * plane,
+                             const double * means, double * z,
+                             double hmin, double hmax, int nz,
+                             double xmin, double xmax,
+                             double ymin, double ymax,
+                             int m1, int m2)
+{
+  int len = list_len (list), n = m1*m2*len;
+  for (int i = 0; i < n; i++)
+    plane[i] = 0.;
+
+  double * slab = malloc (n*sizeof(double));
+  int holes = 0;
+  for (int iz = 0; iz < nz; iz++) {
+    z[iz] = snap_to_cell (nz > 1 ? hmin + (hmax - hmin)*(iz + 0.5)/nz : hmin,
+                          m1);
+    holes += sample_scalar_plane (list, slab, z[iz],
+                                  xmin, xmax, ymin, ymax, m1, m2);
+    for (int i = 0; i < m1*m2; i++)
+      for (int k = 0; k < len; k++)
+        plane[i*len + k] += slab[i*len + k] - means[iz*len + k];
+  }
+  free (slab);
+  return holes;
+}

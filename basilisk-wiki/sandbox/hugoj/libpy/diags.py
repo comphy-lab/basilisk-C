@@ -8,6 +8,57 @@ import xgcm
 import xarray as xr
 from scipy.interpolate import interp1d
 
+from fftlib import get_wavenumber, get_spec_1D
+
+
+def compute_Ek(ds, L0, skip=2):
+    dst = ds.isel(time=slice(0, len(ds.time), skip))
+    dx = (ds.x[1] - ds.x[0]).values
+    return (
+        0.5
+        * ((dst["u.x"] ** 2 + dst["u.y"] ** 2 + dst["u.z"] ** 2) * dst.h * dx**2).sum(
+            dim=["level", "x", "y"]
+        )
+        / (L0 * L0)
+    )
+
+
+def EOS(T, T0, betaT):
+    drho = -betaT * (T - T0)
+    return drho
+
+
+def compute_Ep(rho, g, ds, L0, Ep0=0.0, skip=2):
+    dx = (ds.x[1] - ds.x[0]).values
+    Ept = (
+        (rho * g * ds.z * ds.h * dx**2)
+        .isel(time=slice(0, len(ds.time), skip))
+        .sum(dim=["level", "x", "y"])
+    ) / (L0**2)
+    return Ept - Ep0
+
+
+def compute_spectrum_trange(ds, start, end):
+    # find items in [start, end]
+    subds = ds.sel(time=slice(start, end))
+
+    _, _, _, k_sample = get_wavenumber(N, L0 / N)
+
+    phi_k = np.zeros((len(subds.time), len(k_sample)))
+    kr = np.zeros((len(subds.time), len(k_sample)))
+
+    for it in range(0, len(subds.time)):
+        this_eta = subds.eta.isel(time=it).values
+        tmp = get_spec_1D(this_eta, this_eta, L0 / N, averaging="radial")
+        phi_k[it] = tmp[1]
+        kr[it] = tmp[0]
+
+    kr *= 2 * np.pi
+
+    phi_k = phi_k.mean(axis=0)
+    kr = kr.mean(axis=0)
+    return kr, phi_k
+
 
 def h_divergence(ds, grid, ux="u.x", uy="u.y", zvar="z", compute=False):
     dx = ds.x[1] - ds.x[0]

@@ -57,6 +57,71 @@ void write_spectrum_block_ascii (const char * filename, const char * mode,
 }
 
 /**
+## A single cross-spectrum block
+
+`cross_spectrum_scalar_foliated()` and `cross_spectrum_plane()` return one
+shell-averaged array with no field list to draw a name from -- the two
+operands are arbitrary scalars, not necessarily `u.x`/`u.y`/`u.z` -- so the
+caller supplies a `label` string instead. One block: `nk` rows, no `z`/`iz`
+column since there is exactly one plane (or one foliated sum) per call.
+*/
+
+void write_cross_spectrum_block_ascii (const char * filename,
+                                       const char * mode,
+                                       const char * label,
+                                       double * E, int nk,
+                                       double hmin, double hmax)
+{
+  if (pid() != 0)
+    return;
+
+  FILE * fp = fopen (filename, mode);
+  if (fp == NULL) { perror (filename); exit (1); }
+
+  fprintf (fp, "# Cross-spectrum(%s): t = %.10g, L0 = %g, nk = %d,"
+           " hmin = %g, hmax = %g\n", label, t, L0, nk, hmin, hmax);
+  fprintf (fp, "# [0]k [1]kphys [2]E(%s)\n", label);
+  for (int b = 0; b < nk; b++)
+    fprintf (fp, "%-6d %15.8e %24.15e\n", b, 2.*pi*b/L0, E[b]);
+
+  fputc ('\n', fp);
+  fflush (fp);
+  fclose (fp);
+}
+
+/**
+## A cross-spectrum stack
+
+Transverse twin of `write_spectrum_block_ascii()` for a single label spread
+over `nz` planes: `E[iz*nk + b]`, one `z` per plane -- the cross-spectrum
+counterpart of `spectrum_scalar_stack()`.
+*/
+
+void write_cross_spectrum_stack_ascii (const char * filename, const char * mode,
+                                       const char * label,
+                                       double * E, double * z,
+                                       int nz, int nk, double hmin, double hmax)
+{
+  if (pid() != 0)
+    return;
+
+  FILE * fp = fopen (filename, mode);
+  if (fp == NULL) { perror (filename); exit (1); }
+
+  fprintf (fp, "# Cross-spectrum(%s): t = %.10g, L0 = %g, nz = %d, nk = %d,"
+           " hmin = %g, hmax = %g\n", label, t, L0, nz, nk, hmin, hmax);
+  fprintf (fp, "# [0]iz [1]z [2]k [3]kphys [4]E(%s)\n", label);
+  for (int iz = 0; iz < nz; iz++)
+    for (int b = 0; b < nk; b++)
+      fprintf (fp, "%-4d %15.8e %-6d %15.8e %24.15e\n",
+               iz, z[iz], b, 2.*pi*b/L0, E[(size_t) iz*nk + b]);
+
+  fputc ('\n', fp);
+  fflush (fp);
+  fclose (fp);
+}
+
+/**
 ## HDF5
 
 The same block, appended along an unlimited time axis of a single file:
@@ -178,6 +243,127 @@ void write_spectrum_block_hdf5 (const char * filename,
     is++;
   }
   free (slice);
+  H5Fclose (file);
+}
+
+/** Transverse twin of `write_spectrum_block_hdf5()` for a single label over
+`nz` planes: one `/E/<label>` dataset of shape `(nt, nz, nk)` instead of one
+per field, alongside the shared `/z` axis. */
+
+void write_cross_spectrum_stack_hdf5 (const char * filename,
+                                      const char * label,
+                                      double * E, double * z,
+                                      int nz, int nk,
+                                      double hmin, double hmax,
+                                      int compression_level = 6)
+{
+  if (pid() != 0)
+    return;
+
+  bool created = true;
+  FILE * probe = fopen (filename, "r");
+  if (probe) {
+    fclose (probe);
+    created = false;
+  }
+  hid_t file = created ?
+    H5Fcreate (filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT) :
+    H5Fopen (filename, H5F_ACC_RDWR, H5P_DEFAULT);
+  if (file < 0) {
+    fprintf (stderr, "write_cross_spectrum_stack_hdf5: cannot open %s\n",
+            filename);
+    return;
+  }
+
+  if (created) {
+    H5LTset_attribute_double (file, ".", "L0", &L0, 1);
+    H5LTset_attribute_int (file, ".", "nz", &nz, 1);
+    H5LTset_attribute_int (file, ".", "nk", &nk, 1);
+
+    int * kidx = malloc (nk*sizeof(int));
+    double * kphys = malloc (nk*sizeof(double));
+    for (int b = 0; b < nk; b++) {
+      kidx[b] = b;
+      kphys[b] = 2.*pi*b/L0;
+    }
+    hsize_t dk = nk;
+    H5LTmake_dataset_int (file, "/k", 1, &dk, kidx);
+    H5LTmake_dataset_double (file, "/kphys", 1, &dk, kphys);
+    free (kidx);
+    free (kphys);
+
+    H5Gclose (H5Gcreate2 (file, "/E", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT));
+  }
+
+  double tt = t;
+  append_slice (file, "/t",    &tt,   H5T_NATIVE_DOUBLE, 1, 1, 1, compression_level);
+  append_slice (file, "/hmin", &hmin, H5T_NATIVE_DOUBLE, 1, 1, 1, compression_level);
+  append_slice (file, "/hmax", &hmax, H5T_NATIVE_DOUBLE, 1, 1, 1, compression_level);
+  append_slice (file, "/z",    z,     H5T_NATIVE_DOUBLE, 2, nz, 1, compression_level);
+
+  char name[128];
+  snprintf (name, sizeof(name), "/E/%s", label);
+  append_slice (file, name, E, H5T_NATIVE_DOUBLE, 3, nz, nk, compression_level);
+
+  H5Fclose (file);
+}
+
+/** Same layout as `write_spectrum_block_hdf5()`, one `/E/<label>` dataset of
+shape `(nt, nk)` instead of one per field -- `append_slice()`'s `/z`-style
+rank-2 call, `d2 = 1`. */
+
+void write_cross_spectrum_block_hdf5 (const char * filename,
+                                      const char * label,
+                                      double * E, int nk,
+                                      double hmin, double hmax,
+                                      int compression_level = 6)
+{
+  if (pid() != 0)
+    return;
+
+  bool created = true;
+  FILE * probe = fopen (filename, "r");
+  if (probe) {
+    fclose (probe);
+    created = false;
+  }
+  hid_t file = created ?
+    H5Fcreate (filename, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT) :
+    H5Fopen (filename, H5F_ACC_RDWR, H5P_DEFAULT);
+  if (file < 0) {
+    fprintf (stderr, "write_cross_spectrum_block_hdf5: cannot open %s\n",
+            filename);
+    return;
+  }
+
+  if (created) {
+    H5LTset_attribute_double (file, ".", "L0", &L0, 1);
+    H5LTset_attribute_int (file, ".", "nk", &nk, 1);
+
+    int * kidx = malloc (nk*sizeof(int));
+    double * kphys = malloc (nk*sizeof(double));
+    for (int b = 0; b < nk; b++) {
+      kidx[b] = b;
+      kphys[b] = 2.*pi*b/L0;
+    }
+    hsize_t dk = nk;
+    H5LTmake_dataset_int (file, "/k", 1, &dk, kidx);
+    H5LTmake_dataset_double (file, "/kphys", 1, &dk, kphys);
+    free (kidx);
+    free (kphys);
+
+    H5Gclose (H5Gcreate2 (file, "/E", H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT));
+  }
+
+  double tt = t;
+  append_slice (file, "/t",    &tt,   H5T_NATIVE_DOUBLE, 1, 1, 1, compression_level);
+  append_slice (file, "/hmin", &hmin, H5T_NATIVE_DOUBLE, 1, 1, 1, compression_level);
+  append_slice (file, "/hmax", &hmax, H5T_NATIVE_DOUBLE, 1, 1, 1, compression_level);
+
+  char name[128];
+  snprintf (name, sizeof(name), "/E/%s", label);
+  append_slice (file, name, E, H5T_NATIVE_DOUBLE, 2, nk, 1, compression_level);
+
   H5Fclose (file);
 }
 

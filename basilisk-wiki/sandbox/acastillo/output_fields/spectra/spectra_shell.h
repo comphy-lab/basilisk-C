@@ -82,6 +82,32 @@ static void shell_average (double * data, int m1, int m2, double * E, int nk)
 }
 
 /**
+Cross-shell-average $\mathrm{Re}[F_1 F_2^*]/(m_1m_2)^2$ into the same
+unit-width $|k|$ bins as `shell_average()`. Reduces to `shell_average(data,
+data, ...)` when the two transforms coincide, and to 0 on every bin where the
+two fields carry power on disjoint Fourier modes -- the cross terms outside a
+shared $(k_x,k_y)$ never appear in the sum.
+*/
+
+static void cross_shell_average (double * data1, double * data2,
+                                 int m1, int m2, double * E, int nk)
+{
+  for (int b = 0; b < nk; b++)
+    E[b] = 0.;
+  double norm = 1./sq ((double) m1*m2);
+  for (int i = 0; i < m1; i++) {
+    double kx = i <= m1/2 ? i : i - m1;
+    for (int j = 0; j < m2; j++) {
+      double ky = j <= m2/2 ? j : j - m2;
+      int b = (int) (sqrt (sq (kx) + sq (ky)) + 0.5);
+      if (b < nk)
+        E[b] += (REAL(data1, i*m2 + j)*REAL(data2, i*m2 + j) +
+                 IMAG(data1, i*m2 + j)*IMAG(data2, i*m2 + j))*norm;
+    }
+  }
+}
+
+/**
 Sample the plane at $z = h$ and fill `E` with one shell-averaged spectrum per
 field, laid out as `E[is*nk + b]` for field `is` in bin `b`. The caller
 allocates `len*nk` doubles, `nk` from `nshells()`. Returns the number of
@@ -113,4 +139,84 @@ int spectrum_plane (scalar * list, double * E, double h,
   }
   free (plane);
   return holes/len;   // per lattice point, not per stored value
+}
+
+/**
+Cross-spectrum twin of `spectrum_plane()`: sample two fields at $z = h$ and
+fill `E` with their shell-averaged $\mathrm{Re}[\hat a \hat b^*]$. Reduces to
+an auto-spectrum when `b` and `a` are the same field. `holes` is reported from
+`a`'s sample only -- it depends on domain coverage, not field values, so both
+samples return the same count (see `sample_scalar_plane()`).
+*/
+
+int cross_spectrum_plane (scalar a, scalar b, double * E, double h,
+                          double xmin, double xmax, double ymin, double ymax,
+                          int m)
+{
+  int nk = nshells (m, m);
+  size_t npt = (size_t) m*m;
+  double * pa = malloc (npt*sizeof(double));
+  double * pb = malloc (npt*sizeof(double));
+  int holes = sample_scalar_plane ({a}, pa, h, xmin, xmax, ymin, ymax, m, m);
+  sample_scalar_plane ({b}, pb, h, xmin, xmax, ymin, ymax, m, m);
+  if (pid() == 0) {
+    double * da = malloc (2*npt*sizeof(double));
+    double * db = malloc (2*npt*sizeof(double));
+    for (size_t i = 0; i < npt; i++) {
+      REAL(da,i) = pa[i], IMAG(da,i) = 0.;
+      REAL(db,i) = pb[i], IMAG(db,i) = 0.;
+    }
+    fft2D_forward (da, m, m);
+    fft2D_forward (db, m, m);
+    cross_shell_average (da, db, m, m, E, nk);
+    free (da);
+    free (db);
+  }
+  free (pa);
+  free (pb);
+  return holes;
+}
+
+/**
+Foliated twin of `cross_spectrum_plane()`: sum each field's anomaly over `nz`
+slabs with `sample_scalar_stack_sum()` (see
+[spectra_sample.h](spectra_sample.h)), then cross-shell-average the two
+resulting planes. `means_a`/`means_b` follow that function's `means`
+layout, one per field. `holes` is the sum over both fields and all slabs.
+*/
+
+int cross_spectrum_scalar_foliated (scalar a, scalar b,
+                                    const double * means_a,
+                                    const double * means_b,
+                                    double * E,
+                                    double hmin, double hmax, int nz,
+                                    double xmin, double xmax,
+                                    double ymin, double ymax, int m)
+{
+  int nk = nshells (m, m);
+  size_t npt = (size_t) m*m;
+  double * pa = malloc (npt*sizeof(double));
+  double * pb = malloc (npt*sizeof(double));
+  double * z = malloc ((size_t) nz*sizeof(double));
+  int holes = sample_scalar_stack_sum ({a}, pa, means_a, z, hmin, hmax, nz,
+                                       xmin, xmax, ymin, ymax, m, m);
+  holes += sample_scalar_stack_sum ({b}, pb, means_b, z, hmin, hmax, nz,
+                                    xmin, xmax, ymin, ymax, m, m);
+  if (pid() == 0) {
+    double * da = malloc (2*npt*sizeof(double));
+    double * db = malloc (2*npt*sizeof(double));
+    for (size_t i = 0; i < npt; i++) {
+      REAL(da,i) = pa[i], IMAG(da,i) = 0.;
+      REAL(db,i) = pb[i], IMAG(db,i) = 0.;
+    }
+    fft2D_forward (da, m, m);
+    fft2D_forward (db, m, m);
+    cross_shell_average (da, db, m, m, E, nk);
+    free (da);
+    free (db);
+  }
+  free (pa);
+  free (pb);
+  free (z);
+  return holes;
 }

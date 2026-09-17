@@ -53,6 +53,83 @@ Examples are available in
 
 ---
 
+### `strain_and_vorticity_sq()`
+**Location:** [`strain_and_vorticity.h`](strain_and_vorticity.h)
+
+**Description:**
+Squared magnitudes of *both* the strain-rate and the rotation-rate tensors,
+$S^2 = S_{ij}S_{ij}$ and $\Omega^2 = \Omega_{ij}\Omega_{ij}$, from one set of
+centred differences instead of differencing the velocity twice. Together they
+give the Q-criterion for vortex identification,
+$Q = \frac{1}{2}(\Omega^2 - S^2)$. The $S^2$ is the same quantity as
+[`strain_rate_sq()`](strain_rate.h)'s, agreeing to roundoff but not
+bit-for-bit — the off-diagonal terms are summed in a different order — and
+`strain_rate_sq()` stays the right call when $\Omega^2$ is not wanted. Same
+caveats as that function: Cartesian only, and neither tensor is trace-removed.
+
+**Example:**
+Examples are available in
+[`test_strain_and_vorticity_affine.c`](tests_quantities/test_strain_and_vorticity_affine.c)
+(exactness of both invariants on an affine field, plus agreement with
+`strain_rate_sq()`) and
+[`test_strain_and_vorticity_smooth.c`](tests_quantities/test_strain_and_vorticity_smooth.c)
+(second-order convergence of $\Omega^2$).
+
+---
+
+### `interfacial_power_curvature()`, `interfacial_power_acceleration()`
+**Location:** [`interfacial_power.h`](interfacial_power.h)
+
+**Description:**
+The rate at which the interfacial force does work on the flow,
+$\Psi_\sigma = \int \mathbf{u}\cdot\phi\nabla f\,dV$ with
+$\phi = \sigma\kappa$. Since the transport term integrates to zero on a
+bi-periodic or wall-bounded box, in the continuum $\Psi_\sigma = -d(\sigma
+A)/dt$ exactly, so the gap between the two is discretisation error and nothing
+else — which the interfacial area alone cannot tell you, being a state
+variable that cannot separate an interface leak from an advection leak.
+
+Two routes compute it. `interfacial_power_curvature()` rebuilds
+$\phi = \sigma\kappa$ and is the one to use by default: independent of where
+it is called from, usable under `REDUCED`, and it returns the per-cell density
+in its output field so a caller wanting a histogram needs no second
+`curvature()` pass. `interfacial_power_acceleration()` reads back the
+acceleration the solver actually applied and is the ground truth, but must be
+called from a `projection` event, needs the uniform body acceleration passed
+in, and cannot be used under `REDUCED`. Include after `tension.h`. On trees the
+two differ wherever the interface sits on a refinement boundary.
+
+It is not a more accurate route to the interfacial area, and should not be
+used as one. On a static drop, both against their closed forms, with an exact
+(Vofi) fraction:
+
+| $D/\Delta$ | 2.0 | 4.1 | 10.2 | 20.5 | 41.0 | 128 |
+| --- | --- | --- | --- | --- | --- | --- |
+| err $\Psi_\sigma$ | 34% | 15% | 1.9% | 0.47% | 0.11% | 0.012% |
+| err area | 4.9% | 0.22% | 0.028% | 0.11% | 0.063% | 0.0069% |
+
+PLIC reconstructs the geometry within each cut cell, whereas $\Psi_\sigma$ is
+a surface integral evaluated as a smeared volume sum weighted by
+$\sigma\kappa$, and the height-function curvature degrades first. The residual
+$\Psi_\sigma + \sigma\,dA/dt$ is therefore not symmetric discretisation
+error: at these resolutions it is dominated by $\Psi_\sigma$. The one regime
+where the area misleads instead is a long run whose *net* area change is small,
+where VOF advection drift fails to cancel in $\Delta A$.
+
+**Example:**
+Examples are available in
+[`test_interfacial_power_static.c`](tests_quantities/test_interfacial_power_static.c)
+(second-order convergence to the closed form on a static drop, and the null of
+a uniform velocity) and
+[`test_interfacial_power_routes.c`](tests_quantities/test_interfacial_power_routes.c)
+(the two routes agreeing to roundoff on an oscillating drop), with
+[`test_interfacial_power_amr.c`](tests_quantities/test_interfacial_power_amr.c)
+pinning the tree behaviour from both sides: they still agree while a refined
+band contains the interface, and separate by ~1e-3 once a level jump runs
+through it.
+
+---
+
 ### `count_phase()`
 **Location:** [`count_phase.h`](count_phase.h)
 
@@ -109,6 +186,35 @@ profile utilities](/sandbox/Antoonvh/profile5c.h).
 
 **Example:**
 Examples are available in [`tests_profiles/`](tests_profiles/).
+
+---
+
+### `profile_scalar_slab()`, `profile_product_slab()`, `profile_dissipation_slab()`
+**Location:** [`profiles/profiles_slab.h`](profiles/profiles_slab.h)
+
+**Description:**
+The same three profiles as [`profiles/profiles.h`](profiles/profiles.h), in
+the same file format, computed in one traversal of the grid instead of one per
+slab. Those routines call `foreach_region()` for each of the `n` slabs, each
+carrying its own reduction, so a profile costs `n` MPI collectives and the
+price scales with resolution in the profile direction rather than with the
+work per slab; here every cell is binned into its slab by coordinate in a
+single `foreach()` and the profile is reduced once.
+
+Not a general drop-in. The two agree only where every cell of the sampled
+region is at the same resolution **and** `hmin`, `hmax` and `n` are chosen so
+that a slab is exactly one row of those cells — `foreach_region()`
+point-samples at cell centres without interpolation, so under that condition
+it visits the cells this traversal visits. Over a region spanning several
+levels, or with slabs thicker than a cell, the two weight cells differently.
+
+**Example:**
+[`test_profiles_slab.c`](tests_profiles/test_profiles_slab.c) runs both
+implementations on one field under the required geometry and compares the
+files column by column (they agree to ~1e-18);
+[`test_profiles_slab_bias.c`](tests_profiles/test_profiles_slab_bias.c) adds a
+refined band so the region spans two resolutions and checks that they then
+diverge (~1e-4), so the precondition is pinned from both sides.
 
 ---
 

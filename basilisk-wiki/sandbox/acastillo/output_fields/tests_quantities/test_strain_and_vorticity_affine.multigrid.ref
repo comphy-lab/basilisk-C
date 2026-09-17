@@ -1,0 +1,5 @@
+--- strain_and_vorticity_affine.asc
+Processed 3 resolutions.
+PASS: S2 exact to roundoff on an affine field: 1.65e-15, 3.85e-15, 8.61e-15
+PASS: O2 exact to roundoff on an affine field: 4.66e-15, 1.11e-14, 2.84e-14
+PASS: S2 agrees with strain_rate_sq() to roundoff: 1.83e-16, 1.83e-16, 1.83e-16

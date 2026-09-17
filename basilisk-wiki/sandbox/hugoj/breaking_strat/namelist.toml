@@ -25,9 +25,9 @@ Re = 40000     # Reynolds number Re = c*lambda/nu
 # DOMAIN DEFINITION
 #
 N_grid = 512 # 1024=10 2^N_grid, number of x and y gridpoints
-N_layer = 30 # number of layers
+N_layer = 40 # number of layers
 L = 200.0    # [m] domain size
-h0 = 100.0   # [m] =2pi/kp, depth of water 
+h0 = 20.0    # [m] =2pi/kp, depth of water 
 
 #
 # RUN PARAMETERS

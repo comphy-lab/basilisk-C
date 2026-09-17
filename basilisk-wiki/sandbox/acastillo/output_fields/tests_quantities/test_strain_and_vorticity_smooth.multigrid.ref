@@ -1,0 +1,4 @@
+--- strain_and_vorticity_smooth.asc
+Processed 3 resolutions.
+PASS: max-norm error 0.0429, 0.0109, 0.00273, order 1.98, 2.00.
+PASS: L2-norm error 0.0152, 0.00391, 0.000999, order 1.95, 1.97.

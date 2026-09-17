@@ -46,9 +46,21 @@ GROUPS = {
                 ('test_average_bias', 'octree'),
                 'test_profile_bias',
                 ('test_profile_bias', 'octree')], False),
+  # profiles_slab.h is a claim about MPI collectives, so its tests run under
+  # MPI. The bias test needs a grid that can refine, hence tree grids only.
+  'profiles_slab': ([('test_profiles_slab', 'multigrid'),
+                     ('test_profiles_slab', 'quadtree'),
+                     ('test_profiles_slab', 'multigrid3D'),
+                     ('test_profiles_slab', 'octree'),
+                     ('test_profiles_slab_bias', 'quadtree'),
+                     ('test_profiles_slab_bias', 'octree')], True),
 }
 
 NP = os.environ.get('NP', '4')  # MPI ranks, when a group needs them
+
+# `multigrid3D` decomposes the domain into octants, so it insists on 8^i ranks
+# and refuses the default 4.
+GRID_NP = {'multigrid3D': '8'}
 
 
 def run_one(entry, mpi):
@@ -65,9 +77,10 @@ def run_one(entry, mpi):
   if grid and os.path.exists(ref_variant):
     shutil.copyfile(ref_variant, f'{test}.ref')
 
+  np = GRID_NP.get(grid, NP)
   env = dict(os.environ)
   if mpi:
-    env['CC'] = f'mpicc -D_MPI={NP}'
+    env['CC'] = f'mpicc -D_MPI={np}'
   if grid:
     env['EXTRA_CFLAGS'] = f'-grid={grid} ' + env.get('EXTRA_CFLAGS', '')
 
@@ -76,7 +89,7 @@ def run_one(entry, mpi):
 
   label = f'{test} [grid={grid}]' if grid else test
   if mpi:
-    label += f' [mpi -np {NP}]'
+    label += f' [mpi -np {np}]'
   if os.path.exists(os.path.join(test, 'fail')):
     verdict = 'FAIL'
   elif os.path.exists(os.path.join(test, 'pass')):

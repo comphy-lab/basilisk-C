@@ -75,6 +75,10 @@ def make_L2_layer(
     OUPUT:
         - dsL2: the dataset with the new diagnostics
     """
+    # sanitize out name for .zarr
+    if outfile[-3:] == ".nc":
+        outfile = outfile.replace(".nc", ".zarr")
+
     input_path = Path(outpath + outfile).expanduser()
     if not input_path.exists():
         if verb:
@@ -119,15 +123,21 @@ def make_L2_layer(
             print("saving ...")
             print("dataset saved:\n")
             print(dsL2)
-            dsL2.to_netcdf(outpath + outfile)
+            # dsL2.to_netcdf(outpath + outfile)
+            dsL2.to_zarr(
+                outpath + outfile, mode="w", consolidated=True
+            )  # faster than to_netcdf
             print("\ndone !")
             dsL2.close()
-            dsL2 = xr.open_dataset(outpath + outfile)
+            # dsL2 = xr.open_dataset(outpath + outfile, consolidated=True)
+            dsL2 = xr.open_zarr(outpath + outfile, consolidated=True)
         else:
             print("saving skipped !")
     else:
-        dsL2 = xr.open_dataset(
-            outpath + outfile, chunks={"x": ds.chunks["x"], "y": ds.chunks["y"]}
+        dsL2 = xr.open_zarr(
+            outpath + outfile,
+            chunks={"x": ds.chunks["x"], "y": ds.chunks["y"]},
+            consolidated=True,
         )
         if dsL2.time[0] == dsL2.time[1]:
             dsL2 = dsL2.isel(time=slice(1, len(dsL2.time)))
@@ -151,6 +161,9 @@ def make_L2_eulerian(
     tke, mke and gradients.
 
     ds and grid can be obtained using 'read_bas_data' from 'data_reader.py'
+
+    NOTE:
+        You might need to adjust the chunks of the 'ds' dataset to be able to process the L2 data (to fit in memory)
 
     INPUTS:
         - ds: the original dataset

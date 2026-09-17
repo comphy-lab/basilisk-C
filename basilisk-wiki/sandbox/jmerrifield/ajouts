@@ -1,0 +1,30 @@
+Seulement pour moi:
+
+# Global
+- Ajouter des images des simulations, pour qu'on voit mieux ce que je veux représenter comme phénomènes physiques si possible, mais compliqué sans avoir recours à darcs
+
+- Commenter plus les codes
+
+- ~~Ajouter les réfs pour chaque code~~
+
+- ~~Faire des parties (avec #, ##, ###, etc.) pour permettre une meilleure relecture (CL, gravité, angle de contact, condition de Navier, etc.)~~
+  - ~~Fait pour l'ascension capillaire, à faire pour la goutte~~
+  
+- Passer code en adimensionné?
+
+## Ascension capillaire
+- Voir pourquoi les graphe de l'angle ~~et de Washburn~~ ne fonctionnent pas
+
+- ~~Ajouter la comparaison avec la hauteur de Washburn pour le transitoire seulement (environ jusqu'à t=0.7) pour capillaire noslip et navier~~
+
+- Peut-être modifier origine pour le capillaire incliné?
+
+## Goutte
+- ~~Voir pourquoi le graphe de e* = f(Bo) ne fonctione pas~~
+
+- Mettre le code pour le plan incliné (gravité inclinée sur plan fixe)
+
+- Vérifier origine pour plan incliné
+
+## Angle de contact dynamique
+- ~~Créer un header avec le calcul des angles de contact dynamiques pour que ça puisse être réutilisé plus facilement~~ et adapter [sessile_embed](https://basilisk.fr/sandbox/jmerrifield/Sessile/sessile_embed.c) pour l'utiliser et mettre le lien vers le header

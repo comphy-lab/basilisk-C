@@ -8,7 +8,7 @@ During this internship, I studied diphasic flows and their interactions with emb
 
 I used Mathilde Tavares's header to impose the contact angle on the embed boundary [contact-embed](https://basilisk.fr/sandbox/tavares/contact-embed.h) and Théo Witkamp's header to compute the Navier boundary condition [embed_navier](https://basilisk.fr/sandbox/twitkamp/MovingEmbed/embed_navier.h).
 
-I made my own header to follow properties of the interface : [interface_properties](https://basilisk.fr/sandbox/jmerrifield/interface_properties.h)
+I made my own header to follow properties of the interface, such as both contact angles, contact points and contact velocities on the embedded boundary : [interface_properties](https://basilisk.fr/sandbox/jmerrifield/interface_properties.h)
 
 # Codes
 
@@ -20,4 +20,4 @@ I studied vertical capillary rise with [capillary_navier](https://basilisk.fr/sa
 
 ## Sessile spreading 
 
-Following that, I studied the behaviour of spreading of a sessile on embed boundary. First, without gravity, to see the deformation due to capillary effects, and after with gravity to see its influence on the form of the sessile [sessile_grav](https://basilisk.fr/sandbox/jmerrifield/Sessile/sessile_embed_grav.c).
+Following that, I studied the behaviour of spreading of a sessile on embed boundary. First, without gravity, to see the deformation due to capillary effects [sessile_embed](https://basilisk.fr/sandbox/jmerrifield/Sessile/sessile_embed.c), and after with gravity to see its influence on the form of the sessile [sessile_grav](https://basilisk.fr/sandbox/jmerrifield/Sessile/sessile_embed_grav.c).

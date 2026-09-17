@@ -5,14 +5,17 @@ This sandbox contains Basilisk simulations developed during my M1 internship at 
 The objective is to model dry granular landslides using depth-averaged approaches and to compare the results with other numerical models and experimental data.
 
 The complete internship report is available here:
-[**M1 internship report – PDF**](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/ressources/Rapport_POLGE_POULICHET_Kilian.pdf)
+[**M1 internship report – PDF**](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/Rapport_POLGE_POULICHET_Kilian.pdf)
+
+The main results are also presented here:
+[**M1 internship presentation – PDF**](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/Presentation_POLGE_POULICHET_Kilian.pdf)
 
 ## 1D simulations
 
-* [Dry granular collapse – comparison with HySEA](dry_landslide_comparison_hysea.c)  
+* [Dry granular collapse – comparison with HySEA](https://basilisk.fr/sandbox/Kilian/dry_granular_collapse_comparison_hysea.c)  
   Saint-Venant simulation of the dry granular collapse experiment of Poulain et al. (2023), using the Pouliquen–Forterre basal friction law. Results are compared with experimental data and the non-hydrostatic HySEA model.
 
-* [Dry granular collapse – comparison with SHALTOP](dry_landslide_comparison_shaltop.c)  
+* [Dry granular collapse – comparison with SHALTOP](https://basilisk.fr/sandbox/Kilian/dry_granular_collapse_comparison_shaltop.c)  
   Basilisk implementation of a SHALTOP-type formulation for the same granular collapse configuration, including topographic and curvature corrections. Results are compared with reference SHALTOP profiles.
 
 ## 2D simulations
@@ -22,7 +25,4 @@ The complete internship report is available here:
 
 ## Contact
 
-Kilian Polge-Poulichet  
-[Kilian.Polge_Poulichet@etu.sorbonne-universite.fr](mailto:Kilian.Polge_Poulichet@etu.sorbonne-universite.fr)
-
-
+[kilian.polge_poulichet@etu.sorbonne-universite.fr](mailto:kilian.polge_poulichet@etu.sorbonne-universite.fr)

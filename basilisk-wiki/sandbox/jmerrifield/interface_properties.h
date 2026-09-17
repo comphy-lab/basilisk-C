@@ -86,7 +86,7 @@ The contact angle is computed with a scalar product between the fluid normal nf 
 */
 
     double s = (x - xc)*ct - y*st;
-    if (fabs(s - R) < Delta/2.)
+    if (fabs(s - R) < Delta)
     {
       coord ns = {ct, -st};
 	
@@ -96,7 +96,7 @@ The contact angle is computed with a scalar product between the fluid normal nf 
       d.theta_right = acos(dot)*180./pi;
     }
       
-    if (fabs(s + R) < Delta/2.)
+    if (fabs(s + R) < Delta)
     {
       coord ns = {-ct, st};
       
@@ -111,7 +111,7 @@ The contact angle is computed with a scalar product between the fluid normal nf 
 
 
 /**
-# Sessil spreading function
+# Sessile spreading function
 Now, we define the type and the function for data recuperation of the sessile spreading.
 */
 

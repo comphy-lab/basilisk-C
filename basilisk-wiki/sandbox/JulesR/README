@@ -3,5 +3,5 @@ Welcome to my Sandbox :)
 You can find the code I use for my graduation project here.
 I am modelling the Stratified Inclined Duct (SID) experiment including Stokes particles.
 
-The code for the SID without particles can be found here: [froude.c](froude.c). The Froude number is calculated to measure the stability of the flow.
-The code used for the mesh study is included [here](inertial_mesh.c). I measure flow statistics: average velocity in the duct and the gradient of the buoyancy field in the duct and particle statistics: the average buoyancy at the position of the particles.
+The exchange flow through the duct takes long to start up, so first I simulate 100 time units without adding any particles using [this code](flow_t100.c). I generate a dumpfile every 10 time units, starting at t=50.
+Using the dumpfile for the flow, I release the particles at t=101. They are organized in four groups: two densities and two release locations per density. Code can be found [here](particle_groups.c).

@@ -1,0 +1,4 @@
+--- interfacial_power_energy.asc
+Processed 3 resolutions.
+PASS: relaxed onto the equal-area circle, within 0.001.
+PASS: energy residual 0.13, 0.033, 0.013, converging at order 1 or better.

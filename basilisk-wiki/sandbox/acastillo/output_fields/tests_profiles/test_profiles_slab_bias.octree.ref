@@ -1,0 +1,1 @@
+PASS: region_scalar.asc vs slab_scalar.asc differ by ~1e-4, as the precondition requires

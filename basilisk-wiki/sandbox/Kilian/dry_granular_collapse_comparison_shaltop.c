@@ -32,7 +32,7 @@ in the basal friction term.
 <p align="justify">
 This is therefore not the official SHALTOP code. It is a Basilisk
 implementation kept as close as possible to the previously documented
-[HySEA-comparison version](https://basilisk.fr/sandbox/Kilian/dry_landslide_comparison_hysea.c),
+[HySEA-comparison version](https://basilisk.fr/sandbox/Kilian/dry_granular_collapse_comparison_hysea.c),
 so that the numerical framework and comparison workflow remain almost
 unchanged.
 </p>
@@ -111,7 +111,7 @@ angle determines the geometric factor $c=\cos\theta_{\rm loc}$.*
 The local cosine is not specific to SHALTOP. The granular Froude number used
 in the Pouliquen--Forterre law already contains the factor $\cos\theta$ for a
 uniform inclined plane. In the
-[HySEA-comparison code](https://basilisk.fr/sandbox/Kilian/dry_landslide_comparison_hysea.c),
+[HySEA-comparison code](https://basilisk.fr/sandbox/Kilian/dry_granular_collapse_comparison_hysea.c),
 this angle is evaluated locally from the bed slope. In the present
 SHALTOP-type formulation, however, the same geometric factor $c$ also enters
 the definition of the normal thickness, the velocity variables, the pressure
@@ -1163,7 +1163,7 @@ unset output
 /**
 # References
 
-* POLGE POULICHET, K. (2026). *Numerical modelling of landslides under different mechanical conditions*. First-year Master's internship report, Sorbonne Université, Institut Jean le Rond d'Alembert. [Full report (PDF)](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/ressources/Rapport_POLGE_POULICHET_Kilian.pdf)
+*  [POLGE POULICHET, K. (2026). *Numerical modelling of landslides under different mechanical conditions*. First-year Master's internship report, Sorbonne Université, Institut Jean le Rond d'Alembert.](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/Rapport_POLGE_POULICHET_Kilian.pdf)
 * [P. Poulain *et al.*, *Performance and limits of a shallow-water model for landslide-generated tsunamis: from laboratory experiments to simulations of flank collapses at Montagne Pelée (Martinique)*, Geophysical Journal International, 233, 796--825, 2023.](https://www.ipgp.fr/~mangeney/poulain-etal_gji-2023.pdf)
 * [O. Pouliquen & Y. Forterre, *Friction law for dense granular flows: application to the motion of a mass down a rough inclined plane*, Journal of Fluid Mechanics, 453, 133--151, 2002.](https://yoelforterre.wordpress.com/wp-content/uploads/2016/09/jfmmoire02.pdf)
 * [M. Peruzzetto *et al.*, *Topography curvature effects in thin-layer models for gravity-driven flows without bed erosion*, Journal of Geophysical Research: Earth Surface, 126(4), e2020JF005657, 2021.](https://doi.org/10.1029/2020JF005657)

@@ -1,4 +1,4 @@
-pristine:db0ddd30785089642b5877eb908555a30c5ab73ef2a5ff7b0057b389553181ee
+pristine:c48d70ebe2ae02b26b51fe30c786aec84d12e19dcddf4df4b663176078162474
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -14681,3 +14681,428 @@ tt2211 <tt2211>**20260905180348
  Ignore-this: 3d7998dd1ad48054291af57597e48bb0be481aebc92d6abd517f26eb65d44261b8baf30abb823da1
 ] 
 hash: 0000001984-b6dd25b6145e35a35697fb44ed980c4560755769477bf5cf295f51df865cd3e1
+[periodic movie 
+Antoonvh <j.a.v.hooft@gmail.com>**20260907132009
+ Ignore-this: 921e09fc03ba52f362b44baf17db3273db8b498fd46d50d0e73ce0340820f69e0b81a4ff8fe19f93
+] 
+hash: 0000000335-2730c148ede4ee504df0f19ada501a847fbfa1b6d6ee91dc38a17a844e8461e2
+[add code with all particle groups combined
+JulesR <e.relyveld@gmail.com>**20260908101854
+ Ignore-this: 3dc5856d7f93aac79f7528f29f7ea89a92dd8b487dd69bb8033fb3bb93c056df5bf37de658422784
+] 
+hash: 0000015561-422362e7b20fbdeb4e016f16ee0e0b81e3bcb761a83afe3372c8e90e61b1228e
+[add link to code of final simulations
+JulesR <e.relyveld@gmail.com>**20260908102912
+ Ignore-this: 66b5828ccf004907f787203c7208c6ff79dddc8bc2dec23a1a80a43141659e342c71d0d548eefc4a
+] 
+hash: 0000001039-2beb872bff2a0f730d9548004d32e008e08a95ced57bbdc23d23cbff3a1996ce
+[add code for first 100 timesteps
+JulesR <e.relyveld@gmail.com>**20260908103009
+ Ignore-this: dd09a6135a0e6df72a68e7c504493e4e574e73cf8043f1035f4a5b1a2c4aac88e6e8323566434be4
+] 
+hash: 0000005577-58f5949cac96fca7f3fdc975e18593c608e9cb2d3bd3222edc8c487051fc3b74
+[output_fields: add strain_and_vorticity_sq(), with tests
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260908205604
+ Ignore-this: efffc58d693509570121dabc9b4af74498e6030dee7c16805b624d75dc013aace317da26e9328a43
+] 
+hash: 0000021077-cb50063eaf92a82a763d2b5fc5aba54a66691e520fb321d3e6501539c2e0c6c4
+[add of the sessile embed link
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260908221611
+ Ignore-this: 47455fb8e9f69f2090ccc1378860185e6329e6e55154b1688878da039584ad3497d2856665a773d
+] 
+hash: 0000000951-ab08d1aab1d32d80e7255ddc02be4dfa137fd95142728f255c16826f7d832d8c
+[more description about my header 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260908222105
+ Ignore-this: 754b7d643d5cfc86a73ce6ef83669ffd28b2bd0cc67d242acadd8e3789a1683896351a3336f6657f
+] 
+hash: 0000000634-4b23e6922a658be6363a219670d736e8f8042e2a24bc29ec81b4d734925e8f3c
+[   
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260908223002
+ Ignore-this: a26e8f10f92ff661f05ff03ebfa60ab0d443b25ddabdbf78ed7750fbe5ce9b01c08a44841988e886
+] 
+hash: 0000000951-ef1612b9221494e6766fb370634ba848c336d43334e1d68e5491af543e0d827b
+[fix: no enough resolution for T(z). Now: dz=cst, shallower and more layer
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260908072234
+ Ignore-this: 5129acff6a3cb38d49c483d37856648f
+] 
+hash: 0000000640-8b927b2e6f9fad3419a3ee6fe1e8ad29a11a8c3d9061a04eb00cd63897ec68dc
+[added figures for CSI, and cleanup
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260908072333
+ Ignore-this: 3bfb480952c2363878cc3bd0fe9a17a2
+] 
+hash: 0000008446-fcf66927dea549cc7badae0804388d6b29bb8677341461682017eb7773ed6c46
+[saving as zarr for faster writing. to be tested
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260908072517
+ Ignore-this: 4b26714b46c007ace1d2701ce078a2b1
+] 
+hash: 0000001504-ced5d2cd9202ebfbb58d4fc0365d86fae7f16637ef0d41cd9f18189b2244d412
+[add a test case with constant temperature, on cpu (working) and gpu (bug). Also added a test case with a real sea state
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260909135220
+ Ignore-this: f389f93d143bd4cbb096dedf89ad46fa
+] 
+hash: 0000014501-7d2e1592ffab5f0bba07d92e728593a648a8b9e77cd43dab156681b14b171f4e
+[output_fields: add profiles_slab.h, one traversal per profile, with tests
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260908214033
+ Ignore-this: 9d03b049756837f5406da08c65e7539b35e16e485f9883c91d58204bca0e13927ad91c96787b90a9
+] 
+hash: 0000028943-720702a19b7c7b7907f1d8310388b882cb350e057a2e4d21d08d671891dfd803
+[output_fields: add interfacial_power.h, with tests
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260909151534
+ Ignore-this: 6c2441d9200aab1d2f7e814077edb3a1fabd7794d8519fa443c49f4264adb93b1d8f9c1df09a6870
+] 
+hash: 0000046761-71252bd55ec9c6e1fedff0db609d9048b6a96310fa5621a9dad4a45f9a52ac0b
+[output_fields: trim interfacial_power.h comments, measurements to readme
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260909154726
+ Ignore-this: ed13f36c110d9a56bcf9645e8f987a4086f8d6b6157b6bd45343fcf1612d559cc0bce1ee247e478e
+] 
+hash: 0000009949-2c2566eab1171b87d63832533a010373e0b6beab6c67db918bd40bd16d4a3afb
+[add of the references
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260909180056
+ Ignore-this: 5f18533d1651f011e6ea5cb44f63794fe2c666bd9d051060ec6322a417ee1a3c94ca0dfe1a7a0ca6
+] 
+hash: 0000002680-b4a8deadc9cfd5f0df98446053e69f0ce610a6315de6a61231429474506d0081
+[add of the references
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260909180740
+ Ignore-this: e9c0735778284ed451fbdb313bf963c059e0f4ec595c4026f8c6f6797334512507a99ea9c2bedc5f
+] 
+hash: 0000002678-8aad44d0c26b4250311e2ea30e9180f43bfc3f60086172822c1c09805e753959
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260909181244
+ Ignore-this: 8d7d220fb6ab61f548d5e737c0d03d7cd383a5033b6c443e338d9c65cdaf2be977b44edee11745fd
+] 
+hash: 0000000494-c8fa0ef7279ffed9f80d601a2402e8a4f73bef70dbb6a2fc61caa14f021cde41
+[  
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260909181610
+ Ignore-this: 28b011ea276809a05eb355a4a8c59b1eab8309464030c5b5cd7189eec43b22754cbf141dbb176c55
+] 
+hash: 0000000774-48fda1c197307f92478cf14b846649b4e98abcd51b55992a779bd38a8c407941
+[add of the reference
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260909182813
+ Ignore-this: 251bebce2157ab043e732cf6ae970e5993650e452b4266e2430612997bb37cb356d4d05683b155ab
+] 
+hash: 0000000732-5bfd3cabc425cb816e2dfb93772fe1fecc8305d3432b716dbe834a988c374c95
+[add of the reference
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260909182931
+ Ignore-this: 41b6aef0c595e074d5fdc2801a5a968e4040bc4108a106e8f2d48cf39085fc37226524ae1876d20a
+] 
+hash: 0000000737-e7a26fa74ffbd669f1b8d3ab49b662c64d717d5ac1864a776cc9bd9da763ad83
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260909182958
+ Ignore-this: 8531ba761a645df8b3a941e6985104277d1524564fb1dec7c2581f9d8f01b0e053770841ab47c55d
+] 
+hash: 0000000293-7c579097e4d20d7c004ae5a742bb45fca5d85cb523b5ef301c437a6b24b5c7c4
+[added non periodic test case
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260910064536
+ Ignore-this: b62547dcc5ace6c94895d0b79caf7e27
+] 
+hash: 0000002759-d48eeb189f6338dcc409c89bf10fe0a5161476e9e60a7b5401af449860e9c409
+[fixed mem leak
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260910065047
+ Ignore-this: fb7855162cf65fbd549a7aecebd7c8ca
+] 
+hash: 0000000502-2921a2c4780c5abc20c7496573d942d23af9a006eddf0d142f10d827e1bb21fb
+[added new diags (energy, spectrum) to toolbox, option to save 3D view as png, cleanup
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260910150909
+ Ignore-this: 530ee4e95eea6b21f004d5fdbdab68b5
+] 
+hash: 0000028064-20dc767943118d1966ef1ad653b473279bebf89eb75127a1ab6dccfac98b8fb1
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260910161441
+ Ignore-this: 1c7ba4eabba202a4029e9c66d69bea56da1cdb719eeafc772e68c115fabbe7a5e64f34f2de6371b4
+] 
+hash: 0000000532-372ad191736a0f8315e1b47b4cb4c7eb794840033e552f0a766e30f5bfa17cc7
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260910161928
+ Ignore-this: 591a106908f20f62ea6b08166f89d0874b235efc782babc62b11789962f194039960f92201811115
+] 
+hash: 0000001040-0e9a58bab481b492fa191c04940b43926a725a7f1d8cd7aa2c70dc78658fedc8
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260910161932
+ Ignore-this: ccf05f72f4979f9eb8fb3c5798d77f2d6505f93893b3324dc8dd860b627ad3cc36b0c38bb7fa53e0
+] 
+hash: 0000000720-da3fb083cedf260c4bfe77f940d82b3fda6ed4b6c7ed506cf1067efcdd4793c2
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260910162220
+ Ignore-this: dd63516888eff8dfecf8fa0486773e8c74a83f127f8f469ac64323a0fdabe412f19ee97db6495e92
+] 
+hash: 0000000881-7de85857410d5d77073b1ddc5c8e0d726b564c5aaf2e4d216a042c0a7578ed77
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260910162644
+ Ignore-this: d5bb2364138ef1bc0c065c75a796d678d056237659e887723f2504b818706287bcb6625b622a27d6
+] 
+hash: 0000001047-6a13dea9a6c2611772c08efae41cc90a15ab3a7b10547cc5e67358a849600bc8
+[ Add of parts for a better reading of the code
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911090812
+ Ignore-this: 93fc66c6f7f1276d129a17b048a54037fd3ec6daeea3a7faaea6a36f4c9cddccfdb57f384b51bf8f
+] 
+hash: 0000002736-013eb91df6334b69f8714c4536e5c8590aa05efa77d8d6c55bfc780f79a1c4eb
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911091130
+ Ignore-this: f23505e9ec6403a8aad129881f22c9e089ed231f3ac53766a83a1caf33f79d26230af2160ed74c3
+] 
+hash: 0000000332-582b3d5e3b06c34d51fc744eba55967607b8ec3d85f6ab96c9769ea2b3333c30
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911091610
+ Ignore-this: 9e4d622449ad4ff4d5e42cc4c3c1d6accf8a6cc232035c4c1b375a45c2575bfb11aef2f96445f8bc
+] 
+hash: 0000001058-5bdc74fbf4cebef52b638296520a4475e4e7efeaffe4d8fbc4f1895337130116
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911092023
+ Ignore-this: 2d4e7ddb6b73de2174521dc6aaac2ae43cb22ff8e11d3de1d78aec6a2460217f30985fb44265eb8
+] 
+hash: 0000000830-9919ebdef51adbcd88af54ae30b0db9e05919b6d1c1b8257a410a8b2850d1ba0
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911092235
+ Ignore-this: 9c9e558a41ecf09c8e4164bd3ea7abe76f9ded6c6e19564349e8b17c4a765857d42c3bd681d0409e
+] 
+hash: 0000001998-a929f7455f97b676c67e1f85fdea2868428ccf016c376123973a419cd6d19729
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911092306
+ Ignore-this: fdef85ea208c507ea2209eb8fd01c847932cad19846d15653ed983c42b4e6fc7cfc7a6485f4655ef
+] 
+hash: 0000000230-1fe22af9e0882d894e7c435ebef7e2d75a69c90a106df621d622370dd8ead8fb
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911092541
+ Ignore-this: 245221d017f4b7f86191a032a7606cc230676e75ceffa0ec3001c4769c4f7be40b09d6eaf2851693
+] 
+hash: 0000000368-b470465d3ed950c31754c7c40f847c44a89024ff6e4d0259c8e1327aa501d009
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911093316
+ Ignore-this: 38fd988fecd102394f787bab8294d7dfa6761f27f657be497f431389d441c0b9fdbfdc5ac80483dd
+] 
+hash: 0000000375-13163eff40ddb11893e4d4e7f88c64a7d702713b0d78b7b173e34264ad37231d
+[creation
+mvacher <marc.cordelle.vacher@gmail.com>**20260911095559
+ Ignore-this: fd2921a539e750e927a37592bbd804fe5e201fc31fb14aa7ca002bde7272e8c458555288ffa73dc1
+] 
+hash: 0000004017-42f652ac8804e57a71b4f4cd52aaa155e8f3c734aea434b1db633ec701d82f48
+[no harmonics.h
+mvacher <marc.cordelle.vacher@gmail.com>**20260911095810
+ Ignore-this: 5efb0fb8fa877b8ae7dd527af52a5c78b53dc0836cad897734abb5adfbe946fa507a1a8b463846a5
+] 
+hash: 0000000707-c462c66e670880a80d1187cd8fad92915433295005046b878f866931b05f0aa2
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911101010
+ Ignore-this: adb37fbcb5aed4706cfa26a72645b93a6c2c99740f2fc6af2adcba1df22a6e8dd4493f9ec49db176
+] 
+hash: 0000000519-fd83a31a4267b2d233388e81c81e860f3d79e1275c2ea76b88894f9c363ce8ec
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911112009
+ Ignore-this: 27d7848884032a72228611dba6fd94cf376d81e74ec6719ed1122bc903f516812ca7b67ce063a032
+] 
+hash: 0000007262-5d90135bcd62c04360ff74b396638afc39d1660fd7df86778710c92061c7b9cc
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911112629
+ Ignore-this: 44251f12132079616a461650aca22dec980fbe01dd26759423e0d99215ae668e6a068d486636843d
+] 
+hash: 0000000357-008b2bfdb9b61a5e0b321fe94a07b600bfff9494cbfa49a635a9d113d1932826
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911113040
+ Ignore-this: e546bf3b9bae1866f6e7d9b178c6a4ea67521327267c7749918b68b791ff1463d8457934d3e5d317
+] 
+hash: 0000000274-9aed1aeb630fe239622e5d1d426cd2259cea99430ce6194b31e84ce5c3df7215
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911113243
+ Ignore-this: 2a07d546e242c7f7242ea73db5e0f81fd464d175951e5792acf8a2c010bbaf1d24be68ecaba1fef6
+] 
+hash: 0000000353-5019ff37f94cbea88badacec23516a6e5dba2b17e243422ff6ee2a06ae4dc874
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911113506
+ Ignore-this: 3f95075f9d1eb307bc6454cf2083eeb950a8f114de99699b85ceebe46dc28b9e36c468143cde18c9
+] 
+hash: 0000000274-999c25b03601dbd99428e0d1816fe15a75034a2a4901eda33c15365c6cf7e2fb
+[  
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260911113618
+ Ignore-this: a84794f09d41086218f53efe2c72fa2ac839ce4a506fda7b481309607f24dd42d46bab356c05e87c
+] 
+hash: 0000008436-0040bcd03a2dc996b98d4ac04b31222115c07b69bb29dc0593d313a0d4a4cd28
+[better view
+mvacher <marc.cordelle.vacher@gmail.com>**20260911114249
+ Ignore-this: aa2d1ffee7b0d6b146139ed835f965628fb7519a635e7ead732f0b3ad9275932d5c6529a91bf294d
+] 
+hash: 0000001165-b09353a72deec9057e501e7a0a3e8265f713c478acc699feff4ae808dba21639
+[add vorticity 
+mvacher <marc.cordelle.vacher@gmail.com>**20260911132923
+ Ignore-this: 5bac14d4b8bc7cecd9fb3a97dac05eb24f6991c239d7973be8824a1d421f10cec0807b0eb5509a2a
+] 
+hash: 0000002207-e581ed855ee7f3770d3e4a4d94d12462a82fed2fadd2922247fc77f42a0580ef
+[problem video solved (?)
+mvacher <marc.cordelle.vacher@gmail.com>**20260911140144
+ Ignore-this: 78755dcbb6e22e5e7350208996823f123ad1519b1b06d13da909ee775e5865ab1a60da7adfc9b324
+] 
+hash: 0000000409-161eddd427f9d9b749d18d79f629f0f3b14a49ff03c8c274363e396a08780381
+[videos solved (!)
+mvacher <marc.cordelle.vacher@gmail.com>**20260911143413
+ Ignore-this: 59a4ee806e7b4a1e153f2c5c2999314257a19b5f998f3f071e8e0dff387ad5670a88e50824ef64da
+] 
+hash: 0000000375-e5951e221592d97da843cdddac933fdfa0575f8f5ef848a5e900b94303abbe57
+[final compil
+mvacher <marc.cordelle.vacher@gmail.com>**20260911144607
+ Ignore-this: 82072cad5f00d948ad362057a3326778b360d3050b68b82481f1d15de9f4adf98e6d7118eafb450f
+] 
+hash: 0000000354-7fd1448d0bb6b68735263e9c0df53633c157a6c7710883789c13df8372aad1d4
+[trouble to run to the end...
+mvacher <marc.cordelle.vacher@gmail.com>**20260911150959
+ Ignore-this: b197b94c60b32b3e4f38b8599646ab7fe3ae531dc33bff47f2eba4b5467d362bcce3a545c0289551
+] 
+hash: 0000000464-29d0b67d43118ba3b4aeec7edf1b7d04284bf0efae3b8a0b20ad9f8b81c2e731
+[creation
+mvacher <marc.cordelle.vacher@gmail.com>**20260911152540
+ Ignore-this: 699d54267644745b74fef9f35358f7ae424d8ca11979c50bb8eb0390af75da6f22e84773272653f4
+] 
+hash: 0000002618-4138da90c23214a20e75abddd4c4b16eb3edafb1bbff64a24f6cac2ef22dcc86
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260913210336
+ Ignore-this: d88094b9f234b9c039a7f16933c3fbb32c24003705581633730cd2412d89e447c65c474dd3d8052f
+] 
+hash: 0000001682-94c8910ca3ba960874a5c7e7e4c0a47d75799e331a1850e2447fff91a7e015d5
+[  
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260913222745
+ Ignore-this: a6118b68d934a1c9a752d901e2ac586a6174027ba062077ce76bc9153253e378a542485451406036
+] 
+hash: 0000009799-0c27a47d6874b53bc61c53652be04b2d8f419d18dcf66a0389be49bd21558ead
+[Added Pan 2026
+Stephane Popinet <popinet@basilisk.fr>**20260914075646
+ Ignore-this: fb745d9b730cf21fc9943418df27c04856a75a25ab9fbe2f48333d2227329527f0960a411ecad8dc
+] 
+hash: 0000000490-c3f6c40d556ad29938d2ddfde228c79919c2c69ed82840e5ec9eeddab192c191
+[vortex stretching example
+Antoonvh <j.a.v.hooft@gmail.com>**20260914084640
+ Ignore-this: c2af22a259659464eefda85244595d7ef122e4d2731d591ceb831926308e5932e732d4db78b1cb33
+] 
+hash: 0000001967-fdae2c6588896690a70f1527ef5a347058059bec5b9eb66a0a54fd22db9e2ecd
+[a bit longer
+Antoonvh <j.a.v.hooft@gmail.com>**20260914084834
+ Ignore-this: f3caae247d97ac8d7b9392aad022894c72c0e1f81d6b17de5fcb2940e15a023f0ccac5166df8dca3
+] 
+hash: 0000000373-2b79abc3930e22111ba6f1f8a70d43552219939fa17e9082b79d5a7aaa9a4b30
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914095553
+ Ignore-this: 41f587f041f80ed26928ba9fa7f6d9cdcf3d653142ed840196c2c65b24182082790f0035ca706162
+] 
+hash: 0000000774-1ef64e9487762f3786896f41694ffdcc025da554a4746b913a74006a6ba78d2c
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914103221
+ Ignore-this: b492e5ec85ca96913a404bd2d48299953980903425746889b08bc90b8d2f1d6e4977a52071fd5cf8
+] 
+hash: 0000001016-6a3be221332466c80da9f3e982d91f4b0bc8fa42d7af6c68d5c11450d1c7aae5
+[  
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914111500
+ Ignore-this: a644369dde561f537c49bcab8e14383b94b80fc0d3e6b90e9ca506c2c1d921bb5c8ece051fd7be2c
+] 
+hash: 0000000505-e62d4875e284e130f128eca7b491c9665ad2d2e7478c9be8169754ff8fb3026f
+[  
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914111534
+ Ignore-this: bbdcf2ce45b3819755a771ecc0ec98bebc079bde500e4918631323f863a66bb8c889d3bd197b284b
+] 
+hash: 0000000545-b7584817510f109b8a0ae19b83ba2666fbf35f212a89c758f313a9399f35eee8
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914113115
+ Ignore-this: b34171ef4731778126774b531ed7d60de006d622346530cce5b7f92487f502d41e0678ce111d69d6
+] 
+hash: 0000000858-73f52518604e6536c5f1fbb5382554f86c217177f7a1acf18afdb6b35c8ea6be
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914113829
+ Ignore-this: d2eeedf62e39dec5dfeed5277ad76d60a4260a80ee2d9354194c69cb30e39c088f950ef7dee8e6c6
+] 
+hash: 0000000672-f51225cc760ce8687933893175b125b63f41ef7a53e4f190bc67ad1b40f08c22
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914165249
+ Ignore-this: 636b34dbd3d0aeea0001af2793ad55de5fad43aa614ea66b95e0374f04e8f1d9f048af2faa3d4e3c
+] 
+hash: 0000000532-30c24d7ed68b23de907b15802df564bf70a46745e297dd7e331b32fcf30b4376
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914165258
+ Ignore-this: d358544c0726474cf47f670f53652583fb484a8311b870a305a7483bba08f1d6d34495a79ce2e364
+] 
+hash: 0000000415-51ed52c718596ce1fbcbb4e0d51a9762727ec54f5a182af835468d3d030f1e18
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914165328
+ Ignore-this: caf737c954369ffea493d14f1586fa539194a77bf239e2d3302715947241f5e905a046348283ba70
+] 
+hash: 0000000499-9d84ef673708df1aa8f1f039cb060291e1e0be9b8198e10ecd03a9ea44c6dc5f
+[Creation of the header
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914213545
+ Ignore-this: 44d7ef8c33040467089f6ed7d88f70018a1d4f1d0163f06b5a2eacc5bd113cd62d9d6d2ec14b8fe
+] 
+hash: 0000001882-32deb7c9d00c96429277fbd7cd693df7de53419ce16816877012adda5e68a037
+[ 
+jmerrifield <jordan.merrifield@etu.sorbonne-universite.fr>**20260914213638
+ Ignore-this: 8b6b6f1ceaebd2feea1bdf1625d3fc54552a38b1703e39c1a9f7f8bc3e6b25f0a62a362e99c31a6b
+] 
+hash: 0000000708-f1ee835696775da41858400c88a25239f3ee91e58e1ddbc377284d8bb8962ab7
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260916094009
+ Ignore-this: e93497e7a5cba44416ef35e1f4533e688702dfe4080b9e800c16b5f428ce62cbaee682bb6afc7e97
+] 
+hash: 0000002000-e4643fe833bbfe8ba0a5ff6c1f9ed9e5074b2aaef397effbba3d4583968f2bb3
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260916094404
+ Ignore-this: 1c30480641cea1ede25ecde890f232777576219b6aa3e0924df721e97896c2c7e455a44db53ceafe
+] 
+hash: 0000000894-8b52ef5595344ca27e8b7528d483cf336561756533a2e4be0e94e4c79b4e93a9
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260916094555
+ Ignore-this: 86f19db36f7d9b588e5be376f1f34526926924660dc0edbd4b5f710ff917fa624a56d2a63ffb0286
+] 
+hash: 0000000897-0bdb0f855ee85d89221713b980f63b3571bae8395b620a24fa42246d0b492936
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260916094744
+ Ignore-this: d22ddb85564d2195f0e7c4868d7d609ac4e37ada099600f4340ef674b8bb3fff8b8ff659245d42d4
+] 
+hash: 0000000785-195c586abd90122953d5bc5bef4355b40b4b3db879bbf2c65531f381ee6174a6
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260916101047
+ Ignore-this: 73fc06c914af05a403d91c43faa520fb04f96e6bc7b34beb66776532026142b79cc4618fccc761af
+] 
+hash: 0000000429-8b834a2e20110aeedeac65ea4c4bc1cf736ab3fce068a2789eb92ca43d552637
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260916101127
+ Ignore-this: f2b3de451f3ea0b17a8bf1f1a1a102d1bab6a02a764ba5f65063c4466955e4329d13761acee0a708
+] 
+hash: 0000000501-1039d2b3c2e1f4aa4b95f1919b600f9c3217568ae01442819422a4b9c64801bb
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260916101311
+ Ignore-this: 4bf2b00599ae3e8701e1e0736b634d3b6ac69170c32f74c5ff3ce9027d604cf89d0d43fa5c506b47
+] 
+hash: 0000000689-14e184a6af6ac183876fd690f7d56ad29a1b327b67dc770c2ae0c98c9517fd7c
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20260916101449
+ Ignore-this: 1e51f2a553943619e362cb5bc45935329df687ed906129a9a22dcda0ccde7415cb2e819b2c002acf
+] 
+hash: 0000000714-02d6339eb4c0b3b7e97a04579eba488e3dcc5b86a03be0607baefc03e1d97f47
+[spectra: add cross-spectrum shell-averaging primitive and test
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260916075333
+ Ignore-this: 1c89ead567dcd835ee299ca482d2ec68060300a02bfa1031a7e81109e09c5aecadb04522d8c79124
+] 
+hash: 0000007720-280ae42ee89bc6b8c0ee606ec026f21bd821e6ac62834fa82c191c3d0bf769a8
+[spectra: add foliated stack-sum sampling primitive and test
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260916081839
+ Ignore-this: 7ef8947e057e2dee0058dca5daf4d95673042e328e73ddfbc40c63310e192fcff45c15b1f6994913
+] 
+hash: 0000004430-7d84b8143b637979f95a1666e5d93563e2da6b2765e8d0563e5623a328ad5844
+[spectra: add test_spectra_foliate_sample.c
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260916081859
+ Ignore-this: 66ac5438a1e01a34fcb0bf22839db0fbc9625d304a206b999d5499f4ab5c44522496e1cbdc4a364e
+] 
+hash: 0000003510-9894720879bccf44218c17c540ad96f63d7ff037a79586c6efacf4821ac85c39
+[spectra: add foliated spectrum orchestrators and dedupe lattice args
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260916083754
+ Ignore-this: 344c87adcff5dd29a3024421ced2a27877db4858bbac7871c1fe71f672f813ad58d5259d1a52b16b
+] 
+hash: 0000013831-bffd3f6779525395b0726694cc32cf6835fc9a67fca583018dbab3d5da807c3a
+[interfacial_power: extract surface_tension_force() as a standalone vector field
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260916090112
+ Ignore-this: dc9dc95fe0c5608aa46026b64031c7052300b12a4f4a52ca37f6cd80557ada57437cb29386693457
+] 
+hash: 0000007273-fc66d03e25dbec027255f7ff1e711c607d94176607f966710cde58065ef4cf98
+[spectra: add cross-spectrum orchestrators for foliated and transverse output
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260916183423
+ Ignore-this: 1bf57ee34b3b1fa95930949f39c58ee8b962dbfb83a073be1ef707b3785871a22c2150374c63b317
+] 
+hash: 0000010138-3af6d07e31de15ea988ca757ddd19540c89373671265b5f6a3fc880f69ab586f
+[Update of BMM video description
+Tianyang <hantianyang@ucas.ac.cn>**20260917134446
+ Ignore-this: b06cc19558e2a0c64c03424863cf86592747eb4ee48c9864832fcdca381b577a0d5c30b46655e53f
+] 
+hash: 0000000619-0171f451027b309ecb1183fdb9cc95116025c8a23b6dbd8348f526afc256631d

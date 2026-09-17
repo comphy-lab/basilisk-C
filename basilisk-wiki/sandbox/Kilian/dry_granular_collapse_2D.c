@@ -185,19 +185,21 @@ $$
 \mu(h,Fr,S)=
 \begin{cases}
 \displaystyle
-\min\!\left(\mu_3+\frac{\mu_2-\mu_1}{1+h/L},S\right),
-&Fr=0,\\[1.1em]
+\mu_1+\frac{\mu_2-\mu_1}{1+\beta h/(LFr)},
+&Fr\geq\beta,\\[1.1em]
 \displaystyle
 \mu_3+\frac{\mu_2-\mu_1}{1+h/L}
-+\left(\frac{Fr}{\beta}\right)^\xi(\mu_1-\mu_3),
++\left(\mu_1+\frac{\mu_2-\mu_1}{1+h/L}
+-\mu_3-\frac{\mu_2-\mu_1}{1+h/L}\right)
+\left(\frac{Fr}{\beta}\right)^\xi,
 &0<Fr<\beta,\\[1.1em]
 \displaystyle
-\mu_1+\frac{\mu_2-\mu_1}{1+(h/L)\beta/Fr},
-&Fr\geq\beta,
+\min\!\left(\mu_3+\frac{\mu_2-\mu_1}{1+h/L},S\right),
+&Fr=0,
 \end{cases}
 $$
 
-where $\mu_i=\tan\delta_i$. In the static branch, the `min` operation
+where $\mu_i=\tan\delta_i$ and $L=1.3d$. In the static branch, the `min` operation
 prevents friction from exceeding the local driving slope. No additional
 regularisation is introduced here.
 */
@@ -210,7 +212,9 @@ double pouliquen_forterre (double Fr, double h_over_L,
 
   if (Fr < beta_pf)
     return mu3 + (mu2 - mu1)/(1. + h_over_L)
-      + pow(Fr/beta_pf, xi_pf)*(mu1 - mu3);
+      + (mu1 + (mu2 - mu1)/(1. + h_over_L)
+         - mu3 - (mu2 - mu1)/(1. + h_over_L))
+      * pow(Fr/beta_pf, xi_pf);
 
   return mu1 + (mu2 - mu1)/(1. + h_over_L*beta_pf/Fr);
 }
@@ -247,7 +251,7 @@ int main (int argc, char * argv[])
 
   beta_pf = 0.136;
   xi_pf = 1e-3;
-  grain_length = 1e-3;
+  grain_length = 1.3e-3;
 
   L0 = 1.10;
   origin (-0.16, -L0/2.);
@@ -673,7 +677,7 @@ surface and the final runout footprint on the horizontal deposition zone.
 
 # References
 
-* POLGE POULICHET, K. (2026). *Numerical modelling of landslides under different mechanical conditions*. First-year Master's internship report, Sorbonne Université, Institut Jean le Rond d'Alembert. [Full report (PDF)](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/ressources/Rapport_POLGE_POULICHET_Kilian.pdf)
+* [POLGE POULICHET, K. (2026). *Numerical modelling of landslides under different mechanical conditions*. First-year Master's internship report, Sorbonne Université, Institut Jean le Rond d'Alembert.](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/Rapport_POLGE_POULICHET_Kilian.pdf)
 * [P. Poulain *et al.*, *Performance and limits of a shallow-water model for landslide-generated tsunamis: from laboratory experiments to simulations of flank collapses at Montagne Pelée (Martinique)*, Geophysical Journal International, 233, 796--825, 2023.](https://www.ipgp.fr/~mangeney/poulain-etal_gji-2023.pdf)
 * [O. Pouliquen & Y. Forterre, *Friction law for dense granular flows: application to the motion of a mass down a rough inclined plane*, Journal of Fluid Mechanics, 453, 133--151, 2002.](https://yoelforterre.wordpress.com/wp-content/uploads/2016/09/jfmmoire02.pdf)
 

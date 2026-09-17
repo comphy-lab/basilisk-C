@@ -25,6 +25,26 @@ GROUPS = {
                    ('test_strain_rate_affine', 'multigrid3D'),
                    ('test_strain_rate_smooth', 'multigrid'),
                    ('test_strain_rate_smooth', 'multigrid3D')], True),
+  'strain_and_vorticity': ([('test_strain_and_vorticity_affine', 'multigrid'),
+                            ('test_strain_and_vorticity_affine', 'multigrid3D'),
+                            ('test_strain_and_vorticity_smooth', 'multigrid'),
+                            ('test_strain_and_vorticity_smooth',
+                             'multigrid3D')], True),
+  # interfacial_power.h: the static test needs Vofi (see install notes in the
+  # test's header comment); the routes test needs a uniform grid, where
+  # iforce.h's prolongation swap is a no-op.
+  'interfacial_power': ([('test_interfacial_power_static', 'multigrid'),
+                         ('test_interfacial_power_static', 'multigrid3D'),
+                         ('test_interfacial_power_routes', 'multigrid'),
+                         ('test_interfacial_power_routes',
+                          'multigrid3D'),
+                         ('test_interfacial_power_force', 'multigrid'),
+                         ('test_interfacial_power_force', 'multigrid3D'),
+                         ('test_interfacial_power_amr', 'quadtree'),
+                         ('test_interfacial_power_amr', 'octree'),
+                         # 2D only: the 3D analogue costs far more than the
+                         # rest of the group at a useful resolution.
+                         ('test_interfacial_power_energy', 'multigrid')], True),
   # count_phase.h resolves the interface with AMR, so only the tree grids are
   # registered: on multigrid the `#if TREE` refinement is skipped and the
   # coarse base level would freeze a failure with nothing to learn from it.

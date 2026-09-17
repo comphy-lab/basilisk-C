@@ -1,0 +1,3 @@
+PASS: region_scalar.asc vs slab_scalar.asc agree to ~1e-18
+PASS: region_product.asc vs slab_product.asc agree to ~0
+PASS: region_dissipation.asc vs slab_dissipation.asc agree to ~1e-16

@@ -5,7 +5,7 @@ This pages mimics [other
 pages](/_search?patterns=Womersley) on pulsatile
 flow in a tube.
 
-![The numerical solution and the analytical one](witzig/mov.mp4)
+![The numerical solution and the analytical one](witzig/mov.mp4)(loop)
 
 Search words: Womersley, womersley
  */

@@ -172,6 +172,14 @@ def parse_args(argv=None):
         help="Z direction clip. Default is full domain. The clip is made by guessing an index from the averaged height z",
     )
 
+    p.add_argument(
+        "--outpng",
+        type=bool,
+        nargs=1,
+        default=False,
+        help="if True, outputs a .png file instead of .pdf",
+    )
+
     return p.parse_args(argv)
 
 
@@ -201,13 +209,17 @@ def render_snapshot(
     xclip=None,
     yclip=None,
     zclip=None,
+    outpng=False,
 ):
 
     input_path = Path(input).expanduser()
     if not input_path.exists():
         raise FileNotFoundError(f"input file not found: {input_path}")
     output_path = Path(output)
-    output_path = f"{Path(output)}_t{ttime}.pdf"
+    if outpng:
+        output_path = f"{Path(output)}_t{ttime}.png"
+    else:
+        output_path = f"{Path(output)}_t{ttime}.pdf"
 
     vartop = {"name": var_top, "clim": list(clim_top), "cmap": cmap_top}
     varside = {"name": var_side, "clim": list(clim_side), "cmap": cmap_side}

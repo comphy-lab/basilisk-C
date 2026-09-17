@@ -89,7 +89,8 @@ int main() {
     mu = muv;
   
 /**
-We impose the contact angle on the embed boundary
+## Contact angle
+We impose a constant contact angle at the embed boundary.
 */
     const scalar theta[] = theta0*pi/180.;
     contact_angle = theta;
@@ -100,7 +101,10 @@ We impose the contact angle on the embed boundary
 }
 
 /**
-We set the boundary conditions
+## Boundary conditions
+
+We set the boundary conditions for a capillary tube with each end opened (at the top and the bottom) so that the fluid can pass through this numerical boundary. 
+In this test case, the fluid can slip partially at the embed boundary.
 */
 //Lower conditions
 u.n[bottom]  = neumann(0.);
@@ -187,7 +191,8 @@ event data_recuperation (t=0)
     fprintf(fp4, "h_corr = %g mm \n", 1000*h_corr);
 }
 /**
-The gravity is set to be constant
+## Gravity
+The gravity is set to be constant.
 */
 event acceleration (i++, t<=endTime) 
 {

@@ -26,6 +26,13 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
+@Article{pan2026,
+author={Jieyun Pan and Tian Long and Ruben Scardovelli and Stéphane Popinet and Stéphane Zaleski},
+title={A Three-dimensional Edge-Based Interface Tracking (EBIT) Method for Multiphase-flow Simulations},
+journal={Journal of Computational Physics},
+year={2026}
+}
+
 @Article{yang2026b,
 author={Rui Yang and Jiarong Wu and Nicolo Scapin and J. Thomas Farrar and Bertrand Chapron and Stéphane Popinet and Luc Deike},
 title={Multilayer simulation of wind-forced breaking wave fields},
