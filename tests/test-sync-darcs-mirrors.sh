@@ -67,8 +67,15 @@ if grep -q 'darcs pull --all' "$ROOT/release-comphy-tag.sh"; then
   fail "release script still uses darcs pull directly"
 fi
 grep -q 'dont-allow-conflicts' "$HELPER" || fail "existing-repo pull is not fail-closed on conflicts"
+grep -q 'not-in-remote' "$HELPER" || fail "existing-repo sync does not drop patches missing from upstream"
+grep -q 'optimize clean' "$HELPER" || fail "existing-repo sync does not garbage-collect unreferenced hashed files"
 grep -q 'size +90M' "$HELPER" || fail "helper does not reject oversized Git blobs"
+grep -q 'filter=lfs' "$HELPER" || fail "size guard does not honour Git LFS attributes"
+grep -q 'check-attr filter' "$HELPER" || fail "size guard does not ask Git for LFS attributes"
 grep -q 'tentative_hashed_inventory' "$HELPER" || fail "helper does not strip Darcs tentative inventory files"
+if grep -Eq 'yes[[:space:]]*\|' "$HELPER"; then
+  fail "helper pipes yes into a command"
+fi
 pass "helper, workflow, and release script have no interactive darcs pull"
 
 sync_one_and_check() {
@@ -103,8 +110,9 @@ sync_one_and_check() {
   local first_manifest
   first_manifest="$(tree_manifest "$work/$rel_dir")"
 
-  # Second pass must use the existing-_darcs path: discard dirt, pull, and
-  # rsync the working tree without replacing the Darcs store.
+  # Second pass must use the existing-_darcs path: discard dirt, drop
+  # patches that are no longer upstream, pull, and leave the hashed store
+  # in place.
   local sample
   sample="$(find "$work/$rel_dir" -type f ! -path '*/_darcs/*' -print -quit)"
   [[ -n "$sample" ]] || fail "$name sync produced no working-tree files"
@@ -150,8 +158,17 @@ sync_existing_hashed_source() {
   witness_hash="$(sha256sum "$witness" | awk '{print $1}')"
   printf 'unrecorded-dirt\n' >> "$work/basilisk-source/src/common.h"
   printf 'stale-backup\n' > "$work/basilisk-source/hashed-pass.c.~0~"
+  printf 'local-only-mirror-test\n' > "$work/basilisk-source/src/comphy-mirror-test.txt"
+  (
+    cd "$work/basilisk-source"
+    darcs add src/comphy-mirror-test.txt </dev/null
+    darcs record --all --skip-long-comment \
+      --author 'comphy-test <test@example.invalid>' \
+      -m 'comphy local-only mirror test' </dev/null
+  )
 
   run_closed_stdin --repo-root "$work" source
+  [[ ! -e "$work/basilisk-source/src/comphy-mirror-test.txt" ]] || fail "hashed incremental sync kept a local-only patch"
   [[ ! -e "$work/basilisk-source/hashed-pass.c.~0~" ]] || fail "hashed incremental sync retained backup files"
   [[ ! -e "$work/basilisk-source/_darcs/patches/unrevert" ]] || fail "hashed incremental sync left unrevert state"
   if find "$work/basilisk-source/_darcs" \( -name '*.tentative' -o -name 'tentative_*' \) -print | grep -q .; then

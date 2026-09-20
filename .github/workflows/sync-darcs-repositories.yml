@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   sync:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     container:
       image: debian:bookworm
@@ -22,18 +23,23 @@ jobs:
       - name: Install dependencies
         run: |
           apt-get update
-          apt-get install -y darcs git ca-certificates rsync
+          apt-get install -y darcs git git-lfs ca-certificates rsync
+          git lfs install --skip-repo
           darcs --version
           git --version
+          git lfs version
           rsync --version
 
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          lfs: true
+          persist-credentials: false
 
       - name: Configure Git
         run: |
+          git lfs install
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
@@ -57,6 +63,8 @@ jobs:
 
       - name: Commit and push if changes exist
         if: steps.check_changes.outputs.changes == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: |
           if [ -n "$(git status --porcelain basilisk-source)" ]; then
             echo "Staging basilisk-source..."
@@ -78,4 +86,4 @@ jobs:
             fi
           fi
 
-          git push
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD

@@ -1,21 +1,25 @@
 #!/usr/bin/env bash
-# Replace the read-only basilisk.fr Darcs mirrors with a fresh lazy checkout.
+# Refresh the read-only basilisk.fr Darcs mirrors.
 #
-# This is the only supported sync path. A fresh lazy checkout is the source of
-# truth for working-tree contents. When the Git-tracked target already has
-# `_darcs`, that history is updated with `darcs revert --all` plus
-# `darcs pull --all --dont-allow-conflicts` instead of being replaced: a lazy
-# wiki `_darcs/patches` file has exceeded GitHub's 100 MiB limit. Unrecorded
-# dirt is discarded; backup files such as *.~0~ are not retained.
+# A missing Git-tracked target is filled from a fresh lazy checkout. When the
+# target already has `_darcs`, that hashed history is kept: replacing it from a
+# lazy wiki checkout produced a pack over GitHub's 100 MiB limit. The existing
+# store is aligned with upstream by discarding unrecorded dirt, obliterating
+# patches that are no longer on the remote, then
+# `darcs pull --all --dont-allow-conflicts`. Pull alone cannot drop extra
+# patches, so a remote obliterate (wiki spam, rewritten history) previously
+# left the Git mirror dirty after rsync. Unrevert state and backup files such
+# as *.~0~ are not retained.
 set -euo pipefail
 
 usage() {
   cat <<'EOF'
 Usage: scripts/sync-darcs-mirrors.sh [--repo-root DIR] source|wiki|all
 
-Refresh one or both read-only upstream Darcs mirrors from a fresh lazy
-checkout. Existing Git-tracked `_darcs` histories are updated incrementally
-so a lazy hashed pack cannot replace them. Allowed mirrors:
+Refresh one or both read-only upstream Darcs mirrors. Missing targets are
+filled from a fresh lazy checkout. Existing Git-tracked `_darcs` histories
+are updated incrementally so a lazy hashed pack cannot replace them.
+Allowed mirrors:
 
   source  https://basilisk.fr/basilisk  ->  <repo-root>/basilisk-source
   wiki    https://basilisk.fr/wiki      ->  <repo-root>/basilisk-wiki
@@ -168,13 +172,53 @@ assert_no_darcs_backups() {
   return 0
 }
 
+git_lfs_attr_matches() {
+  local relpath="$1"
+  local attrfile="$REPO_ROOT/.gitattributes"
+  local output value line pattern rest
+  if command -v git >/dev/null 2>&1 \
+    && git -C "$REPO_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    output="$(git -C "$REPO_ROOT" check-attr filter -- "$relpath" 2>/dev/null || true)"
+    value="${output##*: }"
+    [[ "$value" == lfs ]] && return 0
+    return 1
+  fi
+  [[ -f "$attrfile" ]] || return 1
+  value=""
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%%#*}"
+    line="${line#"${line%%[![:space:]]*}"}"
+    [[ -n "$line" ]] || continue
+    pattern="${line%%[[:space:]]*}"
+    rest="${line#"$pattern"}"
+    case "$relpath" in
+      $pattern)
+        case "$rest" in
+          *-filter*) value="" ;;
+          *filter=lfs*) value=lfs ;;
+          *filter=*) value="" ;;
+        esac
+        ;;
+    esac
+  done < "$attrfile"
+  [[ "$value" == lfs ]]
+}
+
 assert_no_oversized_git_files() {
   local root="$1"
-  local found
-  # GitHub rejects blobs over 100 MiB. Fail before CI tries to push.
-  found="$("$FIND_BIN" "$root" -type f -size +90M -print)"
+  local found="" path relpath
+  # GitHub rejects ordinary blobs over 100 MiB. Files already declared as
+  # Git LFS in .gitattributes are stored as pointers and are allowed.
+  while IFS= read -r -d '' path; do
+    relpath="${path#"$REPO_ROOT"/}"
+    if git_lfs_attr_matches "$relpath"; then
+      printf 'sync-darcs-mirrors: allowing Git LFS file over 90 MiB: %s\n' "$relpath"
+      continue
+    fi
+    found+="$path"$'\n'
+  done < <("$FIND_BIN" "$root" -type f -size +90M -print0)
   if [[ -n "$found" ]]; then
-    printf 'sync-darcs-mirrors: refusing files over 90 MiB:\n%s\n' "$found" >&2
+    printf 'sync-darcs-mirrors: refusing files over 90 MiB:\n%s' "$found" >&2
     return 1
   fi
   return 0
@@ -191,21 +235,84 @@ normalize_darcs_cache() {
     "$repo/_darcs/rebase.tentative" \
     "$repo/_darcs/tentative_hashed_inventory" \
     "$repo/_darcs/tentative_pristine"
+  discard_darcs_unrevert "$repo"
   if [[ -d "$repo/_darcs/patches" ]]; then
     "$FIND_BIN" "$repo/_darcs/patches" -maxdepth 1 -type f \
-      \( -name unrevert -o -name '*.tentative' \) -delete
+      -name '*.tentative' -delete
   fi
 }
 
-sync_one() {
-  local name="$1"
-  local mapping url rel_dir target checkout
+discard_darcs_unrevert() {
+  local repo="$1"
+  # Revert writes an unrevert bundle. Obliterate then prompts
+  # "This operation will make unrevert impossible!" even with --all.
+  rm -f "$repo/_darcs/patches/unrevert"
+}
 
-  mapping="$(resolve_mirror "$name")"
-  url="${mapping%%$'\t'*}"
-  rel_dir="${mapping#*$'\t'}"
-  target="$REPO_ROOT/$rel_dir"
+remove_darcs_backups() {
+  local root="$1"
+  [[ -d "$root" ]] || return 0
+  # Revert backups can be files or directories (name.~0~). Delete both.
+  "$FIND_BIN" "$root" -depth \
+    \( -name '.*.~[0-9]*~' -o -name '*.~[0-9]*~' \) \
+    -exec rm -rf -- {} +
+}
+
+finish_mirror() {
+  local name="$1"
+  local url="$2"
+  local rel_dir="$3"
+  local target="$4"
+
+  [[ -d "$target/_darcs" ]] || die "replaced $name mirror is missing _darcs"
+  darcs_is_clean "$target" || die "replaced $name mirror is not Darcs-clean"
+  assert_no_darcs_backups "$target" || die "replaced $name mirror contained backup files"
+  # `darcs whatsnew` recreates rebuildable caches during validation.
+  # Strip them before the size scan so they cannot enter Git.
+  normalize_darcs_cache "$target"
+  assert_no_oversized_git_files "$target" || die "replaced $name mirror contained oversized files"
+  cleanup_staging
+  printf 'sync-darcs-mirrors: %s is a clean read-only mirror of %s\n' "$rel_dir" "$url"
+}
+
+sync_existing_hashed() {
+  local name="$1"
+  local url="$2"
+  local target="$3"
+
+  [[ ! -L "$target/_darcs" ]] || die "refusing symlink $target/_darcs"
   assert_whitelisted_target "$target"
+  printf 'sync-darcs-mirrors: discarding unrecorded changes in %s\n' "$target"
+  # A clean tree exits 0 with nothing to revert; a dirty tree must not prompt.
+  if ! darcs_cmd revert --repodir "$target" --all; then
+    die "darcs revert failed for $target"
+  fi
+  remove_darcs_backups "$target"
+  discard_darcs_unrevert "$target"
+  printf 'sync-darcs-mirrors: dropping patches not in %s from %s\n' "$url" "$target"
+  if ! darcs_cmd obliterate --repodir "$target" --not-in-remote="$url" --all; then
+    die "darcs obliterate of patches not on $url failed for $target"
+  fi
+  printf 'sync-darcs-mirrors: pulling %s into existing %s\n' "$url" "$target"
+  if ! darcs_cmd pull --repodir "$target" --all --dont-allow-conflicts "$url"; then
+    die "darcs pull failed for $name ($url)"
+  fi
+  if ! darcs_cmd revert --repodir "$target" --all; then
+    die "darcs revert after pull failed for $target"
+  fi
+  remove_darcs_backups "$target"
+  discard_darcs_unrevert "$target"
+  printf 'sync-darcs-mirrors: garbage-collecting unreferenced hashed files in %s\n' "$target"
+  if ! darcs_cmd optimize clean --repodir "$target"; then
+    die "darcs optimize clean failed for $target"
+  fi
+}
+
+sync_fresh_lazy() {
+  local name="$1"
+  local url="$2"
+  local target="$3"
+  local checkout
 
   STAGING="$("$MKTEMP_BIN" -d "$REPO_ROOT/.darcs-sync-staging.XXXXXX")"
   checkout="$STAGING/checkout"
@@ -218,41 +325,31 @@ sync_one() {
   darcs_is_clean "$checkout" || die "fresh $name checkout was not Darcs-clean"
   assert_no_darcs_backups "$checkout" || die "fresh $name checkout contained backup files"
 
+  mkdir -p "$target"
+  assert_whitelisted_target "$target"
+  printf 'sync-darcs-mirrors: replacing %s\n' "$target"
+  if ! "$RSYNC_BIN" -a --delete -- "$checkout"/ "$target"/; then
+    die "rsync replace failed for $target"
+  fi
+}
+
+sync_one() {
+  local name="$1"
+  local mapping url rel_dir target
+
+  mapping="$(resolve_mirror "$name")"
+  url="${mapping%%$'\t'*}"
+  rel_dir="${mapping#*$'\t'}"
+  target="$REPO_ROOT/$rel_dir"
+  assert_whitelisted_target "$target"
+
   if [[ -d "$target/_darcs" ]]; then
-    [[ ! -L "$target/_darcs" ]] || die "refusing symlink $target/_darcs"
-    assert_whitelisted_target "$target"
-    printf 'sync-darcs-mirrors: discarding unrecorded changes in %s\n' "$target"
-    # A clean tree exits 0 with nothing to revert; a dirty tree must not prompt.
-    if ! darcs_cmd revert --repodir "$target" --all; then
-      die "darcs revert failed for $target"
-    fi
-    printf 'sync-darcs-mirrors: pulling %s into existing %s\n' "$url" "$target"
-    if ! darcs_cmd pull --repodir "$target" --all --dont-allow-conflicts "$url"; then
-      die "darcs pull failed for $name ($url)"
-    fi
-    printf 'sync-darcs-mirrors: replacing working tree of %s\n' "$target"
-    if ! "$RSYNC_BIN" -a --delete --exclude=_darcs -- "$checkout"/ "$target"/; then
-      die "rsync working-tree replace failed for $target"
-    fi
+    sync_existing_hashed "$name" "$url" "$target"
   else
-    mkdir -p "$target"
-    assert_whitelisted_target "$target"
-    printf 'sync-darcs-mirrors: replacing %s\n' "$target"
-    if ! "$RSYNC_BIN" -a --delete -- "$checkout"/ "$target"/; then
-      die "rsync replace failed for $target"
-    fi
+    sync_fresh_lazy "$name" "$url" "$target"
   fi
 
-  [[ -d "$target/_darcs" ]] || die "replaced $name mirror is missing _darcs"
-  darcs_is_clean "$target" || die "replaced $name mirror is not Darcs-clean"
-  assert_no_darcs_backups "$target" || die "replaced $name mirror contained backup files"
-  assert_no_oversized_git_files "$target" || die "replaced $name mirror contained oversized files"
-  # Strip rebuildable caches last. `darcs whatsnew` recreates them during
-  # validation, and they must not enter Git.
-  normalize_darcs_cache "$target"
-
-  cleanup_staging
-  printf 'sync-darcs-mirrors: %s is a clean read-only mirror of %s\n' "$rel_dir" "$url"
+  finish_mirror "$name" "$url" "$rel_dir" "$target"
 }
 
 MIRRORS=()
