@@ -10,6 +10,66 @@ Lets have a look.
 Obligatory refinement movie:
 
 ![Very refined](sharp-edged/cells.mp4)
+
+## Primary and secondary vorticty
+
+We meassure the strength of coherent vortices away from the wall. We
+plot their absolute strength, and color code with their sign.
+
+### $x_p/R = -2$
+
+~~~gnuplot xp/R = -2
+set grid
+set xlabel 'time [-]'
+set title 'Circulation of detatched vortices'
+set ylabel 'Absolute Circulation [-]'
+set yr [0:1]
+set xr [0:12]
+set size square
+set palette rgbformulae 33,13,10
+set cbrange [-1.5: 1.2]
+unset colorbox
+set key bottom left box
+plot 'vort_-2' pt 7 palette t 'sign'  
+~~~
+
+### $x_p/R = 0$
+
+~~~gnuplot xp/R = 0 
+reset
+set grid
+set xlabel 'time [-]'
+set title 'Circulation of detatched vortices'
+set ylabel 'Absolute Circulation [-]'
+set yr [0:1]
+set xr [0:12]
+set size square
+set palette rgbformulae 33,13,10
+set cbrange [-1.5: 1.2]
+unset colorbox
+set key bottom left box
+plot 'vort_0' pt 7 palette t 'sign'  
+~~~
+
+### $x_p/R = 2$
+
+~~~gnuplot xp/R = 2 
+reset
+set grid
+set xlabel 'time [-]'
+set title 'Circulation of detatched vortices'
+set ylabel 'Absolute Circulation [-]'
+set yr [0:1]
+set xr [0:12]
+set size square
+set palette rgbformulae 33,13,10
+set cbrange [-1.5: 1.2]
+unset colorbox
+set key bottom left box
+plot 'vort_2' pt 7 palette t 'sign'  
+~~~
+
+
 */
 #include "embed.h"
 #include "navier-stokes/centered.h"
@@ -17,8 +77,8 @@ Obligatory refinement movie:
 #include "view.h"
 #include "scatter2.h"
 
-int maxlevel = 11;
-double cse = 1e-3;
+int maxlevel = 12;
+double cse = 5e-4;
 double wedge_angle = 4.*pi/180.;
 
 double xp = 0, yp = -5;
@@ -60,7 +120,7 @@ int main() {
   L0 = 40;
   X0 = Y0 = -L0/2.;
   mu = nu;
-  for (xp = -2; xp < 2.1 ; xp += 2)
+  for (xp = -2; xp < 2.1 ; xp += 1)
     run();
 }
 
@@ -106,3 +166,54 @@ event movies (t += 0.1; t <= tend) {
 event adapt (i++) {
   adapt_wavelet ({cs, u}, (double[]){cse, 0.05, 0.05}, maxlevel);
 }
+
+/**
+## Vortex identification
+
+We identify regions of coherent vortices, away from the wall. These
+are defined as patches of vorticity, where $|\omega| >
+\frac{\omega_0}{20}$, where $\omega_0$, is the maximum vorticity of
+the initial dipole (approx $k^2 \approx 10$).
+*/
+#include "tag.h"
+double alphaa = 20;
+
+event vortex_tracking (t += 0.1) {
+  double circ_scale = 6.711; //Half Dipole
+  char fname[99];
+  sprintf (fname, "vort_%g", xp);
+  static FILE * fp = fopen (fname, "w");
+  scalar omg[], f[];
+  vorticity (u, omg);
+  for (int s = -1; s < 2; s += 2) {
+    foreach() 
+      f[] = ((s*omg[] > sq(3.8)/alphaa) || cs[] < 1) ;
+    int n = tag(f);
+    output_ppm (f, file = "fa.png", n = 300, min = 0, max = n);
+    for (double ni = 1; ni <= n; ni++) {
+      double is_wall = -1;
+      foreach(reduction(max:is_wall)) {
+	if (fabs(f[] - ni) < 1e-3 && cs[] < 1.)
+	  is_wall = 1;
+      }
+      if (is_wall < 0) {
+	printf("not wall\n");
+	double circ = 0;
+	foreach(reduction(+:circ)) {
+	  if (fabs(f[] - ni) < 1e-3)
+	    circ += sq(Delta)*fabs(omg[]);
+	}
+	if (circ > circ_scale/50) {
+	  fprintf (fp, "%g %g %d\n", t, circ/circ_scale, s);
+	  fflush(fp);
+	  printf ("%g %g %d\n", t, circ/circ_scale, s);
+	  fflush(stdout);
+	}
+      }
+    }
+  }
+}
+
+
+
+

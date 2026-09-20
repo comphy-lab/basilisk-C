@@ -11,6 +11,8 @@ what happens here is the thresholds and the structural checks.
   python3 test_spectra.py amr            spectra_amr.asc
   python3 test_spectra.py ascii          spec.asc spec_u.asc
   python3 test_spectra.py hdf5           spectra_hdf5.asc
+  python3 test_spectra.py restrict_plane spectra_restrict_plane.asc
+  python3 test_spectra.py restrict_rr    spectra_restrict_rr.asc
 
 Each prints one line per case then PASS or FAIL, and exits non-zero on
 failure. The constants mirror the .c sources and are kept in step by hand.
@@ -343,6 +345,101 @@ def check_amr(filename):
                  'the plane is exact at one level and leaks across two.')
 
 
+# --------------------------------------------------------- restrict_plane ---
+#
+# `tag holes err_hvar err_zlin err_smooth err_curved err_radial dmin dmax
+# filled`. `hvar` is a step at $x = 0$: no lattice, restricted or not, lands
+# a cell centre exactly on it, so both strategies carry a real, unavoidable
+# error there -- what matters is that `restrict` does not do *worse* than
+# `region`. The other four fields are smooth enough that the coarse-cell
+# average should recover them close to exactly, so `restrict` is held to a
+# tight roundoff-scale tolerance on those, while `region` must show a real,
+# nonzero bias (the vacuity guard: without it a passing `restrict` row would
+# prove nothing).
+
+RESTRICT_PLANE_REQUIRED = ('region', 'restrict')
+RESTRICT_BIAS_MIN = 1e-3   # region's error on the smooth fields must be real
+RESTRICT_SMOOTH_TOL = 2e-2 # restrict's residual on a coarser lattice, not 0
+
+
+def check_restrict_plane(filename):
+  failures, rows = [], {}
+  for w in rows_of(filename):
+    tag = w[0]
+    holes = int(w[1])
+    err = [float(v) for v in w[2:7]]
+    dmin, dmax = float(w[7]), float(w[8])
+    filled = int(w[9])
+    rows[tag] = (holes, err, dmin, dmax, filled)
+    print(f'{tag:<10} holes {holes:4d}  err {" ".join(f"{e:.2e}" for e in err)}'
+          f'  D [{dmin:.4g}, {dmax:.4g}]  filled {filled}')
+    if holes:
+      failures.append(f'{tag}: {holes} unfilled lattice points')
+
+  failures += [f'missing row: {t}' for t in RESTRICT_PLANE_REQUIRED
+              if t not in rows]
+
+  if 'region' in rows:
+    holes, err, dmin, dmax, filled = rows['region']
+    if dmin == dmax:
+      failures.append('region: cells all the same size -- grid does not '
+                      'straddle the refined band, test is vacuous')
+    # smooth, curved, radial (indices 2-4): must show a real bias
+    if min(err[2:5]) < RESTRICT_BIAS_MIN:
+      failures.append(f'region: smallest smooth/curved/radial error '
+                      f'{min(err[2:5]):.3g} below {RESTRICT_BIAS_MIN:g}, '
+                      f'unrestricted sampling no longer shows a bias')
+
+  if 'restrict' in rows:
+    holes, err, dmin, dmax, filled = rows['restrict']
+    if dmin != dmax:
+      failures.append(f'restrict: cell sizes not uniform ({dmin} vs {dmax})')
+    if max(err[2:5]) > RESTRICT_SMOOTH_TOL:
+      failures.append(f'restrict: max smooth/curved/radial error '
+                      f'{max(err[2:5]):.3g} above {RESTRICT_SMOOTH_TOL:g}')
+
+  # hvar (index 0) and zlin (index 1): restrict must not be worse than region
+  if 'region' in rows and 'restrict' in rows:
+    for name, k in (('hvar', 0), ('zlin', 1)):
+      rg, rs = rows['region'][1][k], rows['restrict'][1][k]
+      if rs > rg + TOL:
+        failures.append(f'{name}: restrict error {rs:.3g} worse than '
+                        f'region {rg:.3g}')
+
+  return verdict(failures,
+                 'sample_scalar_plane_restrict() is uniform and at least as '
+                 'accurate as the locate()-based sampler, which is biased.')
+
+
+# ------------------------------------------------------------ restrict_rr ---
+#
+# `tag npe nz len m maxdiff`. Round-robin correctness is an equality, not a
+# tolerance: every rank does the same FFT + shell-average work either way, so
+# `spectrum_scalar_stack()`/`cross_spectrum_stack()` splitting it round-robin
+# across ranks instead of stacking it on `pid() == 0` must reproduce the
+# serial `E` to roundoff, at whatever `npe()` the test happened to build with.
+
+RESTRICT_RR_REQUIRED = ('scalar_stack', 'cross_stack')
+
+
+def check_restrict_rr(filename):
+  failures, seen = [], set()
+  for w in rows_of(filename):
+    tag, npe_, nz, ln, m = w[0], int(w[1]), int(w[2]), int(w[3]), int(w[4])
+    maxdiff = float(w[5])
+    seen.add(tag)
+    print(f'{tag:<14} npe {npe_}  nz {nz}  len {ln}  m {m}  '
+          f'max|E_rr - E_ref| {maxdiff:.3e}')
+    if maxdiff > TOL:
+      failures.append(f'{tag}: max|E_rr - E_ref| {maxdiff:.3g} above {TOL:g}')
+
+  failures += [f'missing row: {t}' for t in RESTRICT_RR_REQUIRED
+              if t not in seen]
+  return verdict(failures,
+                 'round-robin FFT distribution matches the serial reference '
+                 'exactly, independent of npe().')
+
+
 # ----------------------------------------------------------------- ascii ---
 #
 # Structure rather than transform: block count, header metadata, row ordering,
@@ -570,7 +667,9 @@ CHECKS = {'sample': (check_sample, 1), 'modes': (check_modes, 1),
           'foliate_sample': (check_foliate_sample, 1),
           'foliate': (check_foliate, 2),
           'amr': (check_amr, 1), 'ascii': (check_ascii, 2),
-          'hdf5': (check_hdf5, 1)}
+          'hdf5': (check_hdf5, 1),
+          'restrict_plane': (check_restrict_plane, 1),
+          'restrict_rr': (check_restrict_rr, 1)}
 
 
 def main():

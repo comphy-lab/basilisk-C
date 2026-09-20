@@ -31,6 +31,8 @@ number of unfilled points, 0 for a complete plane.
   #error sample_scalar_plane() is 3D only
 #endif
 
+#include "spectra_utils.h"
+
 int sample_scalar_plane (scalar * list, double * plane, double h,
                          double xmin, double xmax,
                          double ymin, double ymax,
@@ -57,17 +59,6 @@ int sample_scalar_plane (scalar * list, double * plane, double h,
     if (plane[i] == nodata)
       holes++;
   return holes;
-}
-
-/**
-Snap a target height to the nearest cell centre. `foreach_region` returns the
-cell containing the point, so a height on a face resolves to one side
-arbitrarily -- $z = 0$ is a face whenever the grid size is even. */
-
-double snap_to_cell (double h, int m)
-{
-  double del = L0/m;
-  return Z0 + (floor ((h - Z0)/del) + 0.5)*del;
 }
 
 /**

@@ -1,0 +1,3 @@
+region     holes    0  err 5.00e-01 9.77e-04 6.14e-03 7.26e-02 5.83e-02  D [0.0009766, 0.001953]  filled 16384
+restrict   holes    0  err 5.00e-01 0.00e+00 1.98e-04 1.01e-02 7.17e-03  D [0.007812, 0.007812]  filled 16384
+PASS: sample_scalar_plane_restrict() is uniform and at least as accurate as the locate()-based sampler, which is biased.

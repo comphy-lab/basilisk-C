@@ -1,0 +1,3 @@
+scalar_stack   npe 4  nz 8  len 3  m 64  max|E_rr - E_ref| 5.551e-17
+cross_stack    npe 4  nz 8  len 2  m 64  max|E_rr - E_ref| 7.704e-34
+PASS: round-robin FFT distribution matches the serial reference exactly, independent of npe().

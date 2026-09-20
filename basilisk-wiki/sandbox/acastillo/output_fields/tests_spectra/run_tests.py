@@ -42,7 +42,9 @@ GROUPS = {
                ('test_spectra_ascii', 'octree'),
                ('test_spectra_ascii', 'multigrid3D'),
                ('test_spectra_hdf5', 'octree'),
-               ('test_spectra_hdf5', 'multigrid3D')], True),
+               ('test_spectra_hdf5', 'multigrid3D'),
+               ('test_spectra_restrict_plane', 'octree'),
+               ('test_spectra_restrict_rr', 'octree')], True),
 }
 
 NP = os.environ.get('NP', '4')  # MPI ranks, when a group needs them
