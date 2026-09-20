@@ -23,6 +23,17 @@ static bool _gpu_done_ = false;
 #include "cartesian-common.h"
 #include "gpu/backend.h"
 
+void realloc_scalar_gpu (int size)
+{
+  for (scalar s in baseblock) {
+    if (s.gpu.stored < 0)
+      gpu_cpu_sync_scalar (s.i, s.block, grid_data(), field_size(), GPU_READ);
+    s.gpu.stored = 1; // only stored on the CPU
+  }
+  realloc_scalar_cpu (size);
+  realloc_ssbo (field_size());
+}
+  
 typedef struct {
   GRIDPARENT parent;
   khash_t(INT) * shaders;

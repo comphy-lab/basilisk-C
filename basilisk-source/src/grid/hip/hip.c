@@ -73,7 +73,7 @@ typedef struct {
 
 extern int N;
 extern double X0, Y0, Z0, L0;
-extern struct { int x, y; } Dimensions;
+extern struct { int x, y, z; } Dimensions;
 
 #include "../../ast/symbols.h"
 
@@ -139,7 +139,8 @@ struct _Ctx_ {
 };
 
 struct _Shader {
-  unsigned ng[2], nwg[2];
+  unsigned ng[3], nwg[3];
+  int dimension;
   struct _Ctx_ * hctx, * tmp;
   hipDeviceptr_t dctx;
   MyUniform * uniforms, * locals;
@@ -366,13 +367,8 @@ void realloc_ssbo (size_t field_size)
     return;
   size_t totalsize = field_size*datasize;
   assert (totalsize > GPUContext.current_size);
-  hipDeviceptr_t ptr;
-  HIP_CHECK (hipMalloc ((void **) &ptr, totalsize)); // fixme: allocates memory twice
-  if (GPUContext.current_size > 0) {
-    HIP_CHECK (hipMemcpy ((void *)ptr, (void *)ssbo, GPUContext.current_size, hipMemcpyDeviceToDevice));
-    HIP_CHECK (hipFree ((void *) ssbo));
-  }
-  ssbo = ptr;
+  HIP_CHECK (hipFree ((void *) ssbo));
+  HIP_CHECK (hipMalloc ((void **) &ssbo, totalsize));
   GPUContext.current_size = totalsize;
 }
 
@@ -422,10 +418,11 @@ static size_t pad_to_align (size_t current_offset, size_t alignment) {
 }
 
 void finalize_shader (Shader * shader, External * externals, External * merged,
-                      unsigned ng[2], unsigned nwg[2])
+                      unsigned ng[3], unsigned nwg[3], int dim)
 {
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 3; i++)
     shader->ng[i] = ng[i], shader->nwg[i] = nwg[i];
+  shader->dimension = dim;
   
   /**
   ## Make list of local and global uniforms */
@@ -454,7 +451,7 @@ void finalize_shader (Shader * shader, External * externals, External * merged,
       case sym_DOUBLE:
         esize = sizeof(float); break;
       case sym__COORD:
-        nd *= 2;
+        nd *= dim;
         esize = sizeof(float); break;
       case sym_COORD:
         nd *= 3;
@@ -463,7 +460,7 @@ void finalize_shader (Shader * shader, External * externals, External * merged,
       case sym_DOUBLE:
         esize = sizeof(double); break;
       case sym__COORD:
-        nd *= 2;
+        nd *= dim;
         esize = sizeof(double); break;
       case sym_COORD:
         nd *= 3;
@@ -589,7 +586,7 @@ void post_setup_shader (Shader * shader, External * externals)
 int run_shader (const Shader * shader, const RegionParameters * region)
 {
   hipDeviceptr_t dctx = shader->dctx;
-  struct { int x, y; } csOrigin = {0,0};
+  struct { int x, y, z; } csOrigin = {0,0,0};
   void * params[] = { &dctx, &csOrigin, shader->args };
   
   /**
@@ -598,9 +595,12 @@ int run_shader (const Shader * shader, const RegionParameters * region)
   If this is a `foreach_point()` iteration, we access a single point */
 
   int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
-  if (region->n.x == 1 && region->n.y == 1) {
+  if (region->n.x == 1 && region->n.y == 1 &&
+      (shader->dimension == 2 || region->n.z == 1)) {
     csOrigin.x = (region->p.x - X0)/L0*Nl*Dimensions.x;
     csOrigin.y = (region->p.y - Y0)/L0*Nl*Dimensions.x;
+    if (shader->dimension == 3)
+      csOrigin.z = (region->p.z - Z0)/L0*Nl*Dimensions.x;
     assert (!GPUContext.fragment_shader);
     HIP_CHECK (hipModuleLaunchKernel (shader->kernel,
                                       1, 1, 1,
@@ -611,7 +611,7 @@ int run_shader (const Shader * shader, const RegionParameters * region)
   /**
   This is a region */
   
-  else if (region->n.x || region->n.y) {
+  else if (region->n.x || region->n.y || (shader->dimension == 3 && region->n.z)) {
 #if 1
     assert (false);
 #else
@@ -631,8 +631,8 @@ int run_shader (const Shader * shader, const RegionParameters * region)
   else {
     assert (!GPUContext.fragment_shader);
     HIP_CHECK (hipModuleLaunchKernel (shader->kernel,
-                                      shader->ng[0], shader->ng[1], 1,
-                                      shader->nwg[0], shader->nwg[1], 1,
+                                      shader->ng[0], shader->ng[1], shader->ng[2],
+                                      shader->nwg[0], shader->nwg[1], shader->nwg[2],
                                       0, stream, params, NULL));
   }
   return Nl;
@@ -840,14 +840,16 @@ double gpu_reduction (size_t offset,
                       const char op,
                       const RegionParameters * region,
                       GPUData * data,
-                      size_t nb)
+                      size_t nb,
+                      int dim)
 {
-  if (region->n.x == 1 && region->n.y == 1) {
+  if (region->n.x == 1 && region->n.y == 1 && (dim == 2 || region->n.z == 1)) {
     int i = (region->p.x - X0)/L0*N;
     int j = (region->p.y - Y0)/L0*N;
-    if (i < 0 || i >= N || j < 0 || j >= N)
+    int k = dim == 3 ? (region->p.z - Z0)/L0*N : 0;
+    if (i < 0 || i >= N || j < 0 || j >= N || (dim == 3 && (k < 0 || k >= N)))
       return 0.;
-    offset += i*N + j;
+    offset += dim == 2 ? i*N + j : (i*N + j)*N + k;
     nb = 1;
   }
   return cuda_reduce (ssbo + offset*sizeof(real), nb, op);

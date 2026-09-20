@@ -1,0 +1,17 @@
+# 0 shaders
+src/poisson.h:219: warning: convergence for a not reached after 100 iterations
+  res: 1.52588e-05 sum: -4.29153e-06 nrelax: 88 tolerance: 1e-10
+8 0.0418179
+# 16 shaders
+src/poisson.h:219: warning: convergence for a not reached after 100 iterations
+  res: 6.86646e-05 sum: -0.000144482 nrelax: 95 tolerance: 1e-10
+16 0.0122185
+# 19 shaders
+src/poisson.h:219: warning: convergence for a not reached after 100 iterations
+  res: 0.000305176 sum: 5.99623e-05 nrelax: 96 tolerance: 1e-10
+32 0.00317278
+# 22 shaders
+src/poisson.h:219: warning: convergence for a not reached after 100 iterations
+  res: 0.00135803 sum: -0.000603855 nrelax: 97 tolerance: 1e-10
+64 0.000800715
+# 25 shaders

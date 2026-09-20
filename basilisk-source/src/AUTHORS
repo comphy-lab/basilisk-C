@@ -9,6 +9,7 @@
   flow](test/artery1D.c)
 * [Daniel Fuster](/sandbox/fuster/README): [All-Mach two-phase
   compressible solver](compressible/two-phase.h)
+* Andreas Iberl: [3D multigrid on GPUs](/src/?changes=20260911142700)
 * [Hugo Jacquet](/sandbox/hugoj/README.md): [HIP on AMD](/src/grid/hip/hip.c)
 * [Geoffroy Kirstetter](/sandbox/geoffroy/README): [flow rates for
   multiple rivers](test/multiriverinflow.c)  

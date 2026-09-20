@@ -50,7 +50,7 @@ typedef struct {
 
 extern int N;
 extern double X0, Y0, Z0, L0;
-extern struct { int x, y; } Dimensions;
+extern struct { int x, y, z; } Dimensions;
 
 #include "../../ast/symbols.h"
 
@@ -104,7 +104,8 @@ struct _Ctx_ {
 };
 
 struct _Shader {
-  unsigned ng[2], nwg[2];
+  unsigned ng[3], nwg[3];
+  int dimension;
   struct _Ctx_ * hctx, * tmp;
   cl_mem dctx;
   MyUniform * uniforms, * locals;
@@ -319,15 +320,10 @@ void realloc_ssbo (size_t field_size)
     return;
   size_t totalsize = field_size * datasize;
   assert (totalsize > GPUContext.current_size);
-  cl_mem new_buffer = clCreateBuffer (ctx, CL_MEM_READ_WRITE, totalsize, NULL, NULL);
-  assert (new_buffer);
-  if (GPUContext.current_size > 0) {
-    // Copy old data to new buffer
-    CL_CHECK (clEnqueueCopyBuffer (queue, ssbo, new_buffer, 0, 0, GPUContext.current_size, 0, NULL, NULL));
-    CL_CHECK (clFinish (queue));
+  if (ssbo)
     CL_CHECK (clReleaseMemObject (ssbo));
-  }
-  ssbo = new_buffer;
+  ssbo = clCreateBuffer (ctx, CL_MEM_READ_WRITE, totalsize, NULL, NULL);
+  assert (ssbo);
   GPUContext.current_size = totalsize;
 }
 
@@ -369,10 +365,11 @@ static size_t pad_to_align (size_t current_offset, size_t alignment) {
 }
 
 void finalize_shader (Shader * shader, External * externals, External * merged,
-                      unsigned ng[2], unsigned nwg[2])
+                      unsigned ng[3], unsigned nwg[3], int dim)
 {
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 3; i++)
     shader->ng[i] = ng[i], shader->nwg[i] = nwg[i];
+  shader->dimension = dim;
 
   /**
    * Make list of local and global uniforms
@@ -402,7 +399,7 @@ void finalize_shader (Shader * shader, External * externals, External * merged,
       case sym_DOUBLE:
         esize = sizeof (float); break;
       case sym__COORD:
-        nd *= 2;
+        nd *= dim;
         esize = sizeof (float); break;
       case sym_COORD:
         nd *= 3;
@@ -411,7 +408,7 @@ void finalize_shader (Shader * shader, External * externals, External * merged,
       case sym_DOUBLE:
         esize = sizeof (double); break;
       case sym__COORD:
-        nd *= 2;
+        nd *= dim;
         esize = sizeof (double); break;
       case sym_COORD:
         nd *= 3;
@@ -543,7 +540,8 @@ void post_setup_shader (Shader * shader, External * externals)
 
 int run_shader (const Shader * shader, const RegionParameters * region)
 {
-  struct { int x, y; } csOrigin = {0,0};
+  struct { int x, y, z; } csOrigin = {0,0,0};
+  size_t csOriginSize = shader->dimension*sizeof(int);
 
   /**
    * Set kernel arguments
@@ -554,7 +552,7 @@ int run_shader (const Shader * shader, const RegionParameters * region)
   // fixme: possible optimisation, only set args which have changed
   CL_CHECK (clSetKernelArg (shader->kernel, 0, sizeof (cl_mem), &ssbo));
   CL_CHECK (clSetKernelArg (shader->kernel, 1, sizeof (cl_mem), &shader->dctx));
-  CL_CHECK (clSetKernelArg (shader->kernel, 2, sizeof (struct { int x, y; }), &csOrigin));
+  CL_CHECK (clSetKernelArg (shader->kernel, 2, csOriginSize, &csOrigin));
   if (shader->args)
     CL_CHECK (clSetKernelArg (shader->kernel, 3, shader->lsize, shader->args));
 
@@ -564,14 +562,17 @@ int run_shader (const Shader * shader, const RegionParameters * region)
    */
 
   int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
-  if (region->n.x == 1 && region->n.y == 1) {
+  if (region->n.x == 1 && region->n.y == 1 &&
+      (shader->dimension == 2 || region->n.z == 1)) {
     assert (!GPUContext.fragment_shader);
     csOrigin.x = (region->p.x - X0)/L0*Nl*Dimensions.x;
     csOrigin.y = (region->p.y - Y0)/L0*Nl*Dimensions.x;
-    CL_CHECK (clSetKernelArg (shader->kernel, 2, sizeof (struct { int x, y; }), &csOrigin));
-    size_t global_work_size[2] = {1, 1};
-    size_t local_work_size[2] = {1, 1};
-    CL_CHECK (clEnqueueNDRangeKernel (queue, shader->kernel, 2, NULL,
+    if (shader->dimension == 3)
+      csOrigin.z = (region->p.z - Z0)/L0*Nl*Dimensions.x;
+    CL_CHECK (clSetKernelArg (shader->kernel, 2, csOriginSize, &csOrigin));
+    size_t global_work_size[3] = {1, 1, 1};
+    size_t local_work_size[3] = {1, 1, 1};
+    CL_CHECK (clEnqueueNDRangeKernel (queue, shader->kernel, shader->dimension, NULL,
                                       global_work_size, local_work_size,
                                       0, NULL, NULL));
   }
@@ -580,7 +581,7 @@ int run_shader (const Shader * shader, const RegionParameters * region)
    * This is a region
    */
 
-  else if (region->n.x || region->n.y) {
+  else if (region->n.x || region->n.y || (shader->dimension == 3 && region->n.z)) {
     // OpenCL doesn't use glDrawArrays, so we need to use compute shaders
     // This would require a different approach for region rendering
     assert (false);
@@ -588,15 +589,17 @@ int run_shader (const Shader * shader, const RegionParameters * region)
 
   else {
     assert (!GPUContext.fragment_shader);
-    size_t global_work_size[2] = {
+    size_t global_work_size[3] = {
       shader->ng[0]*shader->nwg[0],
-      shader->ng[1]*shader->nwg[1]
+      shader->ng[1]*shader->nwg[1],
+      shader->ng[2]*shader->nwg[2]
     };
-    size_t local_work_size[2] = {
+    size_t local_work_size[3] = {
       shader->nwg[0],
-      shader->nwg[1]
+      shader->nwg[1],
+      shader->nwg[2]
     };
-    CL_CHECK (clEnqueueNDRangeKernel (queue, shader->kernel, 2, NULL,
+    CL_CHECK (clEnqueueNDRangeKernel (queue, shader->kernel, shader->dimension, NULL,
                                       global_work_size, local_work_size,
                                       0, NULL, NULL));
   }
@@ -810,14 +813,16 @@ double gpu_reduction (size_t offset,
                       const char op,
                       const RegionParameters * region,
                       GPUData * data,
-                      size_t nb)
+                      size_t nb,
+                      int dim)
 {
-  if (region->n.x == 1 && region->n.y == 1) {
+  if (region->n.x == 1 && region->n.y == 1 && (dim == 2 || region->n.z == 1)) {
     int i = (region->p.x - X0)/L0*N;
     int j = (region->p.y - Y0)/L0*N;
-    if (i < 0 || i >= N || j < 0 || j >= N)
+    int k = dim == 3 ? (region->p.z - Z0)/L0*N : 0;
+    if (i < 0 || i >= N || j < 0 || j >= N || (dim == 3 && (k < 0 || k >= N)))
       return 0.;
-    offset += i*N + j;
+    offset += dim == 2 ? i*N + j : (i*N + j)*N + k;
     nb = 1;
   }
     
@@ -827,6 +832,6 @@ double gpu_reduction (size_t offset,
                                    CL_TRUE, // Blocking read
                                    offset*sizeof(float), sizeof(float), &result, 0, NULL, NULL));
   else
-    opencl_reduce (ssbo, nb, op, (int)offset); // fixme: what about very large offsets??
+    result = opencl_reduce (ssbo, nb, op, (int)offset); // fixme: what about very large offsets??
   return result;
 }

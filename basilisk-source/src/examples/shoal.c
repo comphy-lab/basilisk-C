@@ -133,7 +133,7 @@ event movie (t += 1) {
 /**
 When running on GPUs, we display the solution at runtime. */
 
-#if _GPU
+#if _GPU && SHOW
 event display (i++)
   output_ppm (eta, min = -0.04, max = 0.04, fps = 30, fp = NULL);
 #endif

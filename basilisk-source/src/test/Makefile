@@ -1,6 +1,8 @@
 all: check 3D-tests mpi-tests load-balancing curvature-tests	\
 	axi-tests cadna-tests embed-tests multilayer-tests	\
-	multilayer-stratified gotm-tests dimensions-tests gpu-tests
+	multilayer-stratified gotm-tests dimensions-tests       \
+	gpu-tests cuda-tests hip-tests ocl-tests                \
+	gpu3D-tests cuda3D-tests hip3D-tests ocl3D-tests
 
 failed:
 	$(MAKE) -k `find . -name fail | sed -e 's|\./||g' -e 's|/fail|.tst|g'`
@@ -633,5 +635,25 @@ hip-tests: CFLAGS += -DPRINTNSHADERS
 ocl-tests: gpu.ocl.tst gpu-reduce.ocl.tst restriction1.ocl.tst gpu-boundary.ocl.tst \
 	 layers.ocl.tst bump2D-gpu.ocl.tst advection.ocl.tst reversed.ocl.tst
 ocl-tests: CFLAGS += -DPRINTNSHADERS
+
+# GPU 3D tests (GLSL/OpenGL)
+gpu3D-tests: gpu.gpu3D.tst gpu-reduce.gpu3D.tst restriction1.gpu3D.tst gpu-boundary.gpu3D.tst \
+	periodic.gpu3D.tst poisson.gpu3D.tst
+gpu3D-tests: CFLAGS += -DPRINTNSHADERS
+
+# GPU 3D tests (CUDA)
+cuda3D-tests: gpu.cuda3D.tst gpu-reduce.cuda3D.tst restriction1.cuda3D.tst gpu-boundary.cuda3D.tst \
+	periodic.cuda3D.tst poisson.cuda3D.tst
+cuda3D-tests: CFLAGS += -DPRINTNSHADERS
+
+# GPU 3D tests (HIP)
+hip3D-tests: gpu.hip3D.tst gpu-reduce.hip3D.tst restriction1.hip3D.tst gpu-boundary.hip3D.tst \
+	periodic.hip3D.tst poisson.hip3D.tst
+hip3D-tests: CFLAGS += -DPRINTNSHADERS
+
+# GPU 3D tests (OpenCL)
+ocl3D-tests: gpu.ocl3D.tst gpu-reduce.ocl3D.tst restriction1.ocl3D.tst gpu-boundary.ocl3D.tst \
+	periodic.ocl3D.tst poisson.ocl3D.tst
+ocl3D-tests: CFLAGS += -DPRINTNSHADERS
 
 include ../Makefile.defs

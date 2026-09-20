@@ -1,4 +1,4 @@
-pristine:51b98f1fcd2f3f52604f4631c72957213ad914af93f604119e3aeef62cf522e5
+pristine:f7078e56583ad58e1faf07ea6d4d7446013401ae3e1008933e51554639862f8c
 Starting with inventory:
 0000037732-a832b376657cb3b715658b5ef0aafa25929bf314584f9a390ad892839ce705cf
 [TAG release-remapc-gpu
@@ -509,3 +509,66 @@ Stephane Popinet <popinet@basilisk.fr>**20260828170013
  Ignore-this: 27d024963e7e057b771995168f439070470c0920260bacfd50f1c9862611a5f69a26ad086ecc65ce
 ] 
 hash: 0000000367-3056380b2eb02df6cb80fb7b3184690daa5d1b9dae522a881ba73dd65f83ac05
+[Support for newer cuda versions (> 13.x) with additional NULL argument
+Andreas Iberl <andreas.iberl@unibw.de>**20260910085509
+ Ignore-this: d3ae4eaab2fbc09adf1d80c5aa10ba34b53d114d466293f288cda50f4bf7213fa6ae3707e04aa006
+] 
+hash: 0000000381-bc4af782a580c1a86c34c24329934fbbf4734b3f3bf67e0c336fc14c78bda350
+[OpenCL casts for periodic boundary offsets
+Andreas Iberl <andreas.iberl@unibw.de>**20260911085626
+ Ignore-this: 52d6a790d286bd1d1bae8a60c32783e800689a3e35ee0e938acdbf0673d12f5470fbc124c9b43b36
+ 
+ OpenCL C does not support the GLSL/C++ cast syntax int(...).
+ Instead, it is replaced by (int)(...).
+] 
+hash: 0000000591-d968515797c504fb898ff69be3f32b1ad3c55638420203385e684e75515c6bf7
+[MissingArgumentGPUCPUSyncScalar
+Andreas Iberl <andreas.iberl@unibw.de>**20260910111103
+ Ignore-this: 22b038811edec28282096c99ac19163fa945a9d11399e727edd4540267916659ad2394978e269a7b
+ 
+ In the branch PRINTCOPYGPU the argument field_size() is missing the function gpu_cpu_sync_scalar.
+] 
+hash: 0000000605-cfd9272e51026c65759e8df2efd6c4de548b1da66a9ca9e0a3c526223e8a2b7d
+[Extension of GPU grids to 3D and new/modified test cases for that
+Andreas Iberl <andreas.iberl@unibw.de>**20260911142700
+ Ignore-this: d7e284f42d48030d4e70f5389b235cda563ddbb453b62455616ab9f9af8a56d0ee15b5720e106244
+] 
+hash: 0000199611-2f8cd49706c75c099d3900523d0499099ae4f3a16f97bfb91193bcf31924ec6c
+[Unified boundary condition paths in 3D GPU implementation
+Andreas Iberl <andreas.iberl@unibw.de>**20260916094107
+ Ignore-this: bed1f17afa8b0428669ac717bc21ad08b59a06429dcd2240256981b05382126050d15fe03f63206d
+ 
+ Both branches #if dimension == 2, and #elif dimension == 3 contained
+ mostly the same code. This patch removes the redundant lines.
+] 
+hash: 0000004574-950bfd3f5eb7551afb1d26cabe8e9e4d169ec4d63363b17de839a5dc30b817ae
+[Cosmetics
+Stephane Popinet <popinet@basilisk.fr>**20260918115301
+ Ignore-this: 9ce10c7e0709024a3d959e7384a0620e7c0a16f9d95da8a9f19acd95c24700a55c3f9d124dce9034
+] 
+hash: 0000003145-7125441e58aaf83f752bc71cb888833ce2efd239b2332a7a94fe448b895d5125
+[Added HIP 3D tests
+Stephane Popinet <popinet@basilisk.fr>**20260918131222
+ Ignore-this: eb719f7266eb3235fa10e345e89b4f50275d4eb5224ecf8109de1535c0eb60cbf8d0bb34213df3fc
+] 
+hash: 0000053024-9f99c41c29002d2fdfd8538f150bb5f28e0e588595440d1afdc57c67cddd8839
+[Added results for 3D isotropic turbulence on GPUs
+Stephane Popinet <popinet@basilisk.fr>**20260918131325
+ Ignore-this: 2830876288986b2925758b8601cad6bf8be348f8355721b90438bbc9339df91619cdaa8b2c076760
+] 
+hash: 0000855582-ae3b969877d37f96314551b3c24afd5291a33a20507e5ea9bd6ff05280e5e7d0
+[shoal-ml.gpu.tst must also use ML
+Stephane Popinet <popinet@basilisk.fr>**20260918142719
+ Ignore-this: 5b9b5bda2d8c5f012cfb658787e619c122278847c19d52b888edb27c09d04c587a0e66f39562fa8d
+] 
+hash: 0000000316-3df970544354beced2011d68558bcaaf44a318534718a2916c2225c0688c6327
+[Updated references
+Stephane Popinet <popinet@basilisk.fr>**20260918171701
+ Ignore-this: e1ad43072a8e6d55917b29de686493553768a748dc311710170dc1deea362f8c64fc19014a4b1ea3
+] 
+hash: 0000003633-e5298cff17fb05a4ad394b47c50be4b6719e7d7c72c61291380b5c698431b4a2
+[Do not reallocate memory twice on CUDA/HIP/OpenCL
+Stephane Popinet <popinet@basilisk.fr>**20260918172719
+ Ignore-this: a462a75dd1e8e54c4d9d2c6c6b75b9afcf7115c978563d8e71595809b52a3a01ff06158085acc4e9
+] 
+hash: 0000003453-e64ce5e4b105cfe3af87b8173e2228599a12be1917d1c0377a86501c73d83993

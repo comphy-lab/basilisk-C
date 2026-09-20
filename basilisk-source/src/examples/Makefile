@@ -34,6 +34,8 @@ shoal-ml.c: shoal.c
 shoal-ml.tst: shoal.s
 shoal-ml.tst: CFLAGS += -DML=1
 
+shoal-ml.gpu.tst: CFLAGS += -DML=1
+
 # Coupled solvers
 
 master.s: slave.o

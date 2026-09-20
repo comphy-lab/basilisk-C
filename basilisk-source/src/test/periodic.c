@@ -28,10 +28,11 @@ int main()
     foreach()
       e[] = a[] + sin(2.*pi*x)*cos(2.*pi*y)*cos(2.*pi*z);
     stats s = statsf(e);
+    double mean = s.sum/s.volume;
     foreach()
-      e[] -= s.sum/s.volume;
+      e[] -= mean;
     fprintf (stderr, "%d %g\n", n, statsf(e).max);
   }
-  foreach()
+  foreach(serial)
     printf ("%g %g %g %g %g\n", x, y, z, a[], e[]);
 }

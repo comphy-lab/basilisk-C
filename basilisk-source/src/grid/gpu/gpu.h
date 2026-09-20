@@ -89,7 +89,7 @@ macro2 foreach_point_stencil (double _xp, double _yp, double _zp,
 {
   foreach_stencil_generic (flags, reductions, _parallel, _externals, _kernel) {
     _region.p = (coord){ _xp, _yp, _zp };
-    _region.n = (coord){ 1, 1 };
+    _region.n = (coord){ 1, 1, 1 };
     {...}
   }
 }
@@ -138,13 +138,6 @@ macro2 foreach_level_or_leaf_stencil (int _level, char flags, Reduce reductions,
     {...}
 }
 
-void realloc_scalar_gpu (int size)
-{
-  realloc_scalar (size);
-  void realloc_ssbo (size_t);
-  realloc_ssbo (field_size());
-}
-
 void gpu_boundary_level (scalar * list, int l)
 {
   scalar * list1 = NULL;
@@ -157,5 +150,8 @@ void gpu_boundary_level (scalar * list, int l)
     free (list1);
   }
 }
+
+void realloc_scalar_gpu (int size);
+void realloc_scalar_cpu (int size) { realloc_scalar(size); }
 
 #define realloc_scalar(size) realloc_scalar_gpu (size)

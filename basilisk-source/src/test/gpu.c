@@ -138,22 +138,42 @@ int main (int argc, char * argv[])
   /**
   ## Check input/output for vector fields */
 
-  foreach()
+  foreach() {
     v.x[] = 1., v.y[] = 2.;
+#if dimension == 3
+    v.z[] = 3.;
+#endif
+  }
   foreach (serial)
+#if dimension == 2
     fprintf (stderr, "1) v.x: %g v.y: %g\n", v.x[], v.y[]);
-  foreach()
+#elif dimension == 3
+    fprintf (stderr, "1) v.x: %g v.y: %g v.z: %g\n", v.x[], v.y[], v.z[]);
+#endif
+  foreach() {
     v.x[] += 1., v.y[] += 2.;
+#if dimension == 3
+    v.z[] += 3.;
+#endif
+  }
   foreach (serial)
+#if dimension == 2
     fprintf (stderr, "2) v.x: %g v.y: %g\n", v.x[], v.y[]);
+#elif dimension == 3
+    fprintf (stderr, "2) v.x: %g v.y: %g v.z: %g\n", v.x[], v.y[], v.z[]);
+#endif
 
   /**
   ## Check consistent writes to individual texture components */
   
   foreach()
-    v.y[] = 3; // v.x[] should not be modified
+    v.y[] = 3; // v.x[] and v.z[] should not be modified
   foreach (serial)
+#if dimension == 2
     fprintf (stderr, "3) v.x: %g v.y: %g\n", v.x[], v.y[]);
+#elif dimension == 3
+    fprintf (stderr, "3) v.x: %g v.y: %g v.z: %g\n", v.x[], v.y[], v.z[]);
+#endif
 
   /**
   ## Check consistent CPU copies of individual texture components */
@@ -163,7 +183,11 @@ int main (int argc, char * argv[])
   foreach()
     v.x[] += v.y[];
   foreach (serial)
+#if dimension == 2
     fprintf (stderr, "4) v.x: %g v.y: %g\n", v.x[], v.y[]);
+#elif dimension == 3
+    fprintf (stderr, "4) v.x: %g v.y: %g v.z: %g\n", v.x[], v.y[], v.z[]);
+#endif
 
   /**
   ## Check for "no inputs" */
@@ -239,7 +263,12 @@ int main (int argc, char * argv[])
 	a.x[] = 5., b.x[] = 6.;
     }
     foreach (serial)
+#if dimension == 2
       fprintf (stderr, "10) %g %g %g %g\n", v.x[], v.y[], v1.x[], v1.y[]);
+#elif dimension == 3
+      fprintf (stderr, "10) %g %g %g %g %g %g\n",
+        v.x[], v.y[], v.z[], v1.x[], v1.y[], v1.z[]);
+#endif
   }
 
   /**
@@ -282,10 +311,18 @@ int main (int argc, char * argv[])
       for (s, v in list1, list) {
 	s[] = 1;
 	v.x[] = 2, v.y[] = 3;
+#if dimension == 3
+	v.z[] = 4;
+#endif
       }
     }
     foreach (serial)
+#if dimension == 2
       fprintf (stderr, "12) %g %g %g %g %g %g\n", v.x[], v.y[], v1.x[], v1.y[], s[], s1[]);
+#elif dimension == 3
+      fprintf (stderr, "12) %g %g %g %g %g %g %g %g\n",
+               v.x[], v.y[], v.z[], v1.x[], v1.y[], v1.z[], s[], s1[]);
+#endif
   }
 
   /**
@@ -381,16 +418,34 @@ int main (int argc, char * argv[])
   ## foreach_point() */
 
   init_grid (2);
+#if dimension == 2
   origin (-0.5, -0.5);
+#elif dimension == 3
+  origin (-0.5, -0.5, -0.5);
+#endif
   foreach()
     s[] = 0.;
   for (double xp = - 0.24; xp < 0.5; xp += 0.5)
     for (double yp = - 0.24; yp < 0.5; yp += 0.5)
+#if dimension == 2
       foreach_point (xp, yp)
 	s[] = (x + y) - (xp + yp);
+#elif dimension == 3
+    for (double zp = -0.24; zp < 0.5; zp += 0.5)
+      foreach_point (xp, yp, zp)
+	s[] = (x + 10.*y + 100.*z) - (xp + 10.*yp + 100.*zp);
+#endif
   foreach (serial)
+#if dimension == 2
     fprintf (stderr, "23) %g %g %g\n", x, y, s[]);
+#elif dimension == 3
+    fprintf (stderr, "23) %g %g %g %g\n", x, y, z, s[]);
+#endif
+#if dimension == 2
   origin (0, 0);
+#elif dimension == 3
+  origin (0, 0, 0);
+#endif
 
   /**
   ## Interpolation
@@ -398,20 +453,38 @@ int main (int argc, char * argv[])
   This also tests foreach_point() and reductions. */
   
   foreach()
+#if dimension == 2
     s[] = x*y;
+#elif dimension == 3
+    s[] = x + 10.*y + 100.*z;
+#endif
+#if dimension == 2
   fprintf (stderr, "24) %g %g\n",
 	   interpolate (s, 0.5, 0.5, linear = false),
 	   interpolate (s, 0.5, 0.5, linear = true));
+#elif dimension == 3
+  fprintf (stderr, "24) %g %g\n",
+	   interpolate (s, 0.5, 0.5, 0.5, linear = false),
+	   interpolate (s, 0.5, 0.5, 0.5, linear = true));
+#endif
 
   /**
   ## foreach_vertex() coordinates */
 
   {
+#if dimension == 2
     vertex scalar a[], b[];
     foreach_vertex()
       a[] = x, b[] = y;
     foreach (serial)
       fprintf (stderr, "25) %g %g\n", a[], b[]);
+#elif dimension == 3
+    vertex scalar a[], b[], c[];
+    foreach_vertex()
+      a[] = x, b[] = y, c[] = z;
+    foreach (serial)
+      fprintf (stderr, "25) %g %g %g\n", a[], b[], c[]);
+#endif
   }
 
   /**
@@ -437,24 +510,52 @@ int main (int argc, char * argv[])
     
     max = 0., sum = 0.;
     foreach_face (y, reduction(max:max) reduction(+:sum)) {
+#if dimension == 2
       f.x[] = f.x[]; // so that the loop is done on GPUs
       if (x > max) max = x;
       sum += x;
+#elif dimension == 3
+      f.y[] = f.y[]; // so that the loop is done on GPUs
+      if (y > max) max = y;
+      sum += y;
+#endif
     }
     fprintf (stderr, "26b) %g %g\n", sum, max);
     
+#if dimension == 3
+    max = 0., sum = 0.;
+    foreach_face (z, reduction(max:max) reduction(+:sum)) {
+      f.z[] = f.z[]; // so that the loop is done on GPUs
+      if (z > max) max = z;
+      sum += z;
+    }
+    fprintf (stderr, "26c) %g %g\n", sum, max);
+#endif
+
+#if dimension == 2
     init_grid (512);
+#elif dimension == 3
+    init_grid (128);
+#endif
     max = 0., sum = 0.;
     foreach_face (reduction(max:max) reduction(+:sum)) {
       f.x[] = f.x[]; // so that the loop is done on GPUs
       if (x > max) max = x;
       sum += x;
     }
+#if dimension == 2
     fprintf (stderr, "26c) %g %g\n", sum, max);
+#elif dimension == 3
+    fprintf (stderr, "26d) %g %g\n", sum, max);
+#endif
   }
 
   {
+#if dimension == 2
     dimensions (nx = 4);
+#elif dimension == 3
+    dimensions (nx = 4, ny = 2, nz = 1);
+#endif
     init_grid (8);
     face vector uf[];
     foreach_face()
@@ -466,8 +567,13 @@ int main (int argc, char * argv[])
       sum++;
     }
     fprintf (stderr, "26e) %g %g\n", min, sum);
+#if dimension == 2
     dimensions (nx = 1);
     init_grid (512);
+#elif dimension == 3
+    dimensions (nx = 1, ny = 1, nz = 1);
+    init_grid (64);
+#endif
   }
   
   /**
@@ -478,10 +584,19 @@ int main (int argc, char * argv[])
     double max = 0., sum = 0.;
     foreach_vertex (reduction(max:max) reduction(+:sum)) {
       s[] = s[]; // so that the loop is done on GPUs
-      if (x > max) max = x;
-      sum += x;
+#if dimension == 2
+      double value = x;
+#elif dimension == 3
+      double value = x + 10.*y + 100.*z;
+#endif
+      if (value > max) max = value;
+      sum += value;
     }
+#if dimension == 2
     fprintf (stderr, "26d) %g %g\n", sum, max);
+#elif dimension == 3
+    fprintf (stderr, "26f) %g %g\n", sum, max);
+#endif
   }
 
   /**
@@ -493,9 +608,16 @@ int main (int argc, char * argv[])
     foreach() {
       double b = a[]; b = b; // fixme: a needs to be used
       v.x[] = a.d.x, v.y[] = a.d.y;
+#if dimension == 3
+      v.z[] = a.d.z;
+#endif
     }
     foreach (serial)
+#if dimension == 2
       fprintf (stderr, "27) %g %g\n", v.x[], v.y[]);
+#elif dimension == 3
+      fprintf (stderr, "27) %g %g %g\n", v.x[], v.y[], v.z[]);
+#endif
   }
 
   /**
@@ -505,19 +627,36 @@ int main (int argc, char * argv[])
     init_grid (16);
     reset ({s}, 31.);
     foreach_level (2)
+#if dimension == 2
       s[] = x*y;
+#elif dimension == 3
+      s[] = x + 10.*y + 100.*z;
+#endif
   
     foreach_level (2, serial)
+#if dimension == 2
       fprintf (stderr, "28) %g %g %g\n", x, y, s[]);
+#elif dimension == 3
+      fprintf (stderr, "28) %g %g %g %g\n", x, y, z, s[]);
+#endif
 
     boundary_level ({s}, 2);
   
     scalar g[];
     foreach_level_or_leaf (2)
+#if dimension == 2
       g[] = s[] - s[-1];
+#elif dimension == 3
+      g[] = s[] - s[-1,0,0] + 2.*(s[] - s[0,-1,0]) + 4.*(s[] - s[0,0,-1]);
+#endif
     
     foreach_level (2, serial)
+#if dimension == 2
       fprintf (stderr, "29) %g %g %g %g\n", x, y, g[], s[-1]);
+#elif dimension == 3
+      fprintf (stderr, "29) %g %g %g %g %g %g %g\n",
+               x, y, z, g[], s[-1,0,0], s[0,-1,0], s[0,0,-1]);
+#endif
 
     foreach_coarse_level (1) {
       double sum = 0.;
@@ -527,18 +666,34 @@ int main (int argc, char * argv[])
     }
 
     foreach_level (1, serial)
+#if dimension == 2
       fprintf (stderr, "30) %g %g %g\n", x, y, s[]);
+#elif dimension == 3
+      fprintf (stderr, "30) %g %g %g %g\n", x, y, z, s[]);
+#endif
 
     foreach_level (3)
       s[] = bilinear (point, s);
     foreach_level (3, serial)
+#if dimension == 2
       fprintf (stderr, "31) %g %g %g\n", x, y, s[]);
+#elif dimension == 3
+      fprintf (stderr, "31) %g %g %g %g\n", x, y, z, s[]);
+#endif
 
     foreach()
+#if dimension == 2
       s[] = x*y;
+#elif dimension == 3
+      s[] = x + 10.*y + 100.*z;
+#endif
     restriction ({s});
     foreach_level (2, serial)
+#if dimension == 2
       fprintf (stderr, "32) %g %g %g\n", x, y, s[]);
+#elif dimension == 3
+      fprintf (stderr, "32) %g %g %g %g\n", x, y, z, s[]);
+#endif
   }
 
   /**
@@ -551,12 +706,38 @@ int main (int argc, char * argv[])
     uf.n[right] = x;
     uf.n[top] = y;
     uf.n[bottom] = y;
+#if dimension == 3
+    uf.n[back] = z;
+    uf.n[front] = z;
+#endif
     foreach_face()
+#if dimension == 2
       uf.x[] = (x + 1)*(y + 1);
+#elif dimension == 3
+      uf.x[] = (x + 1)*(y + 1)*(z + 1);
+#endif
     foreach_face (x, serial)
+#if dimension == 2
       fprintf (stderr, "33) %g %g %g %g %g\n", x, y, uf.x[], uf.x[0,1], uf.x[0,-1]);
+#elif dimension == 3
+      fprintf (stderr, "33) %g %g %g %g %g %g %g %g\n",
+               x, y, z, uf.x[], uf.x[0,1,0], uf.x[0,-1,0],
+               uf.x[0,0,1], uf.x[0,0,-1]);
+#endif
     foreach_face (y, serial)
+#if dimension == 2
       fprintf (stderr, "34) %g %g %g %g %g\n", x, y, uf.y[], uf.y[1], uf.y[-1]);    
+#elif dimension == 3
+      fprintf (stderr, "34) %g %g %g %g %g %g %g %g\n",
+               x, y, z, uf.y[], uf.y[1,0,0], uf.y[-1,0,0],
+               uf.y[0,0,1], uf.y[0,0,-1]);
+#endif
+#if dimension == 3
+    foreach_face (z, serial)
+      fprintf (stderr, "34a) %g %g %g %g %g %g %g %g\n",
+               x, y, z, uf.z[], uf.z[1,0,0], uf.z[-1,0,0],
+               uf.z[0,1,0], uf.z[0,-1,0]);
+#endif
   }
 
   /**
@@ -657,6 +838,7 @@ int main (int argc, char * argv[])
     }
   }  
   
+#if dimension == 2
   /**
   ## Other tests */
   
@@ -716,4 +898,5 @@ int main (int argc, char * argv[])
   output_ppm (p, file = "p.png", n = 512, spread = -1);
   output_ppm (s1, file = "s1.png", n = 512, spread = -1);
 #endif
+#endif // dimension == 2
 }

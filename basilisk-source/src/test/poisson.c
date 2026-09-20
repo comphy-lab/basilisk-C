@@ -62,7 +62,7 @@ int main (int argc, char ** argv)
     	    maxres[i]);
   }
   double max = 0;
-  foreach() {
+  foreach(reduction(max:max)) {
     double e = a[] - solution(x, y, z);
     if (fabs(e) > max) max = fabs(e);
     //    printf ("%g %g %g %g %g %g\n", x, y, a[], b[], res[], e);

@@ -8,7 +8,11 @@ pseudo-spectral code. The initial condition is an unstable solution to
 the incompressible Euler equations. Numerical noise in the solution
 eventually leads to the destabilisation of the base solution into a
 fully turbulent flow where turbulent dissipation balances the linear
-input of energy. */
+input of energy.
+
+![Animation of the $\lambda_2$ isosurface (a way to characterise
+vortices) and cross-sections of velocity and vorticity.](isotropic/movie.mp4)
+*/
 
 #include "grid/multigrid3D.h"
 #include "navier-stokes/centered.h"
@@ -17,8 +21,10 @@ input of energy. */
 We use the $\lambda_2$ criterion and Basilisk View for visualisation
 of vortices. */
 
-#include "lambda2.h"
-#include "view.h"
+#if !_GPU // fixme: view does not work yet on GPUs
+# include "lambda2.h"
+# include "view.h"
+#endif
 
 /**
 We monitor performance statistics and control the maximum runtime. */
@@ -124,20 +130,17 @@ event logfile (i++; t <= 300) {
   vd *= MU/vol;
 
   if (i == 0)
-    fprintf (stderr, "t dissipation energy Reynolds\n");
-  fprintf (stderr, "%g %g %g %g\n",
-	   t, vd, ke, 2./3.*ke/MU*sqrt(15.*MU/vd));
+    fprintf (stderr, "t dissipation energy Reynolds grid->tn perf.t perf.speed\n");
+  fprintf (stderr, "%g %g %g %g %ld %g %g\n",
+	   t, vd, ke, 2./3.*ke/MU*sqrt(15.*MU/vd), grid->tn, perf.t, perf.speed);
 }
 
 /**
-We generate a movie of the vortices. 
-
-![Animation of the $\lambda_2$ isosurface (a way to characterise
-vortices) and cross-sections of velocity and vorticity.](isotropic/movie.mp4)
-*/
+We generate a movie of the vortices. */
 
 event movie (t += 0.25; t <= 150)
 {
+#if !_GPU // fixme: does not work yet on GPUs
   view (fov = 44, camera = "iso", ty = .2,
 	width = 600, height = 600, bg = {1,1,1}, samples = 4);
   clear();
@@ -150,6 +153,7 @@ event movie (t += 0.25; t <= 150)
   lambda2 (u, l2);
   isosurface ("l2", -1);
   save ("movie.mp4");
+#endif // !_GPU
 }
 
 /**
@@ -163,6 +167,20 @@ event adapt (i++) {
 #endif
 
 /**
+## Running on GPUs
+
+This runs fine on GPUs, for example using the CUDA backend:
+
+~~~bash
+make isotropic.cuda3D.tst
+~~~
+
+and the performances on an RTX4090 are impressive (see the computational
+speed plot below).
+
+Note that up to 512^3^ is possible when using an RTX4090 with 24GB of
+memory (~16 GB are used).
+
 ## Running with MPI on occigen
 
 On the local machine
@@ -257,6 +275,7 @@ set ylabel 'Kinetic energy'
 set logscale  y
 plot 'isotropic.occigen' u 1:3 w l t 'Basilisk (occigen)', \
      'isotropic.mesu' u 1:3 w l t 'Basilisk (mesu)', \
+     'isotropic.cuda' u 1:3 w l t 'Basilisk (CUDA on RTX4090)', \
      'isotropic.hit3d' u 1:($3*3./2.) w l t 'Spectral'
 ~~~
 
@@ -264,6 +283,7 @@ plot 'isotropic.occigen' u 1:3 w l t 'Basilisk (occigen)', \
 set ylabel 'Microscale Reynolds number'
 plot 'isotropic.occigen' u 1:4 w l t 'Basilisk (occigen)', \
      'isotropic.mesu' u 1:4 w l t 'Basilisk (mesu)', \
+     'isotropic.cuda' u 1:4 w l t 'Basilisk (CUDA on RTX4090)', \
      'isotropic.hit3d' u 1:4 w l t 'Spectral'
 ~~~
 
@@ -271,18 +291,22 @@ plot 'isotropic.occigen' u 1:4 w l t 'Basilisk (occigen)', \
 set ylabel 'Dissipation function'
 plot 'isotropic.occigen' u 1:2 w l t 'Basilisk (occigen)', \
      'isotropic.mesu' u 1:2 w l t 'Basilisk (mesu)', \
+     'isotropic.cuda' u 1:2 w l t 'Basilisk (CUDA on RTX4090)', \
      'isotropic.hit3d' u 1:2 w l t 'Spectral'
 ~~~
 
 The computational speed is respectable (for a relatively small 128^3^
 problem on 512 cores). Note that these were obtained when switching
-off movie outputs.
+off movie outputs. A single RTX4090 GPU card is more than twice as
+fast as 512 cores.
 
 ~~~gnuplot Computational speed in points.timesteps/sec/core
 set ylabel 'Speed'
 unset logscale
-plot 'isotropic.occigen' u 1:($7/512) w l t 'occigen', \
-     'isotropic.mesu' u 1:($7/512) w l t 'mesu'
+set key bottom right
+plot 'isotropic.occigen' u 1:7 w l t 'occigen (512 cores)', \
+     'isotropic.mesu' u 1:7 w l t 'mesu (512 cores)', \
+     'isotropic.cuda' u 1:7 w l t 'Basilisk (CUDA on RTX4090)'
 ~~~
 
 ## Scalability on irene

@@ -11,6 +11,7 @@
 
 #define HUGE 1e30f
 #define sq(x) ((x)*(x))
+#define cube(x) ((x)*(x)*(x))
 #define swap(type,a,b) do { type _tmp_ = a; a = b; b = _tmp_; } while(false)
 
 typedef struct { double x, y, z; } coord;
@@ -27,7 +28,7 @@ typedef struct {
 
 extern int N;
 extern double X0, Y0, Z0, L0;
-extern struct { int x, y; } Dimensions;
+extern struct { int x, y, z; } Dimensions;
 
 #include "../../ast/symbols.h"
 
@@ -271,7 +272,8 @@ typedef struct {
 } MyUniform;
 
 struct _Shader {
-  unsigned id, ng[2];
+  unsigned id, ng[3];
+  int dimension;
   MyUniform * uniforms;
 };
 
@@ -424,15 +426,8 @@ void realloc_ssbo (size_t field_size)
     size_t size = min (totalsize, GPUContext.max_ssbo_size);
     totalsize -= size;
     if (current_size < GPUContext.max_ssbo_size) {
-      GLuint tmp;
-      GL_C (glGenBuffers (1, &tmp));
-      GL_C (glBindBuffer (GL_SHADER_STORAGE_BUFFER, tmp));
+      GL_C (glBindBuffer (GL_SHADER_STORAGE_BUFFER, ssbo[GPUContext.nssbo - 1]));
       GL_C (glBufferData (GL_SHADER_STORAGE_BUFFER, size, NULL, GL_DYNAMIC_READ));
-      GL_C (glBindBuffer (GL_COPY_READ_BUFFER, ssbo[GPUContext.nssbo - 1]));
-      GL_C (glBindBuffer (GL_COPY_WRITE_BUFFER, tmp));
-      GL_C (glCopyBufferSubData (GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER, 0, 0, current_size));
-      GL_C (glDeleteBuffers (1, &ssbo[GPUContext.nssbo - 1]));
-      ssbo[GPUContext.nssbo - 1] = tmp;
     }
 #if DEBUGALLOC    
     else
@@ -521,10 +516,11 @@ void reset_scalar (int i, int block, size_t field_size, double val)
 }
 
 void finalize_shader (Shader * s, External * externals, External * merged,
-                      unsigned ng[2], unsigned nwg[2])
+                      unsigned ng[3], unsigned nwg[3], int dim)
 {
   if (false) is_external_variable (NULL); // just to prevent a -Wunused-function
-  s->ng[0] = ng[0], s->ng[1] = ng[1];
+  s->ng[0] = ng[0], s->ng[1] = ng[1], s->ng[2] = ng[2];
+  s->dimension = dim;
   
   /**
   ## Make list of uniforms */
@@ -542,7 +538,8 @@ void finalize_shader (Shader * s, External * externals, External * merged,
     if (g->type == sym_INT && (!strcmp (g->name, "N") ||
 			       !strcmp (g->name, "nl") ||
 			       !strcmp (g->name, "bc_period_x") ||
-			       !strcmp (g->name, "bc_period_y")))
+			       !strcmp (g->name, "bc_period_y") ||
+             (dim == 3 && !strcmp (g->name, "bc_period_z"))))
       continue;
     if (g->type == sym_INT ||
 	g->type == sym_LONG ||
@@ -637,11 +634,16 @@ void post_setup_shader (Shader * shader, External * externals)
       break;
     }
     case sym__COORD: {
-      float p[2*g->nd];
+      float p[shader->dimension*g->nd];
       double * data = pointer;
-      for (int i = 0; i < 2*g->nd; i++)
-	p[i] = data[i];
-      glUniform2fv (g->location, g->nd, p);
+      for (int i = 0; i < shader->dimension*g->nd; i++)
+        p[i] = data[i];
+      if (shader->dimension == 2) {
+        glUniform2fv (g->location, g->nd, p);
+      }
+      else if (shader->dimension ==3) {
+        glUniform3fv (g->location, g->nd, p);
+      }
       break;
     }
     case sym_COORD: {
@@ -656,7 +658,11 @@ void post_setup_shader (Shader * shader, External * externals)
     case sym_DOUBLE:
       glUniform1dv (g->location, g->nd, pointer); break;
     case sym__COORD:
-      glUniform2dv (g->location, g->nd, pointer); break;
+      if (shader->dimension == 2)
+        glUniform2dv (g->location, g->nd, pointer);
+      else if (shader->dimension == 3)
+        glUniform3dv (g->location, g->nd, pointer);
+      break;
     case sym_COORD:
       glUniform3dv (g->location, g->nd, pointer); break;
 #endif // DOUBLE_PRECISION
@@ -675,12 +681,19 @@ int run_shader (const Shader * shader, const RegionParameters * region)
   If this is a `foreach_point()` iteration, we draw a single point */
 
   int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
-  if (region->n.x == 1 && region->n.y == 1) {
+  if (region->n.x == 1 && region->n.y == 1 &&
+      (shader->dimension == 2 || region->n.z == 1)) {
     int csOrigin[] = {
       (region->p.x - X0)/L0*Nl*Dimensions.x,
-      (region->p.y - Y0)/L0*Nl*Dimensions.x
+      (region->p.y - Y0)/L0*Nl*Dimensions.x,
+      0
     };
-    GL_C (glUniform2iv (0, 1, csOrigin));
+    if (shader->dimension == 2) 
+      GL_C (glUniform2iv (0, 1, csOrigin));
+    else if (shader->dimension == 3) {
+      csOrigin[2] = (region->p.z - Z0)/L0*Nl*Dimensions.x;
+      GL_C (glUniform3iv (0, 1, csOrigin));
+    }
     assert (!GPUContext.fragment_shader);
     GL_C (glMemoryBarrier (GL_SHADER_STORAGE_BARRIER_BIT));
     GL_C (glDispatchCompute (1, 1, 1));
@@ -689,7 +702,7 @@ int run_shader (const Shader * shader, const RegionParameters * region)
   /**
   This is a region */
   
-  else if (region->n.x || region->n.y) {
+  else if (region->n.x || region->n.y || (shader->dimension == 3 && region->n.z)) {
     float vsScale[] = {
       (region->box[1].x - region->box[0].x)/L0,
       (region->box[1].y - region->box[0].y)/L0
@@ -705,7 +718,7 @@ int run_shader (const Shader * shader, const RegionParameters * region)
   else {
     assert (!GPUContext.fragment_shader);
     GL_C (glMemoryBarrier (GL_SHADER_STORAGE_BARRIER_BIT));
-    GL_C (glDispatchCompute (shader->ng[0], shader->ng[1], 1));
+    GL_C (glDispatchCompute (shader->ng[0], shader->ng[1], shader->ng[2]));
   }
 
   return Nl;
