@@ -580,20 +580,30 @@ def check_ascii(scalar_file, vector_file):
 #
 # The summary test_spectra_hdf5.c reads back out of the stored file:
 #
-#   attr <L0> <m> <nz> <nk>
-#   shape <name> <dims...>
-#   t <it> <value>
-#   kphys <max residual against 2*pi*k/L0>
+#   format <v>
+#   block <it> <group> <nz> <nk> <m> <t> <hmin> <hmax>
+#   shape <it> <name> <dims...>
+#   kphys <it> <nk> <max residual against 2*pi*k/L0>
 #   peak <field> <it> <iz> <bpeak> <Epeak> <sum> <z>
 #
-# The twelve spectra are all distinct -- `a`'s mode moves with the block, both
+# The spectra are all distinct -- `a`'s mode moves with the block, both
 # amplitudes are scaled by z -- so the expected bin and energy follow from the
 # block index and the stored height, and axes written in the wrong order fail
 # on the values rather than only on the shape.
+#
+# One self-contained group per output, so the plane count differs per block
+# (HDF5_NZS) with nothing shared for a later block to break. `it` is the
+# position HDF5 listed the group at, ordered by name, so checking t against
+# the block index is also checking that the zero-padded name sorts by time.
 
 NT = 3
 NK = nshells(M)
 HDF5_REL = 1e-9
+HDF5_FORMAT = 3
+HDF5_NZS = (4, 2, 7)              # mirrors NZS in test_spectra_hdf5.c
+HDF5_LZ = lambda it: 0.5 + 0.25*it   # the widening zone, as in the .c
+HDF5_GROUP = lambda it: 't%09.4f' % (0.1*it)
+HDF5_COMPS = ('v.x', 'v.y', 'v.z')
 
 # the bin of field <f> in block <it>, and its energy at height z
 HDF5_SPEC = {
@@ -603,39 +613,65 @@ HDF5_SPEC = {
 
 
 def check_hdf5(filename):
-  shapes, times, peaks = {}, {}, []
-  attr = dk = None
+  shapes, blocks, kphys, peaks = {}, {}, {}, []
+  fmt = None
   for w in rows_of(filename):
-    if w[0] == 'attr':
-      attr = (float(w[1]), int(w[2]), int(w[3]), int(w[4]))
+    if w[0] == 'format':
+      fmt = int(w[1])
     elif w[0] == 'shape':
-      shapes[w[1]] = tuple(int(v) for v in w[2:])
-    elif w[0] == 't':
-      times[int(w[1])] = float(w[2])
+      shapes[(int(w[1]), w[2])] = tuple(int(v) for v in w[3:])
+    elif w[0] == 'block':
+      blocks[int(w[1])] = (w[2], int(w[3]), int(w[4]), int(w[5]),
+                           float(w[6]), float(w[7]), float(w[8]))
     elif w[0] == 'kphys':
-      dk = float(w[1])
+      kphys[int(w[1])] = (int(w[2]), float(w[3]))
     elif w[0] == 'peak':
       peaks.append((w[1], int(w[2]), int(w[3]), int(w[4]),
                     float(w[5]), float(w[6]), float(w[7])))
 
   failures = []
-  if attr != (L0, M, NZ, NK):
-    failures.append(f'attributes {attr}, expected {(L0, M, NZ, NK)}')
+  if fmt != HDF5_FORMAT:
+    failures.append(f'format {fmt}, expected {HDF5_FORMAT}')
+  if len(blocks) != NT:
+    failures.append(f'{len(blocks)} groups, expected {NT}')
 
-  expected_shapes = {'t': (NT,), 'z': (NT, NZ), 'kphys': (NK,),
-                     'E': (NT, NZ, NK), 'v.x': (NT, NZ, NK),
-                     'v.y': (NT, NZ, NK), 'v.z': (NT, NZ, NK)}
-  for name, exp in expected_shapes.items():
-    if shapes.get(name) != exp:
-      failures.append(f'/{name} has shape {shapes.get(name)}, expected {exp}')
-
+  # each group stands alone: its own name, axes, metadata and plane count.
+  # `it` is the position HDF5 listed it at, ordered by name, so matching t
+  # to the block index also checks the name sorts by time.
   for it in range(NT):
-    if abs(times.get(it, -1) - 0.1*it) > TOL:
-      failures.append(f't[{it}] = {times.get(it)}, expected {0.1*it}')
-  if dk is None or dk > TOL:
-    failures.append(f'/kphys residual {dk}')
-  if len(peaks) != 2*NT*NZ:
-    failures.append(f'{len(peaks)} spectra summarised, expected {2*NT*NZ}')
+    got = blocks.get(it)
+    if got is None:
+      failures.append(f'block {it}: missing')
+      continue
+    name, nz, nk, m, t, hmin, hmax = got
+    nzexp, Lz = HDF5_NZS[it], HDF5_LZ(it)
+    if name != HDF5_GROUP(it):
+      failures.append(f'block {it}: group {name!r}, '
+                      f'expected {HDF5_GROUP(it)!r} at this position')
+    if (nz, nk, m) != (nzexp, NK, M):
+      failures.append(f'block {it}: (nz, nk, m) = {(nz, nk, m)}, '
+                      f'expected {(nzexp, NK, M)}')
+    if abs(t - 0.1*it) > TOL:
+      failures.append(f'block {it}: t = {t}, expected {0.1*it}')
+    if abs(hmin + Lz) > TOL or abs(hmax - Lz) > TOL:
+      failures.append(f'block {it}: bounds ({hmin:.6g}, {hmax:.6g}), '
+                      f'expected ({-Lz:.6g}, {Lz:.6g})')
+
+    # the axes are repeated per group, so every copy has to be right
+    if kphys.get(it) is None or kphys[it][0] != NK or kphys[it][1] > TOL:
+      failures.append(f'block {it}: kphys {kphys.get(it)}, '
+                      f'expected ({NK}, residual <= {TOL:g})')
+    if shapes.get((it, 'z')) != (nzexp,):
+      failures.append(f'block {it}: z has shape {shapes.get((it, "z"))}, '
+                      f'expected {(nzexp,)}')
+    for f in list(HDF5_SPEC) + list(HDF5_COMPS):
+      if shapes.get((it, f)) != (nzexp, NK):
+        failures.append(f'block {it}: {f} has shape '
+                        f'{shapes.get((it, f))}, expected {(nzexp, NK)}')
+
+  if len(peaks) != len(HDF5_SPEC)*sum(HDF5_NZS):
+    failures.append(f'{len(peaks)} spectra summarised, '
+                    f'expected {len(HDF5_SPEC)*sum(HDF5_NZS)}')
 
   heights = {}
   for name, it, iz, bpeak, peak, total, z in peaks:
@@ -651,15 +687,24 @@ def check_hdf5(filename):
       failures.append(f'{name}[{it}][{iz}]: {total - Eexp:.3g} outside '
                       f'bin {bexp}')
 
-  # the zone widens between blocks, so the stored heights spread with it
-  spans = [max(v) - min(v) for it, v in sorted(heights.items())]
-  if spans != sorted(spans) or spans[0] == spans[-1]:
-    failures.append(f'plane heights did not spread with the zone: {spans}')
+  # the zone widens between blocks and each block's planes sit inside its own
+  # bounds, so a group read at the wrong width shows up in the heights too
+  cell = L0/M
+  for it in range(NT):
+    zs = sorted(set(heights.get(it, [])))
+    Lz = HDF5_LZ(it)
+    if len(zs) != HDF5_NZS[it]:
+      failures.append(f'block {it}: {len(zs)} distinct heights, '
+                      f'expected {HDF5_NZS[it]}')
+    if zs and not -Lz - cell <= zs[0] <= zs[-1] <= Lz + cell:
+      failures.append(f'block {it}: heights [{zs[0]:.6g}, {zs[-1]:.6g}] '
+                      f'outside [{-Lz:.6g}, {Lz:.6g}]')
 
-  print(f'nt {NT}  nz {NZ}  nk {NK}  {len(peaks)} spectra  '
-        f'z spans {", ".join(f"{s:.4f}" for s in spans)}')
+  print(f'format {fmt}  nt {NT}  nz {HDF5_NZS}  nk {NK}  '
+        f'{len(peaks)} spectra')
   return verdict(failures,
-                 'the HDF5 file stores the blocks on the axes it documents.')
+                 'each output is a self-contained group, whatever its plane '
+                 'count.')
 
 
 CHECKS = {'sample': (check_sample, 1), 'modes': (check_modes, 1),

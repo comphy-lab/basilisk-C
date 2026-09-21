@@ -54,9 +54,11 @@ HDF5 file always appends along its time axis.
 [spectra_sample_restricted.h](spectra_sample_restricted.h)), correct whether
 `slablevel` is the finest grid level or coarser, unlike
 [spectra.h](spectra.h)'s `locate()`-based sampling which required it to be
-the finest. Use a fixed `nz` rather than one plane per cell,
-so the block shape does not change as the refined region grows; the heights
-are in the output, so rescaling them is a post-processing choice.
+the finest. `nz` may change from block to block as the refined region grows:
+each output is a self-contained group in the HDF5 file
+([spectra_output.h](spectra_output.h)), and an ASCII block carries its own
+`nz` in its header. The heights are in the output, so rescaling them is a
+post-processing choice.
 
 `mode` defaults to append, so repeated runs in one directory accumulate blocks
 -- as the profile writers do.
@@ -83,7 +85,7 @@ void spectrum_scalar_stack (scalar * list,
   double * data = malloc (2*npt*sizeof(double));
   int job = 0;
   for (int iz = 0; iz < nz; iz++) {
-    z[iz] = snap_to_cell (nz > 1 ? hmin + (hmax - hmin)*(iz + 0.5)/nz : hmin, m);
+    z[iz] = snap_to_cell (hmin + (hmax - hmin)*(iz + 0.5)/nz, m);
     holes += sample_scalar_plane_restrict (list, plane, z[iz], slablevel);
 
     for (int is = 0; is < len; is++, job++) {
@@ -178,7 +180,7 @@ void cross_spectrum_stack (scalar a, scalar b, const char * label,
   double * da = malloc (2*npt*sizeof(double));
   double * db = malloc (2*npt*sizeof(double));
   for (int iz = 0; iz < nz; iz++) {
-    z[iz] = snap_to_cell (nz > 1 ? hmin + (hmax - hmin)*(iz + 0.5)/nz : hmin, m);
+    z[iz] = snap_to_cell (hmin + (hmax - hmin)*(iz + 0.5)/nz, m);
     holes += sample_scalar_plane_restrict ({a}, pa, z[iz], slablevel);
     sample_scalar_plane_restrict ({b}, pb, z[iz], slablevel);
 

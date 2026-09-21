@@ -1,4 +1,4 @@
-pristine:b8adf589f70240fe0293749e7e5bfdd41f65833d6da9a25036988b71f47effc4
+pristine:7a6e280addd5145ec5cbd0d4eefdc861783d69eee14b1abcc89e0ad232736bdc
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15000,3 +15000,39 @@ Antoonvh <j.a.v.hooft@gmail.com>**20260919132244
  Ignore-this: 2f9c3dc7cf2ee5453f058e3e62506eaf29bc2ecda554c4a195720e32c32345499fb8672c75db7af3
 ] 
 hash: 0000000333-3151ca4cd7c5dcb560844fab88f58434b6048f5497f389efd5f254441ffbd105
+[spectra: store the HDF5 plane axis ragged, so nz may vary between blocks
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260919091901
+ Ignore-this: a19d308e04acd72c9243d99f32b78e5cc757cc0a9499a094258b34f369a8f06e0acdc0c37cff4005
+ 
+ /E/<field> was fixed at (nt, nz, nk) on the first block, but H5DOappend()
+ takes the trailing extents from the dataset, not from the buffer: once a
+ caller's plane count shrank, every append read past the end of its own
+ array and returned 0.
+ 
+ Planes are now concatenated onto one row axis indexed by /nz and /zoff, so
+ /z is (nrows) and /E/<field> is (nrows, nk). A format attribute marks the
+ layout; a file disagreeing about it, or about nk, is refused before
+ anything is written rather than half-appended to.
+ 
+ test_spectra_hdf5 held nz fixed, which is why it never caught this; it now
+ writes 4, 2 and 7 planes.
+] 
+hash: 0000028797-d723a87503c63a148528da8a385acff0e067ab056548a557cdf6d58454fce380
+[spectra: one HDF5 group per output, and fix the nz = 1 plane height
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260919202529
+ Ignore-this: 94a8cbb6cf31548463f88fa862f6f467a3ffd4b61d24ca1fa7ff0bbc8d0c2bfbb27342bcbe7f1034
+ 
+ H5DOappend() aborts inside HDF5 1.12 even where the shapes agree, so the
+ shared time axis is gone: each output is its own group, every dataset
+ created at its final shape and written once. nz and nk may now differ
+ between outputs.
+ 
+ The plane height was special-cased at nz = 1 to hmin, putting a lone plane
+ at the bottom of the range; the general formula already gives the midpoint.
+] 
+hash: 0000038778-8e230b710be74e1709c622e9c058645d3324d9e08df8e90608026965f76d5103
+[Added paper by Kuo and Hao
+Xuanting Hao <xuantinghao@gmail.com>**20260920190457
+ Ignore-this: b91d4a942603e16348cb13a1d7b8db8e13ce41193ebc39afff46b21a2d728dd3c58b1adc3a563f57
+] 
+hash: 0000000493-8df493de6b9765d34633df8020837f3ce8de2cb00c8650f9218c084c678c3556

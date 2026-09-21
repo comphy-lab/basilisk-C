@@ -95,7 +95,7 @@ int sample_scalar_stack_sum_restrict (scalar * list, double * plane,
   for (int i = 0; i < n; i++)
     plane[i] = 0.;
   for (int iz = 0; iz < nz; iz++)
-    zout[iz] = snap_to_cell (nz > 1 ? hmin + (hmax - hmin)*(iz + 0.5)/nz : hmin,
+    zout[iz] = snap_to_cell (hmin + (hmax - hmin)*(iz + 0.5)/nz,
                              m1);
 
   restriction (list);

@@ -7,6 +7,17 @@ own papers if they use Basilisk. See also [src/references.bib]() for older refer
 
 ### 2026
 ~~~bib
+
+@article{kuo2026, 
+title={Fate of secondary droplets produced by high-speed raindrops interacting with a liquid pool}, 
+volume={1043}, 
+DOI={10.1017/jfm.2026.12028}, 
+journal={Journal of Fluid Mechanics}, 
+author={Kuo, Han-Hsiang and Hao, Xuanting}, 
+year={2026}, 
+pages={A27}
+} 
+
 @article{kieffer2026,
 title = {A coupled Volume-of-Fluid and Lagrangian Point-Particle approach for investigating the plain liquid jet in crossflow atomization},
 journal = {Computers & Fluids},

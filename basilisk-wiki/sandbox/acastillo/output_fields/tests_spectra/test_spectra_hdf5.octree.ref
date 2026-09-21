@@ -1,2 +1,2 @@
-nt 3  nz 4  nk 24  24 spectra  z spans 0.5890, 0.9817, 1.3744
-PASS: the HDF5 file stores the blocks on the axes it documents.
+format 3  nt 3  nz (4, 2, 7)  nk 24  26 spectra
+PASS: each output is a self-contained group, whatever its plane count.

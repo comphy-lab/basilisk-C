@@ -92,7 +92,7 @@ int sample_scalar_stack_sum (scalar * list, double * plane,
   double * slab = malloc (n*sizeof(double));
   int holes = 0;
   for (int iz = 0; iz < nz; iz++) {
-    z[iz] = snap_to_cell (nz > 1 ? hmin + (hmax - hmin)*(iz + 0.5)/nz : hmin,
+    z[iz] = snap_to_cell (hmin + (hmax - hmin)*(iz + 0.5)/nz,
                           m1);
     holes += sample_scalar_plane (list, slab, z[iz],
                                   xmin, xmax, ymin, ymax, m1, m2);
