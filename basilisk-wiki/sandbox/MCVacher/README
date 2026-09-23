@@ -1,4 +1,4 @@
-This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I work on a hydrodynamic instability of a jet/bubble plume impinging on a free-surface. Here are some Basilisk simulations on this subject, and more ! You can also learn things here : [Website](https://sites.google.com/view/marc-vacher/)
+This is the sandbox of Marc Vacher, Ph.D from LadHyX & PMMH, now teaching at ENS Paris-Saclay. I work on a hydrodynamic instability of a jet/bubble plume impinging on a free-surface, among others. Here are some Basilisk simulations on this subject, and more ! You can also learn things here : [Website](https://sites.google.com/view/marc-vacher/)
 
 ## Free Jets
 
@@ -22,6 +22,8 @@ This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I
 
 * [Self-induced sloshing by a jet](slosh_reg.c)
 
+* [Self-induced sloshing induced by a bubble flow (attempt)](bubble_injection.c)
+
 ## Sloshing
 
 * [Sloshing as a damped oscillator](slosh_dissipation.c)
@@ -35,6 +37,8 @@ This is the sandbox of Marc Vacher, currently a Ph.D student at LadHyX & PMMH. I
 ## Other
 
 * [Gravity current (Huppert)](gravity_current.c)
+
+* [Heated plate (natural convection boundary layer)](heated_plate.c)
 
 * [Test of harmonic.h](test_harmonic.c)
 

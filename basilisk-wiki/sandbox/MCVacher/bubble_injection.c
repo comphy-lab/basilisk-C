@@ -1,3 +1,15 @@
+/**
+# Two-Phase Bubble Plume Injection into a Liquid Bath with Embedded Geometry
+
+This simulation extends the single-phase jet sloshing configuration of
+[slosh_reg](https://basilisk.fr/sandbox/MCVacher/slosh_reg.c) to a
+two-phase framework. Instead of a liquid jet impinging on a free surface, 
+a gas bubble plume is injected upward from a nozzle at the bottom of a 
+liquid bath.
+
+The geometry includes two solid walls on either side of the nozzle inlet to generate bubbles continuously. If better methods exists, I am glad to be taught !
+*/
+
 #include "embed.h"
 #include "navier-stokes/centered.h"
 #include "two-phase.h" 
@@ -11,14 +23,12 @@ double U0;
 double R_d;
 double grav;
 
-#define MAXLEVEL 9
-
 FILE * fpmax; 
 
 int main() {
 
-  R_d=0.005; //Rayon du jet initial
-  L0=0.4; //Taille de la boite  
+  R_d=0.005; // Jet nozzle radius
+  L0=0.4;   
   rho2 = 10.;
   rho1=1000.;
   mu1 = 0.1;
@@ -46,11 +56,11 @@ int main() {
  
   G.y = -grav;
  
-  N=256;
-  origin (-L0/2, 0);//set the origin
-  init_grid(N);//Maillage, doit être de la forme 2^n
+  N=128;
+  origin (-L0/2, 0);
+  init_grid(N);
 
-  fpmax =  fopen("log.dat", "w"); //crée un fichier où on va mettre les infos qu'on veut
+  fpmax =  fopen("log.dat", "w"); 
 
   f.sigma=0.2;
 
@@ -67,15 +77,10 @@ event logfile (i++) {
   fprintf (fpmax, "%d %g \n", i, t);
 }
 
-
-event adapt (i++){
-  adapt_wavelet((scalar*){u}, (double[]){0.05, 0.05}, MAXLEVEL,5);
-}
-
 /**
 We generate videos:
 */
-event ppm_output (t = 0; t += 0.05; t <= 20) {
+event ppm_output (t = 0; t += 0.02; t <= 10) {
   char name[80];
   sprintf (name, "f.mp4");
   output_ppm (f, file = name, n = 512, min = 0, max = 1, linear = true);
@@ -84,23 +89,13 @@ event ppm_output (t = 0; t += 0.05; t <= 20) {
   sprintf (name1, "uY.mp4");
   output_ppm (u.y, file = name1, n = 512, linear = true);
   
-  /**
   char name2[80];
-  sprintf (name2, "uX.mp4");
-  output_ppm (u.x, file = name2, n = 512, linear = true);
-  */
-  
-  scalar omega[];
-  vorticity (u, omega);
-  
-  char name3[80];
-  sprintf (name3, "omega.mp4");
-  output_ppm (omega, file = name3, n = 512, linear = true);
+  sprintf (name2, "cs.mp4");
+  output_ppm (cs, file = "cs.mp4", n = 512, min = 0, max = 1, linear = false);
 }
 
 /**
 ![Free-surface](bubble_injection/f.mp4)
 ![Vertical velocity](bubble_injection/uY.mp4)
-![Horizontal velocity](bubble_injection/uX.mp4)
-![Vorticity](bubble_injection/omega.mp4)
+![Geometry](bubble_injection/cs.mp4)
 */
