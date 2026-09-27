@@ -54,6 +54,11 @@ GROUPS = {
                      ('test_profiles_slab', 'octree'),
                      ('test_profiles_slab_bias', 'quadtree'),
                      ('test_profiles_slab_bias', 'octree')], True),
+  # profiles_slab_restrict.h: restriction then foreach_level. Self-checking
+  # (exit code, no .ref); the dissipation test fixes its own grid (octree).
+  'profiles_slab_restrict': ([('test_profiles_level', 'quadtree'),
+                              ('test_profiles_level', 'octree'),
+                              'test_dissipation_level'], True),
 }
 
 NP = os.environ.get('NP', '4')  # MPI ranks, when a group needs them

@@ -89,7 +89,37 @@ void profile_scalar_slab (scalar * list = all, PROFILE_SLAB_PARAMS)
   for (int i = 0; i < n; i++)
     total_weight[i] = sample_count[i] = 0.;
 
-  profile_slab_restrict (list, w);
+  /** `s*w` and `s^2*w` formed at the leaves, each in its own field:
+      restricting `s` (or `w`) and multiplying here would give a product of
+      means. Unweighted, `s` itself is the first moment and needs no copy. */
+
+  bool weighted = (w.i != unity.i);
+  scalar * sws = NULL, * sqs = NULL;
+  for (int k = 0; k < len; k++) {
+    scalar s2 = new scalar;
+    sqs = list_append (sqs, s2);
+    if (weighted) {
+      scalar sw = new scalar;
+      sws = list_append (sws, sw);
+    }
+  }
+  scalar * mom1 = weighted ? sws : list;
+
+  foreach() {
+    double wt = weighted ? w[] : 1.;
+    scalar s, s2;
+    for (s, s2 in list, sqs)
+      s2[] = sq (s[])*wt;
+    if (weighted) {
+      scalar sw;
+      for (s, sw in list, sws)
+        sw[] = s[]*wt;
+    }
+  }
+  scalar * r = list_concat (mom1, sqs);
+  profile_slab_restrict (r, w);
+  free (r);
+
   foreach_level (slablevel,
            reduction(+:aver[:n*len]) reduction(+:aver_sq[:n*len])
            reduction(+:total_weight[:n]) reduction(+:sample_count[:n])) {
@@ -104,12 +134,19 @@ void profile_scalar_slab (scalar * list = all, PROFILE_SLAB_PARAMS)
     sample_count[iprof]++;
 
     int k = 0;
-    for (scalar s in list) {
-      double val = s[];
-      aver[iprof*len + k]    += val*weight;
-      aver_sq[iprof*len + k] += sq (val)*weight;
+    scalar s1, s2;
+    for (s1, s2 in mom1, sqs) {
+      aver[iprof*len + k]    += s1[];
+      aver_sq[iprof*len + k] += s2[];
       k++;
     }
+  }
+
+  delete (sqs);
+  free (sqs);
+  if (weighted) {
+    delete (sws);
+    free (sws);
   }
 
   PROFILE_SLAB_EPILOGUE();
@@ -169,8 +206,8 @@ void profile_product_slab (scalar * list1 = all, scalar * list2 = all,
   for (int i = 0; i < n; i++)
     total_weight[i] = sample_count[i] = 0.;
 
-  /** Formed at the leaves: restricting the operands and multiplying here
-      would give the product of the means. */
+  /** Formed at the leaves, weight included: restricting the operands (or
+      `w`) and multiplying here would give a product of means. */
 
   scalar * prods = NULL;
   for (int k = 0; k < len; k++) {
@@ -178,9 +215,10 @@ void profile_product_slab (scalar * list1 = all, scalar * list2 = all,
     prods = list_append (prods, p);
   }
   foreach() {
+    double wt = (w.i != unity.i) ? w[] : 1.;
     scalar s1, s2, p;
     for (s1, s2, p in list1, list2, prods)
-      p[] = s1[]*s2[];
+      p[] = s1[]*s2[]*wt;
   }
   profile_slab_restrict (prods, w);
   foreach_level (slablevel,
@@ -198,7 +236,7 @@ void profile_product_slab (scalar * list1 = all, scalar * list2 = all,
 
     int k = 0;
     for (scalar p in prods)
-      aver[iprof*len + k++] += p[]*weight;
+      aver[iprof*len + k++] += p[];
   }
 
   PROFILE_SLAB_EPILOGUE();

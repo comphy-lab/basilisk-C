@@ -1,4 +1,4 @@
-pristine:d68c31dfdb8eec19b4b0bbb32ef2b5db3e79e0a162644503b6f82e32e4ab4e3d
+pristine:1868bee230a714fe11a119b1e7a1f40f0784e705f668b4517ad1c76d2e20d292
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15106,3 +15106,8 @@ mvacher <marc.cordelle.vacher@gmail.com>**20260922155918
  Ignore-this: 45f4bfa887abe493201d3ba845e67dfa7093fbaad1e5797e44aa2da713fee4fbc82b934aad196d34
 ] 
 hash: 0000000888-47b9aabe652769a680c96a7dfd50f58226160a4d084481e76b4e1b9f49d1980d
+[Restriction is now applied consistently
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260926165255
+ Ignore-this: 18438857efeeeb9aba0d535fbc17767c6803abe680a5b4a910ceb8e45872fe82ba890909efcdbce9
+] 
+hash: 0000006721-0311fa54ea6afdf078a38ca3b3c5a3e3ff3c19705b49c66403a1bdc9f880f27f

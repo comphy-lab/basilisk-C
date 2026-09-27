@@ -20,11 +20,18 @@ mean exactly 1/2) and so sees any mis-weighting between cell sizes; `zlin` is
 constant within a slab and is a control that must stay exact; `smooth` has slab
 mean exactly 0 and tests cancellation; `curved` is nonlinear in $z$ and
 separates resampling error from weighting error; `radial` is keyed to the
-cylinder, so it varies exactly where the finest cells are.
+cylinder, so it varies exactly where the finest cells are; `chk` is $\pm 1$
+alternating in $x$ on each leaf's own lattice, so it averages to 0 over any
+parent while its square is 1 everywhere.
 
 All three writers are exercised, since each restricts a different list:
 
-* `profile_scalar_slab` -- the scalars above.
+* `profile_scalar_slab` -- the scalars above. `chk` pins the `mean(s^2)`
+  column: formed at the leaves it is exactly 1 in every slab, while squaring
+  after restriction gives 0 in the slabs the band refines. A second call
+  weighted by `wchk = 1 + chk/2` pins the weight the same way: the leaf
+  moments give mean(chk) = 1/2 and mean(chk^2) = 1 exactly, while weighting
+  the restricted field gives 0 in the band.
 * `profile_product_slab` -- `radial*radial`, whose slab mean is
   $\overline{radial^2} = 0.1097$ against $\overline{radial}^2 = 0.0304$: a gap
   of 0.079, keyed to the refined cylinder. This is the pair that discriminates,
@@ -60,7 +67,7 @@ Checks its own tolerances and reports through the exit code, as
 # define HORIZ x
 #endif
 
-scalar hvar[], zlin[], smooth[], curved[], radial[];
+scalar hvar[], zlin[], smooth[], curved[], radial[], chk[], wchk[];
 
 /** Distance from the vertical axis: a cylinder in 3D, a slab-centred strip in
     2D, so the innermost refinement is always off-axis and curved where it can
@@ -117,7 +124,8 @@ int mode;   // 0 uniform, 1 nested@base, 2 nested@leaves
 #define COL_SMOOTH 7
 #define COL_CURVED 9
 #define COL_RADIAL 11
-#define NCOL       13
+#define COL_CHK    13
+#define NCOL       15
 
 /** Max |mode a - mode b| over slabs, in one column of the scalar block. */
 
@@ -145,6 +153,27 @@ double column_gap (int ma, int mb, int col)
   } while (fgets (la, sizeof(la), fa) && fgets (lb, sizeof(lb), fb));
   fclose (fa); fclose (fb);
   return gap;
+}
+
+/** Max |value - target| over slabs, in one column of a profile file. */
+
+double column_dev (const char * name, int col, double target)
+{
+  FILE * fp = fopen (name, "r");
+  if (fp == NULL) { perror (name); exit (1); }
+  char line[2048];
+  while (fgets (line, sizeof(line), fp) && line[0] == '#');
+  double dev = 0.;
+  do {
+    double v[NCOL];
+    int c = 0, nch;
+    char * p = line;
+    while (c < NCOL && sscanf (p, "%lf%n", &v[c], &nch) == 1) { p += nch; c++; }
+    if (c > col && fabs (v[col] - target) > dev)
+      dev = fabs (v[col] - target);
+  } while (fgets (line, sizeof(line), fp));
+  fclose (fp);
+  return dev;
 }
 
 int main() {
@@ -201,6 +230,28 @@ int main() {
     nfail++;
   }
 
+  /** The scalar writer's moments are formed at the leaves, weight included:
+      `chk^2` is 1 in every cell, and weighted by `wchk` `chk` averages to 1/2
+      over every pair -- on both grids, even where the band's children cancel
+      `chk` itself to 0 after restriction. */
+  struct { const char * file; int col; double exact; const char * what; } mom[] = {
+    {"prof_level_mode%d.asc",   COL_CHK + 1, 1.,  "mean(chk^2)"},
+    {"profw_level_mode%d.asc",  3,           0.5, "weighted mean(chk)"},
+    {"profw_level_mode%d.asc",  4,           1.,  "weighted mean(chk^2)"},
+  };
+  for (int k = 0; k < 3; k++)
+    for (int m = 0; m <= 1; m++) {
+      char name[80];
+      sprintf (name, mom[k].file, m);
+      double d = column_dev (name, mom[k].col, mom[k].exact);
+      fprintf (stderr, "%-21s mode %d max dev : %.3e\n", mom[k].what, m, d);
+      if (d > EXACT_TOL) {
+        fprintf (stderr, "FAIL: %s is not %g: a product was taken after "
+                 "restriction\n", mom[k].what, mom[k].exact);
+        nfail++;
+      }
+    }
+
   /** The product is formed at the leaves, so it is the mean of the square,
       not the square of the mean. */
   double ex2 = radial_quad (1), ex1 = radial_quad (0);
@@ -248,6 +299,8 @@ event init (i = 0) {
 #endif
     curved[] = tanh (VERT/DTANH);
     radial[] = radial_profile (x, y);
+    chk[]    = ((int) floor ((x - X0)/Delta)) % 2 ? 1. : -1.;
+    wchk[]   = 1. + 0.5*chk[];
     /** Linear in space: every velocity gradient is an exact constant, so the
         dissipation profile has a closed form even across a level jump. */
     u.x[] = 2.*VERT; // only the vertical may vary linearly: x,y are periodic
@@ -269,8 +322,13 @@ event go (i = 0) {
   int slev = (mode == 2) ? depth() : min (LBASE, depth());
   double vmin = (dimension == 2 ? Y0 : Z0);
 
-  scalar * list = {hvar, zlin, smooth, curved, radial};
+  scalar * list = {hvar, zlin, smooth, curved, radial, chk};
   profile_scalar_slab (list, filename = name,
+                       hmin = vmin + del/2., hmax = vmin + L0 - del/2.,
+                       n = NC, slablevel = slev, mode = "w");
+
+  char wname[80]; sprintf (wname, "profw_level_mode%d.asc", mode);
+  profile_scalar_slab ({chk}, wchk, filename = wname,
                        hmin = vmin + del/2., hmax = vmin + L0 - del/2.,
                        n = NC, slablevel = slev, mode = "w");
 
