@@ -38,10 +38,9 @@ def compute_Ep(rho, g, ds, L0, Ep0=0.0, skip=2):
     return Ept - Ep0
 
 
-def compute_spectrum_trange(ds, start, end):
+def compute_spectrum_trange(ds, N, L0, start, end):
     # find items in [start, end]
     subds = ds.sel(time=slice(start, end))
-
     _, _, _, k_sample = get_wavenumber(N, L0 / N)
 
     phi_k = np.zeros((len(subds.time), len(k_sample)))

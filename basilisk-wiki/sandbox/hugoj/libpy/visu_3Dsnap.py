@@ -173,11 +173,11 @@ def parse_args(argv=None):
     )
 
     p.add_argument(
-        "--outpng",
-        type=bool,
+        "--out",
+        type=str,
         nargs=1,
-        default=False,
-        help="if True, outputs a .png file instead of .pdf",
+        default="pdf",
+        help="outputs using --out extension, default is .pdf. Available is .svg .pdf",
     )
 
     return p.parse_args(argv)
@@ -209,15 +209,15 @@ def render_snapshot(
     xclip=None,
     yclip=None,
     zclip=None,
-    outpng=False,
+    out="png",
 ):
 
     input_path = Path(input).expanduser()
     if not input_path.exists():
         raise FileNotFoundError(f"input file not found: {input_path}")
     output_path = Path(output)
-    if outpng:
-        output_path = f"{Path(output)}_t{ttime}.png"
+    if out == "svg":
+        output_path = f"{Path(output)}_t{ttime}.svg"
     else:
         output_path = f"{Path(output)}_t{ttime}.pdf"
 

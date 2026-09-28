@@ -1,4 +1,4 @@
-pristine:1868bee230a714fe11a119b1e7a1f40f0784e705f668b4517ad1c76d2e20d292
+pristine:cbb1a909d3906fe0af75b457d061d75cf4ee62f14e028c790aa717cc20dff86c
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15111,3 +15111,38 @@ Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**2026092616525
  Ignore-this: 18438857efeeeb9aba0d535fbc17767c6803abe680a5b4a910ceb8e45872fe82ba890909efcdbce9
 ] 
 hash: 0000006721-0311fa54ea6afdf078a38ca3b3c5a3e3ff3c19705b49c66403a1bdc9f880f27f
+[add some diags (MLD, T top view) and minor cleanups
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260927173001
+ Ignore-this: 67d1b319613b5e68df82ffbceda5912a
+] 
+hash: 0000011089-13d9b2b73f25c0024d31eebffdbeea109ae4b57dc8f0566c77f2e71a7fb9404e
+[added wind forcing to multilayer (E=cst and forcing=cst), with linear wave test case, + cleanup
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260927174655
+ Ignore-this: b1439f72c1e42edbcacaaed49ada348c
+] 
+hash: 0000094565-9ed04457374f1c705e90bfd079a0e02c9294e8008fc851f16b53949760888b2d
+[Hay 2023: Europa Ocean with the multilayer
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260927174852
+ Ignore-this: 3e0b0509af7ae12f81234c5f1a31ee57
+] 
+hash: 0000019509-0bcffd60ab030ef77ff9ed008ce2ff1d9b95b37b85e1dff3eca1141cd9c0e556
+[saving work on the T loss bug. Added a new diffusionH_delta.h that works on deltas instead of absolute values. still wip
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260927175355
+ Ignore-this: fa106f1d492a0dccd0af4bc478338c7d
+] 
+hash: 0000049949-1c0d2467ba98182c4b0276118388eaddec4770129c9ac13819449eb819cb62dd
+[doc, cleaner example
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260927184757
+ Ignore-this: ce6f028874c2227b4f1c246d6cca8aa
+] 
+hash: 0000012091-834418e1897b71db2b753e2423b911ac7ee6ad566da5164044c9821bff7265f9
+[updated Makefile
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260927184859
+ Ignore-this: 3771cfe8aa6de40ea29edf9f0568dba
+] 
+hash: 0000000317-9eca7d7a95d5a71e796cb243fd30c5ae9f39d413d78cd930c99f848a821c5ace
+[cosmetics
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260927190352
+ Ignore-this: c6f9631d0432655bf343b76594a59741
+] 
+hash: 0000003175-baffd04849e622a2b1cdd62fe9b850a822a0d1e68e589d6b7b0ed3cf04882a39

@@ -1,15 +1,18 @@
 """
 Figures for CSI report 2026
+
+
+you might need to change the temp dir for dask:
+(if you get out of memory error because workers are spilling too much data on disk)
+export TMPDIR=/home/jacqhugo/basilisk/wiki/sandbox/hugoj/breaking_strat/tmp
 """
 
 import numpy as np
-import xarray as xr
 import matplotlib.pyplot as plt
-from pathlib import Path
 import colorcet as cc
-import matplotlib.ticker as ticker
 import time
-
+import xarray as xr
+from scipy.optimize import curve_fit
 
 # add libpy
 import os.path
@@ -27,6 +30,7 @@ from diags import (
     compute_Ek,
     EOS,
 )
+
 from L2_maker import make_L2_layer, make_L2_eulerian
 from visu_3Dsnap import render_snapshot
 from fftlib import get_spec_1D, get_wavenumber
@@ -38,12 +42,12 @@ def main():
 
     if True:
         cluster = LocalCluster(
-            n_workers=4,  # fewer workers, more memory each, tune to your machine
-            threads_per_worker=2,
-            memory_limit="4GB",  # per worker — dask will spill to disk before crashing
+            n_workers=8,  # fewer workers, more memory each, tune to your machine
+            threads_per_worker=1,
+            memory_limit="2GB",  # per worker — dask will spill to disk before crashing
         )
         client = Client(cluster)
-        print(client.dashboard_link)
+        print("dashboard :", client.dashboard_link)
 
     # General parameters
     L0 = 200
@@ -63,7 +67,8 @@ def main():
     # inpath = "N512_nl30_0.000002_Tinizl/"
     # inpath = "N512_30_P0.02_RE40000_TiniZ/"
     # inpath = "N512_30_P0.02_RE40000_TiniZl/"
-    inpath = "N512_40_RE40000_TiniZl_remap1.0/"
+    # inpath = "N512_40_RE40000_TiniZl_remap1.0/"
+    inpath = "N512_40_RE40000_TiniZl_remap1.0_cuda/"
     infile = "out.nc"
     outfile = "L2_" + infile
     lsfx = -1
@@ -93,7 +98,8 @@ def main():
     # ========================
     # --- Energy evolution ---
     # ========================
-    if True:
+    if False:
+        print("Energy evolution")
         skip = 1
 
         drho = EOS(ds.T, Ts, betaT)
@@ -119,10 +125,11 @@ def main():
         # Total energy
         Et = Ek + Ep
 
+        ET0 = Et.isel(time=0)
         fig, ax = plt.subplots(1, 1, figsize=(5, 5), constrained_layout=True, dpi=100)
-        ax.plot(ds.time / Tp, Ep / Ep.isel(time=0), c="g", label="Ep")
-        ax.plot(ds.time / Tp, Ek / Ek.isel(time=0), c="b", label="Ek")
-        ax.plot(ds.time / Tp, Et / Et.isel(time=0), c="k", label="Et=Ek+Ep")
+        ax.plot(ds.time / Tp, 2 * Ep / ET0, c="g", label="2Ep")
+        ax.plot(ds.time / Tp, 2 * Ek / ET0, c="b", label="2Ek")
+        ax.plot(ds.time / Tp, Et / ET0, c="k", label="Et=Ek+Ep")
         ax.set_xlabel("t/Tp")
         ax.set_ylabel("E/E0")
         ax.legend()
@@ -262,7 +269,7 @@ def main():
                 label="t/Tp=%d" % (listt[it] / Tp),
             )
 
-        kr, phi_k = compute_spectrum_trange(ds, start, end)
+        kr, phi_k = compute_spectrum_trange(ds, N, L0, start, end)
         ax.loglog(
             kr * L0,
             (phi_k / (2 * np.pi)) * kp**3,
@@ -329,47 +336,177 @@ def main():
         return r"${} \times 10^{{{}}}$".format(a, b)
 
     if False:
-        fig, ax = plt.subplots(1, 1, figsize=(8, 5), constrained_layout=True, dpi=300)
+        fig, ax = plt.subplots(1, 1, figsize=(6, 5), constrained_layout=True, dpi=300)
         s = ax.pcolormesh(
             ds.x,
             ds.y,
             # ds.T.isel(time=att, level=lsfx) / Ts,
-            (ds.T.isel(time=att, level=lsfx) - Ts) * 1000,
-            # vmin=19.996,
-            # vmax=20.0,
-            cmap=cc.m_fire,
+            (ds.T.sel(time=att, method="nearest").isel(level=lsfx) - Ts) * 1000,
+            vmin=-11,
+            vmax=-4,
+            cmap=cc.m_bmy,
         )
         ax.set_aspect(1)
         ax.set_xlabel("X(m)")
         ax.set_ylabel("Y(m)")
         # plt.colorbar(s, ax=ax, format=ticker.FuncFormatter(fmt), label="T-T0 (mK)")
-        plt.colorbar(s, ax=ax, label="T-T0 (mK)")
-        fig.savefig(f"CSI_sfx_T_at{att}.pdf")
+        plt.colorbar(s, ax=ax, label="T-Ts (mK)")
+        fig.savefig("CSI_sfx_T_at%d_sfx.pdf" % (att))
+
+    if False:
+        atlvl = 30
+        zm = (
+            ds.z.sel(time=att, method="nearest")
+            .isel(level=atlvl)
+            .mean(dim=["x", "y"])
+            .values
+        )
+        fig, ax = plt.subplots(1, 1, figsize=(6, 5), constrained_layout=True, dpi=300)
+        s = ax.pcolormesh(
+            ds.x,
+            ds.y,
+            # ds.T.isel(time=att, level=lsfx) / Ts,
+            (ds.T.sel(time=att, method="nearest").isel(level=atlvl) - Ts) * 1000,
+            vmin=-11,
+            vmax=-4,
+            cmap=cc.m_bmy,
+        )
+        ax.set_aspect(1)
+        ax.set_xlabel("X(m)")
+        ax.set_ylabel("Y(m)")
+        # plt.colorbar(s, ax=ax, format=ticker.FuncFormatter(fmt), label="T-T0 (mK)")
+        plt.colorbar(s, ax=ax, label="T-Ts (mK)")
+        fig.savefig("CSI_sfx_T_at%d_d%d.pdf" % (att, np.abs(zm)))
 
     # ==================
     # -- Diag de MLD ---
     # ==================
-    # TODO: !
-    if False:
+    if True:
         skip = 10
 
-        fig, ax = plt.subplots(1, 1, figsize=(5, 5), constrained_layout=True, dpi=300)
-        print("-> MLD diag: dTm/dz")
-        for it in range(0, nt, skip):
+        dTdz_ini = Ndeux / (g * betaT)
+
+        if False:
+            fig, ax = plt.subplots(
+                1, 1, figsize=(5, 5), constrained_layout=True, dpi=300
+            )
+            print("-> MLD diag: dTm/dz")
+            for it in range(0, nt, skip):
+                dTmdz = grad_dir(
+                    dsL2.T_m.isel(time=it),
+                    dsL2.isel(time=it),
+                    grid,
+                    dir="Z",
+                    zvar="level",
+                )
+                ax.plot(
+                    dTmdz,
+                    Zm.isel(time=it),
+                    c="b",
+                    alpha=(it + 1) / (2 * nt),
+                    marker="x",
+                )
+            ax.set_ylim((-H0, 0))
+            ax.set_xlim((-dTdz_ini * 1.5, dTdz_ini * 1.5))
+            ax.set_xlabel(r"$\partial_z \overline{T}$")
+            ax.set_ylabel(r"$\overline{z}$")
+            fig.savefig("CSI_gradT.pdf")
+
+        """
+        MLD = first level where change of dTdz is less than X% of dTdz_ini
+        """
+        if True:
+            thrs = 0.25
+            MLD = np.zeros(len(ds.time))
+
             dTmdz = grad_dir(
-                dsL2.T_m.isel(time=it), dsL2.isel(time=it), grid, dir="Z", zvar="level"
+                dsL2.T_m,
+                dsL2,
+                grid,
+                dir="Z",
+                zvar="level",
             )
-            ax.plot(
-                dTmdz,
-                Zm.isel(time=it),
-                c="b",
-                alpha=(it + 1) / (2 * nt),
-                marker="x",
+
+            dTmdz_diff = dTmdz.diff(dim="level")  # level dim now has nl-1 points...
+            # dTmdz_diff[k] = dTmdz[k+1] - dTmdz[k]
+            rel_change = np.abs(dTmdz_diff) / (
+                np.abs(dTmdz.isel(level=slice(None, -1))) + 1e-8
             )
-        ax.set_ylim((-H0 / 5, 0))
-        # ax[0].set_xlim((-25, 1))
-        ax.set_xlabel(r"$\partial_z \overline{T}$")
-        ax.set_ylabel(r"$\overline{z}$")
+
+            # 2. Condition: gradient has stabilized (<10% change)
+            cond = rel_change < 0.10  # dims: (time, level', ...) level'=nl-1
+
+            # 3. Reverse along level so index 0 = surface-most point, then search
+            cond_rev = cond.isel(level=slice(None, None, -1))
+
+            first_idx_rev = cond_rev.argmax(
+                dim="level"
+            )  # first True from the surface down
+            found = cond_rev.any(dim="level")
+
+            first_idx_rev = first_idx_rev.compute()
+            found = found.compute()
+
+            # 4. Map the reversed index back to the original (bottom-to-top) level index
+            n_levels = cond.sizes["level"]
+            first_idx = (
+                n_levels - 1
+            ) - first_idx_rev  # index into the ORIGINAL cond/level' axis
+
+            # 5. Get the depth at that level (Zm must share the same level' coordinate as cond,
+            #    i.e. drop the last original level to match dTmdz_diff, OR the first — see note below)
+            Zm_levels = Zm.isel(
+                level=slice(None, -1)
+            )  # align with dTmdz_diff's level axis
+            MLD = xr.where(found, Zm_levels.isel(level=first_idx), np.nan)
+
+            # 6. Fallback when no level ever stabilizes (e.g. fully mixed or noisy profile)
+            MLD = MLD.ffill(dim="time").fillna(0)
+            MLD = MLD.values
+
+            MLD[0] = 0
+            print(MLD)
+
+            def h_conv(B0, Ndeux, offset, t):
+                return -np.sqrt(2 * (B0) / Ndeux * t) + offset
+
+            params, _ = curve_fit(h_conv, ds.time.values[1:], MLD[1:])
+            y_smooth = h_conv(ds.time, *params)
+
+            fig, ax = plt.subplots(
+                1, 1, figsize=(5, 5), constrained_layout=True, dpi=300
+            )
+            ax.plot(ds.time / Tp, y_smooth, c="k", label=r"$\propto \sqrt{t}+c$")
+            print(-y_smooth)
+            ax.scatter(ds.time / Tp, MLD, c="b", marker="+", label="data")
+            ax.set_xlabel("t/Tp")
+            ax.set_ylabel("MLD (m)")
+            ax.legend()
+            fig.savefig("CSI_MLD.pdf")
+
+            raise Exception
+            # for it in range(1, nt):
+            #     dTmdz = grad_dir(
+            #         dsL2.T_m.isel(time=it),
+            #         dsL2.isel(time=it),
+            #         grid,
+            #         dir="Z",
+            #         zvar="level",
+            #     )
+            #     delta = dTmdz[-1] - dTmdz[-2]
+            #     for kz in range(len(ds.level)):
+            #         if delta > thrs * dTdz_ini:
+            #             MLD[it] = Zm.isel(time=it, level=nl - kz)
+            #         else:
+            #             MLD[it] = MLD[it - 1]
+            print(MLD)
+            fig, ax = plt.subplots(
+                1, 1, figsize=(5, 5), constrained_layout=True, dpi=300
+            )
+            ax.plot(ds.time / Tp, MLD)
+            ax.set_xlabel("t/Tp")
+            ax.set_ylabel("MLD (m)")
+            fig.savefig("CSI_MLD.pdf")
 
     # ===========
     # 3D PLOTS
@@ -398,7 +535,6 @@ def main():
             xclip=None,
             yclip=None,
             zclip=None,
-            outpng=True,
         )
 
     # --- zoom on a breaking ---

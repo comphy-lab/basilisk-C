@@ -22,7 +22,7 @@ def common_diags(
 
     # mean
     for i, var in enumerate(var_vec):
-        ds[var_vec2[i] + "_m"] = ds[var].mean(dim=["x", "y"])
+        ds[var_vec2[i] + "_m"] = ds[var].mean(dim=["x", "y"]).compute()
 
     # fluctuations
     for i, var in enumerate(var_vec):

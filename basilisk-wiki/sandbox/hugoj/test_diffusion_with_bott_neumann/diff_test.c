@@ -14,10 +14,18 @@ __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia make
 */
 #include "grid/multigrid.h"
 #include "layered/hydro.h"
+#if !MINIMAL
 #include "layered/nh.h"
+#if !NO_REMAP
 #include "layered/remap.h"
+#endif
+#endif
 #include "layered/perfs.h"
-#include "hugoj/lib/diffusionH.h"
+#if DIFF_DELTA
+# include "hugoj/lib/diffusionH_delta.h"
+#else
+# include "hugoj/lib/diffusionH.h"
+#endif
 #include "bderembl/libs/netcdf_bas.h"
 
 double tend = 3600.0;
@@ -42,21 +50,21 @@ double fluxbot,fluxtop;
 
 double* Temp;
 
-static FILE * fp;
-
 int main(int argc, char *argv[])  
 {
-  L0 = 50.;
+  L0 = 1.;
   nu = 0.01;
   diffT = nu/Pr;
   N = 1; 
   nl = 30;
   G = 9.81;
+#if !MINIMAL
   theta_H = 0.51;
   CFL_H = 8.;
+#endif
   CFL = 0.8;
   
-  #if HDIFF || T_CST
+  #if HDIFF
   N = 8;
   #endif
 
@@ -95,6 +103,12 @@ int main(int argc, char *argv[])
 
 event init(i =  0) {
 
+#if DIFF_DELTA
+  fprintf (stderr, "## diffusionH_delta.h version %s\n", DIFFUSIONH_DELTA_VERSION);
+#else
+  fprintf (stderr, "## diffusionH.h version %s\n", DIFFUSIONH_VERSION);
+#endif
+
   foreach() {
     zb[] = -H0;
     eta[] = 0.;
@@ -105,7 +119,9 @@ event init(i =  0) {
       z += h[]/2.;
       foreach_dimension()
         u.x[] = 0.;
+#if !MINIMAL
       w[] = 0.;
+#endif
     #if T_CST
       T[] = Ts;
     #else
@@ -115,9 +131,13 @@ event init(i =  0) {
     }
   }
 
-  fp  = fopen("T_profile.dat","w"); // reset file
-  fclose(fp);
-  create_nc({zb, h, u, w, eta, T}, "out.nc");
+  create_nc(
+#if MINIMAL
+           {zb, h, u, eta, T},
+#else
+           {zb, h, u, w, eta, T},
+#endif
+           "out.nc");
 }
 
 /**
@@ -125,9 +145,40 @@ We impose the stratification at the top and the bottom to be the initial
 stratification. We should not see any change in the profile.
 */
 
+#if DIAG_STEPS
+static void diag_T (const char * tag, double tt, int ii)
+{
+  /* per-layer T averaged over cells, printed on stderr with a tag.
+     Deliberately uses the same (CPU) loop pattern as event log. */
+  foreach (reduction(+:Temp[:nl])) {
+    foreach_layer()
+      Temp[point.l] += T[];
+  }
+  for (int kl = 0; kl < nl; kl++) {
+    Temp[kl] /= N*N;
+    fprintf (stderr, "%s %f %d %d %.9e\n", tag, tt, ii, kl, Temp[kl]-Ts);
+    Temp[kl] = 0.;
+  }
+  fprintf (stderr, "\n\n");
+}
+#endif
+
 event viscous_term (i++)
 {
+#if DIAG_STEPS
+  if (i < 10)
+    diag_T ("A", t, i);   // start of step, before diffusion
+#endif
   foreach() {
+  #if DIFF_DELTA
+    vertical_diffusion_delta (point,   // point
+                              h,        // h
+                              T,        // scalar
+                              dt,       // dt
+                              diffT,    // D
+                              fluxtop,  // dst
+                              fluxbot); // dsb
+  #else
     vertical_diffusion2 (point,   // point
                         h,        // h
                         T,        // scalar
@@ -135,7 +186,12 @@ event viscous_term (i++)
                         diffT,    // D
                         fluxtop,  // dst
                         fluxbot); // dsb
+  #endif
   }
+#if DIAG_STEPS
+  if (i < 10)
+    diag_T ("B", t, i);   // after vertical diffusion, before other viscous ops
+#endif
   #if HDIFF
   horizontal_diffusion ({T}, diffT, dt);
   horizontal_diffusion ({u, w}, nu, dt);
@@ -143,12 +199,16 @@ event viscous_term (i++)
 }
 
 event log (i++){
-  fp  = fopen("T_profile.dat","a");
-  if (fp == NULL){
-    fprintf(stderr, "Error opening file T_profile.dat");
-    return 2;
-  }
 
+#if DIAG_STEPS
+  if (i < 10)
+    diag_T ("C", t, i);   // end of timestep (after advection, remap, ...)
+  if (i < 10) {
+    fprintf (stdout, "%f %d\n", t, i);  // keep 'out' minimal in diag mode
+    fprintf(stdout, "\n\n");
+    write_nc();
+  }
+#else
   #if HDIFF || T_CST
   foreach (reduction(+:Temp[:nl])){
     foreach_layer (){
@@ -157,22 +217,23 @@ event log (i++){
   }
   for (int kl=0; kl<nl; kl++){
     Temp[kl] /= N*N;
-    fprintf (fp, "%f %d %d %g\n", t, i, kl, Temp[kl]);
+    fprintf (stdout, "%f %d %d %g\n", t, i, kl, Temp[kl]-Ts);
     Temp[kl] = 0.;
   }
   #else
   foreach() {
     foreach_layer()
-      fprintf (fp, "%f %d %d %g\n", t, i, point.l, T[]);
+      fprintf (stdout, "%f %d %d %g\n", t, i, point.l, T[]-Ts);
   }
   #endif 
-  fprintf(fp,"\n\n");
-  fclose(fp);
+#endif // !DIAG_STEPS
+  fprintf(stdout, "\n\n");
   write_nc();
 }
 
-event stop (t = tend){
+event stop (i=200){ // t = tend
   free(Temp);
+  return 1;
 }
 
 
@@ -183,19 +244,19 @@ event stop (t = tend){
 ~~~pythonplot Profile of T with imposed gradient at the top and the bottom of the domain imposed to be the initial stratification: we expect that nothing moves
 import numpy as np
 import matplotlib.pyplot as plt
-data = np.loadtxt("T_profile.dat")
+data = np.loadtxt("out", skiprows=1)
+print(data)
 nl=30
 nt = data.shape[0]//nl
 fig, ax = plt.subplots(figsize=(8, 6))
 cmap = plt.get_cmap("viridis", nt)
 for t in range(nt):
     layer=data[t*nl:(t+1)*nl,2]
-    T = data[t*nl:(t+1)*nl,3]
+    T = data[t*nl:(t+1)*nl,3] - 20 
     ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
 ax.set_xlabel("T")
 ax.set_ylabel("Layer")
 ax.set_title("Temperature profiles (hold stratif)")
-ax.set_xlim([19.875,20.025])
 #ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
 plt.tight_layout()
 plt.savefig("T_profiles.png", dpi=150)
@@ -206,19 +267,18 @@ plt.savefig("T_profiles.png", dpi=150)
 ## HEATING
 
 ~~~pythonplot Profile of T with surface cooling
-data = np.loadtxt("../diff_test_H/T_profile.dat")
+data = np.loadtxt("../diff_test_H/out",skiprows=1)
 nl=30
 nt = data.shape[0]//nl
 fig, ax = plt.subplots(figsize=(8, 6))
 cmap = plt.get_cmap("viridis", nt)
 for t in range(nt):
     layer=data[t*nl:(t+1)*nl,2]
-    T = data[t*nl:(t+1)*nl,3]
+    T = data[t*nl:(t+1)*nl,3]- 20 
     ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
 ax.set_xlabel("T")
 ax.set_ylabel("Layer")
 ax.set_title("Temperature profiles (Q<0)")
-ax.set_xlim([19.875,20.025])
 #ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
 plt.tight_layout()
 plt.savefig("T_profiles_H.png", dpi=150)
@@ -228,19 +288,18 @@ plt.savefig("T_profiles_H.png", dpi=150)
 ## NEUMANN0
 
 ~~~pythonplot Profile of T Neumann boundary conditions
-data = np.loadtxt("../neumann0/T_profile.dat")
+data = np.loadtxt("../neumann0/out", skiprows=1)
 nl=30
 nt = data.shape[0]//nl
 fig, ax = plt.subplots(figsize=(8, 6))
 cmap = plt.get_cmap("viridis", nt)
 for t in range(nt):
     layer=data[t*nl:(t+1)*nl,2]
-    T = data[t*nl:(t+1)*nl,3]
+    T = data[t*nl:(t+1)*nl,3]- 20 
     ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
 ax.set_xlabel("T")
 ax.set_ylabel("Layer")
 ax.set_title("Temperature profiles (dTdz=0 top, bot)")
-ax.set_xlim([19.875,20.025])
 #ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
 plt.tight_layout()
 plt.savefig("T_profiles_neumann0.png", dpi=150)
@@ -250,19 +309,18 @@ plt.savefig("T_profiles_neumann0.png", dpi=150)
 ## NEUMANN0, HDIFF
 
 ~~~pythonplot Profile of T Neumann boundary conditions and horizontal diffusion
-data = np.loadtxt("../with_diff/T_profile.dat")
+data = np.loadtxt("../with_diff/out", skiprows=1)
 nl=30
 nt = data.shape[0]//nl
 fig, ax = plt.subplots(figsize=(8, 6))
 cmap = plt.get_cmap("viridis", nt)
 for t in range(nt):
     layer=data[t*nl:(t+1)*nl,2]
-    T = data[t*nl:(t+1)*nl,3]
+    T = data[t*nl:(t+1)*nl,3]- 20 
     ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
 ax.set_xlabel("T")
 ax.set_ylabel("Layer")
 ax.set_title("Temperature profiles (w/ hdiff, dTdz=0 bot and top)")
-ax.set_xlim([19.875,20.025])
 #ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
 plt.tight_layout()
 plt.savefig("T_profiles_with_diff.png", dpi=150)
@@ -271,19 +329,18 @@ plt.savefig("T_profiles_with_diff.png", dpi=150)
 ## ----------------------
 ## NEUMANN0, HDIFF, CUDA
 ~~~pythonplot Profile of T Neumann boundary conditions and horizontal diffusion (cuda)
-data = np.loadtxt("../with_diff.cuda/T_profile.dat")
+data = np.loadtxt("../with_diff.cuda/out", skiprows=1)
 nl=30
 nt = data.shape[0]//nl
 fig, ax = plt.subplots(figsize=(8, 6))
 cmap = plt.get_cmap("viridis", nt)
 for t in range(nt):
     layer=data[t*nl:(t+1)*nl,2]
-    T = data[t*nl:(t+1)*nl,3]
+    T = data[t*nl:(t+1)*nl,3]- 20 
     ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
 ax.set_xlabel("T")
 ax.set_ylabel("Layer")
 ax.set_title("Temperature profiles (w/ hdiff, dTdz=0 bot and top, cuda)")
-ax.set_xlim([19.875,20.025])
 #ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
 plt.tight_layout()
 plt.savefig("T_profiles_with_diff_cuda.png", dpi=150)
@@ -293,19 +350,18 @@ plt.savefig("T_profiles_with_diff_cuda.png", dpi=150)
 ## NEUMANN0, T_CST
 
 ~~~pythonplot Profile of T, with Neumann boundary conditions and constant initial temperature
-data = np.loadtxt("../T_cst/T_profile.dat")
+data = np.loadtxt("../T_cst/out",skiprows=1)
 nl=30
 nt = data.shape[0]//nl
 fig, ax = plt.subplots(figsize=(8, 6))
 cmap = plt.get_cmap("viridis", nt)
 for t in range(nt):
     layer=data[t*nl:(t+1)*nl,2]
-    T = data[t*nl:(t+1)*nl,3]
+    T = data[t*nl:(t+1)*nl,3]- 20 
     ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
 ax.set_xlabel("T")
 ax.set_ylabel("Layer")
 ax.set_title("Temperature profiles (T=cst, dT/dz=0 bot and top)")
-ax.set_xlim([19.999,20.001])
 #ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
 plt.tight_layout()
 plt.savefig("T_profiles_T_cst.png", dpi=150)
@@ -315,19 +371,18 @@ plt.savefig("T_profiles_T_cst.png", dpi=150)
 ## NEUMANN0, T_CST, CUDA
 
 ~~~pythonplot Profile of T, with Neumann boundary conditions and constant initial temperature (cuda)
-data = np.loadtxt("../T_cst.cuda/T_profile.dat")
+data = np.loadtxt("../T_cst.cuda/out", skiprows=1)
 nl=30
 nt = data.shape[0]//nl
 fig, ax = plt.subplots(figsize=(8, 6))
 cmap = plt.get_cmap("viridis", nt)
 for t in range(nt):
     layer=data[t*nl:(t+1)*nl,2]
-    T = data[t*nl:(t+1)*nl,3]
+    T = data[t*nl:(t+1)*nl,3]- 20 
     ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
 ax.set_xlabel("T")
 ax.set_ylabel("Layer")
 ax.set_title("Temperature profiles (T=cst, dT/dz=0 bot and top, cuda)")
-ax.set_xlim([19.999,20.001])
 #ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
 plt.tight_layout()
 plt.savefig("T_profiles_T_cst_cuda.png", dpi=150)
@@ -337,19 +392,18 @@ plt.savefig("T_profiles_T_cst_cuda.png", dpi=150)
 ## NEUMANN0, T_CST, NOT_PERIODIC
 
 ~~~pythonplot Profile of T, with Neumann boundary conditions and constant initial temperature (cuda)
-data = np.loadtxt("../T_cst_notperiodic/T_profile.dat")
+data = np.loadtxt("../T_cst_notperiodic/out", skiprows=1)
 nl=30
 nt = data.shape[0]//nl
 fig, ax = plt.subplots(figsize=(8, 6))
 cmap = plt.get_cmap("viridis", nt)
 for t in range(nt):
     layer=data[t*nl:(t+1)*nl,2]
-    T = data[t*nl:(t+1)*nl,3]
+    T = data[t*nl:(t+1)*nl,3]- 20 
     ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
 ax.set_xlabel("T")
 ax.set_ylabel("Layer")
 ax.set_title("Temperature profiles (T=cst, dT/dz=0 bot and top, notperiodic)")
-ax.set_xlim([19.999,20.001])
 #ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
 plt.tight_layout()
 plt.savefig("T_profiles_T_cst_not_periodic.png", dpi=150)
@@ -359,19 +413,18 @@ plt.savefig("T_profiles_T_cst_not_periodic.png", dpi=150)
 ## NEUMANN0, T_CST, NOT_PERIODIC, CUDA
 
 ~~~pythonplot Profile of T, with Neumann boundary conditions and constant initial temperature (cuda)
-data = np.loadtxt("../T_cst_notperiodic.cuda/T_profile.dat")
+data = np.loadtxt("../T_cst_notperiodic.cuda/out", skiprows=1)
 nl=30
 nt = data.shape[0]//nl
 fig, ax = plt.subplots(figsize=(8, 6))
 cmap = plt.get_cmap("viridis", nt)
 for t in range(nt):
     layer=data[t*nl:(t+1)*nl,2]
-    T = data[t*nl:(t+1)*nl,3]
+    T = data[t*nl:(t+1)*nl,3]- 20 
     ax.plot(T,layer,color=cmap(t), marker="+", linestyle="-")
 ax.set_xlabel("T")
 ax.set_ylabel("Layer")
 ax.set_title("Temperature profiles (T=cst, dT/dz=0 bot and top, notperiodic,cuda)")
-ax.set_xlim([19.999,20.001])
 #ax.legend(loc="upper left", bbox_to_anchor=(1, 1))
 plt.tight_layout()
 plt.savefig("T_profiles_T_cst_not_periodic_cuda.png", dpi=150)

@@ -21,7 +21,7 @@ state](example_PM_spectrum/ml_breaking/eta.mp4)
 
 ### Decay of a breaking wave field with stratification
 
-* WIP [breaking with stratification](./breaking_strat/ml_breaking_strat.c)
+* [breaking with stratification](./breaking_strat/ml_breaking_strat.c)
 
 ### Convection 
 
@@ -51,7 +51,7 @@ bderemble/libs/netcdf_bas.h](./libby/data_reader.py)
 
 * [Use Neumann condition at top and bottom for the multilayer](lib/diffusionH.h)
 
-* [Wind forcing for the multilayer](lib/wind_forcing.h)
+* [Wind forcing for the multilayer](test_windinput/test_forcing/linear_wave_wind_input.c)
 
 ## Tests
 
