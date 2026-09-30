@@ -58,6 +58,8 @@ GROUPS = {
   # (exit code, no .ref); the dissipation test fixes its own grid (octree).
   'profiles_slab_restrict': ([('test_profiles_level', 'quadtree'),
                               ('test_profiles_level', 'octree'),
+                              ('test_profiles_area_level', 'quadtree'),
+                              ('test_profiles_area_level', 'octree'),
                               'test_dissipation_level'], True),
 }
 

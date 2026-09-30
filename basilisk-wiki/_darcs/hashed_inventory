@@ -1,4 +1,4 @@
-pristine:cbb1a909d3906fe0af75b457d061d75cf4ee62f14e028c790aa717cc20dff86c
+pristine:5871a2b129893037d37129e0f1d0a74df912a0f049c7fc772c54c2dae9eb3d71
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15146,3 +15146,13 @@ Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260927190352
  Ignore-this: c6f9631d0432655bf343b76594a59741
 ] 
 hash: 0000003175-baffd04849e622a2b1cdd62fe9b850a822a0d1e68e589d6b7b0ed3cf04882a39
+[new nh-staggered
+Bruno Deremble <bruno.deremble@cnrs.fr>**20260929080542
+ Ignore-this: b38787dee38234e50b05857fe046292d02fc184d7eaece2650c8105b289ca2722eb835a7b34704a
+] 
+hash: 0000013691-5667e45b6923086ac943526f718162e26dca814bc8bba2b94ba930b164f8428d
+[tests(area): interface area + profiles introduces a scaling factor when on on leaf cells
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260929145347
+ Ignore-this: 29c35da1f27cd9518d1716eefab6020d0d951f80417e5f927898481ac9f3d718a56c724883f68223
+] 
+hash: 0000000482-8b4c387a6400ca23ec7134c5d03fccf278804e54a6f5eff52bf5980a6e08cce7
