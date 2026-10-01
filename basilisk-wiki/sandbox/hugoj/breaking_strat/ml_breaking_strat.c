@@ -190,7 +190,7 @@ event init(i =  0) {
     }
 
     /** set currents */
-    initial_condition_u_fft (u, spectrum, -h0, 2., N);
+    initial_condition_u_fft (u, spectrum, -h0, N);
 
     // initializing diag arrays
     //T_profile[0] = Trand; // <- this passes the dimensional analysis

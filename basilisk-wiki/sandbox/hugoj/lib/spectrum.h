@@ -765,13 +765,12 @@ trace
 void initial_condition_u_fft (vector u, 
                               T_Spectrum spec, 
                               double zmin, 
-                              double zmax, 
-                              int N, 
+                              int N,
                               int Nz=10)
 {
   // Generate currents on 3D cartesian grid
   T_UStack S;
-  S = ustack_build (spec, N, zmin, zmax, Nz);
+  S = ustack_build (spec, N, zmin, 0., Nz);
 
   double dx = L0/N;
   double dy = dx;
@@ -784,13 +783,16 @@ void initial_condition_u_fft (vector u,
 
     // p is the position in the flattened array (N*N) of (i,j) in the 2D array (N,N)
     int p = i*N + j; 
+    double h0 = - zmin;
     double z = zb[];
     foreach_layer() {
-      z += h[]/2;
+      //z += h[]/2;
+      z += h0*beta[point.l]/2;
       u.x[] = column_interp(S.Ux, Nz, N, p, S.z, z);  
       u.y[] = column_interp(S.Uy, Nz, N, p, S.z, z); 
       w[] =  column_interp(S.Uz, Nz, N, p, S.z, z);
-      z += h[]/2;
+      z += h0*beta[point.l]/2;
+      //z += h[]/2;
     }
   }
   ustack_free(&S);
@@ -842,6 +844,7 @@ coord wave_u_v1 (double x, double y, double z, T_Spectrum spec)
 - add the possiblity to switch to other form of spectrum
 - use Basilisk's interpolation instead of mine ?
 - make T_spectrum GPU compatible
+- allows for a use without remap (without beta function declared)
 
 ## References
 

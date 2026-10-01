@@ -103,7 +103,7 @@ event init_v2(i =  0)
     } 
   }
 
-  initial_condition_u_fft (u, spectrum, zmin, zmax, N);
+  initial_condition_u_fft (u, spectrum, zmin, N);
 
   sprintf (dname, "out_v2_N%d_nl%d.nc", N, nl);
   create_nc({zb, h, u, w, eta}, dname);

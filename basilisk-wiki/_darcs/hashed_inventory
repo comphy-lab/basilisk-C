@@ -1,4 +1,4 @@
-pristine:5871a2b129893037d37129e0f1d0a74df912a0f049c7fc772c54c2dae9eb3d71
+pristine:8805df68acb234c3f605211a90a692d5d63806d2b40fdacb1f05917d9b93a456
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15156,3 +15156,13 @@ Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**2026092914534
  Ignore-this: 29c35da1f27cd9518d1716eefab6020d0d951f80417e5f927898481ac9f3d718a56c724883f68223
 ] 
 hash: 0000000482-8b4c387a6400ca23ec7134c5d03fccf278804e54a6f5eff52bf5980a6e08cce7
+[fixed: z for linear wave corresponds to flat sea
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260930123641
+ Ignore-this: c47d1d776bf9ff14b3a7eb36bfbce705
+] 
+hash: 0000000722-d91344da9ce4045a0f9e269bdc0a773ed37d08550cee20b340430ba3de13fd49
+[simpler currents initialization with my ifft version
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260930124631
+ Ignore-this: 2b5f5c29f1850347a18e9c4f5c9f3464
+] 
+hash: 0000008227-b9dd1724b6f160596ddb08185948c5923c57a23e314e91989c6874116c9db733
