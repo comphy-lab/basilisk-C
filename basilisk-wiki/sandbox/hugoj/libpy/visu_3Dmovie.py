@@ -250,6 +250,10 @@ def render_movie(
 
     # --- Open dataset ---
     dst = xr.open_dataset(input_path)
+
+    # clean up duplicates
+    dst = dst.isel(time=~dst.indexes["time"].duplicated(keep="first"))
+
     dst = dst.isel(time=slice(skip, len(dst.time)))
     H0 = -dst.zb.values.flatten()[0]
 
@@ -278,7 +282,6 @@ def render_movie(
     if nframes < 1:
         raise ValueError("computed 0 frames — check fps / speed_factor / time range")
     target_times = t0 + np.arange(nframes) * (speed_factor / fps)
-
     nx, ny, nz = dst.x.size, dst.y.size, dst.level.size
 
     if verbose:

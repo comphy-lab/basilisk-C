@@ -243,9 +243,12 @@ def render_snapshot(
         zmin, zmax = zclip
     physical_clip = xmin, xmax, ymin, ymax, zmin, zmax
 
-    # clean up initial instant dublicate
-    if dst.time[0] == dst.time[1]:
-        dst = dst.isel(time=slice(1, len(dst.time)))
+    # # clean up initial instant dublicate
+    # if dst.time[0] == dst.time[1]:
+    #     dst = dst.isel(time=slice(1, len(dst.time)))
+
+    # clean up duplicates
+    dst = dst.isel(time=~dst.indexes["time"].duplicated(keep="first"))
 
     # Select a timestamp
     if "time" not in dst.keys():

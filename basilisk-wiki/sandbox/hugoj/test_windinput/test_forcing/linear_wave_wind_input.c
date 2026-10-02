@@ -1,5 +1,5 @@
 /**
-# Wave growth using forcing
+# Wave growth using wind forcing
 
 ## 1. Decay of a linear wave
 
@@ -7,6 +7,10 @@
 
 A linear surface gravity wave will decay in a viscous fluid. The rate of this
 decay is $E(t)=E_0 e^{-4\nu k^2 t}$ (Lamb 1932)
+
+One of the essential ingredient for the dissipation from the model to match the
+theoretical dissipation is to correctly represent currents, i.e. have enough
+layers for the vertical exponential decay discretisation.
 
 ### Notes
 
@@ -56,6 +60,7 @@ $$
  p_0= 4 \rho \nu k c
 \end{aligned}
 $$
+
 ## 4. Dynamic forcing to reach a target energy
 
 Let's say we want to maintain a quasi-stationnary sea state. We can do this
@@ -76,14 +81,14 @@ input by the present forcing
 
 $$
 \begin{aligned}
-\frac{\partial E_{in}}{\partial t} = \frac{\Delta E }{\Delta t } \]
+\frac{\partial E_{in}}{\partial t} = \frac{\Delta E }{\Delta t }
 \end{aligned}
 $$
 Rearranging terms gives the amplitude for the current timestep
 $$
 \begin{aligned}
  p0 = \frac{-\rho g}{\Delta t}( \overline{\eta^2}_{target} - \overline{\eta^2}(t))
-        / \sum_N (Q \frac{\partial^2 \eta}{\partial x^2})
+        / \sum_N (Q \frac{\partial^2 \eta}{\partial x^2} dx)
 \end{aligned}
 $$
 
@@ -108,39 +113,51 @@ Ref Rui Yang
 // - simplifier
 
 #include "grid/multigrid1D.h"
-double p0 = 0.00625; // Pa
-double rho = 1000;
+double p0 = 0.00625 [-1, -2, 1]; // Pa
+double rho = 1000 [-3, 0, 1];
 #if HOLD_FORCING || EXACT_FORCING
 // wind pressure param
-#define wind_pressure(eta,i)  (p0/rho)*(eta[i+1] - eta[i-1])/(2*Delta)
-// total barotropic pressure
-#define p_baro(eta,i) (-G*eta[i] - wind_pressure(eta,i))
-
-#define a_baro(eta,i) (gmetric(i)*(p_baro(eta,i)-p_baro(eta,i-1))/Delta) 
-
+// #define wind_pressure(eta,i)  (p0/rho)*(eta[i+1] - eta[i-1])/(2*Delta)
+// // total barotropic pressure
+// #define p_baro(eta,i) (-G*eta[i] - wind_pressure(eta,i))
+//
+// #define a_baro(eta,i) (gmetric(i)*(p_baro(eta,i)-p_baro(eta,i-1))/Delta) 
+#define a_baro(eta,i) \
+  (gmetric(i) * ( \
+      -G*(eta[i] - eta[i-1])/Delta \
+      - (p0/rho) * \
+        (eta[i+1] - 2.*eta[i] + eta[i-1])/(Delta*Delta) \
+  ))
 #endif // HOLD_FORCING || EXACT_FORCING
 
 #include "layered/hydro.h"
 #include "layered/nh.h"
 #include "layered/remap.h"
 #include "layered/perfs.h"
+#if OUTNC
 #include "bderembl/libs/netcdf_bas.h"
+#endif
 
+// Dim [L, T, Mass, Temp]
+
+double g_ = 1. [1,-2];
 /**
 We use a linear wave mode, with very low steepness
 */
-double k_ = 2.*pi, h_ = 1., g_ = 1.0, ak = 0.01; 
+double k_ = 2.*pi [-1], h_ = 1. [1], ak = 0.01; 
 double RE = 20000.;
 
+#include "hugoj/lib/common_waves.h"
 
 #define T0  (2.*pi/sqrt(g_*k_)) // = sqrt(2PI) = 2.5s
-double lam;
-double NT0 = 50.;
-double etam_i = 0.;
-double etavar_i = 0.;
-double etavar_previous, etavar_current;
-double cp, omega;
-double relax_dt;
+double lam = 0. [1];
+double NT0 = 10. [0, 1];
+double etam_i = 0. [1];
+double etavar_i = 0. [2];
+double etavar_previous =0. [2], etavar_current=0. [2];
+double cp = 0.[1, -2];
+double omega = 0. [0,-1];
+double relax_dt = 0. [0,1];
 
 int main()
 {
@@ -148,23 +165,23 @@ int main()
   origin (-L0/2.);
   periodic (right);
   N = 64;
-  nl = 64; // 60
+  nl = 100; // 60
   G = g_;
   lam = 2*pi/k_*L0;
   
   omega = sqrt(g_*k_);
   cp = omega/k_;
   nu = cp*lam/RE; 
-  theta_H=0.5065;         // scheme conserve energy when theta_H = 0.5
-  DT=0.02;                // fixed DT to study spatial and temporal resolution separately
+  theta_H=0.5;         // scheme conserve energy when theta_H = 0.5
+  DT=0.01;                // fixed DT to study spatial and temporal resolution separately
   NITERMIN=3;             // Forces to do more cycles to avoid any influence of the poisson solver
-  
+
   /**
    In the case of counter balancing the viscous dissipation exactly, we set once
    the value of p0
    */
-  #if EXACT_FORCING
-  p0 = 4*rho*nu*k_*cp; // Forcing to exactly balance viscous diss
+  #if EXACT_FORCING 
+  p0 = 2*rho*nu*k_*cp; // Forcing to exactly balance viscous diss
   #endif
   /** If the dynamic forcing is used, we set a timescale for the relaxation of
     the forcing.
@@ -197,33 +214,27 @@ event init (i = 0)
   // default beta is 1/nl
   foreach() {
     zb[] = -h_;
-    eta[] = ak/k_*cos(k_*x);
+    #if STOKES
+    eta[] = wave_stokes (x, 0., ak, k_, h_);
+    //eta[] = ak/k_*cos(k_*x);
+    #else
+    eta[] = wave_monolin(0., x, ak/k_, k_);
+    #endif
     double H = eta[] - zb[];
     double z = zb[];
     foreach_layer() {
       h[] = H*beta[point.l];
-      #if 1
-
       /** 
-      In the linear theory, $\eta$ is almost 0 and z levels are flat     
-       */
+      In the linear theory, $\eta$ is almost 0 and z levels are flat. 
 
-      z += h_/nl/2; 
-      u.x[] = ak/k_*sqrt(g_*k_)*exp(k_*z)*cos(k_*x); // 
-      w[] = ak/k_*sqrt(g_*k_)*exp(k_*z)*sin(k_*x);  // 
-      z += h_/nl/2; 
-        
-      /**
       Using true z levels is adding energy compared to the linear theory as some
       z points are positive, so the exponential in the currents can grow fast
       for steeper cases.
       */
-      #else
-      z +=  h[]/2.;
-      u.x[] = ak/k_*sqrt(g_*k_)*exp(k_*z)*cos(k_*x); // 
-      w[] = ak/k_*sqrt(g_*k_)*exp(k_*z)*sin(k_*x);  // 
-      z += h[]/2.;
-      #endif
+      z += h_/nl/2; 
+      u.x[] = u_x_monolin(0., x, z, ak/k_, k_); //ak/k_*sqrt(g_*k_)*exp(k_*z)*cos(k_*x); // 
+      w[] = u_y_monolin(0., x, z, ak/k_, k_); //ak/k_*sqrt(g_*k_)*exp(k_*z)*sin(k_*x);  //
+      z += h_/nl/2; 
     }
 
   }
@@ -232,8 +243,9 @@ event init (i = 0)
   // If dynamic forcing is used, the target energy is the initial energy
   fprintf (stderr, "INITIAL eta mean = %.10f, variance = %.10f\n", etam_i, etavar_i);
   fprintf (stderr, "initial p0 = %f\n", p0);
-  
+  #if OUTNC
   create_nc({zb, eta, h, u.x, w}, "out.nc");
+  #endif
 }
 
 /* compute p0 from eta in a 'update_p0' event so that it uses eta from previous timestep,
@@ -294,10 +306,12 @@ event logfile (i++; t <= NT0*T0) // target: at least 300*T0
 /**
   Optional: output fields for analysis
 */
+#if OUTNC
 event writenc (i+=10; t <= NT0*T0) 
 {
   write_nc();
 }
+#endif
 
 
 
@@ -324,7 +338,7 @@ print("T0 = %f" % T0)
 def E_linwave(E0, nu, ak, k, t):
     print("\nWave decay for linear wave (theory)")
     print(f"nu={nu},ak={ak},k={k / np.pi}pi\n")
-    return E0 * np.exp(-4 * nu * k**2 * t)
+    return E0 * np.exp(-2 * nu * k**2 * t)
 
 
 data = {
@@ -380,30 +394,34 @@ fig, ax = plt.subplots(figsize=(7, 6))
 #     label="2Ek (current_noforcing)",
 #     alpha=0.5,
 # )
+ax.semilogy(time["current_noforcing"], Eth / E0, color="r", label=r"$E(t)=E_0 e^{-2 \nu k^2 t}$")
 ax.hlines(E0th, 0, 100, colors="gray", alpha=0.7)
 ax.semilogy(
     time["current_noforcing"],
     E["current_noforcing"] / E0,
     color="pink",
-    label="E (current noforcing)",
+    label="E (no forcing)",
+    ls='--',
 )
 ax.semilogy(
     time["current_forced"],
     E["current_forced"] / E0,
     color="purple",
-    label="E (current forcing)",
+    label="E (hold forcing)",
+    ls='--'
 )
 ax.semilogy(
     time["current_exactforced"],
     E["current_exactforced"] / E0,
     color="orange",
-    label="E (current exact forcing)",
+    label="E (exact forcing)",
+    ls='--'
 )
-ax.semilogy(time["current_noforcing"], Eth / E0, color="r", label=r"$E(t)=E_0 e^{-4 \nu k^2 t}$")
+
 ax.set_xlabel("t/T0")
 ax.set_ylabel("E/E0")
 ax.set_xlim([0, 10])
-ax.set_ylim([1.16e-6, 1.28e-6])
+ax.set_ylim([1.2e-6, 1.28e-6])
 ax.legend()
 ax.grid(axis="y", which="both")
 plt.savefig("energy.pdf", dpi=300)

@@ -1,4 +1,4 @@
-pristine:8805df68acb234c3f605211a90a692d5d63806d2b40fdacb1f05917d9b93a456
+pristine:2ea51a7f5b784cb540e0d6559de2af8093f17287ec77ff717020d6fc4da0a6a2
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15166,3 +15166,13 @@ Hugo Jacquet <hugo.jacquet.work@gmail.com>**20260930124631
  Ignore-this: 2b5f5c29f1850347a18e9c4f5c9f3464
 ] 
 hash: 0000008227-b9dd1724b6f160596ddb08185948c5923c57a23e314e91989c6874116c9db733
+[correct dissipation for linear wave, increased nl for better matching with theory. Added a stokes wave case (not breaking, model is unstable is steepness is too high
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261001145357
+ Ignore-this: e9d50b80eb6b59af73f2996504dd02c0
+] 
+hash: 0000010026-74587d8455e7457ee65aec5ed5c4c1e533ce77bf1dd4dbeae459875f1b5b8b8e
+[fixed: depending on the method of outputs, duplicated times were causing troubles
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261001202709
+ Ignore-this: de2461fabbcc8cde93901dec34b8493c
+] 
+hash: 0000000806-33cceaf69bf425b9dd45af03b47207a701053d1112e47b2f05fd079615a9ab3d

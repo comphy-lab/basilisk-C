@@ -1,5 +1,6 @@
 CFLAGS += -I$(DOCUMENT_ROOT)/sandbox -O2
 CFLAGS += -disable-dimensions # skip dimensions check for now
+CFLAGS += -DOUTNC
 
 all: no_forcing.tst linear_wave_wind_input.tst exact_forcing.tst linear_wave_wind_input/plots
 
@@ -13,8 +14,10 @@ exact_forcing.c: linear_wave_wind_input.c
 
 exact_forcing.tst: CFLAGS += -DEXACT_FORCING=1
 
+stokes.c: linear_wave_wind_input.c
+	ln -sf linear_wave_wind_input.c stokes.c
 
-
+stokes.tst: CFLAGS += -DSTOKES
 
 include $(BASILISK)/Makefile.defs
 
