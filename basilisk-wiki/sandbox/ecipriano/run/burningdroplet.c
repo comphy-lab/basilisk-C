@@ -520,7 +520,6 @@ event defaults (i = 0) {
 
     u.n[bottom] = dirichlet (0.);
     u.t[bottom] = dirichlet (0.);
-    p[bottom] = neumann (0.);
     uf.n[bottom] = 0.;
     uf.t[bottom] = 0.;
   }

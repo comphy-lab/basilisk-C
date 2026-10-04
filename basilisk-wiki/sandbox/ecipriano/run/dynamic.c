@@ -204,9 +204,7 @@ double theta0 = 60.;
 vector h[];
 h.t[left] = contact_angle (thetad*pi/180.);
 
-u.n[left] = dirichlet (0.);
 u.t[left] = navier (0., SLIP_LENGTH);
-p[left] = neumann (0.);
 
 int maxlevel, setup = 0;
 double R0 = 0.5, tend = 1.4;

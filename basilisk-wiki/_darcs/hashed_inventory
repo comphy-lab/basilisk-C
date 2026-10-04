@@ -1,4 +1,4 @@
-pristine:2ea51a7f5b784cb540e0d6559de2af8093f17287ec77ff717020d6fc4da0a6a2
+pristine:195af8ef58d09c3c182ad6958989658c6a4a16bcb390045392729964ab563cee
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15176,3 +15176,8 @@ Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261001202709
  Ignore-this: de2461fabbcc8cde93901dec34b8493c
 ] 
 hash: 0000000806-33cceaf69bf425b9dd45af03b47207a701053d1112e47b2f05fd079615a9ab3d
+[Fixed wall boundary conditions keeping the default neumann_pressure
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20261002091634
+ Ignore-this: 29b15f990633005eef2198546da53ba375ed2c618a0eafb43eb00da5edbb4be9e1a6fab3a931dfbf
+] 
+hash: 0000000897-3497d57d781f92cae428c4264a53d3f9d79ff414cb350e317d0bbd7cf122c1ca

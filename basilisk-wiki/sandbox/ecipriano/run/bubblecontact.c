@@ -53,9 +53,7 @@ u.n[right] = neumann (0.);
 u.t[right] = neumann (0.);
 p[right] = dirichlet (0.);
 
-u.n[left] = dirichlet (0.);
 u.t[left] = dirichlet (0.);
-p[left] = neumann (0.);
 
 double Tsat, Tbulk;
 T[top] = dirichlet (Tbulk);

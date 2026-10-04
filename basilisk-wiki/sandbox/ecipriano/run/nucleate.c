@@ -52,9 +52,7 @@ u.n[right] = neumann (0.);
 u.t[right] = neumann (0.);
 p[right] = dirichlet (0.);
 
-u.n[left] = dirichlet (0.);
 u.t[left] = dirichlet (0.);
-p[left] = neumann (0.);
 
 /**
 A constant contact angle model is used. */
