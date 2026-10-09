@@ -1,8 +1,6 @@
 # Granular landslide simulations
 
-This sandbox contains Basilisk simulations developed during my M1 internship at Institut Jean Le Rond d'Alembert with Pierre-Yves Lagrée.
-
-The objective is to model dry granular landslides using depth-averaged approaches and to compare the results with other numerical models and experimental data.
+This sandbox contains Basilisk simulations developed during my M1 internship at Institut Jean Le Rond d'Alembert with Pierre-Yves Lagrée. The objective is to model dry granular landslides using depth-averaged approaches and to compare the results with other numerical models and experimental data.
 
 The complete internship report is available here:
 [**M1 internship report – PDF**](https://raw.githubusercontent.com/kilian-gthub/basilisk-ressources/main/Rapport_POLGE_POULICHET_Kilian.pdf)

@@ -510,6 +510,12 @@ event animatedplot (t = 0.; t <= tmax; t += 0.05)
   fflush (animation_fp);
 }
 
+/**
+## Clean termination
+
+Closing the Gnuplot pipe finalises all the frames of the GIF.
+*/
+
 event stop (t = tmax)
 {
   if (animation_fp) {
@@ -522,7 +528,6 @@ event stop (t = tmax)
 }
 
 /**
-
 # Main result
 
 ## Three-dimensional collapse animation
@@ -535,7 +540,7 @@ bed.
 </p>
 
 <p align="center">
-  <img src="dry_granular_collapse_2D/dry_landslide_2D_3D.gif"
+  <img src="test/dry_landslide_2D_3D.gif"
        alt="Three-dimensional animation of the two-dimensional dry granular collapse"
        width="70%">
 </p>

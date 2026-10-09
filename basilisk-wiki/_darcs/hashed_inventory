@@ -1,4 +1,4 @@
-pristine:09befce137a9700c72dd43465fdbde93c3b70846bd35014976f01119a0fd6712
+pristine:6d6c12cc6f19a28b644a4f96c052d1042682e0d03aaa285bf0203e073946e56f
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15196,3 +15196,48 @@ vega <jonathan.billet@ens.psl.eu>**20261007113839
  Ignore-this: 24bf17dc92d52a3e3054bd1e0428cfb3dbc089b4567e3f214c96d8989ca84cfa2310522767eadcc4
 ] 
 hash: 0000001658-a778563e45197152f285826b649eb597d60b55632e05ea189a441931575b4276
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20261008110914
+ Ignore-this: b877a74eba1550a9e3b24b51ac49381895607006ec97948cd22bb2159e9916b5115b84c523468477
+] 
+hash: 0000000809-53d93feab61741655679a852bd561f7384e877269a28e36c4d6fb21c41e16f6a
+[Changing from capilarity scales to gravity scales
+vega <jonathan.billet@ens.psl.eu>**20261008112045
+ Ignore-this: 40a3173b94503f3ce1dc86111d6891bc4730fdbec003fc7253c5808d3c3e0a05b0fcce4d531efcbd
+] 
+hash: 0000001240-7c7526df2e51d06bb1618d3457465e789bfdd761cef344cf046721fd18d4a562
+[Adding the Galilei numbers
+vega <jonathan.billet@ens.psl.eu>**20261008112705
+ Ignore-this: d03f114a3b4ffef1294f93236da7e9d5ff438ff3b4ed8c045dd6c1bf25e02d0c71f7dd28de0d2198
+] 
+hash: 0000000691-5de76b557b7c2dd42906b9f0c7959249b9b2246cff23de60151d9e46f62106f7
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20261008124412
+ Ignore-this: 9ea4bbc42efae5f7232fdf4c522bcdba6b5f26bd10c77a1737870c2c89c4534f49cbbe7c48f40b9e
+] 
+hash: 0000019495-3d7520f18bc0b88c9136f0043ce992a1f9ae42a9dc5eaf35c077bb518e2a1662
+[v2
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20261008125737
+ Ignore-this: a34d10f7ed497501a69ab31f22e50109a186ae50c8fcd009242fe70b213c6cda43cfd1ffae5b0725
+] 
+hash: 0000025160-81658cbdbe997b48225195db5cba85f2fe056f398da30bc8a66c8048cd4fd7e1
+[v1
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20261008130446
+ Ignore-this: 76a9e3fe1d80ffb26913aac1813b91b77c3dc28e036f1b4e0664f9595f72d9c114ca512201af30ff
+] 
+hash: 0000000534-598c7addce109477e87163fe770ff879385761a7e4789a690c006aa460bd49af
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20261008131004
+ Ignore-this: 75511f8b7bdd8e22283671d456c170cec90ee1e9ad55b76b189cbd53fd7a6182bad2b6c99c0598ef
+] 
+hash: 0000000513-77f2143d9701431c1437ac37d38ab7d528bb256da557b80a79224edbba9b128b
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20261008131648
+ Ignore-this: 26f09fb07cdab88ccb7ef3f2bdb16ddb526bb9e26ca3fa3ef5fd4a2543e44259fc9ae7ba78423248
+] 
+hash: 0000013293-0f9ff63c40e0e359975a999d43ac68f4b24269b5556b16aff6b4dbd0cf18f6c8
+[vf
+kilian <kilian.polge_poulichet@etu.sorbonne-universite.fr>**20261008131853
+ Ignore-this: 4cef4b764635e434b39767bafa487ab34fe1eb4a88ec96ddcbc83ee6aa8da3f8402af3a91e6b2370
+] 
+hash: 0000000381-7418ebc41aeda789b2410f0f3b5e4f39c1cc6ae41b2e27b4df4269f0aaad6c4c
