@@ -56,7 +56,7 @@ void output_vtu_pid (scalar * list, vector * vlist, char * subname)
   uint64_t no_points = 0, no_cells=0 ;
   foreach_vertex(){
     marker[] = _k;
-    if is_vertex(cell)
+    if (is_vertex(cell))
       no_points += 1;
   }
   foreach()

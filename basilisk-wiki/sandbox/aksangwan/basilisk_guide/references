@@ -1,0 +1,19 @@
+# References
+
+1. J. B. Bell, P. Colella and H. M. Glaz. A second-order projection method for the incompressible Navier--Stokes equations. *Journal of Computational Physics* 85 (1989) 257--283.
+2. J. U. Brackbill, D. B. Kothe and C. Zemach. A continuum method for modeling surface tension. *Journal of Computational Physics* 100 (1992) 335--354.
+3. W. L. Briggs, V. E. Henson and S. F. McCormick. *A Multigrid Tutorial*, 2nd edition. SIAM, 2000.
+4. A. J. Chorin. Numerical solution of the Navier--Stokes equations. *Mathematics of Computation* 22 (1968) 745--762.
+5. J. H. Ferziger and M. Perić. *Computational Methods for Fluid Dynamics*, 3rd edition. Springer, 2002.
+6. H. Johansen and P. Colella. A Cartesian grid embedded boundary method for Poisson's equation on irregular domains. *Journal of Computational Physics* 147 (1998) 60--85.
+7. J. Larsen and H. Dancy. Open boundaries in short wave simulations: a new approach. *Coastal Engineering* 7 (1983) 285--297.
+8. R. J. LeVeque. *Finite Volume Methods for Hyperbolic Problems*. Cambridge University Press, 2002.
+9. S. Popinet. Gerris: a tree-based adaptive solver for the incompressible Euler equations in complex geometries. *Journal of Computational Physics* 190 (2003) 572--600.
+10. S. Popinet. An accurate adaptive solver for surface-tension-driven interfacial flows. *Journal of Computational Physics* 228 (2009) 5838--5866.
+11. S. Popinet. Numerical models of surface tension. *Annual Review of Fluid Mechanics* 50 (2018) 49--75.
+12. M. Rudman. A volume-tracking method for incompressible multifluid flows with large density variations. *International Journal for Numerical Methods in Fluids* 28 (1998) 357--378.
+13. R. Scardovelli and S. Zaleski. Direct numerical simulation of free-surface and interfacial flow. *Annual Review of Fluid Mechanics* 31 (1999) 567--603.
+14. G. D. Weymouth and D. K.-P. Yue. Conservative volume-of-fluid method for free-surface simulations on Cartesian grids. *Journal of Computational Physics* 229 (2010) 2853--2865.
+15. Anthropic. Claude (Opus 5.5), large language model. <https://claude.ai>. Used October 2026 to help write this guide.
+
+[Back to the contents](README)

@@ -10,7 +10,7 @@
 # - Generates velocity data for both the x and y components (u.x and u.y).
 # - Computes interface shape using linear stability analysis with a given wave 
 #   number (k), amplitude (a), and other physical parameters.
-# - Saves the data to be used by the main simulation code (`single.c`).
+# - Saves the data to be used by the main simulation code (`main.c`).
 # - Can output the velocity and interface data to a `.dat` file for use in 
 #   the simulation.
 #

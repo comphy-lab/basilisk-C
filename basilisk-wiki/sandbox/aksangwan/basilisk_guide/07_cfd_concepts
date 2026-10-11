@@ -1,0 +1,253 @@
+# 7 CFD concepts the solver is built on {#ch:cfd}
+
+This chapter collects the general ideas that every later chapter uses. Each
+one is introduced on the simplest equation that shows it, and each ends with
+the place where Basilisk uses it.
+
+## Conservation laws and the finite-volume method
+
+Most equations of fluid mechanics state that some quantity $q$ (mass,
+momentum, a volume fraction) changes in a fixed region $V$ only because of
+what flows through its boundary $\partial V$ and what is produced inside:
+$$
+\frac{d}{dt}\int_V q\,dV = -\oint_{\partial V} \mathbf{F}(q)\cdot\mathbf{n}\,dS
++ \int_V s\,dV,
+\tag{7.1}
+$$
+where $\mathbf{F}$ is the flux of $q$ (for advection, $\mathbf{F} = q\mathbf{u}$),
+$\mathbf{n}$ is the outward unit normal and $s$ a source. Applying the divergence
+theorem and letting $V$ shrink to a point gives the differential form
+$\partial_t q + \nabla\cdot\mathbf{F} = s$.
+
+A finite-volume method applies (7.1) to each grid cell.
+For a square cell of side $\Delta$ in 2D, define the cell average
+$\bar q_{ij} = \Delta^{-2}\int_{\text{cell}} q\,dV$ and the face-averaged flux,
+for example $F_{{i+\frac 12},j}$ through the right face. Then
+(7.1) is exact in the form
+$$
+\frac{d\bar q_{ij}}{dt} = \frac{F_{{i-\frac 12},j} - F_{{i+\frac 12},j}}{\Delta}
+ + \frac{G_{i,j-\frac12} - G_{i,j+\frac12}}{\Delta} + \bar s_{ij},
+\tag{7.2}
+$$
+with $F$ and $G$ the $x$ and $y$ fluxes (figure 7.1). The only
+approximation is in how the face fluxes are computed from the cell averages.
+Because the flux leaving cell $i$ through face ${i+\frac 12}$ is the same number that
+enters cell $i+1$, the sum of $\bar q\Delta^2$ over all cells changes only by
+what crosses the domain boundary. This is *discrete conservation*, and
+it holds whatever formula is used for the face flux.
+
+![Figure 7.1: A finite-volume cell. The unknown is the cell average $\bar q_{ij}$;
+it changes by the difference of the fluxes through its four faces. The flux
+through a shared face is computed once and used with opposite signs by the
+two cells, which makes the scheme conservative.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_fvcell.png)
+
+> **In the code: `bcg.h`, function `advection()`**
+>
+> ~~~literatec
+> f[] += dt*(flux.x[] - flux.x[1])/(Delta*cm[]);
+> ~~~
+>
+> This is (7.2) integrated over one step with forward Euler.
+> `flux.x[]` is the flux through the left face and `flux.x[1]`
+> through the right face; `foreach_dimension()` repeats the line for $y$
+> and $z$. `cm[]` is the fraction of the cell open to fluid (1 without a
+> solid).
+
+## Truncation error, order, stability and convergence
+
+Replace derivatives by differences and the result differs from the exact
+equation by a *truncation error*. For example, by Taylor expansion,
+$$
+\frac{q_{i+1} - q_{i-1}}{2\Delta} = \partial_x q + \frac{\Delta^2}{6}\partial_x^3 q
++ O(\Delta^4),
+$$
+so the central difference has truncation error $O(\Delta^2)$ and is
+*second-order accurate*: halving $\Delta$ divides the error by four. A
+scheme is *consistent* if its truncation error goes to zero as $\Delta$
+and $\Delta t$ go to zero.
+
+Consistency is not enough. A scheme is *stable* if errors (round-off,
+initial errors) do not grow without bound as the steps proceed. The Lax
+equivalence theorem says that for a well-posed linear problem, a consistent
+scheme converges to the exact solution if and only if it is stable. In
+practice, every time-step restriction in Basilisk exists to keep a scheme
+stable.
+
+## Advection, upwinding and numerical diffusion {#sec:upwind}
+
+Take the model problem $\partial_t q + c\,\partial_x q = 0$ with $c > 0$. Its
+exact solution moves the initial profile to the right at speed $c$ without
+changing its shape. Define the Courant number
+$$
+C = \frac{c\,\Delta t}{\Delta}.
+$$
+
+**First-order upwind.** Information comes from the left, so take the
+face value from the upwind cell, $F_{i+\frac 12}= c\,q_i$. Then
+$$
+q_i^{n+1} = q_i^n - C\,(q_i^n - q_{i-1}^n).
+\tag{7.4}
+$$
+Expanding $q_{i-1}$ and $q_i^{n+1}$ in Taylor series around $(x_i, t^n)$ and
+using the equation itself to swap time derivatives for space derivatives
+shows that (7.4) solves, to second order, the *modified
+equation*
+$$
+\partial_t q + c\,\partial_x q = \underbrace{\frac{c\Delta}{2}(1 - C)}_{\nu_{\text{num}}}\,\partial_x^2 q.
+\tag{7.5}
+$$
+Upwinding adds a diffusion $\nu_{\text{num}}$ that is not in the physics. It
+vanishes only at $C = 1$. This is *numerical diffusion*, and it is why
+first-order upwind smears fronts (figure 7.2).
+
+**Second order and Godunov's theorem.** Adding a linear slope inside
+the upwind cell, $F_{i+\frac 12}= c\,[q_i + \tfrac{1}{2}(1 - C)(q_{i+1} - q_i)]$
+(the Lax--Wendroff flux), removes the $\partial_x^2$ error term and makes the
+scheme second order. The leading error becomes a third derivative, which is
+*dispersive*: different wavelengths travel at different speeds and
+oscillations appear next to steep fronts. Godunov's theorem states that no
+linear scheme can be both higher than first order and free of new
+oscillations. The way around it is to make the scheme nonlinear: compute the
+slope, then *limit* it near extrema and fronts. Such schemes are called
+total-variation diminishing (TVD). The minmod limiter takes the smaller of
+the left and right differences when they have the same sign and zero when
+they do not.
+
+![Figure 7.2: A square pulse advected over 80 steps at $C = 0.5$ on 100 cells
+(computed for this document). Upwind smears the pulse because of the
+numerical diffusion in (7.5). The unlimited second-order
+scheme keeps it steeper but oscillates. The limited scheme is steep and
+oscillation-free. Basilisk's BCG scheme ([chapter 11](11_advection)) is of the
+third kind when a limiter is set on the field.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_advcompare.png)
+
+> **In the code: `utils.h`**
+>
+> ~~~literatec
+> double minmod2 (double s0, double s1, double s2)   // generalised minmod, theta = 1.3
+> ~~~
+>
+> Basilisk lets each field carry a limiter in its `gradient` attribute
+> (`minmod`, `superbee`, `sweby`, `minmod2`). If the
+> attribute is unset, which is the default (`s.gradient = NULL` in
+> `grid/cartesian-common.h`), plain central differences are used.
+
+## The CFL condition {#sec:cfl}
+
+In an explicit scheme the new value in cell $i$ depends on cells $i-1$, $i$
+and $i+1$ at the old time. The exact solution at $(x_i, t^{n+1})$ depends on
+the initial data at $x_i - c\Delta t$. If that point is outside the cells the
+scheme looks at, the scheme cannot be right however small $\Delta$ is
+(figure 7.3). This gives the Courant--Friedrichs--Lewy condition
+$C = |c|\Delta t/\Delta\le 1$ for the stencil of (7.4). Stability
+analysis gives the same bound for upwind.
+
+![Figure 7.3: Domain of dependence. The dashed lines are characteristics
+$x - ct = \text{const}$ through the new point. When $C < 1$ the
+characteristic lands inside the cells used by the scheme; when $C > 1$ it
+lands outside and the scheme is missing the information it needs.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_cfl.png)
+
+Basilisk uses $C \le 0.8$ for the velocity (`CFL = 0.8` in
+`centered.h`) and lowers it to $0.5$ when VOF is used
+(`vof.h`); [section 17.5](17_vof#sec:vofcfl) explains why VOF needs the smaller value.
+
+## Explicit and implicit time stepping {#sec:implicit}
+
+For diffusion, $\partial_t q = \nu\,\partial_x^2 q$, the explicit update
+$q_i^{n+1} = q_i^n + \frac{\nu\Delta t}{\Delta^2}(q_{i+1} - 2q_i + q_{i-1})^n$ is
+stable only if $\nu\Delta t/\Delta^2 \le 1/2$ in 1D (and $\le 1/(2d)$ in $d$
+dimensions). The limit scales with $\Delta^2$, so halving the cell size cuts the
+allowed step by four. The implicit (backward Euler) update
+$$
+q_i^{n+1} - \frac{\nu\Delta t}{\Delta^2}(q_{i+1} - 2q_i + q_{i-1})^{n+1} = q_i^n
+\tag{7.6}
+$$
+is stable for any $\Delta t$, at the price of solving a linear system every step.
+Basilisk treats viscosity this way ([chapter 13](13_viscosity)) and solves the
+system with the same multigrid method used for pressure.
+
+## Incompressibility and the role of pressure {#sec:pressure-role}
+
+For an incompressible fluid, mass conservation reduces to
+$\nabla\cdot\mathbf{u}= 0$. This is a constraint, not an evolution equation: nothing in
+it says how $\mathbf{u}$ changes in time. Pressure is the field that enforces it.
+For constant density, taking the divergence of the momentum equation and
+using $\nabla\cdot\mathbf{u}= 0$ gives
+$$
+\nabla^2 p = -\rho\,\nabla\cdot(\mathbf{u}\cdot\nabla\mathbf{u}),
+$$
+an elliptic equation: the pressure at one point depends instantly on the
+velocity everywhere. Pressure acts as a Lagrange multiplier that removes
+any part of the velocity change that would create or destroy volume.
+
+**Helmholtz--Hodge decomposition.** Any smooth vector field
+$\mathbf{w}$ in a domain can be split uniquely into a divergence-free part
+tangent to the boundary and a gradient:
+$$
+\mathbf{w} = \mathbf{u}+ \nabla\phi,\qquad \nabla\cdot\mathbf{u}= 0,\quad \mathbf{u}\cdot\mathbf{n}|_{\partial\Omega} = 0.
+$$
+Taking the divergence gives $\nabla^2\phi = \nabla\cdot\mathbf{w}$ with
+$\partial_n\phi = \mathbf{w}\cdot\mathbf{n}$ on the boundary. Solving this Poisson
+problem and subtracting $\nabla\phi$ *projects* $\mathbf{w}$ onto the
+divergence-free fields. This is the idea of Chorin's projection method
+\[[4](references)\]: advance the velocity ignoring the constraint, then project.
+The scalar $\phi$ turns out to be $\Delta t\,p/\rho$. [Chapter 15](15_projection) derives
+the discrete version.
+
+## Where the unknowns live: collocated and staggered grids {#sec:checker}
+
+If $p$ and $\mathbf{u}$ are both stored at cell centres and the pressure gradient is
+computed with central differences, $\partial_x p|_i \approx (p_{i+1} -
+p_{i-1})/(2\Delta)$ never uses $p_i$. A pressure field that alternates
+$+1, -1, +1, \dots$ from cell to cell (a checkerboard) then has zero computed
+gradient and is invisible to the momentum equation, so nothing removes it
+(figure 7.4). Staggered (MAC) grids avoid this by storing each
+velocity component on the faces, where $(p_{i+1} - p_i)/\Delta$ is the natural
+gradient.
+
+Basilisk uses both: the cell-centred velocity $\mathbf{u}$ (convenient for
+advection, viscosity, refinement and output) and a face-normal velocity
+$\mathbf{u}_f$ (the one used for fluxes, made exactly divergence-free by the
+projection, with a compact face pressure gradient). The coupling between the
+two is the *approximate projection* of [section 15.5](15_projection#sec:approx-proj).
+
+![Figure 7.4: A checkerboard pressure. The central difference across the outlined
+cell uses its two neighbours, which hold the same value, so the computed
+gradient is zero everywhere although the pressure is far from uniform.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_checker.png)
+
+## Representing an interface
+
+Two-phase flows need to know where each fluid is. Basilisk's main method is
+the volume-of-fluid (VOF) method: each cell stores the fraction
+$f\in[0,1]$ of its volume filled with fluid 1 (water). The interface is
+reconstructed inside each cut cell as a straight line (2D) or plane (3D),
+and advected geometrically so that $f$ stays sharp and its total is
+conserved ([chapter 17](17_vof)). Both fluids are solved as one fluid with
+properties that jump across the interface ([chapter 8](08_equations)).
+
+## Dimensionless numbers {#sec:dimless}
+
+Before setting up a case, estimate the dimensionless numbers. They tell you
+which terms matter, which modules you need and how fine the grid has to be.
+With a velocity scale $U$, a length $L$, densities $\rho_1$ (heavier) and
+$\rho_2$, viscosity $\mu$, surface tension $\sigma$ and gravity $g$:
+
+| Number | Definition | What it decides |
+|:---|:---|:---|
+| Reynolds | $Re = \rho UL/\mu$ | inertia vs viscosity; boundary layer thickness $\sim L/\sqrt{Re}$ |
+| Froude | $Fr = U/\sqrt{gL}$ | inertia vs gravity; free-surface waves |
+| Weber | $We = \rho U^2L/\sigma$ | inertia vs surface tension; breakup |
+| Bond | $Bo = (\rho_1 - \rho_2)gL^2/\sigma$ | gravity vs surface tension; drop and bubble shape |
+| Density ratio | $\rho_1/\rho_2$ | need for momentum-conserving transport ([chapter 12](12_momentum)) |
+| Courant | $C = U\Delta t/\Delta$ | time step ([section 7.4](#sec:cfl)) |
+| Cells per feature | $L/\Delta$ | resolution: aim for 10--30 cells across the smallest feature |
+
+: Table 7.1: Dimensionless numbers to estimate before a run.
+
+Two examples of how this guides choices. Water and air have
+$\rho_1/\rho_2 \approx 830$, so a free-surface flow with breaking or
+splashing should use `navier-stokes/conserving.h`. For a water wave of
+wavelength 1 m, $Bo \approx 10^5$ and surface tension can be left out;
+for a bubble of radius 1 mm, $Bo \approx 0.1$ and surface tension
+controls its shape.
+
+[Previous](06_pitfalls) | [Contents](README) | [Next](08_equations)

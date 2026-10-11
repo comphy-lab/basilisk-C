@@ -1,0 +1,121 @@
+# 11 Advection of velocity: the Bell--Colella--Glaz scheme {#ch:advection}
+
+This chapter describes how `centered.h` computes the term
+$\nabla\cdot(\mathbf{u}\otimes\mathbf{u})$. It is the default for every case that uses
+`centered.h`. For large density ratios,
+`navier-stokes/conserving.h` sets `stokes = true` and replaces it
+with VOF-consistent transport ([chapter 12](12_momentum)). The BCG scheme matters
+in both cases: the same upwinding formula is reused for the momentum
+tracers inside the VOF sweeps, and most single-phase Basilisk cases use it.
+
+## Goal: a face value at the half time
+
+The advection term is computed in flux form,
+$$
+\mathbf{u}^\star_i = \mathbf{u}^n_i - \frac{\Delta t}{\Delta}\sum_{d}\left(u_{f,{i+\frac 12}}\,\mathbf{u}_{i+\frac 12}^{n+\frac 12}- u_{f,{i-\frac 12}}\,\mathbf{u}_{i-\frac 12}^{n+\frac 12}\right)_d,
+\qquad (11.1)
+$$
+where each face needs the advecting normal velocity $u_f$ and the advected
+value $\mathbf{u}^{n+\frac 12}$ on the face at the half time. Using the half time makes the
+update second order in time with a single explicit stage, the same way the
+midpoint rule is second order. The BCG scheme \[[1](references)\] gets
+$q^{n+\frac 12}_{i+\frac 12}$ for any advected scalar $q$ (here each velocity component) by
+Taylor expansion from the cell centre.
+
+## Derivation of the face value {#sec:bcg-derivation}
+
+Take a face at $x_{i+\frac 12}$ with positive normal velocity $u$, so the upwind cell
+is $i$. Expand from the cell centre to the face and to the half time:
+$$
+q(x_i + \tfrac{\Delta}{2}, t^n + \tfrac{\Delta t}{2}) \approx q_i + \frac{\Delta}{2}\partial_x q
+ + \frac{\Delta t}{2}\partial_t q.
+$$
+Replace the time derivative using the equation itself,
+$\partial_t q = -u\,\partial_x q - v\,\partial_y q - w\,\partial_z q + S$,
+where $S$ is the source (for velocity, the pressure gradient and acceleration
+at time $n$):
+$$
+q^{n+\frac 12}_{i+\frac 12}= q_i + \frac{\Delta}{2}\Big(1 - \underbrace{\frac{u\,\Delta t}{\Delta}}_{u_n}\Big)\partial_x q
+ \;-\; \frac{\Delta t}{2}\,v\,\partial_y q \;-\; \frac{\Delta t}{2}\,w\,\partial_z q
+ \;+\; \frac{\Delta t}{2}S.
+\qquad (11.3)
+$$
+The first correction moves from the centre to the point the face value comes
+from after half a step; geometrically, it evaluates the linear
+reconstruction in cell $i$ at the foot of the characteristic,
+$x_{i+\frac 12}- u\Delta t/2$ (figure 11.1). The transverse terms account for flow
+along the face. For $u < 0$ the upwind cell is $i+1$ and the first
+correction becomes $-\frac{\Delta}{2}(1 + u_n)\partial_x q$. With $s =
+\operatorname{sign}(u_n)$ both cases are
+$$
+q^{n+\frac 12}_{i+\frac 12}= q_{\text{up}} + s\,(1 - s\,u_n)\,\frac{\Delta}{2}\,\partial_x q_{\text{up}} + \dots
+$$
+
+![Figure 11.1: BCG upwinding in one direction. Within the upwind cell the field is
+a straight line with slope $\partial_x q$. The value that crosses the face
+during the step is, on average, the value at the foot of the characteristic,
+half a time step upstream of the face: $q_i + (\Delta/2 - u\Delta t/2)\partial_x q$.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_bcg.png)
+
+The slope $\partial_x q$ is either the centred difference
+$(q_{i+1} - q_{i-1})/(2\Delta)$ or, if the field has a `gradient` attribute,
+a limited slope ([section 7.3](07_cfd_concepts#sec:upwind)). The transverse derivative is a one-sided
+upwind difference, chosen by the sign of $v$. The source term is averaged
+over the two cells on either side of the face.
+
+> **In the code: `bcg.h`, `tracer_fluxes()`**
+>
+> ~~~literatec
+> double un = dt*uf.x[]/(fm.x[]*Delta + SEPS), s = sign(un);
+> int i = -(s + 1.)/2.;                         // upwind cell: 0 or -1
+> double f2 = f[i] + (src[] + src[-1])*dt/4. + s*(1. - s*un)*g.x[i]*Delta/2.;
+> double vn = (uf.y[i] + uf.y[i,1])/(fm.y[i] + fm.y[i,1]);
+> double fyy = vn < 0. ? f[i,1] - f[i] : f[i] - f[i,-1];
+> f2 -= dt*vn*fyy/(2.*Delta);                   // transverse term
+> flux.x[] = f2*uf.x[];
+> ~~~
+>
+> Line by line this is (11.3). `(src[] + src[-1])*dt/4` is
+> $\frac{\Delta t}{2}\cdot\frac{S_{i-1} + S_i}{2}$. Here `uf.x[]` is
+> the face to the *left* of the current cell, so here the upwind cell
+> index is $0$ (current) for $u<0$ and $-1$ for $u > 0$.
+
+## Predicting and projecting the advecting velocity
+
+The advecting velocity $u_f^{n+\frac 12}$ in (11.1) must also be known
+at the half time. `prediction()` in `centered.h` computes it with
+the same formula (11.3) applied to the normal velocity component
+itself, using the centred velocities and $\mathbf{g}^n$ as the source:
+
+~~~literatec
+double un = dt*(u.x[] + u.x[-1])/(2.*Delta), s = sign(un);
+int i = -(s + 1.)/2.;
+uf.x[] = u.x[i] + (g.x[] + g.x[-1])*dt/4. + s*(1. - s*un)*du.x[i]*Delta/2.;
+~~~
+
+This predicted $\mathbf{u}_f$ is not divergence-free. It is then projected
+([chapter 15](15_projection)) with time step $\Delta t/2$ and a separate pressure field
+`pf`:
+
+~~~literatec
+mgpf = project (uf, pf, alpha, dt/2., mgpf.nrelax);
+advection ((scalar *){u}, uf, dt, (scalar *){g});
+~~~
+
+Why project it? The flux form (11.1) computes
+$\nabla\cdot(u_fq)$. The physical term is $u_f\cdot\nabla q$. They differ by
+$q\,\nabla\cdot u_f$. If the advecting field had a divergence, a uniform field
+$q = q_0$ would change by $-\Delta t\,q_0\,\nabla\cdot u_f$ in one step, which is
+nonsense. With a discretely divergence-free $\mathbf{u}_f$ the flux form leaves a
+uniform field unchanged and is both conservative and consistent with the
+non-conservative equation.
+
+## Order of accuracy and stability
+
+Without limiting, the BCG face value is second order in space and time for
+smooth fields. With a limiter it drops to first order at extrema, which is
+the price of having no oscillations. The scheme is explicit and stable for
+$C \le 1$; Basilisk uses $C \le 0.8$. The `dt/2` projection and the
+second Poisson solve it needs are why the `mgpf` statistics appear next to
+`mgp` in the solver output.
+
+[Previous](10_timestep) | [Contents](README) | [Next](12_momentum)

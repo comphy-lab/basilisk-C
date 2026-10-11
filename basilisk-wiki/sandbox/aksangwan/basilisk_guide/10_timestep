@@ -1,0 +1,104 @@
+# 10 One time step: the order of operations {#ch:timestep}
+
+## Events
+
+`run()` (in `run.h`) repeats one loop: execute all events that are
+due at the current iteration $i$ and time $t$, then advance $t$ by $\Delta t$. The
+Navier--Stokes solver defines its events in a fixed order, and every module
+or user file adds code to those events or adds new ones. Within a step the
+events run in this order (all of them are declared with `i++`, so they
+run every step):
+
+![Figure 10.1: Events executed in one time step of the centered Navier--Stokes
+solver with the two-phase modules.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_events.png)
+
+When a module defines an event with the same name as an existing one, both
+bodies run in that slot. This is how `reduced.h`, `tension.h`,
+`iforce.h` and an `acceleration` event in your own file (a body
+force, a damping layer) all add to the same face field $\mathbf{a}$ before the
+projection uses it. Events with new names (output, logging) run after the
+solver's events, in the order they are defined in the file. A test compiled
+for this guide confirmed both rules; [chapter 2](02_language) gives the details.
+
+## Time levels {#sec:timelevels}
+
+The scheme is staggered in time (figure 10.2). Velocity and pressure
+are known at integer times $t^n$. The volume fraction, and therefore density
+and viscosity, are known at half times $t^{{n-\frac 12}}$. In the `vof` event
+the volume fraction is advanced from $t^{n-\frac 12}$ to $t^{n+\frac 12}$ using the face
+velocity from the end of the previous step. The properties used by the
+momentum update then sit at the midpoint of the interval $[t^n,t^{n+1}]$,
+which is what a second-order time integration of
+$\rho\,\partial_t\mathbf{u}= \dots$ needs.
+
+![Figure 10.2: Staggering in time. The interface lags the velocity by half a step,
+so density and viscosity are centred in the interval over which the
+velocity is advanced.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_timeline.png)
+
+## Choosing the time step
+
+The `stability` event computes the largest stable step from the face
+velocity:
+$$
+\Delta t_{\text{CFL}} = C_{\max}\,\min_{\text{faces}}\frac{\Delta\,f_m}{|u_f|},
+\qquad (10.1)
+$$
+where $u_f$ already contains the factor $f_m$ (the face is partly blocked by
+the solid), so $\Delta f_m/|u_f| = \Delta/|u|$ for the actual velocity $u$.
+$C_{\max} = 0.8$ by default and $0.5$ with VOF. With surface tension
+(`tension.h`) the step is also limited by the period of the shortest
+capillary wave the grid can carry:
+$$
+\Delta t_\sigma = \sqrt{\frac{\rho_m\Delta_{\min}^3}{\pi\sigma}},\qquad
+\rho_m = \tfrac12(\rho_1 + \rho_2).
+$$
+The step is not allowed to grow suddenly. If the new estimate is larger than
+the previous step, it is replaced by a weighted mean:
+$$
+\Delta t^{n} = \frac{\Delta t^{n-1} + 0.1\,\Delta t_{\text{CFL}}}{1.1}
+\quad\text{if } \Delta t_{\text{CFL}} > \Delta t^{n-1},
+$$
+which raises it by at most 10% of the gap per step. Finally
+`dtnext()` shortens the step so that the next scheduled event time
+(an output, a dump) is hit exactly.
+
+> **In the code: `timestep.h`**
+>
+> ~~~literatec
+> double dt = Delta/fabs(u.x[]);  dt *= fm.x[];
+> if (dt < dtmax) dtmax = dt;
+> dtmax *= CFL;
+> if (dtmax > previous) dtmax = (previous + 0.1*dtmax)/1.1;
+> ~~~
+
+## The algorithm in one page {#sec:algorithm}
+
+Writing $\overline{\,\cdot\,}$ for the average of two cell values onto a face,
+$\mathcal{A}$ for the advection operator, $\mathcal{L}_\mu$ for the viscous
+operator and $\mathcal{P}$ for the projection, one step of the centered
+solver for a two-phase flow is:
+$$
+\begin{aligned}
+&f^{n+\frac 12}= \text{VOF transport of } f^{n-\frac 12}\text{ with } \mathbf{u}_f^n
+  &&\text{(\href{17_vof}{chapter 17})}\\
+&\mathbf{u}^\star = \mathbf{u}^n - \Delta t\,\mathcal{A}(\mathbf{u}^n, \mathbf{u}_f^{n+\frac 12})
+  &&\text{(\href{11_advection}{chapter 11})}\\
+&\rho^{n+\frac 12}\,\frac{\mathbf{w} - (\mathbf{u}^\star + \Delta t\,\mathbf{g}^n)}{\Delta t} = \mathcal{L}_{\mu^{n+\frac 12}}(\mathbf{w}),\quad
+  \mathbf{u}^{\star\star} = \mathbf{w} - \Delta t\,\mathbf{g}^n
+  &&\text{(\href{13_viscosity}{chapter 13})}\\
+&\mathbf{u}_f^\star = f_m\left(\overline{\mathbf{u}^{\star\star}} + \Delta t\,\mathbf{a}^{n+\frac 12}\right)
+  &&\text{(\href{14_acceleration}{chapter 14})}\\
+&\nabla\cdot(\alpha^{n+\frac 12}\nabla p^{n+1}) = \frac{\nabla\cdot\mathbf{u}_f^\star}{\Delta t},\quad
+  \mathbf{u}_f^{n+1} = \mathbf{u}_f^\star - \Delta t\,\alpha^{n+\frac 12}\nabla p^{n+1}
+  &&\text{(\href{15_projection}{chapter 15})}\\
+&\mathbf{g}^{n+1} = \text{cell average of }\left(f_m\mathbf{a}- \alpha\nabla p^{n+1}\right),\quad
+  \mathbf{u}^{n+1} = \mathbf{u}^{\star\star} + \Delta t\,\mathbf{g}^{n+1}.
+\end{aligned}
+$$
+With `conserving.h` the first two lines are replaced by one: $f$ and
+the momentum $\rho\mathbf{u}$ are moved together by the VOF sweeps and
+$\mathbf{u}^\star = (\rho\mathbf{u})^\star/\rho(f^{n+\frac 12})$ ([chapter 12](12_momentum)). Without
+interfaces, the first line is absent and $\rho$ is constant. The following
+chapters derive each line.
+
+[Previous](09_grid) | [Contents](README) | [Next](11_advection)

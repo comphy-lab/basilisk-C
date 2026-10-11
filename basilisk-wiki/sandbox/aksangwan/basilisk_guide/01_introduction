@@ -1,0 +1,82 @@
+# 1 Introduction {#ch:intro}
+
+Basilisk (<http://basilisk.fr>) is a free library for solving partial
+differential equations on adaptive Cartesian meshes, written by Stéphane
+Popinet as the successor of Gerris \[[9](references)\]. It is used mostly for
+fluid mechanics: incompressible and variable-density flows, interfaces with
+surface tension, shallow-water and multilayer ocean models, and flows around
+solid bodies.
+
+A Basilisk simulation is one C file. It includes a grid, a solver and a few
+modules, then defines *events*: functions that run at given iterations or
+times. The translator `qcc` turns the Basilisk extensions to C
+(`foreach()`, `event`, field declarations) into plain C and calls
+the C compiler. Nothing in the numerics is hidden in a binary. Every equation
+in this guide is a loop in one of the header files under `$BASILISK`,
+and the guide quotes those loops.
+
+## Who this guide is for
+
+This guide is for someone who knows some fluid mechanics and C and wants to
+use Basilisk with an understanding of what it computes. It has three parts.
+
+Part I is practical. It covers the Basilisk language, how to set
+up, compile, run and restart a case, how to get data out, four complete
+worked examples that were run for this guide, and the mistakes that most
+often break a run. Read it first and run the examples.
+
+Part II explains the numerical method. It starts from general
+CFD ideas (finite volumes, stability, upwinding, the CFL condition,
+implicit time stepping, projection methods), then follows one time step of
+the incompressible Navier--Stokes solver: the grid, advection,
+momentum-conserving transport for two fluids, viscosity, body and
+interfacial forces, the pressure projection, the multigrid solver, the
+volume-of-fluid method, boundary conditions and embedded solids. Each
+derivation is followed by the source line that computes it.
+
+Part III describes the other solvers and modules in the library
+and when to use them.
+
+## The pieces of a typical simulation
+
+Figure 1.1 shows the files a two-phase simulation with an embedded
+solid includes, and what each one contributes. The Navier--Stokes solver
+(`navier-stokes/centered.h`) owns the time loop and calls a fixed
+sequence of events. The other modules plug into that sequence by
+*overloading* an event: `reduced.h` adds gravity inside the
+`acceleration` event, `two-phase.h` sets density and viscosity in
+the `properties` event, and so on.
+
+![Figure 1.1: Files used by a typical two-phase simulation with a solid body.
+Arrows point from a module to the modules it relies on or feeds. Blue is the
+core solver, orange its numerical building blocks, green the two-phase
+modules and red the body and interfacial forces.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_stack.png)
+
+## How to read the boxes
+
+Two kinds of boxes appear in the text. An *In the code* box quotes
+the source line that computes the equation just derived. A titled concept
+box explains a general CFD idea or a rule to remember.
+
+> **Notation used everywhere**
+>
+> $\Delta$ is the size of the current cell (`Delta` in the code), $\Delta t$ the time
+> step (`dt`), and superscripts $n$, $n+\tfrac{1}{2}$, $n+1$ are time levels.
+> Cell centres have integer indices $i, j, k$; faces have half indices, so
+> $u_{f,{i+\frac 12}}$ is the face velocity between cells $i$ and $i+1$. In Basilisk
+> code `s[]` is the value in the current cell, `s[1]` its right
+> neighbour and `s[-1]` its left neighbour; `s[0,1]` is the neighbour
+> above. A face field value `uf.x[]` lives on the *left* face of the
+> current cell, so `uf.x[]` is $u_{f,{i-\frac 12}}$ and `uf.x[1]` is
+> $u_{f,{i+\frac 12}}$. A full symbol table is in [chapter A](A_notation).
+
+## Where to find more
+
+The source files are the reference documentation: each header starts with
+a commented explanation, and the same text is rendered on
+<http://basilisk.fr/src/>. The directories `$BASILISK/test` and
+`$BASILISK/examples` contain several hundred complete programs, most
+of them with plots and comparisons against reference solutions. When you
+need a feature, the fastest route is usually to find a test that uses it.
+
+[Contents](README) | [Next](02_language)

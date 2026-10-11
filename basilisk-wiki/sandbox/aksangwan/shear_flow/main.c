@@ -1,9 +1,25 @@
+/**
+# Two-phase shear flow
 
-// **Two-Phase Shear Flow Simulation**
-// This code simulates a two-phase shear flow using the Basilisk C framework.
-// The setup involves two fluids with different densities, gravity, and a moving top boundary.
+A lower fluid at rest lies under a lighter upper fluid that is sheared by
+the moving top wall. The interface starts as an unstable linear mode of
+this flow (a small cosine wave with its velocity eigenfunction), and the
+run follows its growth. Units are CGS (cm, g, s).
 
-// Author - Anil Kumar, IIT Bombay, India (Email: ak.sangwan.iitb@gmail.com)
+Author: Anil Kumar, IIT Bombay, India (ak.sangwan.iitb@gmail.com)
+
+The initial condition is computed by [genData.py](genData.py), which must be
+in the run directory and needs `python3` with numpy, scipy and sympy.
+`distance.h` and the VTU writer work only in serial, so compile without
+`-fopenmp` and run without MPI:
+
+~~~bash
+qcc -O2 -Wall main.c -o run -lm
+./run            # new run
+./run -r 20      # restart from dumpfile/dump-20
+~~~
+*/
+
 #include "navier-stokes/centered.h"
 #define FILTERED 1
 #include "two-phase.h"
@@ -43,13 +59,9 @@ u.t[top] = dirichlet(U0); // Tangential velocity at top boundary
 u.t[bottom] = neumann(0.); // Tangential velocity at bottom boundary
 int main(int argc, char *argv[])
 {
-    if (argc > 1)
-    {
-        for (int i = 1; i < argc; i++)
-        {
-            (strcmp(argv[i], "-r") == 0) ? sprintf(restoreFileName, "dumpfile/dump-%d", atoi(argv[i + 1])) : none;
-        }
-    }
+    for (int i = 1; i < argc - 1; i++) // "-r N" restarts from dumpfile/dump-N
+        if (strcmp(argv[i], "-r") == 0)
+            sprintf(restoreFileName, "dumpfile/dump-%d", atoi(argv[i + 1]));
     periodic(right); // Periodic boundary condition at right
     G.y = -gG; // Gravity in y-direction
     f.sigma = 72.; // Surface tension
@@ -74,7 +86,7 @@ event init(t = 0) // Initialization event at time t=0
     }
     else
     {
-        refine((y > -0.1 * hH && y < 0.1 * hH) && level < 10); // Initial refinement near interface
+        refine((y > -0.1 * hH && y < 0.1 * hH) && level < MAXLEVEL); // Initial refinement near interface
         make_interface(); // Create the interface
         my_init_cond(); // Set initial conditions
     }
@@ -158,7 +170,8 @@ void my_init_cond()
     FILE *fpt = fopen("veldata.dat", "r");
     if (fpt == NULL)
     {
-        printf("Can't open file ");
+        fprintf(ferr, "Can't open veldata.dat: did genData.py run?\n");
+        exit(1);
     }
     else
     {
@@ -177,9 +190,8 @@ void my_init_cond()
                 //     pdata[count] = atof(ptr);
                 else
                 {
-                    printf("column is large");
-                    fflush(stdout);
-                    exit(0);
+                    fprintf(ferr, "veldata.dat has more than 2 columns\n");
+                    exit(1);
                 }
                 column++;
                 ptr = strtok(NULL, ",");
@@ -219,11 +231,10 @@ void make_interface()
     ptr = fopen("eta.dat", "rb");
     if (ptr == NULL)
     {
-        fprintf(ferr, "There is no file eta file \n");
-        exit(0);
+        fprintf(ferr, "Can't open eta.dat: did genData.py run?\n");
+        exit(1);
     }
 
-    // fprintf(stderr, "Herereeeeeee");
     coord *shapedata = input_xy(ptr);
     fclose(ptr);
     scalar a[];

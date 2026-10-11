@@ -1,0 +1,237 @@
+# 2 The Basilisk language {#ch:language}
+
+Basilisk C is C99 with a few additions. This chapter lists them, with the
+rules that are easy to get wrong. Everything here was checked against the
+source tree or by compiling a test program.
+
+## Compiling with qcc
+
+~~~bash
+export BASILISK=$HOME/basilisk/src
+export PATH=$PATH:$BASILISK
+qcc -O2 -Wall case.c -o case -lm              # serial
+qcc -O2 -Wall -fopenmp case.c -o case -lm     # OpenMP (OMP_NUM_THREADS=n ./case)
+~~~
+
+`qcc` translates the file to C99, runs a static check of physical
+dimensions, and passes every option it does not know to the C compiler. Its
+own options include:
+
+| Option | Effect |
+|:---|:---|
+| `-grid=octree` | use this grid instead of the one included in the file |
+| `-catch` | stop with a message on floating-point errors (NaN, division by zero) |
+| `-events` | print a trace of the events as they run |
+| `-source` | write the generated C file (`_case.c`) and stop |
+| `-disable-dimensions` | skip the dimension check |
+| `-Wdimensions` | report dimension errors as warnings only |
+
+For MPI, generate the C source and compile it with the MPI compiler:
+
+~~~bash
+qcc -source -D_MPI=1 case.c
+mpicc -O2 -std=c99 -D_XOPEN_SOURCE=700 -D_GNU_SOURCE=1 _case.c -o case -lm
+mpirun -np 8 ./case
+~~~
+
+> **The dimension checker**
+>
+> `qcc` tries to infer the physical dimension of every constant and
+> reports combinations that do not agree. It sometimes reports errors for
+> correct code, typically in expressions that mix a dimensional function call
+> and a bare number such as `cond ? u(x) : 0.`. If the code is right,
+> compile with `-disable-dimensions` instead of changing the physics to
+> please the checker. It also catches real mistakes. While preparing this
+> guide, `exp(-100.*(sq(x - 0.5) + sq(y - 0.5)))` was rejected because
+> the exponent has units of length squared; writing
+> `exp(-(sq(x - 0.5) + sq(y - 0.5))/sq(0.1 [1]))` states that the width
+> 0.1 is a length and passes. The bracket annotations, `0.1 [1]`,
+> `L0 = 8. [1]` or `DT = 0.1 [0,1]`, declare dimensions (here
+> length, and time) for the checker and have no other effect. `qcc`
+> reports a dimension error but still builds the program.
+
+## The structure of a program
+
+The order of the `#include` lines matters, because each file can
+depend on the ones before it:
+
+1.  the grid (`grid/multigrid.h`, `grid/octree.h`, ...). If no
+    grid is included, `qcc` uses `grid/quadtree.h`;
+
+2.  `embed.h` if there is a solid body (it must come before the
+    solver);
+
+3.  the solver (`navier-stokes/centered.h`, `saint-venant.h`,
+    ...);
+
+4.  modules that add to the solver (`two-phase.h`,
+    `navier-stokes/conserving.h`, `tension.h`, `reduced.h`,
+    `tracer.h`, `diffusion.h`, ...);
+
+5.  your own headers.
+
+Then come global parameters and boundary conditions, `main()`, and the
+events. `main()` sets the domain and parameters and calls
+`run()`, which runs the time loop until no event is left to run.
+
+## Fields
+
+Fields are declared with an empty bracket and are allocated on the whole
+grid:
+
+~~~literatec
+scalar s[];          // one value per cell
+vector u[];          // u.x, u.y (and u.z in 3D), cell-centred
+face vector uf[];    // uf.x on x faces, uf.y on y faces, ...
+tensor T[];          // T.x.x, T.x.y, ...
+~~~
+
+A field declared at file scope exists for the whole run; a field declared
+inside a function or event is allocated there and freed at the closing
+brace. Fields can also be created and freed by hand:
+
+~~~literatec
+scalar w = new scalar;
+...
+delete ({w});
+~~~
+
+A *constant* field takes no memory and has the same value everywhere:
+
+~~~literatec
+const face vector muc[] = {1e-3, 1e-3};   // a constant face field
+mu = muc;
+mu[] = {1e-3, 1e-3};                      // the same, in one line
+~~~
+
+Fields carry *attributes*, for example `f.sigma` (surface tension of
+an interface), `s.gradient` (slope limiter, such as
+`minmod2`), `s.nodump` (leave out of dump files), or
+`s.refine` and `s.prolongation` (interpolation on the tree).
+
+## Loops over the grid
+
+All computation on fields happens inside loops that visit the grid:
+
+| Loop | Visits |
+|:---|:---|
+| `foreach()` | every leaf cell |
+| `foreach_face()` | every face, in each direction |
+| `foreach_face(x)` | only the faces normal to $x$ |
+| `foreach_vertex()` | every cell vertex |
+| `foreach_level(l)` | every cell at level `l` |
+| `foreach_dimension()` | repeats a block for $x$, $y$, $z$ with indices rotated |
+
+Inside a loop, `x`, `y`, `z` are the coordinates of the cell
+centre (or of the face centre in `foreach_face()`), `Delta` is the
+cell size, `level` the tree level and `dv()` the cell volume
+(including the solid fraction, if any). Neighbours are reached by relative
+index: `s[1]`, `s[-1]`, `s[0,1]`, `s[1,1]`, and so on, up
+to the number of ghost layers (one by default, two with `embed.h`).
+
+`foreach_dimension()` writes the $x$ version of a block and gets the
+others free:
+
+~~~literatec
+foreach()
+  foreach_dimension()
+    g.x[] = (s[1] - s[-1])/(2.*Delta);   // also g.y[] = (s[0,1] - s[0,-1])/(2.*Delta), ...
+~~~
+
+**Reductions.** A loop that accumulates into a variable must
+declare it, so that the result is correct with OpenMP and MPI:
+
+~~~literatec
+double vol = 0., umax = 0.;
+foreach (reduction(+:vol) reduction(max:umax)) {
+  vol += f[]*dv();
+  if (fabs(u.x[]) > umax) umax = fabs(u.x[]);
+}
+~~~
+
+Without the reduction clause, the result is wrong with OpenMP or MPI.
+
+## Events {#sec:events}
+
+An event is a function with a schedule:
+
+~~~literatec
+event name (schedule) { ... }
+~~~
+
+| Schedule | Runs |
+|:---|:---|
+| `i = 0`, `t = 0` | once, at the first step |
+| `i++` | every step |
+| `i += 10` | every 10 steps |
+| `t += 0.1` | every 0.1 time units (the time step is shortened to land on these times) |
+| `t = 0; t <= 5; t += 0.1` | from 0 to 5 every 0.1 |
+| `i += 10; i <= 1000` | every 10 steps up to step 1000 |
+| `t = {0, 1, 2.5}` | at the listed times |
+| `t = end` | once, after the last step |
+
+Three rules decide how a run behaves. All three were confirmed with small
+test programs for this guide.
+
+> **When does a run stop?**
+>
+> `run()` continues while at least one event still has a scheduled time or
+> iteration *with an upper limit*. Events with no limit (`i++`,
+> `t += 0.1`) do not keep the run alive. A program whose only events are
+> unlimited stops after the first step. Give at least one event an end, for
+> example `event end (t = 10)` or `event logfile (t += 0.1; t <= 10)`.
+> An event that returns a non-zero value stops the run immediately; this is
+> the way to stop on a condition (convergence, a blow-up).
+
+> **Event names: overloading**
+>
+> Several events with the same name all run, at the slot of the first
+> definition, in *reverse* order of definition: the one defined last runs
+> first. Solvers define named slots (`init`, `properties`,
+> `acceleration`, `projection`, `adapt`, ...) and modules add to
+> them this way. Events with new names run after the solver's events, in the
+> order they appear in the file.
+
+> **Floating-point event times**
+>
+> `t += 0.1; t <= 0.3` does *not* run at $t = 0.3$: the third time is
+> $0.1 + 0.1 + 0.1 = 0.30000000000000004 > 0.3$. Use a limit slightly above
+> the last wanted time (`t <= 0.3 + 1e-6`) or a list
+> (`t = {0, 0.1, 0.2, 0.3}`).
+
+## Boundary conditions
+
+Conditions are assignments at file scope (or in `main()` before
+`run()`):
+
+~~~literatec
+u.n[left]  = dirichlet (1.);     // normal velocity on the left side
+u.t[top]   = dirichlet (0.);     // tangential velocity (u.r: second tangential, 3D)
+p[right]   = dirichlet (0.);
+pf[right]  = dirichlet (0.);     // the half-step pressure needs the same condition
+f[left]    = neumann (0.);
+u.n[embed] = dirichlet (0.);     // on an embedded solid
+periodic (right);                // left and right sides are periodic
+~~~
+
+The sides are `left`, `right`, `bottom`, `top`,
+`back`, `front` and `embed`. Inside the expression, `x`,
+`y`, `z` and `t` can be used, and `s[]` is the interior
+cell next to the boundary. [Chapter 18](18_boundary) explains how each condition becomes
+a ghost-cell value.
+
+## Global variables you will use
+
+| Name | Meaning |
+|:---|:---|
+| `t`, `i`, `dt` | current time, iteration number, time step |
+| `L0`, `X0`, `Y0`, `Z0` | domain size and lower-left corner (`size()`, `origin()`) |
+| `N` | number of cells per side for `init_grid()` / `run()` |
+| `DT` | maximum time step |
+| `CFL` | Courant number (0.8; 0.5 with VOF) |
+| `TOLERANCE`, `NITERMAX` | multigrid tolerance ($10^{-3}$) and maximum cycles (100) |
+| `mgp`, `mgu` | statistics of the last pressure and viscous solves |
+| `grid->tn` | total number of leaf cells |
+| `pid()`, `npe()` | MPI rank and number of processes |
+
+[Previous](01_introduction) | [Contents](README) | [Next](03_setup)

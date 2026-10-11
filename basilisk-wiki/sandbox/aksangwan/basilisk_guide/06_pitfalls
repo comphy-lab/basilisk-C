@@ -1,0 +1,155 @@
+# 6 Common pitfalls and how to diagnose a run {#ch:pitfalls}
+
+These are the problems that most often waste a day. Most were met in real
+projects; the first two were found while preparing the examples of this
+guide.
+
+## The program
+
+### The run stops after one step
+
+No event has an upper limit, so `run()` has nothing left to wait for
+([section 2.5](02_language#sec:events)). Give one event an end: `event end (t = 10) {}` is
+enough.
+
+### An output time is skipped
+
+`t += 0.1; t <= 0.3` misses $t = 0.3$ because of rounding. Use
+`t <= 0.3 + 1e-6` or a list of times.
+
+### `initializer element is not constant`
+
+Global variables in C can only be initialised with constants. Declare
+`double c = 0.;` at file scope and compute `c = f(...);` in
+`main()` before `run()`.
+
+### Dimension errors for correct code
+
+The static dimension check of `qcc` reports false errors, most often
+for `cond ? expression : 0.`. Compile with `-disable-dimensions`
+once you are sure the code is right.
+
+### Results change with the number of threads
+
+A loop that accumulates into a variable has no `reduction()` clause.
+
+## Boundary conditions
+
+### Open boundaries
+
+Write velocity and pressure conditions as pairs ([table 18.1](18_boundary)), and
+give `pf` the same condition as `p`. A domain where every side
+prescribes the normal velocity needs the inflow and outflow to balance
+exactly; a closed box with an inflow has no pressure solution, and the
+multigrid solver then fails to converge or crawls.
+
+### Imposing a volume fraction
+
+Never write `f[left] = dirichlet(cond ? 1 : 0)`. The ghost value is
+$2f_b - f_i$, between $-1$ and 2 wherever the computed interface is not
+exactly at the target, and the interfacial force (gravity with
+`reduced.h`, surface tension) turns that jump into a large force on the
+first interior face. Use `neumann(0)` or set the ghost value to a
+volume fraction directly ([section 18.8](18_boundary#sec:bc-f)).
+
+### Inflow profiles in two-phase flows
+
+An analytic inflow velocity (a wave, a jet) is usually valid in one fluid
+only. Applied over the whole boundary, it can drive the other fluid many
+times faster than the physical flow and collapse the time step. Multiply the
+profile by the volume fraction of the fluid it describes.
+
+### Wave makers and absorbing layers
+
+A velocity inlet reflects everything that comes back to it, and a pressure
+outlet reflects unless the flow arriving there is calm. Use a relaxation
+zone at the inlet and a damping layer at the outlet ([chapter 20](20_zones)), and
+measure the reflection: a layer of about one wavelength is needed for
+reflection of a few percent, and a stronger damping in a short layer
+reflects more because the damping itself becomes an obstacle.
+
+## Embedded solids
+
+### Tiny cut cells
+
+A cell that is almost all solid ($c_s \sim 10^{-4}$) has a tiny volume, and
+a pressure difference across it gives a huge velocity. This happens most
+where an interface meets the solid. Remove such cells after every call to
+`solid()`:
+
+~~~literatec
+solid (cs, fs, phi);
+foreach()
+  if (cs[] < 1e-2)
+    cs[] = 0.;
+fractions_cleanup (cs, fs);
+~~~
+
+Do this in one function and call it at initialisation, after a restore and
+after each adaptation.
+
+### Restarting with a solid
+
+`dump()` does not save face fields, so `fs` is missing after
+`restore()`. Rebuild the solid before the first step.
+
+### Forces with reduced gravity
+
+With `reduced.h`, `p` is the dynamic pressure. Add the hydrostatic
+part before computing forces, and check sign and size with a submerged
+body at rest, which must feel its buoyancy.
+
+## Domain and resolution
+
+### The domain is a cube
+
+On trees, `size()` sets one length for all directions. Making the
+domain longer makes it taller and wider too. Define positions and lengths
+from physical quantities (a wavelength, a diameter), and compute `L0`
+from them, never the other way round; a position written as a fraction of
+`L0` moves silently when the domain changes.
+
+### Points on cell faces
+
+A gauge exactly on a cell face or on the domain boundary can return a
+neighbour's value or `nodata`. Offset probe points slightly.
+
+### Disk space
+
+A dump of a 3D run at level 8 or more can take tens of megabytes. A dump
+event every few time units fills a disk quota quickly.
+
+## Diagnosing a collapsing time step
+
+When `dt` shrinks step after step, some velocity in the domain is far
+too large. Find it:
+
+~~~literatec
+event check (i++)
+{
+  double umax = 0.; coord pmax = {0};
+  foreach (reduction(max:umax))
+    if (norm(u) > umax)
+      umax = norm(u);
+  foreach()
+    if (norm(u) == umax)
+      pmax = (coord){x, y, z};
+  fprintf (stderr, "umax 
+}
+~~~
+
+Then look at what is in that cell: its volume fraction, its solid fraction,
+its level, whether it is next to a boundary. The location usually points to
+one of the causes above: an inflow in the wrong fluid, a tiny cut cell, a
+ghost value of $f$ outside $[0,1]$.
+
+## Testing
+
+Test every change at a low level and short end time first: it shows within
+minutes whether the program compiles, runs and keeps a healthy time step.
+Such a run only shows that the change is stable. Whether it is right (a
+reflection coefficient, a force, a convergence rate) needs a run at the
+resolution and duration of the real case, or a 2D version of the problem,
+which is often 100 times cheaper and enough to tune parameters.
+
+[Previous](05_examples) | [Contents](README) | [Next](07_cfd_concepts)

@@ -1,0 +1,45 @@
+# Learning Basilisk
+
+A guide to using the Basilisk flow solver and to the mathematics behind it.
+
+Anil Kumar, Indian Institute of Technology Bombay, Mumbai.
+
+This guide teaches Basilisk in three parts. The first part is practical: the Basilisk C language and its event system, how to set up, run, restart and post-process a case, four complete worked examples (a lid-driven cavity, a vortex street behind a cylinder, a rising bubble and a collapsing water column) and the mistakes that most often break a simulation. The second part explains the numerical method, from the CFD ideas it rests on (finite volumes, stability and the CFL condition, upwinding, implicit time stepping, projection methods) to each step of the incompressible Navier--Stokes solver: the adaptive grid, Bell--Colella--Glaz advection, momentum-conserving transport for two fluids, implicit viscosity, balanced-force gravity and surface tension, the pressure projection and its multigrid solver, geometric volume-of-fluid advection, ghost-cell boundary conditions, cut cells for solid bodies, and wave-generating and absorbing layers. Each derivation is followed by the source line in [src/](/src/) that computes it. The third part surveys the other solvers in the library.
+
+> **Note on how this guide was written.** This documentation was generated with the help of Claude, an AI assistant made by Anthropic [[15](references)]. Claude drafted text, derivations, figures and example programs from the Basilisk source code under the author's direction. Mistakes may remain; if you find one, please tell the author through the [Basilisk forum](https://groups.google.com/g/basilisk-fr).
+
+## Part I: Using Basilisk
+
+1. [Introduction](01_introduction)
+2. [The Basilisk language](02_language)
+3. [Setting up, running and restarting a case](03_setup)
+4. [Getting data out: output and diagnostics](04_output)
+5. [Four worked examples](05_examples) (programs: [cavity.c](examples/cavity.c), [karman.c](examples/karman.c), [bubble.c](examples/bubble.c), [dambreak.c](examples/dambreak.c); plus the [shear-flow case](/sandbox/aksangwan/shear_flow/) from the sandbox)
+6. [Common pitfalls and how to diagnose a run](06_pitfalls)
+
+## Part II: How the solver works
+
+7. [CFD concepts the solver is built on](07_cfd_concepts)
+8. [The equations Basilisk solves](08_equations)
+9. [The grid, the fields and the stencils](09_grid)
+10. [One time step: the order of operations](10_timestep)
+11. [Advection of velocity: the Bell--Colella--Glaz scheme](11_advection)
+12. [Momentum-conserving advection for large density ratios](12_momentum)
+13. [The viscous term: an implicit solve](13_viscosity)
+14. [Body and interfacial forces: the acceleration event](14_acceleration)
+15. [Pressure and the projection step](15_projection)
+16. [Solving the Poisson equations: multigrid](16_multigrid)
+17. [The free surface: geometric VOF advection](17_vof)
+18. [Boundary conditions on the domain](18_boundary)
+19. [Solid bodies: embedded boundaries and cut cells](19_embed)
+20. [Generating and absorbing waves: relaxation and damping layers](20_zones)
+21. [Everything together: one time step](21_full_step)
+
+## Part III: Beyond the Navier--Stokes solver
+
+22. [Other solvers and modules](22_other_solvers)
+
+## Appendix
+
+- [A. Notation and code names](A_notation)
+- [References](references)

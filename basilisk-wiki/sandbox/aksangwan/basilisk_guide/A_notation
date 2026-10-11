@@ -1,0 +1,48 @@
+# Appendix A: Notation and code names {#app:notation}
+
+| Symbol | Code | Meaning |
+|:---|:---|:---|
+| $\Delta$ | `Delta` | cell size at the current level |
+| $\Delta t$ | `dt` | time step |
+| $\ell$ | `level` | tree level, $\Delta= L_0/2^\ell$ |
+| $L_0$ | `L0` | domain size |
+| $\mathbf{u}$ | `u` (vector) | cell-centred velocity |
+| $\mathbf{u}_f$ | `uf` (face vector) | face-normal velocity, times $f_m$ |
+| $p$ | `p` | pressure (dynamic pressure $p'$ with `reduced.h`) |
+| $p_f$ | `pf` | pressure of the $\Delta t/2$ BCG projection |
+| $\mathbf{g}$ | `g` (vector) | centred pressure gradient plus acceleration |
+| $\mathbf{a}$ | `a` (face vector) | face acceleration (gravity, tension, user forces) |
+| $\alpha$ | `alpha` (face vector) | specific volume $f_m/\rho$ on faces |
+| $\rho$ | `rho` | cell density times $c_m$ |
+| $\mu$ | `mu` (face vector) | face dynamic viscosity times $f_m$ |
+| $f$ | `f` | water volume fraction |
+| $\rho_1, \rho_2$ | `rho1`, `rho2` | water and air density |
+| $\mu_1, \mu_2$ | `mu1`, `mu2` | water and air viscosity |
+| $\sigma$ | `f.sigma` | surface tension coefficient |
+| $\phi$ | `f.phi` | interfacial potential ($\sigma\kappa$, gravity) |
+| $\mathbf{G}$, $\mathbf{Z}$ | `G`, `Z` | gravity vector, reference level |
+| $\kappa$ | from `curvature()` | interface curvature |
+| $\mathbf{n}$, $\alpha$ (PLIC) | `n`, `alpha` in `vof.h` | interface normal and intercept |
+| $c_s$ | `cs` | fluid volume fraction (embedded solid) |
+| $f_s$ | `fs` (face vector) | fluid face fraction (embedded solid) |
+| $c_m$, $f_m$ | `cm`, `fm` | metric: volume and face factors ($=c_s$, $f_s$ with `embed.h`) |
+| $C$ | `CFL` | Courant number limit |
+| $q_1$, $q_2$ | `q1`, `q2` | momentum of each phase (`conserving.h`) |
+| $\chi$ | `cc` | Weymouth--Yue step function, $f > 0.5$ |
+|  | `TOLERANCE` | multigrid stopping tolerance ($10^{-3}$) |
+|  | `mgp`, `mgpf`, `mgu` | multigrid statistics: pressure, half-step pressure, viscosity |
+
+## Basilisk stencil syntax
+
+| Code | Meaning |
+|:---|:---|
+| `s[]` | value in the current cell |
+| `s[1]`, `s[-1]` | right and left neighbours |
+| `s[0,1]`, `s[0,-1]` | top and bottom neighbours |
+| `uf.x[]`, `uf.x[1]` | left and right faces of the current cell |
+| `foreach()` | loop over leaf cells |
+| `foreach_face()` | loop over faces (each direction) |
+| `foreach_dimension()` | repeat a block for $x$, $y$, $z$ with rotated indices |
+| `event name (i++)` | run every step; same name = overload |
+
+[Previous](22_other_solvers) | [Contents](README)

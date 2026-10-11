@@ -1,0 +1,108 @@
+# 13 The viscous term: an implicit solve {#ch:viscosity}
+
+## Time discretisation
+
+The `viscous_term` event advances
+$$
+\rho\,\partial_t\mathbf{u}= \nabla\cdot\left[\mu\left(\nabla\mathbf{u}+ \nabla\mathbf{u}^T\right)\right]
+$$
+with backward Euler ([section 7.5](07_cfd_concepts#sec:implicit)):
+$$
+\frac{\rho}{\Delta t}\mathbf{u}^{n+1} - \nabla\cdot\left[\mu(\nabla\mathbf{u}+ \nabla\mathbf{u}^T)\right]^{n+1} = \frac{\rho}{\Delta t}\mathbf{u}^{\text{old}},
+\qquad (13.2)
+$$
+with $\rho$ and $\mu$ at $t^{n+\frac 12}$. Backward Euler is first order in time but
+unconditionally stable. The unknown is the whole velocity vector because the
+term $\nabla\mathbf{u}^T$ couples the components.
+
+## Spatial discretisation
+
+Write out the $x$ component of $\nabla\cdot[\mu(\nabla\mathbf{u}+ \nabla\mathbf{u}^T)]$ in 2D:
+$$
+\partial_x\left(2\mu\,\partial_x u\right) + \partial_y\left(\mu\,(\partial_y u + \partial_x v)\right).
+$$
+Each derivative of a flux is a difference of face values divided by $\Delta$,
+like [(7.2)](07_cfd_concepts):
+$$
+\begin{aligned}
+\partial_x(2\mu\partial_x u)\big|_{ij} &\approx \frac{1}{\Delta^2}\left[2\mu_{{i+\frac 12}}(u_{i+1} - u_i) - 2\mu_{i-\frac 12}(u_i - u_{i-1})\right],\\
+\partial_y(\mu\,\partial_y u)\big|_{ij} &\approx \frac{1}{\Delta^2}\left[\mu_{j+\frac12}(u_{j+1} - u_j) - \mu_{j-\frac12}(u_j - u_{j-1})\right],\\
+\partial_y(\mu\,\partial_x v)\big|_{ij} &\approx \frac{1}{\Delta}\left[\mu_{j+\frac12}(\partial_x v)_{j+\frac12} - \mu_{j-\frac12}(\partial_x v)_{j-\frac12}\right].
+\end{aligned}
+$$
+The cross derivative $\partial_x v$ is needed on the horizontal face
+$(i, j+\frac12)$, where no $v$ is stored. It is built from the four cell
+centres around the face (figure 13.1):
+$$
+\Delta\,(\partial_x v)_{i,j+\frac12} \approx \frac{(v_{i+1,j} + v_{i+1,j+1}) - (v_{i-1,j} + v_{i-1,j+1})}{4}.
+$$
+The face viscosity is $\mu_{\text{face}} = f_m\,\mu(\bar f)$ with $\bar f$ the
+average of the (smoothed) volume fraction of the two cells sharing the face
+(`properties` event in `two-phase-generic.h`).
+
+![Figure 13.1: Stencil of the $x$ momentum viscous operator in 2D. Vertical faces
+carry $2\mu$ (normal stress), horizontal faces carry $\mu$ (shear stress).
+The green circles are the four $v$ values used for $\partial_x v$ on the top
+face; the same pattern one row lower gives it on the bottom face.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_viscstencil.png)
+
+## Solving the system
+
+Collecting the terms of (13.2) that multiply $u_{ij}$ and moving
+the rest to the right gives the Gauss--Seidel update used by the multigrid
+relaxation ([chapter 16](16_multigrid)):
+$$
+u_{ij} \leftarrow \frac{r_{ij}\Delta^2 + \frac{\Delta t}{\rho}\,N_{ij}}
+{\Delta^2 + \frac{\Delta t}{\rho}\left(2\mu_{i+\frac 12}+ 2\mu_{i-\frac 12}+ \mu_{j+\frac12} + \mu_{j-\frac12}\right)},
+\qquad (13.8)
+$$
+with the neighbour terms
+$$
+N_{ij} = 2\mu_{i+\frac 12}u_{i+1} + 2\mu_{i-\frac 12}u_{i-1}
+ + \mu_{j+\frac12}\big(u_{j+1} + \Delta(\partial_x v)_{j+\frac12}\big)
+ - \mu_{j-\frac12}\big(-u_{j-1} + \Delta(\partial_x v)_{j-\frac12}\big),
+$$
+where $r = \mathbf{u}^{\text{old}}$ is the right-hand side. The denominator is always
+larger than $\Delta^2$, so the iteration is diagonally dominant and converges for
+any $\Delta t$.
+
+> **In the code: `viscosity.h`, `relax_viscosity()`**
+>
+> ~~~literatec
+> w.x[] = (r.x[]*sq(Delta) + dt/rho[]*(2.*mu.x[1]*u.x[1] + 2.*mu.x[]*u.x[-1]
+>          + mu.y[0,1]*(u.x[0,1] + (u.y[1,0] + ua.y[1,1])/4. - (u.y[-1,0] + ua.y[-1,1])/4.)
+>          - mu.y[]*(- u.x[0,-1] + (ua.y[1,-1] + u.y[1,0])/4. - (ua.y[-1,-1] + u.y[-1,0])/4.)))
+>        /(lambda.x*sq(Delta) + dt/rho[]*(2.*mu.x[1] + 2.*mu.x[] + mu.y[0,1] + mu.y[]));
+> ~~~
+>
+> This is (13.8); `foreach_dimension()` produces the $y$
+> and $z$ versions by rotating the indices. `lambda.x` is 1 except in
+> axisymmetric runs.
+
+## Why the pressure gradient is added and removed
+
+In `centered.h`:
+
+~~~literatec
+correction (dt);       // u += dt*g    (g: centred pressure gradient + acceleration at t^n)
+mgu = viscosity (u, mu, rho, dt, mgu.nrelax);
+correction (-dt);      // u -= dt*g
+~~~
+
+The velocity coming out of advection does not contain the pressure gradient
+or the body forces. Near a wall or the free surface that velocity can be far
+from the final $\mathbf{u}^{n+1}$, and the implicit viscous operator, together with
+the velocity boundary conditions applied during the solve, would act on the
+wrong field. Adding $\Delta t\,\mathbf{g}^n$ first gives the solver a good
+estimate of $\mathbf{u}^{n+1}$; removing it afterwards leaves room for the new
+pressure gradient $\mathbf{g}^{n+1}$, which the projection adds at the end
+of the step.
+
+## Embedded boundaries
+
+With `embed.h`, `centered.h` includes `viscosity-embed.h`
+instead. Its operator is the same but adds, in cut cells, the viscous flux
+through the piece of solid surface inside the cell, computed from the
+Dirichlet condition $\mathbf{u}= 0$ on the solid with the gradient
+reconstruction of [section 19.3](19_embed#sec:embed-dirichlet).
+
+[Previous](12_momentum) | [Contents](README) | [Next](14_acceleration)

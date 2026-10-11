@@ -1,0 +1,148 @@
+# 22 Other solvers and modules {#ch:other}
+
+Part II followed the centered Navier--Stokes solver. The
+library contains several other solvers built from the same pieces (the grid,
+events, `bcg.h`, `poisson.h`). This chapter says what each one
+solves and when to use it; the header file of each is its documentation.
+
+## Passive scalars: tracer.h and diffusion.h
+
+`tracer.h` advects every scalar in the list `tracers` with the
+face velocity $\mathbf{u}_f$, using the BCG scheme of [chapter 11](11_advection), in the
+`tracer_advection` event. `diffusion.h` solves the implicit
+reaction--diffusion equation
+$$
+\theta\,\partial_t T = \nabla\cdot(D\nabla T) + \beta T + r
+$$
+with backward Euler, which gives a Poisson--Helmholtz problem solved by the
+multigrid solver of [chapter 16](16_multigrid). Together they give an
+advection--diffusion equation for a temperature or a concentration:
+
+~~~literatec
+#include "navier-stokes/centered.h"
+#include "tracer.h"
+#include "diffusion.h"
+
+scalar T[];
+scalar * tracers = {T};
+const face vector kappa[] = {1e-3, 1e-3};   // diffusivity
+
+event init (t = 0) {
+  foreach() {
+    T[] = exp (- (sq(x - 0.5) + sq(y - 0.5))/sq(0.1 [1]));
+    u.x[] = 1.;
+  }
+}
+
+event tracer_diffusion (i++)
+  diffusion (T, dt, kappa);
+
+event end (t = 0.5)
+  fprintf (stderr, "i = 
+
+int main() {
+  periodic (right);
+  periodic (top);
+  init_grid (64);
+  run();
+}
+~~~
+
+Run for this guide, it gives $\int T\,dV = 0.0314159$, equal to the initial
+integral $\pi\times0.1^2$ (the scheme conserves it), and a peak of 0.823
+against the exact $1/(1 + 4\kappa t/w^2) = 0.833$. The box must be
+periodic here: a uniform velocity in the default closed box cannot satisfy
+$\nabla\cdot\mathbf{u}= 0$ with $u_n = 0$ on the walls, and the pressure solver fails.
+
+For a tracer that should stay on one side of an interface, attach it to the
+volume fraction (`f.tracers = {c}`) so that `vof.h` moves it with
+the geometric fluxes ([chapter 12](12_momentum) uses this mechanism for momentum).
+
+## Variants of the Navier--Stokes solver
+
+- `navier-stokes/mac.h` is a staggered (MAC) solver for constant
+  density: velocity components live on faces, so the projection is exact and
+  there is no cell-centred velocity. Simpler and cheaper than
+  `centered.h`, but without variable density, embedded boundaries or VOF
+  coupling.
+
+- `navier-stokes/double-projection.h` is an option for
+  `centered.h`, after Almgren et al. (2000), that adds a second
+  projection. With an approximate projection several pressures can be
+  defined, and the header explains which one each variant uses.
+
+- `navier-stokes/conserving.h` moves momentum consistently with
+  VOF, for large density ratios ([chapter 12](12_momentum)).
+
+- `axi.h` is for axisymmetric flows. $x$ is the axis and $y \ge 0$ the
+  radius. It changes the metric fields $c_m$ and $f_m$ so that every operator
+  includes the factor $r$ ([chapter 9](09_grid)). Include it before the solver.
+
+## Other interface methods
+
+- `two-phase.h` uses VOF, the method of this guide.
+
+- `two-phase-clsvof.h` couples VOF with a level set: the signed
+  distance `d` is advected and kept consistent with the VOF interface.
+  Mass conservation is at least as good as pure VOF, and the smooth distance
+  function helps some surface-tension formulations (`integral.h`).
+
+- `two-phase-levelset.h` is a pure level set. Its header recommends
+  the coupled method instead, because a level set alone does not conserve
+  mass well.
+
+## Compressible flows
+
+`all-mach.h` solves the momentum equation together with an evolution
+equation for pressure,
+$$
+\partial_t p + \mathbf{u}\cdot\nabla p = -\rho c^2\nabla\cdot\mathbf{u},
+$$
+which reduces to $\nabla\cdot\mathbf{u}= 0$ when the sound speed $c$ is infinite (the
+default). `momentum.h` builds a two-phase solver on it, and the
+`compressible/` folder contains a compressible two-phase solver with an
+energy equation and equations of state in separate files
+(`NASG.h`, `Mie-Gruneisen.h`). Use these for bubble collapse, shock--interface
+interaction and similar problems where compressibility matters.
+
+## Shallow water and layered models
+
+For flows much wider than deep (rivers, coasts, tsunamis, oceans), the
+vertical structure can be modelled instead of resolved.
+
+- `saint-venant.h` solves the shallow-water (Saint-Venant) equations for
+  depth $h$ and depth-averaged velocity, with topography $z_b$ and wetting and
+  drying, using a well-balanced finite-volume scheme. Its header now
+  recommends the multilayer solver for most uses.
+
+- `green-naghdi.h` adds the dispersive terms of the Green--Naghdi
+  (Serre) equations, for waves that are not long compared with the depth.
+
+- `layered/hydro.h` is the multilayer solver: the water column is
+  divided into layers that move vertically with the flow. With one layer it
+  is Saint-Venant; with several it resolves vertical shear.
+
+- `layered/nh.h` adds non-hydrostatic pressure to the multilayer
+  solver, which gives dispersive waves with a few layers at a fraction of the
+  cost of a full Navier--Stokes free-surface simulation. Further modules in
+  `layered/` add diffusion, Coriolis, density stratification and remapping.
+
+## Viscoelastic fluids
+
+`log-conform.h` adds a polymer stress $\nabla\cdot\boldsymbol\tau_p$ to
+the momentum equation and evolves the conformation tensor in logarithmic
+form, which keeps it positive definite at high Weissenberg numbers. It
+supports Oldroyd-B and related models; `fene-p.h` provides the FENE-P
+model.
+
+## Generic building blocks
+
+For equations that none of the solvers cover, write your own time loop from
+the pieces: `run.h` (events and time loop), `timestep.h` (CFL),
+`bcg.h` (advection), `poisson.h` (elliptic solves),
+`runge-kutta.h` and `predictor-corrector.h` (explicit time
+integration of a list of fields). `$BASILISK/examples` contains
+reaction--diffusion systems (Brusselator, Ginzburg--Landau) and the game of
+life written this way.
+
+[Previous](21_full_step) | [Contents](README) | [Next](A_notation)

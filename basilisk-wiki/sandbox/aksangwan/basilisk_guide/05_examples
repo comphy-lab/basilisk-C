@@ -1,0 +1,240 @@
+# 5 Four worked examples {#ch:examples}
+
+Each example below is a complete program in the `examples/` folder
+next to this guide. All four were compiled with
+`qcc -O2 -Wall -fopenmp` and run for this guide (3 OpenMP threads on a
+desktop machine); the figures show their actual output. Compile and run any
+of them with
+
+~~~bash
+qcc -O2 -Wall -fopenmp cavity.c -o cavity -lm
+OMP_NUM_THREADS=4 ./cavity 2> log.txt
+~~~
+
+## Lid-driven cavity {#sec:ex-cavity}
+
+A square box of unit side full of fluid; the top wall slides at speed 1.
+With $\nu = 10^{-3}$ the Reynolds number is 1000 and the flow settles into
+one large vortex with smaller ones in the bottom corners. This is the
+standard first test of an incompressible solver.
+
+~~~literatec
+~~~
+
+**What to notice.**
+
+- `grid/multigrid.h` gives a uniform $64\times64$ grid without
+  adaptation.
+
+- Only the tangential velocity needs a condition: the normal component
+  is zero on every wall by default ([chapter 18](18_boundary)). The `uf.n` lines set the
+  face velocity on the walls directly, which `$BASILISK/test/lid.c` notes
+  improves the result with the centered solver.
+
+- `mu[] = {1e-3, 1e-3}` makes the viscosity a constant face
+  field ([chapter 2](02_language)).
+
+- The `logfile` event has an end time (`t <= 60`); without it
+  the run would stop after one step, because no event would have an upper
+  limit ([section 2.5](02_language#sec:events)). The event also stops the run early by returning
+  1 once $\max|u - u_{\text{prev}}| < 10^{-4}$ over 0.5 time units.
+
+**Result.** The run reached steady state at $t = 41$ after 2933
+steps, in about 4 seconds. Figure 5.1 shows the vorticity and the
+horizontal velocity on the vertical centre line. The minimum, $u = -0.382$
+at $y = -0.325$, is the value usually compared with the benchmark
+solutions of Ghia, Ghia and Shin (1982).
+
+![Figure 5.1: Lid-driven cavity at $Re = 1000$, $64\times64$ cells, steady state.
+Left: vorticity (colour range $\pm5$). Right: horizontal velocity along the
+vertical centre line.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_cavity.png)
+
+## Flow past a cylinder: a vortex street {#sec:ex-karman}
+
+Uniform flow at $U_0 = 1$ enters a channel and passes a cylinder of
+diameter $D = 0.125$; with $\nu = U_0D/160$ the Reynolds number is 160 and
+the wake becomes unsteady and sheds vortices. The program is the
+`$BASILISK/examples/karman.c` example with the drag and lift added.
+
+~~~literatec
+~~~
+
+**What to notice.**
+
+- `embed.h` is included before the solver; `solid()` in
+  `init` builds the cylinder; `u.n[embed]` and `u.t[embed]` make
+  it no-slip ([chapter 19](19_embed)).
+
+- The viscosity is multiplied by `fm.x[]` in `properties`,
+  so it is zero on solid faces.
+
+- Inflow and outflow come in pairs: velocity and `neumann` pressure
+  on the left, `neumann` velocity and `dirichlet` pressure on the
+  right, for both `p` and `pf` ([section 18.7](18_boundary#sec:wellposed)).
+
+- `adapt_wavelet()` on `cs` and `u` keeps the cylinder
+  and the wake at level 9 and the rest coarse: about 4400 cells instead of
+  the 262 144 of a uniform level-9 grid.
+
+- `embed_force()` gives the pressure and viscous forces (2D only).
+
+**Result.** 3000 steps to $t = 15$ took 30 seconds. After the start
+the drag coefficient oscillates between 1.30 and 1.38 (mean 1.34) and the
+lift between $\pm0.55$, with a period of 0.63, so the Strouhal number is
+$St = D/(U_0T) = 0.20$ (figure 5.2).
+
+![Figure 5.2: Flow past a cylinder at $Re = 160$. Top: vorticity at $t = 15$
+(range $\pm10$; the cylinder is at the left). Bottom: drag and lift
+coefficients.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_karman.png)
+
+## A rising bubble {#sec:ex-bubble}
+
+A circular bubble of radius 0.25 (density 100, viscosity 1) rises in a
+heavier liquid (density 1000, viscosity 10) under gravity 0.98, with
+surface tension 24.5. This is the first test case of Hysing et al. (2009),
+and `$BASILISK/test/rising.c` runs it with many variants. Here gravity
+points along $-x$, so the bubble rises to the right.
+
+~~~literatec
+~~~
+
+**What to notice.**
+
+- `dimensions (nx = 4)` on a multigrid makes a box four times
+  longer than wide ([chapter 3](03_setup)): $[0,2]\times[0,0.5]$. The bubble is
+  centred on $y = 0$, so only its upper half is computed; the default
+  free-slip wall at $y = 0$ is a symmetry plane.
+
+- `two-phase.h` provides `f`, `rho1` ... `mu2`;
+  `tension.h` adds surface tension through `f.sigma`; `reduced.h`
+  adds gravity through `G` and `Z` ([chapter 14](14_acceleration)).
+
+- The bubble is fluid 2 ($f = 0$), so its volume, centroid and velocity
+  are integrals weighted by $1 - f$, computed with reductions.
+
+- `t = {0, 1, 2, 3}` schedules the shape output at listed times.
+
+**Result.** The run took under 3 seconds. The rise velocity peaks
+at 0.242 at $t = 0.92$ and the centroid reaches $x = 1.079$ at $t = 3$;
+the bubble flattens into an ellipse (figure 5.3).
+
+![Figure 5.3: Rising bubble, $128\times32$ cells. Left: interface at
+$t = 0, 1, 2, 3$ from `output_facets()`; the whole width of the box
+is shown, and the lower edge $y = 0$ is the symmetry plane. Right: rise
+velocity of the bubble.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_bubble.png)
+
+## A collapsing water column {#sec:ex-dambreak}
+
+A column of water 0.25 m wide and 0.5 m high stands in the corner of a
+1 m box filled with air, and collapses under gravity. This example uses
+real fluid properties (SI units), a density ratio of 833, and adaptive
+refinement on the interface.
+
+~~~literatec
+~~~
+
+**What to notice.**
+
+- With $\rho_1/\rho_2 = 833$, `navier-stokes/conserving.h` moves
+  momentum with the volume fraction ([chapter 12](12_momentum)). For this guide the
+  same program was also run without that line. It did not blow up, but it
+  needed 2650 steps instead of 750 (the time step fell to
+  $3.7\times10^{-5}$ s instead of about $5\times10^{-4}$ s) and adaptation
+  created up to 15 000 cells instead of 4700, because spurious air velocities
+  near the interface both limit the CFL step and trigger refinement.
+
+- `fraction (f, min (0.25 - x, 0.5 - y))` builds the rectangle as
+  the intersection of two half-planes.
+
+- All walls are the default free-slip walls; no boundary condition is
+  written.
+
+- The front position is a `reduction(max:xf)` over cells near the
+  floor that are mostly water.
+
+**Result.** 750 steps to $t = 0.6$ took 8 seconds with 3000 to 4700
+cells. The front reaches the far wall at $t \approx 0.33$, then the water
+runs up the wall (figure 5.4).
+
+![Figure 5.4: Collapsing water column, maximum level 7. Left: the interface at
+four times. At $t = 0$ the column's edges lie exactly on cell faces, so every
+cell is full or empty and `output_facets()` writes nothing; the initial
+rectangle is drawn directly. Right: position of the front along the floor.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_dambreak.png)
+
+## From the sandbox: a wave growing on a sheared interface {#sec:ex-shear}
+
+This case is not one of the four programs above and was not run for this
+guide. It is the author's sandbox case
+[sandbox/aksangwan/shear_flow](/sandbox/aksangwan/shear_flow/), shown here because
+it uses several techniques the other examples do not: an initial condition
+computed by an external program, an interface built from a list of points,
+and restarting from a dump file.
+
+A lighter fluid ($\rho_2/\rho_1 = 0.5$) lies over a heavier one at rest, in
+a periodic box one wavelength wide ($\lambda = 2\pi/k = 21.5$ cm, CGS units,
+$g = 980$, $\sigma = 72$, both fluids inviscid). The top wall moves at
+$U_0 = 199.6$ cm/s and the upper fluid has the exponential profile
+$U(y) = U_0(1 - e^{-y/b})$ with $b = 2.54$ cm. The interface starts as
+$\eta = a\cos kx$, $a = 0.0685$ cm, with the velocity of the corresponding
+unstable mode of linear theory, whose complex wave speed is
+$c = 61.26 + 22.55\,i$ cm/s. In the linear stage the amplitude should
+therefore grow like $e^{k c_i t}$ with $k c_i = 6.59$ s$^{-1}$, which is the
+first thing to check in the output.
+
+~~~literatec
+u.n[top]    = dirichlet(0.);
+u.n[bottom] = dirichlet(0.);
+u.t[top]    = dirichlet(U0);    // moving wall drives the shear
+u.t[bottom] = neumann(0.);
+...
+periodic (right);
+G.y = -gG;
+f.sigma = 72.;
+rho1 = 1.0; rho2 = density_ratio*rho1;
+mu1 = 0.;   mu2 = 0.;
+~~~
+
+**What to notice.**
+
+- The velocity
+  of the linear mode involves hypergeometric functions of complex argument,
+  which are easier to evaluate in Python (`scipy.special.hyp2f1`). The
+  `init` event writes the centre of every cell to a file with
+  `foreach()`, calls `genData.py` through `system()`, then
+  reads the velocities back in a second `foreach()` in the same order.
+  This works because both loops visit the cells in the same order, which is
+  true only in a serial run. With `-fopenmp`, `qcc` refuses to
+  compile a `foreach()` that increments a shared counter. A version that
+  also runs in parallel would have Python tabulate the profiles $\hat u(y)$
+  and $\hat v(y)$ once on a fine one-dimensional grid, and `init` would
+  interpolate them at each cell and multiply by $e^{ikx}$.
+
+- `distance.h`
+  reads the points $(x, \eta(x))$ with `input_xy()` and computes the
+  signed distance to that curve at every cell centre. The program averages
+  it to the vertices and calls `fractions (phi, f)`, as in
+  [chapter 17](17_vof). `distance.h` works only in serial.
+
+- `./run -r 20` sets the dump file name
+  before `run()`. The `init` event tries `restore()` first
+  and only builds the initial condition if that fails, which is the usual
+  Basilisk pattern for restarts ([chapter 3](03_setup)).
+
+- The adaptation criterion includes the
+  curvature from `curvature (f, KAPPA)`. `curvature()` sets
+  `KAPPA` to `nodata` away from the interface, and
+  `adapt_wavelet()` has no special case for `nodata`, so the jump
+  between a defined curvature and `nodata` counts as a large error.
+  Only interface cells have a defined curvature, and the `f` criterion
+  already refines those, so the curvature criterion mainly matters where the
+  curvature itself varies quickly along the interface.
+
+## Where to go next
+
+Change one thing at a time and look at what happens: raise the level and
+check whether the result changes (convergence), switch off
+`conserving.h` in the dam break and watch the time step, set a limiter
+(`u.x.gradient = minmod2`) in the cavity, or add a passive tracer with
+`tracer.h` to the Kármán street as in the original example.
+
+[Previous](04_output) | [Contents](README) | [Next](06_pitfalls)

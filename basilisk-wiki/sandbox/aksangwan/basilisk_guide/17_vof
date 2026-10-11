@@ -1,0 +1,171 @@
+# 17 The free surface: geometric VOF advection {#ch:vof}
+
+## Volume fractions and their reconstruction
+
+Each cell stores $f\in[0,1]$, the fraction of its volume occupied by water.
+$f$ alone does not say where the water is inside the cell. Before moving it,
+`vof.h` reconstructs the interface in each cut cell ($0 < f < 1$) as a
+straight line (a plane in 3D), the PLIC method (piecewise-linear interface
+calculation \[[13](references)\]). Figure 17.1 shows the result on a
+circle.
+
+![Figure 17.1: PLIC reconstruction of a circle (dashed) on a $6\times6$ grid,
+computed for this document with the Youngs normal and Basilisk's
+`line_alpha()`. Numbers are the volume fractions. Each red segment is
+the line that cuts off exactly the area $f$ in its cell with the estimated
+normal. The segments do not join up: PLIC is discontinuous from cell to
+cell, but it conserves the volume in each cell exactly.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_plic.png)
+
+**The line in a cell.** In coordinates scaled to the unit cell
+$[-\tfrac{1}{2},\tfrac{1}{2}]^d$, the interface is
+$$
+\mathbf{n}\cdot\mathbf{x}= \alpha,
+$$
+with $\mathbf{n}$ pointing out of the water and the water on the side
+$\mathbf{n}\cdot\mathbf{x}< \alpha$. Two numbers are needed: the normal $\mathbf{n}$ and the
+intercept $\alpha$.
+
+**The normal: Mixed-Youngs-Centred (MYC).** Youngs' method takes
+$\mathbf{n}\propto -\nabla f$ from the $3\times3$ block of cells with weights
+$1,2,1$:
+$$
+n_x \propto (f_{i-1,j+1} + 2f_{i-1,j} + f_{i-1,j-1}) - (f_{i+1,j+1} + 2f_{i+1,j} + f_{i+1,j-1}).
+$$
+The centred method uses column sums, which are height functions: if the
+interface is closer to horizontal, $n_x \propto \tfrac12(c_{\text{left}} -
+c_{\text{right}})$ with $c$ the sum of $f$ in the left and right columns, and
+$n_y = \pm1$. Neither is best everywhere. `mycs()` computes both and
+keeps the one with the larger slope (minor component over major component),
+then normalises so that $|n_x| + |n_y| = 1$ \[[13](references)\].
+
+**The intercept.** Given $\mathbf{n}$, the area cut off by the line is a
+monotone function of $\alpha$, so there is exactly one $\alpha$ for each $f$.
+In 2D, with $n_1 = \min(|n_x|,|n_y|)$, $n_2 = \max$ and $\alpha$ measured
+from the corner of the cell where the water region starts, the water region
+is a triangle while $\alpha \le n_1$ and a trapezoid after that, so
+$$
+f = \begin{cases}
+\dfrac{\alpha^2}{2n_1n_2} & \alpha \le n_1,\\[2mm]
+\dfrac{\alpha - n_1/2}{n_2} & n_1 \le \alpha \le n_2,\\[2mm]
+1 - \dfrac{(n_1 + n_2 - \alpha)^2}{2n_1n_2} & \alpha \ge n_2,
+\end{cases}
+\qquad
+\alpha = \begin{cases}
+\sqrt{2fn_1n_2},\\
+fn_2 + n_1/2,\\
+n_1 + n_2 - \sqrt{2n_1n_2(1 - f)}.
+\end{cases}
+$$
+`line_alpha()` evaluates the right-hand inversion, then shifts $\alpha$
+to the cell-centred coordinates. `plane_alpha()` does the same in 3D,
+where the cases are more numerous and involve a cubic, solved with the
+trigonometric formula.
+
+![Figure 17.2: The PLIC interface in a unit cell centred at the origin. The normal
+points from water to air. Given $\mathbf{n}$, $\alpha$ is the unique value that
+makes the shaded area equal to $f$.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_plic-cell.png)
+
+## Direction-split advection {#sec:split}
+
+In 3D, computing the exact volume swept through a face by a general
+velocity field is complicated. `vof.h` instead advects in one
+direction at a time. In a single $x$ sweep the velocity field $(u, 0, 0)$ is
+not divergence-free, so the sweep solves the 1D form of
+$\partial_t f + \mathbf{u}\cdot\nabla f = 0$ written with a flux:
+$$
+\partial_t f + \partial_x(u f) = f\,\partial_x u.
+\qquad (17.4)
+$$
+The right-hand side is the *compression term*. Discretised over one
+sweep:
+$$
+f_i \leftarrow f_i + \dfrac{\Delta t}{c_{m}\Delta}\left[F_{i-\dfrac 12}- F_{i+\dfrac 12}+ \chi_i\left(u_{f,{i+\dfrac 12}} - u_{f,{i-\dfrac 12}}\right)\right].
+\qquad (17.5)
+$$
+The sweeps run in the order $x, y, z$ on even steps and rotate on odd steps
+(`sweep[(i + d) % dimension]`), so the splitting error does not
+always favour the same direction.
+
+## The geometric flux {#sec:vofflux}
+
+During one sweep, the fluid that crosses face ${i+\dfrac 12}$ is the strip of the
+upwind cell of width $|u|\Delta t$ next to the face (figure 17.3). The
+volume of water in that strip is computed exactly from the reconstructed
+line:
+$$
+F_{i+\dfrac 12}= c_f\,u_{f,{i+\dfrac 12}},\qquad
+c_f = \text{fraction of the strip below the line}.
+$$
+`rectangle_fraction()` computes $c_f$ by rescaling the strip to a unit
+square and calling `plane_volume()` (the forward function $f(\alpha)$
+above). If the upwind cell is full or empty, $c_f$ is 1 or 0.
+
+![Figure 17.3: Geometric VOF flux. The hatched strip is the volume that crosses the
+face in one sweep. $c_f$ is the part of it under the reconstructed interface,
+computed exactly from $\mathbf{n}$ and $\alpha$.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_vofflux.png)
+
+> **In the code: `vof.h`, `sweep_x()`**
+>
+> ~~~literatec
+> double un = uf.x[]*dt/(Delta*fm.x[] + SEPS), s = sign(un);
+> int i = -(s + 1.)/2.;
+> double cf = (c[i] <= 0. || c[i] >= 1.) ? c[i] :
+>   rectangle_fraction ((coord){-s*n.x[i], n.y[i], n.z[i]}, alpha[i],
+>                       (coord){-0.5, -0.5, -0.5}, (coord){s*un - 0.5, 0.5, 0.5});
+> flux[] = cf*uf.x[];
+> ...
+> c[] += dt*(flux[] - flux[1] + cc[]*(uf.x[1] - uf.x[]))/(cm[]*Delta);
+> ~~~
+>
+> The sign flip $-s\,n_x$ mirrors the cell so that the strip is always at the
+> low-$x$ end of the unit square.
+
+## Exact conservation: the Weymouth--Yue step function {#sec:wy}
+
+What value of $f$ goes in the compression term? Weymouth and Yue
+\[[14](references)\] showed that the choice
+$$
+\chi_i = \begin{cases}1 & f_i^n > 0.5,\\ 0 & \text{otherwise},\end{cases}
+$$
+computed once before the first sweep and kept fixed for all sweeps, makes
+the scheme conserve volume exactly. Sum (17.5) over all
+sweeps and all cells. The flux differences telescope to the fluxes through
+the domain boundary. The compression terms add up, for each cell, to
+$$
+\dfrac{\Delta t}{\Delta}\,\chi_i\sum_d\left(u_{f,{i+\dfrac 12}} - u_{f,{i-\dfrac 12}}\right)_d = \Delta t\,\chi_i\,(\mathcal{D}\mathbf{u}_f)_i = 0,
+$$
+because $\chi_i$ is the same in every sweep and $\mathbf{u}_f$ is discretely
+divergence-free after the projection ([chapter 15](15_projection)). Total water
+volume therefore changes only by what crosses the domain boundary, to the
+tolerance of the pressure solve. Weymouth and Yue also show that with
+$\chi$ a step function and $C \le \tfrac{1}{2}$ the sweeps keep $f$ within $[0,1]$
+up to round-off.
+
+## Why VOF needs CFL $\le 0.5$ {#sec:vofcfl}
+
+In one sweep a cell can lose fluid through both faces at once (when the flow
+diverges in the 1D sweep). Each outgoing strip has width $|u|\Delta t$ inside the
+cell. If $|u|\Delta t\le \Delta/2$ on both sides, the two strips cannot overlap and
+the cell cannot give away more than it holds. This is the condition used by
+the boundedness argument above. `vof.h` lowers the solver's CFL number
+to 0.5 and prints a warning whenever a face exceeds it.
+
+## With an embedded solid
+
+With `embed.h`, the update is multiplied by $c_s$:
+`c[] += dt*cs[]*(flux[] - flux[1] + …)/(cm[]*Delta)`. Since $c_m =
+c_s$, this means the solid part of a cut cell is ignored and $f$ is the
+fraction of the *whole* cell, not of its fluid part. The authors chose
+this because it keeps $f$ bounded and conserves volume when the volume is
+also measured ignoring the solid.
+
+## Initial and boundary values of $f$
+
+`fraction(f, phi)` initialises $f$ from a level-set function $\phi$
+($\phi > 0$ inside): $\phi$ is evaluated at cell vertices, the edge
+intersections give face fractions, and the face fractions give the volume
+fraction. On the adaptive mesh, $f$ is refined with
+`fraction_refine()`: the parent's interface is reconstructed and each
+child receives the exact area of the line in its quarter.
+
+[Previous](16_multigrid) | [Contents](README) | [Next](18_boundary)

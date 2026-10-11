@@ -1,0 +1,136 @@
+# 8 The equations Basilisk solves {#ch:equations}
+
+## One-fluid formulation
+
+Water and air are each incompressible and Newtonian. Instead of solving two
+sets of equations and matching them at the interface, Basilisk solves one set
+over the whole domain, with density and viscosity that change across the
+interface. Define the volume fraction (colour function)
+$$
+f(\mathbf{x},t) = \begin{cases} 1 & \text{in water (fluid 1)},\\ 0 & \text{in air (fluid 2)}.\end{cases}
+$$
+Each fluid particle keeps its identity, so $f$ is carried by the flow:
+$$
+\partial_t f + \mathbf{u}\cdot\nabla f = 0
+\quad\Longleftrightarrow\quad
+\partial_t f + \nabla\cdot(f\mathbf{u}) = 0 \ \text{ (because } \nabla\cdot\mathbf{u}= 0).
+\qquad (8.2)
+$$
+The mixture properties are
+$$
+\rho(f) = f\rho_1 + (1 - f)\rho_2,\qquad \mu(f) = f\mu_1 + (1 - f)\mu_2.
+\qquad (8.3)
+$$
+The momentum and continuity equations for the mixture are
+$$
+\begin{aligned}
+\rho\left(\partial_t\mathbf{u}+ \mathbf{u}\cdot\nabla\mathbf{u}\right) &= -\nabla p
+ + \nabla\cdot(2\mu\mathbf{D}) + \rho\mathbf{g}+ \sigma\kappa\,\delta_s\mathbf{n},
+\\
+\nabla\cdot\mathbf{u}&= 0,
+\end{aligned}
+\qquad (8.4, 8.5)
+$$
+with the rate-of-strain tensor $\mathbf{D}= \tfrac{1}{2}(\nabla\mathbf{u}+ \nabla\mathbf{u}^T)$, gravity
+$\mathbf{g}$, surface tension coefficient $\sigma$, interface curvature $\kappa$,
+interface normal $\mathbf{n}$ and $\delta_s$ a Dirac delta concentrated on the
+interface.
+
+These equations contain the jump conditions at the interface without
+writing them separately: integrating (8.4) across a thin layer
+around the interface gives the stress balance $[-p\mathbf{I} + 2\mu\mathbf{D}]\cdot\mathbf{n}
+= \sigma\kappa\mathbf{n}$ (the Laplace pressure jump plus continuity of tangential
+stress), and (8.5) gives continuity of normal velocity.
+
+> **In the code: `two-phase-generic.h`**
+>
+> ~~~literatec
+> #define rho(f) (clamp(f,0.,1.)*(rho1 - rho2) + rho2)
+> #define mu(f)  (clamp(f,0.,1.)*(mu1 - mu2) + mu2)
+> ~~~
+>
+> Equation (8.3), with $f$ clipped to $[0,1]$.
+
+## The form used by the centered solver
+
+`centered.h` writes the momentum equation per unit mass, with all body
+and interfacial forces collected in one acceleration $\mathbf{a}$:
+$$
+\partial_t\mathbf{u}+ \nabla\cdot(\mathbf{u}\otimes\mathbf{u}) = \frac{1}{\rho}\left[-\nabla p
+ + \nabla\cdot(2\mu\mathbf{D})\right] + \mathbf{a}.
+\qquad (8.6)
+$$
+Because $\nabla\cdot\mathbf{u}= 0$, $\nabla\cdot(\mathbf{u}\otimes\mathbf{u}) = \mathbf{u}\cdot\nabla\mathbf{u}$, so
+(8.6) is (8.4) divided by $\rho$. The solver stores
+$1/\rho$ on faces as the *specific volume*
+$\alpha = 1/\rho$ (the face field `alpha`) and $\rho$ at cell centres
+(`rho`). The acceleration $\mathbf{a}$ is a face field too, so that it sits
+where the pressure gradient sits ([chapter 14](14_acceleration) explains why that
+matters).
+
+## Conservative form and why it matters for two fluids {#sec:cons-form}
+
+Using (8.2) and (8.3), the density obeys
+$\partial_t\rho + \nabla\cdot(\rho\mathbf{u}) = 0$. Multiply (8.4) out and add
+$\mathbf{u}$ times this mass equation to get the *conservative* momentum
+equation
+$$
+\partial_t(\rho\mathbf{u}) + \nabla\cdot(\rho\mathbf{u}\otimes\mathbf{u}) = -\nabla p + \nabla\cdot(2\mu\mathbf{D})
+ + \rho\mathbf{g}+ \sigma\kappa\delta_s\mathbf{n}.
+\qquad (8.7)
+$$
+In exact arithmetic (8.4) and (8.7) are the same. In a
+discrete scheme they are not. If mass ($f$, hence $\rho$) is moved with one
+discrete flux and velocity with another, then at the interface the momentum
+that leaves a water cell is not the momentum that arrives in the neighbouring
+air cell. With a density ratio of 816, a small mismatch in the water
+momentum flux becomes a large velocity in the air. [Chapter 12](12_momentum) shows
+how `conserving.h` moves $\rho\mathbf{u}$ with the same fluxes as $f$ to avoid
+this.
+
+## Gravity as an interfacial force {#sec:reduced-derivation}
+
+For a two-phase flow with constant densities in each phase, the gravity term
+can be moved to the interface. Write $\mathbf{g}= \nabla(\mathbf{g}\cdot\mathbf{x})$ and use
+$\rho = \rho_2 + (\rho_1 - \rho_2)f$:
+$$
+\begin{aligned}
+-\nabla p + \rho\mathbf{g}&= -\nabla p + \nabla(\rho\,\mathbf{g}\cdot\mathbf{x}) - (\mathbf{g}\cdot\mathbf{x})\nabla\rho\\
+ &= -\nabla p' - (\rho_1 - \rho_2)(\mathbf{g}\cdot\mathbf{x})\nabla f,
+\end{aligned}
+$$
+where $p' = p - \rho\,\mathbf{g}\cdot\mathbf{x}$ is the *dynamic* pressure (total
+pressure minus the hydrostatic pressure of each fluid). $\nabla f$ is zero
+away from the interface, so gravity now acts only at the interface, as a
+force of the form $\phi\nabla f$ with
+$$
+\phi = (\rho_2 - \rho_1)\,\mathbf{g}\cdot(\mathbf{x}- \mathbf{Z}),
+\qquad (8.8)
+$$
+where the reference level $\mathbf{Z}$ only shifts $p'$ by a constant inside
+each phase. Surface tension has the same form, $\sigma\kappa\delta_s\mathbf{n}=
+\sigma\kappa\nabla f$ in the continuum-surface-force sense
+\[[2](references)\], with $\phi = \sigma\kappa$. `iforce.h` adds every
+such term as $\alpha\,\phi\,\nabla f$ on faces.
+
+## Boundary conditions in the continuous problem
+
+The continuous problem needs, on every boundary, conditions that make the
+pressure Poisson problem solvable and the velocity well defined:
+
+- a wall: $\mathbf{u}= \mathbf{u}_{\text{wall}}$ (no slip) or $\mathbf{u}\cdot\mathbf{n}= 0$
+  with zero tangential stress (free slip);
+
+- an inflow: $\mathbf{u}$ given;
+
+- an outflow: a condition on pressure (for example $p = 0$) and a zero
+  normal derivative of $\mathbf{u}$;
+
+- a periodic pair: all fields equal on the two sides.
+
+If all boundaries prescribe the normal velocity, integrating
+$\nabla\cdot\mathbf{u}= 0$ over the domain shows that the prescribed fluxes must sum to
+zero ($\oint\mathbf{u}\cdot\mathbf{n}\,dS = 0$). The pressure is then defined only up to a
+constant. [Chapter 18](18_boundary) shows how each of these becomes a ghost-cell value.
+
+[Previous](07_cfd_concepts) | [Contents](README) | [Next](09_grid)

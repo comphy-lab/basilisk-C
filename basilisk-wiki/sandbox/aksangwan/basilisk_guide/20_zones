@@ -1,0 +1,126 @@
+# 20 Generating and absorbing waves: relaxation and damping layers {#ch:zones}
+
+A computational domain is finite, but many flows are not: waves come from
+far away and leave, a wake leaves the box. The boundary conditions of
+[chapter 18](18_boundary) are not enough on their own. A velocity inlet reflects every
+wave that comes back to it, and a pressure outlet reflects unless the flow
+reaching it is already calm. The usual remedy is to add layers inside the
+domain, next to the boundaries, where the solution is gently pulled towards
+a known state. Basilisk does not provide these as a module; they are a few
+lines in user events, and this chapter derives them.
+
+![Figure 20.1: Layout of a numerical wave tank. Waves are generated through a
+velocity inlet backed by a relaxation zone, pass the region of interest,
+and are damped before they reach the outlet. The curves at the bottom are
+the strength $\sigma(x)$ of each layer.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_tank.png)
+
+## The strength profile
+
+Both kinds of layer use a coefficient $\sigma(x)$ (units 1/s) that is zero
+outside the layer and grows smoothly inside it. With $\tau\in[0,1]$ the
+normalised distance into the layer, a good choice is
+$$
+\sigma(\tau) = \sigma_{\max}\,\tau^2(3 - 2\tau).
+$$
+This "smoothstep" starts from zero with zero slope, so a wave entering the
+layer meets no sudden change; a sudden change in the medium reflects
+waves, which is what the layer is meant to avoid.
+
+## Damping layers: implicit Rayleigh damping {#sec:sponge}
+
+A damping (sponge) layer adds a drag $-\sigma\mathbf{u}$ to the momentum
+equation. Integrated explicitly, $u^{n+1} = u^n(1 - \sigma\Delta t)$ changes sign
+and grows if $\sigma\Delta t> 2$. Integrated implicitly (backward Euler),
+$$
+\dfrac{u^{n+1} - u^n}{\Delta t} = -\sigma u^{n+1}
+\;\Longrightarrow\;
+u^{n+1} = \dfrac{u^n}{1 + \sigma\Delta t}
+\;\Longleftrightarrow\;
+\dfrac{u^{n+1} - u^n}{\Delta t} = -\dfrac{\sigma\,u^n}{1 + \sigma\Delta t},
+$$
+which is stable for any $\sigma\Delta t$. The last form is an acceleration that
+depends only on known values, so it can be added to the face acceleration
+$\mathbf{a}$ ([section 14.8](14_acceleration#sec:userforce)):
+
+~~~literatec
+static double sponge_sigma (double x) {
+  double x0 = L0/2. - LAYER;                  // layer at the right end
+  if (x <= x0) return 0.;
+  double tau = clamp ((x - x0)/LAYER, 0., 1.);
+  return SIGMA_MAX*sq(tau)*(3. - 2.*tau);
+}
+
+event acceleration (i++) {
+  face vector av = a;
+  foreach_face() {
+    double s = sponge_sigma (x);
+    if (s > 0. && fm.x[] > 0.)
+      av.x[] -= s*uf.x[]/(1. + dt*s);
+  }
+}
+~~~
+
+A user `acceleration` event runs first in its slot ([chapter 2](02_language)),
+so `uf` there is still the projected face velocity of the previous
+step, a good estimate of $u^n$ on that face. Because the drag is put in
+$\mathbf{a}$, on faces, it enters the projection like any other force: the pressure
+adjusts to it and the face velocity remains divergence-free. Drag conserves
+volume; it only removes momentum.
+
+For a free surface, the outlet can also relax the volume fraction towards a
+flat surface, $f_{\text{target}} = \text{clamp}(\tfrac12 - (y - h)/\Delta, 0, 1)$,
+with the update of the next section. This removes the wave shape as well as
+its velocity, but it is not volume-conserving.
+
+## Relaxation zones: exact exponential relaxation
+
+A relaxation zone pulls the solution towards a target state $q_T$ (an
+incoming wave, a uniform flow):
+$$
+\dfrac{dq}{dt} = -\sigma\,(q - q_T).
+$$
+Over one step with $q_T$ held fixed, the exact solution is
+$$
+q^{n+1} = q_T + (q^n - q_T)\,e^{-\sigma\Delta t}
+= q^n + w\,(q_T - q^n),\qquad w = 1 - e^{-\sigma\Delta t}.
+$$
+The weight $w$ is always between 0 and 1, so the update never overshoots,
+whatever $\sigma\Delta t$. In a two-phase flow, relax $f$ and $\mathbf{u}$ together, in
+the same cells and with the same weight, so that the momentum reconstructed
+from them stays consistent:
+
+~~~literatec
+event relax (i++) {
+  foreach() {
+    double s = inlet_sigma (x);
+    if (s > 0.) {
+      double w = 1. - exp (-dt*s);
+      double fT = target_fraction (x, y, t);     // e.g. exact cut-cell fraction of the wave
+      f[]   += w*(fT - f[]);
+      u.x[] += w*(fT*target_u (x, y, t) - u.x[]);
+      u.y[] += w*(fT*target_v (x, y, t) - u.y[]);
+    }
+  }
+}
+~~~
+
+This event has a new name, so it runs after the projection; the next
+step's projection then corrects the face velocity built from the relaxed
+cell velocities. Relaxing $f$ adds or removes fluid; that is how the zone
+absorbs waves coming back to the inlet while holding the incident wave.
+
+## Choosing the layers
+
+The layer length is a physical constraint: for reflection of a few percent
+the damping layer needs to be about one wavelength long. In a 2D test with a
+0.75-wavelength layer, the reflection was about 4.5% with
+$\sigma_{\max}$ equal to the wave frequency and grew to 7--17% with three
+to eight times that value. A stronger $\sigma_{\max}$ does
+not make up for a short layer: beyond some value, the drag itself acts as an
+obstacle and reflects more. Keep the inlet zone short and away from the
+region of interest, so it does not damp the scattered field you want to
+measure. Then measure the reflection: in a cheap 2D run,
+record the wave amplitude along the tank and compute the ratio
+$(A_{\max} - A_{\min})/(A_{\max} + A_{\min})$ of the standing-wave envelope.
+
+[Previous](19_embed) | [Contents](README) | [Next](21_full_step)

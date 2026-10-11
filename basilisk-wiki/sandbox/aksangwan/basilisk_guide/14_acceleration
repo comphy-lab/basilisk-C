@@ -1,0 +1,193 @@
+# 14 Body and interfacial forces: the acceleration event {#ch:acceleration}
+
+## Forces live on faces
+
+All forces other than pressure and viscosity are collected in the face field
+$\mathbf{a}$ (`a`). At the start of each step the `viscous_term` event
+resets it to zero; the `acceleration` event fills it; and the last
+body of the `acceleration` event, in `centered.h`, builds the
+provisional face velocity
+$$
+u_f^\star = f_m\left(\overline{u} + \Delta t\,a\right),\qquad
+\overline{u}_{i-\frac 12}= \tfrac12(u_{i-1} + u_i).
+\qquad (14.1)
+$$
+
+> **In the code: `centered.h`, event `acceleration`**
+>
+> ~~~literatec
+> foreach_face()
+>   uf.x[] = fm.x[]*(face_value (u.x, 0) + dt*a.x[]);
+> ~~~
+
+## Who writes into $\mathbf{a}$, and in which order
+
+Several files overload `acceleration`. A small test compiled for this
+document confirmed that Basilisk runs overloaded events in *reverse*
+order of definition: the body defined last runs first. For a program that
+includes `centered.h`, `two-phase.h`, `tension.h` and
+`reduced.h`, then defines its own `acceleration` event, the order
+within the slot is:
+
+1.  the `acceleration` event in your file, which can add any body
+    force to $\mathbf{a}$ ([section 14.8](#sec:userforce));
+
+2.  `reduced.h`, which computes the gravity potential $\phi$ of
+    [(8.8)](08_equations) in interfacial cells;
+
+3.  `tension.h`, which adds $\sigma\kappa$ to $\phi$ (only if
+    `f.sigma` is set);
+
+4.  `iforce.h`, which turns $\phi$ into the face acceleration
+    $\alpha\phi\nabla f$ and adds it to $\mathbf{a}$;
+
+5.  `centered.h`, which builds $u_f^\star$ with (14.1).
+
+This is why `iforce.h` is included before the modules that define
+potentials: being defined earlier, it runs after them.
+
+## The interfacial force
+
+`iforce.h` represents any force concentrated on the interface and
+normal to it, $\phi\,\mathbf{n}\,\delta_s$, by $\phi\nabla f$ ([section 8.4](08_equations#sec:reduced-derivation)).
+On the face between cells $i-1$ and $i$:
+$$
+a_{i-\frac 12}\mathrel{+}= \frac{\alpha_{i-\frac 12}}{f_{m,{i-\frac 12}}}\;\phi_{i-\frac 12}\;\frac{f_i - f_{i-1}}{\Delta},
+\qquad \phi_{i-\frac 12}= \tfrac12(\phi_{i-1} + \phi_i),
+\qquad (14.2)
+$$
+where $\alpha/f_m = 1/\rho$ on the face. $\phi$ is only defined in cells that
+contain the interface; if only one of the two cells has a value, that value
+is used. The term is nonzero only where $f$ changes across the face, so the
+force acts in a band one or two cells thick around the interface.
+
+> **In the code: `iforce.h`**
+>
+> ~~~literatec
+> if (f[] != f[-1] && fm.x[] > 0.) {
+>   double phif = (phi[] < nodata && phi[-1] < nodata) ? (phi[] + phi[-1])/2. : ...;
+>   ia.x[] += alpha.x[]/(fm.x[] + SEPS)*phif*(f[] - f[-1])/Delta;
+> }
+> ~~~
+
+## Gravity with reduced.h
+
+`reduced.h` sets, in each interfacial cell,
+$$
+\phi = (\rho_2 - \rho_1)\,\mathbf{G}\cdot(\mathbf{x}_\Gamma - \mathbf{Z}),
+$$
+where $\mathbf{x}_\Gamma$ is the position of the interface in that cell, computed
+by `position()` from height functions ([section 14.6](#sec:heights)). With
+$\mathbf{G} = (0,-g,0)$, $\mathbf{Z} = 0$ and a free surface at elevation
+$\eta$, $\phi = (\rho_1 - \rho_2)\,g\,\eta$.
+
+The physical meaning follows from [section 8.4](08_equations#sec:reduced-derivation): the solver
+works with the dynamic pressure $p' = p - \rho\,\mathbf{G}\cdot\mathbf{x}$. In
+still water with a flat surface at $y = 0$, $p'$ is the same constant in both
+fluids and $\phi = 0$, so nothing moves. Under a wave crest of height $\eta$,
+$p'$ in the water just below the surface is higher than in the air by
+$(\rho_1 - \rho_2)g\eta$: the weight of the extra water column. The
+interfacial force is what creates this jump.
+
+## Balanced force: why $\mathbf{a}$ must sit on faces {#sec:balanced}
+
+Consider a fluid at rest with a force $\phi\nabla f$ and constant $\phi$
+(a static drop with surface tension, or hydrostatic balance). The exact
+solution is $\mathbf{u}= 0$ with $p = \phi f + \text{const}$: the pressure jump
+balances the force. In the projection ([chapter 15](15_projection)) the face
+velocity becomes
+$$
+u_f^{n+1} = \Delta t\,\alpha\left(\phi\,\frac{f_i - f_{i-1}}{\Delta} - \frac{p_i - p_{i-1}}{\Delta}\right).
+$$
+Because the force and the pressure gradient use the same two cells and the
+same weight $\alpha$, the discrete pressure $p_i = \phi f_i$ makes this zero
+on every face, exactly. If instead the force were computed at cell centres
+and then interpolated, the two terms would use different stencils, their
+difference would not vanish, and the solver would create *spurious
+currents* at the interface every step. Figure 14.1 shows the
+arrangement.
+
+![Figure 14.1: Balanced-force arrangement. On each face the interfacial force
+(red) and the pressure gradient (blue) are both differences of the same two
+cell values, weighted by the same $\alpha$, so they can cancel exactly.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_balanced.png)
+
+On an adaptive mesh the same reasoning requires $f$ and $p$ to be
+interpolated the same way at fine/coarse faces, so `iforce.h`
+temporarily gives $f$ the prolongation function of $p$ while computing
+(14.2).
+
+## Interface position and curvature from height functions {#sec:heights}
+
+Both `position()` (gravity) and `curvature()` (surface tension) use
+*height functions*. For an interface that is closer to horizontal than
+vertical, sum the volume fractions in a vertical column of cells:
+$$
+h_i = \Delta\sum_{k} f_{i,k},
+$$
+which is the height of the water in column $i$ measured from the bottom of
+the stencil (figure 14.2). `heights.h` integrates half-columns
+up and down from each cell, accepts the height only if the column reaches a
+full cell at one end and an empty cell at the other (so it crosses the
+interface once), and gives up if the interface is farther than 5.5 cells. Differencing neighbouring heights gives the slope and
+curvature:
+$$
+h_x = \frac{h_{i+1} - h_{i-1}}{2\Delta},\quad
+h_{xx} = \frac{h_{i+1} - 2h_i + h_{i-1}}{\Delta^2},\quad
+\kappa = \frac{h_{xx}}{(1 + h_x^2)^{3/2}}
+$$
+in 2D, and
+$$
+\kappa = \frac{h_{xx}(1 + h_y^2) + h_{yy}(1 + h_x^2) - 2h_{xy}h_xh_y}{(1 + h_x^2 + h_y^2)^{3/2}}
+$$
+in 3D. The heights are second-order accurate and the curvature converges
+with mesh refinement, which plain derivatives of $f$ do not. Where heights
+are not available (very curved or under-resolved interfaces), Basilisk falls
+back on fitting a parabola (paraboloid in 3D) to interface positions.
+
+![Figure 14.2: Height function. Summing $f$ down the outlined column gives the
+height of the interface in that column. Neighbouring columns give the slope
+and curvature.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_heights.png)
+
+## Surface tension
+
+`tension.h` sets $\phi = \sigma\kappa$ in interfacial cells, so
+(14.2) gives the continuum surface force
+$\sigma\kappa\nabla f/\rho$. The scheme is explicit and needs the capillary
+time step of [chapter 10](10_timestep). It is switched on by giving the volume
+fraction a coefficient, `f.sigma = 72.8e-3;` (SI, water--air). Whether it
+matters is decided by the Bond and Weber numbers ([section 7.9](07_cfd_concepts#sec:dimless)).
+
+## Adding your own body force {#sec:userforce}
+
+Any extra acceleration goes into $\mathbf{a}$ in an `acceleration` event of
+your own. Two rules follow from the balanced-force argument above: write the
+force on faces (component `x` on `x` faces, and so on), and
+multiply nothing by $f_m$ yourself, since `centered.h` does that when it
+builds $u_f^\star$. A uniform gravity without `reduced.h`, as in
+`$BASILISK/test/rising.c`:
+
+~~~literatec
+event acceleration (i++) {
+  face vector av = a;
+  foreach_face(x)
+    av.x[] -= 0.98;
+}
+~~~
+
+A damping (sponge) layer that relaxes the velocity to zero at rate
+$\sigma(x)$, integrated implicitly so that it is stable for any
+$\sigma\Delta t$ ([section 20.2](20_zones#sec:sponge)):
+
+~~~literatec
+event acceleration (i++) {
+  face vector av = a;
+  foreach_face()
+    if (sigma(x) > 0.)
+      av.x[] -= sigma(x)*uf.x[]/(1. + dt*sigma(x));
+}
+~~~
+
+For a single-phase flow, uniform gravity does not need to be added at all:
+it is balanced by a hydrostatic pressure and only changes $p$.
+
+[Previous](13_viscosity) | [Contents](README) | [Next](15_projection)

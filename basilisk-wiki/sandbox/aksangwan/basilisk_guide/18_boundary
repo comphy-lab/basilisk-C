@@ -1,0 +1,144 @@
+# 18 Boundary conditions on the domain {#ch:bc}
+
+## Boundary conditions are ghost values
+
+Basilisk never writes a special stencil for a boundary cell. Instead, before
+a field is read near the boundary, it fills the ghost cells outside the
+domain, and the ordinary interior stencil does the rest. A boundary
+condition is a formula for the ghost value. In that formula, `s[]`
+(written $s_i$ below) is the interior cell next to the boundary, and the
+coordinates `x`, `y`, `z` are those of the boundary
+*face*, the point halfway between the interior cell centre and the
+ghost centre (figure 18.1).
+
+![Figure 18.1: A ghost cell. The boundary value $s_b$ lives on the face, halfway
+between the interior centre and the ghost centre. A Dirichlet condition
+chooses $s_g$ so that the straight line through $s_i$ and $s_g$ passes
+through $s_b$ at the face.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_ghost.png)
+
+## The basic conditions
+
+**Dirichlet, $s = s_b$ on the boundary.** Linear interpolation
+between the two centres gives the face value $\tfrac12(s_i + s_g)$; setting
+it to $s_b$ gives
+$$
+s_g = 2s_b - s_i.
+\qquad (18.1)
+$$
+
+**Neumann, $\partial_n s = q$ on the boundary.** The face gradient
+$(s_g - s_i)/\Delta$ must equal $q$:
+$$
+s_g = s_i + \Delta\,q.
+\qquad (18.2)
+$$
+
+**A bare expression.** If the condition is an expression without
+`dirichlet()` or `neumann()`, the ghost value is set to that
+expression directly. This is the safe way to impose a volume fraction at
+an inlet ([section 18.8](#sec:bc-f)).
+
+**Symmetry and antisymmetry.** `symmetry` sets $s_g = s_i$ (a
+homogeneous Neumann condition) and `antisymmetry` sets $s_g = -s_i$ (a
+homogeneous Dirichlet condition, $s_b = 0$).
+
+> **In the code: `grid/cartesian-common.h` and `embed.h`**
+>
+> ~~~literatec
+> double dirichlet (double expr, ...) { return 2.*expr - s[]; }
+> double neumann   (double expr, ...) { return Delta*expr + s[]; }
+> static double symmetry     (...) { return s[]; }
+> static double antisymmetry (...) { return -s[]; }
+> ~~~
+>
+> `embed.h` redefines `dirichlet()` and `neumann()` so that the
+> same names work on the embedded boundary, where they return the boundary
+> value or gradient instead of a ghost value ([chapter 19](19_embed)).
+
+## Default conditions
+
+If you set nothing on a side:
+
+- every scalar is `symmetry`: zero normal gradient;
+
+- for a vector, the normal component is `antisymmetry` (zero on the
+  boundary) and the tangential components are `symmetry` (zero normal
+  gradient), which together are a *free-slip* wall;
+
+- the pressure $p$ gets the Neumann condition of [section 15.6](15_projection#sec:pbc) that
+  balances the face acceleration. On a wall face, $u_f^\star = \Delta tf_m a_n$
+  (the averaged velocity is zero because of the antisymmetric ghost), and the
+  projection removes exactly that, so the face velocity through the wall is
+  zero after every step.
+
+A box with no boundary conditions set is therefore a closed box with
+free-slip walls.
+
+## Vectors: normal and tangential components
+
+Conditions on a vector are written per component relative to the boundary:
+`u.n[left]` is the component normal to the left side ($u_x$),
+`u.t[left]` the first tangential component ($u_y$) and
+`u.r[left]` the second ($u_z$). A no-slip wall is
+`u.n[side] = dirichlet(0); u.t[side] = dirichlet(0)` (and `u.r` in
+3D).
+
+## Periodic boundaries
+
+`periodic(right)` links the left and right sides: the ghost cells on
+one side are copies of the interior cells on the other side. It must be
+called before the grid is built (`init_grid` or `run`). No
+condition may be set on a periodic side.
+
+## Homogeneous conditions in the multigrid solver
+
+The multigrid correction $\delta a$ of [chapter 16](16_multigrid) satisfies the
+*homogeneous* version of the boundary conditions of $a$: Dirichlet with
+$s_b = 0$ ($s_g = -s_i$) and Neumann with $q = 0$ ($s_g = s_i$). The
+correct boundary values are already in the current guess, so the correction
+must not change them. Basilisk generates the homogeneous version
+automatically from each condition you write.
+
+## Making the pressure problem well posed {#sec:wellposed}
+
+The pressure Poisson problem decides whether a set of conditions works.
+Integrate [(15.2)](15_projection) over the domain: the left side becomes the boundary
+integral of $\alpha\partial_n p$, the right side the net volume flux of
+$\mathbf{u}_f^\star$ through the boundary divided by $\Delta t$.
+
+- If every side has a Neumann condition on $p$ (walls, prescribed
+  inflow), the net prescribed volume flux must be zero, or the equation has no
+  solution and the multigrid solver never converges.
+
+- If at least one side has a Dirichlet condition on $p$, the problem has
+  a unique solution and any imbalance between inflow and outflow leaves
+  through that side.
+
+This is why an open boundary is always written as a pair: a condition on
+the velocity and a compatible condition on the pressure.
+
+| Boundary type | velocity | pressure |
+|:---|:---|:---|
+| Free-slip wall (default) | $u_n = 0$, $\partial_n u_t = 0$ | Neumann (balances $a_n$) |
+| No-slip wall | $u_n = 0$, $u_t = 0$ | Neumann (default) |
+| Velocity inlet | $u_n = U(y,t)$, $u_t$ given | `neumann(0)` |
+| Pressure outlet | $\partial_n u_n = 0$ | `dirichlet(0)` |
+| Periodic | copied | copied |
+
+: Table 18.1: Common pairs of velocity and pressure conditions. Both `p`
+and `pf` need the pressure condition.
+
+## The volume fraction at a boundary {#sec:bc-f}
+
+$f$ appears in the interfacial force as $\phi\,(f_i - f_{i-1})/\Delta$
+([(14.2)](14_acceleration)). At a boundary face this uses the ghost value of $f$.
+A Dirichlet condition on $f$ with a 0/1 target produces, by
+(18.1), ghost values $2f_b - f_i$ that can be $-1$ or $2$
+wherever the computed interface is not exactly at the target. The jump
+$f_g - f_i$ is then up to 2 instead of at most 1, and the gravity potential
+multiplies it into a large force on the first interior face. The safe
+choices are `neumann(0)` (the default) or a ghost value that is itself
+a volume fraction, for example the exact cut-cell fraction of the incoming
+interface computed with `plane_volume()`.
+
+[Previous](17_vof) | [Contents](README) | [Next](19_embed)

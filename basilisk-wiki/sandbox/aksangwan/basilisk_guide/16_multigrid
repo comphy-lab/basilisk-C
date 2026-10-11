@@ -1,0 +1,134 @@
+# 16 Solving the Poisson equations: multigrid {#ch:multigrid}
+
+Every step solves at least two elliptic problems: the pressure equation
+[(15.5)](15_projection) and the viscous system [(13.2)](13_viscosity). On a level
+9 octree these have millions of unknowns. `poisson.h` solves both with
+one generic multigrid solver, `mg_solve()`.
+
+## Relaxation
+
+The general equation in `poisson.h` is the Poisson--Helmholtz equation
+$$
+\nabla\cdot(\alpha\nabla a) + \lambda a = b.
+$$
+Discretised as in [(15.5)](15_projection) and solved for the centre value,
+it gives the update
+$$
+a_i \leftarrow \dfrac{\sum_{\text{faces}}\alpha_f\,a_{\text{nb}(f)} - \Delta^2 b_i}
+{\sum_{\text{faces}}\alpha_f - \lambda_i\Delta^2},
+\qquad (16.2)
+$$
+where the sums run over the $2d$ faces of the cell and $a_{\text{nb}(f)}$ is
+the neighbour across face $f$. Sweeping (16.2) over all cells,
+using new values as soon as they are computed, is Gauss--Seidel relaxation.
+
+> **In the code: `poisson.h`, `relax()`**
+>
+> ~~~literatec
+> double n = - sq(Delta)*b[], d = - lambda[]*sq(Delta);
+> foreach_dimension() {
+>   n += alpha.x[1]*a[1] + alpha.x[]*a[-1];
+>   d += alpha.x[1] + alpha.x[];
+> }
+> c[] = n/d;
+> ~~~
+
+## Why relaxation alone is too slow
+
+Write the error as a sum of Fourier modes $\sin(k x)$. For the 1D Laplacian,
+one weighted Jacobi sweep multiplies a mode of grid wavenumber
+$\theta = k\Delta$ by $1 - 2\omega\sin^2(\theta/2)$. High-frequency modes
+($\theta$ near $\pi$) are cut by a large factor each sweep. Smooth modes
+($\theta \ll 1$) are multiplied by about $1 - \omega\theta^2/2$, which is
+close to 1: on a grid of $N$ cells the smoothest mode needs of order $N^2$
+sweeps. Figure 16.1 shows this on a computed example. Relaxation
+is a good *smoother* and a bad *solver*.
+
+![Figure 16.1: Gauss--Seidel on the 1D Laplacian with 64 cells (computed for this
+document). The oscillating parts of the error vanish in three sweeps; the
+smooth part has lost only about 10% of its amplitude after fifty.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_smoothing.png)
+
+## The multigrid idea
+
+A smooth error on a fine grid is a less smooth error on a grid twice as
+coarse: the same wave spans half as many cells, so its $\theta$ doubles.
+Multigrid uses a hierarchy of grids, levels $0$ to $\ell_{\max}$, so that
+every part of the error is high-frequency on some level and is removed there
+by a few sweeps \[[3](references)\].
+
+The tool that links the levels is the *residual equation*. Let
+$\tilde a$ be the current guess and $r = b - L(\tilde a)$ the residual. Since
+$L$ is linear, the correction $\delta a = a - \tilde a$ satisfies
+$$
+L(\delta a) = r,
+$$
+with homogeneous boundary conditions (the boundary values are already
+right in $\tilde a$). This equation can be approximated on coarser grids,
+where it is cheap to solve.
+
+## The Basilisk cycle
+
+`mg_cycle()` does the following (figure 16.2):
+
+1.  compute the residual $r$ on the leaves and *restrict* it (average)
+    to every coarser level;
+
+2.  on the coarsest level, start from $\delta a = 0$ and relax;
+
+3.  for each finer level in turn: initialise $\delta a$ by bilinear
+    *prolongation* from the level below, apply homogeneous boundary
+    conditions, and do `nrelax` relaxation sweeps of $L(\delta a) = r$;
+
+4.  add the correction to the solution, $a \leftarrow a + \delta a$, on the
+    leaves.
+
+`mg_solve()` repeats the cycle, recomputing the residual each time,
+until $\max|r| <$ `TOLERANCE` (at least `NITERMIN = 1` and at most
+`NITERMAX = 100` cycles). Each cycle costs a fixed amount of work per
+cell, so the solver is $O(N)$ for $N$ cells. It also tunes `nrelax`: if
+a cycle reduces the residual by less than a factor 1.2 it adds a sweep, and
+if by more than 10 it removes one.
+
+![Figure 16.2: One Basilisk multigrid cycle. Grey: the residual is averaged down
+to all levels. Blue (R): `nrelax` relaxation sweeps of the correction
+equation. Red: the correction is interpolated up as the starting guess for
+the next finer level.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_mgcycle.png)
+
+> **In the code: `poisson.h`, `mg_cycle()`**
+>
+> ~~~literatec
+> restriction (res);
+> for (int l = minlevel; l <= maxlevel; l++) {
+>   if (l == minlevel)  /* da = 0 */
+>   else                /* da = bilinear (coarse da) */
+>   for (int i = 0; i < nrelax; i++) {
+>     boundary_level (da, l);
+>     relax (da, res, l, data);
+>   }
+> }
+> foreach() a[] += da[];
+> ~~~
+
+## On the adaptive tree
+
+On a tree the leaves are at different levels. Relaxation on level $\ell$
+runs over cells of level $\ell$ and over leaves coarser than $\ell$
+(`foreach_level_or_leaf`). The residual is computed from face
+fluxes, $\alpha\,\partial_n a$, evaluated once per face and differenced, so
+at a fine/coarse face the coarse cell receives the sum of the fine fluxes.
+This makes the discrete operator conservative across levels, which keeps
+$\mathcal{D}\mathbf{u}_f= 0$ meaningful on the adaptive mesh.
+
+## Reading the solver statistics
+
+`mgp` (pressure), `mgpf` (half-step pressure) and `mgu`
+(viscosity) hold: `i`, the number of cycles; `resb` and
+`resa`, the maximum residual before and after; `sum`, the sum of
+the right-hand side; and `nrelax`. A healthy pressure solve takes a few
+cycles. Many cycles, or the "convergence not reached" warning, point to
+something that makes the equation hard or unsolvable: a large density ratio
+across a badly resolved interface, isolated fluid cells (tiny $c_s$ near the
+solid), or boundary conditions that leave the problem without a
+solution ([chapter 18](18_boundary)).
+
+[Previous](15_projection) | [Contents](README) | [Next](17_vof)

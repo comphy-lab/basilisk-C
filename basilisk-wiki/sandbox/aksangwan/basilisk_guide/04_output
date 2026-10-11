@@ -1,0 +1,134 @@
+# 4 Getting data out: output and diagnostics {#ch:output}
+
+Output in Basilisk is written in events, with ordinary C plus a few library
+functions. This chapter lists the ones used most, with their real
+signatures from `output.h`, `utils.h` and
+`grid/cartesian-common.h`.
+
+## Logging
+
+Write one line per step (or every few steps) to standard error:
+
+~~~literatec
+event logfile (i++)
+  fprintf (stderr, "
+~~~
+
+For data you will plot, open a file once and append to it:
+
+~~~literatec
+event probe (t += 0.01; t <= 10.)
+{
+  static FILE * fp = NULL;
+  if (!fp) fp = fopen ("probe.dat", "w");
+  fprintf (fp, "
+  fflush (fp);
+}
+~~~
+
+With MPI, every process runs the event. Functions that loop over the grid
+(`interpolate()`, `statsf()`, reductions) return the global value
+on all processes, but only process 0 should write: wrap the
+`fprintf` in `if (pid() == 0)`.
+
+## Field statistics
+
+~~~literatec
+stats s = statsf (f);    // s.min, s.max, s.sum (volume integral), s.stddev, s.volume
+norm  n = normf (u.x);   // n.avg, n.rms, n.max (of |u.x|), n.volume
+double d = change (u.x, un);   // max |u.x - un|, then copies u.x into un
+~~~
+
+`statsf(f).sum` is $\int f\,dV$: for a volume fraction it is the volume
+of fluid 1, which you should track to check conservation. `change()`
+is the usual test for steady state (the cavity example uses it).
+
+## Values at points
+
+`interpolate (s, x, y, z)` returns the value of $s$ at a point
+(bilinear by default, `linear = false` for the cell value). It returns
+`nodata` (a very large number, about $10^{30}$) if the point is outside
+the domain, including exactly on the boundary. For many points at once,
+`gauges.h` writes one file per gauge:
+
+~~~literatec
+#include "gauges.h"
+Gauge gauges[] = {
+  {"g1.dat", 0.5, 0.0},
+  {"g2.dat", 1.0, 0.0},
+  {NULL}
+};
+event gauge (i++) output_gauges (gauges, {eta});
+~~~
+
+## Derived fields
+
+`vorticity (u, omega)` fills a scalar with the vorticity
+$\partial_x v - \partial_y u$ (2D), including the metric and solid
+fractions. Other derived fields are written with a `foreach()` loop in
+the event that needs them; declare them inside the event so they are freed
+afterwards:
+
+~~~literatec
+event speed (t += 1.)
+{
+  scalar s[];
+  foreach()
+    s[] = sqrt (sq(u.x[]) + sq(u.y[]));
+  output_ppm (s, file = "speed.png");
+}
+~~~
+
+## Images and movies
+
+~~~literatec
+output_ppm (omega, file = "vort.png", n = 512, min = -10, max = 10,
+            linear = true, box = {{-0.5,-0.5},{7.5,0.5}}, mask = m);
+~~~
+
+`output_ppm()` samples a scalar on an $n\times n$ image (cut to
+`box`), maps it to colours (`map = jet` by default) and writes it.
+The format follows the file name. A `.png` is a single image,
+converted with ImageMagick's `convert`. A `.mp4`, `.ogv` or
+`.gif` is an animation: each call appends one frame (through
+`ffmpeg` or `convert`). If neither program is found, the raw PPM
+is saved with an extra `.ppm` extension. Without `min` and `max` the range is
+the mean $\pm$ 5 standard deviations. A `mask` field hides the cells
+where it is negative (a solid, for example). In 3D the image is a slice at
+`z`.
+
+For interfaces, `output_facets (f, fp)` writes the reconstructed
+segments (2D) as pairs of points separated by blank lines, ready for gnuplot
+or pgfplots; the bubble and dam-break figures in [chapter 5](05_examples) were
+drawn from it.
+
+## Fields on a regular grid
+
+`output_field ({f, u.x, p}, fp, n = 64)` interpolates fields onto an
+$n\times n$ grid and writes text columns `x y f u.x p`, with a
+header line and a blank line after each row of $x$ (gnuplot's format for
+`splot ... with pm3d`). For ParaView, `vtk.h` provides `output_vtk()` on a
+uniform grid; for the adaptive mesh itself, many users write their own
+`.vtu` writer (one hexahedron per leaf).
+
+## Interactive viewing
+
+`view.h` provides `view()`, `draw_vof()`, `squares()`,
+`cells()` and `save()`, which render 2D and 3D views from inside
+the simulation, off-screen. The `bview` programs browse a
+dump file or a running simulation. These need the graphics libraries
+built with Basilisk.
+
+## What to monitor in every run
+
+- `dt` and the number of cells, every few steps;
+
+- `mgp.i` and `mgu.i` (multigrid cycles);
+
+- a conserved quantity: the volume of each fluid
+  (`statsf(f).sum`), the kinetic energy, the mass flux through inlet and
+  outlet;
+
+- one physical output you can check against theory or experiment.
+
+[Previous](03_setup) | [Contents](README) | [Next](05_examples)

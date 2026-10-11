@@ -1,0 +1,136 @@
+# 19 Solid bodies: embedded boundaries and cut cells {#ch:embed}
+
+## Volume and face fractions
+
+A solid body is not meshed. It cuts through the Cartesian cells, and
+`embed.h` describes it with two fields (figure 19.1):
+
+- $c_s$ (`cs`): the fraction of each cell's volume that is fluid;
+
+- $f_s$ (`fs`): the fraction of each face's area that is fluid.
+
+`solid(cs, fs, phi)` computes both from a level-set function $\phi$
+that is positive in the fluid, in exactly the way `fraction()` computes
+$f$. In the `metric` event `embed.h` sets $c_m = c_s$ and
+$f_m = f_s$, so every operator of the previous chapters (divergence, face
+velocity, Poisson coefficients, VOF update, CFL) is weighted by the open
+volume and open face area. That substitution turns the whole solver into a
+finite-volume cut-cell method.
+
+![Figure 19.1: A cut cell (outlined), with fractions computed for the circle drawn. $c_s$ is its open volume fraction; each face
+has its own open area fraction $f_s$. The solid surface inside the cell is
+represented by a straight segment (a plane facet in 3D) whose normal is
+computed from the face fractions.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_cutcell.png)
+
+## Finite volumes in a cut cell
+
+For a cut cell the conservation law [(7.1)](07_cfd_concepts) has one more
+surface: the piece of solid wall $\Gamma_b$ inside the cell. For a diffusion
+or Poisson operator,
+$$
+\int_{\text{cell}}\nabla\cdot(\alpha\nabla s)\,dV =
+\sum_{\text{faces}} f_s\,\Delta^{d-1}\,\alpha\,\partial_n s
+\;+\; \int_{\Gamma_b}\alpha\,\partial_n s\,dA.
+$$
+The face terms are the usual ones multiplied by $f_s$. The wall term
+depends on the boundary condition:
+
+- homogeneous Neumann (for example pressure, by default): the wall flux
+  is zero and nothing is added;
+
+- Dirichlet (for example $\mathbf{u}= 0$ in the viscous solve): the wall flux
+  needs the normal gradient of $s$ at the wall, computed as below.
+
+`embed_flux()` returns this wall flux, and `poisson.h` and
+`viscosity-embed.h` add it to the residual and to the relaxation
+(the `embed_flux` branch in `relax()`).
+
+## Gradient at the wall for a Dirichlet condition {#sec:embed-dirichlet}
+
+Following Johansen and Colella \[[6](references)\]: from the centroid of the
+wall segment, draw the normal into the fluid (figure 19.2). It crosses the
+next two grid lines (columns of cell centres in the direction where $|n|$ is
+largest) at distances $d_0$ and $d_1$. Interpolate $s$ at those crossings,
+$v_0$ and $v_1$, with quadratic interpolation along the grid line. A
+quadratic through $(0, s_b)$, $(d_0, v_0)$, $(d_1, v_1)$ has slope at the
+wall
+$$
+\partial_n s\big|_b = \dfrac{1}{\Delta}\,\dfrac{d_1\dfrac{v_0 - s_b}{d_0} - d_0\dfrac{v_1 - s_b}{d_1}}{d_1 - d_0},
+$$
+which is a third-order estimate. If the second point is not available the
+code uses the second-order $(v_0 - s_b)/(d_0\Delta)$, and in degenerate cases
+it uses the cell centre value.
+
+![Figure 19.2: Johansen--Colella gradient at an embedded wall. The normal from the
+wall centroid crosses two grid lines; values there ($v_0$, $v_1$) are
+interpolated from three cell centres on each line, and a quadratic through
+the wall value and these two points gives the wall gradient.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_jc.png)
+
+## Boundary conditions on the embedded surface
+
+Conditions on the solid are set like domain conditions, with the side name
+`embed`:
+
+~~~literatec
+u.n[embed] = dirichlet(0.);  u.t[embed] = dirichlet(0.);  u.r[embed] = dirichlet(0.);
+~~~
+
+`embed.h` redefines `dirichlet()` and `neumann()` so that,
+called on the embedded boundary, they return the wall value (and mark it as
+Dirichlet) or the wall gradient, instead of a ghost value. The default for
+the pressure is a zero normal gradient, consistent with the wall-normal
+velocity being zero.
+
+## The small-cell problem
+
+The CFL condition in a cut cell is $\Delta t< c_s\Delta/(f_s|u|)$: a cell with
+$c_s = 10^{-3}$ would force a step a thousand times smaller. Basilisk does
+not reduce the step. For tracers, `update_tracer()` uses *flux
+redistribution*: a cut cell is advanced with the full flux only if it can
+absorb it; otherwise it is advanced up to its own limit
+$\Delta t_{\max} = c_s\Delta/\max|u_f|$ and the excess
+$(\Delta t- \Delta t_{\max})F$ is shared among its neighbours in proportion to
+$c_s^2$. The total amount is conserved.
+
+The pressure equation has a related difficulty. In a cell with tiny $c_s$
+the Poisson coefficients are tiny, the cell is weakly connected to its
+neighbours, and a pressure difference across it produces a large velocity
+when divided by its small volume. `fractions_cleanup()` removes cells
+whose volume and face fractions are inconsistent (for example a cell with
+$c_s > 0$ but all faces closed).
+
+## Force on the body {#sec:embed-force}
+
+The force exerted by the fluid on the solid is the integral of the stress
+over the wall:
+$$
+\mathbf{F} = \oint_{\Gamma_b}\left(-p\,\mathbf{I} + 2\mu\mathbf{D}\right)\cdot\mathbf{n}_{\text{out}}\,dA,
+$$
+with $\mathbf{n}_{\text{out}}$ pointing from the solid into the fluid. In a
+cut-cell code this becomes a sum over cut cells of the facet area times the
+stress at the facet centroid.
+
+In 2D, `embed_force(p, u, mu, &Fp, &Fmu)` returns the pressure and
+viscous parts (the Kármán example in [chapter 5](05_examples) uses it for the drag
+coefficient). Its viscous part asserts `dimension == 2`, so in 3D the sum
+has to be written out in a `foreach()` loop over cells with
+$0 < c_s < 1$:
+
+- `embed_geometry(point, &b, &n)` returns the facet area (as a
+  fraction of $\Delta^{d-1}$), its centroid `b` in cell units and the unit
+  normal `n`, which points *into* the solid, so the pressure
+  contribution of a facet of area $A$ is $+p\,\mathbf{n}A$;
+
+- the pressure at the centroid is interpolated from the cell and its
+  fluid neighbours;
+
+- the viscous traction on a no-slip wall is
+  $\mathbf{F}_\mu = -\sum\mu\,[\mathbf{g} + \mathbf{n}(\mathbf{g}\cdot\mathbf{n})]\,A$ with
+  $\mathbf{g} = \nabla\mathbf{u}\cdot\mathbf{n}$ from `embed_gradient()`.
+
+With `reduced.h` the solver pressure is the dynamic pressure $p'$, so
+the hydrostatic part $\rho\,\mathbf{G}\cdot\mathbf{x}$ must be added back before
+integrating. A useful check of sign and magnitude is a fully submerged body
+in still water, which must feel its buoyancy $\rho g V$.
+
+[Previous](18_boundary) | [Contents](README) | [Next](20_zones)

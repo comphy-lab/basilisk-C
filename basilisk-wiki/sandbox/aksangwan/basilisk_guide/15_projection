@@ -1,0 +1,171 @@
+# 15 Pressure and the projection step {#ch:projection}
+
+## The continuous projection
+
+After the acceleration event we have a provisional face velocity
+$\mathbf{u}_f^\star$ that includes advection, viscosity and all forces except the
+pressure gradient at the new time. We look for $p^{n+1}$ such that
+$$
+\mathbf{u}_f^{n+1} = \mathbf{u}_f^\star - \Delta t\,\alpha\,\nabla p^{n+1},\qquad \nabla\cdot\mathbf{u}_f^{n+1} = 0.
+\qquad (15.1)
+$$
+Taking the divergence of the first equation and using the second gives the
+variable-coefficient Poisson equation
+$$
+\boxed{\;\nabla\cdot\left(\alpha\,\nabla p^{n+1}\right) = \dfrac{\nabla\cdot\mathbf{u}_f^\star}{\Delta t}\;}
+\qquad (15.2)
+$$
+with $\alpha = 1/\rho$. This is the Helmholtz--Hodge decomposition of
+[section 7.6](07_cfd_concepts#sec:pressure-role) in a norm weighted by density: $\mathbf{u}_f^\star$ is split
+into a divergence-free part and the gradient part $\Delta t\,\alpha\nabla p$
+(figure 15.1). Because $\mathbf{u}_f^\star$ contains no pressure gradient,
+$p^{n+1}$ is the full pressure, not an increment.
+
+![Figure 15.1: The projection as a geometric operation. The space of
+divergence-free fields is drawn as a plane. The pressure gradient term is
+the part of $\mathbf{u}_f^\star$ that is orthogonal to that plane (in the inner
+product weighted by $\rho$), and subtracting it leaves the closest
+divergence-free field.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_projection.png)
+
+## The discrete projection
+
+Define the discrete divergence of a face field and the discrete face gradient
+of a cell field:
+$$
+\begin{aligned}
+(\mathcal{D}\mathbf{u}_f)_i &= \dfrac{1}{\Delta}\sum_{d}\left(u_{f,{i+\dfrac 12}} - u_{f,{i-\dfrac 12}}\right)_d,\\
+(\mathcal{G}p)_{i-\dfrac 12}&= \dfrac{p_i - p_{i-1}}{\Delta}.
+\end{aligned}
+$$
+The face velocity already contains the open-area factor $f_m$, so
+$u_f\,\Delta^{d-1}$ is the volume flux through the face and $\mathcal{D}$ is a
+finite-volume divergence. Then (15.2) becomes
+$$
+\sum_d \dfrac{\alpha_{i+\dfrac 12}(p_{i+1} - p_i) - \alpha_{i-\dfrac 12}(p_i - p_{i-1})}{\Delta^2}
+= \dfrac{(\mathcal{D}\mathbf{u}_f^\star)_i}{\Delta t},
+\qquad (15.5)
+$$
+a 5-point (2D) or 7-point (3D) Laplacian weighted by the face values of
+$\alpha$. It is solved by multigrid ([chapter 16](16_multigrid)), then each face is
+corrected:
+$$
+u_{f,{i-\dfrac 12}}^{n+1} = u_{f,{i-\dfrac 12}}^\star - \Delta t\,\alpha_{i-\dfrac 12}\,(\mathcal{G}p^{n+1})_{i-\dfrac 12}.
+$$
+
+**The new face velocity is divergence-free to solver tolerance.**
+The discrete Laplacian in (15.5) is exactly
+$\mathcal{D}(\alpha\mathcal{G}p)$, so
+$$
+\mathcal{D}\mathbf{u}_f^{n+1} = \mathcal{D}\mathbf{u}_f^\star - \Delta t\,\mathcal{D}(\alpha\mathcal{G}p^{n+1})
+= \Delta t\left[\dfrac{\mathcal{D}\mathbf{u}_f^\star}{\Delta t} - \mathcal{D}(\alpha\mathcal{G}p^{n+1})\right]
+= \Delta t\cdot\text{residual}.
+$$
+If the Poisson equation were solved exactly, the face velocity would be
+exactly divergence-free. This is why VOF transport, which uses $\mathbf{u}_f$, can
+conserve volume to round-off ([section 17.4](17_vof#sec:wy)).
+
+**No checkerboard.** The face gradient $(p_i - p_{i-1})/\Delta$ is
+compact, so the Laplacian in (15.5) sees every cell, and an
+alternating pressure gives a large, not zero, Laplacian. The problem of
+[section 7.7](07_cfd_concepts#sec:checker) does not arise.
+
+> **In the code: `poisson.h`, `project()`**
+>
+> ~~~literatec
+> foreach() {
+>   div[] = 0.;
+>   foreach_dimension()
+>     div[] += uf.x[1] - uf.x[];
+>   div[] /= dt*Delta;
+> }
+> mgstats mgp = poisson (p, div, alpha, tolerance = TOLERANCE/sq(dt), nrelax = nrelax);
+> foreach_face()
+>   uf.x[] -= dt*alpha.x[]*face_gradient_x (p, 0);
+> ~~~
+
+## What the tolerance means
+
+`TOLERANCE` (default $10^{-3}$) is passed as `TOLERANCE/sq(dt)`.
+From the identity above, $|\mathcal{D}\mathbf{u}_f^{n+1}|\,\Delta t= \Delta t^2\,|\text{residual}|$,
+so stopping when the residual is below $\text{TOLERANCE}/\Delta t^2$ means
+$$
+\max_i\left|\mathcal{D}\mathbf{u}_f^{n+1}\right|_i\Delta t< \text{TOLERANCE}:
+$$
+no cell changes its volume by more than $0.1\%$ in one step because of
+incomplete convergence. The solver prints a warning when it reaches
+`NITERMAX = 100` cycles without meeting this.
+
+## Variable density and the density ratio
+
+The face coefficient is $\alpha_{i-\dfrac 12}= f_{m,{i-\dfrac 12}}/\rho(\bar f_{i-\dfrac 12})$, with
+$\bar f$ the average of the two cell values. Across a water--air interface it
+jumps from $1$ to $1/0.001225 \approx 816$. A Poisson equation with a
+coefficient that jumps by three orders of magnitude over one cell is much
+harder to solve than the constant-coefficient case; you see it as larger
+`mgp.i` counts when steep crests are present.
+
+## The approximate projection: updating the cell velocity {#sec:approx-proj}
+
+The cell-centred velocity still has to be corrected. `centered.h` forms
+on each face the total acceleration, force plus pressure gradient,
+$$
+g_{f,{i-\dfrac 12}} = f_{m,{i-\dfrac 12}}\,a_{i-\dfrac 12}- \alpha_{i-\dfrac 12}\,(\mathcal{G}p^{n+1})_{i-\dfrac 12},
+$$
+averages the two faces of each cell,
+$$
+\mathbf{g}_i = \dfrac{g_{f,{i-\dfrac 12}} + g_{f,{i+\dfrac 12}}}{f_{m,{i-\dfrac 12}} + f_{m,{i+\dfrac 12}}},
+\qquad (15.9)
+$$
+and updates $\mathbf{u}^{n+1} = \mathbf{u}^{\star\star} + \Delta t\,\mathbf{g}$. This makes
+$\mathbf{u}$ consistent with $\mathbf{u}_f$ but not exactly divergence-free in the discrete
+sense: the average of two face gradients is not the gradient that the
+Poisson equation used. The error is second order in $\Delta$. The method is
+called an *approximate projection*. It does not harm volume
+conservation, because the field used to move $f$ and momentum is always the
+exactly projected $\mathbf{u}_f$, which is rebuilt from $\mathbf{u}$ and projected again
+every step.
+
+The same $\mathbf{g}$ is reused at the next step: added before the viscous
+solve ([chapter 13](13_viscosity)) and used as the source term in BCG prediction.
+
+> **In the code: `centered.h`, `centered_gradient()` and event `projection`**
+>
+> ~~~literatec
+> gf.x[] = fm.x[]*a.x[] - alpha.x[]*(p[] - p[-1])/Delta;
+> g.x[] = (gf.x[] + gf.x[1])/(fm.x[] + fm.x[1] + SEPS);
+> ...
+> mgp = project (uf, p, alpha, dt, mgp.nrelax);
+> centered_gradient (p, g);
+> correction (dt);        // u.x[] += dt*g.x[]
+> ~~~
+
+## Pressure boundary conditions {#sec:pbc}
+
+At a wall the normal face velocity must be zero after projection. The ghost
+value of the normal velocity is antisymmetric ([chapter 18](18_boundary)), so
+$\overline{u} = 0$ on the wall face and $u_f^\star = \Delta t\,f_m a$ there. Setting
+$u_f^{n+1} = 0$ in (15.1) gives
+$$
+\left.\dfrac{\partial p}{\partial n}\right|_{\text{wall}} = \dfrac{f_m\,a_n}{\alpha}:
+$$
+the pressure gradient at the wall must balance the force pushing into it.
+This is the default pressure condition on every domain side in
+`centered.h`:
+
+~~~literatec
+#define neumann_pressure(i) (a.n[i]*fm.n[i]/alpha.n[i])
+p[right] = neumann (neumann_pressure(ghost));
+p[left]  = neumann (- neumann_pressure(0));
+~~~
+
+The sign differs between left and right because the outward normal points in
+opposite directions.
+
+At an outflow, a Dirichlet condition such as `p[right] = dirichlet(0)`
+fixes the level of $p$ and lets fluid leave freely. With all-Neumann
+boundaries, (15.5) has a solution only if the sum of the
+right-hand side over the domain is zero (net volume flux through the boundary
+is zero), and $p$ is then defined up to a constant. The multigrid statistics
+store this sum in `mgp.sum` for checking.
+
+[Previous](14_acceleration) | [Contents](README) | [Next](16_multigrid)

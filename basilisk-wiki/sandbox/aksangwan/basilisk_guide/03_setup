@@ -1,0 +1,190 @@
+# 3 Setting up, running and restarting a case {#ch:setup}
+
+## A program skeleton
+
+Most Navier--Stokes programs have the same shape. This one is a complete,
+compilable template; the worked examples in [chapter 5](05_examples) fill it in.
+
+~~~literatec
+#include "navier-stokes/centered.h"        // grid: quadtree by default
+#include "two-phase.h"                     // only for two fluids
+#include "navier-stokes/conserving.h"      //   ... with a large density ratio
+#include "reduced.h"                       //   ... with gravity
+
+#define LEVEL 8
+
+// boundary conditions (defaults: free-slip walls everywhere)
+u.n[left]  = dirichlet (1.);
+p[left]    = neumann (0.);
+pf[left]   = neumann (0.);
+u.n[right] = neumann (0.);
+p[right]   = dirichlet (0.);
+pf[right]  = dirichlet (0.);
+
+int main()
+{
+  size (1.);                  // domain side L0
+  origin (0., 0.);            // lower-left corner
+  init_grid (1 << LEVEL);     // 256 x 256 to start
+  rho1 = 1000., mu1 = 1e-3;   // fluid 1 (f = 1)
+  rho2 = 1.2,   mu2 = 1.8e-5; // fluid 2 (f = 0)
+  G.y = -9.81;
+  run();
+}
+
+event init (t = 0)
+{
+  fraction (f, 0.3 - y);      // fluid 1 below y = 0.3
+}
+
+event logfile (i++)
+  fprintf (stderr, "
+
+event adapt (i++)
+  adapt_wavelet ({f, u}, (double[]){1e-3, 1e-2, 1e-2}, LEVEL);
+
+event end (t = 2.)
+{
+  dump ("final");
+}
+~~~
+
+## Choosing the grid
+
+| Grid | Use |
+|:---|:---|
+| `grid/cartesian.h` | uniform, simplest; no multigrid hierarchy, so slow
+Poisson solves; for tests |
+| `grid/multigrid.h` (`multigrid3D.h`) | uniform with a multigrid
+hierarchy; fast; allows non-square boxes with `dimensions(nx = 4)` |
+| `grid/quadtree.h`, `grid/octree.h` | adaptive; the default; the
+domain is always a square or cube |
+| `grid/bitree.h`, `multigrid1D.h` | one-dimensional problems |
+
+On an adaptive tree the domain is one cube of side `L0`: `size()`
+sets it and `origin()` only moves it. To model a long channel, either
+accept the full cube and keep the unused part coarse with adaptation
+([section 9.5](09_grid#sec:wavelet)), or use `multigrid.h` with `dimensions()` if a
+uniform grid is affordable. `mask()` can cut parts of a tree domain
+away, but the source notes that it does not work together with MPI in some
+output functions.
+
+## Resolution
+
+`init_grid(n)` creates a uniform grid of $n$ cells per side; $n$ must
+be a power of two on trees and multigrids. For an adaptive run, start with a
+coarse or moderate grid and let `adapt_wavelet()` refine, or refine
+the initial grid where you know detail is needed:
+
+~~~literatec
+refine (sq(x) + sq(y) < sq(0.2) && level < LEVEL);   // around a body at the origin
+~~~
+
+The level sets the cell size, $\Delta= L_0/2^{\ell}$. Count cells across the
+smallest feature you need (a body diameter, a wave height, a bubble): 10
+cells give a rough answer, 20--30 a usable one, and a convergence study
+(levels $\ell$, $\ell+1$, $\ell+2$) tells you whether the answer has
+settled.
+
+## Initial conditions
+
+Initial conditions go in an `init` event (`t = 0`):
+
+- a volume fraction from a level-set function, positive inside fluid 1:
+  `fraction (f, 0.3 - y);`
+
+- a solid body from a level-set function, positive in the fluid:
+  `solid (cs, fs, sqrt(sq(x) + sq(y)) - R);`
+
+- any field by a loop: `foreach() u.x[] = U0*f[];`
+
+Constructive solid geometry combines level sets with `union()`
+(`max`), `intersection()` (`min`) and `difference()`.
+
+## Fluid properties and solver parameters
+
+For one fluid, the viscosity is a face field `mu`; its default is zero
+(inviscid). Set it in `main()` for a constant value, or in a
+`properties` event if it varies:
+
+~~~literatec
+face vector muv[];
+int main() { mu = muv; ... }
+event properties (i++) {
+  foreach_face()
+    muv.x[] = fm.x[]*nu;      // always multiply by fm (solid fraction / metric)
+}
+~~~
+
+For two fluids, `two-phase.h` computes $\rho$ and $\mu$ from
+`rho1`, `rho2`, `mu1`, `mu2` and $f$. Surface tension
+is `f.sigma`; gravity with `reduced.h` is `G` (and the
+reference level `Z`).
+
+The parameters you are most likely to change: `DT` (maximum time
+step), `CFL`, `TOLERANCE` (lower it, for example to $10^{-4}$, if
+accuracy of pressure matters), and `NITERMAX`.
+
+## Adaptive refinement
+
+~~~literatec
+event adapt (i++)
+  adapt_wavelet ({f, u}, (double[]){1e-3, 1e-2, 1e-2}, maxlevel, minlevel);
+~~~
+
+The list gives the fields to watch, and the array one tolerance per scalar
+(a vector counts as its components). The tolerance is in the units of the
+field: $10^{-2}$ for a velocity of order 1 means "refine where the
+interpolation error exceeds 1% of the velocity scale". Volume fractions
+use $10^{-3}$ to $10^{-2}$. With an embedded body, include `cs` so the
+surface stays at the finest level. [Section 9.5](09_grid#sec:wavelet) explains the error
+estimate.
+
+## Running
+
+Run in the background and keep the log:
+
+~~~bash
+OMP_NUM_THREADS=8 ./case > out.log 2> log.txt &
+tail -f log.txt
+~~~
+
+Print at least $t$, `dt`, the cell count and `mgp.i` every few
+steps. A time step that keeps shrinking, or a pressure solve that needs
+many cycles, is the first sign of trouble ([chapter 6](06_pitfalls)).
+
+**Cost.** The cost is roughly the number of cells times the number of
+steps. Halving $\Delta$ doubles the number of steps (CFL) and multiplies the
+cells by 4 in 2D and 8 in 3D, so one more level costs about 8 times more in
+2D and 16 times more in 3D. Test changes at a low level and short end time
+first.
+
+## Dumping and restarting
+
+`dump()` writes all fields to a binary file; `restore()` reads one
+back. The usual restart pattern tries to restore in `init` and only
+sets the initial condition if there was nothing to restore:
+
+~~~literatec
+event init (t = 0)
+{
+  if (!restore (file = "restart")) {
+    fraction (f, 0.3 - y);         // fresh start
+  }
+}
+
+event snapshots (t += 0.5)
+{
+  char name[80];
+  sprintf (name, "dump-
+  dump (name);
+}
+~~~
+
+Copy the dump you want to continue from to `restart`. Two things are
+not in a dump: face fields such as the embedded face fractions `fs`
+(rebuild the solid with `solid()` after restoring), and the pressure
+(`p.nodump` is set), which the first projection recomputes. Dump files
+grow quickly with the level; delete old ones.
+
+[Previous](02_language) | [Contents](README) | [Next](04_output)

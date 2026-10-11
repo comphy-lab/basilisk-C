@@ -1,0 +1,88 @@
+# 21 Everything together: one time step {#ch:fullstep}
+
+## The complete algorithm
+
+This chapter lists, in order, everything that happens in one step of a
+two-phase flow with an embedded solid, using `centered.h`,
+`two-phase.h`, `conserving.h`, `reduced.h` and
+`embed.h`, on an adaptive tree. Simpler cases skip some of the steps.
+
+Starting values: $\mathbf{u}^n$, $p^n$, $\mathbf{g}^n$, the projected face velocity
+$\mathbf{u}_f^n$, the volume fraction $f^{n-\dfrac 12}$, the geometry $c_s$, $f_s$.
+
+1.  The `stability` event takes $\Delta t$ from the CFL condition on
+    $\mathbf{u}_f^n$ with $C = 0.5$, smoothed and adjusted to the next output time
+    ([chapter 10](10_timestep)).
+
+2.  The `vof` event of `conserving.h` forms
+    $q_1 = f\rho_1\mathbf{u}$ and $q_2 = (1-f)\rho_2\mathbf{u}$. Reconstruct the interface
+    (MYC normal, PLIC intercept). For each direction in rotating order, compute
+    geometric fluxes of $f$ and the consistent fluxes of $q_1$, $q_2$, and update
+    with the Weymouth--Yue compression term. Recover
+    $\mathbf{u}^\star = (q_1 + q_2)/\rho(f^{n+\dfrac 12})$ ([chapter 17](17_vof) and [chapter 12](12_momentum)).
+
+3.  The `properties` event sets, on faces,
+    $\alpha = f_s/\rho(\bar f)$ and $\mu = f_s\,\mu(\bar f)$; at centres
+    $\rho_c = c_s\rho(f)$ ([chapter 8](08_equations)).
+
+4.  The `viscous_term` event does $\mathbf{u}\mathrel{+}=
+    \Delta t\,\mathbf{g}^n$; solve the implicit viscous system by multigrid with the
+    no-slip wall flux on the solid; $\mathbf{u}\mathrel{-}= \Delta t\,\mathbf{g}^n$. Reset
+    $\mathbf{a}= 0$ ([chapter 13](13_viscosity)).
+
+5.  The `acceleration` event adds any user forces on faces (a
+    damping layer, for example); the gravity potential $\phi = (\rho_2-\rho_1)\mathbf{G}\cdot\mathbf{x}_\Gamma$ in
+    interfacial cells; $a \mathrel{+}= \alpha\phi\,\delta f/\Delta$ on faces;
+    $u_f^\star = f_s(\overline{u} + \Delta t\,a)$ ([chapter 14](14_acceleration)).
+
+6.  The `projection` event solves
+    $\mathcal{D}(\alpha\mathcal{G}p) = \mathcal{D}\mathbf{u}_f^\star/\Delta t$ by multigrid;
+    $\mathbf{u}_f^{n+1} = \mathbf{u}_f^\star - \Delta t\,\alpha\mathcal{G}p$; build $\mathbf{g}^{n+1}$
+    from face values; $\mathbf{u}^{n+1} = \mathbf{u}+ \Delta t\,\mathbf{g}^{n+1}$
+    ([chapter 15](15_projection) and [chapter 16](16_multigrid)).
+
+7.  The `adapt` event uses the wavelet estimate on the chosen fields
+    ($c_s$, $f$, $\mathbf{u}$, ...) to refine and coarsen, with momentum-conserving
+    interpolation; the solid fractions are then rebuilt and cleaned
+    ([section 9.5](09_grid#sec:wavelet) and [chapter 6](06_pitfalls)).
+
+8.  Events with new names run last: relaxation zones, logging, forces,
+    output and dumps ([chapter 20](20_zones) and [chapter 4](04_output)).
+
+## What is conserved, and what is not
+
+| Property | Status in this scheme |
+|:---|:---|
+| Water volume, interior | Exact up to the pressure-solver tolerance:
+geometric fluxes, Weymouth--Yue step function and a face velocity that is
+divergence-free to `TOLERANCE` ([section 17.4](17_vof#sec:wy)). |
+| Water volume, whole domain | Changed by the flux through open boundaries,
+and on purpose by any relaxation of $f$. |
+| $0 \le f \le 1$ | Kept by the sweeps up to round-off for $C \le 0.5$;
+clamped wherever $f$ is used to compute properties or forces. |
+| Momentum, advection | Conserved: $\rho\mathbf{u}$ is moved by fluxes, and the
+mesh-adaptation operators conserve it. |
+| Momentum, pressure and forces | Not exactly: the cell velocity receives the
+average of two face accelerations (approximate projection), which is not a
+flux difference. |
+| Momentum, layers | Removed by damping layers and imposed by relaxation
+zones, by design. |
+| Divergence of $\mathbf{u}_f$ | Zero to `TOLERANCE` per step. |
+| Divergence of $\mathbf{u}$ | Only $O(\Delta^2)$ (approximate projection). |
+| Hydrostatic rest state | Exact (balanced force, [section 14.5](14_acceleration#sec:balanced)). |
+
+: Table 21.1: Conservation properties of the scheme.
+
+## Order of accuracy
+
+In smooth regions away from interfaces and walls the scheme is second order
+in space. In time, advection and forces are second order; the viscous term
+(backward Euler) is first order. Near the interface the reconstruction is
+first order in the position of the interface within a cell but second order
+for the curvature from height functions. Limiters, the step function
+$\chi$ and cut cells all reduce the local order. In practice, the accuracy
+of a result is governed by how many cells resolve the features that matter,
+and by the treatment of open boundaries, more than by the formal order.
+Check it by running the same case at two or three levels.
+
+[Previous](20_zones) | [Contents](README) | [Next](22_other_solvers)

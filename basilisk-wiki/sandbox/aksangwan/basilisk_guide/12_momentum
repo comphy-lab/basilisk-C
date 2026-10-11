@@ -1,0 +1,118 @@
+# 12 Momentum-conserving advection for large density ratios {#ch:momentum}
+
+## The problem
+
+Consider water moving to the right at speed $U$ next to air at rest, with the
+interface inside cell $i$. During one step, a volume of water $V_w$ crosses
+the face into the air cell $i+1$. Physically, momentum $\rho_1 U V_w$
+crosses with it. In the BCG scheme of [chapter 11](11_advection), however, the
+velocity is advected as if density were uniform, and the face value of $u$ is
+reconstructed from cell-centred velocities that mix water and air. The
+momentum carried with the water and the mass carried with the water are
+computed by different formulas. With $\rho_1/\rho_2 = 816$, a tiny error in
+the momentum per unit volume of water becomes a large velocity in a cell
+that is mostly air: the air near the crest accelerates, the time step
+collapses and the interface breaks up. The remedy, proposed by Rudman
+\[[12](references)\] and implemented in `navier-stokes/conserving.h`, is to
+move momentum with exactly the same geometric fluxes as the volume fraction.
+
+## Splitting momentum by phase
+
+Define the momentum per unit volume of each phase,
+$$
+\mathbf{q}_1 = f\rho_1\mathbf{u},\qquad \mathbf{q}_2 = (1 - f)\rho_2\mathbf{u},
+\qquad \rho\mathbf{u}= \mathbf{q}_1 + \mathbf{q}_2.
+$$
+Each component of $\mathbf{q}_1$ is a quantity confined to the water, so it
+can be transported as a *VOF tracer* of $f$: its flux through a face is
+the volume of water crossing the face times the water momentum per unit
+water volume, $\rho_1 u$. Likewise $\mathbf{q}_2$ is a tracer of $1 - f$
+(the `inverse` attribute). In each direction-split sweep
+([chapter 17](17_vof)), for a face with upwind cell $i$:
+$$
+\begin{aligned}
+\text{volume flux of water:}\quad & F_f = c_f\,u_f, \\
+\text{flux of } q_1:\quad & F_{q_1} = \Big[\rho_1 u_i + s\min(1,1 - s\,u_n)\,\partial_x(\rho_1 u)_i\,\frac{\Delta}{2}\Big]\,c_f\,u_f, \\
+\text{flux of } q_2:\quad & F_{q_2} = \Big[\rho_2 u_i + \dots\Big]\,(1 - c_f)\,u_f,
+\end{aligned}
+$$
+where $c_f$ is the fraction of the swept volume that is water, computed from
+the reconstructed interface ([section 17.3](17_vof#sec:vofflux)). The bracket is the BCG
+upwind value of [section 11.2](11_advection#sec:bcg-derivation) without the transverse terms; its
+slope is computed only from cells that are mostly of the same phase
+(`vof_concentration_gradient_x`), so air velocities never enter the
+water momentum flux and vice versa.
+
+![Figure 12.1: Consistent transport. The hatched region is everything that
+crosses the face during the sweep. Its water part (fraction $c_f$) carries
+water momentum, its air part carries air momentum. Mass and momentum use the
+same geometric volume, so they cannot drift apart.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_consistent.png)
+
+## The update and the recovery of velocity
+
+For each sweep, $f$, $q_1$ and $q_2$ are updated together with the
+one-dimensional equations of [section 17.2](17_vof#sec:split):
+$$
+\begin{aligned}
+f_i &\mathrel{+}= \frac{\Delta t}{\Delta}\left[F_{f,{i-\frac 12}} - F_{f,{i+\frac 12}} + \chi_i\,(u_{f,{i+\frac 12}} - u_{f,{i-\frac 12}})\right],\\
+q_{1,i} &\mathrel{+}= \frac{\Delta t}{\Delta}\left[F_{q_1,{i-\frac 12}} - F_{q_1,{i+\frac 12}} + \chi_i\,\rho_1 u_i\,(u_{f,{i+\frac 12}} - u_{f,{i-\frac 12}})\right],
+\end{aligned}
+$$
+where $\chi_i = 1$ if $f_i > 0.5$ and $0$ otherwise (the step function of
+Weymouth and Yue, [section 17.4](17_vof#sec:wy)). After all sweeps the velocity is
+recovered from the total momentum and the new density:
+$$
+\mathbf{u}^\star = \frac{\mathbf{q}_1 + \mathbf{q}_2}{\rho(f^{n+\frac 12})}.
+$$
+
+> **In the code: `navier-stokes/conserving.h`**
+>
+> ~~~literatec
+> q1.x[] = fc*rho1*u.x[];   q2.x[] = (1. - fc)*rho2*u.x[];
+> q2.x.inverse = true;
+> f.tracers = list_concat (tracers, (scalar *){q1, q2});
+> vof_advection ({f}, i);
+> u.x[] = (q1.x[] + q2.x[])/rho(f[]);
+> ~~~
+
+## Why it works: a uniform flow stays uniform
+
+Suppose $\mathbf{u}= U$ everywhere at the start of the step. Then
+$\rho_1 u$ is the constant $\rho_1 U$, its slope is zero, and
+$F_{q_1} = \rho_1 U\,F_f$ on every face. The compression terms also match:
+$\chi_i\rho_1 u_i = \rho_1 U\chi_i$. So the $q_1$ update is exactly
+$\rho_1 U$ times the $f$ update, and $q_1^{\text{new}} = \rho_1 U f^{\text{new}}$.
+The same holds for $q_2$ with $1 - f$. Therefore
+$$
+\mathbf{u}^{\text{new}} = \frac{\rho_1 U f^{\text{new}} + \rho_2 U(1 - f^{\text{new}})}{\rho(f^{\text{new}})} = U
+$$
+exactly, whatever the density ratio and however the interface moved. The
+non-conservative BCG scheme has no such property: moving density with one
+scheme and velocity with another lets the two disagree in interface cells.
+
+## Conservation on the adaptive mesh {#sec:momentum-refine}
+
+When cells are refined or coarsened, plain bilinear interpolation of $\mathbf{u}$
+would change the total momentum because density differs between children.
+`conserving.h` replaces the operators:
+$$
+\begin{aligned}
+\text{restriction:}\quad & u_{\text{parent}} = \frac{\sum_c c_{m,c}\,\rho(f_c)\,u_c}{2^d\,c_{m,p}\,\rho(f_p)},\\
+\text{refinement:}\quad & u_c = u_c^{\text{bilinear}} + \delta u,\quad
+ \delta u \text{ chosen so that } \sum_c c_{m,c}\,\rho(f_c)\,u_c = 2^d c_{m,p}\,\rho(f_p)\,u_p.
+\end{aligned}
+$$
+These need the children's $f$ before $u$, so the module moves $f$ to the front
+of the field list. They conserve total momentum, not the momentum of each
+phase separately.
+
+## What changes in the solver
+
+`conserving.h` sets `stokes = true`, which skips the BCG
+`advection_term` and the `dt/2` projection that goes with it.
+Because `centered.h` then no longer computes a CFL step, the module
+overloads `stability` to call `timestep(uf, dtmax)` itself. The
+`vof` event now transports $f$, $q_1$ and $q_2$ together and hides the
+interface list from the default `vof` event so $f$ is not moved twice.
+
+[Previous](11_advection) | [Contents](README) | [Next](13_viscosity)

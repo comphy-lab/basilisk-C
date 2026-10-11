@@ -1,0 +1,137 @@
+# 9 The grid, the fields and the stencils {#ch:grid}
+
+## Octree cells
+
+`grid/octree.h` (or `quadtree.h` in 2D) builds the mesh by
+recursive subdivision of one cube of side $L_0$. A cell at *level*
+$\ell$ has side
+$$
+\Delta= \frac{L_0}{2^\ell}.
+$$
+Level 0 is the root. With $L_0 = 1$, level 8 gives $\Delta= 1/256 \approx 0.0039$
+and level 10 gives $\Delta\approx 0.001$.
+Every cell at every level exists in the tree, but only the *leaf*
+cells (cells with no children) hold the solution. Coarser parent cells are
+used by the multigrid solver ([chapter 16](16_multigrid)) and for interpolation
+when the mesh changes.
+
+Two neighbouring leaves may differ by at most one level. This
+*2:1 balance* keeps stencils simple: every face of a leaf touches either
+one leaf of the same level, one leaf one level coarser, or two (four in 3D)
+leaves one level finer (figure 9.1).
+
+![Figure 9.1: Octree/quadtree mesh. Shaded tree nodes are leaves. The red face
+separates a level-1 leaf from two level-2 leaves; the flux through it is
+computed on the fine side and summed for the coarse side so that
+conservation holds across levels.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_quadtree.png)
+
+## Where each variable lives
+
+Basilisk has three kinds of fields (figure 9.2):
+
+- A `scalar` has one value per cell, at the centre. $p$, $f$,
+  $\rho$ and each component of $\mathbf{u}$ are scalars.
+
+- A `vector` is $d$ cell-centred scalars, for example $\mathbf{u}$ and the
+  centred pressure-gradient field $\mathbf{g}$.
+
+- A `face vector` has one value per face, normal to it. $\mathbf{u}_f$,
+  $\alpha$, $\mu$, $\mathbf{a}$ and the embedded face fractions $f_s$ are face
+  vectors. `uf.x[]` is on the left face of the cell and `uf.x[1]`
+  on the right face.
+
+![Figure 9.2: Positions of the variables. Pressure, volume fraction and the
+centred velocity are at cell centres (dots). The face velocity $\mathbf{u}_f$, the
+specific volume $\alpha$, the viscosity $\mu$ and the acceleration $\mathbf{a}$ are
+on faces (arrows), normal to the face. The face gradient
+$(p_i - p_{i-1})/\Delta$ is naturally located at the face ${i-\frac 12}$, next to
+$u_{f,{i-\frac 12}}$.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_placement.png)
+
+> **In the code: `common.h`**
+>
+> ~~~literatec
+> #define face_gradient_x(a,i) ((a[i] - a[i-1])/Delta)
+> #define face_value(a,i)      ((a[i] + a[i-1])/2.)
+> #define center_gradient(a)   ((a[1] - a[-1])/(2.*Delta))
+> ~~~
+>
+> The three basic stencils: gradient at a face, average to a face, centred
+> gradient at a cell.
+
+## Ghost cells
+
+To apply the same stencil in every leaf, including next to the domain
+boundary, Basilisk surrounds the domain with *ghost cells*. Before a
+stencil reads a field, the ghost values are filled from the boundary
+conditions ([chapter 18](18_boundary)). With embedded boundaries `BGHOSTS = 2`, so
+two layers are filled, because the cut-cell interpolations use a $5\times5$
+stencil.
+
+Fine/coarse faces inside the tree are handled the same way: when a fine cell
+needs a neighbour that only exists at the coarser level, the value is
+*prolongated* (interpolated) from the coarse cell into a temporary
+ghost child.
+
+## Restriction and prolongation {#sec:restrict}
+
+*Restriction* fills a parent from its $2^d$ children; the default is the
+average,
+$$
+s_{\text{parent}} = \frac{1}{2^d}\sum_{\text{children}} s_c,
+$$
+which conserves the integral of $s$. *Prolongation* fills children from
+parents. The default is bilinear interpolation; in 2D a child takes
+$$
+s_{\text{child}} = \tfrac{9}{16}s_0 + \tfrac{3}{16}(s_x + s_y) + \tfrac{1}{16}s_{xy},
+$$
+where $s_0$ is its parent and $s_x$, $s_y$, $s_{xy}$ the parent's neighbours
+in the child's direction (figure 9.3). Some fields replace these
+defaults: $f$ uses a geometric refinement that cuts the reconstructed
+interface (`fraction_refine`), the face velocity uses a
+divergence-preserving refinement (`refine_face_solenoidal`), and with
+`conserving.h` the velocity uses a refinement that conserves momentum
+([section 12.5](12_momentum#sec:momentum-refine)).
+
+![Figure 9.3: Bilinear prolongation in 2D. The child (red) in the upper-right
+quarter of its parent takes the weights shown in brackets, divided by 16.](https://raw.githubusercontent.com/a-k-sangwan/basilisk-guide/main/basilisk_guide/figures/fig_prolong.png)
+
+## Adaptive refinement with wavelets {#sec:wavelet}
+
+`adapt_wavelet({fields}, {tolerances}, maxlevel)` decides where to
+refine by asking how well each field can be predicted from the coarser
+level. For each parent cell and each listed field $s$:
+
+1.  restrict the children to the parent (average);
+
+2.  prolongate the parent back to the children;
+
+3.  the error estimate in each child is
+    $e = |s_{\text{child}} - \text{prolongation}(\text{restriction}(s))|$.
+
+If $e > \epsilon$ (the tolerance for that field) and the level is below
+`maxlevel`, the cell is marked too coarse and refined. If
+$e \le \epsilon/1.5$ for every field, its children may be merged. Between
+the two thresholds nothing changes, which stops cells from flipping between
+refined and coarse every step. The error $e$ is of the size of the second
+derivative times $\Delta^2$, so refinement goes where the fields curve sharply:
+at interfaces, near solid walls and in shear layers.
+
+> **In the code: `grid/tree-common.h`, `adapt_wavelet()`**
+>
+> ~~~literatec
+> double e = fabs(*b - s[]);       // *b: original child value, s[]: prolongated
+> if (e > emax && level < maxlevel)       -> too_coarse (refine)
+> else if (e <= emax/1.5 || level > maxlevel) -> too_fine (may coarsen)
+> ~~~
+
+## The metric fields $c_m$ and $f_m$
+
+Every solver multiplies cell volumes by `cm[]` and face areas by
+`fm.x[]`. On a plain Cartesian grid both are 1. With `embed.h` the
+`metric` event sets `cm = cs` and `fm = fs`: the fraction of the
+cell volume and of each face open to fluid. That single substitution is how
+every operator in this document becomes a cut-cell operator around the
+solid ([chapter 19](19_embed)). With `axi.h` the same fields carry the
+radius for axisymmetric runs.
+
+[Previous](08_equations) | [Contents](README) | [Next](10_timestep)
