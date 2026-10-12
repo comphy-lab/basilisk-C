@@ -26,6 +26,13 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
+@Article{kulkarni2026,
+author={Kulkarni, Yash and Fullana, Tomas and Popinet, Stéphane and Zaleski, Stéphane},
+title={The rapidly advancing contact line {P}art-1: {N}avier slip and microscale inertial effects},
+journal={Journal of Fluid Mechanics},
+year={2026}
+}
+
 @Article{pan2026,
 author={Jieyun Pan and Tian Long and Ruben Scardovelli and Stéphane Popinet and Stéphane Zaleski},
 title={A Three-dimensional Edge-Based Interface Tracking (EBIT) Method for Multiphase-flow Simulations},
