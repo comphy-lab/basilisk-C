@@ -1,5 +1,5 @@
 #include "heights.h"
-#include "redistance.h"
+#include "redistance_amr.h"
 
 /**
 ## Determinism helper
@@ -33,9 +33,14 @@ double minimum (double a, double b, double c, double x)
 {
   double f;
   int nmax = 10;
+  const double eps = 1e-6;
   do {
-    f = (x + (2.*a*x + b)*(x*(a*x + b) + c))/
-      (a*(6.*x*(a*x + b) + 2.*c) + b*b + 1.);
+    double y  = x*(a*x + b) + c;
+    double yp = 2.*a*x + b;
+    double num = x + yp*y;
+    double den = a*(6.*x*(a*x + b) + 2.*c) + b*b + 1.;   /* = D''(x) */
+    if (den < eps) den = eps;         /* LM-style floor, guarantees descent */
+    f = num/den;
     x -= f;
   }
   while (nmax-- && fabs (f) > 1e-6);
@@ -73,9 +78,19 @@ coord height_closest_y (Point point, vector h)
     double a = (h.y[1] + h.y[-1] - 2.*h.y[])/2.;
     double b = (h.y[1] - h.y[-1])/2.;
     double c = height (h.y[]);
+
+    /* Tangent-line starting guess: minimizes x^2 + (b*x + c)^2 exactly
+       (drops the quadratic term a*x^2), mirroring tangent_plane_closest
+       in the 3D code. Cheap, always well-defined, and a materially
+       better seed than the fixed grid alone when |a| is large -- which
+       is exactly the regime where minimum() is most likely to need more
+       than one basin of attraction to find the true closest point. */
+    double x0 = -b*c/(1. + b*b);
+
     double xm = nodata, ym = nodata, dm = HUGE;
-    for (double x = -1; x <= 1.; x += 1.) {
-      double xp = minimum (a, b, c, x), yp = xp*(a*xp + b) + c;
+    double seeds[] = { x0, -1., 0., 1. };
+    for (int k = 0; k < 4; k++) {
+      double xp = minimum (a, b, c, seeds[k]), yp = xp*(a*xp + b) + c;
       double dp = sq(xp) + sq(yp);
       if (dp < dm)
 	xm = xp, ym = yp, dm = dp;
@@ -86,17 +101,19 @@ coord height_closest_y (Point point, vector h)
   return p;
 }
 
+
 coord height_closest (Point point, vector h, scalar c, int * s)
 {
   coord p;
   coord qx = height_closest_x (point, h);
   coord qy = height_closest_y (point, h);
 
+  *s = (c[] > 0.5) ? 1 : -1;
+
   if (qx.x != nodata) {
-    *s = (orientation(h.x[]) ? height(h.x[]) < 0. : height(h.x[]) > 0.) ? 1 : -1;
     if (qy.x != nodata) {
       /* Slope of each height function in its transverse direction.
-         nodata neighbor → 1e11 (interface out of stencil ≡ very steep slope).
+         nodata neighbor Ã¢â€ â€™ 1e11 (interface out of stencil Ã¢â€°Â¡ very steep slope).
          The three pairs of statements below (a/b computed, normalised,
          then weighted) are structurally identical, differing only in
          which field (h.x vs h.y) they touch -- exactly the isomorphic-
@@ -125,7 +142,6 @@ coord height_closest (Point point, vector h, scalar c, int * s)
   }
   else {
     if (qy.x != nodata){
-      *s = (orientation(h.y[]) ? height(h.y[]) < 0. : height(h.y[]) > 0.) ? 1 : -1;
     p = qy;}
     else{
      if (interfacial2(point, c)){
@@ -135,7 +151,6 @@ coord height_closest (Point point, vector h, scalar c, int * s)
     	foreach_dimension() nn2 = slp_barrier (nn2 + slp_barrier (sq(nn.x)));
 	foreach_dimension()
 		p.x = slp_barrier (alpha / nn2 * nn.x * Delta);
-	*s = (c[] > 0.5) ? 1 : -1;
 
      }
     }
@@ -143,6 +158,10 @@ coord height_closest (Point point, vector h, scalar c, int * s)
   }
   return p;
 }
+
+
+
+
 
 
 trace
@@ -433,7 +452,7 @@ coord height_closest (Point point, vector h, scalar c, int *s)
 #endif
 
   /* Weights from h-function STENCIL SLOPES, not from the returned p-vector.
-     Missing neighbor → 1e11 (nodata means interface moves sharply out of
+     Missing neighbor â†’ 1e11 (nodata means interface moves sharply out of
      stencil range, implying the column is nearly tangent to the interface). */
   double wx = 0., wy = 0., wz = 0.;
 
@@ -500,7 +519,7 @@ coord height_closest (Point point, vector h, scalar c, int *s)
   if (n > 0) {
     foreach_dimension() p.x /= wtot;
 
-    /* Sign from VOF field: c[]>0.5 means inside the reference phase → negative SDF.
+    /* Sign from VOF field: c[]>0.5 means inside the reference phase â†’ negative SDF.
        This is unambiguous for any interface geometry.
        
        Old height-function-based sign (kept for reference):
@@ -518,8 +537,8 @@ coord height_closest (Point point, vector h, scalar c, int *s)
        This fails for closed objects near axis-aligned poles: when the 7-cell
        column stencil captures only the near-side interface crossing of a sphere,
        the column sum exceeds 3.5 for inside cells, inverting the sign.
-       Example: cell at (-0.684, -0.027, -0.020) inside sphere R=0.7, normal≈(-1,0,0):
-         column sum = 5.50 cells → height > 0 → s=+1 (outside) → WRONG.             */
+       Example: cell at (-0.684, -0.027, -0.020) inside sphere R=0.7, normalâ‰ˆ(-1,0,0):
+         column sum = 5.50 cells â†’ height > 0 â†’ s=+1 (outside) â†’ WRONG.             */
     *s = (c[] > 0.5) ? 1 : -1;
   }
   else {
