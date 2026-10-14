@@ -1,6 +1,10 @@
 /**
 # Rayleigh--Taylor instability 
 
+## Acknowledgment
+
+This code was inspired and can be considered as an upgrade of this Basilisk [test case](https://basilisk.fr/src/test/rt.c) , and this [code in the sandbox of haouche](https://basilisk.fr/sandbox/haouche/Hydrodynamic_instabilities/rayleigh-taylor.c)
+
 ## How to run ?
 
 DTENSION can be set to zero (or undefined) if you want to run a simulation without surface tension.
