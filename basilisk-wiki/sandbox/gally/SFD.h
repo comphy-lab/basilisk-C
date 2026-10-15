@@ -1,5 +1,5 @@
 /**
-# Selective Frequency Damping method
+# Selective Frequency Damping method (Akervik et al., 2006)
 
 The low-pass filtered version of the initial flow is calculated at each iteration using an Euler explicite scheme ($\Delta$ a control parameter of the method) :
 $$
@@ -71,3 +71,6 @@ event bar (i++) {
     pbar[] = (p[] - pbar[]) * (dt/SFD_Delta) + pbar[];
   }
 }
+/**
+# References 
+- Åkervik, E., Brandt, L., Henningson, D. S., Hœpffner, J., Marxen, O., & Schlatter, P. (2006). Steady solutions of the Navier-Stokes equations by selective frequency damping. Physics of fluids, 18(6). */

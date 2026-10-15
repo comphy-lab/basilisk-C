@@ -1,4 +1,4 @@
-Hi, I'm Louise. I'm a fourth year student doing an internship for which I'm implementing the Selective Frequency Damping (SFD) method into Basilisk.
+Hi, I'm Louise. I'm a fourth year student doing an internship for which I'm implementing the Selective Frequency Damping (SFD) method (Akervik et al., 2006) into Basilisk.
 
 ![SFD acting on a Kármán Vortex Street (vorticity field)](KarmanSFD/vort.mp4)(loop)
 
@@ -15,3 +15,6 @@ Hi, I'm Louise. I'm a fourth year student doing an internship for which I'm impl
 # Instabilities of von Kármán
 - [Strouhal number of the oscillations behind a 2D sphere](/sandbox/gally/KarmanStrouhal.c)
 - First step of the SFD : [filtering the unstable flow](/sandbox/gally/KarmanFiltered.c)
+
+# References
+- Åkervik, E., Brandt, L., Henningson, D. S., Hœpffner, J., Marxen, O., & Schlatter, P. (2006). Steady solutions of the Navier-Stokes equations by selective frequency damping. Physics of fluids, 18(6).
