@@ -1,15 +1,16 @@
-import os
 import numpy as np
 from skimage.feature import hessian_matrix, hessian_matrix_eigvals
-import matplotlib.pyplot as plt
+from scipy import ndimage as ndi
+from scipy.sparse import coo_matrix
+from scipy.sparse.csgraph import connected_components
+from scipy.spatial import cKDTree
 
 """
 Code from https://github.com/jiarong-wu/multilayer_breaking/blob/bab0b535be26eaf3021bf5a34c9bf20d1962e483/postprocessing/mlpython/breaking.py
 """
 
-""" The detection function """
 
-
+# The detection function
 def detect_ridges(gray, sigma=1.0):
     H_elems = hessian_matrix(
         gray, sigma=sigma, order="rc", use_gaussian_derivatives=False
@@ -18,10 +19,12 @@ def detect_ridges(gray, sigma=1.0):
     return maxima_ridges, minima_ridges
 
 
+# detect slope based on gradient threshold
 def detect_slope(grad, threshold):
     return np.logical_not(grad > threshold)
 
 
+# bins for predefined kps
 def get_bins(kp):
     try:
         if kp == 2 * np.pi / 10:
@@ -38,10 +41,8 @@ def get_bins(kp):
     return bins
 
 
-""" Detect breaking fronts based on geometry of surface elevation (eta) and compute the statistics 
-    of the velocity of the detected front. """
-
-
+# Detect breaking fronts based on geometry of surface elevation (eta) and compute the statistics
+#    of the velocity of the detected front
 def simple_mapping(
     eta,
     ux,
@@ -109,3 +110,105 @@ def simple_mapping(
         return hist, a_
     else:
         return hist
+
+
+def label_periodic(points, structure):
+    """Connected-component labelling, periodic in both axes.
+    points: 2D bool array (axis 0 = y, axis 1 = x)
+    structure: odd-sized bool array
+    Returns (labels as int32, number of objects)."""
+    ny, nx = points.shape
+    py, px = structure.shape[0] // 2, structure.shape[1] // 2
+
+    # Pad only by the structure's reach (1 px for a 3x3 structure)
+    padded = np.pad(points, ((py, py), (px, px)), mode="wrap")
+    lab = np.empty(padded.shape, dtype=np.int32)
+    n = ndi.label(padded, structure=structure, output=lab)
+    if n == 0:
+        return lab[py : py + ny, px : px + nx].copy(), 0
+
+    # Each padded cell is a copy of one original cell: find that cell's label
+    iy = (np.arange(ny + 2 * py) - py) % ny + py
+    ix = (np.arange(nx + 2 * px) - px) % nx + px
+    src = lab[np.ix_(iy, ix)]
+
+    # Copies carrying different labels belong to the same object
+    m = lab > 0
+    a, b = lab[m], src[m]
+    graph = coo_matrix((np.ones(a.size, np.int32), (a, b)), shape=(n + 1, n + 1))
+    ncomp, comp = connected_components(graph, directed=False)
+
+    # comp[0] == 0 (background), other objects are numbered 1..ncomp-1
+    out = comp.astype(np.int32)[lab[py : py + ny, px : px + nx]]
+    return out, ncomp - 1
+
+
+def match_frames(prev_pts, prev_lab, cur_pts, cur_lab, r_max, box):
+    """Vote count per (previous label, current label) pair.
+    Points are (y, x) in metres, in [0, box)."""
+    if len(prev_pts) == 0 or len(cur_pts) == 0:
+        return np.empty((0, 2), int), np.empty(0, int)
+    tree = cKDTree(prev_pts, boxsize=box)  # periodic distances
+    d, i = tree.query(cur_pts, distance_upper_bound=r_max)
+    ok = np.isfinite(d)  # no neighbour -> d = inf
+    pairs = np.stack([prev_lab[i[ok]], cur_lab[ok]], axis=1)
+    return np.unique(pairs, axis=0, return_counts=True)
+
+
+def btrack(frames, dx, dy, structure, r_max, events=None):
+    """frames: iterable of 2D bool arrays (True on points of interest).
+    Returns a list of int arrays holding persistent track ids (0 = background).
+    If `events` is a list, it is filled with tuples:
+      ("birth", t, id)            new object with no parent
+      ("split", t, child, parent) new id created from an existing track
+      ("merge", t, ended, into)   track `ended` absorbed by track `into`
+      ("death", t, id)            track disappears with no successor
+    """
+    next_id, prev, out = 1, None, []
+    for t, mask in enumerate(frames):
+        ny, nx = mask.shape
+        box = (ny * dy, nx * dx)
+        labels, n = label_periodic(mask, structure)
+        ys, xs = np.nonzero(mask)
+        pts = np.column_stack([ys * dy, xs * dx])
+        lab = labels[ys, xs]
+
+        id_of = np.zeros(n + 1, dtype=np.int64)  # label -> track id
+        used, vote_parent, vote_child = set(), {}, {}
+        if prev is not None and n > 0:
+            pairs, counts = match_frames(prev["pts"], prev["lab"], pts, lab, r_max, box)
+            for k in np.argsort(-counts):  # strongest claims first
+                pl, cl = pairs[k]
+                tid = prev["id_of"][pl]
+                vote_parent.setdefault(cl, tid)  # best parent of each new object
+                vote_child.setdefault(tid, cl)  # best successor of each old track
+                if id_of[cl] == 0 and tid not in used:
+                    id_of[cl] = tid
+                    used.add(tid)
+
+        born = []
+        for cl in range(1, n + 1):
+            if id_of[cl] == 0:
+                id_of[cl] = next_id
+                born.append(cl)
+                next_id += 1
+
+        if events is not None:
+            for cl in born:
+                if cl in vote_parent:
+                    events.append(("split", t, int(id_of[cl]), int(vote_parent[cl])))
+                else:
+                    events.append(("birth", t, int(id_of[cl])))
+            if prev is not None:
+                for tid in prev["id_of"][1:]:
+                    if tid not in used:
+                        if tid in vote_child:
+                            events.append(
+                                ("merge", t, int(tid), int(id_of[vote_child[tid]]))
+                            )
+                        else:
+                            events.append(("death", t, int(tid)))
+
+        out.append(id_of[labels])
+        prev = dict(pts=pts, lab=lab, id_of=id_of)
+    return out

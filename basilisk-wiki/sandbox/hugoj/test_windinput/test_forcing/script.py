@@ -16,10 +16,14 @@ T0 = 2 * np.pi / np.sqrt(g * k)
 print("T0 = %f" % T0)
 
 
-def E_linwave(E0, nu, ak, k, t):
+def E_linwave_nostress(E0, nu, k, t):
     print("\nWave decay for linear wave (theory)")
-    print(f"nu={nu},ak={ak},k={k / np.pi}pi\n")
+    print(f"nu={nu}, k={k / np.pi}pi\n")
     return E0 * np.exp(-4 * nu * k**2 * t)
+
+
+def E_linwave(E0, nu, k, t):
+    return E0 * np.exp(-2 * nu * k**2 * t)
 
 
 data = {
@@ -38,11 +42,11 @@ for case in data.keys():
     gpe[case] = data[case][:, 2]
     E[case] = ke[case] + gpe[case]
 
-E0th = 0.5 * g * (ak / k) ** 2  # E["remap"][0]
+E0th = 0.5 * g * (ak / k) ** 2
 print("\ntheoretical E0 = %g m3/s2" % E0th)
 print("initial energy for current sim E0 = %g m3/s2" % E["current_noforcing"][0])
 print("ratio is %g \n" % (E0th / E["current_noforcing"][0]))
-Eth = E_linwave(E0th, nu, ak, k, time["remap"] * T0)
+Eth = E_linwave(E0th, nu, k, time["current_noforcing"] * T0)
 E0 = 1
 
 print("Target for E=cst for this set of parameters:")
@@ -96,7 +100,9 @@ ax.semilogy(
     label="E (current exact forcing)",
     ls="--",
 )
-ax.semilogy(time["remap"], Eth / E0, color="r", label=r"$E(t)=E_0 e^{-4 \nu k^2 t}$")
+ax.semilogy(
+    time["current_noforcing"], Eth / E0, color="r", label=r"$E(t)=E_0 e^{-2 \nu k^2 t}$"
+)
 ax.set_xlabel("t/T0")
 ax.set_ylabel("E/E0")
 ax.set_xlim([0, 10])

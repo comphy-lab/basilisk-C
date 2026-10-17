@@ -27,8 +27,8 @@ they take into account entrainment of cold water into the mixed layer, while
 
 
 //#include "grid/gpu/multigrid.h"
-//#include "grid/multigrid.h"
-#include "grid/multigrid1D.h"
+#include "grid/multigrid.h"
+//#include "grid/multigrid1D.h"
 #include "layered/hydro.h"
 #include "layered/nh.h"
 
@@ -66,7 +66,7 @@ double Ts = 20. [0,0,1];              // [K] Surface temperature (arbitrary)
 // -> Forcing
 double qt = 100. [-2,-1,0,1];         // [W.m-2] Heat flux
 // -> Domain definition
-int N_grid = 5;                       // 2^N_grid : number of x and y gridpoints
+int N_grid = 64;                       // 2^N_grid : number of x and y gridpoints
 double L = 200.0 [1];                 // domain size
 int N_layer = 5;                      // number of layers
 double h0 = 1.0 [1];                  // depth of water
@@ -144,13 +144,13 @@ int main(int argc, char *argv[])
   L0 = L;
   nu = nu0;
   diff_T = nu0/Pr;
-  N = 1 << N_grid; // 1*2^N_grid
+  N = N_grid; // 1*2^N_grid
   nl = N_layer;
   G = g_;
   theta_H = thetaH;
-  CFL_H = 8.;
-  CFL = 0.8;
-  //TOLERANCE = 1e-8;
+  CFL_H = 1.;
+  CFL = 0.5;
+  TOLERANCE = 1e-2;
   //CFL_H = 40; 
   //CFL=0.5;
 
@@ -181,14 +181,14 @@ int main(int argc, char *argv[])
 
 event init(i =  0) {
   // reset({T},0.);
-  geometric_beta (0., true); // if !=0, varying layer thickness 1./3.
+  geometric_beta (1., true); // if !=0, varying layer thickness 1./3.
   // step 1: set eta and h
   foreach(cpu) {
     zb[] = -h0;
     eta[] = 0.;
     double H = - zb[];
     foreach_layer() 
-      h[] = H*beta[point.l];
+      h[] = H/nl;
   }
 
   reset({T},0.);

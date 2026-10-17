@@ -183,7 +183,7 @@ def parse_args(argv=None):
     return p.parse_args(argv)
 
 
-def render_snapshot(
+def render_snapshot3D(
     input,
     output,
     ttime=0.0,
@@ -316,6 +316,14 @@ def render_snapshot(
     # Add mesh on the sides and the top
     add_mesh_domain_side(grid, plotter, vartop, varside, index_clip=iclip)
 
+    # time text
+    plotter.add_text(
+        f"t = {ttime:.1f} s",
+        position="lower_left",
+        font_size=10,
+        name="time_text",
+    )
+
     # Save
     plotter.save_graphic(output_path)
     plotter.close()
@@ -327,7 +335,7 @@ def render_snapshot(
 def main(argv=None):
     args = parse_args(argv)
     try:
-        render_snapshot(
+        render_snapshot3D(
             input=args.input,
             output=args.output,
             ttime=args.ttime,

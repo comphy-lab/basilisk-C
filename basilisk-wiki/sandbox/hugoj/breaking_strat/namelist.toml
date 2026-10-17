@@ -32,12 +32,12 @@ h0 = 20.0    # [m] =2pi/kp, depth of water
 #
 # RUN PARAMETERS
 #
-tend = 100.0 # (x Tp) time to end the simu
+tend = 10.0  # (x Tp) time to end the simu
 t_iniT = 1.0 # (x Tp) time to initialise temperature profile
 dtout = 5.0  # [s] dt for output in netcdf
 # with CFLAGS += -DUS_DIAG
-tstart_diag = 5.0 # (x Tp) time to start Stokes drift diag
-tend_diag = 10.0  # (x Tp) time to stop Stokes drift diag 
+tstart_diag = 2.0 # (x Tp) time to start Stokes drift diag
+tend_diag = 5.0   # (x Tp) time to stop Stokes drift diag 
 # ---
 
 #
@@ -55,4 +55,4 @@ qt = 0.0 # [W.m-2]
 #
 # DIAGNOSTICS
 #
-dt_mean = 10.0 # [s]
+dt_mean = 5.0 # [s]

@@ -17,17 +17,17 @@ NOTE: g_ has to be either #define or declared before #include this file
 
 double wave_monolin(double t, double x, double a, double k){
   double omega = sqrt(g_*k);
-  return a*sin(k*x-omega*t);
+  return a*cos(k*x-omega*t);
 }
 
 double u_x_monolin(double t, double x, double z, double a, double k){
   double omega = sqrt(g_*k);
-  return a*omega*exp(k*z)*sin(k*x-omega*t);
+  return a*omega*exp(k*z)*cos(k*x-omega*t);
 }
 
 double u_y_monolin(double t, double x, double z, double a, double k){
   double omega = sqrt(g_*k);
-  return a*omega*exp(k*z)*cos(k*x-omega*t);
+  return a*omega*exp(k*z)*sin(k*x-omega*t);
 }
 /*
 ## 3rd order Stokes wave

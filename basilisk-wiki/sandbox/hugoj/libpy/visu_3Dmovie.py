@@ -191,7 +191,7 @@ def parse_args(argv=None):
     return p.parse_args(argv)
 
 
-def render_movie(
+def render_movie3D(
     input,
     output,
     skip=1,
@@ -314,6 +314,9 @@ def render_movie(
         plotter, L0, H0, tick_len_min, tick_len_maj, label_offset, clip=physical_clip
     )
 
+    # current timestep
+    plotter.add_text("t/T0: 0.0", position="lower_left", font_size=10, name="time_text")
+
     # Camera position
     plotter.camera_position = camera_position
     plotter.camera.elevation = elevation
@@ -362,6 +365,14 @@ def render_movie(
         # Add mesh on the sides and the top
         add_mesh_domain_side(grid, plotter, vartop, varside, index_clip=iclip)
 
+        # update text
+        plotter.add_text(
+            f"t = {t_target:.1f} s",
+            position="lower_left",
+            font_size=10,
+            name="time_text",
+        )
+
         plotter.write_frame()
 
         if verbose and (
@@ -383,7 +394,7 @@ def render_movie(
 def main(argv=None):
     args = parse_args(argv)
     try:
-        render_movie(
+        render_movie3D(
             input=args.input,
             output=args.output,
             fps=args.fps,

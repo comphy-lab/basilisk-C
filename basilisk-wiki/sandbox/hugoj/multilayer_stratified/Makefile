@@ -3,7 +3,7 @@ CFLAGS += -disable-dimensions # skip dimensions check for now
 CFLAGS += -DDIAG=0
 CFLAGS += -DTRACE=2
 
-all: ml_convection/namelist.toml ml_convection.tst
+all: ml_convection.cuda/namelist.toml ml_convection.cuda.tst
 
 
 ml_convection/namelist.toml: namelist.toml
@@ -14,6 +14,10 @@ ml_convection.gpu/namelist.toml: namelist.toml
 	mkdir -p ml_convection.gpu
 	ln -sf ../namelist.toml ml_convection.gpu/namelist.toml
 
+
+ml_convection.cuda/namelist.toml: namelist.toml
+	mkdir -p ml_convection.cuda
+	ln -sf ../namelist.toml ml_convection.cuda/namelist.toml
 
 ml_convection.tst: CC = mpicc -D_MPI=16
 

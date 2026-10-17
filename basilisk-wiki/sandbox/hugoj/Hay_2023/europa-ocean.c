@@ -21,6 +21,7 @@ of the paper): $Ra = \alpha g \Delta T D^3/(\nu\kappa) = 6.85\times
 #include "grid/multigrid.h"
 #include "spherical.h"
 #include "layered/hydro.h"
+//#include "layered/nh.h"
 #include "layered/implicit.h"
 #include "bderembl/libs/netcdf_bas.h"
 /**
@@ -99,9 +100,9 @@ int main (int argc, char * argv[])
   Radius = 1561000. [1];
   G = 1.3 [1,-2];
 
-  if (argc > 1) N = atoi (argv[1]);   else N = 256;
+  if (argc > 1) N = atoi (argv[1]);   else N = 64;
   if (argc > 2) DELTAT = atof (argv[2]);
-  if (argc > 3) DT = atof (argv[3]);  else DT = 600. [0,1];
+  if (argc > 3) DT = atof (argv[3]);  else DT = 300. [0,1];
   if (argc > 4) tend = atof (argv[4]);
 
   DT = 50; //150.[0,1] * 256./N;
@@ -208,32 +209,12 @@ unstable columns are homogenised by thickness-weighted pairwise
 mixing: this is the surrogate for the paper's resolved convection
 plumes. */
 
-event convection (i++, last)
+event diffusion (i++, last)
 {
   foreach()
     vertical_diffusion (point, h, T, dt, kappa, 0., 0., HUGE);
-
-  horizontal_diffusion ({u.x, u.y, T}, kappa, dt);
-
-	//  foreach() {
-	//    double hv[nl], Tv[nl];
-	//    int l = 0;
-	//    foreach_layer() { hv[l] = h[], Tv[l] = T[]; l++; }
-	//    for (int it = 0; it < nl; it++) {
-	//      bool stable = true;
-	//      for (l = 0; l < nl - 1; l++)
-	// if (drho(Tv[l+1]) > drho(Tv[l])) { // dense over light
-	//   double m = (hv[l]*Tv[l] + hv[l+1]*Tv[l+1])/(hv[l] + hv[l+1]);
-	//   Tv[l] = Tv[l+1] = m;
-	//   stable = false;
-	// }
-	//      if (stable) break;
-	//    }
-	//    l = 0;
-	//    foreach_layer() { T[] = Tv[l]; l++; }
-  //}
+  //horizontal_diffusion ({u, T}, kappa, dt);
 }
-
 /**
 ## Diagnostics
 

@@ -17,6 +17,9 @@ const double g_ = 9.81 [1,-2];        // [m.s-2] Gravity
 #include "hugoj/lib/spectrum.h"       // Initial conditions generation
 #include "hugoj/lib/diffusionH.h"     // Neumann at top and bot for diffusion
 
+// Idea de diag: breaking composite dans la même veine que les tourbillons
+// composites
+
 /**
 ## Default parameters
 
@@ -288,7 +291,7 @@ event dump_diag_start(t=tstart_diag){
   dump(dname);
 }
 
-event output(i++, t<=tend){
+event output_usdiag(i++, t<=tend){
   if (t+dt >=tstart_diag && t+dt <= tend_diag){
     write_nc();
   }
