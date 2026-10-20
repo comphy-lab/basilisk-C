@@ -1,4 +1,4 @@
-pristine:b545653f11f5701f113c97af33f194a9933c9693281dcb001648ad1d77dadb65
+pristine:a34b7ec5c050a50cc6bc31157045ef9b78e276c8497c4bdde7bf9e8bdd770aff
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15611,3 +15611,8 @@ ecipriano <edoardo.cip@gmail.com>**20261016154418
  Ignore-this: 3af2ff1fe44d0302d8f468d3711e86b93eaf926697324e007d5d01642de72e6c8aa389e523e13bfb
 ] 
 hash: 0000001405-78c25c4d7eb78d5ae7f19a2e97fbaefda9bc59436ace92e77e69017f6d020f0c
+[fix: tracking object when using periodic condition, more doc, a // version of simple_mapping to work on long dataset
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261019143706
+ Ignore-this: 8be215863f74f09f489e0c8e79a524c2
+] 
+hash: 0000022151-810d0896c4500b833c3580f131e8fdd281cbe1b8c0356509c58ab64a56f133cf
