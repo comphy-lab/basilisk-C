@@ -1,4 +1,4 @@
-pristine:a34b7ec5c050a50cc6bc31157045ef9b78e276c8497c4bdde7bf9e8bdd770aff
+pristine:a39ba20525417d84a35748ae0f1d6ebab26c4dff192ed8cac3fbdbafa6412452
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15616,3 +15616,18 @@ Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261019143706
  Ignore-this: 8be215863f74f09f489e0c8e79a524c2
 ] 
 hash: 0000022151-810d0896c4500b833c3580f131e8fdd281cbe1b8c0356509c58ab64a56f133cf
+[New release
+Stephane Popinet <popinet@basilisk.fr>**20261020131245
+ Ignore-this: 3af4c21f0c68538acc6333b1236cbfc95fdd8c70f10450296cc37e5d3d6a94b15738d5afbda7845f
+] 
+hash: 0000000426-3ed2ea341859d3e664bee682b16e3aafea0ce9dddad4d7fb88119ad4cf3df46a
+[Bug fixed
+Stephane Popinet <popinet@basilisk.fr>**20261020132112
+ Ignore-this: 50cc08f65b9f58bfc13e5e178dad33b8b85b7740bb3b364d6cc1e6963d4c77263eb38964256ca9bd
+] 
+hash: 0000000442-87b02dd595cdd6ceb1cb9b5c1bbe0120fe0f3a4ede495005bf47dcc2527e20f7
+[Viscous damping of a linear wave
+Stephane Popinet <popinet@basilisk.fr>**20261020165823
+ Ignore-this: 13489e9ec1bc8ab0c5445add6a139cb28797c619aefc391d63e9d366fb2290c37abbae58bfb6f33c
+] 
+hash: 0000004148-6b902e033ae9580c45efb3c28de975b5531b978174b6d1ab73a446d98214d8fe

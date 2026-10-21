@@ -29,7 +29,6 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
-* [Convergence issues in cells with degenerate interface gradients](embed-degenerate.c)
 * [multigrid3D dump/restart grid depth do not match](my_report_bug.c) 
 * [No inheritance of dimension from scalar to array](https://basilisk.fr/sandbox/hugoj/bug_dimension_of_array/main.c)
 * [Incompatible arguments in _stencil_function with pre-defined input values](args-stencil.c)
@@ -100,6 +99,7 @@ mistakes.
 
 The bugs below should be fixed in the most recent release.
 
+* [Convergence issues in cells with degenerate interface gradients](embed-degenerate.c) [16/10/26](/src/?changes=20261016151252)
 * [There is a missing metrics cm[] in update_tracer function in embed.h](axi_embed_tracers.c) [03/08/26](/src/?changes=20260803152337)
 * [Compiling qcc in any parent folders containing ".c" or ".h" prevents qcc from transpiling basilisk C code](https://basilisk.fr/sandbox/bugs/qcc-is_code)  [04/06/26](https://basilisk.fr/src/?changes=20260527160025)
 * [Errors when restarting simulations](atomisation_NoEdit.c) [15/04/26](/src/?changes=20260415151613)
