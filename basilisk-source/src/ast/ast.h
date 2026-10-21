@@ -298,6 +298,7 @@ Ast * ast_identifier_type      (Ast * n, AstDimensions * d, Stack * stack);
 Ast * ast_base_type            (Ast * type, AstDimensions * d, Stack * stack);
 Ast * ast_get_array_dimensions (Ast * direct_declarator, int symbol, AstDimensions * d, int nd, Stack * stack);
 Ast * ast_variable_array_size  (Ast * n, Stack * stack);
+char * ast_stringify (Ast * n, char * output, bool nolineno);
 
 /**
 ## Kernels */

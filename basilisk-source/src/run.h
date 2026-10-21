@@ -40,7 +40,7 @@ void run (void)
 By default we display the boundaries of the domain. */
 
 event defaults (i = 0) {
-  display ("box();");
+  display() { box(); }
 }
 
 /**

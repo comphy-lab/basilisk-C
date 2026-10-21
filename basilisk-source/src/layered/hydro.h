@@ -159,7 +159,7 @@ event defaults (i = 0)
   /**
   We setup the default display. */
 
-  display ("squares (color = 'eta > zb ? eta : nodata', spread = -1);");
+  display() { squares (color = "eta > zb ? eta : nodata", spread = -1); }
 }
 
 /**

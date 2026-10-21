@@ -6,6 +6,8 @@ These have been done on:
   on a Dell XPS laptop with 16GB RAM.
 * IntelUHD: the integrated Mesa Intel(R) UHD Graphics (TGL GT1)
   (0x9a60) with 3072 MB of video memory.
+* AppleM2: the Metal backend on the integrated 10-core GPU of an
+  Apple M2 with 8 GB of unified memory (13" MacBook Pro 2022).
 * [RTX3050](https://www.techpowerup.com/gpu-specs/geforce-rtx-3050-mobile.c3788):
   NVIDIA GeForce RTX 3050 Ti Laptop GPU card with 4096 MB of video
   memory.
@@ -40,7 +42,7 @@ set key top left
 set logscale y
 set grid
 
-np = 9
+np = 10
 input = 'advection'
 call 'bench.gp'
 ~~~
@@ -54,7 +56,7 @@ than the BCG scheme.
 See [Benchmarks/reversed]() for the commands and raw data.
 
 ~~~gnuplot Time-reversed VOF advection in a vortex {width="100%"}
-np = 9
+np = 10
 input = 'reversed'
 call 'bench.gp'
 ~~~
@@ -67,7 +69,7 @@ This is close to this [test case](/src/test/bump2D.c) and tests the
 See [Benchmarks/bump2D-gpu]() for the commands and raw data.
 
 ~~~gnuplot Saint-Venant bump {width="100%"}
-np = 8
+np = 9
 input = 'bump2D-gpu'
 call 'bench.gp'
 ~~~
@@ -83,7 +85,7 @@ pressure.
 See [Benchmarks/lid]() for the commands and raw data.
 
 ~~~gnuplot Lid-driven cavity {width="100%"}
-np = 8
+np = 9
 input = 'lid'
 call 'bench.gp'
 ~~~
@@ -98,7 +100,7 @@ Poisson solver).
 See [Benchmarks/turbulence]() for the commands and raw data.
 
 ~~~gnuplot Two-dimensional turbulence {width="100%"}
-np = 9
+np = 10
 input = 'turbulence'
 call 'bench.gp'
 ~~~

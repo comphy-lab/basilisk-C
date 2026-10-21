@@ -942,8 +942,10 @@ event metric (i = 0)
 We add the embedded boundary to the default display. */
 
 event defaults (i = 0 ) {
-  display ("draw_vof (c = 'cs', s = 'fs', filled = -1, "
-	   "fc = {0.5,0.5,0.5}, order = 2);");
+  display() {
+    draw_vof (c = "cs", s = "fs", filled = -1,
+              fc = {0.5,0.5,0.5}, order = 2);
+  }
 }
 
 /**

@@ -95,7 +95,7 @@ either edit `$HOME/.bashrc` manually or do
 ~~~bash
 cd basilisk/src
 echo "export BASILISK=$PWD" >> ~/.bashrc
-echo 'export PATH=$PATH:$BASILISK' >> ~/.bashrc
+echo 'export PATH=$PATH:$BASILISK:$BASILISK/gview' >> ~/.bashrc
 ~~~
 
 # Useful additional packages
@@ -136,15 +136,6 @@ which require additional installation are
 
 * [GOTM for the layered solver](/src/gotm/common.h)
 * [CVMix for the layered solver](/src/cvmix/cvmix.h)
-* [PPR remapping for the layered solver](/src/ppr/Makefile)
-
-This depends on a Fortran compiler, just do
-
-~~~bash
-sudo apt install gfortran
-cd $BASILISK/ppr
-make
-~~~
 
 # Getting started
 

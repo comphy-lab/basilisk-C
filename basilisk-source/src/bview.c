@@ -2,7 +2,7 @@
 # Basilisk View "dump files" server
 
 This can be used to interactively display [dump files](output.h#dump)
-using the [javascript interface](jview/README). 
+using the [gview interface](gview/display.c). 
 
 Typical usage is:
 
@@ -24,7 +24,7 @@ int main (int argc, char * argv[])
 {
   char * file = "dump"; argc--; argv++;
   for (char * arg = *argv; argc; argc--, arg = *++argv) {
-    if (!strcmp (arg, "-debug") || !strcmp (arg, "-d"))
+    if (!strcmp (arg, "--debug") || !strcmp (arg, "-d"))
       Display.debug = true;
     else
       file = arg;
@@ -41,10 +41,13 @@ int main (int argc, char * argv[])
   display_url (stderr);
   fputc ('\n', stderr);
 
-  display ("box();");
+  display() {
+    box();
+  }
+  
   while (1) {
     if (display_poll (-1))
       display_update (INT_MAX);
   }
-  display_destroy();
+  display_terminate();
 }

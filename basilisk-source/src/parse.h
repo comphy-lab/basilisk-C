@@ -2,6 +2,22 @@
 # Parser for interactive bview
 */
 
+static char * remove_blanks (char * line)
+{
+  while (strchr (" \t", *line)) line++;
+  char * s = line, * cur = line;
+  bool instring = false;
+  while (*s != '\0' && *s != '#') {
+    if (*s == '"')
+      instring = !instring;
+    if (instring || !strchr (" \t", *s))
+      *cur++ = *s;
+    s++;
+  }
+  *cur = '\0';
+  return line;
+}
+
 enum ParamsType { pstring, pint, punsigned, pbool, pfloat, pdouble, pcolormap };
 
 typedef struct {
@@ -55,6 +71,8 @@ static bool args (Params * p, char * val)
       *((Colormap *)p->val) = gray;
     else if (!strcmp (val, "randomap"))
       *((Colormap *)p->val) = randomap;
+    else if (!strcmp (val, "blue_white_red"))
+      *((Colormap *)p->val) = blue_white_red;
     else {
       fprintf (stderr, "unknown colormap '%s'\n", val);
       return false;
@@ -153,6 +171,7 @@ static char * mystrtok (char * str, const char * delim)
   return start;
 }
 
+static
 int parse_params (Params * params)
 {
   char * s;

@@ -121,6 +121,7 @@ static Ast * new_ast (AstRoot * parse,
 ({SP}?\"([^"\\\n]|{ES})*\"{WS}*)+	{ SAST(STRING_LITERAL); }
 
 "{...}"					{ SAST(ELLIPSIS_MACRO); }
+"[...]"					{ SAST(ELLIPSIS_EXPRESSION); }
 "..."					{ SAST(ELLIPSIS); }
 ">>="					{ SAST(RIGHT_ASSIGN); }
 "<<="					{ SAST(LEFT_ASSIGN); }

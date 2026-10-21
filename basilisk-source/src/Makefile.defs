@@ -86,6 +86,18 @@ clean:
 %.ocl3D.s.d: CFLAGS += -grid=opencl/multigrid3D
 %.ocl3D.tst: CFLAGS += -grid=opencl/multigrid3D
 
+%.metal.c: %.c
+	ln -s -f $< $@
+%.metal.s:   CFLAGS += -grid=metal/multigrid
+%.metal.s.d: CFLAGS += -grid=metal/multigrid
+%.metal.tst: CFLAGS += -grid=metal/multigrid
+
+%.metal3D.c: %.c
+	ln -s -f $< $@
+%.metal3D.s:   CFLAGS += -grid=metal/multigrid3D
+%.metal3D.s.d: CFLAGS += -grid=metal/multigrid3D
+%.metal3D.tst: CFLAGS += -grid=metal/multigrid3D
+
 %.CADNA.c: %.c
 	ln -s -f $< $@
 

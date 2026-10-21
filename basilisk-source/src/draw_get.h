@@ -2,8 +2,8 @@
 else if (!strcmp (s, "view")) {
   float tx = 0.;
   float ty = 0.;
-  float fov = 0.;
-  float quat[4] = {0};
+  float fov = 24.;
+  float quat[4] = {0,0,0,1};
   float sx = 1.;
   float sy = 1.;
   float sz = 1.;
@@ -15,9 +15,9 @@ else if (!strcmp (s, "view")) {
   float phi = 0.;
   float psi = 0.;
   bool relative = false;
-  float tz = 0.;
-  float near = 0.;
-  float far = 0.;
+  float tz = -3.;
+  float near = 0.01;
+  float far = 100.;
   float res = 0.;
   char * camera = NULL;
   MapFunc map = NULL;
@@ -57,7 +57,7 @@ else if (!strcmp (s, "view")) {
   };
   if (!parse_params (params))
     return false;
-  view (tx,ty,fov,quat,sx,sy,sz,width,height,samples,bg,theta,phi,psi,relative,tz,near,far,res,camera,map,cache,p1x,p1y,p2x,p2y,view1);
+  return view (tx,ty,fov,quat,sx,sy,sz,width,height,samples,bg,theta,phi,psi,relative,tz,near,far,res,camera,map,cache,p1x,p1y,p2x,p2y,view1);
 }
 else if (!strcmp (s, "draw_vof")) {
   char * c = NULL;
@@ -86,6 +86,7 @@ else if (!strcmp (s, "draw_vof")) {
     {"max", pdouble, &max},
     {"spread", pdouble, &spread},
     {"linear", pbool, &linear},
+    {"map", pcolormap, &map},
     {"fc", pfloat, fc, 3},
     {"lc", pfloat, lc, 3},
     {"lw", pfloat, &lw},
@@ -93,8 +94,7 @@ else if (!strcmp (s, "draw_vof")) {
   };
   if (!parse_params (params))
     return false;
-  if (!draw_vof (c,s,edges,larger,filled,color,min,max,spread,linear,map,fc,lc,lw,expr))
-    return false;
+  return draw_vof (c,s,edges,larger,filled,color,min,max,spread,linear,map,fc,lc,lw,expr);
 }
 else if (!strcmp (s, "isoline")) {
   char * phi = NULL;
@@ -125,6 +125,7 @@ else if (!strcmp (s, "isoline")) {
     {"max", pdouble, &max},
     {"spread", pdouble, &spread},
     {"linear", pbool, &linear},
+    {"map", pcolormap, &map},
     {"fc", pfloat, fc, 3},
     {"lc", pfloat, lc, 3},
     {"lw", pfloat, &lw},
@@ -132,8 +133,7 @@ else if (!strcmp (s, "isoline")) {
   };
   if (!parse_params (params))
     return false;
-  if (!isoline (phi,val,n,edges,larger,filled,color,min,max,spread,linear,map,fc,lc,lw,expr))
-    return false;
+  return isoline (phi,val,n,edges,larger,filled,color,min,max,spread,linear,map,fc,lc,lw,expr);
 }
 else if (!strcmp (s, "cells")) {
   coord n = {0,0,1};
@@ -149,8 +149,7 @@ else if (!strcmp (s, "cells")) {
   };
   if (!parse_params (params))
     return false;
-  if (!cells (n,alpha,lc,lw))
-    return false;
+  return cells (n,alpha,lc,lw);
 }
 else if (!strcmp (s, "vectors")) {
   char * u = NULL;
@@ -168,8 +167,7 @@ else if (!strcmp (s, "vectors")) {
   };
   if (!parse_params (params))
     return false;
-  if (!vectors (u,scale,lc,lw,level))
-    return false;
+  return vectors (u,scale,lc,lw,level);
 }
 else if (!strcmp (s, "squares")) {
   char * color = NULL;
@@ -184,6 +182,7 @@ else if (!strcmp (s, "squares")) {
   bool expr = false;
   coord n = {0,0,1};
   double alpha = 0;
+  float lw = 1;
   Params params[] = {
     {"color", pstring, &color},
     {"z", pstring, &z},
@@ -191,16 +190,17 @@ else if (!strcmp (s, "squares")) {
     {"max", pdouble, &max},
     {"spread", pdouble, &spread},
     {"linear", pbool, &linear},
+    {"map", pcolormap, &map},
     {"fc", pfloat, fc, 3},
     {"lc", pfloat, lc, 3},
     {"n", pdouble, &n, 3},
     {"alpha", pdouble, &alpha},
+    {"lw", pfloat, &lw},
     {NULL}
   };
   if (!parse_params (params))
     return false;
-  if (!squares (color,z,min,max,spread,linear,map,fc,lc,expr,n,alpha))
-    return false;
+  return squares (color,z,min,max,spread,linear,map,fc,lc,expr,n,alpha,lw);
 }
 else if (!strcmp (s, "box")) {
   bool notics = false;
@@ -214,8 +214,7 @@ else if (!strcmp (s, "box")) {
   };
   if (!parse_params (params))
     return false;
-  if (!box (notics,lc,lw))
-    return false;
+  return box (notics,lc,lw);
 }
 else if (!strcmp (s, "isosurface")) {
   char * f = NULL;
@@ -238,6 +237,7 @@ else if (!strcmp (s, "isosurface")) {
     {"max", pdouble, &max},
     {"spread", pdouble, &spread},
     {"linear", pbool, &linear},
+    {"map", pcolormap, &map},
     {"fc", pfloat, fc, 3},
     {"lc", pfloat, lc, 3},
     {"lw", pfloat, &lw},
@@ -245,8 +245,7 @@ else if (!strcmp (s, "isosurface")) {
   };
   if (!parse_params (params))
     return false;
-  if (!isosurface (f,v,color,min,max,spread,linear,map,fc,lc,lw,expr))
-    return false;
+  return isosurface (f,v,color,min,max,spread,linear,map,fc,lc,lw,expr);
 }
 else if (!strcmp (s, "travelling")) {
   double start = 0;
@@ -284,8 +283,7 @@ else if (!strcmp (s, "draw_string")) {
   };
   if (!parse_params (params))
     return false;
-  if (!draw_string (str,pos,size,lc,lw))
-    return false;
+  return draw_string (str,pos,size,lc,lw);
 }
 else if (!strcmp (s, "labels")) {
   char * f = NULL;
@@ -301,8 +299,7 @@ else if (!strcmp (s, "labels")) {
   };
   if (!parse_params (params))
     return false;
-  if (!labels (f,lc,lw,level))
-    return false;
+  return labels (f,lc,lw,level);
 }
 else if (!strcmp (s, "lines")) {
   char * file = NULL;
@@ -316,6 +313,5 @@ else if (!strcmp (s, "lines")) {
   };
   if (!parse_params (params))
     return false;
-  if (!lines (file,lc,lw))
-    return false;
+  return lines (file,lc,lw);
 }

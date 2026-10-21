@@ -66,13 +66,13 @@ script()
     rm -f $log log-* stencil stencil-* fine fine-* coarse coarse-*
     case $OSTYPE in
 	*darwin*)
-	    (tail -F display.html 2> /dev/null | grep -o 'http://.*:[0-9]*') &
+	    (tail -F display.html 2> /dev/null | grep -o 'https://.*%20[0-9]*') &
 	    retail1=$!
 	    (tail -F $log 2> /dev/null | grep -E '.*:[0-9]*:.*(warning|error).*:') &
 	    retail2=$!	    
 	    ;;
 	*)
-	    tail -f --pid=$$ --retry display.html 2> /dev/null | grep -o 'http://.*:[0-9]*' &
+	    tail -f --pid=$$ --retry display.html 2> /dev/null | grep -o 'https://.*%20[0-9]*' &
 	    tail -f --pid=$$ --retry $log 2> /dev/null | grep -E '.*:[0-9]*:.*(warning|error).*:' &
 	    retail=$!
 	    ;;

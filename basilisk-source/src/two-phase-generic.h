@@ -24,7 +24,9 @@ event defaults (i = 0)
   /**
   We add the interface to the default display. */
 
-  display ("draw_vof (c = 'f');");
+  display() {
+    draw_vof (c = "f");
+  }
 }
 
 /**

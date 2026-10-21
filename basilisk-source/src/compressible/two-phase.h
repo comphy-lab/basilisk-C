@@ -190,8 +190,10 @@ event defaults (i = 0)
   /**
   We add the interface and the density to the default display. */
 
-  display ("draw_vof (c = 'f');");
-  display ("squares (color = 'rhov', spread = -1);");
+  display() {
+    draw_vof (c = "f");
+    squares (color = "rhov", spread = -1);
+  }
 }
 
 event init (i = 0)

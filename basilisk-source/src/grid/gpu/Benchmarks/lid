@@ -33,6 +33,19 @@ for i in 64 128 256 512 1024 2048; do ./lid.gpu $i | grep steps; done
 # Multigrid (GPU), 300 steps, 6.25396 CPU, 40.75 real, 7.72e+06 points.step/s, 17 var
 # Multigrid (GPU), 300 steps, 17.7899 CPU, 182.2 real, 6.91e+06 points.step/s, 17 var
 
+Metal device: Apple M2 (10-core GPU)
+Unified memory: 8192 MB
+
+for i in 64 128 256 512 1024 2048; do ./lid.metal/lid.metal $i | grep steps; done
+
+# Title: AppleM2(metal)
+# Multigrid (metal), 300 steps, 0.460662 CPU, 1.365 real, 9e+05 points.step/s, 17 var
+# Multigrid (metal), 300 steps, 0.542442 CPU, 1.503 real, 3.27e+06 points.step/s, 17 var
+# Multigrid (metal), 300 steps, 0.744339 CPU, 2.079 real, 9.46e+06 points.step/s, 17 var
+# Multigrid (metal), 300 steps, 1.03143 CPU, 4.819 real, 1.63e+07 points.step/s, 17 var
+# Multigrid (metal), 300 steps, 1.39492 CPU, 12.71 real, 2.47e+07 points.step/s, 17 var
+# Multigrid (metal), 300 steps, 1.86716 CPU, 43.27 real, 2.91e+07 points.step/s, 17 var
+
 OpenGL renderer string: NVIDIA GeForce RTX 3050 Ti Laptop GPU/PCIe/SSE2
 Dedicated video memory: 4096 MB
 

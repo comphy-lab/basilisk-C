@@ -13,11 +13,12 @@ generates "computation kernels" for each [loop
 iterator](/Basilisk%20C#iterators). These kernels are then dynamically
 compiled (at runtime) by the [OpenGL Shading
 Language](https://en.wikipedia.org/wiki/OpenGL_Shading_Language)
-(GLSL) compiler which is part of the (OpenGL) graphics card driver. If
-compilation is successful, the corresponding loop is performed on the
-GPU, otherwise the CPU is used. If this hybrid GPU/CPU hybrid mode of
-operation is used, synchronisation between the GPU and CPU memory is
-necessary and is done automatically.
+(GLSL) compiler which is part of the (OpenGL) graphics card driver, or
+by the equivalent runtime compilers provided by the CUDA, HIP, OpenCL
+or Metal libraries. If compilation is successful, the corresponding
+loop is performed on the GPU, otherwise the CPU is used. If this
+hybrid GPU/CPU hybrid mode of operation is used, synchronisation
+between the GPU and CPU memory is necessary and is done automatically.
 
 OpenGL is an open standard (unlike
 e.g. [CUDA](https://en.wikipedia.org/wiki/CUDA)) and is widely
@@ -26,8 +27,9 @@ graphics cards and some high-end "professional" Nvidia cards).
 
 Note that this is not the only option to run on GPUs and/or other
 accelerators: there are also Basilisk backends which support
-[CUDA](/src/grid/cuda/cuda.c), [HIP](/src/grid/hip/hip.c) and
-[OpenCL](/src/grid/opencl/opencl.c).
+[CUDA](/src/grid/cuda/cuda.c), [HIP](/src/grid/hip/hip.c),
+[OpenCL](/src/grid/opencl/opencl.c) and, on macOS,
+[Metal](/src/grid/metal/metal.c).
 
 ## Running on GPUs
 
@@ -56,6 +58,9 @@ which will compile and run `code.c` using the `gpu/multigrid` grid.
 
 Note that for all this to work properly you first need to
 [install](#installation) the Basilisk GPU libraries.
+
+Similar simple compilation targets are provided for the other drivers
+(i.e. `.cuda.tst`, `.hip.tst`, `.ocl.tst`, `.metal.tst`).
 
 ## Installation
 
@@ -88,6 +93,8 @@ fast Nvidia graphics card using
 ~~~bash
 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia glxinfo -B
 ~~~
+
+See [here](#see-also) for the installation of other drivers (CUDA, HIP etc.).
 
 ## Tests
 
@@ -131,6 +138,13 @@ happens to be what is used within most `foreach` loops in Basilisk
 (this is not a coincidence...). Thus, in many cases, simple and
 efficient Basilisk code will also run transparently and efficiently on
 GPUs.
+
+Note that GLSL is only used by the OpenGL driver. CUDA kernels use a
+general C++ implementation which consequently has less restrictions
+than GLSL, as does the AMD kernel compiler. OpenCL uses a variant of
+C99, which is also less restrictive than GLSL. Generally speaking,
+writing code compatible with GLSL, as described in what follows, will
+ensure portability for all these drivers.
 
 ### GPU/CPU hybrid mode
 
@@ -290,7 +304,8 @@ function](/src/ast/macro.h#complex-return-macros).
   defined at compilation time. This means that variable/dynamical
   arrays, dynamic memory allocation (malloc etc.) and ***pointers***
   do not exist on GPUs (and in GLSL). Using any of these in a foreach
-  loop will give you a GLSL error as above.
+  loop will give you a GLSL error as above (note that these
+  restrictions can be lifted on CUDA, HIP etc. drivers).
 * Limited support for function pointers: function pointers are
   fundamentally different from memory pointers.  Basilisk includes
   limited support for function pointers i.e. what is sufficient for
@@ -351,6 +366,8 @@ To maximize performance, here are a few tips and observations:
 * Use [built-in profiling](/src/README.trace) to check where time is
   spent. Use the `-DTRACE=3` compilation flag to get profiling
   information at the level of foreach loops.
+* On Nvidia cards the [CUDA driver](/src/grid/cuda/cuda.c) generally
+  gives better performance, especially for large problems.
 
 ## Profiling with Nsight Compute or Nsight Systems
 
@@ -373,9 +390,10 @@ nsys-ui report*.nsys-rep
 * [Test cases on GPUs](/src/test/README#gpu-tests)
 * [GPU benchmarks](Benchmarks.md)
 * [Computation kernels](/src/ast/kernels.c)
-* [An experimental CUDA driver](/src/grid/cuda/cuda.c)
-* [An experimental HIP driver](/src/grid/hip/hip.c)
-* [An experimental OpenCL driver](/src/grid/opencl/opencl.c)
+* [The CUDA driver](/src/grid/cuda/cuda.c)
+* [The HIP driver](/src/grid/hip/hip.c)
+* [The OpenCL driver](/src/grid/opencl/opencl.c)
+* [The (experimental) Metal driver (macOS)](/src/grid/metal/metal.c)
 
 # Implementation */
 
@@ -387,7 +405,46 @@ GPUContext_t GPUContext = {
   .current_shader = -1,
 };
 
-#if _OPENCL
+#if _METAL
+
+/**
+The [Metal Shading Language](/src/grid/metal/metal.c) is a dialect of
+C++14 and is thus close to CUDA, with two important differences:
+pointers cannot be stored in `constant` buffers (so the field data are
+passed as a separate kernel argument, like in OpenCL) and variables
+declared at program scope must reside in the `constant` address space
+(this is what the `_CONST_` macro is for). */
+
+# define TYPEDEF(NAME, BODY) "struct " NAME " " BODY ";\n"
+# define CAST(NAME, BODY) NAME "{" BODY "}\n"
+# define _GLOB_PARAMS0 "device real * _data, constant struct _Ctx_ * _ctx_"
+# define DEFINITIONS                       \
+  "#include <metal_stdlib>\n"              \
+  "using namespace metal;\n"               \
+  "#pragma clang diagnostic ignored \"-Wunused-variable\"\n"           \
+  "#pragma clang diagnostic ignored \"-Wunused-function\"\n"           \
+  "#pragma clang diagnostic ignored \"-Wsign-compare\"\n"               \
+  "#define _CONST_ constant\n"             \
+  "#define tensor _bsk_tensor\n" /* 'tensor' clashes with metal::tensor */ \
+  TYPEDEF("ivec2", "{ int x, y; }")        \
+  TYPEDEF("ivec3", "{ int x, y, z; }")     \
+  TYPEDEF("vec2", "{ float x, y; }")       \
+  TYPEDEF("vec3", "{ float x, y, z; }")    \
+  TYPEDEF("vec4", "{ float r, g, b, a; }") \
+  "#define forin(type,s,list) for (int _i = 0; _i < int(sizeof(list)/sizeof(type)) - 1; _i++) { type s = list[_i];\n" \
+  "#define forin2(a,b,c,d) for (int _i = 0; _i < int(sizeof(c)/sizeof(a)) - 1; _i++)" \
+  "  { a = c[_i]; b = d[_i];\n"                                         \
+  "#define forin3(a,b,e,c,d,f) for (int _i = 0; _i < int(sizeof(c)/sizeof(a)) - 1; _i++)" \
+  "  { a = c[_i]; b = d[_i]; e = f[_i];\n"                              \
+  "#define layout(x)\n"                                                 \
+  "#define _GLOB0_ _data, _ctx_\n"                                      \
+  "#define _GLOB_ _data, _ctx_,\n"                                      \
+  "#define _GLOB_PARAMS0_ " _GLOB_PARAMS0 "\n"                          \
+  "#define _GLOB_PARAMS_ " _GLOB_PARAMS0 ",\n"                          \
+  "#define _GLOB_VAL_(x) (_ctx_->x)\n"                                  \
+  "#define _LOC_VAL_(x) (_local_.x)\n"                                  \
+  "#define __global\n"
+#elif _OPENCL
 # define TYPEDEF(NAME, BODY) "typedef struct " BODY " " NAME ";\n"
 # define CAST(NAME, BODY) "(" NAME "){" BODY "}\n"
 # define _GLOB_PARAMS0 "__global real * _data, __constant struct _Ctx_ *_ctx_"
@@ -408,7 +465,8 @@ GPUContext_t GPUContext = {
   "#define _GLOB_PARAMS0_ " _GLOB_PARAMS0 "\n"                          \
   "#define _GLOB_PARAMS_ " _GLOB_PARAMS0 ",\n"                          \
   "#define _GLOB_VAL_(x) (_ctx_->x)\n"            \
-  "#define _LOC_VAL_(x) (_local_.x)\n"
+  "#define _LOC_VAL_(x) (_local_.x)\n"                 \
+  "#define _CONST_ const\n"
 #elif _CUDA
 # define TYPEDEF(NAME, BODY) "struct " NAME " " BODY ";\n"
 # define CAST(NAME, BODY) NAME "{" BODY "}\n"
@@ -433,6 +491,7 @@ GPUContext_t GPUContext = {
   "#define _GLOB_VAL_(x) (_ctx_->x)\n"                                  \
   "#define _LOC_VAL_(x) (_local_.x)\n"                                  \
   "#define __global\n"                                                  \
+  "#define _CONST_ const\n"                                            \
   "#define fabs(x) abs(x)\n"
 #else // GLSL
 # define TYPEDEF(NAME, BODY) "struct " NAME " " BODY ";\n"
@@ -449,6 +508,7 @@ GPUContext_t GPUContext = {
   "#define _GLOB_PARAMS_\n"                                             \
   "#define _GLOB_VAL_(x) x\n"                                           \
   "#define _LOC_VAL_(x) (x)\n"                                          \
+  "#define _CONST_ const\n"                                            \
   "#define fabs(x) abs(x)\n"
 #endif // GLSL
 
@@ -476,7 +536,7 @@ GPUContext_t GPUContext = {
 # define GPU_POINT_INDICES "int i, j, level;"
 # define GPU_NEIGHBOR_INDICES "point.i+_i,point.j+_j,point.level,point.n"
 # define GPU_ORIGIN_INIT "{0,0}"
-# define GPU_UNUSED_COORDS "const real z = 0.;\n"
+# define GPU_UNUSED_COORDS "_CONST_ real z = 0.;\n"
 #elif dimension == 3
 # define GPU_IVEC_TYPE "ivec3"
 # define GPU_DIM_COORD_TYPE GPU_COORD3_TYPE
@@ -558,7 +618,7 @@ const char glsl_preproc[] =
   "#define pi 3.14159265359f\n"
   "#define nodata (1e30f)\n"
   GPU_UNUSED_COORDS
-  "const int ig = 0, jg = 0, kg = 0;\n"
+  "_CONST_ int ig = 0, jg = 0, kg = 0;\n"
   GPU_UNIFORM_DECLS
   ;
 
@@ -579,6 +639,83 @@ const char glsl_preproc[] =
 #undef GPU_TYPE_DECLS
 #undef GPU_NEIGHBOR_DECL
 #undef GPU_UNIFORM_DECLS
+
+#if _METAL
+
+/**
+Metal requires an explicit address space qualifier for the pointer
+parameters of *any* function (not just kernels). Any pointer passed to
+a function generated by the Basilisk preprocessor points to a local
+variable of the calling kernel i.e. to the `thread` address space.
+
+This adds the `thread` qualifier to each parameter of the function
+definition in *code* which is a pointer. */
+
+static char * metal_thread_qualifiers (const char * code)
+{
+  const char * nl = strchr (code, '\n');
+  const char * open = nl ? strchr (nl, '(') : NULL;
+  if (!open)
+    return str_append (NULL, code);
+
+  const char * close = open;
+  int depth = 0;
+  while (*close) {
+    if (*close == '(') depth++;
+    else if (*close == ')' && !--depth) break;
+    close++;
+  }
+  if (!*close)
+    return str_append (NULL, code);
+
+  int ncommas = 1;
+  for (const char * q = open; q < close; q++)
+    if (*q == ',') ncommas++;
+  char * out = sysmalloc (strlen (code) + 7*ncommas + 1), * o = out;
+
+  const char * p = code;
+  while (p <= open) *o++ = *p++;
+  const char * start = p;
+  depth = 0;
+  for (const char * q = p; q <= close; q++) {
+    if (q == close || (*q == ',' && !depth)) {
+      const char * a = start;
+      while (a < q && strchr (" \t\n", *a)) a++;
+
+      /**
+      The `_GLOB_PARAMS_` macro expands to several kernel arguments
+      which already carry their own address space qualifiers. */
+
+      for (const char ** m = (const char *[]){ "_GLOB_PARAMS_", "_GLOB_PARAMS0_", NULL };
+	   *m; m++) {
+	size_t len = strlen (*m);
+	if ((size_t)(q - a) >= len && !strncmp (a, *m, len)) {
+	  a += len;
+	  while (a < q && strchr (" \t\n", *a)) a++;
+	  break;
+	}
+      }
+
+      bool pointer = false;
+      for (const char * b = a; b < q; b++)
+	if (*b == '*') pointer = true;
+      while (start < a) *o++ = *start++;
+      if (pointer) {
+	strcpy (o, "thread "); o += 7;
+      }
+      while (start < q) *o++ = *start++;
+      if (q == close) break;
+      *o++ = *q;
+      start = q + 1;
+    }
+    else if (*q == '(') depth++;
+    else if (*q == ')') depth--;
+  }
+  while (*close) *o++ = *close++;
+  *o = '\0';
+  return out;
+}
+#endif // _METAL
 
 static inline int list_size (const External * i)
 {
@@ -1025,8 +1162,16 @@ char * external_declaration (char * fs, const External * g)
 
 static
 char * external_write (char * fs, const External * g, const ForeachData * loop,
-                       const RegionParameters * region, const unsigned nwg[dimension])
+                       const RegionParameters * region, const unsigned nwg[dimension],
+		       bool local)
 {
+
+  /**
+  Variables declared within the body of the kernel cannot use the
+  `constant` address space of Metal (see `_CONST_` in
+  [DEFINITIONS](#definitions)). */
+
+  const char * _const_ = local ? "const " : "_CONST_ ";
   if (g->name[0] == '.') {
     if (g->type == sym_function_declaration) {
       bool boundary = is_boundary_attribute (g);
@@ -1067,16 +1212,20 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
     External * f = _get_function ((long) g->pointer);
 #if _HIP_AMD
     fs = str_append (fs, "\n__device__ ", f->data, "\n");
+#elif _METAL
+    char * code = metal_thread_qualifiers (f->data);
+    fs = str_append (fs, "\n", code, "\n");
+    sysfree (code);
 #else
     fs = str_append (fs, "\n", f->data, "\n");
 #endif
     char s[20]; snprintf (s, 19, "%d", f->nd);
-    fs = str_append (fs, "const int _p", g->name, " = ", s, ";\n");
+    fs = str_append (fs, "_CONST_ int _p", g->name, " = ", s, ";\n");
   }
   else if (g->type == sym_function_declaration) {
     External * f = _get_function ((long) g->pointer);
     char s[20]; snprintf (s, 19, "%d", f->nd);
-    fs = str_append (fs, "const int ", g->name, " = ", s, ";\n",
+    fs = str_append (fs, "_CONST_ int ", g->name, " = ", s, ";\n",
                      "#define _f", g->name, "(args) (", f->name, " args)\n");
   }
   else if (g->type != sym_SCALAR &&
@@ -1090,16 +1239,17 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
       snprintf (d, 19, "%d", depth());
       snprintf (l, 19, "%d", level);
       fs = str_append (fs,
-                       "const uint N = ", s, ", _depth = ", d, ";\n");
+                       "_CONST_ uint N = ", s, ", _depth = ", d, ";\n");
       if (GPUContext.nssbo <= 1) {
         char size[30];
         snprintf (size, 29, "%ld", (size_t) field_size());	  
         fs = str_append (fs,
-                         "const uint _field_size = ", size, ";\n");
+                         "_CONST_ uint _field_size = ", size, ";\n");
       }
 #ifdef shift_level // multigrid
+      char nd[20]; snprintf (nd, 19, "%d", depth() + 1);
       fs = str_append (fs,
-                       "const uint _shift[_depth + 1] = {");
+                       "_CONST_ uint _shift[", nd, "] = {");
       for (int d = 0; d <= depth(); d++) {
         snprintf (s, 19, "%ld", shift_level(d));
         fs = str_append (fs,  d > 0 ? "," : "", s);
@@ -1110,17 +1260,17 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
       snprintf (d, 19, "%d", Dimensions.y);
 #if dimension == 2
       fs = str_append (fs,
-                       "const ivec2 Dimensions = {", s, ",", d, "};\n"
-                       "const uint NY = N*", d,
+                       "_CONST_ ivec2 Dimensions = {", s, ",", d, "};\n"
+                       "_CONST_ uint NY = N*", d,
                        loop->face > 1 || loop->vertex ? "+1" : "", ";\n");
 #elif dimension == 3
       char e[20];
       snprintf (e, 19, "%d", Dimensions.z);
       fs = str_append (fs,
-                       "const ivec3 Dimensions = {", s, ",", d, ",", e, "};\n"
-                       "const uint NY = N*", d,
+                       "_CONST_ ivec3 Dimensions = {", s, ",", d, ",", e, "};\n"
+                       "_CONST_ uint NY = N*", d,
                        (loop->face & (1 << 1)) || loop->vertex ? "+1" : "", ";\n"
-                       "const uint NZ = N*", e,
+                       "_CONST_ uint NZ = N*", e,
                        (loop->face & (1 << 2)) || loop->vertex ? "+1" : "", ";\n");
 #endif
 #if !_CUDA
@@ -1167,7 +1317,7 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
 	
       char nl[20];
       snprintf (nl, 19, "%d", *((int *)g->pointer));
-      fs = str_append (fs, "const int nl = ", nl, ";\n");
+      fs = str_append (fs, "_CONST_ int nl = ", nl, ";\n");
     }
     else if (g->type == sym_INT && g->global && !strcmp (g->name, "bc_period_x")) {
       char s[20] = "-1";
@@ -1177,7 +1327,7 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
 #else
         snprintf (s, 19, "int(N*%d)", Dimensions.x);
 #endif
-      fs = str_append (fs, "const int bc_period_x = ", s, ";\n");
+      fs = str_append (fs, "_CONST_ int bc_period_x = ", s, ";\n");
     }
     else if (g->type == sym_INT && g->global && !strcmp (g->name, "bc_period_y")) {
       char s[20] = "-1";
@@ -1187,7 +1337,7 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
 #else
         snprintf (s, 19, "int(N*%d)", Dimensions.y);
 #endif
-      fs = str_append (fs, "const int bc_period_y = ", s, ";\n");
+      fs = str_append (fs, "_CONST_ int bc_period_y = ", s, ";\n");
     }
 #if dimension == 3
     else if (g->type == sym_INT && g->global && !strcmp (g->name, "bc_period_z")) {
@@ -1198,7 +1348,7 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
 #else
         snprintf (s, 19, "int(N*%d)", Dimensions.z);
 #endif
-      fs = str_append (fs, "const int bc_period_z = ", s, ";\n");
+      fs = str_append (fs, "_CONST_ int bc_period_z = ", s, ";\n");
     }
 #endif
 #if dimension == 2
@@ -1224,7 +1374,7 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
       default:
         assert (false); // not implemented yet
       }
-      fs = str_append (fs, "const ", type_string (g), " ", EXTERNAL_NAME (g), "=", value, ";\n");
+      fs = str_append (fs, _const_, type_string (g), " ", EXTERNAL_NAME (g), "=", value, ";\n");
     }
     else if (strcmp (g->name, "Dimensions") && g->reduct != '+') {
 #if !_CUDA
@@ -1238,7 +1388,7 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
     int size = list_size (g);
     for (int j = 0; j < size; j++) {
       if (j == 0) {
-        fs = str_append (fs, "const ", type_string (g), " ", EXTERNAL_NAME (g));
+        fs = str_append (fs, _const_, type_string (g), " ", EXTERNAL_NAME (g));
         if (g->nd == 0)
           fs = str_append (fs, " = ");
         else {
@@ -1298,8 +1448,8 @@ char * build_shader (External * externals, const ForeachData * loop,
                           "#version 430\n",
 #endif
                           glsl_preproc,
-			  "const int _nconst = ", s, ";\n"
-			  "const real _constant[_nconst] = {", a);
+			  "_CONST_ int _nconst = ", s, ";\n"
+			  "_CONST_ real _constant[", s, "] = {", a);
   for (int i = 1; i < nconst; i++) {
     snprintf (a, 19, "%g", _constant[i]);
     fs = str_append (fs, ",", a);
@@ -1318,7 +1468,7 @@ char * build_shader (External * externals, const ForeachData * loop,
 		     "].f[(_offset[(field)].j+(index))%", s, "]\n");
   }
   else
-#if _OPENCL
+#if _OPENCL || _METAL
     fs = str_append (fs,
 		     "#define _data_val(field,index) _data[(field)*field_size() + (index)]\n");
 #elif _CUDA
@@ -1356,7 +1506,7 @@ char * build_shader (External * externals, const ForeachData * loop,
 	nindex++;
     assert (nindex > 0);
     char s[20]; snprintf (s, 19, "%d", nindex);
-    fs = str_append (fs, "const _Attributes _attr[", s, "]={");
+    fs = str_append (fs, "_CONST_ _Attributes _attr[", s, "]={");
     nindex = 0;
     for (scalar s in baseblock)
       if (s.gpu.index) {
@@ -1429,7 +1579,7 @@ char * build_shader (External * externals, const ForeachData * loop,
 	  imax = s.i + s.block;
       }
     char string[100]; snprintf (string, 19, "%d", imax);
-    fs = str_append (fs, "const struct { uint i, j; } _offset[", string, "]={");
+    fs = str_append (fs, "_CONST_ struct { uint i, j; } _offset[", string, "]={");
     for (int s = 0; s < imax; s++) {
       fs = str_append (fs, s ? ",{" : "{");
       size_t offset = s*field_size(), size = GPUContext.max_ssbo_size/sizeof(real);
@@ -1449,7 +1599,22 @@ char * build_shader (External * externals, const ForeachData * loop,
   /**
   Global variables */
 
-#if _CUDA
+#if _METAL
+
+  /**
+  Metal does not allow pointers in `constant` buffers: the first field
+  is only a placeholder which matches the layout of the corresponding
+  structure on the host. */
+
+  fs = str_append (fs, "struct _Ctx_ {\n  ulong _data;\n");
+  for (const External * g = externals; g; g = g->next)
+    if (g->global && is_external_variable (g)) {
+      fs = str_append (fs, "  ");
+      fs = external_declaration (fs, g);
+      fs = str_append (fs, ";\n");
+    }
+  fs = str_append (fs, "};\n");
+#elif _CUDA
   fs = str_append (fs, "struct _Ctx_ {\n  __global real * _data;\n");
   for (const External * g = externals; g; g = g->next)
     if (g->global && is_external_variable (g)) {
@@ -1465,7 +1630,7 @@ char * build_shader (External * externals, const ForeachData * loop,
   
   for (External * g = externals; g; g = g->next)    
     if (g->global || !is_normal_variable (g) || is_external_variable (g))
-      fs = external_write (fs, g, loop, region, nwg);
+      fs = external_write (fs, g, loop, region, nwg, false);
       
   return fs;
 }
@@ -1719,6 +1884,23 @@ static char * shader_append_func (char * s, const ForeachData * loop, const Exte
     }
   if (locals)
     s = str_append (s, "struct _Local {\n", locals, "};\n");
+#if _METAL
+
+  /**
+  Metal kernel arguments must be explicitly bound to buffer indices
+  and the position of the thread in the grid is obtained through an
+  attribute qualifier. */
+
+  s = str_append (s,
+                  "kernel\n"
+                  "void ", func, "("
+                  "device real * _data [[buffer(0)]], "
+                  "constant struct _Ctx_ * _ctx_ [[buffer(1)]], "
+                  "constant ivec & csOrigin [[buffer(2)]]");
+  if (locals)
+    s = str_append (s, ", constant struct _Local & _local_ [[buffer(3)]]");
+  s = str_append (s, ", uint" xstr(dimension) " _tpig [[thread_position_in_grid]]){\n");
+#else // !_METAL
   s = str_append (s,
 #if _OPENCL
                   "__kernel\n"
@@ -1730,6 +1912,7 @@ static char * shader_append_func (char * s, const ForeachData * loop, const Exte
   if (locals)
     s = str_append (s, ", const struct _Local _local_");
   s = str_append (s, "){\n");
+#endif // !_METAL
   return s;
 #else // !_CUDA
   return str_append (s, "void main() {\n");
@@ -1860,7 +2043,10 @@ static Shader * compile_shader (ForeachData * loop,
     snprintf (d, 19, "%d", region->level > 0 ? region->level - 1 : depth());
     shader = str_append (shader,
 #if dimension == 2
-#if _OPENCL
+#if _METAL
+                         "Point point = {csOrigin.x + int(_tpig.y) + GHOSTS,"
+			 "csOrigin.y + int(_tpig.x) + GHOSTS,", d,
+#elif _OPENCL
                          "Point point = {csOrigin.x + get_group_id(1)*get_local_size(1) + get_local_id(1) + GHOSTS,"
                          "csOrigin.y + get_group_id(0)*get_local_size(0) + get_local_id(0) + GHOSTS,", d,
 #elif _CUDA
@@ -1871,7 +2057,11 @@ static Shader * compile_shader (ForeachData * loop,
 			 "csOrigin.y + int(gl_GlobalInvocationID.x) + GHOSTS,", d,
 #endif
 #elif dimension == 3
-#if _OPENCL
+#if _METAL
+                         "Point point = {csOrigin.x + int(_tpig.z) + GHOSTS,"
+			 "csOrigin.y + int(_tpig.y) + GHOSTS,"
+			 "csOrigin.z + int(_tpig.x) + GHOSTS,", d,
+#elif _OPENCL
                          "Point point = {csOrigin.x + get_group_id(2)*get_local_size(2) + get_local_id(2) + GHOSTS,"
                          "csOrigin.y + get_group_id(1)*get_local_size(1) + get_local_id(1) + GHOSTS,"
                          "csOrigin.z + get_group_id(0)*get_local_size(0) + get_local_id(0) + GHOSTS,", d,
@@ -1917,7 +2107,7 @@ static Shader * compile_shader (ForeachData * loop,
 #endif
   for (const External * g = merged; g; g = g->next) {
     if (!(g->global || !is_normal_variable (g) || is_external_variable (g)))
-      shader = external_write (shader, g, loop, region, nwg);    
+      shader = external_write (shader, g, loop, region, nwg, true);    
     if (g->reduct) {
       shader = str_append (shader, type_string (g), " ",
                            g->global == 2 ? "_loc_" : "", g->name, " = ");
@@ -2243,7 +2433,9 @@ bool gpu_end_stencil (ForeachData * loop,
     on_gpu = doloop_on_gpu (loop, region, externals, kernel);
     if (!on_gpu) {
       fprintf (stderr, "%s:%d: %s: foreach() done on CPU (see "
-#if _OPENCL
+#if _METAL
+               "Metal"
+#elif _OPENCL
                "OpenCL"
 #elif _CUDA
                "CUDA"

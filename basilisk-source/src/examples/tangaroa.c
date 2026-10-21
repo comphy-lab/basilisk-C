@@ -182,12 +182,15 @@ event init (t = 0) {
   /**
   We setup the default display. */
 
-  display ("view (quat = {0.542,0.150,0.209,0.799},"
-	   "      fov = 30, near = 0.01, far = 1000,"
-	   "      tx = -0.0074, ty = -0.0138, tz = -0.3211);"
-	   "draw_vof (c = 'f', color = 'z', min = -0.1, max = 0.1, "
-	   "          linear = true, fc = {0.45,0.78,0.92});"
-	   "draw_vof (c = 'tangaroa');", true);
+  display() {
+    clear();
+    view (quat = {0.542,0.150,0.209,0.799},
+          fov = 30, near = 0.01, far = 1000,
+          tx = -0.0074, ty = -0.0138, tz = -0.3211);
+    draw_vof (c = "f", color = "z", min = -0.1, max = 0.1,
+              linear = true, fc = {0.45,0.78,0.92});
+    draw_vof (c = "tangaroa");
+  }
 }
 
 /**

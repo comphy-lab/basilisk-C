@@ -330,7 +330,7 @@ Several metric spaces/coordinate systems are predefined:
 
 # Basilisk View
 
-* [Javascript interface](jview/README)
+* [Gview interactive interface](gview/display.c)
 * ["Dump files" server](bview.c)
 * [Online](view.h)
 

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>gview</title>
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #222;
+  }
+
+  #canvas-container {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  #canvas {
+    display: block;
+  }
+  #messages {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #f88;
+      font-family: monospace;
+      white-space: pre-wrap;
+      z-index: 1000;
+  }
+  </style>
+</head>
+<body>
+  <div id="messages"></div>
+  <div id="canvas-container">
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <script>
+    canvas.addEventListener("contextmenu", function (event) {
+      event.preventDefault();
+    });
+  </script>
+  
+  <script async type="text/javascript" src="gview.js"></script>
+  
+  <script>
+    var canvas = document.getElementById('canvas');
+    const query = decodeURIComponent (window.location.search.substring (1));
+    const cl_arguments = query ? query.trim ().split (/\s+/) : [];
+    
+    var Module = {
+            canvas: canvas,
+            arguments: cl_arguments,
+            stderr: "",
+            print: function(text) { console.log ("STDOUT: " + text); },
+            printErr: function(text) {
+                    console.log ("STDERR: " + text);
+                    Module.stderr += text + "\n";
+            },
+            
+            onExit: function (status) {
+                    if (status != 0) {
+                            const messages = document.getElementById ("messages");
+                            messages.textContent = Module.stderr;
+                            messages.style.display = "block";
+                    }
+            }
+    };
+
+    function gview_open_file() {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = ".gv";
+
+            input.onchange = function () {
+                    const file = input.files[0];
+                    if (!file)
+                            return;
+
+                    file.text().then(function (text) {
+                            Module.ccall("gview_file_loaded", null,
+                                         ["string", "string"],
+                                         [file.name, text]);
+                    });
+            };
+
+            input.click();
+    }
+  </script>
+</body>
+</html>

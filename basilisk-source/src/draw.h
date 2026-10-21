@@ -47,20 +47,22 @@ void clear()
 * *cache*: the maximum number of cached compiled expressions.
 */
 
-void view (float tx = 0., float ty = 0.,
-	   float fov = 0.,
-	   float quat[4] = {0},
+bool view (float tx = 0., float ty = 0.,
+	   float fov = 24.,
+	   float quat[4] = {0,0,0,1},
 	   float sx = 1., float sy = 1., float sz = 1.,
-	   unsigned width = 800, unsigned height = 800, unsigned samples = 4,
+	   unsigned width = 800, unsigned height = 800,
+           unsigned samples = 4,
 	   float bg[3] = {0},
 	   float theta = 0., float phi = 0., float psi = 0.,
 	   bool relative = false,
-	   float tz = 0., float near = 0., float far = 0.,
+	   float tz = -3., float near = 0.01, float far = 100.,
 	   float res = 0.,
 	   char * camera = NULL,
 	   MapFunc map = NULL,
 	   int cache = 0,
-	   float p1x = 0., float p1y = 0., float p2x = 0., float p2y = 0.,
+	   float p1x = 0., float p1y = 0.,
+           float p2x = 0., float p2y = 0.,
 	   bview * view1 = NULL)
 {
   bview * v = view1 ? view1 : get_view();
@@ -203,6 +205,8 @@ void view (float tx = 0., float ty = 0.,
   }
   
   clear();
+
+  return true;
 }
 
 /**
@@ -651,7 +655,7 @@ macro colorized (float fc[3], bool constant_color,
 * *label*: a label.
 * *lscale*: the label scale factor.
 * *min*, *max*: the range.
-* *horizontal*: true for anb horizontal colorbar.
+* *horizontal*: true for an horizontal colorbar.
 * *border*: adds a border.
 * *mid*: adds a mid-value label.
 * *lc*: the line color.
@@ -660,7 +664,7 @@ macro colorized (float fc[3], bool constant_color,
 * *format*: how to format numbers.
 * *levels*: the number of subdivisions.
 
-Note that this cannot be used with [jview](jview/README) (yet) because
+Note that this cannot be used with [gview](gview/display.c) (yet) because
 it mixes surface and line rendering. */
 
 trace
@@ -1081,6 +1085,8 @@ bool isoline (char * phi,
 	      COLORBAR_PARAMS)
 {
 #if dimension == 2
+  if (phi == NULL)
+    phi = "0";
   if (!color) color = phi;
   colorize_args();
   scalar fphi = col, fiso[];
@@ -1255,6 +1261,8 @@ bool squares (char * color,
     boundary ({fn}); // fixme: necessary because foreach_leaf() below doesn't do automatic BCs
   }
 #endif
+  if (color == NULL)
+    color = "0";
   colorize_args();
   scalar f = col;
   boundary ({f}); // fixme: necessary because foreach_leaf() below doesn't do automatic BCs
@@ -1543,9 +1551,8 @@ bool isosurface (char * f,
 		 COLORBAR_PARAMS)
 {
 #if dimension > 2
-  if (!f)
-    return false;
-  
+  if (f == NULL)
+    f = "0";  
   scalar ff = {-1};
   bool fexpr;
   if (strcmp (f, "level")) {
@@ -1577,7 +1584,6 @@ bool isosurface (char * f,
       double t[5][3][3];
       int nt = polygonize (val, v, t);
       for (int i = 0; i < nt; i++) {
-	color_facet();
 	glBegin (GL_POLYGON);
 	for (int j = 0; j < 3; j++) {
 	  coord v = {t[i][j][0], t[i][j][1], t[i][j][2]}, np;
@@ -1705,6 +1711,8 @@ trace
 bool labels (char * f, float lc[3] = {0}, float lw = 1, int level = -1)
 {
 #if dimension == 2
+  if (f == NULL)
+    f = "0";
   bool expr = false;
   scalar ff = compile_expression (f, &expr);
   if (ff.i < 0)

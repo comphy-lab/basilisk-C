@@ -905,8 +905,7 @@ void kernel (Ast * n, Stack * stack, void * data)
 /**
 # Utilities */
 
-static
-char * stringify (Ast * n, char * output, bool nolineno)
+char * ast_stringify (Ast * n, char * output, bool nolineno)
 {
   AstTerminal * t = ast_left_terminal (n);
   char * before = t->before;
@@ -936,7 +935,6 @@ char * stringify (Ast * n, char * output, bool nolineno)
     }
   }
   free (s);
-  ast_destroy (n);
   return output;
 }
 
@@ -967,7 +965,8 @@ char * ast_kernel (Ast * n, char * argument, KernelOptions opts, Ast * macroscop
     str_append (argument, "\"", d.error, "\"");
   else {
     str_append (argument, "\"");
-    argument = stringify (statement, argument, opts.nolineno);
+    argument = ast_stringify (statement, argument, opts.nolineno);
+    ast_destroy (statement);
     str_append (argument, "\"");
   }
   free (d.error);

@@ -2181,6 +2181,13 @@ static void replace_ellipsis_macro (Ast * n)
     n->sym = token_symbol (';');
     strcpy (ast_terminal (n)->start, ";");
   }
+  else if (n->sym == sym_ELLIPSIS_EXPRESSION) {
+    assert (n->parent->sym == sym_primary_expression);
+    n->sym = sym_STRING_LITERAL;
+    strcpy (ast_terminal (n)->start, "\"\"");
+    Ast * parent = n->parent;
+    ast_set_child (parent, 0, NN(parent, sym_string, n));
+  }
   else if (n->child)
     for (Ast ** c = n->child; *c; c++)
       replace_ellipsis_macro (*c);

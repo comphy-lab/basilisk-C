@@ -1547,5 +1547,7 @@ foreach (serial)
 trace
 double z_indexing (scalar index, bool leaves) 
 {
-  return z_weights (index, w=unity, leaves=leaves);
+  double tl = z_weights (index, w=unity, leaves=leaves);
+  // with unit weights tl is the number of cells: the maximum index is tl - 1
+  return pid() == 0 ? tl - 1. : -1.;
 }

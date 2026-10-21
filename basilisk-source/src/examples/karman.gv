@@ -1,0 +1,5 @@
+view (tx = -0.0903593, tz = -0.405391, width = 1070, height = 614);
+squares (color = "u.x", spread = -1);
+box ();
+vectors (u = "u", scale = 0.005);
+draw_vof (c = "cs", s = "fs", filled = -1, fc = {0.370656,0.370656,0.370656});

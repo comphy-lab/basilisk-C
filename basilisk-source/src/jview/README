@@ -1,5 +1,9 @@
 # Javascript interface for Basilisk View
 
+<div class="message">
+<div id="msg_logo"><img src="/img/warning.png"></div>
+Note that this interface has been replaced by [gview](/src/gview/display.c) which should be prefered. The client/server model is the same however, so the general description which follows is also useful for the new gview interface.</div>
+
 This directory contains the javascript implementation of the Basilisk
 View interface. It is a fork of the [three.js](https://threejs.org/)
 [editor](https://threejs.org/editor/) which allows connection to the

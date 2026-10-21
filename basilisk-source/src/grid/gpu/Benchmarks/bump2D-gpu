@@ -26,6 +26,19 @@ for i in 6 7 8 9 10 11; do ./bump2D-gpu/bump2D-gpu $i; done
 # Cartesian (GPU), 3615 steps, 6.07372 CPU, 107.7 real, 3.52e+07 points.step/s, 28 var
 # Cartesian (GPU), 7303 steps, 15.5081 CPU, 955 real, 3.21e+07 points.step/s, 28 var
 
+Metal device: Apple M2 (10-core GPU)
+Unified memory: 8192 MB
+
+for i in 6 7 8 9 10 11; do ./bump2D-gpu.metal/bump2D-gpu.metal $i; done
+
+# Title: AppleM2(metal)
+# Multigrid (metal), 217 steps, 0.07026 CPU, 0.5402 real, 1.65e+06 points.step/s, 28 var
+# Multigrid (metal), 437 steps, 0.100779 CPU, 0.2982 real, 2.4e+07 points.step/s, 28 var
+# Multigrid (metal), 885 steps, 0.189099 CPU, 1.118 real, 5.19e+07 points.step/s, 28 var
+# Multigrid (metal), 1789 steps, 0.563754 CPU, 4.124 real, 1.14e+08 points.step/s, 28 var
+# Multigrid (metal), 3615 steps, 1.16541 CPU, 23.62 real, 1.6e+08 points.step/s, 28 var
+# Multigrid (metal), 7303 steps, 2.54388 CPU, 171.1 real, 1.79e+08 points.step/s, 28 var
+
 OpenGL renderer string: NVIDIA GeForce RTX 3050 Ti Laptop GPU/PCIe/SSE2
 Dedicated video memory: 4096 MB
 

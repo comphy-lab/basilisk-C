@@ -1,15 +1,18 @@
 #!/bin/bash
 
-CONVERT="`which convert`"
+CONVERT="`which magick`"
+if test -z "$CONVERT"; then
+    CONVERT="`which convert`"
+fi
 GIFSICLE="`which gifsicle`"
 
 if test -z "$CONVERT" -o -z "$GIFSICLE"; then
-    echo "ppm2gif: warning: could not find 'convert' or 'gifsicle'" >&2
+    echo "ppm2gif: warning: could not find 'magick'/'convert' or 'gifsicle'" >&2
     echo "ppm2gif: the output will just be concatenated PPM files" >&2
     cat
 else
     command="gifsicle --colors 256 --optimize --delay 5"
-    ppm="convert"
+    ppm="$CONVERT"
     while test $# -gt 0; do
 	case $1 in
 	    -s)

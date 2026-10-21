@@ -13,37 +13,41 @@ OpenGL library. */
 
 struct {
   // public
-  Array * position, * normal, * color, * index;
+  Array * position, * normal, * color, * index, * lindex;
+  int nvertex;
+  
   float modelview[16];
   int type;  // type = 0 -> lines, type = 1 -> mesh
   int dim;
-  int vertex, nvertex;
   bool visible; // visible = true > only traverse visible vertices
   
   // private
   int line_loop, lines, line_strip ;
   int quads, polygon, fan;
-  int state;
+  int state;  
 } VertexBuffer = {
   .visible = false, // traverse all vertices by default
   .modelview = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 }
 };
 
-static void vertex_buffer_push_index (unsigned int i)
+static void vertex_buffer_push_index (Array * index, unsigned int i)
 {
-  i -= VertexBuffer.vertex;
-  array_append (VertexBuffer.index, &i, sizeof(unsigned int));
+  //  i -= VertexBuffer.vertex;
+  array_append (index, &i, sizeof(unsigned int));
 }
 
-void vertex_buffer_setup()
+void vertex_buffer_setup (bool lindex) // fixme: this should be always true, eventually
 {
-  VertexBuffer.nvertex = 0;
   VertexBuffer.type = -1;
   VertexBuffer.dim = -1;
+  
+  VertexBuffer.nvertex = 0;
   VertexBuffer.position = array_new();
   VertexBuffer.normal = array_new();
   VertexBuffer.color = array_new();
   VertexBuffer.index = array_new();
+
+  VertexBuffer.lindex = lindex ? array_new() : VertexBuffer.index;
 }
 
 void vertex_buffer_free()
@@ -55,7 +59,9 @@ void vertex_buffer_free()
   array_free (VertexBuffer.color);
   VertexBuffer.color = NULL;
   array_free (VertexBuffer.index);
-  VertexBuffer.index = NULL;
+  if (VertexBuffer.lindex != VertexBuffer.index)
+    array_free (VertexBuffer.lindex);
+  VertexBuffer.index = VertexBuffer.lindex = NULL;
 }
 
 static void vertex_buffer_glBegin (unsigned int state)
@@ -117,26 +123,26 @@ static void vertex_buffer_glEnd()
 
     case GL_LINE_LOOP:
       for (int i = VertexBuffer.line_loop; i < VertexBuffer.nvertex - 1; i++) {
-	vertex_buffer_push_index (i);
-	vertex_buffer_push_index (i + 1);
+	vertex_buffer_push_index (VertexBuffer.lindex, i);
+	vertex_buffer_push_index (VertexBuffer.lindex, i + 1);
       }
-      vertex_buffer_push_index (VertexBuffer.nvertex - 1);
-      vertex_buffer_push_index (VertexBuffer.line_loop);
+      vertex_buffer_push_index (VertexBuffer.lindex, VertexBuffer.nvertex - 1);
+      vertex_buffer_push_index (VertexBuffer.lindex, VertexBuffer.line_loop);
       type = 0;
       break;
     
     case GL_LINES:
       for (int i = VertexBuffer.lines; i < VertexBuffer.nvertex; i += 2) {
-	vertex_buffer_push_index (i);
-	vertex_buffer_push_index (i + 1);
+	vertex_buffer_push_index (VertexBuffer.lindex, i);
+	vertex_buffer_push_index (VertexBuffer.lindex, i + 1);
       }
       type = 0;
       break;
     
     case GL_LINE_STRIP:
       for (int i = VertexBuffer.line_strip; i < VertexBuffer.nvertex - 1; i++) {
-	vertex_buffer_push_index (i);
-	vertex_buffer_push_index (i + 1);
+	vertex_buffer_push_index (VertexBuffer.lindex, i);
+	vertex_buffer_push_index (VertexBuffer.lindex, i + 1);
       }
       type = 0;
       break;
@@ -144,9 +150,9 @@ static void vertex_buffer_glEnd()
     case GL_QUADS:
       for (int i = VertexBuffer.quads; i < VertexBuffer.nvertex; i += 4)
 	for (int j = 1; j <= 2; j++) {
-	  vertex_buffer_push_index (i);
-	  vertex_buffer_push_index (i + j);
-	  vertex_buffer_push_index (i + j + 1);
+	  vertex_buffer_push_index (VertexBuffer.index, i);
+	  vertex_buffer_push_index (VertexBuffer.index, i + j);
+	  vertex_buffer_push_index (VertexBuffer.index, i + j + 1);
 	}
       type = 1;
       break;
@@ -154,18 +160,18 @@ static void vertex_buffer_glEnd()
     case GL_POLYGON:
       for (int j = 1; j <= VertexBuffer.nvertex - VertexBuffer.polygon - 2;
 	   j++) {
-	vertex_buffer_push_index (VertexBuffer.polygon);
-	vertex_buffer_push_index (VertexBuffer.polygon + j);
-	vertex_buffer_push_index (VertexBuffer.polygon + j + 1);
+	vertex_buffer_push_index (VertexBuffer.index, VertexBuffer.polygon);
+	vertex_buffer_push_index (VertexBuffer.index, VertexBuffer.polygon + j);
+	vertex_buffer_push_index (VertexBuffer.index, VertexBuffer.polygon + j + 1);
       }
       type = 1;
       break;
     
     case GL_TRIANGLE_FAN:
       for (int i = VertexBuffer.fan + 1; i < VertexBuffer.nvertex - 1; i++) {
-	vertex_buffer_push_index (VertexBuffer.fan);
-	vertex_buffer_push_index (i);
-	vertex_buffer_push_index (i + 1);
+	vertex_buffer_push_index (VertexBuffer.index, VertexBuffer.fan);
+	vertex_buffer_push_index (VertexBuffer.index, i);
+	vertex_buffer_push_index (VertexBuffer.index, i + 1);
       }
       type = 1;
       break;
@@ -174,7 +180,7 @@ static void vertex_buffer_glEnd()
       break;
     }
     VertexBuffer.state = 0;
-    if (VertexBuffer.type >= 0 && type >= 0) {
+    if (VertexBuffer.lindex == VertexBuffer.index && VertexBuffer.type >= 0 && type >= 0) {
        // cannot mix lines and surfaces primitives
       assert (VertexBuffer.type == type);
     }
@@ -189,7 +195,10 @@ static void vertex_buffer_glColor3f (float r, float g, float b)
 {
   if (VertexBuffer.color) {
     struct { float x, y, z; } color = {r, g, b}; // fixme: use r,g,b directly
-    array_append (VertexBuffer.color, &color, 3*sizeof(float));
+    if (VertexBuffer.lindex == VertexBuffer.index ||
+        VertexBuffer.state == GL_QUADS || VertexBuffer.state == GL_POLYGON ||
+        VertexBuffer.state == GL_TRIANGLE_FAN)
+      array_append (VertexBuffer.color, &color, 3*sizeof(float));
   }
   else
     glColor3f (r, g, b);
@@ -205,6 +214,12 @@ static void vertex_buffer_glNormal3d (double nx, double ny, double nz)
     glNormal3d (nx, ny, nz);
 }
 
+static void vertex_buffer_append (float v[4])
+{
+  array_append (VertexBuffer.position, v, 3*sizeof(float));
+  VertexBuffer.nvertex++;
+}
+
 static void vertex_buffer_glVertex3d (double x, double y, double z)
 {
   if (VertexBuffer.position) {
@@ -212,8 +227,7 @@ static void vertex_buffer_glVertex3d (double x, double y, double z)
       VertexBuffer.dim = 3;
     float v[4] = {x, y, z, 1.};
     vector_multiply (v, VertexBuffer.modelview);
-    array_append (VertexBuffer.position, v, 3*sizeof(float));
-    VertexBuffer.nvertex++;
+    vertex_buffer_append (v);
   }
   else
     glVertex3d (x, y, z);    
@@ -226,8 +240,7 @@ static void vertex_buffer_glVertex2d (double x, double y)
       VertexBuffer.dim = 2;
     float v[4] = {x, y, 0, 1.};
     vector_multiply (v, VertexBuffer.modelview);
-    array_append (VertexBuffer.position, v, 3*sizeof(float));
-    VertexBuffer.nvertex++;
+    vertex_buffer_append (v);
   }
   else
     glVertex3d (x, y, 0.);

@@ -456,7 +456,7 @@ static void bview_draw (bview * view)
 The file to write to is given either using its name *file* or the file
 pointer *fp*. If neither is specified, the default is *stdout*.
 
-If *file* is used, options for 'convert' or 'ffmpeg' can be given in
+If *file* is used, options for 'magick' (or 'convert') or 'ffmpeg' can be given in
 *opt*.
 
 The format to use is given either explicitly using *format*, or, if a
@@ -471,7 +471,7 @@ The recognised file formats are:
 * "ppm": [Portable PixMap](https://en.wikipedia.org/wiki/Netpbm_format) 
          format. A basic uncompressed image format.
 * "png", "jpg": Compressed image formats. Will only work if the
-                *convert* command from
+                *magick* (or *convert*) command from
                 [ImageMagick](http://imagemagick.org) is installed on
                 the system.
 * "mp4", "gif", "ogv": Compressed animation formats. Will only work if
@@ -518,7 +518,7 @@ bool save (char * file = NULL, char * format = "ppm", char * opt = NULL,
   if (!view)
     view = get_view();
 
-  if ((!strcmp (format, "png") && which ("convert")) ||
+  if ((!strcmp (format, "png") && (which ("magick") || which ("convert"))) ||
       !strcmp (format, "jpg") ||
       (file && is_animation (file))) {
     bview_draw (view);
@@ -620,22 +620,6 @@ bool save (char * file = NULL, char * format = "ppm", char * opt = NULL,
 
 The functions below parse a text file and perform the corresponding
 function calls. */
-
-static char * remove_blanks (char * line)
-{
-  while (strchr (" \t", *line)) line++;
-  char * s = line, * cur = line;
-  bool instring = false;
-  while (*s != '\0' && *s != '#') {
-    if (*s == '"')
-      instring = !instring;
-    if (instring || !strchr (" \t", *s))
-      *cur++ = *s;
-    s++;
-  }
-  *cur = '\0';
-  return line;
-}
 
 #include "parse.h"
 

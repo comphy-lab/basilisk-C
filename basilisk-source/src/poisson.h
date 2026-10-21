@@ -374,7 +374,7 @@ static double residual (scalar * al, scalar * bl, scalar * resl, void * data)
 #if EMBED
     if (p->embed_flux) {
       double c, e = p->embed_flux (point, a, alpha, &c);
-      res[] += c - e*a[];
+      res[] += c + e*a[];
     }
 #endif // EMBED    
     if (fabs (res[]) > maxres)
@@ -390,7 +390,7 @@ static double residual (scalar * al, scalar * bl, scalar * resl, void * data)
 #if EMBED
     if (p->embed_flux) {
       double c, e = p->embed_flux (point, a, alpha, &c);
-      res[] += c - e*a[];
+      res[] += c + e*a[];
     }
 #endif // EMBED
     if (fabs (res[]) > maxres)

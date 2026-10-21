@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.5.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -16,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -134,8 +134,9 @@ extern int yydebug;
     REDUCTION = 335,               /* REDUCTION  */
     MACRO = 336,                   /* MACRO  */
     ELLIPSIS_MACRO = 337,          /* ELLIPSIS_MACRO  */
-    MACRODEF = 338,                /* MACRODEF  */
-    foreach_statement = 339        /* foreach_statement  */
+    ELLIPSIS_EXPRESSION = 338,     /* ELLIPSIS_EXPRESSION  */
+    MACRODEF = 339,                /* MACRODEF  */
+    foreach_statement = 340        /* foreach_statement  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -149,6 +150,8 @@ typedef  Ast *  YYSTYPE;
 
 
 
+
 int yyparse (AstRoot * parse, Ast * root);
+
 
 #endif /* !YY_YY_BASILISK_H_INCLUDED  */

@@ -2,6 +2,113 @@ Note that the detailed ChangeLog is always available using the
 [Development/Recent activity](/src/?history) menu on the web site, as
 well as in the [/src/ChangeLog]() file in the distribution.
 
+# Release '20-10-26 (gview)'
+
+## Usage of LLMs for coding
+
+This release is probably the first where a substantial number of
+patches were written with the assistance of LLMs (Large Language
+Models), either by me or by others. This is also the occasion to
+remind Basilisk's contributors of a few basic principles:
+
+* while LLMs are clearly powerful assistants for programming, they are
+  also very ressource hungry, so one needs to use them "responsibly"
+  i.e. "with moderation" (like alcohol, lifts, cars and other addictive
+  substances).
+* the human author of the code is still entirely responsible for the
+  content produced, including bugs, potential violations of copyright,
+  non-recognition of the contributions of others etc. This is
+  unfortunately even more true given the irresponsible and unethical
+  attitudes of the companies producing these tools.
+* "Responsible use" means that the author must check and understand
+  every line of code produced by the LLM. This is essential for the
+  long-term maintainabilty of Basilisk.
+* And of course, I (or others) should not have to guess that an LLM
+  has been used to produce a submitted patch. This should be declared
+  up front.
+
+Aside from these principles, I can share a few comments from personal
+experience using LLMs (mostly ChatGPT) to code the new gview
+interface (and some of the GPU drivers):
+
+* LLMs are clearly useful as "experts" to give general directions in
+  the "jungle" of available libraries etc. For example the overall
+  architecture of gview was designed with both my input (i.e. previous
+  experience with jview etc.) and that of the LLM for the precise
+  choice of which libraries to use.
+* LLMs can give accurate summaries of how some of the (undocumented)
+  parts of Basilisk work (for example the GPU drivers), but they can
+  also be misleading and/or inaccurate, and it is difficult to judge
+  the level of confidence of the output from the text produced.  
+* The "efficiency" or "productivity" gained from using LLMs for
+  programming can be difficult to evaluate. For example, I would say
+  that the initial version of gview was clearly produced much faster
+  (~1 day) than without a LLM, however the final version took approx
+  ~5 days of very largely manual debugging and refining.
+* A somewhat perverse side-effect is that LLMs can distract you (by
+  making it look easy) from the "really useful things" you should be
+  doing (and which cannot be done by an LLM): for example one could
+  say that using a week to write gview was not the best use of my time
+  (and I would not have done it if the LLM had not been able to code
+  the initial draft quickly).
+* Note also that none of the present document was written using an
+  LLM: I consider writing (text not code) as a task which should not
+  be delegated to an LLM.
+
+## gview
+
+[Gview](/src/gview/display.c) is a new interactive interface which
+replaces the [jview interface](/src/jview/README). There are two
+versions, compiled from the same C99 source code: a desktop linux
+application (`gview-gui`) and a
+[WebAssembly](https://webassembly.org/) version running directly in
+the browser, on any system. The initial version was written with the
+help of ChatGPT 5.6.
+
+## GPUs
+
+* The multilayer solver now runs well on GPUs thanks to the [remapping
+  implementation in C](/src/layered/remapc.h) of Antoine Aubert, this
+  replaces the PPR Fortran library.
+* The [GPU grids](/src/grid/gpu/grid.h#see-also) now support a wide
+  range of libraries/hardware: CUDA for nvidia cards, AMD HIP for AMD
+  cards, OpenCL for a broad range of accelerators/GPUs, Metal for
+  MacOSX etc. With special thanks to Hugo Jacquet and Edoardo Cipriano
+  (and LLMs).
+* 3D multigrid is now possible on GPUs thanks to Andreas Iberl (and
+  LLMs). See for example the [3D isotropic turbulence
+  example](/src/examples/isotropic.c#running-on-gpus).
+* A better memory (re)allocation scheme: 512^3^ [3D isotropic
+  turbulence](/src/examples/isotropic.c) is possible with a 24GB
+  RTX4090 GPU (16 GB are used).
+
+## Weighted Load Balancing
+
+Riccardo Caraccio has implemented a generalised weighted Load
+Balancing which can for example be used to automatically partition
+based on CPU load rather than number of grid points. See [this
+example](/src/test/balance-rotate.c).
+
+## Other
+
+* a new example: the [Held & Suarez climate model](/src/examples/held-suarez.c).
+* another new example: [turbulent flow in a channel with a "wall
+  model"](/src/examples/wall-model.c).  
+* New [msolve()](/src/solve.h#multiple-unknowns) macro solves generic
+  coupled linear systems, see the [Ginzburg-Landau
+  example](/src/examples/ginzburg-landau.c#using-the-generic-linear-system-solver).
+* The wiki does not allow files larger than 1MB.
+* [Calculation of the face fraction](/src/fractions.h#face-fraction)
+  from the PLIC interface, thanks to Jose Lopez-Herrera, Gabriele
+  Gennari and Edoardo Cipriano.
+
+## Bug fixes
+
+* Fixed sign of the implicit source of embed_flux for degenerate cells
+  thanks to Robert A and Edoardo Cipriano.
+* Bug fix for axi + embed thanks to David Pekker.
+* Many other more minor fixes.
+
 # Release '25-02-26 (macros)'
 
 ## Macros in qcc and rewrite of grid implementations

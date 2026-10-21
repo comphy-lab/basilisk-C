@@ -59,7 +59,9 @@ event defaults (i = 0) {
   /**
   The default display. */
   
-  display ("squares (color = 'omega', spread = -1);");
+  display() {
+    squares (color = "omega", spread = -1);
+  }
 }
 
 /**

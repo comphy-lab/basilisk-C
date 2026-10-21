@@ -94,7 +94,7 @@ static int yyparse (AstRoot * parse, Ast * root);
 
 %token  MAYBECONST NEW_FIELD TRACE
 %token  FOREACH_DIMENSION
-%token  REDUCTION MACRO ELLIPSIS_MACRO MACRODEF
+%token  REDUCTION MACRO ELLIPSIS_MACRO ELLIPSIS_EXPRESSION MACRODEF
 
 /**
 The token below is only used temporarily in ast/stencil.c, not in the
@@ -123,6 +123,7 @@ translation_unit
 primary_expression
         : IDENTIFIER
 	| MACRO
+        | ELLIPSIS_EXPRESSION
 	| constant
 	| string
 	| '(' expression_error ')'

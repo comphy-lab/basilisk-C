@@ -46,6 +46,7 @@ typedef unsigned int uint32_t;
 typedef long int64_t;
 typedef unsigned long uint64_t;
 typedef double time_t;
+typedef void pthread_t;
 
 /**
 ## Tricks for AST

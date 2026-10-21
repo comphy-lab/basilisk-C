@@ -185,6 +185,34 @@ The comment made above regarding the non-type-casting of the return
 values of inlined macros, also applies to the arguments of any
 macro. This is different from what happens for standard C functions.
 
+## Expansion of ellipsis expressions
+
+The ellipsis expression macro operator `[...]` is expanded as an
+expression. Since the C grammar does not allow "statements as
+expressions" the statements are first converted to a C string. For
+example, the following code:
+
+~~~literatec
+macro expand_ellipsis()
+{
+  func ([...]);
+}
+...
+  expand_ellipsis() {
+    a = 3;
+    another_func();
+  }
+...
+~~~
+
+will be expanded to something like:
+
+~~~literatec
+...
+  func ("//#line 3 \"myfunc.h\"\n    a=3;\n    another_func();\n");
+...
+~~~
+
 ## Postmacros
 
 Macro definitions can use an "order" parameter which define their
@@ -379,6 +407,25 @@ static void replace_ellipsis (Ast * n, Stack * stack, void * data)
     MacroReplacement * r = data;
     ast_set_child (n, ast_child_index (child), ast_copy (r->statement));
     ast_destroy (child);
+  }
+  else if (ast_schema (n, sym_primary_expression,
+                       0, sym_ELLIPSIS_EXPRESSION)) {
+    n->child[0]->sym = sym_STRING_LITERAL;
+    AstTerminal * t = ast_terminal (n->child[0]);
+    free (t->start);
+    MacroReplacement * r = data;
+    Ast * statement = ast_schema (r->statement, sym_statement,
+                                  0, sym_compound_statement,
+                                  1, sym_block_item_list);
+    if (!statement && !ast_schema (r->statement, sym_statement,
+                                   0, sym_expression_statement,
+                                   0, token_symbol(';')))
+      statement = r->statement;
+    t->start = strdup ("\"");
+    if (statement)
+      t->start = ast_stringify (statement, t->start, r->nolineno);
+    str_append (t->start, "\"");
+    ast_set_child (n, 0, NN(n, sym_string, n->child[0]));
   }
 }
 

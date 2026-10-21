@@ -206,8 +206,10 @@ These tests can be run using `make embed-tests`.
 These tests can be run manually using:
 
 ~~~bash
-make -k gpu-tests cuda-tests hip-tests ocl-tests
+make -k gpu-tests cuda-tests hip-tests ocl-tests metal-tests
 ~~~
+
+(`metal-tests` is for macOS, see the [Metal backend](/src/grid/metal/metal.c).)
 
 * [A range of GPU tests](gpu.c)
 * [Layers](layers.c)

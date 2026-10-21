@@ -392,7 +392,9 @@ event defaults (i = 0)
   /**
   We setup the default display. */
 
-  display ("squares (color = 'h > 0 ? eta : nodata', spread = -1);");
+  display() {
+    squares (color = "h > 0 ? eta : nodata", spread = -1);
+  }
 }
 
 /**

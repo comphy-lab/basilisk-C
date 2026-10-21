@@ -80,6 +80,31 @@ event init (t = 0)
 {
 
   /**
+  Here we give two examples of how a default display can be
+  setup. Either by loading the file `karman.gv` which contains drawing
+  calls (the first option, commented out), or directly adding
+  commands. See also the [display.h](/src/display.h#default-display)
+  documentation. */
+
+  // display ("karman.gv", true);
+  display() {
+    clear();
+    view (tx = -0.0903593, tz = -0.405391, width = 1070, height = 614);
+    squares (color = "u.y", spread = -1);
+    box ();
+    vectors (u = "u", scale = 0.005);
+    draw_vof (c = "cs", s = "fs", filled = -1, fc = {0.370656,0.370656,0.370656});
+  }
+
+  /**
+  We can also optionaly (removing `&& 0`) directly start the
+  visualisation, also using the `karman.gv` drawing calls. */
+  
+#if DISPLAY && 0
+  system ("gview-gui -g karman.gv &");
+#endif
+  
+  /**
   The domain contains a cylinder of diameter 0.125. */
 
   solid (cs, fs, sqrt(sq(x) + sq(y)) - D/2.);

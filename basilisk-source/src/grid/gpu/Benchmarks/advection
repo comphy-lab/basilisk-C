@@ -29,6 +29,19 @@ Video memory: 3072MB
 # Multigrid (GPU), 6163 steps, 3.10575 CPU, 43.14 real, 1.5e+08 points.step/s, 8 var
 # Multigrid (GPU), 12280 steps, 7.34859 CPU, 340 real, 1.51e+08 points.step/s, 8 var
 
+Metal device: Apple M2 (10-core GPU)
+Unified memory: 8192 MB
+
+./advection.metal/advection.metal 2048 2> /dev/null | grep steps
+
+# Title: AppleM2(metal)
+# Multigrid (metal), 412 steps, 0.051935 CPU, 0.1494 real, 1.13e+07 points.step/s, 8 var
+# Multigrid (metal), 799 steps, 0.063683 CPU, 0.2446 real, 5.35e+07 points.step/s, 8 var
+# Multigrid (metal), 1569 steps, 0.147449 CPU, 0.5587 real, 1.84e+08 points.step/s, 8 var
+# Multigrid (metal), 3102 steps, 0.248402 CPU, 1.473 real, 5.52e+08 points.step/s, 8 var
+# Multigrid (metal), 6165 steps, 0.901009 CPU, 8.672 real, 7.45e+08 points.step/s, 8 var
+# Multigrid (metal), 12282 steps, 1.69397 CPU, 57.6 real, 8.94e+08 points.step/s, 8 var
+
 OpenGL renderer string: NVIDIA GeForce RTX 3050 Ti Laptop GPU/PCIe/SSE2
 Dedicated video memory: 4096 MB
 

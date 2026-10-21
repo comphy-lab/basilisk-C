@@ -636,6 +636,11 @@ ocl-tests: gpu.ocl.tst gpu-reduce.ocl.tst restriction1.ocl.tst gpu-boundary.ocl.
 	 layers.ocl.tst bump2D-gpu.ocl.tst advection.ocl.tst reversed.ocl.tst
 ocl-tests: CFLAGS += -DPRINTNSHADERS
 
+# GPUs (Metal, macOS)
+metal-tests: gpu.metal.tst gpu-reduce.metal.tst restriction1.metal.tst gpu-boundary.metal.tst \
+	 layers.metal.tst bump2D-gpu.metal.tst advection.metal.tst reversed.metal.tst
+metal-tests: CFLAGS += -DPRINTNSHADERS
+
 # GPU 3D tests (GLSL/OpenGL)
 gpu3D-tests: gpu.gpu3D.tst gpu-reduce.gpu3D.tst restriction1.gpu3D.tst gpu-boundary.gpu3D.tst \
 	periodic.gpu3D.tst poisson.gpu3D.tst
@@ -655,5 +660,10 @@ hip3D-tests: CFLAGS += -DPRINTNSHADERS
 ocl3D-tests: gpu.ocl3D.tst gpu-reduce.ocl3D.tst restriction1.ocl3D.tst gpu-boundary.ocl3D.tst \
 	periodic.ocl3D.tst poisson.ocl3D.tst
 ocl3D-tests: CFLAGS += -DPRINTNSHADERS
+
+# GPU 3D tests (Metal, macOS)
+metal3D-tests: gpu.metal3D.tst gpu-reduce.metal3D.tst restriction1.metal3D.tst gpu-boundary.metal3D.tst \
+	periodic.metal3D.tst poisson.metal3D.tst
+metal3D-tests: CFLAGS += -DPRINTNSHADERS
 
 include ../Makefile.defs

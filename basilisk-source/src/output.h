@@ -338,7 +338,7 @@ The open_image()/close_image() functions use pipes to convert PPM
 images to other formats, including `.mp4`, `.ogv` and `.gif`
 animations.
 
-The functions check whether the 'ffmpeg' or 'convert' executables are
+The functions check whether the 'ffmpeg' or 'magick' executables are
 accessible, if they are not the conversion is disabled and the raw PPM
 images are saved. An extra ".ppm" extension is added to the file name
 to indicate that this happened. */
@@ -474,25 +474,28 @@ FILE * open_image (const char * file, const char * options)
     return open_image_data.fp[open_image_data.n - 1] = popen (command, "w");
   }
   else { // !animation
-    static int has_convert = -1;
-    if (has_convert < 0) {
-      if (which ("convert"))
-	has_convert = true;
+    static int imagemagick = -1;
+    if (imagemagick < 0) {
+      if (which ("magick"))
+	imagemagick = 7;
+      else if (which ("convert"))
+	imagemagick = 6;
       else {
 	fprintf (ferr,
-		 "src/output.h:%d: warning: cannot find 'convert'\n"
+		 "src/output.h:%d: warning: cannot find 'magick' or 'convert'\n"
 		 "src/output.h:%d: warning: falling back to raw PPM outputs\n",
 		 LINENO, LINENO);
-	has_convert = false;
+	imagemagick = 0;
       }
     }
-    if (!has_convert)
+    if (!imagemagick)
       return ppm_fallback (file, "w");
-    
-    int len = strlen ("convert ppm:-   ") + strlen (file) +
+    const char * converter = imagemagick == 7 ? "magick" : "convert";
+    int len = strlen (converter) + strlen (" ppm:-   ") + strlen (file) +
       (options ? strlen (options) : 0);
     char command[len];
-    strcpy (command, "convert ppm:- ");
+    strcpy (command, converter);
+    strcat (command, " ppm:- ");
     if (options) {
       strcat (command, options);
       strcat (command, " ");
@@ -511,7 +514,7 @@ void close_image (const char * file, FILE * fp)
       fclose (fp);
   }
 @if !__EMSCRIPTEN__
-  else if (which ("convert"))
+  else if (which ("magick") || which ("convert"))
     pclose (fp);
 @endif // !__EMSCRIPTEN__
   else
@@ -578,10 +581,10 @@ first-order.
 of the domain for which *mask* is negative. 
 
 *map*
-: the colormap: *jet*, *cool_warm* or *gray*. Default is *jet*.
+: the colormap: *jet*, *cool_warm*, *gray*, *blue_white_red* etc. Default is *jet*.
 
 *opt*
-: options to pass to 'convert' or to the 'ppm2???' scripts (used
+: options to pass to 'magick' or to the 'ppm2???' scripts (used
 with *file*).
 
 *fps*

@@ -62,7 +62,9 @@ event defaults (i = 0) {
   /**
   We setup the default display. */
 
-  display ("squares (color = 'h > 0 ? zb + h : nodata', spread = -1);");
+  display() {
+    squares (color = "h > 0 ? zb + h : nodata", spread = -1);
+  }
 }
 
 /**

@@ -37,7 +37,7 @@ event defaults (i = 0)
   for (scalar s in all)
     s.gradient = gradient;
   
-  display ("box();");
+  display() { box(); }
 }
 
 trace

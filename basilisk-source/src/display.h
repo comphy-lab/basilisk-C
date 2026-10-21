@@ -2,8 +2,8 @@
 # Server-side display
 
 This file implements the server-side of the interactive display of a
-running Basilisk code. The client-side is typically done by the
-[javascript implementation](jview/README).
+running Basilisk code. The client-side is typically done by
+[gview](gview/display.c).
 
 This works using two main components:
 
@@ -26,7 +26,7 @@ Multiple servers can run simultaneously on the same machine but must
 use different ports. When connecting, the server looks for a free port
 in the default range (typically 7100 to 7200, see the DISPLAY_RANGE
 macro below). The corresponding connection information (including the
-URL of the [javascript interface](/src/jview/README)) is written in
+URL of the [gview web interface](gview/display.c)) is written in
 the `display.html` file, which can be used to open the connection on
 the client side (i.e. the web browser).
 
@@ -42,31 +42,49 @@ display_control (value, 0, 100, "Short Name", "Long tooltip");
 where the first argument is the name of the variable and the numbers
 indicate the (optional) range (min and max values). The (optional)
 name and tooltip are used to generate the [Basilisk
-View](jview/README) interface. The only compulsory argument is the
-variable name. 
+View](gview/display.c) interface. The only compulsory argument is the
+variable name.
 
 ## Default display
 
 Default [drawing function calls](draw.h), which will be sent to an empty
-[javascript client](jview/README), can be setup using something like:
+[client](gview/display.c), can be setup using something like:
 
 ~~~literatec
-display ("squares (color = 'u.x', spread = -1);");
+display() {
+  squares (color = "u.x", spread = -1);
+}
 ~~~
-
-where the single quotes will be expanded to doubles quotes when
-interpreted. Do not forget the trailing semi-column.
 
 Note that these function calls will be appended to existing ones. To
 overwrite existing calls, use:
 
 ~~~literatec
-display ("squares (color = 'u.x', spread = -1);", true);
+display() {
+  clear();
+  squares (color = "u.x", spread = -1);
+}
 ~~~
-*/
+
+but be careful that this will work only if this call happens *after*
+the default displays are set, typically in each solver `defaults`
+event.
+
+You can also directly specify a ".gv" file containing display commands:
+
+~~~literatec
+event init (i = 0) {
+  display ("myview.gv", true);
+  ...
+}
+~~~
+
+where the second argument (`true` here) indicates whether this should
+overwrite existing commands. */
 
 #ifndef DISPLAY_JS
-# define DISPLAY_JS "http://basilisk.ida.upmc.fr/three.js/editor/index.html"
+# define DISPLAY_JS "https://basilisk.fr/gview"
+# pragma autolink -L$BASILISK/wsServer -lws
 #endif
 
 #ifndef DISPLAY_HOST
@@ -77,11 +95,13 @@ display ("squares (color = 'u.x', spread = -1);", true);
 # define DISPLAY_RANGE "7100:7200"
 #endif
 
-#define debug(...) do { if (Display.debug) fprintf (qerr, __VA_ARGS__), fflush(qerr); } while(0)
+#define debug(...) do { if (Display.debug) {                            \
+      fprintf (qerr, "%s:%d:%s: ", __FILE__, LINENO, __func__);         \
+      fprintf (qerr, __VA_ARGS__), fflush(qerr);                        \
+    }} while(0)
 
 #include <netdb.h>
 #include <wsServer/include/ws.h>
-#pragma autolink -L$BASILISK/wsServer -lws
 
 #include "view.h"
 #include "khash.h"
@@ -93,13 +113,42 @@ typedef struct {
 
 KHASH_MAP_INIT_STR(strhash, DisplayClient *)
 
+#define MAXREADY 256
+  
 static struct {
   khash_t(strhash) * objects;
   int sock, port;
-  char * error;
+  char * error, * status;
   Array * controls;
   bool debug;
+  struct {
+    int fd;
+    bool ready;
+  } ready[MAXREADY];
+  int nready;
 } Display = { .sock = -1 };
+
+static bool display_ready (int fd)
+{
+  for (int i = 0; i < Display.nready; i++)
+    if (Display.ready[i].fd == fd)
+      return Display.ready[i].ready;
+  return true;
+}
+
+static void display_set_ready (int fd, bool ready)
+{
+  int found = -1;
+  for (int i = 0; i < Display.nready && found < 0; i++)
+    if (Display.ready[i].fd == fd)
+      found = i;
+  if (found < 0) {
+    assert (Display.nready < MAXREADY);
+    found = Display.nready++;
+    Display.ready[found].fd = fd;
+  }
+  Display.ready[found].ready = ready;
+}
 
 static void display_display()
 {
@@ -107,13 +156,18 @@ static void display_display()
   for (khiter_t k = kh_begin (Display.objects); k != kh_end (Display.objects);
        ++k)
     if (kh_exist (Display.objects, k)) {
-      debug ("%s", kh_key (Display.objects, k));
+      char * s = NULL;
       DisplayClient * client = kh_value (Display.objects, k);
       while (client->fd >= 0) {
-	debug (" %d/%d", client->fd, client->iter);
+        if (Display.debug) {
+          char * s1;
+          asprintf (&s1, "%s %d/%d", s ? s : "", client->fd, client->iter);
+          free (s); s = s1;
+        }
 	client++;
       }
-      debug ("\n");
+      debug ("%s%s\n", kh_key (Display.objects, k), s);
+      free (s);
     }
   debug ("--------------------------\n");
 }
@@ -138,10 +192,15 @@ static char * read_file_into_buffer (FILE * fp)
 static void display_command (const char * command)
 {
   debug ("display_command (%s)\n", command);
-  
-  vertex_buffer_setup();
-  VertexBuffer.vertex = 0; // fixme
 
+  free (Display.error);
+  Display.error = NULL;
+  
+  vertex_buffer_setup (false);
+  
+  if (!strcmp (command, "status();"))
+    return;
+  
   // Temporarily redirect stderr to catch errors
   int bak = -1;
   if (pid() == 0) {
@@ -156,8 +215,6 @@ static void display_command (const char * command)
   bool status = process_line (line);
   free (line);
   
-  free (Display.error);
-  Display.error = NULL;
   if (status) {
     if (VertexBuffer.type < 0)
       VertexBuffer.type = 0;
@@ -247,10 +304,16 @@ static int display_send (const char * command, int fd)
 {
   int status = 0;
 
+  if (!display_ready (fd)) {
+    debug ("%d not ready: not sending '%s'\n", fd, command);
+    return 0;
+  }
+
   debug ("sending '%s' to %d\n", command, fd);
-  
+
+  const char * msg = !strcmp (command, "status();") ? Display.status : Display.error;
   unsigned int commandlen = strlen (command);
-  unsigned int errorlen = Display.error ? strlen (Display.error) : 0;
+  unsigned int msglen = msg ? strlen (msg) : 0;
   
   int paddedlen = 4*ceil(commandlen/4.);
   size_t len = 2*sizeof(unsigned int) + paddedlen;
@@ -269,7 +332,7 @@ static int display_send (const char * command, int fd)
 #endif
   
   if (gtype < 0)
-    len += errorlen;
+    len += msglen;
   else
     len += 2*sizeof(int) +
       4*sizeof (unsigned int) + glens[0] + glens[1] + glens[2] + glens[3];
@@ -277,7 +340,7 @@ static int display_send (const char * command, int fd)
   if (pid() == 0) {
     if (ws_sendframe_init (fd, len, false, WS_FR_OP_BIN) < 0 ||
 	ws_send (fd, &commandlen, sizeof(unsigned int)) < sizeof(unsigned int) ||
-	ws_send (fd, &errorlen, sizeof(unsigned int)) < sizeof(unsigned int) ||
+	ws_send (fd, &msglen, sizeof(unsigned int)) < sizeof(unsigned int) ||
 	ws_send (fd, command, commandlen) < commandlen)
       status = -1;
     
@@ -291,7 +354,7 @@ static int display_send (const char * command, int fd)
 
   if (gtype < 0) {
     if (pid() == 0 && status >= 0 &&
-	ws_send (fd, Display.error, errorlen) < errorlen)
+	ws_send (fd, msg, msglen) < msglen)
       status = -1;
   }
   else {
@@ -328,7 +391,7 @@ static void display_add (const char * command, int fd)
   }
   DisplayClient * clients = kh_value (Display.objects, k), * client = clients;
   int len = 0;
-  while (client->fd >= 0) {
+  while (client->fd >= 0 && fd >= 0) {
     if (client->fd == fd)
       fd = -1;
     client++, len++;
@@ -377,7 +440,7 @@ static void display_remove (const char * command, int fd)
   debug ("removing '%s'\n", command);
   khiter_t k = kh_get (strhash, Display.objects, command);
   if (k == kh_end (Display.objects))
-    debug ("display_remove(): error! could not find '%s' (%d)\n",
+    debug ("display_remove(): could not find '%s' (%d)\n",
 	   command, fd);
   else
     array_remove (k, fd);
@@ -510,19 +573,22 @@ static char * bview_interface_json()
 void display_onclose (int fd)
 {  
   debug ("closing %d\n", fd);
-  for (khiter_t k = kh_begin (Display.objects); k != kh_end (Display.objects);
-       ++k)
+  for (khiter_t k = kh_begin (Display.objects); k != kh_end (Display.objects); ++k)
     if (kh_exist (Display.objects, k))
       array_remove (k, fd);
   display_display();
 }
 
-void display_onmessage (int fd, const char * msg, size_t size, int type)
+void display_onmessage (int fd, void * data, size_t size, int type)
 {
   if (type == WS_FR_OP_TXT) {
-    if (!msg)
+    if (!data)
       fprintf (stderr, "error receiving data on websocket\n");
-    else switch (msg[0]) {
+    else {
+      char msg[size + 1];
+      memcpy (msg, data, size); msg[size] = '\0';
+      debug ("display_onmessage: %s\n", msg);
+      switch (msg[0]) {
       case '+': display_add (msg + 1, fd); break;
       case '-': display_remove (msg + 1, fd); break;
       case '#': display_control_update (msg + 1, fd); break;
@@ -531,6 +597,19 @@ void display_onmessage (int fd, const char * msg, size_t size, int type)
 			msg);
 	break;
       }
+    }
+  }
+  else if (type == WS_FR_OP_BIN) {
+    static const unsigned char throttle_magic[] = {
+      'T', 'R', 'A', 'N', 'S', 'F', 'E', 'R',
+      '_', 'C', 'T', 'R', 'L'
+    };
+    static const int len = sizeof(throttle_magic);
+    if (size == len + 1 && !memcmp (data, throttle_magic, len)) {
+      bool ready = ((char *)data)[len];
+      debug ("throttling: %s\n", ready ? "ready" : "not ready");
+      display_set_ready (fd, ready);
+    }
   }
   else
     fprintf (stderr, "display_onmessage: error: unexpected message type '%d'\n",
@@ -566,8 +645,7 @@ void display_onopen (int fd)
 
 static void display_update (int i)
 {
-  for (khiter_t k = kh_begin (Display.objects); k != kh_end (Display.objects);
-       ++k)
+  for (khiter_t k = kh_begin (Display.objects); k != kh_end (Display.objects); ++k)
     if (kh_exist (Display.objects, k)) {
       DisplayClient * client = kh_value (Display.objects, k);
       while (client->fd >= 0) {
@@ -581,17 +659,17 @@ static void display_update (int i)
 	client = kh_value (Display.objects, k);
 	while (client->fd >= 0) {
 	  if (client->iter < i) {
-	      client->iter = i;
-	      if (display_send (command, client->fd) < 0) {
-		debug ("error sending '%s' to '%d'\n", command, client->fd);
-		if (pid() == 0)
-		  close (client->fd);
-		display_onclose (client->fd);
-		if (!kh_exist (Display.objects, k))
-		  break;
-	      }
-	      else
-		client++;
+            client->iter = i;
+            if (display_send (command, client->fd) < 0) {
+              debug ("error sending '%s' to '%d'\n", command, client->fd);
+              if (pid() == 0)
+                close (client->fd);
+              display_onclose (client->fd);
+              if (!kh_exist (Display.objects, k))
+                break;
+            }
+            else
+              client++;
 	  }
 	  else
 	    client++;
@@ -702,8 +780,8 @@ void display_url (FILE * fp)
     fprintf (stderr,
 	     "src/display.h:%d: warning: gethostbyname(\"%s\") returned NULL\n",
 	     LINENO, hostname);
-  fprintf (fp, DISPLAY_JS "?ws://%s:%d", h ? h->h_name : "127.0.0.1",
-	   Display.port);
+  if (strcmp (DISPLAY_JS, ""))
+    fprintf (fp, DISPLAY_JS "?%s%%20%d", /*h ? h->h_name :*/ "localhost", Display.port);
 }
 
 int display_usage = 20; // use 20% of runtime, maximum
@@ -715,7 +793,7 @@ int display_play = DISPLAY < 0 ? -1 : 0;
 int display_play = -1;
 #endif
 
-static void display_destroy()
+static void display_terminate()
 {
   for (khiter_t k = kh_begin (Display.objects); k != kh_end (Display.objects);
        ++k)
@@ -731,12 +809,17 @@ static void display_destroy()
     free (d->tooltip);
   }
   array_free (Display.controls);
+
+  sysfree (Display.error);
+  sysfree (Display.status);
   
   if (pid() == 0) {
     remove ("display.html");
-    
-    // fixme: close connection cleanly
-    close (Display.sock);
+
+    if (strcmp (DISPLAY_JS, "")) {
+      // fixme: close connection cleanly
+      close (Display.sock);
+    }
   }
 }
 
@@ -765,21 +848,23 @@ void display_init()
       exit (1);
     }
 
-    FILE * fp = fopen ("display.html", "w");
-    if (!fp)
-      perror ("display.html");
-    else {
-      fputs ("<head><meta http-equiv=\"refresh\" content=\"0;URL=", fp);
-      display_url (fp);
-      fputs ("\"></head>\n", fp);
-      fclose (fp);
+    if (strcmp (DISPLAY_JS, "")) {
+      FILE * fp = fopen ("display.html", "w");
+      if (!fp)
+        perror ("display.html");
+      else {
+        fputs ("<head><meta http-equiv=\"refresh\" content=\"0;URL=", fp);
+        display_url (fp);
+        fputs ("\"></head>\n", fp);
+        fclose (fp);
+      }
     }
   }
 
   Display.objects = kh_init (strhash);
   Display.controls = array_new();
   
-  free_solver_func_add (display_destroy);
+  free_solver_func_add (display_terminate);
 
 #ifndef DISPLAY
   display_control (display_play, -1, 1, "Run/Pause");
@@ -794,6 +879,9 @@ void display_init()
 
 event refresh_display (i++, last)
 {
+  sysfree (Display.status);
+  assert (asprintf (&Display.status, "t: %12f i: %6d", t, i) > 0);
+  
   display_poll (0);
   if (display_play == 1) // Step
     display_play = -1;

@@ -30,6 +30,21 @@ done
 # Multigrid (GPU), 2767 steps, 10.0743 CPU, 97.95 real, 2.96e+07 points.step/s, 8 var
 # Multigrid (GPU), 2991 steps, 17.2899 CPU, 391.4 real, 3.21e+07 points.step/s, 8 var
 
+Metal device: Apple M2 (10-core GPU)
+Unified memory: 8192 MB
+
+for i in 128 256 512 1024 2048 4096; do
+  turbulence.metal/turbulence.metal $i 2> /tmp/log;
+done
+
+# Title: AppleM2(metal)
+# Multigrid (metal), 2008 steps, 1.30242 CPU, 3.836 real, 8.57e+06 points.step/s, 8 var
+# Multigrid (metal), 2011 steps, 1.67881 CPU, 4.864 real, 2.71e+07 points.step/s, 8 var
+# Multigrid (metal), 2482 steps, 2.45009 CPU, 7.524 real, 8.64e+07 points.step/s, 8 var
+# Multigrid (metal), 2731 steps, 3.24003 CPU, 19.94 real, 1.44e+08 points.step/s, 8 var
+# Multigrid (metal), 3216 steps, 4.39381 CPU, 78.68 real, 1.71e+08 points.step/s, 8 var
+# Multigrid (metal), 3330 steps, 5.0843 CPU, 311.7 real, 1.79e+08 points.step/s, 8 var
+
 OpenGL renderer string: NVIDIA GeForce RTX 3050 Ti Laptop GPU/PCIe/SSE2
 Dedicated video memory: 4096 MB
 
