@@ -1,4 +1,4 @@
-pristine:a39ba20525417d84a35748ae0f1d6ebab26c4dff192ed8cac3fbdbafa6412452
+pristine:4a7787fa26105e1f04d748b2984b42ba61f8b148d5b8ca1253427cd0696401f0
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15631,3 +15631,21 @@ Stephane Popinet <popinet@basilisk.fr>**20261020165823
  Ignore-this: 13489e9ec1bc8ab0c5445add6a139cb28797c619aefc391d63e9d366fb2290c37abbae58bfb6f33c
 ] 
 hash: 0000004148-6b902e033ae9580c45efb3c28de975b5531b978174b6d1ab73a446d98214d8fe
+[Updated viscous.c with the bug correction of Rui Yang
+Stephane Popinet <popinet@basilisk.fr>**20261021134037
+ Ignore-this: a8f47184db5ac97bd506b45ede5ce2980b423e1d88a1390d0520d6628c56f93033536252d385f695
+ 
+ The vertical viscosity was applied twice to the vertical velocity
+ component.
+] 
+hash: 0000106903-2278cf3ae04adc8a748d169aa7c1b78e0da1eccd52e142950814a439c821e504
+[The water depth needs to be large enough to be in "deep water"
+Stephane Popinet <popinet@basilisk.fr>**20261021143323
+ Ignore-this: 49ae6b35e41f218aba9c3949dd41b5c71fd48c1aec088707e1b517450be4b11ee3d28b627267be9f
+] 
+hash: 0000211551-9fa938629946a41f0fa65fb02721f81dda5ae99f8dcf110a450d73954d49a185
+[Viscous linear wave decay with the Navier-Stokes solver
+Stephane Popinet <popinet@basilisk.fr>**20261021165112
+ Ignore-this: 63ae94c8ccbfff3bded9582de0a4c617ff848ec59904730992cc6fa6565eac979272319666aebd4c
+] 
+hash: 0000109175-4bd8e911f84d2ec4b1cb1207e893d4097573be555d51cb084801b07f17f6bc1a
