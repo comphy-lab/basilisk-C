@@ -1,4 +1,4 @@
-pristine:2d499bbb419fb86bc9b3cb3a4cc7901213d0cfee1aaf49f2896acec0b6747327
+pristine:a2a9a8234e6b7ca088cf4c62889f47296816c46fa8af21584a90638d408678c7
 Starting with inventory:
 0000047694-4f13d332b329b0e9f2cd48288a17078ae27f85a71c9cf8b6cd10d4ccdd52d556
 [TAG release 20-10-26 (gview)
@@ -6,3 +6,15 @@ Stephane Popinet <popinet@basilisk.fr>**20261020105746
  Ignore-this: 5b48544ecbae5b113f72f019e7023590c028ae1802af6882fb61ed17ce3248d6daa9be3c90d8d8cf
 ] 
 hash: 0000034249-ec03ea12f223b4a43afb60acfef20fdb2a942e96cb40e992ec40aa8355532d8a
+[Fixed vertical viscosity for the vertical velocity component
+Stephane Popinet <popinet@basilisk.fr>**20261021154016
+ Ignore-this: 190866f96efa87873f14830c354c5c3f8a2933977ab0daf6c4e420564df926e415c31db176818720
+ 
+ Since this is already done by viscous_term() in layered/nh.h.
+] 
+hash: 0000000385-b275fd2fedba5160f6bc2ad7eb8f39d130264f78fd2eefd44ae6165c4d21236a
+[Typo
+Stephane Popinet <popinet@basilisk.fr>**20261021154031
+ Ignore-this: a751fe64fab61d7ed1b6df0a84b9dcc2decb217a1b305f15fa64902a082e704d99961e1dc691e379
+] 
+hash: 0000000329-302ebdc549b6b6213c6a12318909aaa0754b0c0077f4761d4138efd24215f136

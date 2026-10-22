@@ -104,8 +104,6 @@ event init (i = 0)
 We add (an approximation of) horizontal viscosity. */
 
 event viscous_term (i++) {
-  foreach()
-    vertical_diffusion (point, h, w, dt, nu, 0., 0., 0.);
   horizontal_diffusion ({u, w}, nu, dt);
 }
 

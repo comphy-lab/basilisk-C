@@ -144,7 +144,7 @@ Most are minor interface details like this, but an important
 difference is that the web version relies on the web browser
 implementation of the
 [WebSocket](https://en.wikipedia.org/wiki/WebSocket) transfer
-protocol, wherewas the standalone version uses its own implementation
+protocol, whereas the standalone version uses its own implementation
 ([transfer_ws.c]()). Because of security concerns for general web
 applications, the web browser implementation of WebSocket is much more
 restrictive than the standalone version (which is not meant to be used
