@@ -64,6 +64,7 @@ Note that only the documented test cases appear in the list below
 * [Typical (1D) tsunami wave](tsunami.c)
 * [3D meniscus](meniscus3D.c)
 * [Dispersion relation of gravito-capillary waves](dispersion_gravitocap.c)
+* [Viscous dissipation of a linear wave](viscous.c)
 
 ## Coriolis
 

@@ -1136,7 +1136,11 @@ function pagepostproc()
 
 function filterdir()
 {
-    sed -r 's|([^~a-zA-Z_\-]+)'"$1"'/|\1~'"$1"'/|g'
+    if [[ "$1" == .* ]]; then
+        cat
+    else
+        sed -r 's|([^~a-zA-Z_\-]+)'"$1"'/|\1~'"$1"'/|g'
+    fi
 }
 
 source $BASILISK/darcsit/filetype

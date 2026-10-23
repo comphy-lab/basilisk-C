@@ -1,4 +1,4 @@
-pristine:a2a9a8234e6b7ca088cf4c62889f47296816c46fa8af21584a90638d408678c7
+pristine:a91c20c93e6c3d5d35a0b2f8d5cbb099c451b89ff53b5ae002f72198ac1f6ba1
 Starting with inventory:
 0000047694-4f13d332b329b0e9f2cd48288a17078ae27f85a71c9cf8b6cd10d4ccdd52d556
 [TAG release 20-10-26 (gview)
@@ -18,3 +18,13 @@ Stephane Popinet <popinet@basilisk.fr>**20261021154031
  Ignore-this: a751fe64fab61d7ed1b6df0a84b9dcc2decb217a1b305f15fa64902a082e704d99961e1dc691e379
 ] 
 hash: 0000000329-302ebdc549b6b6213c6a12318909aaa0754b0c0077f4761d4138efd24215f136
+[New test case "Viscous dissipation of a linear wave"
+Stephane Popinet <popinet@basilisk.fr>**20261022114123
+ Ignore-this: 429aeee877ae5e50b9647a2526ea8261838f7412117275487a7a710d0120ee38d2c090c60ae04ed4
+] 
+hash: 0000218806-72a8809213b0b0b4a06311c2d1519d8423c220f924e899c32f3bd4d0e77d9df8
+[Do not add ~ to .preview directories
+Stephane Popinet <popinet@basilisk.fr>**20261022172456
+ Ignore-this: b834ada38727f01034bffb09f5cfebf2d20abb666e4b7b078ef3877e8ce2b1a75ca88c23f7e7a2bd
+] 
+hash: 0000000401-4c764cf3846d8154d46c735b46c92f35e071b15f318b67f166ab533c4cfc07d6
