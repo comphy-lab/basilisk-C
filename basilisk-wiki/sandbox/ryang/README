@@ -6,6 +6,13 @@ I am Rui Yang, a Postdoc at Princeton Universty advised by Profs. Luc Deike
 
 Here is a summary of [ongoing projects](/sandbox/ryang/)
 
+# Multilayer with wind forcing
+
+[multilayer_windforcing/decay.c](): validation of the energy decay of 2D linear wave, same as [viscous.c](/sandbox/popinet/viscous.c).
+
+[multilayer_windforcing/forcing.c](): validation of the steady state of wind forced 2D linear wave.
+
+
 # Multilayer with variable density
 
 [multilayer_varydensity/bar.c](): a modified version of [/test/bar.c](/src/test/bar.c) with constant density.

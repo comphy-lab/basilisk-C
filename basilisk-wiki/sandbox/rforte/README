@@ -5,3 +5,14 @@ Will update
 - [airblast.c](airblast.c)
 
 - [airblast_time_dependent.c](airblast_time_dependent.c)
+
+
+# STL Tests
+
+## 2D
+- [geom.c](STL_test/2D/geom.c)
+- [logo.c](STL_test/2D/logo.c)
+
+## 3D
+- [geom.c](STL_test/3D/geom.c)
+- [swirler.c](STL_test/3D/swirler.c)

@@ -26,6 +26,13 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
+@Article{popinet2026,
+author={Popinet, Stéphane and Zaleski, Stéphane},
+title={{Multiscale Multiphase Flows: a numerical Perspective}},
+journal={Journal of Fluid Mechanics: Perspectives},
+year={2026}
+}
+
 @Article{kulkarni2026,
 author={Kulkarni, Yash and Fullana, Tomas and Popinet, Stéphane and Zaleski, Stéphane},
 title={The rapidly advancing contact line {P}art-1: {N}avier slip and microscale inertial effects},
