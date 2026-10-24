@@ -1136,128 +1136,96 @@ function pagepostproc()
 
 function filterdir()
 {
-    if [[ "$1" == .* ]]; then
-        cat
-    else
-        sed -r 's|([^~a-zA-Z_\-]+)'"$1"'/|\1~'"$1"'/|g'
-    fi
+    sed -r 's|([^~a-zA-Z_\-]+)'$1'/|\1~'$1'/|g'
 }
 
 source $BASILISK/darcsit/filetype
 
 function setproc()
 {
-    local preview_file="$1"
-    local url_dir="$2"
-    local display_name="$3"
-    PREPROC=()
-    POSTPROC=()
-    PREPROC_FILTER_DIR=""
-    if [[ "$preview_file" == *.[cm] && "$display_name" == *.[cm] ]]; then
-	local dir="${preview_file%%.?}"
-	local target="${display_name%%.?}"
+    if [[ "$1" == *.[cm] ]]; then
+	local dir="${1%%.?}"
+	local target="${dir##\~}"
 	if [[ ! -d "$dir" && -d "$target" ]]; then
 	    copy_test_dir "$target" "$dir"
 	fi
     fi
-    if [[ -s "$preview_file" ]]; then
-	case "$preview_file" in
+    if [[ -s "$1" ]]; then
+	case "$1" in
 	    *.[cmh])
-		if "$BASILISK/darcsit/pagemagic" "$preview_file"; then
-		    PREPROC=(pagepreproc "$preview_file" 1)
-		    if [[ "$preview_file" == *.[cm] ]]; then
-			local dir="${preview_file%%.?}"
-			PREPROC_FILTER_DIR="${dir##*/}"
+		if $BASILISK/darcsit/pagemagic "$1"; then
+		    PREPROC="pagepreproc $1 1"
+		    if [[ "$1" == *.[cm] ]]; then
+			local dir="${1%%.?}"
+			dir="${dir##\~}"
+			PREPROC="$PREPROC | filterdir $dir"
 		    fi
-		    POSTPROC=(pagepostproc "$preview_file")
+		    POSTPROC="pagepostproc $1"
 		else
-		    if [[ $preview_file == *.[ch] ]]; then
-			PREPROC=(cpreproc "$preview_file" .c)
+		    if [[ $1 == *.[ch] ]]; then
+			PREPROC="cpreproc $1 .c"
 		    else
-			PREPROC=(cpreproc "$preview_file" .octave)
+			PREPROC="cpreproc $1 .octave"
 		    fi
-		    POSTPROC=(cpostproc "$display_name" "$url_dir")
+		    POSTPROC="cpostproc ${1##\~} $2"
 		fi
 		;;
 	    *)
-		local type=$(filetype "$preview_file")
+		local type=$(filetype "$1")
 		case $type in
 		    page)
-			PREPROC=(pagepreproc "$preview_file" 0)
-			POSTPROC=(pagepostproc "$preview_file")
+			PREPROC="pagepreproc $1 0"
+			POSTPROC="pagepostproc $1"
 			;;
 		    *)
-			PREPROC=(cpreproc "$preview_file" ".$type")
-			POSTPROC=(cpostproc "$display_name" "$url_dir")
+			PREPROC="cpreproc $1 .$type"
+			POSTPROC="cpostproc ${1##\~} $2"
 			;;
 		esac
 		;;
 	esac
     else
 	# empty file
-	PREPROC=(echo)
-	POSTPROC=(cat)
-    fi
-}
-
-function preview_pipeline()
-{
-    if [[ -n "$PREPROC_FILTER_DIR" ]]; then
-	"${PREPROC[@]}" | filterdir "$PREPROC_FILTER_DIR" | $PANDOC | "${POSTPROC[@]}" | sed 's/__ESCAPEDDOLLAR__/$/g'
-    else
-	"${PREPROC[@]}" | $PANDOC | "${POSTPROC[@]}" | sed 's/__ESCAPEDDOLLAR__/$/g'
+	PREPROC="echo"
+	POSTPROC="cat"
     fi
 }
 
 if [[ -n "$USERS" && "$REQUEST_URI" == /_preview/* ]]; then
+    # Make sure user input is sane
+    regex='^[a-zA-Z0-9 ./_%-]+$'
+    if [[ ! "$REQUEST_URI" =~ $regex ]]; then
+        bad_request
+        exit 0
+    fi
     no_cache
     if [[ "$username" ]]; then
-	preview_target="${REQUEST_URI##/_preview/}"
-	case "$preview_target" in
-	    ""|/*|*..*|*[!A-Za-z0-9._~%+@/-]*)
-		bad_request
-		exit 1
-		;;
-	esac
-	target_file="$DOCUMENT_ROOT/$preview_target"
-	basename="${preview_target##*/}"
-	if [[ -r "$target_file" ]]; then
-	    dirname="${target_file%/*}"
-	    url_dir="${dirname#$DOCUMENT_ROOT}"
+	if [[ -r $DOCUMENT_ROOT/${REQUEST_URI##/_preview/} ]]; then
+	    basename=${file//$dirname\//}
+	    dirname=${dirname//$DOCUMENT_ROOT\/_preview/$DOCUMENT_ROOT}
 	else
-	    dirname="$DOCUMENT_ROOT"
-	    url_dir=""
+	    basename=${file//$dirname\//}
+	    dirname=$DOCUMENT_ROOT
 	fi
-	ext="${basename##*.}"
-	case "$ext" in
-	    page|md|c|h|m|py|sh|awk|plot|html|css|js)
-		;;
-	    *)
-		ext="page"
-		;;
-	esac
-	scratch_path=$(mktemp -p "$dirname" ".preview.XXXXXX.$ext") || exit 1
-	scratch="${scratch_path##*/}"
-	log_path=$(mktemp -p "$dirname" ".preview.XXXXXX.log") || exit 1
-	log="${log_path##*/}"
+	log="_preview_$basename.log"
 	makefile=$(mktemp)
-	echo "include $BASILISK/Makefile.defs" > "$makefile"
-	if [[ -r "$dirname/Makefile" ]]; then
-	    awk -f "$BASILISK/darcsit/filter-makefile.awk" "$dirname/Makefile" >> "$makefile"
+	echo "include $BASILISK/Makefile.defs" > $makefile
+	if [[ -r $dirname/Makefile ]]; then
+	    awk -f $BASILISK/darcsit/filter-makefile.awk $dirname/Makefile >> $makefile
 	fi
 	if cd "$dirname" && \
-		sed 's/raw=//' | urldecode | sanitize > "$scratch" 2> "$log" && \
-		make -f "$makefile" "$scratch.tags" >> "$log" 2>&1; then
-	    setproc "$scratch" "$url_dir" "$basename"
+		sed 's/raw=//' | urldecode | sanitize > "~$basename" 2> "$log" && \
+		make -f $makefile "~$basename.tags" >> "$log" 2>&1; then
+	    setproc "~$basename" "${dirname#$DOCUMENT_ROOT}"
 	    echo -e "Content-type: text/html; charset=utf-8\n"
-	    if preview_pipeline \
+	    if ( eval $PREPROC | $PANDOC | $POSTPROC | sed 's/__ESCAPEDDOLLAR__/$/g' ) \
 		   2>> "$log"; then
-	        rm -f "$dirname/$log" "$makefile" "$dirname/$scratch" "$dirname/$scratch.tags" "$dirname/$scratch.tags.d"
+	        rm -f "$dirname/$log" $makefile
 		exit 0
 	    fi
 	fi
 	internal_error "$log" >&2
-        rm -f "$dirname/$log" "$makefile" "$dirname/$scratch" "$dirname/$scratch.tags" "$dirname/$scratch.tags.d"
+        rm -f "$dirname/$log" $makefile
 	exit 1
     else
 	echo "Status: 302 Found"

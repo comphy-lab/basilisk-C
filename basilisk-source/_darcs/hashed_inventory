@@ -1,4 +1,4 @@
-pristine:a91c20c93e6c3d5d35a0b2f8d5cbb099c451b89ff53b5ae002f72198ac1f6ba1
+pristine:7b2f17e0d57c4889d9f81efb11056d193ddd8b8045c3de114478d38e7f937f92
 Starting with inventory:
 0000047694-4f13d332b329b0e9f2cd48288a17078ae27f85a71c9cf8b6cd10d4ccdd52d556
 [TAG release 20-10-26 (gview)
@@ -28,3 +28,8 @@ Stephane Popinet <popinet@basilisk.fr>**20261022172456
  Ignore-this: b834ada38727f01034bffb09f5cfebf2d20abb666e4b7b078ef3877e8ce2b1a75ca88c23f7e7a2bd
 ] 
 hash: 0000000401-4c764cf3846d8154d46c735b46c92f35e071b15f318b67f166ab533c4cfc07d6
+[Fixed broken darcsit preview due to previous patch
+Stephane Popinet <popinet@basilisk.fr>**20261023185825
+ Ignore-this: 9e429f0ed4244d726d5c5e34f4f4ae12e7b4bc7fc585d7f2bc8c3d4341e7c12b74f8d6ff2bc7ac93
+] 
+hash: 0000005608-f0f5143c6d91d964b6e87fb2997f30165e3016d4e1d9092ca1037d5c1d9fe948
