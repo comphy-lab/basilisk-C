@@ -1,4 +1,4 @@
-pristine:4d8513ce8d9134eac562a3c4f5e6da7bc92cfdd7fffa818d2a3e149b1fccc2fc
+pristine:34cae4cc65c43cc36f37dc75dd1548692acd31a488c890afae36a99b8f658aed
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15734,3 +15734,33 @@ Riccardo Forte**20261022213956
  Ignore-this: baf25346a38e89e6ba8225fcdc01d93a914393b078ff26829f4f638d3ce2a5bd0917fc2892cfb75e
 ] 
 hash: 0000000954-0afff3a5d7225049636ce5099c56b968336fd81738e6fd56b03b9e44bcdb2c8e
+[add viscous-ns
+mvacher <marc.cordelle.vacher@gmail.com>**20261023055338
+ Ignore-this: ba1c3b2b6f446defbdd5c81b0ece34205f99f86d338449a0055e8a2e8e7cc395a044af093c7df8a5
+] 
+hash: 0000000879-7fd40a930fb0e0cd9fdc41c11ff5900753b6967d6aa0994d6300d1ade05d4489
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20261023100447
+ Ignore-this: 525a43ccde29fbfdf8a7657fd46e58796e634f42bac17db76c68a143dbdaa5d8be98750743291cb2
+] 
+hash: 0000000635-d70e5ae880b12668f09a673c414bb7daa47c43b27438fe225042fea46088e6d5
+[adapt
+mvacher <marc.cordelle.vacher@gmail.com>**20261023104517
+ Ignore-this: 17cefee8ba218ade7decfa27457360e68ca024a46e289b52b1b98a44ac24fb8e150596e0298f937f
+] 
+hash: 0000000545-4f04fd3b1e31cca655c946f4e0babc02ce0ba28fac6b15af0246fa303c633c14
+[back
+mvacher <marc.cordelle.vacher@gmail.com>**20261023104841
+ Ignore-this: 1817a3316d416de7dafbb90bba2d082a48e423afec47bba169b4eec9e7a43ba2befd1d14bb12fa5
+] 
+hash: 0000000562-c6883a8a5a2f8b092a733765a8200be3c809db62f7ef6612343edd3a017133d2
+[Added decay results, Joseph & Wang and comment
+Stephane Popinet <popinet@basilisk.fr>**20261023154239
+ Ignore-this: 264dd46ac54c986bda73f03adfb2719b91d5a6f8d3015265286e0594f005c0824bc9d30001928a7
+] 
+hash: 0000001380-5bd4f175583b3033518bcd8ea8f67f81f6fce19018f01866ce3eb411afd795be
+[Removed decay.c since it was just a copy of /src/test/viscous.c
+Stephane Popinet <popinet@basilisk.fr>**20261023154458
+ Ignore-this: 5041586eb279a6d6b68075a681f043d18eff8ba5f8e0c5603cdcddee68f2eb74d83cc0e246d0c559
+] 
+hash: 0000005150-95a0c32a9da6d3dc6ea1ae6beabc1ddd4a5b17dbb091fd4c4a54aedef3a125fa

@@ -9,7 +9,9 @@ p_s = -\hat p\,\partial_x\eta, \qquad
 $$
 The pressure gradient is added to the barotropic acceleration. We retain
 the original linear wave, depth, steepness and viscosity, and use the
-same grid and duration as [decay.c](decay.c).
+same grid and duration as [viscous.c](/src/test/viscous.c).
+
+As shown below, adding the forcing term maintains a nearly constant total energy. The slight increase in energy is due to the fact that the numerical method slightly under-estimates the energy loss compared to the analytical predicition by Joseph & Wang, as clearly shown below.
 
 ~~~gnuplot Evolution of the normalised energy.
 set xlabel 't/T_0'
@@ -18,17 +20,20 @@ k = 2.*pi
 lambda = 1.
 g = 1.
 T0 = k*lambda/sqrt(g*k)
+nu = 1./20000.
 set xrange [0:10]
-plot 'log' u ($1/T0):4 every 30 w p t 'Numerical (forcing)'
+set key bottom left
+plot 'log' u ($1/T0):4 every 30 w p t 'Numerical (forcing)', \
+     '/home/basilisk-src/basilisk/src/test/viscous/log' u ($1/T0):4 every 30 w p t 'Numerical (no forcing)', \
+     exp(-2.*nu*k**2*x*T0) w l t 'Joseph and Wang decay', \
+     1 t 'constant'
 ~~~
-*/
 
-/**
 The macros below add a surface-pressure gradient to the barotropic
 acceleration, using $P/\rho=\hat p\,\partial_x\eta$. Following the surface-pressure forcing from Fedorov & Melville
 (1998), we retain the original coefficient
 $\hat p=2\nu\sqrt{gk}$. In the linear deep-water limit this compensates
-the $2\nu k^2$ energy decay discussed in [decay.c](decay.c).
+the $2\nu k^2$ energy decay discussed in [viscous.c](/src/test/viscous.c).
 */
 
 double phat;

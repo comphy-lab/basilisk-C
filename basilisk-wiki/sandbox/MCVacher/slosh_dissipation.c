@@ -59,7 +59,7 @@ int main() {
   u.t[left] = neumann(0.);
   u.t[right] = neumann(0.);
  
-  N=128;
+  N=256;
   origin (-L0/2, 0);
   init_grid(N);
   
@@ -113,7 +113,6 @@ event logfile (i++) {
   fprintf (fpmax, "%d %g \n", i, t);
 }
 
-
 /**
  We use harmonic.h and perform it on u.y at the chosen $\omega_n$.
 */
@@ -121,7 +120,6 @@ event logfile (i++) {
 event harmonic_analysis (t += 0.01; t <= 15) {
   harmonic_decomposition(u.y, t, omegas);
 }
-
 
 event profile (t = end) {
   printf ("-----END-----\n");
@@ -178,6 +176,11 @@ event ppm_output (t = 0; t += 0.01; t <= 15) {
   char name_u[80];
   sprintf (name_u, "u_y.mp4");
   output_ppm (u.y, file = name_u, n = 512,min = -0.3, max = 0.3, linear = true);
+  
+  //u.x
+  char name_u_2[80];
+  sprintf (name_u_2, "u_x.mp4");
+  output_ppm (u.x, file = name_u_2, n = 512,min = -0.3, max = 0.3, linear = true);
 }
 
 /**
@@ -187,7 +190,7 @@ event ppm_output (t = 0; t += 0.01; t <= 15) {
 /**
 ## Comparison with theory : damping due to bulk dissipation
 
-For the full derivation of the formulas, go [there]() *soon*. Comparisons needs to be made with [gravity.c](https://basilisk.fr/src/test/gravity.c).
+For the full derivation of the formulas, go [there]() *soon*. Comparisons needs to be made with [gravity.c](https://basilisk.fr/src/test/gravity.c) and [viscous-ns.c](https://basilisk.fr/src/test/viscous-ns.c).
 
 We find in the end that the amplitude of the oscillation $\eta_0$ is following a logarithmic decrement, such as :
 
@@ -195,7 +198,7 @@ $$\frac{\text{d} \eta_0}{\text{d} t} + \lambda_1\eta_0 = 0$$
 
 with:
 
-$$\lambda_1 = 2\nu k_m^2 \tanh(k_m h_0)$$
+$$\lambda_1 = 2\nu k_m^2$$
 
 and with $k_m$ the wave number of the sloshing mode $m$:
 
@@ -207,7 +210,7 @@ Consequently we have:
 $$\eta_0(t) = \eta_0(0)\exp(-\lambda_1 t)$$
 
 
-**Note :** In *Hydrodynamics* by Lamb, only the case $h_0 \rightarrow +\infty$ is computed, which gives $\lambda_1 = 2\nu k_m^2$ as expected (§ 348).
+**Note :** In *Hydrodynamics* by Lamb, see (§ 348).
 
 ~~~pythonplot Comparison with theory
 import sys
@@ -270,7 +273,7 @@ h=0.15
 
 k_m=m*np.pi/L
 
-lamb=2*nu*(k_m)**2*np.tanh(k_m*h)
+lamb=2*nu*(k_m)**2
 
 plt.figure()
 plt.plot(x_peaks,y_peaks,'r*',label='Num.')
@@ -303,6 +306,7 @@ Hence, after the initial start, we observe that the component of the mode $m=3$ 
 */
 
 /**
+![Vitesse horizontale](slosh_dissipation/u_x.mp4)
 ![Vitesse verticale](slosh_dissipation/u_y.mp4)
 ![Projection de la norme de la vitesse verticale sur le mode n°3](slosh_dissipation/u_y_3.mp4)
 ![Projection de la norme de la vitesse verticale sur le mode n°1](slosh_dissipation/u_y_1.mp4)
