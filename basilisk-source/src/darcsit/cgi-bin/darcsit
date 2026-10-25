@@ -7,6 +7,8 @@
 
 export LANG=en_US.UTF-8
 
+fileregex='[a-zA-Z0-9 ./_%@-]+'
+
 # Need to match that in $BASILISK/Makefile.defs
 CHECKSUM="md5sum -c --status"
 GENSUM="md5sum"
@@ -203,7 +205,7 @@ fi
 
 ################### ?changes ###########################
 
-if [[ "$REQUEST_URI" == *\?changes=* ]] && is_not_bot; then
+if [[ "$REQUEST_URI" =~ ^$fileregex\?changes=[0-9]+$ ]] && is_not_bot; then
     basename=".${REQUEST_URI%%\?*}"
     shortname=$(echo "$basename" | sed -e 's|^./||' -e 's/%20/ /g')
     hash=${REQUEST_URI##*\?changes=}
@@ -316,7 +318,7 @@ dhistory()
     '
 }
 
-if [[ "$REQUEST_URI" == *\?history ]] && is_not_bot; then
+if [[ "$REQUEST_URI" =~ ^$fileregex\?history$ ]] && is_not_bot; then
     basename=.${REQUEST_URI%%\?*}
     shortname=$(echo $basename | sed -e 's|^./||' -e 's/%20/ /g')
     login_timeout
@@ -343,7 +345,7 @@ fi
 
 ################### Recent activity ######################
 
-if [[ "$basename" == _activity* ]] && is_not_bot; then
+if [[ "$REQUEST_URI" =~ ^($fileregex)?/_activity(\?forUser=$fileregex)?$ ]] && is_not_bot; then
     login_timeout
     no_cache
     echo "X-Robots-Tag: noindex"
@@ -382,7 +384,7 @@ mimetype()
     esac    
 }
 
-if [[ "$QUERY_STRING" == "raw" ]] ; then
+if [[ "$REQUEST_URI" =~ ^$fileregex\?raw$ ]] ; then
     file=${file%\?raw}
     if [[ ! -r "$file" ]]; then
 	cat <<EOF
@@ -436,17 +438,6 @@ EOF
 	cat "$1"
 	echo "</pre>"
     fi
-}
-
-function bad_request()
-{
-    cat <<EOF
-Status: 400 Bad Request
-Content-Type: text/html; charset=utf-8
-
-<h1>400 Bad Request</h1>
-Invalid preview target.
-EOF
 }
 
 function runnable()
@@ -745,7 +736,7 @@ function status()
     fi
 }
 
-if [[ "$REQUEST_URI" == *.[cm]\?status ]]; then
+if [[ "$REQUEST_URI" =~ ^$fileregex\.[cm]\?status$ ]]; then
     no_cache
     echo -e "Content-type: text/plain; charset=utf-8\n"
     status "${REQUEST_URI%%\?status}"
@@ -869,7 +860,7 @@ function update_test()
     fi
 }
 
-if [[ -n "$USERS" && "$REQUEST_URI" == /_edit/* ]] && is_not_bot; then
+if [[ -n "$USERS" && "$REQUEST_URI" =~ ^/_edit/$fileregex$ ]] && is_not_bot; then
     if [[ "$REQUEST_URI" == /_edit/static/* ]]; then
 		cat <<EOF
 Content-Type: text/html; charset=utf-8
@@ -974,7 +965,7 @@ function get_edited_text()
     echo -n "${post[editedText]}" | urldecode | sanitize
 }
     
-if [[ -n "$USERS" && "$REQUEST_URI" == /_save/* ]]; then
+if [[ -n "$USERS" && "$REQUEST_URI" =~ ^/_save/$fileregex$ ]]; then
     no_cache
     if [[ "$username" ]]; then
 	basename=.${REQUEST_URI##/_save}
@@ -1036,7 +1027,7 @@ fi
 
 ######################## _run ############################
 
-if [[ "$REQUEST_URI" == /_run/* ]] && runnable "$REQUEST_URI"; then
+if [[ "$REQUEST_URI" =~ ^/_run/$fileregex$ ]] && runnable "$REQUEST_URI"; then
     no_cache
     if [[ "$username" ]]; then
 	basename=.${REQUEST_URI##/_run}
@@ -1191,13 +1182,7 @@ function setproc()
     fi
 }
 
-if [[ -n "$USERS" && "$REQUEST_URI" == /_preview/* ]]; then
-    # Make sure user input is sane
-    regex='^[a-zA-Z0-9 ./_%-]+$'
-    if [[ ! "$REQUEST_URI" =~ $regex ]]; then
-        bad_request
-        exit 0
-    fi
+if [[ -n "$USERS" && "$REQUEST_URI" =~ ^/_preview/$fileregex$ ]]; then
     no_cache
     if [[ "$username" ]]; then
 	if [[ -r $DOCUMENT_ROOT/${REQUEST_URI##/_preview/} ]]; then
@@ -1285,7 +1270,7 @@ running_preproc()
     fi
 }
 
-if [[ "$REQUEST_URI" == *\?running ]]; then
+if [[ "$REQUEST_URI" =~ ^$fileregex\?running$ ]]; then
     no_cache
     echo -e "Content-type: text/html; charset=utf-8\n"
     running_preproc ${REQUEST_URI%%\?running} | $PANDOCT -s -V wikititle="$WIKI_TITLE"	    \
@@ -1405,7 +1390,7 @@ EOF
     echo "</table></div>"
 }
 
-if [[ "$REQUEST_URI" == *\?failed ]] && is_not_bot; then
+if [[ "$REQUEST_URI" =~ ^$fileregex\?failed$ ]] && is_not_bot; then
     basename=.${REQUEST_URI%%\?*}
 
     cd $DOCUMENT_ROOT
@@ -1429,7 +1414,7 @@ fi
 
 ################### _login ################################
 
-if [[ "$REQUEST_URI" == "/_login"* && -n "$USERS" ]] && is_not_bot; then
+if [[ "$REQUEST_URI" =~ ^/_login(\?destination=$fileregex)?$ && -n "$USERS" ]] && is_not_bot; then
     destination=${REQUEST_URI##*\?destination=}
     if [[ "$destination" == "$REQUEST_URI" ]]; then
 	destination="$HTTP_REFERER"
@@ -1484,7 +1469,7 @@ fi
 
 ################### _register ############################
 
-if [[ "$REQUEST_URI" == "/_register"* && -n "$USERS" ]] && is_not_bot; then
+if [[ "$REQUEST_URI" =~ ^/_register(\?destination=$fileregex)?$ && -n "$USERS" ]] && is_not_bot; then
     destination=${REQUEST_URI##*\?destination=}
     if [[ "$destination" == "$REQUEST_URI" ]]; then
 	destination="$HTTP_REFERER"
@@ -1556,7 +1541,7 @@ function delete_page()
 EOF
 }
 
-if [[ "$REQUEST_URI" == *\?delete ]] && is_not_bot; then
+if [[ "$REQUEST_URI" =~ ^$fileregex\?delete$ ]] && is_not_bot; then
     no_cache
     if [[ "$username" ]]; then
 	basename=".${REQUEST_URI%%\?*}"
@@ -1615,6 +1600,17 @@ if [[ "$REQUEST_URI" == *\?delete ]] && is_not_bot; then
 fi
 
 ################### Any other file #######################
+
+if [[ ! "$REQUEST_URI" =~ $fileregex$ ]]; then
+    cat <<EOF
+Status: 400 Bad Request
+Content-Type: text/html; charset=utf-8
+
+<h1>400 Bad Request</h1>
+Invalid request.
+EOF
+    exit 0
+fi
 
 if [[ -f "${file%%\?*}" ]]; then
     file="${file%%\?*}"

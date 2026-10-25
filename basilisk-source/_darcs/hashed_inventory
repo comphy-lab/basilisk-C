@@ -1,4 +1,4 @@
-pristine:7b2f17e0d57c4889d9f81efb11056d193ddd8b8045c3de114478d38e7f937f92
+pristine:29e7a5f52aa7be3d9e27c320735e6cd386d4cc7f6c1c16e53e191d6cdb2ac1d5
 Starting with inventory:
 0000047694-4f13d332b329b0e9f2cd48288a17078ae27f85a71c9cf8b6cd10d4ccdd52d556
 [TAG release 20-10-26 (gview)
@@ -33,3 +33,8 @@ Stephane Popinet <popinet@basilisk.fr>**20261023185825
  Ignore-this: 9e429f0ed4244d726d5c5e34f4f4ae12e7b4bc7fc585d7f2bc8c3d4341e7c12b74f8d6ff2bc7ac93
 ] 
 hash: 0000005608-f0f5143c6d91d964b6e87fb2997f30165e3016d4e1d9092ca1037d5c1d9fe948
+[Stricter check of URI
+Stephane Popinet <popinet@basilisk.fr>**20261024170710
+ Ignore-this: 1e494a47c79ce6e067c30fe4b2e8092ee46e33118158b6aa1528476d8838a77d3723a39b18ab6b05
+] 
+hash: 0000003306-ffba1cb014faec6436dc550cce214cd08b20effbf9c9cb8f04065e8369f3bf17
