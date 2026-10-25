@@ -27,20 +27,16 @@ $$
 - \textcolor{purple}{ \overline{\textbf{\textsf{A}}} } \,
   \left( \boldsymbol{\nabla} \overline{p} \right)
 + \dfrac{1}{\mathrm{Re}_1} 
-  \left[
-    \textcolor{red}{ \overline{\textbf{\textsf{M}}} }
-    .
-    \boldsymbol{\nabla} 
-  \right] \cdot \left(
-  2 \, \overline{\textbf{\textsf{S}}}
-\right) 
+    \textcolor{red}{ 
+        \overline{\textbf{\textsf{D}}} 
+    } 
 + \mathbf{\overline{a}}
 + \textcolor{green}{
   \overline{\textbf{\textsf{B}}}
   \,         
   \mathbf{\overline{u}}
   }
-- \mathbf{e}_\eta
+- \mathrm{e}^{11\tau/5} \, \mathbf{e}_\eta
 $$
 
 in the conservative continuous form, or in its discretized formulation:
@@ -56,20 +52,16 @@ $$
 }
 = 
 \dfrac{1}{\mathrm{Re}_1} 
-  \left[
-    \textcolor{red}{ \overline{\textbf{\textsf{M}}} }
-    .
-    \boldsymbol{\nabla} 
-  \right] \cdot \left(
-  2 \, \overline{\textbf{\textsf{S}}}^{**}
-\right) 
+    \textcolor{red}{ 
+        \overline{\textbf{\textsf{D}}}^{**} 
+    } 
 + \textcolor{green}{
   \left[
     \overline{\textbf{\textsf{B}}}  \,         
     \mathbf{\overline{u}}
   \right]^{n+1/2}
 }
-+ [ \mathbf{\overline{a}} - \mathbf{e}_\eta ]^{n+1/2}
++ [ \mathbf{\overline{a}} - \mathrm{e}^{11\tau/5} \, \mathbf{e}_\eta ]^{n+1/2}
 $$
 $$
 \left.\begin{array}{rcl}
@@ -99,11 +91,13 @@ $$
   \, \boldsymbol{\xi}}  \\
   \boldsymbol{\xi} &=& {}^{\mathrm{t}}(- \xi, \, \eta) / 5
     = {}^{\mathrm{t}}(-x.t^{-1/5}, \, y.t^{1/5}) / 5 \\ 
-  \textcolor{red}{ \overline{\textbf{\textsf{M}}} }
+  \textcolor{red}{ 
+    \overline{\textbf{\textsf{D}}} 
+  } 
   &\textcolor{red}{=}&
   \textcolor{red}{\begin{pmatrix}
-    \mathrm{e}^{3\tau/5} & 0 \\
-    0 & \mathrm{e}^{7\tau/5}
+    \mathcal{D}_{\overline{u}_\xi} \\
+    \mathcal{D}_{\overline{u}_\eta}
   \end{pmatrix}}
   \\
   \overline{\textbf{\textsf{S}}} 
@@ -128,6 +122,46 @@ $$
 \right.
 $$
 
+and where the self-similar viscous operator is more precisely given by:
+
+$$ 
+\boxed{ 
+  \mathcal{D}_{\overline{u}_\xi} 
+  =
+  A_\xi \partial_\xi (2 \mu \partial_\xi \overline{u}_\xi) 
+  + A_\eta \partial_\eta (\mu \partial_\eta \overline{u}_\xi) 
+  + A_\eta \partial_\eta (\mu \partial_\xi \overline{u}_\eta) 
+} 
+$$
+
+$$ 
+\boxed{ 
+  \mathcal{D}_{\overline{u}_\eta} 
+  = 
+  A_\eta \partial_\xi(\mu \partial_\xi \overline{u}_\eta) 
+  + A_\eta \partial_\xi (\mu \partial_\eta \overline{u}_\xi) 
+  + A_\eta \partial_\eta(2 \mu \partial_\eta \overline{u}_\eta) 
+} 
+$$
+
+with:
+$$ 
+\boxed{ 
+  \begin{aligned} 
+    A_\xi(\tau)
+    &= 
+    \mathrm{e}^{3\tau/5},
+    \\ 
+    A_\eta(\tau)
+    &=
+    \mathrm{e}^{7\tau/5}. 
+  \end{aligned} 
+} 
+$$
+
+and derived in the [README](https://basilisk.fr/sandbox/cailler/huppert_heap/README_selfsim_visc_operator_huppert.md) 
+file.
+
 
 The scheme implemented here is close to that used in Gerris ([Popinet,
 2003](/src/references.bib#popinet2003), [Popinet,
@@ -142,8 +176,7 @@ for viscosity. */
 #include "run.h"
 #include "timestep.h"
 #include "selfsim_bcg_huppert.h"
-#include "viscosity.h"
-
+#include "selfsim_viscosity_huppert.h"
 
 /**
 The primary variables are the centered self-similar 
@@ -202,6 +235,7 @@ for which inertia is negligible compared to viscosity. */
 #if NEW_VERSION_CENTERED
   /* New version of centered.h */
   (const) face vector mu = zerof, a = zerof, alpha = unityf;
+  (const) face vector muAx = zerof, muAy = zerof;
   (const) scalar rho = unity;
   mgstats mgp = {0}, mgpf = {0}, mgu = {0};
   bool stokes = false;
@@ -224,16 +258,31 @@ For the default symmetric boundary conditions, we need to ensure that
 the normal component of the velocity is zero after projection. This
 means that, at the boundary, the acceleration $\mathbf{\overline{a}}$ must be
 balanced by the pressure gradient. Taking care of boundary orientation
-and staggering of $\mathbf{\overline{a}}$, this can be written */
+and staggering of $\mathbf{\overline{a}}$, this can be written in the physical 
+space as */
 
 #define neumann_pressure(i) (a.n[i]*fm.n[i]/(alpha.n[i]))
 
+/** 
+Even though the following lines define pressure boundary conditions, those 
+to be considered are direclty defined and explained in the user code, as they 
+do need special care. 
+We here still implement the needed boundary conditions for the spatial drift 
+vector $\boldsymbol{\xi}$ and the new self-similar velocity advection 
+$\mathbf{\overline{\Lambda}}$.
+*/
+
 p[right] = neumann (neumann_pressure(ghost) 
-  + (fm.n[ghost]/alpha.n[ghost])*((-.2)*x*(u.n[1]-u.n[])/Delta)) ;
+                    + (fm.n[ghost]/alpha.n[ghost])*(
+                       (.2)*x*(u.n[1]-u.n[])/Delta
+                      )
+                   ) ;
   
 p[left]  = neumann (- neumann_pressure(0)
-  - (fm.n[0]/alpha.n[0])*((-.2)*x*(u.n[]-u.n[-1])/Delta));
-
+                    - (fm.n[0]/alpha.n[0])*(
+                       (-.2)*x*(u.n[]-u.n[-1])/Delta
+                      )
+                   );
 
 xi.n[right] = -.2*x ; 
 xi.t[right] = .2*y ; 
@@ -264,10 +313,14 @@ lambdaf.t[bottom] = uf.t[ghost] + fm.t[ghost]*xi.t[ghost] ;
 
 #else // !AXI
 #  if dimension > 1
-p[top]    = neumann (neumann_pressure(ghost)
-  + (.2)*y*(u.n[0,1]-u.n[])/(Delta*alpha.n[ghost]));
+p[top]    = neumann (neumann_pressure(ghost) 
+                     - 1./(alpha.n[ghost])
+                     - fm.n[ghost]*(.2)*y*(u.n[0,1]-u.n[])/(Delta*alpha.n[ghost])
+                    );
 p[bottom] = neumann (- neumann_pressure(0) 
-  + (.2)*y*(u.n[]-u.n[0,-1])/(Delta*alpha.n[0])) ;
+                     + 1./(alpha.n[0])
+                     + fm.n[0]*(.2)*y*(u.n[]-u.n[0,-1])/(Delta*alpha.n[0])
+                    ) ;
 
 xi.n[top] = .2*y ;
 xi.t[top] = -.2*x ; 
@@ -494,10 +547,12 @@ event advection_term (i++,last)
 {
   if (!stokes) {
     prediction_uf();
+
     boundary({xi});
     boundary((scalar *){uf});
 
     mgpf = project (uf, pf, alpha, dt/2., mgpf.nrelax);
+
     boundary((scalar *){uf});
 
     foreach_face(){
@@ -540,6 +595,7 @@ towards *cell centers* (and vice-versa).
     boundary((scalar *){uf_temp});
 
     selfsim_advection ((scalar *){u}, lambdaf, dt, Nd, (scalar *){g});
+
     boundary((scalar *){lambdaf});
     boundary((scalar *){u});
     boundary({xi});
@@ -564,7 +620,9 @@ static void correction (double dt)
 /**
 The viscous term is computed implicitly. We first add the pressure
 gradient and acceleration terms, as computed at time $\tau$, then call
-the implicit viscosity solver. We then remove the acceleration and
+the implicit viscosity solver adapted to the self-similar Huppert's heap 
+problem. 
+We then remove the acceleration and
 pressure gradient terms as they will be replaced by their values at
 time $\tau+\Delta \tau$. */
 
@@ -572,7 +630,7 @@ event viscous_term (i++,last)
 {
   if (constant(mu.x) != 0.) {
     correction (dt);
-    mgu = viscosity (u, mu, rho, dt, mgu.nrelax);
+    mgu = viscosity_huppert (u, mu, muAx, muAy, rho, dt, mgu.nrelax);
     correction (-dt);
   }
 
@@ -614,7 +672,9 @@ event acceleration (i++,last)
   }
   foreach_face(y){
       uf.y[] = fm.y[]*(face_value (u.y, 0) + dt*a.y[]) 
-        + dt*((1.2)*uf_temp.y[] - fm.y[]*exp(2.2*t));
+        + dt*((1.2)*uf_temp.y[] 
+              - fm.y[]*exp(2.2*t)
+             );
   }
   boundary((scalar *){uf});
 }
@@ -638,12 +698,15 @@ void centered_gradient (scalar p, vector g)
 
   face vector gf[];
   foreach_face(x){
-      gf.x[] = fm.x[]*(a.x[]) + (.8)*uf_temp.x[]
+      gf.x[] = fm.x[]*(a.x[]) 
+        + (.8)*uf_temp.x[]
         - alpha.x[]*(p[] - p[-1])/Delta ;
   }
   foreach_face(y){
-      gf.y[] = fm.y[]*(a.y[]) + (1.2)*uf_temp.y[] - fm.y[]*exp(2.2*t)
-        - alpha.y[]*(p[] - p[-1])/Delta ;
+      gf.y[] = fm.y[]*(a.y[]) 
+        + (1.2)*uf_temp.y[] 
+        - fm.y[]*exp(2.2*t)
+        - alpha.y[]*(p[] - p[0,-1])/Delta ;
   }
 
   /**

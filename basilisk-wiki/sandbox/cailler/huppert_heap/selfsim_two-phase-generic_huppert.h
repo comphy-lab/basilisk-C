@@ -16,8 +16,11 @@ event defaults (i = 0)
   If the viscosity is non-zero, we need to allocate the face-centered
   viscosity field. */
   
-  if (mu1 || mu2)
+  if (mu1 || mu2) {
     mu = new face vector;
+    muAx = new face vector;
+    muAy = new face vector;
+  }
 
   /**
   We add the interface to the default display. */
@@ -94,50 +97,53 @@ $$
 \end{pmatrix}
 $$
 for the pressure, and:
+
+$$ 
+\boxed{ 
+  \textcolor{red}{\mathcal{D}_{\overline{u}_\xi}}
+  =
+  A_\xi \partial_\xi (2 \mu \partial_\xi \overline{u}_\xi) 
+  + A_\eta \partial_\eta (\mu \partial_\eta \overline{u}_\xi) 
+  + A_\eta \partial_\eta (\mu \partial_\xi \overline{u}_\eta) 
+} 
 $$
-\left[
-\textcolor{red}{ \overline{\textbf{\textsf{M}}} }
-.\boldsymbol{\nabla}
-\right] \cdot
-=
-{}^{\mathrm{t}}\left(
-  \begin{pmatrix}
-    \mathrm{e}^{3 \tau /5} \, \partial_x &
-    \mathrm{e}^{7 \tau /5} \, \partial_y 
-  \end{pmatrix}
-  {}^{\mathrm{t}} ( \,\, )
-\right)
+
+$$ 
+\boxed{ 
+  \textcolor{red}{\mathcal{D}_{\overline{u}_\eta}}
+  = 
+  A_\eta \partial_\xi(\mu \partial_\xi \overline{u}_\eta) 
+  + A_\eta \partial_\xi (\mu \partial_\eta \overline{u}_\xi) 
+  + A_\eta \partial_\eta(2 \mu \partial_\eta \overline{u}_\eta) 
+} 
 $$
-for the viscosity. 
-In practice, for the viscosity term, we have the following 
-equivalence:
+
+with:
+$$ 
+  \begin{aligned} 
+    A_\xi(\tau)
+    &= 
+    \mathrm{e}^{3\tau/5},
+    \\ 
+    A_\eta(\tau)
+    &=
+    \mathrm{e}^{7\tau/5}. 
+  \end{aligned} 
 $$
-\left[
-\textcolor{red}{ \overline{\textbf{\textsf{M}}} }
-.\boldsymbol{\nabla}
-\right] \cdot \left(
-  2 \, \overline{\textbf{\textsf{S}}}
-\right) 
-= 
-\left(
-  \textcolor{red}{ \overline{\mathbf{M}}' }
-  \cdot 
-  \boldsymbol{\nabla}^2
-\right) 
-\overline{\mathbf{u}}, 
-\quad \text{where } \,
-\textcolor{red}{ \overline{\mathbf{M}}' 
-=
-\begin{pmatrix}
-  \mathrm{e}^{3 \tau /5} \\
-  \mathrm{e}^{7 \tau /5}
-\end{pmatrix}
-}
-$$
+for the viscosity.
 
 To do so, we take profit of the existing *face vectors* 
 `alphav` and `muv`, that we redefine following the two 
 directions $\xi$ and $\eta$:
+
+ Required coefficient fields (all face-centred):
+
+  | On x-faces                         | On y-faces                      | 
+  | ---------------------------------- | ------------------------------- |
+  | `alphav.x = exp(1.4*t)*alphav.x`   | `alphav.y = exp(2.2*t)*alphav.y`|
+  | `muv.x`   = `Ax*muv.x`             | `muv.y`   = `Ay*muv.y`          |
+  | `muAxv.x` = `Ax*muv.x`             | `muAxv.y` = `Ax*muv.y`          |
+  | `muAyv.x` = `Ay*muv.x`             | `muAyv.y` = `Ay*muv.y`          |
 */
 
 
@@ -146,17 +152,29 @@ event properties (i++)
   foreach_face(x) {
     double ff = (sf[] + sf[-1])/2.;
     alphav.x[] = exp(1.4*t)*fm.x[]/rho(ff);
+    // alphav.x[] = fm.x[]/rho(ff);
     if (mu1 || mu2) {
       face vector muv = mu;
+      face vector muAxv = muAx;
+      face vector muAyv = muAy;
       muv.x[] = fm.x[]*mu(ff)*exp(.6*t);
+      muAxv.x[] = fm.x[]*mu(ff)*exp(.6*t);
+      muAyv.x[] = fm.x[]*mu(ff)*exp(1.4*t);
+      // muv.x[] = fm.x[]*mu(ff);
     }
   }
   foreach_face(y) {
     double ff = (sf[] + sf[-1])/2.;
     alphav.y[] = exp(2.2*t)*fm.y[]/rho(ff);
+    // alphav.y[] = fm.y[]/rho(ff);
     if (mu1 || mu2) {
       face vector muv = mu;
+      face vector muAxv = muAx;
+      face vector muAyv = muAy;
       muv.y[] = fm.y[]*mu(ff)*exp(1.4*t);
+      muAxv.y[] = fm.y[]*mu(ff)*exp(.6*t);
+      muAyv.y[] = fm.y[]*mu(ff)*exp(1.4*t);
+      // muv.y[] = fm.y[]*mu(ff);
     }
   }  
   foreach()

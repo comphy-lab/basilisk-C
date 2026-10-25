@@ -1,4 +1,4 @@
-pristine:34cae4cc65c43cc36f37dc75dd1548692acd31a488c890afae36a99b8f658aed
+pristine:58590248bf1f12d88ed20dd169531811044439d50dd5d3a64c4b710faaf1c9d2
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15764,3 +15764,8 @@ Stephane Popinet <popinet@basilisk.fr>**20261023154458
  Ignore-this: 5041586eb279a6d6b68075a681f043d18eff8ba5f8e0c5603cdcddee68f2eb74d83cc0e246d0c559
 ] 
 hash: 0000005150-95a0c32a9da6d3dc6ea1ae6beabc1ddd4a5b17dbb091fd4c4a54aedef3a125fa
+[Update the self-similar solver for the Huppert heap problem. Now working almost as expected.
+nicolas.cailler@upmc.fr**20261024172306
+ Ignore-this: d96a44450e465af439bde5596ca190de570caa16520d3a8833a8c3d2976ec722fc2c1d0d69af47ec
+] 
+hash: 0000073932-c3d99000943438ec3533ae1f80712c9d662272dfb4c623070a40e4c46389d34b
