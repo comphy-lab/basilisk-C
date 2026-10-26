@@ -1,4 +1,4 @@
-pristine:58590248bf1f12d88ed20dd169531811044439d50dd5d3a64c4b710faaf1c9d2
+pristine:8af605d1e16e7c08747b98deac7719512fb7211741a11e1ed3bb206d0edddf95
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15769,3 +15769,18 @@ nicolas.cailler@upmc.fr**20261024172306
  Ignore-this: d96a44450e465af439bde5596ca190de570caa16520d3a8833a8c3d2976ec722fc2c1d0d69af47ec
 ] 
 hash: 0000073932-c3d99000943438ec3533ae1f80712c9d662272dfb4c623070a40e4c46389d34b
+[Adjust velocity scale for the movie + typo
+Nicolas Cailler <nicolas.cailler@upmc.fr>**20261025070046
+ Ignore-this: af6fddad100c0538d640f55d0bf15be01934795d96b58db56b93278813783a44544f189ae1a035f5
+] 
+hash: 0000000768-38189ccf071bf5b8260daafdabfcfb75b0c2b5e9600e23e902dc0c246ca13320
+[Just a copy of /src/test/viscous.c
+Stephane Popinet <popinet@basilisk.fr>**20261025171633
+ Ignore-this: 78e1fffeedc633d31734d3e5f30cf76fdbf428700202306505dc1dfda3df6f6eee08e02b7682e264
+] 
+hash: 0000005027-44e51accf82134d7f983a1abaa00d6fce7dd4559ac11502379b570f18be05a3c
+[Tried a stress-free condition at the top
+Stephane Popinet <popinet@basilisk.fr>**20261025174204
+ Ignore-this: a25ce9d5937ddd621f642e6e504beba0d78c19d8181d03d85199b9830cddf9b0a9bd0c1f36e68e39
+] 
+hash: 0000003612-98e362357e0f3df47d2c24a39349037b9fbb5fd8b79cbed1f9ca8d0097a0b3bb

@@ -377,7 +377,7 @@ event mov_p_omega (t+=1e-2) {
   box();
   draw_vof ("f", lw = 1.5);
   squares("omega", spread=-1, linear=true, map=viridis);
-  vectors("u", scale=0.2, lc = {1, 1, 1});
+  vectors("u", scale=0.05, lc = {1, 1, 1});
   mirror ({1,0}) {
     squares ("p", spread=-1, linear=true, map=cool_warm);
     draw_vof ("f", lw = 1.5);
@@ -387,7 +387,7 @@ event mov_p_omega (t+=1e-2) {
 }
 
 /**
-![Collapsing Huppert's heap simulated in the self-similar space | *left* pressure | *right:* vortcity field | $N_{max} = 7$](selfsim_huppert/selfsim_huppert_movie.mp4)(width="40%")
+![Collapsing Huppert's heap simulated in the self-similar space | *left* pressure | *right:* vorticity field | $N_{max} = 7$](selfsim_huppert/selfsim_huppert_movie.mp4)(width="40%")
 */
 
 
