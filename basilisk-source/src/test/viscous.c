@@ -119,7 +119,7 @@ event init (i = 0)
     double H = wave(x, 0) - zb[];
     double z = zb[];
     foreach_layer() {
-      h[] = H/nl;
+      h[] = H*beta[point.l];
       z += h[]/2.;
       u.x[] = u_x(x, z);
       w[] = u_y(x, z);
@@ -162,11 +162,9 @@ event profiles (t += T0/4.; t <= 10.*T0) {
 
 /**
 We compute and log the kinetic, potential and total (normalised)
-energies. The initial condition seems to lead to an initial "jump"
-(i.e. relaxation) in the numerical solution, so we skip the first
-timestep. This may be improved. */
+energies. */
 
-event logfile (i = 1; i++)
+event logfile (i++)
 {
   double ke = 0., gpe = 0.;
   foreach (reduction(+:ke) reduction(+:gpe)) {
@@ -183,7 +181,7 @@ event logfile (i = 1; i++)
   double Ec = ke/2., Ep = g_*(gpe + L0*sq(h_)/2.);
   double E = Ec + Ep;
   static double E0 = 0.;
-  if (i == 1)
+  if (i == 0)
     E0 = E;  
   fprintf (stderr, "%g %g %g %g\n", t, Ec, Ep, E/E0);
 }

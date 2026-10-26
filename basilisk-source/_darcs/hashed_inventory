@@ -1,4 +1,4 @@
-pristine:29e7a5f52aa7be3d9e27c320735e6cd386d4cc7f6c1c16e53e191d6cdb2ac1d5
+pristine:bc34fcebdb470bab6356e560dbe68c7aaf00ab543fb9c66e0b915e71d966dc0b
 Starting with inventory:
 0000047694-4f13d332b329b0e9f2cd48288a17078ae27f85a71c9cf8b6cd10d4ccdd52d556
 [TAG release 20-10-26 (gview)
@@ -38,3 +38,11 @@ Stephane Popinet <popinet@basilisk.fr>**20261024170710
  Ignore-this: 1e494a47c79ce6e067c30fe4b2e8092ee46e33118158b6aa1528476d8838a77d3723a39b18ab6b05
 ] 
 hash: 0000003306-ffba1cb014faec6436dc550cce214cd08b20effbf9c9cb8f04065e8369f3bf17
+[The initial condition was not using the (geometric) beta
+Stephane Popinet <popinet@basilisk.fr>**20261025175058
+ Ignore-this: 37e182e56ab26f79d5170aba4c2bed2d10f1d13dac90a9d08e590e579f64559f4d68d4ddacf94734
+ 
+ This also fixes the issue with the jump in energy during the first
+ timestep.
+] 
+hash: 0000210383-1cd29cc3e5936bc04387ee749016109b0f4ae7bd4ed08dbd06ec9705dc817932
