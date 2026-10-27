@@ -1,4 +1,4 @@
-pristine:bc34fcebdb470bab6356e560dbe68c7aaf00ab543fb9c66e0b915e71d966dc0b
+pristine:9361f038740ee128be95b0b7276092dbebe5ba9fcb32f6085b1832c733ae3099
 Starting with inventory:
 0000047694-4f13d332b329b0e9f2cd48288a17078ae27f85a71c9cf8b6cd10d4ccdd52d556
 [TAG release 20-10-26 (gview)
@@ -46,3 +46,8 @@ Stephane Popinet <popinet@basilisk.fr>**20261025175058
  timestep.
 ] 
 hash: 0000210383-1cd29cc3e5936bc04387ee749016109b0f4ae7bd4ed08dbd06ec9705dc817932
+[The free-surface condition for the diffusion of w by viscosity can be changed
+Stephane Popinet <popinet@basilisk.fr>**20261026181209
+ Ignore-this: 67f8422da2eb76bdf0b1f6ec86947186e822f095cb220821c283712af494fc2dc6c346915f6ecafd
+] 
+hash: 0000000525-48a099decde0c56c1c9c2313a7eccc1b46ccdbcaeed1cbdd5cc110ce8fd8bf23

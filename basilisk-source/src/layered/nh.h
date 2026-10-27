@@ -71,13 +71,16 @@ event defaults (i = 0)
 ## Viscous term
 
 Vertical diffusion is added to the vertical component of velocity
-$w$. */
+$w$. By default the free-surface condition is $dwt = \partial_z w =
+0$. */
+
+(const) scalar dwt[] = 0.;
 
 event viscous_term (i++)
 {
   if (nu > 0.)
     foreach()
-      vertical_diffusion (point, h, w, dt, nu, 0., 0., 0.);
+      vertical_diffusion (point, h, w, dt, nu, dwt[], 0., 0.);
 }
 
 /**
