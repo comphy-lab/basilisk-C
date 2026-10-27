@@ -8,8 +8,6 @@ Here is a summary of [ongoing projects](/sandbox/ryang/)
 
 # Multilayer with wind forcing
 
-[multilayer_windforcing/decay.c](): validation of the energy decay of 2D linear wave, same as [viscous.c](/sandbox/popinet/viscous.c).
-
 [multilayer_windforcing/forcing.c](): validation of the steady state of wind forced 2D linear wave.
 
 

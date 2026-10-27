@@ -76,7 +76,7 @@ def get_wavenumber(N, Delta, all_kr=False):
     kr: array [nkr]  radial wave number
     '''
 
-    kx = np.fft.fftshift(np.fft.fftfreq(N,Delta)) # two sided  
+    kx = 2*np.pi*np.fft.fftshift(np.fft.fftfreq(N,Delta)) # two sided  
     k,l = np.meshgrid(kx,kx)
     K = np.sqrt(k**2 + l**2)
     if all_kr == False:
@@ -132,7 +132,7 @@ def get_spec_2D(psi1, psi2, Delta, window=None):
 
   psi1_hat = np.fft.fft2(psi1)
   psi2_hat = np.fft.fft2(psi2)
-  spec_2D = (psi1_hat*psi2_hat.conj()).real*Delta**2/N**2
+  spec_2D = (psi1_hat*psi2_hat.conj()).real*( Delta / (2*np.pi) )**2/N**2
   spec_2D = np.fft.fftshift(spec_2D, axes=(-1,-2))
   return k, l, spec_2D
 

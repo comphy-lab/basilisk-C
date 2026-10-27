@@ -5,13 +5,7 @@ This is a work-in-progress version of [/src/test/viscous.c]() where we
 are trying to address the [correct free-surface stress
 condition](#free-surface-stress-free-condition).
 
-As shown below we still do not agree with Lamb (we do not agree with
-Joseph and Wang anymore, which is expected). It seems that half the
-dissipation is missing to get to Lamb, which can be verified by
-multiplying the dissipation flux at the surface by two. An hypothesis
-for this factor of two difference could be that the incompressibility
-condition is not accurate enough close to the surface to be able to
-simplify the cross-terms in the viscous stress tensor.
+As shown below we now agree much better with Lamb.
 
 ~~~gnuplot Evolution of the numerical and theoretical energies.
 set xlabel 't/T_0'
@@ -130,19 +124,54 @@ free-surface stress-free condition should be $\partial_z u_x +
 \partial_x w = 0$. So here we redefine the stress-free condition as
 $\partial_z u_x = - \partial_x w$ where we approximate the
 free-surface vertical component with the vertical velocity in the last
-layer (nl - 1). */
+layer (nl - 1).
 
-vector dutf[];
+At the free-surface, the boundary condition for the diffusion of the
+vertical component of velocity must verify the incompressibility
+condition, i.e.
+$$
+\partial_z w = - \partial_x u
+$$
+*/
+
+vector dzu[];
+scalar dzw[];
 
 event viscous_term (i++) {
-  dut = dutf;
-  foreach()
-    dutf.x[] = - (w[1,0,nl-1] - w[-1,0,nl-1])/(2.*Delta);
+  dut = dzu;
+  dwt = dzw;
+  foreach() {
+    dzu.x[] = - (w[1,0,nl-1] - w[-1,0,nl-1])/(2.*Delta);
+    dzw[] = - (u.x[1,0,nl-1] - u.x[-1,0,nl-1])/(2.*Delta);
+  }
   
   /**
   We need to add the horizontal viscosity. This is also important. */
 
   horizontal_diffusion ({u, w}, nu, dt);
+}
+
+/**
+## Viscous pressure jump on the free-surface
+
+To recover Lamb's dissipation, the viscous pressure jump must also be
+taken into account i.e. the pressure at the (linearised) surface is
+$$
+p_s = g\eta + 2\nu\partial_z w
+$$
+to take this jump into account in the horizontal momentum, we need to add
+$$
+- \partial_x ( 2\nu\partial_z w )
+$$
+to the acceleration. */
+
+event acceleration (i++)
+{
+  foreach_face() {
+    double dp = - 2.*nu*(dzw[] - dzw[-1])/Delta;
+    foreach_layer()
+      ha.x[] += hf.x[]*dp;
+  }
 }
 
 /**
@@ -196,7 +225,7 @@ energies. The initial condition seems to lead to an initial "jump"
 (i.e. relaxation) in the numerical solution, so we skip the first
 timestep. This may be improved. */
 
-event logfile (i = 1; i++)
+event logfile (i++)
 {
   double ke = 0., gpe = 0.;
   foreach (reduction(+:ke) reduction(+:gpe)) {
@@ -213,7 +242,7 @@ event logfile (i = 1; i++)
   double Ec = ke/2., Ep = g_*(gpe + L0*sq(h_)/2.);
   double E = Ec + Ep;
   static double E0 = 0.;
-  if (i == 1)
+  if (i == 0)
     E0 = E;  
   fprintf (stderr, "%g %g %g %g\n", t, Ec, Ep, E/E0);
 }
