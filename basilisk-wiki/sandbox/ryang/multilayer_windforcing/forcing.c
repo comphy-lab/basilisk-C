@@ -14,8 +14,10 @@ same grid and duration as [viscous.c](/src/test/viscous.c).
 As shown below, adding the forcing term maintains a nearly constant total energy. The slight increase in energy is due to the fact that the numerical method slightly under-estimates the energy loss compared to the analytical predicition by Joseph & Wang, as clearly shown below.
 
 ~~~gnuplot Evolution of the normalised energy.
-set xlabel 't/T_0'
-set ylabel 'Normalised energy E/E_0'
+set xlabel 't/T_0' font 'Times New Roman,16'
+set ylabel 'Normalised energy E/E_0' font 'Times New Roman,16'
+set tics font 'Times New Roman,14'
+set key bottom left font 'Times New Roman,14'
 k = 2.*pi
 lambda = 1.
 g = 1.
@@ -47,8 +49,29 @@ double phat;
 #include "layered/remap.h"
 #include "layered/perfs.h"
 
-double k_ = 2.*pi, h_ = 2.0, g_ = 1., ak = 0.01;
-double RE = 20000.;
+/**
+We reuse the Stokes wave initialisation routine for simplicity. The
+nonlinear Stokes terms do not matter since the amplitude is small,
+although this could be checked by using a pure linear wave
+solution. */   
+
+#include "test/stokes.h"
+
+/**
+The wavenumber is $k=2\pi$, the amplitude/slope $ak$ is small enough
+(decreasing it has little effect on the results). The viscosity is
+$\nu=1./RE$. Decreasing the viscosity (or increasing it) does not
+affect the results qualitatively.
+
+Note that we set the fluid depth to h_ = 2 (i.e. twice the wavelength)
+to be in the deep water limit. This is important to match the
+theory. Further increasing the depth does not change the results. */
+
+double k_ = 2.*pi [-1,0];
+double h_ = 2.0 [1,0];
+double g_ = 1. [1,-2];
+double ak = 0.01 [0,0];
+double RE = 20000. [0,0];
 
 #define T0 (k_*L0/sqrt(g_*k_))
 
@@ -57,7 +80,9 @@ int main()
   origin (-L0/2.);
   periodic (right);
   G = g_;
-  nu = 1./RE;
+  double lambda_ = 2.*pi/k_;
+  double c_ = sqrt(g_/k_);
+  nu = c_*lambda_/RE;
 
   N = 256;
   nl = 60;
@@ -74,20 +99,16 @@ The surface tension in the original calculation was zero. */
 event init (i = 0)
 {
   geometric_beta (1./3., true);
+  
   foreach() {
-    zb[] = -h_;
-    eta[] = ak/k_*cos(k_*x);
-    double H = eta[] - zb[];
-    foreach_layer()
-      h[] = H/nl;
-  }
-  vertical_remapping (h, tracers);
-  foreach() {
+    zb[] = - h_;
+    double H = wave(x, 0) - zb[];
     double z = zb[];
     foreach_layer() {
+      h[] = H*beta[point.l];
       z += h[]/2.;
-      u.x[] = ak*sqrt(g_/k_)*cos(k_*x)*exp(k_*z);
-      w[] = ak*sqrt(g_/k_)*sin(k_*x)*exp(k_*z);
+      u.x[] = u_x(x, z);
+      w[] = u_y(x, z);
       z += h[]/2.;
     }
   }
@@ -119,7 +140,7 @@ Log time, kinetic energy, potential energy and normalised total energy
 in stderr (the sandbox's `log` file). As in decay.c, normalise using the
 first timestep to skip the initial relaxation. */
 
-event logfile (i = 1; i++)
+event logfile (i++)
 {
   double ke = 0., gpe = 0.;
   foreach (reduction(+:ke) reduction(+:gpe)) {
@@ -136,7 +157,7 @@ event logfile (i = 1; i++)
   double Ec = ke/2., Ep = g_*(gpe + L0*sq(h_)/2.);
   double E = Ec + Ep;
   static double E0 = 0.;
-  if (i == 1)
+  if (i == 0)
     E0 = E;  
   fprintf (stderr, "%g %g %g %g\n", t, Ec, Ep, E/E0);
 }

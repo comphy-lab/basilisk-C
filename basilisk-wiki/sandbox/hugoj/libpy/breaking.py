@@ -9,6 +9,8 @@ import xarray as xr
 import dask
 import os
 from collections import Counter
+import json
+import matplotlib.pyplot as plt
 
 """
 Base code from Jiarong Wu ("simple_mapping")
@@ -339,7 +341,9 @@ def match_frames(prev_pts, prev_lab, cur_pts, cur_lab, r_max, box):
     return np.unique(pairs, axis=0, return_counts=True)
 
 
-def btrack(frames, dx, dy, structure, r_max, out_file=None, events=None, verbose=True):
+def btrack(
+    frames, dx, dy, structure, r_max, out_file=None, event_out_file=None, verbose=True
+):
     """
     Tracks connected objects across a sequence of 2D binary frames using
     periodic boundary conditions and assigns persistent track IDs to them.
@@ -354,7 +358,7 @@ def btrack(frames, dx, dy, structure, r_max, out_file=None, events=None, verbose
     - r_max (float): Maximum physical distance allowed when matching
       objects between consecutive frames.
     - out_file (string): the name of the ouptput file
-    - events (list, optional): List to which tracking events are appended.
+    -
       Events are represented as tuples:
         - ("birth", t, id): A new object appears with no parent.
         - ("split", t, child, parent): A new object appears from an
@@ -368,14 +372,29 @@ def btrack(frames, dx, dy, structure, r_max, out_file=None, events=None, verbose
     - tracks (xarray.DataArray): 3D int64 array, one timestep per input
       frame, containing the persistent track ID at each pixel. A value of
       0 represents the background.
+    - events (list): List to track events.
     """
+
+    events = []
+    if out_file is not None and os.path.exists(out_file):
+        tracks = xr.open_dataset(out_file)["track_id"]
+
+        with open(event_out_file) as f:
+            events = json.load(f)
+
+        return tracks, events
+
     next_id, prev, out = 1, None, []
-    nframes = frames.shape[0]
+    nframes = frames.sizes["t"]
+
     for t in range(nframes):
-        mask = np.logical_not(frames[t])
+        mask = frames.isel(t=t).values.astype(bool)
+
         ny, nx = mask.shape
         box = (ny * dy, nx * dx)
+
         labels, n = label_periodic(mask, structure)
+
         ys, xs = np.nonzero(mask)
         pts = np.column_stack([ys * dy, xs * dx])
         lab = labels[ys, xs]
@@ -424,9 +443,8 @@ def btrack(frames, dx, dy, structure, r_max, out_file=None, events=None, verbose
             print(f"  timestep {t + 1}/{nframes} ({pct:.0f}%)", end="\r", flush=True)
 
     if verbose:
-        if events is not None:
-            # births, splits, merges, deaths
-            print("   -> Counter of events: " + str(Counter(e[0] for e in events)))
+        # births, splits, merges, deaths
+        print("   -> Counter of events: " + str(Counter(e[0] for e in events)))
 
         # lifetime of each track, in frames
         life = Counter(i for a in out for i in np.unique(a[a > 0]))
@@ -451,6 +469,7 @@ def btrack(frames, dx, dy, structure, r_max, out_file=None, events=None, verbose
         },
     )
 
+    # save the labels
     if out_file is not None:
         encoding = {
             "track_id": {
@@ -461,4 +480,135 @@ def btrack(frames, dx, dy, structure, r_max, out_file=None, events=None, verbose
         }
         tracks.to_netcdf(out_file, encoding=encoding)
 
-    return tracks
+    # save the events
+    if event_out_file is not None:
+        json.dump(events, open(event_out_file, "w"))
+
+    return tracks, events
+
+
+def track_table(events, nt):
+    """Returns {id: dict} with birth, death, last_frame, lifetime, parent and end reason."""
+    info = {}
+    for kind, t, *rest in events:
+        i = rest[0]
+        if kind in ("birth", "split"):
+            info[i] = dict(
+                birth=t,
+                born_by=kind,
+                parent=rest[1] if kind == "split" else None,
+                death=None,
+                ended_by=None,
+                merged_into=None,
+            )
+        elif kind in ("death", "merge"):
+            info[i]["death"] = t
+            info[i]["ended_by"] = kind
+            if kind == "merge":
+                info[i]["merged_into"] = rest[1]
+
+    for d in info.values():
+        end = (
+            d["death"] if d["death"] is not None else nt
+        )  # alive: runs to the last frame
+        d["last_frame"] = end - 1
+        d["lifetime"] = end - d["birth"]  # in frames
+        d["censored_start"] = d["birth"] == 0  # true birth is unknown
+        d["censored_end"] = d["death"] is None  # true death is unknown
+    return info
+
+
+def object_points_coordinates(value, a):
+    """
+    Extracts the spatial coordinates of all points in a DataArray
+    whose value is equal to the specified value.
+
+    The method first identifies the indices where ``a == value`` using
+    ``np.nonzero``. These array indices are then converted to physical
+    x and y coordinates using the DataArray coordinate values.
+
+    INPUTS:
+    - value: Value used to select points in the DataArray.
+    - a (xarray.DataArray): 2D DataArray containing ``x`` and ``y``
+      coordinates.
+
+    OUTPUTS:
+    - numpy.ndarray: 2D array of shape (N, 2), where each row contains
+      the ``[x, y]`` coordinates of a point whose value is equal to
+      ``value``.
+    """
+    iy, ix = np.nonzero((a == value).values)
+    xs = a.x.values[ix]
+    ys = a.y.values[iy]
+
+    return np.column_stack([xs, ys])
+
+
+def bbarycenter(value, a):
+    """
+    Computes the barycenter of coordinates of point in 'a' where a==value
+    """
+    points = object_points_coordinates(value, a)
+    return points.mean(axis=0)
+
+
+def circular_extent(i, n):
+    """Extent of indices i on a periodic axis of length n."""
+    u = np.unique(i)
+    gaps = np.diff(np.concatenate([u, [u[0] + n]]))  # includes the wrap-around gap
+    return n - gaps.max() + 1
+
+
+def length1(value, a, dx, dy):
+    """
+    Computes the spatial extent of the points in an array whose value is
+    equal to the specified value, accounting for periodic boundaries.
+
+    The method first identifies the indices where ``a == value``. For
+    each array axis, the minimum and maximum indices are used by
+    ``circular_extent`` to determine the smallest extent containing the
+    points, including the possibility that the object crosses the
+    periodic boundary.
+
+    INPUTS:
+    - value (int): Value used to select the points in the array.
+    - a (numpy.ndarray): N-dimensional array containing the object values.
+
+    OUTPUTS:
+    - numpy.ndarray: 1D array containing the extent of the selected
+      object along each axis in meters, accounting for periodic boundaries.
+      index 0 = along axis 0 of a, index 1 = along axis 1 of a
+    """
+    idx = np.nonzero(a == value)
+    # return np.array([i.max() - i.min() + 1 for i in idx]) # not taking into account periodic BC
+    return np.array([circular_extent(i, a.shape[0]) for i in idx]) * np.asarray(
+        [dx, dy]
+    )
+
+
+def speed_direction(value, mask, speedu, speedv):
+    """
+    Computes the mean velocity speed and direction of points belonging to
+    a specified object.
+
+    The velocity components are first selected where ``mask == value``.
+    Their spatial means are then computed independently, and the speed
+    and direction are calculated from this mean velocity vector.
+
+    INPUTS:
+    - value (int): Object label used to select the relevant points in ``mask``.
+    - mask (xarray.DataArray): Array containing the object labels.
+    - speedu (xarray.DataArray): x-component of the velocity field.
+    - speedv (xarray.DataArray): y-component of the velocity field.
+
+    OUTPUTS:
+    - speed (float): Magnitude of the mean velocity vector.
+    - direction (float): Direction of the mean velocity vector in degrees,
+      measured counterclockwise from the positive x-axis.
+    """
+    u = speedu.where(mask == value).values
+    v = speedv.where(mask == value).values
+    um, vm = np.nanmean(u), np.nanmean(v)
+    speed = np.sqrt(um**2 + vm**2)
+    direction = np.arctan2(vm, um) * 180 / np.pi
+    return np.asarray([speed, direction])

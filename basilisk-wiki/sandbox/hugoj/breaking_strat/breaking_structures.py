@@ -20,7 +20,7 @@ HYPOTHESIS:
 
 
 NOTES:
-
+ - see also hugoj/test_breaking_detection/test_breaking_shape.py
 
 TODO:
 - how to decide neighbour detection range ?
@@ -42,7 +42,6 @@ import matplotlib.pyplot as plt
 from scipy import ndimage as ndi
 
 
-# pytest test_label_periodic.py -v add libpy
 import os.path
 import sys
 
@@ -52,10 +51,13 @@ sys.path.append(filename)
 
 from breaking import (
     get_bins,
-    simple_mapping,
     label_periodic,
     btrack,
     simple_mapping_parallel,
+    track_table,
+    length1,
+    bbarycenter,
+    speed_direction,
 )
 
 
@@ -76,7 +78,7 @@ ds = xr.open_dataset(path + myfile, chunks={"time": 1, "x": -1, "y": -1})
 # ds = ds.isel(time=slice(4, 745))  # t/tp = [2,5] -> ~115s to be completed
 
 # ds = ds.isel(time=seltime)  # only a subset for now to test the method
-ds = ds.isel(time=slice(742, 745))
+# ds = ds.isel(time=slice(742, 745))
 # ds = ds.isel(time=slice(150, 200))
 
 delta = (ds.x[1] - ds.x[0]).values
@@ -102,42 +104,9 @@ dmask = simple_mapping_parallel(
 )
 
 # =========================================
-if DOPLOTS:
-    print("a first Step 2: label breakings (no time coherence)")
-    structure = ndi.generate_binary_structure(2, 2)
-
-    fig, ax = plt.subplots(1, 3, figsize=(10, 3), constrained_layout=True, dpi=200)
-    for it in range(nt):
-        # load only the slice you need (lazy with xarray/dask)
-        u = ds["u.x"].isel(time=it, level=lvl_surf)
-        s = ax[it].pcolormesh(
-            u.x, u.y, u, cmap="Greys_r", vmin=-4, vmax=4, rasterized=True
-        )
-
-        # labels
-        points = np.logical_not(dmask.mask[it])
-        labels, num_features = label_periodic(points, structure)
-
-        ax[it].pcolormesh(
-            u.x,
-            u.y,
-            np.ma.masked_equal(labels, 0),
-            cmap="tab20",
-            vmin=0,
-            vmax=max(num_features, 1),
-            rasterized=True,
-        )
-        ax[it].set_aspect(1)
-        ax[it].set_xlabel("x (m)")
-        ax[it].set_title("t=%.02f" % u.time.values)
-        del points, labels  # free before the next iteration
-
-    plt.colorbar(s, ax=ax[-1])
-    ax[0].set_ylabel("y (m)")
-    fig.suptitle("Label: no time coherence")
-
-# =========================================
 print("Step 2: track in time, birth, merge, death (time coherence)")
+
+# we define here a structure for spatial coherence
 structure = ndi.generate_binary_structure(2, 2)
 
 # grid spacing (the tracker works on cell indices, so only the spacing matters)
@@ -147,65 +116,136 @@ dy = float(ds.y[1] - ds.y[0])
 # r_max: gap allowed between an object's edges in consecutive frames (metres)
 r_max = 3 * max(dx, dy)  # starting guess, I need to tune it
 
-# run the tracker; frames are produced lazily, one at a time
-events = []
-ids = btrack(
+# run the tracker
+crest_mask_labelled, events = btrack(
     dmask.mask,
     dx,
     dy,
     structure,
     out_file="crest_mask_labelled.nc",
+    event_out_file="breaking_events.json",
     r_max=r_max,
-    events=events,
 )
 
+# we get infos for each object by 'inverting' the 'events' list
+objects_infos = track_table(events, nt)
 
-# =========================================
-if DOPLOTS:
-    print("Step 3: plot")
-    fig, ax = plt.subplots(1, 3, figsize=(10, 3), constrained_layout=True, dpi=200)
-    for a, it in zip(ax, range(nt)):
-        u = ds["u.x"].isel(time=it, level=lvl_surf)
-        s = a.pcolormesh(u.x, u.y, u, cmap="Greys_r", vmin=-4, vmax=4, rasterized=True)
+# ===========================================
+print("Step 3: Compute the characteristics of a breaking")
+print(" - length\n - speed\n - direction")
 
-        tid = np.ma.masked_equal(ids[it], 0)
-        a.pcolormesh(
-            ds.x, ds.y, (tid - 1) % 20, cmap="tab20", vmin=0, vmax=19, rasterized=True
-        )  # same id -> same colour across frames
-        a.set_aspect(1)
-        a.set_xlabel("x (m)")
-        a.set_xlim([0, 20])
-        a.set_ylim([35, 55])
-        a.set_title("t=%.02f" % u.time.values)
-    plt.colorbar(s, ax=ax[-1])
-    ax[0].set_ylabel("y (m)")
-    fig.suptitle("Label: with time coherence")
+print(objects_infos)
+print(crest_mask_labelled)
+
+raise Exception
+
+# add theses infos to 'object_infos'
+for target in objects_infos.keys():
+    istart = objects_infos[target]["birth"]
+    iend = objects_infos[target]["death"]
+    lengths = np.zeros((iend - istart, 2))
+    speeds = np.zeros((iend - istart, 2))
+    directions = np.zeros((iend - istart, 2))
+    barys = np.zeros((iend - istart, 2))
+
+    # print("id object", target)
+    # print("object infos", objects_infos[target])
+    # print("istart", istart)
+
+    # this loop needs to be // later
+    for it in range(istart, iend):
+        snapshot = crest_mask_labelled.isel(time=it)
+        obj_it = it - istart
+
+        # step 3a: length
+        lengths[obj_it, :] = length1(target, snapshot.values, dx, dy)
+
+        # step 3b: speed and direction
+        speeds[obj_it] = speed_direction(
+            target, snapshot.values, ds["u.x"].isel(time=it), ds["u.y"].isel(time=it)
+        )
+
+        # step 3c: position
+        barys[obj_it] = bbarycenter(target, snapshot)
+
+    Lx, Ly = np.max(lengths, axis=0)
+    avg_speed = np.mean(speeds, axis=0)
+    print("object n° %d" % target)
+    print(" max Lx,Ly = %0.1f, %0.1f" % (Lx, Ly))
+    print(" avg_speed = %0.1f" % avg_speed[0])
+    print(" avg_direction = %0.1f" % avg_speed[1])
+
+raise Exception
+
+# TEST =========================================
+if True:
+    print("Compute a length of a breaking")
+
+    # Step 0: working setup
+    target = 591  # the object
+    itarget = 586  # the snapshot time index
+    snapshot = crest_mask_labelled.isel(time=itarget)
+    print("working at it=%d on object %d" % (itarget, target))
+
+    sizes = length1(target, snapshot.values)
+
+    print(f"Ny,Nx = {sizes}")
+    print("Ly,Lx = %f m, %f m" % (sizes[0] * dy, sizes[1] * dx))
+
+    # Test on a time serie for 1 breaker
+    if True:
+        istart = objects_infos[target]["birth"]
+        iend = objects_infos[target]["death"]
+        print("start = %d, end = %d" % (istart, iend))
+        l_sizes = np.zeros((2, iend - istart))
+        for it in range(istart, iend):
+            sizes = length1(target, crest_mask_labelled.isel(time=it).values)
+            l_sizes[0, it - istart] = sizes[0]
+            l_sizes[1, it - istart] = sizes[1]
+
+        lifetime = np.arange(istart, iend)
+        fig, ax = plt.subplots(1, 1, figsize=(5, 3), constrained_layout=True, dpi=200)
+        ax.plot(lifetime, l_sizes[0, :] * dx, c="k", label=r"$L_y$")
+        ax.plot(lifetime, l_sizes[1, :] * dy, c="b", label=r"$L_x$")
+        ax.set_xlabel("timestep")
+        ax.set_ylabel("size (m)")
+        ax.legend()
+
+    plt.show()
 
 
-# fig, ax = plt.subplots(1, 3, figsize=(10, 3), constrained_layout=True, dpi=200)
-# for it in range(nt):
-#     # load only the slice you need (lazy with xarray/dask)
-#     u = ds["u.x"].isel(time=it, level=lvl_surf)
-#     s = ax[it].pcolormesh(u.x, u.y, u, cmap="Greys_r", vmin=-1, vmax=2, rasterized=True)
+# TODO:
+# - save the trajectory of barycenter of the breaking
+# - compute characteristics of breaking (length, speed) and their evolution in the life of the object
 #
-#     # labels
-#     points = ~l_mask[it]
-#     labels, num_features = label_periodic(points, structure)
+# performance:
+# - for each breaker, work on a small domain around it ?
 #
-#     ax[it].pcolormesh(
-#         u.x,
-#         u.y,
-#         np.ma.masked_equal(labels, 0),
-#         cmap="tab20",
-#         vmin=0,
-#         vmax=max(num_features, 1),
-#         rasterized=True,
-#     )
-#     ax[it].set_aspect(1)
-#     ax[it].set_xlabel("x (m)")
-#     ax[it].set_title("t=%.02f" % u.time.values)
-#     del points, labels  # free before the next iteration
-# plt.colorbar(s, ax=ax[-1])
-# ax[0].set_ylabel("y (m)")
+# length of a snapshot:
+# - count the number of pixel that have the id of the breaking ?
+# - fit an ellipse and use its great axis ?
+# - fit a polynomial ?
+
+# speed:
+# - mean of all pixel of the breaker ?
+
+# 1 breaker = dict
+# 'id'=int
+# 'trajectory'= 3D numpy array
+# 'size' = 1D numpy array (time)
+# 'speed' = 1D numpy array
+
+# THE length: max of the distribution of the breaker during its time evolution ?
+# THE speed: same as for length
+
+# to plot:
+# - evolution in time of the size distribution (distribution of length on every snapshots, no time coherence needed)
+# - same with speed
+
+# - evolution of normalized length averaged over all breaker events
+
+# TODO:
+# - save a file with test of each function !
+
 
 plt.show()

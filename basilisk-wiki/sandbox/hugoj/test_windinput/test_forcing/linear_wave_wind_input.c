@@ -20,7 +20,7 @@ We use the following principle: a wind pressure is applied on positive slopes
 (in the x direction) with the norm
 $$
 \begin{aligned}
-p_s(t,x,y) = \frac{p_0(t)}{\rho} \frac{\partial \eta}{\partial x}
+p_s(t,x,y) = -\frac{p_0(t)}{\rho} \frac{\partial \eta}{\partial x}
 \end{aligned}
 $$
 This pressure is added to the barotropic pressure from the deformation of the
@@ -112,26 +112,33 @@ Ref Rui Yang
 // - avec dimensions
 // - simplifier
 
-#include "grid/multigrid1D.h"
+
 double p0 = 0.00625 [-1, -2, 1]; // Pa
 double rho = 1000 [-3, 0, 1];
+
+// Note: here I replaced gmetric(i) with 1.0 as I do not use adaptative mesh.
+// this is necessary for the code to compile on CUDA.
+
 #if HOLD_FORCING || EXACT_FORCING
-// wind pressure param
-// #define wind_pressure(eta,i)  (p0/rho)*(eta[i+1] - eta[i-1])/(2*Delta)
-// // total barotropic pressure
-// #define p_baro(eta,i) (-G*eta[i] - wind_pressure(eta,i))
-//
-// #define a_baro(eta,i) (gmetric(i)*(p_baro(eta,i)-p_baro(eta,i-1))/Delta) 
-#define a_baro(eta,i) \
-  (gmetric(i) * ( \
-      -G*(eta[i] - eta[i-1])/Delta \
-      - (p0/rho) * \
-        (eta[i+1] - 2.*eta[i] + eta[i-1])/(Delta*Delta) \
-  ))
+// this compiles
+#define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
+// This doesnt
+//#define a_baro(f,k) (gmetric(k)*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
+// This doesnt either
+// #define a_baro(eta,i) \
+//     (1.0 * ( \
+//       -G*(eta[i] - eta[i-1])/Delta \
+//       - (p0/rho) * \
+//         (eta[i+1] - 2.*eta[i] + eta[i-1])/(Delta*Delta) \
+//   ))
+
 #endif // HOLD_FORCING || EXACT_FORCING
 
+
+#include "grid/multigrid.h"
 #include "layered/hydro.h"
 #include "layered/nh.h"
+//#include "layered/nh-staggered.h"
 #include "layered/remap.h"
 #include "layered/perfs.h"
 #if OUTNC
@@ -141,11 +148,20 @@ double rho = 1000 [-3, 0, 1];
 // Dim [L, T, Mass, Temp]
 
 double g_ = 1. [1,-2];
-/**
-We use a linear wave mode, with very low steepness
-*/
-double k_ = 2.*pi [-1], h_ = 1. [1], ak = 0.01; 
+double k_ = 2.*pi [-1], h_ = 1. [1]; 
 double RE = 20000.;
+
+#if STOKES
+/**
+For the Stokes wave, a high steepness is used
+*/
+double ak = 0.35; 
+#else
+/**
+For the linear wave, a very low steepness is used
+*/
+double ak = 0.01;
+#endif //STOKES
 
 #include "hugoj/lib/common_waves.h"
 
@@ -157,15 +173,31 @@ double etavar_i = 0. [2];
 double etavar_previous =0. [2], etavar_current=0. [2];
 double cp = 0.[1, -2];
 double omega = 0. [0,-1];
+
+// Control
+double K_1 = 1.;
 double relax_dt = 0. [0,1];
+
+double K_2 = 0.;
+double T_f = 1.;
+double sum_I = 0.;
+
+double K_3 = 0.;
+double last_dE=0.;
 
 int main()
 {
   L0=1.;
   origin (-L0/2.);
   periodic (right);
+
+  #if dimension==2
   N = 64;
-  nl = 100; // 60
+  nl = 100;
+  #else
+  N = 64;
+  nl = 50; // use 100 for no_forcing
+  #endif
   G = g_;
   lam = 2*pi/k_*L0;
   
@@ -186,7 +218,11 @@ int main()
   /** If the dynamic forcing is used, we set a timescale for the relaxation of
     the forcing.
     */
-  relax_dt = 5*T0; 
+  relax_dt = T0; 
+  T_f = T0; //* T0;
+  K_1 = 3./4.; // P
+  K_2 = 0.; // I
+  K_3 = 0.; // D
   fprintf(stderr, "T0 = %f, lam=%f, g_=%f,omega=%f,nu=%g\n", T0, lam, g_, omega,
           nu);
   run();
@@ -200,12 +236,17 @@ int main()
 void eta_stats (double *mean, double *variance)
 {
   double sum = 0., var = 0.;
+  double Nterms = pow (N, dimension);
+
   foreach (reduction(+:sum))
-    sum += eta[]; 
-  *mean = sum/N;
+    sum += eta[];
+  double m = sum/Nterms;
+
   foreach (reduction(+:var))
-    var += sq(eta[] - *mean);
-  *variance = var/N; 
+    var += sq(eta[] - m);
+
+  *mean = m;
+  *variance = var/Nterms;
 }
 
 event init (i = 0)
@@ -214,6 +255,7 @@ event init (i = 0)
   // default beta is 1/nl
   foreach() {
     zb[] = -h_;
+
     #if STOKES
     eta[] = wave_stokes (x, 0., ak, k_, h_);
     //eta[] = ak/k_*cos(k_*x);
@@ -255,24 +297,74 @@ event init (i = 0)
 #if HOLD_FORCING
 event update_p0 (i++)
 {
+  /**
+  ## Forcing using a relaxation time scale
+
+  IN 2D (x,z):
+  input_power = -sum_xy(dp/dx Q)dx
+             with p = p0.deta/dx
+                  Q = sum_layer(u*h)
+      
+        so input_power = p0* sum_xy(sum_layer(d2eta/dx2*u*h*dx))
+
+
+   Energy deficit = rho*g*(variance_eta_target - variance_eta_now)*L0**2
+
+   timescale of relaxation = relax_dt
+
+   we match input power = deficit of relax_dt:
+
+     -sum_xy(dp/dx Q)dx = rho*g*(variance_eta_target - variance_eta_now)*L0**2/relax_dt
+  */
+
+  // Computing the error on wave energy
   double etam;
   eta_stats (&etam, &etavar_current);
-  double dE = G*(etavar_i - etavar_current);
-  double sum = 0.;
-  foreach() {
-    double integrated_transport=0.;
+  double dE = rho*G*(etavar_i - etavar_current)*pow(L0,dimension);
+
+
+  // Computing input power 
+  // P = p0*sum
+  double sum = 0.; 
+  foreach(reduction(+:sum)) {
     double etaxx = (eta[1] + eta[-1]- 2*eta[])/sq(Delta);
     foreach_layer()
-      integrated_transport += h[] * u.x[]; // h * detadx * u
-    sum += integrated_transport*etaxx*dv();
+      sum += h[] * u.x[] * etaxx * dv(); // h * detadx * u
   }
-  p0 = -rho*dE/(relax_dt*sum);
-  // fprintf(stderr,
-  //       "i=%d dE=%g sum=%g dt=%g p0=%g predicted=%g\n",
-  //       i, dE, sum, relax_dt, p0,
-  //       -p0*sum*relax_dt/rho);
-}
 
+  /**
+  ## PID Control
+  */
+  double rhs = 0.;
+  /**
+  P: proportional constrain
+  */
+  rhs += K_1 / relax_dt * dE;
+
+  /**
+  I: integral constrain   
+
+  */
+  sum_I += dE*dt; // TODO
+  rhs += K_2 / T_f * sum_I;
+
+  /**
+  D: derivative constrain
+  */  
+  double dedt = 0.;  
+  dedt = (last_dE - dE)/dt;
+  rhs += K_3*dedt;
+
+  /**
+  Finally we compute p0
+  */
+  p0 = - rhs/sum;
+
+  //p0 = -rho*G*dE*pow(L0,dimension)/relax_dt / sum;
+  fprintf(stderr,
+        "i=%d dE=%g predicted=%g sum=%g relax_dt=%g p0=%g\n",
+        i, dE,-p0*sum*relax_dt, sum, relax_dt, p0);
+}
 #endif 
 
 /** 
@@ -307,7 +399,7 @@ event logfile (i++; t <= NT0*T0) // target: at least 300*T0
   Optional: output fields for analysis
 */
 #if OUTNC
-event writenc (i+=10; t <= NT0*T0) 
+event writenc (i++; t <= NT0*T0) 
 {
   write_nc();
 }

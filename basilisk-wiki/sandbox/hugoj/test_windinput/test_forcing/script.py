@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+CASE = "1D"
+
 g = 1.0
 L0 = 1.0
 ak = 0.01
@@ -26,11 +28,22 @@ def E_linwave(E0, nu, k, t):
     return E0 * np.exp(-2 * nu * k**2 * t)
 
 
-data = {
-    "current_noforcing": np.loadtxt("no_forcing/out", skiprows=1),
-    "current_exactforced": np.loadtxt("exact_forcing/out", skiprows=1),
-    "current_forced": np.loadtxt("linear_wave_wind_input/out", skiprows=1),
-}
+if CASE == "1D":
+    data = {
+        "current_noforcing": np.loadtxt("no_forcing/out", skiprows=1),
+        "current_exactforced": np.loadtxt("exact_forcing/out", skiprows=1),
+        "current_forced": np.loadtxt("linear_wave_wind_input/out", skiprows=1),
+    }
+elif CASE == "2D":
+    data = {
+        "current_noforcing": np.loadtxt("no_forcing2D.cuda/out", skiprows=1),
+        "current_exactforced": np.loadtxt("exact_forcing2D.cuda/out", skiprows=1),
+        "current_forced": np.loadtxt("linear_wave_wind_input2D.cuda/out", skiprows=1),
+    }
+else:
+    print(f"case {CASE} is not recognized")
+
+
 time = {}
 ke = {}
 gpe = {}
@@ -47,7 +60,7 @@ print("\ntheoretical E0 = %g m3/s2" % E0th)
 print("initial energy for current sim E0 = %g m3/s2" % E["current_noforcing"][0])
 print("ratio is %g \n" % (E0th / E["current_noforcing"][0]))
 Eth = E_linwave(E0th, nu, k, time["current_noforcing"] * T0)
-E0 = 1
+E0 = E0th
 
 print("Target for E=cst for this set of parameters:")
 print("nu=%g, ak=%g, k=%g" % (nu, ak, k))
@@ -60,7 +73,7 @@ print(
 )
 print(
     "exact forcing: miss match Eth-E=%g (at %d T0) "
-    % (Eth[-1] - E["current_forced"][-1], NT0)
+    % (Eth[-1] - E["current_exactforced"][-1], NT0)
 )
 
 fig, ax = plt.subplots(figsize=(7, 6))
@@ -79,12 +92,16 @@ fig, ax = plt.subplots(figsize=(7, 6))
 #     label="2Ek (current_noforcing)",
 #     alpha=0.5,
 # )
-ax.hlines(E0th, 0, 100, colors="gray", alpha=0.7)
+ax.hlines(E0th / E0, 0, 100, colors="gray", alpha=0.7)
+ax.semilogy(
+    time["current_noforcing"], Eth / E0, color="r", label=r"$E(t)=E_0 e^{-2 \nu k^2 t}$"
+)
 ax.semilogy(
     time["current_noforcing"],
     E["current_noforcing"] / E0,
     color="pink",
     label="E (current noforcing)",
+    ls="--",
 )
 ax.semilogy(
     time["current_forced"],
@@ -100,14 +117,12 @@ ax.semilogy(
     label="E (current exact forcing)",
     ls="--",
 )
-ax.semilogy(
-    time["current_noforcing"], Eth / E0, color="r", label=r"$E(t)=E_0 e^{-2 \nu k^2 t}$"
-)
+
 ax.set_xlabel("t/T0")
 ax.set_ylabel("E/E0")
 ax.set_xlim([0, 10])
-ax.set_ylim([1.16e-6, 1.28e-6])
+# ax.set_ylim([1.16e-6, 1.28e-6])
 ax.legend()
 ax.grid(axis="y", which="both")
-plt.savefig("energy.pdf", dpi=300)
+plt.savefig(f"energy_{CASE}.png", dpi=300)
 plt.show()
