@@ -76,7 +76,7 @@ print(
     % (Eth[-1] - E["current_exactforced"][-1], NT0)
 )
 
-fig, ax = plt.subplots(figsize=(7, 6))
+fig, ax = plt.subplots(figsize=(8, 6))
 
 # ax.plot(
 #     time["current_noforcing"],
@@ -120,7 +120,7 @@ ax.semilogy(
 
 ax.set_xlabel("t/T0")
 ax.set_ylabel("E/E0")
-ax.set_xlim([0, 10])
+ax.set_xlim([0, NT0])
 # ax.set_ylim([1.16e-6, 1.28e-6])
 ax.legend()
 ax.grid(axis="y", which="both")

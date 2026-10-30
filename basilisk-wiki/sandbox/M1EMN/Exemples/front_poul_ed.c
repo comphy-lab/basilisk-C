@@ -310,12 +310,12 @@ qcc -g -O2 -DTRASH=1 -Wall   -o front_poul_ed front_poul_ed.c -lm
  
   velocity  
   
-Profiles for $t>150$ from numerics
+Profiles for $t>100$ from numerics
   
 ~~~gnuplot shape of front from the out file
 set xlabel "x-xf"
 set ylabel "h(x,t)"
-p'out' u ($1<0 ? ($3 > 150 ? $1 : 0) : 0):($3 > 150 ? $2:0)
+p'out' u ($1<0 ? ($3 > 100 ? $1 : 0) : 0):($3 > 100 ? $2:0)
 ~~~
  
  

@@ -59,8 +59,9 @@ solution. */
 
 /**
 The wavenumber is $k=2\pi$, the amplitude/slope $ak$ is small enough
-(decreasing it has little effect on the results). The viscosity is
-$\nu=1./RE$. Decreasing the viscosity (or increasing it) does not
+(decreasing it has little effect on the results). The Reynolds number is 
+$\text{RE} = c\lambda/\nu$ with $c = \sqrt{g/k}$ the deep-water phase speed. 
+Decreasing the viscosity (or increasing it) does not
 affect the results qualitatively.
 
 Note that we set the fluid depth to h_ = 2 (i.e. twice the wavelength)
@@ -71,7 +72,7 @@ double k_ = 2.*pi [-1,0];
 double h_ = 2.0 [1,0];
 double g_ = 1. [1,-2];
 double ak = 0.01 [0,0];
-double RE = 20000. [0,0];
+double RE = 7979. [0,0]; // Re = c*lambda/nu; this gives nu ≈ 1./20000., matching viscous.c (/src/test/viscous.c).
 
 #define T0 (k_*L0/sqrt(g_*k_))
 
@@ -93,8 +94,7 @@ int main()
 }
 
 /**
-Initialise the original linear wave on geometrically distributed layers.
-The surface tension in the original calculation was zero. */
+Initialise the original linear wave on geometrically distributed layers. */
 
 event init (i = 0)
 {
@@ -137,8 +137,7 @@ event profiles (t += T0/4.; t <= 10.*T0) {
 
 /**
 Log time, kinetic energy, potential energy and normalised total energy
-in stderr (the sandbox's `log` file). As in decay.c, normalise using the
-first timestep to skip the initial relaxation. */
+in stderr (the sandbox's `log` file). */
 
 event logfile (i++)
 {

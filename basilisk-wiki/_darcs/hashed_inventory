@@ -1,4 +1,4 @@
-pristine:27aed0df9b047224fbe1e7416118f465f7a0e2d753a392aa2f7f5ebaffd19971
+pristine:d898f3993d029323f72370896f03c8acfb3f41666b2274c227066419c18eb5cd
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15904,3 +15904,28 @@ Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261028145219
  Ignore-this: 380ebe34258070b38216659054d9dd3af71e65663e388fc2d3ea83359cbf915ca8896f69d239af31
 ] 
 hash: 0000009893-85bda364991a80882808fc8163ba3084ba4ee36bc5d1ff395f9dad13fcd40dc6
+[modify definition of RE
+ryang**20261029012727
+ Ignore-this: 12203d9c63332dad778f188153db480e48aa47181386562557248d39c31ec8fc8429c6eab35a8cba
+] 
+hash: 0000000345-9a7ed10ebdca1d4854af96d5519e3e5851c0955a57168783cf738fe0cb43d0c8
+[Updated the definition of RE
+Stephane Popinet <popinet@basilisk.fr>**20261029084213
+ Ignore-this: f6cc32db1beea253878f895e37b0d95b7d01706c64cbb82c3f6246a44587fe41324f26c3394b4d74
+] 
+hash: 0000000581-812d63e5a3ad0ba2553060a32b5ffd72afad9f5e885d47edab9735e9cad3b371
+[Another comment was not updated
+Stephane Popinet <popinet@basilisk.fr>**20261029084814
+ Ignore-this: 3aaa9be24746000769a084997fe4b65feb96df683d84d8bf5adebbd69e80202daf8c592a2b9902af
+] 
+hash: 0000000679-f2e36fc83842e3ea9f8a00049e86a87e79e7a07b843811364e7b7f5d50a4d331
+[fixed height of currents ini to allow for beta!=1.
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261029142554
+ Ignore-this: 36b031e11f73561acb3da3d5ccf3370d25c5d257ff4ffe102fc5487aed8ec461da99c9fcd924bbcc
+] 
+hash: 0000006913-025019bfbf4171ab182c21663ecf969131d1a7df7b8e339c713d826a1c32d92d
+[little change in plot of front
+pyl <pyl@ccr.jussieu.fr>**20261029152548
+ Ignore-this: 9e14c0dc7ed19c9a8460b3804a3edf58470a7b30d6661e8697eb19cace0dc7dbc2ca7eb7a1066be3
+] 
+hash: 0000000463-88b4118c9f2d00a0481e1f8c8e9b620c2129dcd9097710cdbfd487799bae3bea

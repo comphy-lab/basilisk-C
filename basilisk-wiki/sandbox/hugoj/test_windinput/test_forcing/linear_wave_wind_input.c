@@ -5,8 +5,23 @@
 
 ### Analytical solution
 
-A linear surface gravity wave will decay in a viscous fluid. The rate of this
-decay is $E(t)=E_0 e^{-4\nu k^2 t}$ (Lamb 1932)
+A linear surface gravity wave will decay in a viscous fluid. For a no stress
+boundary condition at the moving surface, Lamb (1932) gives
+
+\begin{aligned}
+  E(t)=E_0 e^{-4\nu k^2 T_0 \tilde{t}}
+\end{aligned}
+
+with $\tilde{t} = t/T_0$.
+
+For the case with a free slip condition at the surface, we get (Dore 1978,
+Joseph and Wang 2004)
+
+$$
+\begin{aligned}
+  E(t)=E_0 e^{-2\nu k^2 T_0 \tilde{t}}
+\end{aligned}
+$$
 
 One of the essential ingredient for the dissipation from the model to match the
 theoretical dissipation is to correctly represent currents, i.e. have enough
@@ -99,6 +114,61 @@ with $Q= \sum_{k}^{nl} h_k u_k$ the integrated transport.
 Horace Lamb, Hydrodynamics (6th ed., 1932), Chapter XI, Article 348, "Effect of
 Viscosity on Water-Waves," pp. 623–625, see also article 349 
 
+~~bib
+@book{lambHydrodynamics1932,
+  title = {Hydrodynamics},
+  author = {Lamb, Horace},
+  year = 1932,
+  publisher = {Cambridge University Press},
+}
+
+@article{doreEffectsAirwaterInterface1978,
+  title = {Some Effects of the Air-Water Interface on Gravity Waves},
+  author = {Dore, B. D.},
+  year = 1978,
+  month = jan,
+  journal = {Geophysical \& Astrophysical Fluid Dynamics},
+  volume = {10},
+  number = {1},
+  pages = {215--230},
+  issn = {0309-1929, 1029-0419},
+  doi = {10.1080/03091927808242638},
+  urldate = {2026-10-23},
+  langid = {english},
+}
+@article{josephDissipationApproximationViscous2004,
+  title = {The Dissipation Approximation and Viscous Potential Flow},
+  author = {Joseph, D. D. and Wang, J.},
+  year = 2004,
+  month = apr,
+  journal = {Journal of Fluid Mechanics},
+  volume = {505},
+  pages = {365--377},
+  issn = {0022-1120, 1469-7645},
+  doi = {10.1017/S0022112004008602},
+  urldate = {2026-10-29},
+  abstract = {Dissipation approximations have been used to calculate the drag on
+              bubbles and drops and the decay rate of free gravity waves on
+              water. In these approximations, viscous effects are calculated by
+              evaluating the viscous stresses on irrotational flows. The pressure
+              is not involved in the dissipation integral, but it enters into the
+              power of traction integral, which equals the dissipation. A viscous
+              correction of the irrotational pressure is needed to resolve the
+              discrepancy between the zero-shear-stress boundary condition at a
+              free surface and the non-zero irrotational shear stress. Here we
+              show that the power of the pressure correction is equal to the
+              power of the irrotational shear stress. The viscous pressure
+              correction on the interface can be expressed by a harmonic series.
+              The principal mode of this series is matched to the velocity
+              potential and its coefficient is explicitly determined. The other
+              modes do not enter into the expression for the drag on bubbles and
+              drops. They vanish in the case of free gravity waves.},
+  copyright = {https://www.cambridge.org/core/terms},
+  langid = {english},
+}
+
+~~
+
 Ref Rui Yang
 
 ## TODO
@@ -112,6 +182,7 @@ Ref Rui Yang
 // - avec dimensions
 // - simplifier
 
+// Dim [L, T, Mass, Temp]
 
 double p0 = 0.00625 [-1, -2, 1]; // Pa
 double rho = 1000 [-3, 0, 1];
@@ -145,22 +216,22 @@ double rho = 1000 [-3, 0, 1];
 #include "bderembl/libs/netcdf_bas.h"
 #endif
 
-// Dim [L, T, Mass, Temp]
+
 
 double g_ = 1. [1,-2];
-double k_ = 2.*pi [-1], h_ = 1. [1]; 
-double RE = 20000.;
+double k_ = 2.*pi [-1], h_ = 2. [1]; 
+double RE = 20000. [0,0,0];
 
 #if STOKES
 /**
 For the Stokes wave, a high steepness is used
 */
-double ak = 0.35; 
+double ak = 0.35 [0,0,0]; 
 #else
 /**
 For the linear wave, a very low steepness is used
 */
-double ak = 0.01;
+double ak = 0.01 [0,0,0];
 #endif //STOKES
 
 #include "hugoj/lib/common_waves.h"
@@ -175,14 +246,14 @@ double cp = 0.[1, -2];
 double omega = 0. [0,-1];
 
 // Control
-double K_1 = 1.;
+double K_1 = 1. [0,0,0];
 double relax_dt = 0. [0,1];
 
-double K_2 = 0.;
+double K_2 = 0. [0,0,0];
 double T_f = 1.;
 double sum_I = 0.;
 
-double K_3 = 0.;
+double K_3 = 0. [0,0,0];
 double last_dE=0.;
 
 int main()
@@ -195,8 +266,8 @@ int main()
   N = 64;
   nl = 100;
   #else
-  N = 64;
-  nl = 50; // use 100 for no_forcing
+  N = 128;
+  nl = 60; // use 100 for no_forcing if geo=1. else 60 with geo=1/3
   #endif
   G = g_;
   lam = 2*pi/k_*L0;
@@ -215,14 +286,18 @@ int main()
   #if EXACT_FORCING 
   p0 = 2*rho*nu*k_*cp; // Forcing to exactly balance viscous diss
   #endif
-  /** If the dynamic forcing is used, we set a timescale for the relaxation of
-    the forcing.
+  /** If the dynamic forcing is used, we use PID correction.
     */
   relax_dt = T0; 
-  T_f = T0; //* T0;
-  K_1 = 3./4.; // P
+  T_f = 1.0; //* T0;
+  K_1 = 1./10./relax_dt; // P
   K_2 = 0.; // I
   K_3 = 0.; // D
+  
+  // Ku = 1/5
+  // Pu = 0.5 T0
+
+
   fprintf(stderr, "T0 = %f, lam=%f, g_=%f,omega=%f,nu=%g\n", T0, lam, g_, omega,
           nu);
   run();
@@ -231,7 +306,7 @@ int main()
 
 /**
  Here a function is defined: it computes the variance and the mean of the
- surface elevation in this 1D model.
+ surface elevation in this model.
  */
 void eta_stats (double *mean, double *variance)
 {
@@ -251,14 +326,13 @@ void eta_stats (double *mean, double *variance)
 
 event init (i = 0)
 {
-  //geometric_beta (1./5., true); // crashes when more cells near sfx ?
+  geometric_beta (1./3., true); // crashes when more cells near sfx ?
   // default beta is 1/nl
   foreach() {
     zb[] = -h_;
 
     #if STOKES
     eta[] = wave_stokes (x, 0., ak, k_, h_);
-    //eta[] = ak/k_*cos(k_*x);
     #else
     eta[] = wave_monolin(0., x, ak/k_, k_);
     #endif
@@ -273,10 +347,10 @@ event init (i = 0)
       z points are positive, so the exponential in the currents can grow fast
       for steeper cases.
       */
-      z += h_/nl/2; 
-      u.x[] = u_x_monolin(0., x, z, ak/k_, k_); //ak/k_*sqrt(g_*k_)*exp(k_*z)*cos(k_*x); // 
-      w[] = u_y_monolin(0., x, z, ak/k_, k_); //ak/k_*sqrt(g_*k_)*exp(k_*z)*sin(k_*x);  //
-      z += h_/nl/2; 
+      z += h_*beta[point.l]/2.; 
+      u.x[] = u_x_monolin(0., x, z, ak/k_, k_); 
+      w[] = u_y_monolin(0., x, z, ak/k_, k_); 
+      z += h_*beta[point.l]/2.; 
     }
 
   }
@@ -339,7 +413,7 @@ event update_p0 (i++)
   /**
   P: proportional constrain
   */
-  rhs += K_1 / relax_dt * dE;
+  rhs += K_1 * dE;
 
   /**
   I: integral constrain   
@@ -381,16 +455,16 @@ We log potential and kinetic energy
  */
 event logfile (i++; t <= NT0*T0) // target: at least 300*T0
 {
-  double ke = 0., gpe = 0.;
-  foreach (reduction(+:ke) reduction(+:gpe)) {
-    foreach_layer() {
-      double norm2 = sq(w[]);
-      foreach_dimension()
-	norm2 += sq(u.x[]);
-      ke += norm2*h[]*dv();
-    }
-    gpe += sq(eta[])*dv();
-  }
+	double ke = 0., gpe = 0.;
+	foreach (reduction(+:ke) reduction(+:gpe)) {
+	  foreach_layer() {
+	    double norm2 = sq(w[]);
+	    foreach_dimension()
+	 norm2 += sq(u.x[]);
+	    ke += norm2*h[]*dv();
+	  }
+	  gpe += sq(eta[])*dv();
+	}
   fprintf (stdout, "%g %g %g\n", t/T0, ke/2., g_*gpe/2.);
 }
 
