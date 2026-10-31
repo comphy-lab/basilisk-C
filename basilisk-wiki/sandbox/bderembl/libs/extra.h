@@ -13,7 +13,14 @@ The configuration file should contain one parameter per line in the format:
 key = value
 ~~~
 
-'value' can be an int, double or array. Comments are allowed with # character
+'value' can be an int, double, array or strings. Comments are allowed with # character
+
+Strings must be declared as
+char file[256];
+
+and not as
+
+char * file;
 
 Example:
 
@@ -23,10 +30,15 @@ Example:
 iterations = 1000
 timestep = 0.01   # with comments
 coefficients = [1.0,2.5,3.7]
+file = "vars.nc"
 ~~~
+
+
 
 ## Global Variables and Data Structures
 */
+
+#define PARAMLIB 1
 
 char dpath[80]; // name of output dir
 char file_param[80] = "params.in"; // name param file
@@ -53,7 +65,6 @@ void trim_whitespace(char* s) {
   *s = '\0';
 }
 
-
 void str2array(char *tmps2, double *array){
 
   // overwrite newline character with string terminator
@@ -71,6 +82,36 @@ void str2array(char *tmps2, double *array){
     p = strtok(NULL, ",");
     n += 1;
   }
+}
+
+
+void str2str(char* src, char* dst)
+{
+  //new line
+  char *nl = strchr(src, '\n');
+  if (nl) *nl = '\0';
+
+  //comment
+  char *hash = strchr(src, '#');
+  if (hash) *hash = '\0';
+
+  //trim leading
+  while (*src == ' ' || *src == '\t') src++;
+
+  //trim trailing
+  int len = strlen(src);
+  while (len > 0 && (src[len-1] == ' ' || src[len-1] == '\t'))
+    src[--len] = '\0';
+
+  // trim quotes
+  if (len >= 2 &&
+      ((src[0] == '"' && src[len-1] == '"') ||
+       (src[0] == '\'' && src[len-1] == '\''))) {
+    src[len-1] = '\0';
+    src++;
+  }
+  strcpy(dst, src);
+  fprintf (stderr, "%s \n", dst);
 }
 
 /**
@@ -140,11 +181,12 @@ void read_params(char* path2file)
       fprintf (stderr, "scan param %s: %e\n", d2->name, *( (double*) d2->ptr));}
     else if (strcmp(d2->type, "array") == 0){
       fprintf (stderr, "scan param %s:\n", d2->name);
-      str2array(tmps2, (double*) d2->ptr);
-      }
+      str2array(tmps2, (double*) d2->ptr); }
+    else if (strcmp(d2->type, "string") == 0) {
+      fprintf(stderr, "scan param %s: ", d2->name);
+      str2str(tmps2, (char *) d2->ptr);}
     }
     }
-
     }
     fclose(fp);
   } else {

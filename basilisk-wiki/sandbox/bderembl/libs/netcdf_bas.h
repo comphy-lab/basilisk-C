@@ -184,6 +184,31 @@ void create_nc(scalar * list_out, char* file_out)
     /*      			 strlen(TEMP_UNITS), TEMP_UNITS))) */
     /*    ERR(nc_err); */
 
+#if PARAMLIB
+    ParamItem * p = params->p;
+    int nparams = params->len/sizeof(ParamItem);
+    
+    for (int i = 0; i < nparams; i++, p++) {
+      if (strcmp(p->type, "int") == 0) {
+        if ((nc_err = nc_put_att_int(ncid, NC_GLOBAL, p->name, NC_INT, 1, (int *) p->ptr)))
+          ERR(nc_err);
+      }
+      else if (strcmp(p->type, "double") == 0) {
+        if ((nc_err = nc_put_att_double(ncid, NC_GLOBAL, p->name, NC_DOUBLE, 1, (double *) p->ptr)))
+          ERR(nc_err);
+      }
+      else if (strcmp(p->type, "array") == 0) {
+        if ((nc_err = nc_put_att_double(ncid, NC_GLOBAL, p->name, NC_DOUBLE, p->len, (double *) p->ptr)))
+          ERR(nc_err);
+      }
+     else if (strcmp(p->type, "string") == 0) {
+        const char * str = (char *) p->ptr;
+        if ((nc_err = nc_put_att_text(ncid, NC_GLOBAL, p->name, strlen (str), str)))
+          ERR(nc_err);
+      }
+    }
+#endif
+
     /* End define mode. */
     if ((nc_err = nc_enddef(ncid)))
       ERR(nc_err);
