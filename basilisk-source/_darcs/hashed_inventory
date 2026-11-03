@@ -1,4 +1,4 @@
-pristine:9361f038740ee128be95b0b7276092dbebe5ba9fcb32f6085b1832c733ae3099
+pristine:6e76bc163081cfb6fb78a29021830215c31782db487d4a755dd0d366c0012c80
 Starting with inventory:
 0000047694-4f13d332b329b0e9f2cd48288a17078ae27f85a71c9cf8b6cd10d4ccdd52d556
 [TAG release 20-10-26 (gview)
@@ -51,3 +51,13 @@ Stephane Popinet <popinet@basilisk.fr>**20261026181209
  Ignore-this: 67f8422da2eb76bdf0b1f6ec86947186e822f095cb220821c283712af494fc2dc6c346915f6ecafd
 ] 
 hash: 0000000525-48a099decde0c56c1c9c2313a7eccc1b46ccdbcaeed1cbdd5cc110ce8fd8bf23
+[Fixed incorrect default register referer
+Stephane Popinet <popinet@basilisk.fr>**20261102134916
+ Ignore-this: 2361dff3e962153906e5d9c0b97730e4860b68bada29a6cde37da29302399bd434ec15d6cd574b61
+] 
+hash: 0000000281-836fe39f330b9e0deeda32f3e6bcc2a8ff665240b1147016d017486bcb8aea9c
+[The default check for invalid requests was not robust
+Stephane Popinet <popinet@basilisk.fr>**20261102141124
+ Ignore-this: 245ab227ddae1f86ff9285c6637f53701748996b9464e876b7e83ede80dce05518c81963d705d9b0
+] 
+hash: 0000000401-c843744a9e32d02e87a533999d1eb8c0310edce30c0e580b2b997a272f7a1dd6
