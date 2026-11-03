@@ -54,13 +54,6 @@ journal={Journal of Fluid Mechanics},
 year={2026}
 }
 
-@Article{lande2026,
-author={Øystein Lande and Stephane Popinet and Odin Gramstad and Thomas Berge Johannessen and Atle Jensen},
-title={Phase-resolved coastal wave modelling using a non-hydrostatic multilayer formulation},
-journal={Coastal Engineering},
-year={2026}
-}
-
 @Article{miller2025,
 author={Lennard Miller and Antoine Venaille and Stéphane Popinet and Bruno Deremble},
 title={Enhanced Gulf Stream Path Variability Under Intensified Stratification},
@@ -190,6 +183,8 @@ doi = {10.5194/gmd-11-4727-2018}
 ### Waves
 
 ~~~bib
+@hal{lande2027, hal-05848198}
+
 @hal{blanco2026, hal-05626800}
 
 @hal{yang2026, hal-05554495}

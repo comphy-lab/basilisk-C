@@ -47,6 +47,8 @@ See also the [POM Gallery]().
 [comment]: # (You may add your new paper to the top op of the list and remove the fourth, i.e. last, entry, but only after checking that it is also present in the Bibliography.)
 
 ~~~bib
+@hal{lande2027, hal-05848198}
+
 @article{cattani2026,
   title={A study of bubble coalescence on solid substrates},
   author={Cattani, Michele and Forooghi, Pourya},
@@ -73,16 +75,4 @@ See also the [POM Gallery]().
 }
 
 @hal{deoclecio2026, hal-05709798}
-
-@article{lande2026,
-  title={A laboratory experiment and procedure for deterministic validation of numerical wave models},
-  author={Lande, {\O}ystein and Jensen, Atle and Johannessen, Thomas B},
-  journal={Journal of Fluid Mechanics},
-  doi={10.1017/jfm.2026.11658},
-  volume={1037},
-  pages={A2},
-  month={June},
-  year={2026},
-  publisher={Cambridge University Press}
-}
 ~~~
