@@ -239,7 +239,7 @@ void create_nc(scalar * list_out, char* file_out)
     /* Close the file. */
     if ((nc_err = nc_close(ncid)))
       ERR(nc_err);
-    printf("*** SUCCESS creating example file %s!\n", nc_file);
+//    printf("*** SUCCESS creating example file %s!\n", nc_file);
   }
 }
 

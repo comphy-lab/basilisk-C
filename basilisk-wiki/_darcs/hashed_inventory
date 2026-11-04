@@ -1,4 +1,4 @@
-pristine:8062ddc034fc99d426163bbbc5d8e233f572458924cc5635b31d43cc90e1e55f
+pristine:3b1b26064fba36533ca729e51a1e6555c5dc883b28cecfba1511d4d4e2feb03b
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15959,3 +15959,28 @@ Stephane Popinet <popinet@basilisk.fr>**20261102154748
  Ignore-this: 29cd1ca11d5692cd5c86ba2f75cc2b9f68874f47a320d7d457b546eda6c99b6b2008db8ba9644432
 ] 
 hash: 0000000634-831993cf637c7772cde4b4d5f6d64ada4931f038dc91c1ec5330d1fcb7cb0197
+[remove print
+Bruno Deremble <bruno.deremble@cnrs.fr>**20261103092705
+ Ignore-this: 4b459f3d34ae78452caf7ed853627beacf382dccbb26f1375e4a0147a1935e5fe345ec05bf75d4ba
+] 
+hash: 0000000344-16ba93226a837b0e1feaec0e607fce143784620f0811917b687b7fff67451eed
+[bug: nested macro inside a static function (a_baro in nh.h) doesnt compile on cuda
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261103114455
+ Ignore-this: 99a958df6bc0a12315418c7984e952d9c892a1edf21a8ef5be07b04f03fec39cf25e2b33b2f423a6
+] 
+hash: 0000001220-48d3916b819c37a60198c7fc8e704d81f6724ef3892a3277b4b1677ddde39715
+[cuda/multigrid by default to run on sandbox's gpu
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261103114647
+ Ignore-this: ca9702f45b7211285312fc256f62e12f2808d32ddde80747a9b71c53d3e7579e6f43c8f6ef667cac
+] 
+hash: 0000000323-c4ba2471cea4b06e88e7490af9bb71500f91fefcfd406ffa60400ce00ae15814
+[added bug report: vector extension in macro on gpu
+hugoj <hugo.jacquet.work@gmail.com>**20261103134021
+ Ignore-this: 78ac0d8ddbc9b71db5742effa477f3415d897cb102359d017ed6a56fa848a168dda8df7b23457815
+] 
+hash: 0000000310-564d25715d49b0eaac93766f92f53d77e96ea755377481e5f3135c7b514a451c
+[added vector_exp_macro_gpu.c
+hugoj <hugo.jacquet.work@gmail.com>**20261103134141
+ Ignore-this: 2c4e97626d5a530bf15d4defa76d60f438bad9c7981c823e2eae420ea3772af0ee325231d11311df
+] 
+hash: 0000000911-9be73f6123345ca250630a181df187eeabd761d1eb33705d269dbd11003927e0
