@@ -1,4 +1,4 @@
-pristine:3b1b26064fba36533ca729e51a1e6555c5dc883b28cecfba1511d4d4e2feb03b
+pristine:7047bbf62daa9bb31d10d62cc9d563bde1bee1051226bf780a60366606d6ac00
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -15984,3 +15984,28 @@ hugoj <hugo.jacquet.work@gmail.com>**20261103134141
  Ignore-this: 2c4e97626d5a530bf15d4defa76d60f438bad9c7981c823e2eae420ea3772af0ee325231d11311df
 ] 
 hash: 0000000911-9be73f6123345ca250630a181df187eeabd761d1eb33705d269dbd11003927e0
+[Added PDF
+Stephane Popinet <popinet@basilisk.fr>**20261104140815
+ Ignore-this: 92ae2e1c412349fccb2b0414dfe7de326072b978d2ec8521e92d4a4401e16adf6fe5a1e450784dac
+] 
+hash: 0000000501-3b0df26b52fe9c2fe5953b7931c457b3425396af7747c93d0811290ea9fe8f6e
+[Added ref to popinet2024f
+Stephane Popinet <popinet@basilisk.fr>**20261104141136
+ Ignore-this: 4b7aa00a294073665651a78da6389fe59f3489241e4c76ec33d589253006824b562fe47632870809
+] 
+hash: 0000000356-39cadb170f1f0631d7d3ae2c3fb9e438c88e3cda70be8c73c531d5fa7f0fed39
+[Full Derivation of the Linear Stability Theory
+vega <jonathan.billet@ens.psl.eu>**20261104160905
+ Ignore-this: 5828f596561e363f1eab98cc24db7c0cb6b3f21517ca69bfab726752a56b4997992bfd3e95894341
+] 
+hash: 0000002542-59af2a8abd292b4eaa1cee652cfda43899b74cef1c73e6cd8cbfccb7af083200
+[updated README
+fpicella <francesco.picella@sorbonne-universite.fr>**20261104170258
+ Ignore-this: d01aeba5d428f349689b5ac824216f44e87fe4348ae74f2ffee74089e8355dd7172caa38eb51eefc
+] 
+hash: 0000001331-f122852305cc1e1e90b7fe094d4b24c4fd4ac79a00c0bcf0c280320491a9724e
+[typo
+fpicella <francesco.picella@sorbonne-universite.fr>**20261104170456
+ Ignore-this: ea3bda5353379093e09e5e297c58d2ace56979060d212b94e33eee5bb079a244a22e32092bad9c82
+] 
+hash: 0000000361-f2381d5a47725eb1c7f5858490585e25577af62a393b560ed4817e2e637c08ec

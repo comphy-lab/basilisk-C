@@ -1,10 +1,26 @@
-#Hello World
-Hi, I'm [Francesco](https://sites.google.com/view/francescopicella), and I'm actually working active colloids.
+# Hello World
+
+<img src="https://raw.githubusercontent.com/fpicella/fpicella.github.io/main/assets/img/portrait.jpg" alt="Francesco Picella" width="180">
+
+Hi, I'm **Francesco Picella** — Maître de Conférences at
+[∂'Alembert](https://www.dalembert.upmc.fr/), Sorbonne Université, Paris.
+I study instabilities and transitions in hydrodynamically coupled systems,
+from active and living fluids to transition to turbulence over complex surfaces,
+and I use Basilisk to build the tools their stability analysis needs.
+
+More on my website: **[francescopicella.com](http://francescopicella.com)** 
 
 ![And yes, I use VI. Comic by [xkcd.](https://xkcd.com/378/)](https://imgs.xkcd.com/comics/real_programmers.png)
 
+### Main subjects
+
 - For this reason, I'm re-adapting [Arthur Ghigo](/sandbox/ghigo/src/) implementation of moving embedded boundaries.
+
 - I work with [Ambre Palotai](/sandbox/apalotai/README) and [Malo Walmetz](/sandbox/walmetz/README) on Robin boundary conditions
+
+- With [Louise Gally](/sandbox/gally/README) on hydrodynamic instabilities (POM for november 2026, bravo!), 
+- [Malo Walmetz](/sandbox/walmetz/README) on SuperHydrophobic Surfaces,
+- [Jordan Merrifield](/sandbox/jmerrifield/README) on multiphase flows.
 
 ## Forces/Torques on a moving embedded boundary
 - A variation of classic [couette](/src/test/couette.c), but computing torques [couette_torque](test/couette_torque.c)

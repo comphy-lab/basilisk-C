@@ -889,7 +889,8 @@ abstract = "Abstract This work reports a direct numerical simulation study on su
   author =	 {S. Popinet et al.},
   title =	 {Basilisk: a programming framework and social network for modelling with partial differential equations (invited talk)},
   year =	 2024,
-  booktitle =	 {Journées scientifiques ONERA sur les environnements de simulation multiphysiques, Châtillon, 19-20 June}
+  booktitle =	 {Journées scientifiques ONERA sur les environnements de simulation multiphysiques, Châtillon, 19-20 June},
+  url = {http://basilisk.fr/sandbox/popinet/onera.pdf}
 }
 
 @InProceedings{fintzi2024,
