@@ -175,12 +175,12 @@ Ref Rui Yang
 
 - better control (right final value, minimal oscillation) of dynamic forcing using integral quantities
 
-*/
+- effect of p0 initial value
+- effect of number of layer (geometric, equidistant)
+- effect of N
+- understand why dissipation rate in 2D is not equal to dissipation rate in 1D
 
-// Faire le cas test !
-// - propre
-// - avec dimensions
-// - simplifier
+*/
 
 // Dim [L, T, Mass, Temp]
 
@@ -190,9 +190,27 @@ double rho = 1000 [-3, 0, 1];
 // Note: here I replaced gmetric(i) with 1.0 as I do not use adaptative mesh.
 // this is necessary for the code to compile on CUDA.
 
+
+/** The forcing is implemented as an overload of 'a_baro' macro */
 #if HOLD_FORCING || EXACT_FORCING
+
+/**
+Wind acts in x only: qcc rewrites .x -> .y inside the
+foreach_dimension()/foreach_face() passes of nh.h/hydro.h, so
+multiplying the wind term by windmask.x makes it vanish in the
+y-passes.
+*/
+coord windmask = {1, 0, 0}; 
+
+/** Definition of the macro. 
+This has to be in 1 expression (no nested macros) and not using already used
+index such as 'i' for the macro to be compiled on GPU (CUDA).
+*/
+
 // this compiles
+// #define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*windmask.x*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
 #define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
+
 // This doesnt
 //#define a_baro(f,k) (gmetric(k)*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
 // This doesnt either
@@ -203,21 +221,24 @@ double rho = 1000 [-3, 0, 1];
 //         (eta[i+1] - 2.*eta[i] + eta[i-1])/(Delta*Delta) \
 //   ))
 
+
+
 #endif // HOLD_FORCING || EXACT_FORCING
 
 
 #include "grid/multigrid.h"
 #include "layered/hydro.h"
 #include "layered/nh.h"
-//#include "layered/nh-staggered.h"
+//#include "layered/nh-staggered.h" // Bruno's staggered, replaced in src/layered
 #include "layered/remap.h"
 #include "layered/perfs.h"
 #if OUTNC
 #include "bderembl/libs/netcdf_bas.h"
 #endif
 
+double pp0 = 0. [-1, -2, 1];
 
-
+/** ## Parameters */
 double g_ = 1. [1,-2];
 double k_ = 2.*pi [-1], h_ = 2. [1]; 
 double RE = 20000. [0,0,0];
@@ -238,12 +259,16 @@ double ak = 0.01 [0,0,0];
 
 #define T0  (2.*pi/sqrt(g_*k_)) // = sqrt(2PI) = 2.5s
 double lam = 0. [1];
-double NT0 = 10. [0, 1];
-double etam_i = 0. [1];
-double etavar_i = 0. [2];
-double etavar_previous =0. [2], etavar_current=0. [2];
+double NT0 = 10. [0, 0, 0]; // Duration of the experiment
 double cp = 0.[1, -2];
 double omega = 0. [0,-1];
+
+// Initial state
+double Ek_i = 0. [2, -2, 1];
+double Ep_i = 0. [2, -2, 1];
+double etam_i = 0. [1];
+double etavar_i = 0. [2];
+
 
 // Control
 double K_1 = 1. [0,0,0];
@@ -256,19 +281,43 @@ double sum_I = 0.;
 double K_3 = 0. [0,0,0];
 double last_dE=0.;
 
+// Low pass filter
+double dE_f, sum_f, tau_f, sum_abs_f;
+// p0 clip
+double p0_max = 100. [-1,-2,1];
+
+/** A function to compute the energy of the simulation */
+void energy_stats (double *mean, double *variance, double *pe, double *ke)
+{
+  double sum = 0.;
+  foreach (reduction(+:sum))
+    sum += eta[];
+  double m = sum/pow (N, dimension);
+
+  double gpe = 0., ke2 = 0.;
+  foreach (reduction(+:gpe) reduction(+:ke2)) {
+    gpe += sq (eta[] - m)*dv();
+    foreach_layer() {
+      double norm2 = sq (w[]);
+      foreach_dimension()
+        norm2 += sq (u.x[]);
+      ke2 += norm2*h[]*dv();
+    }
+  }
+  *mean = m;
+  *variance = gpe/sq(L0);  // <(eta-m)^2> since sum of dv() = L0^dimension
+  *pe = 0.5*rho*G*gpe;
+  *ke = 0.5*rho*ke2;
+}
+
 int main()
 {
   L0=1.;
   origin (-L0/2.);
   periodic (right);
 
-  #if dimension==2
   N = 64;
-  nl = 100;
-  #else
-  N = 128;
-  nl = 60; // use 100 for no_forcing if geo=1. else 60 with geo=1/3
-  #endif
+  nl = 64;
   G = g_;
   lam = 2*pi/k_*L0;
   
@@ -278,59 +327,69 @@ int main()
   theta_H=0.5;         // scheme conserve energy when theta_H = 0.5
   DT=0.01;                // fixed DT to study spatial and temporal resolution separately
   NITERMIN=3;             // Forces to do more cycles to avoid any influence of the poisson solver
-
-  /**
-   In the case of counter balancing the viscous dissipation exactly, we set once
-   the value of p0
-   */
-  #if EXACT_FORCING 
-  p0 = 2*rho*nu*k_*cp; // Forcing to exactly balance viscous diss
-  #endif
-  /** If the dynamic forcing is used, we use PID correction.
-    */
-  relax_dt = T0; 
-  T_f = 1.0; //* T0;
-  K_1 = 1./10./relax_dt; // P
-  K_2 = 0.; // I
-  K_3 = 0.; // D
   
-  // Ku = 1/5
-  // Pu = 0.5 T0
+  /**
+  In the case of counter balancing the viscous dissipation exactly, we set once
+  the value of p0
+  */
+  pp0 = 2*rho*nu*k_*cp; // Forcing to exactly balance viscous diss
+  p0 = pp0; 
+    
+  /** 
+  If the dynamic forcing is used, we use PID correction.
+  */
+  dE_f = 0.;      // filtered error
+  sum_f = 0.;     // filtered sum
+  sum_abs_f = 0.;
+  tau_f = T0/2.;  // timescale for low pass filter
+  
+  // double Ku = 1./(2.*T0); // Ultimate gain
+  double Ku = 2./(T0);                   //
+  double Tu = 2.*T0;      // Ultimate time scale
+  double Td = T0/2.;
+  
+  K_1 = Ku;               // P
+  K_2 = Ku/Tu;            // I, K2 = K_1/Ti
+  K_3 = 0.*Ku*Td;         // D, K3 = K_1*Td
+
+  // PI
+  // response time = 2π·sqrt(Tu/Ku)
+  // damping = sqrt(Ku·Tu)/2
 
 
-  fprintf(stderr, "T0 = %f, lam=%f, g_=%f,omega=%f,nu=%g\n", T0, lam, g_, omega,
-          nu);
+
+  fprintf(stderr, 
+      "T0 = %f, lam=%f, g_=%f,omega=%f,nu=%g\n", T0, lam, g_, omega,nu);
+
+  // study with varying initial p0
   run();
+
+  #if HOLD_FORCING || TESTS_P0
+  pp0 /= 2.;
+  p0 = pp0;
+  dE_f = 0., sum_f = 0.;
+  run();
+
+  pp0 /= 2.;
+  p0 = pp0;
+  dE_f = 0., sum_f = 0.;      
+  run();
+
+  pp0 /= 2.;
+  p0 = pp0;
+  dE_f = 0., sum_f = 0.;
+  run();
+  #endif
 }
 
-
-/**
- Here a function is defined: it computes the variance and the mean of the
- surface elevation in this model.
- */
-void eta_stats (double *mean, double *variance)
-{
-  double sum = 0., var = 0.;
-  double Nterms = pow (N, dimension);
-
-  foreach (reduction(+:sum))
-    sum += eta[];
-  double m = sum/Nterms;
-
-  foreach (reduction(+:var))
-    var += sq(eta[] - m);
-
-  *mean = m;
-  *variance = var/Nterms;
-}
 
 event init (i = 0)
 {
-  geometric_beta (1./3., true); // crashes when more cells near sfx ?
-  // default beta is 1/nl
+
+  geometric_beta (1./3., true); // default beta is 1/nl (1.)
+  
   foreach() {
     zb[] = -h_;
-
     #if STOKES
     eta[] = wave_stokes (x, 0., ak, k_, h_);
     #else
@@ -340,104 +399,145 @@ event init (i = 0)
     double z = zb[];
     foreach_layer() {
       h[] = H*beta[point.l];
+      
       /** 
-      In the linear theory, $\eta$ is almost 0 and z levels are flat. 
+      We use true z levels for the initialisation of the Stokes wave, but for
+      the linear waves, z levels are flat. 
 
       Using true z levels is adding energy compared to the linear theory as some
       z points are positive, so the exponential in the currents can grow fast
       for steeper cases.
       */
+      #if STOKES
+      z += H*beta[point.l]/2.; 
+      u.x[] = u_x_stokes (x, z, ak, k_, h_);
+      w[] = u_y_stokes (x, z, ak, k_, h_);
+      z += H*beta[point.l]/2.; 
+      #else
       z += h_*beta[point.l]/2.; 
       u.x[] = u_x_monolin(0., x, z, ak/k_, k_); 
       w[] = u_y_monolin(0., x, z, ak/k_, k_); 
       z += h_*beta[point.l]/2.; 
+      #endif
     }
 
   }
-  // Compute initial wave energy
-  eta_stats (&etam_i, &etavar_i);
-  // If dynamic forcing is used, the target energy is the initial energy
+  /** 
+  The initial energy of the wavefield is computed.
+  If dynamic forcing is used, the target energy is the initial energy
+  */
+  energy_stats(&etam_i, &etavar_i, &Ep_i, &Ek_i);
   fprintf (stderr, "INITIAL eta mean = %.10f, variance = %.10f\n", etam_i, etavar_i);
   fprintf (stderr, "initial p0 = %f\n", p0);
+  fprintf(stderr, "target Et = %g\n", Ep_i+Ek_i);
+  /**
+  Outputs for visual inspection 
+  */
   #if OUTNC
-  create_nc({zb, eta, h, u.x, w}, "out.nc");
+  create_nc({zb, eta, h, u, w}, "out.nc");
   #endif
+
+  
 }
 
-/* compute p0 from eta in a 'update_p0' event so that it uses eta from previous timestep,
-   before applying the forcing using the macro 'a_baro'
-*/
 
-#if HOLD_FORCING
-event update_p0 (i++)
-{
-  /**
-  ## Forcing using a relaxation time scale
+
+
+/** 
+  We log potential and kinetic energy. 
+ */
+event logfile (i++; t <= NT0*T0) // target: at least 300*T0 
+{ 
+  double etam = 0., etavar_current = 0., pe = 0., ke = 0.;
+  energy_stats (&etam, &etavar_current, &pe, &ke);
+  #if HOLD_FORCING || EXACT_FORCING
+  fprintf (stdout, "%g %g %g %g\n", t/T0, ke, pe, p0);
+  #else
+  fprintf (stdout, "%g %g %g\n", t/T0, ke, pe);
+  #endif 
+
+}
+/**
+  ## Forcing using a controler
 
   IN 2D (x,z):
   input_power = -sum_xy(dp/dx Q)dx
              with p = p0.deta/dx
                   Q = sum_layer(u*h)
       
-        so input_power = p0* sum_xy(sum_layer(d2eta/dx2*u*h*dx))
+        so input_power = - p0* sum_xy(sum_layer(d2eta/dx2*u*h*dx))
 
 
-   Energy deficit = rho*g*(variance_eta_target - variance_eta_now)*L0**2
-
-   timescale of relaxation = relax_dt
-
-   we match input power = deficit of relax_dt:
-
-     -sum_xy(dp/dx Q)dx = rho*g*(variance_eta_target - variance_eta_now)*L0**2/relax_dt
+  Energy deficit = E_ini - E(t)
   */
-
-  // Computing the error on wave energy
-  double etam;
-  eta_stats (&etam, &etavar_current);
-  double dE = rho*G*(etavar_i - etavar_current)*pow(L0,dimension);
-
-
-  // Computing input power 
-  // P = p0*sum
+#if HOLD_FORCING
+event update_p0 (i++)
+{
+  /** Computing the error on wave energy */
+  double etam = 0., etavar_current = 0., pe = 0., ke = 0.;
+  energy_stats (&etam, &etavar_current, &pe, &ke);
+  double dE = (Ek_i+Ep_i) - (pe + ke);
+  //double dE = 0., etam=0., etavar_current=0.;
+  /**
+  Computing input power, P = p0*sum
+  */
   double sum = 0.; 
-  foreach(reduction(+:sum)) {
+    foreach(reduction(+:sum)) {
     double etaxx = (eta[1] + eta[-1]- 2*eta[])/sq(Delta);
     foreach_layer()
-      sum += h[] * u.x[] * etaxx * dv(); // h * detadx * u
+      sum += - h[] * u.x[] * etaxx * dv(); 
+  }
+  /**
+  Low pass filter on error and sum
+  */
+  dE_f += (dE  - dE_f ) * dt / tau_f;
+  sum_f += (sum - sum_f) * dt / tau_f;
+
+  /**
+  safeguard: never divide by near zero sum  
+  */
+  sum_abs_f += (fabs(sum) - sum_abs_f) * dt / tau_f;
+  double sum_den = (sum_f >= 0. ? 1. : -1.) * fmax (fabs(sum_f), 0.1*sum_abs_f);
+  /**
+  PID Control
+
+  p0 = 1/sum * K1( dE + 1/Ti*int_t dE dt + Td*dE/dt ) */
+  double rhs = 0.;
+  
+  /** P: proportional constrain */
+  if (i>1){
+    rhs += K_1 * dE_f;
   }
 
-  /**
-  ## PID Control
-  */
-  double rhs = 0.;
-  /**
-  P: proportional constrain
-  */
-  rhs += K_1 * dE;
+  /** I: integral constrain */
+  if (fabs((rhs + K_2*sum_I)/sum_den) <= p0_max)
+  { 
+    // avoid to take into account spikes of energy
+    sum_I += dE_f * dt;
+  }
+  //sum_I += dE_f * dt;
+  //rhs += K_2 * sum_I;
 
-  /**
-  I: integral constrain   
-
-  */
-  sum_I += dE*dt; // TODO
-  rhs += K_2 / T_f * sum_I;
-
-  /**
-  D: derivative constrain
-  */  
+  /**  D: derivative constrain */  
   double dedt = 0.;  
-  dedt = (last_dE - dE)/dt;
+  dedt = (dE_f-last_dE)/dt;
   rhs += K_3*dedt;
+  last_dE = dE_f;
+  /** Finally we compute p0 */
+  double dp0 = rhs/sum_den;
 
-  /**
-  Finally we compute p0
-  */
-  p0 = - rhs/sum;
+  p0 = pp0 + dp0;
 
-  //p0 = -rho*G*dE*pow(L0,dimension)/relax_dt / sum;
-  fprintf(stderr,
-        "i=%d dE=%g predicted=%g sum=%g relax_dt=%g p0=%g\n",
-        i, dE,-p0*sum*relax_dt, sum, relax_dt, p0);
+  /** safeguard 2: p0 limiter */
+  if (p0 >  p0_max) p0 =  p0_max;
+  if (p0 < -p0_max) p0 = -p0_max;
+
+  // if (i%10==0){
+  //   fprintf(stderr, "i=%d etam=%.3e var=%.6e dE=%g sum=%g sum_den=%g p0=%g\n",
+  //       i, etam, etavar_current, dE, sum, sum_den, p0);
+  // }
+  fprintf(stderr, "i=%d etam=%.3e var=%.6e dE=%g sum=%g sum_den=%g p0=%g\n",
+        i, etam, etavar_current, dE, sum, sum_den, p0);
 }
 #endif 
 
@@ -446,27 +546,19 @@ Isotropic viscous dissipation
 */
 event viscous_term (i++) {
   // vertical diffusion is done in diffusion.h (u.x) and nh.h (w)
-  horizontal_diffusion ({u.x, w}, nu, dt);
+  horizontal_diffusion ({u, w}, nu, dt);
 }
-
 
 /** 
-We log potential and kinetic energy
- */
-event logfile (i++; t <= NT0*T0) // target: at least 300*T0
-{
-	double ke = 0., gpe = 0.;
-	foreach (reduction(+:ke) reduction(+:gpe)) {
-	  foreach_layer() {
-	    double norm2 = sq(w[]);
-	    foreach_dimension()
-	 norm2 += sq(u.x[]);
-	    ke += norm2*h[]*dv();
-	  }
-	  gpe += sq(eta[])*dv();
-	}
-  fprintf (stdout, "%g %g %g\n", t/T0, ke/2., g_*gpe/2.);
-}
+ On GPU, float 32 are used. This introduces a number of round error in the code.
+ The main one is by the remapping procedure that makes the total volume of
+ water drift (sign of the drift depends on the fp32 representation of nl). This
+ has been fixed by enforcing that sum(h[]) = H in remap.h.
+
+ A second one could be in the advection scheme but I still need to look at this.
+*/
+
+
 
 
 /**
@@ -475,124 +567,35 @@ event logfile (i++; t <= NT0*T0) // target: at least 300*T0
 #if OUTNC
 event writenc (i++; t <= NT0*T0) 
 {
-  write_nc();
+  if (i%10==0){
+    write_nc();
+  }
 }
 #endif
 
 
+// #if HOLD_FORCING || TESTS_P0
+// event save_p0 (t>NT0*T0 - dt)
+// {
+//   char mycmd[100];
+//   sprintf (mycmd, "mv out out_p0%.03f", pp0);
+//   system (mycmd);
+//   // system ("rm -f out");
+//   // system ("touch out");
+// }
+//
+// #endif
 
 /**
-~~~pythonplot Wave energy
-import numpy as np
-import matplotlib.pyplot as plt
+NOTES:
 
-g = 1.0
-L0 = 1.0
-ak = 0.01
-k = 2 * np.pi / L0
-lam = 2 * np.pi / k
-Re = 20000
-c = np.sqrt(g * k) / k
-NT0 = 10
-
-nu = c * lam / Re
-T0 = 2 * np.pi / np.sqrt(g * k)
-
-print("T0 = %f" % T0)
+2/11/26
+- 2D CPU (HPC) has a big energy decrease at startup (~0.3%)
+- 2D CPU (HPC) is more dissipative than GPU (local)
+- 2D GPU (local) is more dissipative than theory
+- 2D GPU (local) with exact forcing. E grows with time whereas 2D CPU (HPC)
+decay with time.
 
 
-def E_linwave(E0, nu, ak, k, t):
-    print("\nWave decay for linear wave (theory)")
-    print(f"nu={nu},ak={ak},k={k / np.pi}pi\n")
-    return E0 * np.exp(-2 * nu * k**2 * t)
 
-
-data = {
-    "current_noforcing": np.loadtxt("../no_forcing/out", skiprows=1),
-    "current_exactforced": np.loadtxt("../exact_forcing/out", skiprows=1),
-    "current_forced": np.loadtxt("../linear_wave_wind_input/out", skiprows=1),
-}
-time = {}
-ke = {}
-gpe = {}
-E = {}
-
-for case in data.keys():
-    time[case] = data[case][:, 0]
-    ke[case] = data[case][:, 1]
-    gpe[case] = data[case][:, 2]
-    E[case] = ke[case] + gpe[case]
-
-E0th = 0.5 * g * (ak / k) ** 2  # E["current_noforcing"][0]
-print("\ntheoretical E0 = %g m3/s2" % E0th)
-print("initial energy for current sim E0 = %g m3/s2" % E["current_noforcing"][0])
-print("ratio is %g \n" % (E0th / E["current_noforcing"][0]))
-Eth = E_linwave(E0th, nu, ak, k, time["current_noforcing"] * T0)
-E0 = 1
-
-print("Target for E=cst for this set of parameters:")
-print("nu=%g, ak=%g, k=%g" % (nu, ak, k))
-print("E0 theory = %g" % E0th)
-print("E0 real = %g (need more resolution to match E0th)" % E["current_noforcing"][0])
-print("Initial energy missmatch = E0th - E0 = %g" % (E0th - E["current_noforcing"][0]))
-print(
-    "noforcing: miss match Eth-E=%g (at %d T0) "
-    % (Eth[-1] - E["current_noforcing"][-1], NT0)
-)
-print(
-    "exact forcing: miss match Eth-E=%g (at %d T0) "
-    % (Eth[-1] - E["current_forced"][-1], NT0)
-)
-
-fig, ax = plt.subplots(figsize=(7, 6))
-
-# ax.plot(
-#     time["current_noforcing"],
-#     2 * gpe["current_noforcing"] / E0,
-#     color="g",
-#     label="2Ep (current)",
-#     alpha=0.5,
-# )
-# ax.plot(
-#     time["current_noforcing"],
-#     2 * ke["current_noforcing"] / E0,
-#     color="b",
-#     label="2Ek (current_noforcing)",
-#     alpha=0.5,
-# )
-ax.semilogy(time["current_noforcing"], Eth / E0, color="r", label=r"$E(t)=E_0 e^{-2 \nu k^2 t}$")
-ax.hlines(E0th, 0, 100, colors="gray", alpha=0.7)
-ax.semilogy(
-    time["current_noforcing"],
-    E["current_noforcing"] / E0,
-    color="pink",
-    label="E (no forcing)",
-    ls='--',
-)
-ax.semilogy(
-    time["current_forced"],
-    E["current_forced"] / E0,
-    color="purple",
-    label="E (hold forcing)",
-    ls='--'
-)
-ax.semilogy(
-    time["current_exactforced"],
-    E["current_exactforced"] / E0,
-    color="orange",
-    label="E (exact forcing)",
-    ls='--'
-)
-
-ax.set_xlabel("t/T0")
-ax.set_ylabel("E/E0")
-ax.set_xlim([0, 10])
-ax.set_ylim([1.2e-6, 1.28e-6])
-ax.legend()
-ax.grid(axis="y", which="both")
-plt.savefig("energy.pdf", dpi=300)
-plt.show()
-
-# plot [:2] "out" using 1:($2+$3) w l
-~~~
 */

@@ -1,4 +1,4 @@
-pristine:4fea3981e5e8ff171b3e98a8ad4f831a4ed353e2d14132e6aa0de01ee37a9011
+pristine:232b4656ed5ee9ea3abdcbf0c8c3e4a4bed2dc5f068c7fda09344b2796be4656
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -16029,3 +16029,23 @@ Antoonvh <j.a.v.hooft@gmail.com>**20261108112535
  Ignore-this: b57edab6bc37a7a16027e35a55be0a8755ebd16e8c50d8b1985d3f60c097928f983468c5411c7bed
 ] 
 hash: 0000000773-b1093d894c2a41717c3f04294a3e4e69bfa37b99ac6727705dbe89944958f6cd
+[fixed visual bug for ridge dectection
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261104151128
+ Ignore-this: 25aa4e68b4ae4905fb46439a3c0cada674947c155c673d99f73fb5518129d1efbfc143c9c104f30c
+] 
+hash: 0000000345-bab22f2c26b17dde703f8bba922625743d9dc6a87641bc1a49ff1a101cf0a1f2
+[added tests for initial p0 linear wave, more PI tuning, real case is E~cst over 5 periods
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261109114624
+ Ignore-this: 2c2f643519cf561ba8e1b73c13d859072c0de04446fdb6ed0f55e2f61f8e606ca790fc6750c8d238
+] 
+hash: 0000048481-c1dc1d21996ce819232e78aa77d1c8f8dd2efd7bcf52b2f78f7bee6c480be288
+[fix: ini location consistency between u and eta
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261109114715
+ Ignore-this: b7d228c8f395c3001750a0ab99c97b94d8b6f37c815e8f15d29e9dc5c962041735d59d156403efea
+] 
+hash: 0000000372-a831cf25fa34a6beecfe4edda4dda642e9e9cdedf277e6f2fb8a82da9a5cda91
+[added AA
+Antoonvh <j.a.v.hooft@gmail.com>**20261109183601
+ Ignore-this: 5efe018fd90fe13b876df4ea49fbfd584dff679a344362835d2c0c7fb0baa38fec7d7da1aa9a7bf8
+] 
+hash: 0000003139-1bbc274d0164171a61fd3751bbba18251d8c68574e31322d92a9e6d86c679726

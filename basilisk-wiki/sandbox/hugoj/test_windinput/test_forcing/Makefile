@@ -1,6 +1,6 @@
 CFLAGS += -I$(DOCUMENT_ROOT)/sandbox -O2
 CFLAGS += -disable-dimensions # skip dimensions check for now
-CFLAGS += -DOUTNC
+#CFLAGS += -DOUTNC
 
 all: no_forcing.tst linear_wave_wind_input.tst exact_forcing.tst linear_wave_wind_input/plots
 
@@ -46,7 +46,18 @@ hold_stokes2D.c: linear_wave_wind_input.c
 	ln -sf linear_wave_wind_input.c hold_stokes2D.c
 hold_stokes2D.tst: CFLAGS += -DSTOKES -DHOLD_FORCING=1 
 
+# 2D HPC
+no_forcing2D.hpc.c: linear_wave_wind_input.c
+	ln -sf linear_wave_wind_input.c no_forcing2D.hpc.c
+_no_forcing2D.hpc.c: CFLAGS += -D_MPI=1 
 
+holding2D.hpc.c: linear_wave_wind_input.c
+	ln -sf linear_wave_wind_input.c holding2D.hpc.c
+_holding2D.hpc.c: CFLAGS += -D_MPI=1 -DHOLD_FORCING=1
+
+exact2D.hpc.c: linear_wave_wind_input.c
+	ln -sf linear_wave_wind_input.c exact2D.hpc.c
+_exact2D.hpc.c: CFLAGS += -D_MPI=1 -DEXACT_FORCING=1
 
 
 

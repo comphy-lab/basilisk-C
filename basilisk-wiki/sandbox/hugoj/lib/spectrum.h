@@ -776,8 +776,8 @@ void initial_condition_u_fft (vector u,
   double dy = dx;
   
   foreach(cpu) {
-    int i = (int)floor(x/dx)+1;
-    int j = (int)floor(y/dy)+1;
+    int i = (int)floor(x/dx);
+    int j = (int)floor(y/dy);
     i = (i % N + N) % N; // X cyclic
     j = (j % N + N) % N; // Y cyclic
 

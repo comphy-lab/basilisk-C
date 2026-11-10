@@ -134,7 +134,7 @@ def simple_mapping(
     if method == 0:
         _, b = detect_ridges(eta, sigma=1)  # Maxima and minima ridges
         b_norm = b / delta**2  # Normalize the curvature by grid size
-        b_ = np.less(b_norm, threshold)  # Is this value fixed???
+        b_ = np.less(b_norm, threshold)
         # Extra filtering by above 2.5 sigma (we can kind of use something between 2.5-3\sigma)
         if EXTRA_FILTER:
             height_filter = np.logical_not(eta < 2.5 * np.var(eta) ** 0.5)

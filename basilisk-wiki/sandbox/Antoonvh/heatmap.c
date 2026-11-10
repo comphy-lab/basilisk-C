@@ -5,7 +5,6 @@ Making a heatmap from GPX data tracks
 
 ![Strava in the wiki](https://www.antoonvanhooft.nl/media/heatmap_all.png)
 
-
 */
 #include "distance.h" // for input_xy()
 #include "utils.h" // output_ppm
@@ -32,7 +31,7 @@ void blue_body (double cmap[NCMAP][3])
 /**
 ## Segmet cell intersections
    
-The  foreach_segment() macro is too [buggy](https://basilisk.fr/sandbox/bugs/segment_finder.c), but I can't see what is wrong. So we modify some bwatch methods, where finite rays are used to represent segments. Furthermore, the multigrid acceleration reduces computation time significantly. 
+The  foreach_segment() macro is too [buggy](https://basilisk.fr/sandbox/bugs/segment_finder.c), but I can't see what is wrong. So we modify some bwatch methods, where finite rays are used to represent segments. Furthermore, the multigrid-acceleration is an important optimization. 
  */
 
 typedef struct ray {
@@ -61,21 +60,21 @@ static inline double ray_cell_intersect (ray r, Point point, coord a[2]) {
 macro foreach_ray_cell_intersection (ray r) {
   foreach_cell() { //MG acceleration
     coord _a[2] = {0};
-    double _dist = ray_cell_intersect (r, point, _a);
+      double _dist = ray_cell_intersect (r, point, _a);
     if (_dist < HUGE) {
       if (is_leaf(cell))
 	{...}
     } else // Ray missed, skip children
       continue;
-  }
+    }
+  
 }
 
 scalar s[];
-
-
-int main(int argc, char ** argv) {
+ 
+ int main(int argc, char ** argv) {
   int counter = 1;
-  init_grid (1024);
+  init_grid (2048);
   
   // We find the bounds of our canvas
   X0 = HUGE;
@@ -164,7 +163,7 @@ int main(int argc, char ** argv) {
     if (s[] < 0.1) {
       double sum = 0;
       int n = 0;
-      foreach_neighbor(1)
+      foreach_neighbor(2)
 	if (s[] >= 0.1) {
 	  sum += s[];
 	  n++;
@@ -180,7 +179,8 @@ int main(int argc, char ** argv) {
     if (s[] < 0.1)
       s[] = nodata;
   }
-  // The 1-2-3-2-1 triangle-filter kernel
+  // The 
+  // 1-2-3-2-1 triangle-filter kernel
   foreach() {
     int n = 0;
     double sum = 0;
@@ -211,32 +211,62 @@ int main(int argc, char ** argv) {
     if (h[] != nodata)
       h[] = min(log(h[]), maxv);
   }
-  output_ppm (h, file = "track.png" , min = -0.1, max = maxv + 0.1, map = blue_body);
-  // add transparancy
-  system ("convert track.png -transparent black heatmap.png");
+  /**
+## Anti aliasing
+
+We compute a transparancy approximation for the cells at the edges of
+tracks. To include this info, we need to write in the pam format.
+   */
+   FILE * fp = fopen ("track.pam", "wb");
+  fprintf (fp, "P7\nWIDTH %d\nHEIGHT %d\nDEPTH %d\nMAXVAL %d\nTUPLTYPE RGB_ALPHA\nENDHDR\n", N, N, 4, 255); // .pam header
+  double Delt = L0/N;
+  double cmap[NCMAP][3];
+  double minv = -0.1;
+  blue_body(cmap);
+  for (int j = N - 1; j >= 0; j--) {
+    for (int i = 0; i < N; i++) {
+      foreach_point (X0 + (i+0.5)*Delt, Y0 + (j+0.5)*Delt) {
+	unsigned char px[4] = {0,0,0,0};
+	if (h[] != nodata) {
+	  Color c = colormap_color(cmap, h[], minv, maxv);
+	  px[0] = c.r;
+	  px[1] = c.g;
+	  px[2] = c.b;
+	  double alphav = 0;
+	  foreach_neighbor(1) {
+	    if (h[] != nodata)
+	      alphav++; 
+	  }
+	  px[3] = max(min(255, (alphav - 5)*255/4),0);
+	 }
+	 fwrite (px, 1, 4, fp);
+      }
+    }
+  }
+  fclose(fp);
+  // Convert to png
+  system ("convert track.pam -transparent black heatmap.png");
   char cmd[999];
   // We need to un-map the x coordinate for the osm python script (see below)
   sprintf (cmd, "./venv/bin/python osm.py %g %g %g %g\n", X0/fac, Y0, (X0 + L0)/fac, Y0 + L0);
   system(cmd);
 }
 /**
-## Supporting scripts
+## scripts
+
 
 ### gpx to poly line
 
-~~~bash
+   ~~~bash
    #! /usr/bin/bash
    awk 'match($0, /lat="([^"]+)".*lon="([^"]+)"/, a) {
                       lat = a[1]
       		     lon = a[2]
 		     print lon, lat }' $1 > track3.gnu
-~~~
+   ~~~
 
 ### OSM interface
-   
-This was vibe coded, well done chatGPT! 
-   
-~~~python
+   ~~~python
    #!/usr/bin/env python3
 import math
 from io import BytesIO
@@ -266,7 +296,7 @@ canvas = Image.new("RGB", (width, height))
 
 # Headers required by OSM tile usage policy (must include a valid User-Agent)
 headers = {"User-Agent": "heatmap script"
-           "contact: your@mail.com}
+           "contact: j.a.v.hooft@gmail.com"}
 
 for t in tiles:
   url = f"https://tile.openstreetmap.org/{zoom}/{t.x}/{t.y}.png"
@@ -313,7 +343,7 @@ crop_bottom = int(lr_py - min_tile_origin_y)
 exact_canvas = canvas.crop((crop_left, crop_top, crop_right, crop_bottom))
 exact_canvas.save("osm_exact_output.png")
 print("Saved cropped map as osm_exact_output.png!")
-~~~
+   ~~~
 
 We can now resize and overlay the heatmap with the streetmap, using
 
