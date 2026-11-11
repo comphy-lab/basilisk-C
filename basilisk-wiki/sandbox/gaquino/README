@@ -14,11 +14,7 @@ The simulation of stratified exchange flows.
 ###### Interaction regimes of a vortex ring and an inertial particle
 Study of the dynamics of a single inertial particle interacting with a vortex ring, modeled using a point-like one-way coupling approach.
 
-
-
-
-###### Vortex Ring and Multi Particles
-
+* [Single particle interacting with a vortex ring](vortex_ring_particle.c)
 
 #### Stratified Exchange Flows
 Numerical simulations of stratified inclined duct flows, employing a width-averaged approach using the parametrization of side-wall effects derived from three-dimensional semi-analytical solutions. 
