@@ -66,7 +66,11 @@ Note: g_ has to be defined before #include spectrum.h !
         exit(EXIT_FAILURE); \
     }
 
-
+double P = 0.02;              // energy level (estimated so that kpHs is reasonable)
+int N_mode = 32;              // Number of modes in wavenumber space
+int N_power = 5;              // directional spreading coeff
+int F_shape = 0;              // shape of the initial spectrum
+int N_zlayer = 32;            // for fft init (must be power of 2)
 
 typedef struct {
   int N_mode;
@@ -159,7 +163,6 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
             kp: peak wavenumber
             thetam: midline direction (rad, positive anticlockwise, along x = 0.)
   */
-
   int N_kmod = 128; // Uniform grid in kmod and ktheta, can be finer than N_mode
   int N_theta = 128;
   //double thetam = 0.; // midline direction
@@ -178,13 +181,13 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
   // building kmod
   for (int i = 0; i < N_kmod; ++i) {
     kmod[i] =
-        2 * pi / L + 1.0 * i / (N_kmod - 1) * (1.41 * 100 * 2 - 2) * pi / L;
+        2 * PI / L + 1.0 * i / (N_kmod - 1) * (1.41 * 100 * 2 - 2) * PI / L;
     // fixme: what are these weird constants?? 1.41 * 100 * 2 - 2
   }
   spectrum.thetam = thetam;
   // build Dtheta
   for (int i = 0; i < N_theta; ++i) {
-    theta[i] = -pi + 2.0*pi*i / (N_theta - 1);
+    theta[i] = -PI + 2.0*PI*i / (N_theta - 1);
     Dtheta[i] = fabs(pow(cos(theta[i] - thetam), N_power));  
   }
   // Normalizing Dtheta
@@ -211,11 +214,11 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
 
   // Uniform grid in kx ky
   for (int i = 0; i < Ntmode; ++i) {
-    spectrum.kx[i] = -2*pi*N_mode/L + 2*pi/L*i;
+    spectrum.kx[i] = -2*PI*N_mode/L + 2*PI/L*i;
   }
   for (int i = 0; i < Ntmode; ++i) {
     //spectrum.ky[i] = 2 * pi / L * (i - N_mode / 2);
-    spectrum.ky[i] = -2*pi*N_mode/L + 2*pi/L*i;
+    spectrum.ky[i] = -2*PI*N_mode/L + 2*PI/L*i;
   }
   
   
@@ -261,7 +264,7 @@ T_Spectrum spectrum_gen_linear(int N_mode, int N_power, double L, double P,
       index = i*Ntmode + j;
       k = sqrt(sq(spectrum.kx[i]) + sq(spectrum.ky[j]));
       spectrum.omega[index] = sqrt(g_*k); // we use linear dispersion relation 
-      spectrum.phase[index] = randInRange (0, 2.*pi); // random phase in [0,2pi)
+      spectrum.phase[index] = randInRange (0, 2.*PI); // random phase in [0,2pi)
     }
   }
   return spectrum;

@@ -127,8 +127,8 @@ event init (i = 0) {
   equilibrium value for each chemical species. */
 
   ThermoState tsl, tsg;
-  tsl.T = TL0, tsl.P = Pref, tsl.x = (double[]){0.5,0.5};
-  tsg.T = TG0, tsg.P = Pref, tsg.x = (double[]){0.,0.,1};
+  tsl.T = TL0, tsl.P = P0, tsl.x = (double[]){0.5,0.5};
+  tsg.T = TG0, tsg.P = P0, tsg.x = (double[]){0.,0.,1};
 
   phase_set_thermo_state (liq, &tsl, force = true);
   phase_set_thermo_state (gas, &tsg, force = true);

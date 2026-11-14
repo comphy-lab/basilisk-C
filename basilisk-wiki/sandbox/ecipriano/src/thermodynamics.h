@@ -7,6 +7,9 @@ the evaporation models.
 ## Physical Constants
 */
 
+#ifndef THERMODYNAMICS_H
+# define THERMODYNAMICS_H
+
 #define R_GAS 8.3144621 // Ideal gas constant [J/mol/K]
 
 /**
@@ -106,3 +109,104 @@ double antoine_methanol (double T, double P) {
   return pow (10., A - B/(T + C)) / (P*1.e-5);
 }
 
+/**
+## Composition Utilities
+
+Functions that convert between mass and mole fractions, and that compute the
+molecular weight of the mixture. They operate on plain arrays of fractions and
+molecular weights, without any dependency on the thermodynamic state or on the
+properties backend, therefore they belong here rather than in
+[variable-properties.h](variable-properties.h).
+*/
+
+/**
+## *mass2molefrac()*: Compute mole fractions from mass fractions
+
+* *X*: vector filled with mole fractions
+* *W*: vector with the mass fractions
+* *MW*: vector with the molecular weights of each species
+* *NS*: total number of species (vectors length)
+*/
+
+void mass2molefrac (double * X, const double * W, const double * MW, const int NS)
+{
+  double MWmix = 0.;
+  for (int i=0; i<NS; i++) {
+    MWmix += W[i]/MW[i];
+  }
+  for (int i=0; i<NS; i++) {
+    X[i] = W[i]/MW[i]/(MWmix + 1.e-10);
+  }
+}
+
+/**
+## *mole2massfrac()*: Compute mass fractions from mole fractions
+
+* *W*: vector filled with mole fractions
+* *X*: vector with the mass fractions
+* *MW*: vector with the molecular weights of each species
+* *NS*: total number of species (vectors length)
+*/
+
+void mole2massfrac (double * W, const double * X, const double * MW, const int NS)
+{
+  double MWmix = 0.;
+  for (int i=0; i<NS; i++) {
+    MWmix += X[i]*MW[i];
+  }
+  for (int i=0; i<NS; i++) {
+    W[i] = X[i]*MW[i]/(MWmix + 1.e-10);
+  }
+}
+
+/**
+## *mass2mw()*: Compute mixture molecular weight from mass fractions
+
+* *W*: vector with the mass fractions
+* *MW*: vector with the molecular weights of each species
+* *NS*: total number of species (vectors length)
+*/
+
+double mass2mw (const double * W, const double * MW, const int NS)
+{
+  double MWmix = 0.;
+  for (int i=0; i<NS; i++) {
+    MWmix += W[i]/MW[i];
+  }
+  return 1./(MWmix + 1.e-10);
+}
+
+/**
+## *mole2mw()*: Compute mixture molecular weight from mole fractions
+
+* *X*: vector with the mass fractions
+* *MW*: vector with the molecular weights of each species
+* *NS*: total number of species (vectors length)
+*/
+
+double mole2mw (const double * X, const double * MW, const int NS)
+{
+  double MWmix = 0.;
+  for (int i=0; i<NS; i++) {
+    MWmix += X[i]*MW[i];
+  }
+  return MWmix;
+}
+
+/**
+## *correctfrac()*: Close to 1 a vector of mass or mole fractions
+
+* *X*: vector with mass or mole fractions
+* *NS* total number of species (vector length)
+*/
+
+void correctfrac (double * X, const int NS)
+{
+  double sum = 0.;
+  for (int i=0; i<NS; i++)
+    sum += (X[i] >= 0.) ? X[i] : 0.;
+  for (int i=0; i<NS; i++)
+    X[i] = (X[i] >= 0.) ? X[i]/(sum + 1.e-10) : 0.;
+}
+
+#endif

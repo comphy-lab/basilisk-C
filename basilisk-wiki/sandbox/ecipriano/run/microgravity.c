@@ -122,7 +122,7 @@ int main (void) {
   We set the thermodynamic pressure in SI units (Pa), and the initial
   temperatures of the system. */
 
-  Pref = PRESSURE*101325.;
+  P0 = PRESSURE*101325.;
   TG0 = TEMPERATURE;
   TL0 = TEMPERATURE_DROPLET;
 
@@ -193,8 +193,8 @@ event init (i = 0) {
   We set the properties of the system. */
 
   ThermoState tsl, tsg;
-  tsl.T = TL0, tsl.P = Pref, tsl.x = (double[]){1.};
-  tsg.T = TG0, tsg.P = Pref, tsg.x = (double[]){0.,1.};
+  tsl.T = TL0, tsl.P = P0, tsl.x = (double[]){1.};
+  tsg.T = TG0, tsg.P = P0, tsg.x = (double[]){0.,1.};
 
   phase_set_thermo_state (liq, &tsl, force = !restored);
   phase_set_thermo_state (gas, &tsg, force = !restored);

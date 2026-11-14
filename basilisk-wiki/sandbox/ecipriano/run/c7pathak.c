@@ -89,7 +89,7 @@ int main (void) {
   lambda1 = 0.1121, lambda2 = 0.04428;
   cp1 = 2505., cp2 = 1053.;
   dhev = 3.23e5;
-  Pref = 2860000.;
+  P0 = 2860000.;
 
   /**
   We set the initial liquid and gas phase temperatures. */
@@ -145,8 +145,8 @@ event init (i = 0) {
   weights. */
 
   ThermoState tsl, tsg;
-  tsl.T = TL0, tsl.P = Pref, tsl.x = (double[]){1.};
-  tsg.T = TG0, tsg.P = Pref, tsg.x = (double[]){0.,1.};
+  tsl.T = TL0, tsl.P = P0, tsl.x = (double[]){1.};
+  tsg.T = TG0, tsg.P = P0, tsg.x = (double[]){0.,1.};
 
   phase_set_thermo_state (liq, &tsl, force = !restored);
   phase_set_thermo_state (gas, &tsg, force = !restored);

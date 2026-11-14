@@ -111,7 +111,7 @@ int main (void) {
   cp1 = 2244.92, cp2 = 1041.52;
   dhev = 364482;
 
-  Pref = PRESSURE*101325.;
+  P0 = PRESSURE*101325.;
   TG0 = TEMPERATURE, TL0 = 300, TIntVal = TG0;
 
   /**
@@ -165,8 +165,8 @@ event init (i = 0) {
     mLiq0 += rhol[]*f[]*dv();
 
   ThermoState tsl, tsg;
-  tsl.T = TL0, tsl.P = Pref, tsl.x = (double[]){1.};
-  tsg.T = TG0, tsg.P = Pref, tsg.x = (double[]){0.,1.};
+  tsl.T = TL0, tsl.P = P0, tsl.x = (double[]){1.};
+  tsg.T = TG0, tsg.P = P0, tsg.x = (double[]){0.,1.};
 
   phase_set_thermo_state (liq, &tsl);
   phase_set_thermo_state (gas, &tsg);
@@ -183,12 +183,12 @@ event init (i = 0) {
 
   ThermoState ts0;
   ts0.T = TL0;
-  ts0.P = Pref;
+  ts0.P = P0;
   ts0.x = (double[]){1.};
 
   ThermoState tsf;
   tsf.T = TG0;
-  tsf.P = Pref;
+  tsf.P = P0;
   tsf.x = (double[]){1.};
 
   rho0 = tp1.rhov (&ts0);
@@ -351,8 +351,9 @@ set yrange[1:1.12]
 set size square
 
 basedir350 = "../expansion/"
-basedir375 = "../expansion-T375/"
-basedir400 = "../expansion-T400/"
+basedir375 = "../data/expansion/expansion-T375/"
+basedir400 = "../data/expansion/expansion-T400/"
+
 
 set label "∆T = 50 K"  at 2.45,1.05  left font ",11" tc rgb "black"
 set label "∆T = 75 K"  at 2.45,1.078 left font ",11" tc rgb "black"
@@ -379,13 +380,13 @@ stats "<tail -n 1 OutputData-5" u 6 nooutput name "T1_LEVEL5"
 stats "<tail -n 1 OutputData-6" u 6 nooutput name "T1_LEVEL6"
 stats "<tail -n 1 OutputData-7" u 6 nooutput name "T1_LEVEL7"
 
-stats "<tail -n 1 ../expansion-T375/OutputData-5" u 6 nooutput name "T2_LEVEL5"
-stats "<tail -n 1 ../expansion-T375/OutputData-6" u 6 nooutput name "T2_LEVEL6"
-stats "<tail -n 1 ../expansion-T375/OutputData-7" u 6 nooutput name "T2_LEVEL7"
+stats "<tail -n 1 ".basedir375."/OutputData-5" u 6 nooutput name "T2_LEVEL5"
+stats "<tail -n 1 ".basedir375."/OutputData-6" u 6 nooutput name "T2_LEVEL6"
+stats "<tail -n 1 ".basedir375."/OutputData-7" u 6 nooutput name "T2_LEVEL7"
 
-stats "<tail -n 1 ../expansion-T400/OutputData-5" u 6 nooutput name "T3_LEVEL5"
-stats "<tail -n 1 ../expansion-T400/OutputData-6" u 6 nooutput name "T3_LEVEL6"
-stats "<tail -n 1 ../expansion-T400/OutputData-7" u 6 nooutput name "T3_LEVEL7"
+stats "<tail -n 1 ".basedir400."OutputData-5" u 6 nooutput name "T3_LEVEL5"
+stats "<tail -n 1 ".basedir400."OutputData-6" u 6 nooutput name "T3_LEVEL6"
+stats "<tail -n 1 ".basedir400."OutputData-7" u 6 nooutput name "T3_LEVEL7"
 
 set print "errors"
 

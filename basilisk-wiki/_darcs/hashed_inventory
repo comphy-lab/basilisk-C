@@ -1,4 +1,4 @@
-pristine:c9416c9f783415864049cf655868e6b90fc70fd545967181390075bd9778a834
+pristine:542beedb414b90ed442c181278ffd8a49ebcf37fa1db5504768a654dbe28df21
 Starting with inventory:
 0000163353-170f8191ffcc0ff89f067d92efdff1599a990ba99349869402e82cbd98af48d3
 [TAG release 25-10-18
@@ -16064,3 +16064,73 @@ gaquino <guilherme.siqueiraa@hotmail.com>**20261110135311
  Ignore-this: 10f0f608ed96b3bdfcfb02e87bdf4818210c4f41766fb1834bff4306ac9d8c44a7e551ec976006de
 ] 
 hash: 0000005114-0e9c2129434bfc5747ae29f07c8b405778bc953c9d19e8b91d5db0203d2d4962
+[fixed: time was called t, breaking detection is now crest = 1
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261110135615
+ Ignore-this: 35ceea723e01146b5fedcb0559b406d590113f8335e3da011f6ae965b3161fae32170f9715c26de0
+] 
+hash: 0000008519-7ab63731664c820690b8456c7d2ad7966060de9b09c4cba519b7a12aba77c98d
+[Fixed and improved version of film boiling test case
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20260222205928
+ Ignore-this: 1fc1792140ac48b6b32c2c61c5dd9d0b446ddc9ab17be4a9ca08a689a2a217169f32f88d1c97ea7
+] 
+hash: 0000011559-d9d8420f2b1b5534c9f0e061c5b95e9815fab00b657a9e426c9df6707d07d461
+[Sync with GitHub: capillary() parallel fix, shift_diffusion(), wall BCs, removed deprecated files
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20261113084507
+ Ignore-this: 343be15767682f586576f781c68a0ab1e72b29a35d2763edb96ee150290fa7bbae80fa921881db4f
+] 
+hash: 0000062513-c0857069604e7addd87cd0236854dae1bdffe6b29bf3ece2dfacb5c67a3561b8
+[Updated reference results and Makefile for automatic testing (GitHub #36)
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20261113084516
+ Ignore-this: 365ba417d5bf54de960aaf8d723a2bd9248d7519a7c7e5dd5e7f6026ffc7159b697d69e9e011fdf5
+] 
+hash: 0000069636-f69cda1f2232d9eb0b25dee5f7d1020e5a81655f7653c1c008ccb68518982374
+[Navier/Robin boundary condition on embedded boundaries or generic PLIC interfaces
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20261113084522
+ Ignore-this: a61a2f3753e2da9d62296247c92e9938072c667206469044b7e5b3129ae7d5199bb41fcb37b276f3
+] 
+hash: 0000007115-a3bfac6e031babf61750dc806bea929067ea8a5dd3053889ea71e1244557b4d8
+[Generalized multicomponent model for either droplets or bubbles phase change problems
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20261113084528
+ Ignore-this: e67c3172b732feb1ad41ffe694ecdc1c9fb142c63692ce07d09da93fd019e1fbda7f0fbe0ac0684a
+] 
+hash: 0000066109-4e15516e7690239558366992d3f3b11c7cd2e6800e5f1951706dd4317cb31928
+[Speed-up expansion test case: no need to run different temperatures
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20261113084534
+ Ignore-this: 7fbba73adeb99b0e504778c49d97dd6b0fac94c05d49ea59846213815151ae6015d447b0512cc685
+] 
+hash: 0000054732-41979c0ceb02624b4beb20463c7a7e7e23d1544eaed2a92b7ae7ddbb69a604eb
+[Initial version of pressurization for the low-mach model
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20261113084541
+ Ignore-this: 85236814178eebfd3627a4a8f85c16c5f600001b4f8cd1ea02d70a05e24db287951fe52195545bb3
+] 
+hash: 0000097574-97846a65fc93d01a454e2a1a550ee66a4b4d1de1597cc04023caf1f4ec938463
+[Updated README
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20261113091949
+ Ignore-this: c29a225e1a2eb8a2ba38692c21d202ebc839e2fae36940e57544e8dbd1bcd2fc7cbb1d85fb60e32e
+] 
+hash: 0000000821-eb9ffb382322440a3e370009ae156098062de199cd89c5ede50063d4f1554196
+[Updated phase change documentation
+Edoardo Cipriano <edoardo.cipriano@sorbonne-universite.fr>**20261113102249
+ Ignore-this: b9ef8d3af22482abd7c691ecbd10b1b4c34a3c8f4d0f956ccf73b1bd29e1662ebaf0e0be8985a629
+] 
+hash: 0000028355-904c0a353a5093a2da40d79baf97615d14a6acd4e745101a11c1d16ad8d86e97
+[added: breaker characteristics, comparison lambda(c) from pixel count vs lengths of objects
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261113144923
+ Ignore-this: f1e31f708593d9a17039e344d1cb6bc2595dcd782247c10b4e0ba65207d8478d5fab04be1d60b0e7
+] 
+hash: 0000017937-4650ba4808e4251268d721fecd289b6932a3804cd05d8a8daf0dd55770ee2095
+[small fixes: PI
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261113144948
+ Ignore-this: 6d7867da5fbc9c8d379b2f2b6d5b0c2969056a59eda8802e1899dd356008707004a57b43f812db0c
+] 
+hash: 0000001417-58e2a8d85649a442a2b5d3c8f9c3ab573670311a32b3fa521fec5bac29fd6eb2
+[fix: fps was not using the parameters, added shading gouraud (slower but nicer)
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261113145027
+ Ignore-this: c534f688202838c43ad877023f29638d56cf33e8522ae046e483a0cc09bc8b0fd5ba4f6a7cbaf8c3
+] 
+hash: 0000000573-bb596ed4412a63c3d7b5e202aaa57d3723ffde29e3813400b4ccfefeb8aea693
+[Fixed formatting
+Stephane Popinet <popinet@basilisk.fr>**20261113163433
+ Ignore-this: 1cfa5f94063e4047b04271e2fbcb44aa7d839d4f86c291f80ca16bb98372d9386f2adcc6a4b9ab20
+] 
+hash: 0000004434-8891e690598bed3d341afa5e3afea775d25488ff2bcd790f7b9340f06af0da9c

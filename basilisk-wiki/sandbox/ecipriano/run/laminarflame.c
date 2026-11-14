@@ -83,7 +83,7 @@ int main (int argc, char ** argv) {
   /**
   We set the initial thermodynamic state of the two-phase system (SI units). */
 
-  Pref = 101325., T0 = 300.;
+  P0 = 101325., T0 = 300.;
 
   /**
   We change the dimensions of the domain, introduce gravity, and we decide the
@@ -130,7 +130,7 @@ event init (i = 0) {
   //pcm.divergence = false;
 
   ThermoState tsg;
-  tsg.T = T0, tsg.P = Pref, tsg.x = x;
+  tsg.T = T0, tsg.P = P0, tsg.x = x;
 
   phase_set_thermo_state (gas, &tsg, force = !restored);
 

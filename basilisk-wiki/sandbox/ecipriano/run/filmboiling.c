@@ -69,12 +69,12 @@ int main (void) {
   }
 }
 
-#define wave(x,y) lambdaw/128.*(4. + cos(2.*pi*y/lambdaw))
+#define sin(x,y) lambdaw/128.*(4. + cos(2.*pi*y/lambdaw))
 
 event init (i = 0) {
   solid (cs, fs, -(y - 0.5*lambdaw));
   fractions_cleanup (cs, fs);
-  fraction (f, x - wave(x,y));
+  fraction (f, x - sin(x,y));
   foreach()
     f[] = y <= lambdaw ? f[] : 0.;
 #if defined(AXI) && defined(EMBED)
@@ -85,7 +85,7 @@ event init (i = 0) {
 
   scalar TL = liq->T, TG = gas->T;
   foreach() {
-    double xmax = wave(x,y);
+    double xmax = sin(x,y);
     TG[] = clamp (Twall - x/xmax*(Twall - Tsat), Tsat, Twall)*(1. - f[]);
     TL[] = TL0*f[];
     TG[] *= (cs[] != 0.);
@@ -116,7 +116,7 @@ event adapt (i++) {
   foreach()
     mgf[] /= mgfmax;
 
-  adapt_wavelet ({mgf,T,u.x,u.y}, {1e-2,1e-2,1e-2,1e-2}, maxlevel, minlevel);
+  adapt_wavelet ({mgf,T,u.x,u.y}, {1e-2,1e-2,1e-1,1e-1}, maxlevel, minlevel);
 #else
   adapt_wavelet_leave_interface ({T,u.x,u.y}, {f},
       (double[]){1e-2,1e-2,1e-2}, maxlevel, minlevel, 1);

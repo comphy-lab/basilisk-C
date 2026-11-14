@@ -26,12 +26,10 @@ digraph G {
     node [shape=ellipse, color=black, style=filled, fillcolor=white];
     b00 [label = "evaporation.h"];
     b01 [label = "boiling.h"];
-    b10 [label = "multicomponent.h"];
-    b11 [label = "temperature-gradient.h"];
     b2  [label = "phasechange.h"];
     b3  [label = "phase.h"];
-    b00 -> b10 -> b2 -> b3;
-    b01 -> b11 -> b2;
+    b00 -> b2 -> b3;
+    b01 -> b2;
     label = "Phase Change";
     fontsize = 22;
     fontcolor = darkgreen;

@@ -6,27 +6,11 @@ properties can be performed using this module, which defines
 structures and functions that help to setup such cases.
 */
 
-#ifndef THERMODYNAMICS_H
-# define THERMODYNAMICS_H
+#ifndef VARIABLE_PROPERTIES_H
+# define VARIABLE_PROPERTIES_H
 
 #define VARPROP 1
-
 #include "thermodynamics.h"
-
-/**
-## Fields Allocations
-
-We allocate fields required by this module. All properties
-are intialized as constant fields, and they are initialized
-just by the solver that needs them. If a thermal solver is
-used, there is no need to initialize a non-constant
-diffusivity of the chemical species, for example.
-*/
-
-//(const) scalar rho1v = zeroc, rho2v = zeroc;
-//(const) scalar mu1v = zeroc, mu2v = zeroc;
-//(const) scalar lambda1v = zeroc, lambda2v = zeroc;
-//(const) scalar cp1v = zeroc, cp2v = zeroc;
 
 /**
 ## Thermodynamic State
@@ -61,6 +45,7 @@ typedef struct {
   // Expansion functions
   double (* betaT) (const void *, void *);
   void (* betaY) (const void *, void *, double *);
+  double (* chiT) (const void *, void *);
 } ThermoProps;
 
 // Functions for simpler use of ThermoState
@@ -93,22 +78,6 @@ void copy_thermo_state (ThermoState * dest, const ThermoState * orig,
 We define functions that are useful for variable properties
 simulations.
 */
-
-/**
-### *check_termostate()*: check that the thermodynamic state is
-reasonable. */
-
-//int check_thermostate (ThermoState * ts, int NS) {
-//  double sum = 0.;
-//  for (int jj=0; jj<NS; jj++)
-//    sum += ts->x[jj];
-//
-//  int T_ok = (ts->T > 180. && ts->T < 4000.) ? true : false;
-//  int P_ok = (ts->P > 1e3 && ts->P < 1e7) ? true : false;
-//  int X_ok = (sum > 1.-1.e-3 && sum < 1.+1.e-3) ? true : false;
-//
-//  return T_ok*P_ok*X_ok;
-//}
 
 /**
 ### *print_thermostate()*: print the thermodynamic state of the mixture
@@ -159,142 +128,93 @@ void print_thermoprop (ThermoProps * tp, ThermoState * ts, int NS,
 
 /**
 ### *gasprop_thermal_expansion()*: Thermal expansion coefficient of an ideal gas
+
+For an ideal gas the density is inversely proportional to the temperature,
+therefore the thermal expansion coefficient reduces to the inverse of the
+temperature, without any need for a numerical differentiation.
 */
 
-//double gasprop_thermal_expansion (ThermoProps * tp, ThermoState * ts) {
-//  return ts->T > 0. ? 1./ts->T : 0.;
-//}
-
-//double gasprop_thermal_expansion (void * p, void * s) {
-//  ThermoState * ts = (ThermoState *)s;
-//  return ts->T > 0. ? 1./ts->T : 0.;
-//}
-
-/**
-### *gasprop_species_expansion()*: Thermal expansion coefficient of an ideal gas
-*/
-
-//void gasprop_species_expansion (void * p, void * s, double * r) {
-//}
+double gasprop_thermal_expansion (const void * p, void * s) {
+  ThermoState * ts = (ThermoState *)s;
+  return (ts->T > 0.) ? 1./ts->T : 0.;
+}
 
 /**
 ### *liqprop_thermal_expansion()*: Thermal expansion coefficient of a liquid
+
+The thermal expansion coefficient:
+$$
+  \beta_T = -\dfrac{1}{\rho}
+  \left(\dfrac{\partial\rho}{\partial T}\right)_{P,\omega}
+$$
+is obtained from the numerical differentiation of the density with respect
+to the temperature. The density is reached through the *rhov* function
+pointer, therefore this implementation does not depend on the specific
+thermodynamic backend, and the backends just forward to this function.
 */
 
-//double liqprop_thermal_expansion (ThermoProps * tp, ThermoState * ts) {
-//  double epsT = 1.e-3;
-//  double Ttop = ts->T + epsT, Tbot = ts->T - epsT;
-//  ThermoState tstop, tsbot;
-//  tstop.T = Ttop, tstop.P = ts->P, tstop.x = ts->x;
-//  tsbot.T = Tbot, tsbot.P = ts->P, tsbot.x = ts->x;
-//  double rhotop = tp->rhov (&tstop), rhobot = tp->rhov (&tsbot);
-//  double rhoval = tp->rhov (ts);
-//  return (rhoval > 0.) ? -1./rhoval*(rhotop - rhobot)/(2.*epsT) : 0.;
-//}
+double liqprop_thermal_expansion (const void * p, void * s) {
+  ThermoProps * tp = (ThermoProps *)p;
+  ThermoState * ts = (ThermoState *)s;
 
-//double liqprop_thermal_expansion (void * p, void * s) {
-//  ThermoProps * tp = (ThermoProps *)p;
-//  ThermoState * ts = (ThermoState *)s;
-//
-//  double epsT = 1.e-3;
-//  double Ttop = ts->T + epsT, Tbot = ts->T - epsT;
-//  ThermoState tstop, tsbot;
-//  tstop.T = Ttop, tstop.P = ts->P, tstop.x = ts->x;
-//  tsbot.T = Tbot, tsbot.P = ts->P, tsbot.x = ts->x;
-//  double rhotop = tp->rhov (&tstop), rhobot = tp->rhov (&tsbot);
-//  double rhoval = tp->rhov (ts);
-//  return (rhoval > 0.) ? -1./rhoval*(rhotop - rhobot)/(2.*epsT) : 0.;
-//}
-
-/**
-## *mass2molefrac()*: Compute mole fractions from mass fractions
-
-* *X*: vector filled with mole fractions
-* *W*: vector with the mass fractions
-* *MW*: vector with the molecular weights of each species
-* *NS*: total number of species (vectors length)
-*/
-
-void mass2molefrac (double * X, const double * W, const double * MW, const int NS)
-{
-  double MWmix = 0.;
-  for (int i=0; i<NS; i++) {
-    MWmix += W[i]/MW[i];
-  }
-  for (int i=0; i<NS; i++) {
-    X[i] = W[i]/MW[i]/(MWmix + 1.e-10);
+  if (tp->rhov == NULL)
+    return 0.;
+  else {
+    double epsT = 1.e-3;
+    double Ttop = ts->T + epsT, Tbot = ts->T - epsT;
+    ThermoState tstop, tsbot;
+    tstop.T = Ttop, tstop.P = ts->P, tstop.x = ts->x;
+    tsbot.T = Tbot, tsbot.P = ts->P, tsbot.x = ts->x;
+    double rhotop = tp->rhov (&tstop), rhobot = tp->rhov (&tsbot);
+    double rhoval = tp->rhov (ts);
+    return (rhoval > 0.) ? -1./rhoval*(rhotop - rhobot)/(2.*epsT) : 0.;
   }
 }
 
 /**
-## *mole2massfrac()*: Compute mass fractions from mole fractions
+## Isothermal Compressibility
 
-* *W*: vector filled with mole fractions
-* *X*: vector with the mass fractions
-* *MW*: vector with the molecular weights of each species
-* *NS*: total number of species (vectors length)
+The isothermal compressibility:
+$$
+  \chi_T = \dfrac{1}{\rho}\left(\dfrac{\partial\rho}{\partial P}\right)_{T,\omega}
+$$
+is required by closed systems, where the thermodynamic pressure changes in time
+and it contributes to the divergence of the velocity field. It is the pressure
+counterpart of the thermal expansion coefficient *betaT*.
 */
 
-void mole2massfrac (double * W, const double * X, const double * MW, const int NS)
-{
-  double MWmix = 0.;
-  for (int i=0; i<NS; i++) {
-    MWmix += X[i]*MW[i];
-  }
-  for (int i=0; i<NS; i++) {
-    W[i] = X[i]*MW[i]/(MWmix + 1.e-10);
-  }
+/**
+### *gasprop_isothermal_compressibility()*: Isothermal compressibility of an ideal gas
+*/
+
+double gasprop_isothermal_compressibility (const void * p, void * s) {
+  ThermoState * ts = (ThermoState *)s;
+  return (ts->P > 0.) ? 1./ts->P : 0.;
 }
 
 /**
-## *mass2mw()*: Compute mixture molecular weight from mass fractions
+### *liqprop_isothermal_compressibility()*: Isothermal compressibility of a liquid
 
-* *W*: vector with the mass fractions
-* *MW*: vector with the molecular weights of each species
-* *NS*: total number of species (vectors length)
+The compressibility of a generic phase is obtained from the numerical
+differentiation of the density with respect to the pressure. The perturbation
+is relative, because the absolute value of the pressure can be large.
 */
 
-double mass2mw (const double * W, const double * MW, const int NS)
-{
-  double MWmix = 0.;
-  for (int i=0; i<NS; i++) {
-    MWmix += W[i]/MW[i];
+double liqprop_isothermal_compressibility (const void * p, void * s) {
+  ThermoProps * tp = (ThermoProps *)p;
+  ThermoState * ts = (ThermoState *)s;
+
+  if (tp->rhov == NULL)
+    return 0.;
+  else {
+    double epsP = 1.e-4*ts->P;
+    ThermoState tstop, tsbot;
+    tstop.T = ts->T, tstop.P = ts->P + epsP, tstop.x = ts->x;
+    tsbot.T = ts->T, tsbot.P = ts->P - epsP, tsbot.x = ts->x;
+    double rhotop = tp->rhov (&tstop), rhobot = tp->rhov (&tsbot);
+    double rhoval = tp->rhov (ts);
+    return (rhoval > 0. && epsP > 0.) ?
+      1./rhoval*(rhotop - rhobot)/(2.*epsP) : 0.;
   }
-  return 1./(MWmix + 1.e-10);
 }
-
-/**
-## *mole2mw()*: Compute mixture molecular weight from mole fractions
-
-* *X*: vector with the mass fractions
-* *MW*: vector with the molecular weights of each species
-* *NS*: total number of species (vectors length)
-*/
-
-double mole2mw (const double * X, const double * MW, const int NS)
-{
-  double MWmix = 0.;
-  for (int i=0; i<NS; i++) {
-    MWmix += X[i]*MW[i];
-  }
-  return MWmix;
-}
-
-/**
-## *correctfrac()*: Close to 1 a vector of mass or mole fractions
-
-* *X*: vector with mass or mole fractions
-* *NS* total number of species (vector length)
-*/
-
-void correctfrac (double * X, const int NS)
-{
-  double sum = 0.;
-  for (int i=0; i<NS; i++)
-    sum += (X[i] >= 0.) ? X[i] : 0.;
-  for (int i=0; i<NS; i++)
-    X[i] = (X[i] >= 0.) ? X[i]/(sum + 1.e-10) : 0.;
-}
-
-
 #endif

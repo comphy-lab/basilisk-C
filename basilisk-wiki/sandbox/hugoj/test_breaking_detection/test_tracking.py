@@ -36,9 +36,9 @@ def as_dataarray(frames):
 
     return xr.DataArray(
         arr,
-        dims=("t", "y", "x"),
+        dims=("time", "y", "x"),
         coords={
-            "t": np.arange(arr.shape[0]),
+            "time": np.arange(arr.shape[0]),
             "y": np.arange(arr.shape[1]),
             "x": np.arange(arr.shape[2]),
         },
@@ -98,9 +98,9 @@ def centroids(ids):
     """Return {track id: array of (t, cy, cx)} using circular means."""
     out = {}
 
-    for t in range(ids.sizes["t"]):
+    for t in range(ids.sizes["time"]):
         # Convert only the individual 2D frame to NumPy.
-        a = ids.isel(t=t).values
+        a = ids.isel(time=t).values
 
         for i in np.unique(a[a > 0]):
             ys, xs = np.nonzero(a == i)
@@ -122,7 +122,7 @@ def plot_results(n_snap=5):
     from matplotlib.cm import ScalarMappable
 
     for title, frames, ids in RESULTS:
-        nt = ids.sizes["t"]
+        nt = ids.sizes["time"]
 
         times = np.unique(np.linspace(0, nt - 1, n_snap).astype(int))
 
@@ -137,7 +137,7 @@ def plot_results(n_snap=5):
         all_centroids = centroids(ids)
 
         for a, t in zip(ax, times):
-            frame = ids.isel(t=t).values
+            frame = ids.isel(time=t).values
 
             img = np.ma.masked_equal(frame, 0)
 
@@ -266,7 +266,7 @@ def plot_results(n_snap=5):
             + ".png"
         )
         fig.savefig(
-            filename,
+            "tracking_" + filename,
             dpi=200,
             bbox_inches="tight",
         )
@@ -337,7 +337,7 @@ def check_split(y0):
         r_max=8.0,
     )
 
-    assert n_ids(ids.isel(t=5)) == 1 and n_ids(ids.isel(t=6)) == 2, (
+    assert n_ids(ids.isel(time=5)) == 1 and n_ids(ids.isel(time=6)) == 2, (
         "frames do not split as designed"
     )
 
@@ -353,7 +353,7 @@ def check_split(y0):
         child,
     ) == (6, 1, 2), splits
 
-    final_ids = np.unique(ids.isel(t=-1).values)
+    final_ids = np.unique(ids.isel(time=-1).values)
 
     assert set(final_ids[final_ids > 0]) == {1, 2}
 
@@ -377,7 +377,7 @@ def test_merge_ends_one_id_and_records_it():
         r_max=8.0,
     )
 
-    assert n_ids(ids.isel(t=5)) == 2 and n_ids(ids.isel(t=6)) == 1, (
+    assert n_ids(ids.isel(time=5)) == 2 and n_ids(ids.isel(time=6)) == 1, (
         "frames do not merge as designed"
     )
 
@@ -389,13 +389,13 @@ def test_merge_ends_one_id_and_records_it():
 
     assert t == 6 and {ended, into} == {1, 2}, merges
 
-    frame6 = ids.isel(t=6).values
+    frame6 = ids.isel(time=6).values
 
     assert list(np.unique(frame6[frame6 > 0])) == [into]
 
     # Ended ID never returns.
-    for t in range(6, ids.sizes["t"]):
-        frame = ids.isel(t=t).values
+    for t in range(6, ids.sizes["time"]):
+        frame = ids.isel(time=t).values
 
         assert ended not in np.unique(frame)
 
@@ -415,8 +415,8 @@ def check_single_blob(v):
 
     assert list(unique_ids(ids)) == [1], f"ids found: {unique_ids(ids)}"
 
-    for t in range(ids.sizes["t"]):
-        assert n_ids(ids.isel(t=t)) == 1
+    for t in range(ids.sizes["time"]):
+        assert n_ids(ids.isel(time=t)) == 1
 
 
 def test_two_blobs_keep_separate_ids():
@@ -428,26 +428,26 @@ def test_two_blobs_keep_separate_ids():
         r_max=8.0,
     )
 
-    for t in range(ids.sizes["t"]):
-        assert n_ids(ids.isel(t=t)) == 2
+    for t in range(ids.sizes["time"]):
+        assert n_ids(ids.isel(time=t)) == 2
 
     assert (
-        ids.isel(t=0).values[15, 10]
-        == ids.isel(t=-1).values[
+        ids.isel(time=0).values[15, 10]
+        == ids.isel(time=-1).values[
             15,
             (10 + 5 * 29) % NX,
         ]
     )
 
     assert (
-        ids.isel(t=0).values[45, 40]
-        == ids.isel(t=-1).values[
+        ids.isel(time=0).values[45, 40]
+        == ids.isel(time=-1).values[
             45,
             (40 + 5 * 29) % NX,
         ]
     )
 
-    assert ids.isel(t=0).values[15, 10] != ids.isel(t=0).values[45, 40]
+    assert ids.isel(time=0).values[15, 10] != ids.isel(time=0).values[45, 40]
 
 
 def test_r_max_too_small_breaks_the_track():

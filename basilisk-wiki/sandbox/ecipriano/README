@@ -8,6 +8,11 @@ of [Sorbonne Université](http://www.sorbonne-universite.fr/en). My research foc
 Here you can find my codes. If you would like to discuss a related topic,
 feel free to contact me by email: [edoardo.cipriano@sorbonne-universite.fr](mailto:edoardo.cipriano@sorbonne-universite.fr).
 
+This sandbox is developed on
+[GitHub](https://github.com/edocipriano/basilisk-sandbox-ecipriano) and
+periodically synchronized here: the full history of changes can be retrieved
+from the GitHub repository.
+
 ## Publications
 
 For a detailed description of the phase change models in this
@@ -79,12 +84,20 @@ A comprehensive list of numerical simulations in this sandbox, organized by the 
 * [Isothermal evaporation of a static binary droplet](run/staticbi.c)
 * [Isothermal evaporation of a binary droplet in forced convection](run/forcedbi.c)
 * [Simple Leidenfrost droplet](run/leidenfrostfixedflux.c)
+* [Bubble growth in a supersaturated solution](run/supersaturated.c)
+* [Growth of an electrolytic bubble](run/electrolysis.c)
 
 ### Variable material properties
 
 * [Expansion of a liquid droplet](run/expansion.c)
 * [Microgravity droplet evaporation with variable material properties](run/microgravity.c)
 * [Evaporation of a pure droplet in buoyancy-driven flows](run/normalgravity.c)
+* [Natural convection in a differentially heated cavity](run/cavity.c)
+
+### Pressurization
+
+* [Pressurization of a closed tank](run/pressurization.c)
+* [Bagnold piston](run/piston.c)
 
 ### Combustion
 

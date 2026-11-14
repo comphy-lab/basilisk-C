@@ -120,8 +120,7 @@ double cantera_antoine (double T, double P, int i) {
 */
 
 double cantera_gasprop_thermal_expansion (const void * p, void * s) {
-  ThermoState * ts = (ThermoState *)s;
-  return (ts->T > 0.) ? 1./ts->T : 0.;
+  return gasprop_thermal_expansion (p, s);
 }
 
 /**
@@ -148,21 +147,7 @@ void cantera_gasprop_species_expansion (const void * p, void * s, double * r) {
 */
 
 double cantera_liqprop_thermal_expansion (const void * p, void * s) {
-  ThermoProps * tp = (ThermoProps *)p;
-  ThermoState * ts = (ThermoState *)s;
-
-  if (tp->rhov == NULL)
-    return 0;
-  else {
-    double epsT = 1.e-3;
-    double Ttop = ts->T + epsT, Tbot = ts->T - epsT;
-    ThermoState tstop, tsbot;
-    tstop.T = Ttop, tstop.P = ts->P, tstop.x = ts->x;
-    tsbot.T = Tbot, tsbot.P = ts->P, tsbot.x = ts->x;
-    double rhotop = tp->rhov (&tstop), rhobot = tp->rhov (&tsbot);
-    double rhoval = tp->rhov (ts);
-    return (rhoval > 0.) ? -1./rhoval*(rhotop - rhobot)/(2.*epsT) : 0.;
-  }
+  return liqprop_thermal_expansion (p, s);
 }
 
 /**
@@ -173,6 +158,26 @@ void cantera_liqprop_species_expansion (const void * p, void * s, double * r)
 {
   for (unsigned int i = 0; i < thermo_nSpecies (thermo_liq); i++)
     r[i] = 0.;
+}
+
+/**
+### *cantera_gasprop_isothermal_compressibility()*: gas isothermal compressibility
+
+Consistently with `cantera_gasprop_density()`, the gas phase follows the ideal
+gas law, therefore the isothermal compressibility is the inverse of the
+thermodynamic pressure.
+*/
+
+double cantera_gasprop_isothermal_compressibility (const void * p, void * s) {
+  return gasprop_isothermal_compressibility (p, s);
+}
+
+/**
+### *cantera_liqprop_isothermal_compressibility()*: liq isothermal compressibility
+*/
+
+double cantera_liqprop_isothermal_compressibility (const void * p, void * s) {
+  return liqprop_isothermal_compressibility (p, s);
 }
 
 /**
@@ -210,6 +215,7 @@ event defaults (i = 0) {
   tp1.sigmas  = NULL;
   tp1.betaT   = cantera_liqprop_thermal_expansion;
   tp1.betaY   = cantera_liqprop_species_expansion;
+  tp1.chiT    = cantera_liqprop_isothermal_compressibility;
 
   tp2.rhov    = cantera_gasprop_density;
   tp2.muv     = cantera_gasprop_viscosity;
@@ -219,5 +225,6 @@ event defaults (i = 0) {
   tp2.cps     = cantera_gasprop_heatcapacity_species;
   tp2.betaT   = cantera_gasprop_thermal_expansion;
   tp2.betaY   = cantera_gasprop_species_expansion;
+  tp2.chiT    = cantera_gasprop_isothermal_compressibility;
 }
 

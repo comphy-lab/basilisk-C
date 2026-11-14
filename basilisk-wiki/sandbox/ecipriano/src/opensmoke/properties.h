@@ -230,8 +230,7 @@ double opensmoke_antoine (double T, double P, int i) {
 */
 
 double opensmoke_gasprop_thermal_expansion (const void * p, void * s) {
-  ThermoState * ts = (ThermoState *)s;
-  return (ts->T > 0.) ? 1./ts->T : 0.;
+  return gasprop_thermal_expansion (p, s);
 }
 
 /**
@@ -252,17 +251,7 @@ void opensmoke_gasprop_species_expansion (const void * p, void * s, double * r) 
 */
 
 double opensmoke_liqprop_thermal_expansion (const void * p, void * s) {
-  ThermoProps * tp = (ThermoProps *)p;
-  ThermoState * ts = (ThermoState *)s;
-
-  double epsT = 1.e-3;
-  double Ttop = ts->T + epsT, Tbot = ts->T - epsT;
-  ThermoState tstop, tsbot;
-  tstop.T = Ttop, tstop.P = ts->P, tstop.x = ts->x;
-  tsbot.T = Tbot, tsbot.P = ts->P, tsbot.x = ts->x;
-  double rhotop = tp->rhov (&tstop), rhobot = tp->rhov (&tsbot);
-  double rhoval = tp->rhov (ts);
-  return (rhoval > 0.) ? -1./rhoval*(rhotop - rhobot)/(2.*epsT) : 0.;
+  return liqprop_thermal_expansion (p, s);
 }
 
 /**
@@ -275,6 +264,27 @@ void opensmoke_liqprop_species_expansion (const void * p, void * s, double * r)
     r[i] = 0.;  // fixme: empty
 }
 
+
+/**
+### *opensmoke_gasprop_isothermal_compressibility()*: gas isothermal compressibility
+
+Consistently with `opensmoke_gasprop_density()`, which uses
+`OpenSMOKE_GasProp_Density_IdealGas()`, the gas phase follows the ideal gas
+law, therefore the isothermal compressibility is the inverse of the
+thermodynamic pressure.
+*/
+
+double opensmoke_gasprop_isothermal_compressibility (const void * p, void * s) {
+  return gasprop_isothermal_compressibility (p, s);
+}
+
+/**
+### *opensmoke_liqprop_isothermal_compressibility()*: liq isothermal compressibility
+*/
+
+double opensmoke_liqprop_isothermal_compressibility (const void * p, void * s) {
+  return liqprop_isothermal_compressibility (p, s);
+}
 
 /**
 ## Thermodynamic Properties
@@ -311,6 +321,7 @@ event defaults (i = 0) {
   tp1.sigmas  = opensmoke_liqprop_sigma;
   tp1.betaT   = opensmoke_liqprop_thermal_expansion;
   tp1.betaY   = opensmoke_liqprop_species_expansion;
+  tp1.chiT    = opensmoke_liqprop_isothermal_compressibility;
 
   tp2.rhov    = opensmoke_gasprop_density;
   tp2.muv     = opensmoke_gasprop_viscosity;
@@ -320,5 +331,6 @@ event defaults (i = 0) {
   tp2.cps     = opensmoke_gasprop_heatcapacity_species;
   tp2.betaT   = opensmoke_gasprop_thermal_expansion;
   tp2.betaY   = opensmoke_gasprop_species_expansion;
+  tp2.chiT    = opensmoke_gasprop_isothermal_compressibility;
 }
 

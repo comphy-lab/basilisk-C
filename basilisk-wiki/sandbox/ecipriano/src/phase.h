@@ -8,11 +8,20 @@ improving re-usability, and limiting code duplication. */
 
 #include "variable-properties.h"
 #include "common-evaporation.h"
-#include "diffusion.h"
+#include "diffusion-flux.h"
 
 #define UNDEFINED -1
 #ifndef F_ERR
 # define F_ERR 1e-10
+#endif
+
+/**
+## Virtual metrics
+
+We initialize the virtual metrics to the real ones. */
+
+#ifndef cmv
+# define cmv() (cm[])
 #endif
 
 /**
@@ -54,9 +63,14 @@ typedef struct {
   // Flow divergence
   scalar divu;
   scalar betaT;
+  scalar chiT;
   scalar * betaYList;
   scalar DTDt;
   scalar * DYDtList;
+#if EMBED
+  // Embedded boundaries
+  scalar wetting;
+#endif
 } Phase;
 
 /**
@@ -79,6 +93,7 @@ macro foreach_scalar_in (Phase * phase) {
     scalar STimp = phase->STimp; NOT_UNUSED (STimp);
     scalar divu = phase->divu; NOT_UNUSED (divu);
     scalar betaT = phase->betaT; NOT_UNUSED (betaT);
+    scalar chiT = phase->chiT; NOT_UNUSED (chiT);
     scalar DTDt = phase->DTDt; NOT_UNUSED (DTDt);
     {...}
   }
@@ -224,7 +239,11 @@ Phase * new_phase_empty (char * name = "", bool inverse = false) {
   phase->STimp.i = -1;
   phase->divu.i = -1;
   phase->betaT.i = -1;
+  phase->chiT.i = -1;
   phase->DTDt.i = -1;
+#if EMBED
+  phase->wetting.i = -1;
+#endif
 
   phase->YList = NULL;
   phase->XList = NULL;
@@ -316,6 +335,7 @@ Phase * new_phase (char * name = "", size_t ns = 0, bool inverse = false,
   new_field_type (scalar, dhev, phase, false);
   new_field_type (scalar, divu, phase, nodump);
   new_field_type (scalar, betaT, phase, nodump);
+  new_field_type (scalar, chiT, phase, nodump);
   new_field_type (scalar, DTDt, phase, nodump);
 
   // Create source terms
@@ -340,6 +360,7 @@ Phase * new_phase (char * name = "", size_t ns = 0, bool inverse = false,
       STexp[] = 0.;
       divu[] = 0.;
       betaT[] = 0.;
+      chiT[] = 0.;
       DTDt[] = 0.;
       foreach_species_in (phase) {
         Y[] = 0.;
@@ -362,6 +383,21 @@ Phase * new_phase (char * name = "", size_t ns = 0, bool inverse = false,
   // Create the initial thermo state
   phase->ts0 = new_thermo_state (phase->n);
 
+#if EMBED
+  /**
+  The temperature and the mass fractions of the phase share the correction of
+  the flux through the embedded boundaries due to the wetting (see
+  `phase_embed_flux()`). */
+
+  new_field_type (scalar, wetting, phase, true);
+  scalar wetting = phase->wetting, Tw = phase->T;
+  foreach()
+    wetting[] = 1.;
+  Tw.wetting = wetting;
+  for (scalar Yw in phase->YList)
+    Yw.wetting = wetting;
+#endif
+
 #if TREE
   scalar rhov = phase->rho;
   rhov.refine = density_refine;
@@ -377,7 +413,7 @@ Phase * new_phase (char * name = "", size_t ns = 0, bool inverse = false,
 
 void delete_phase (Phase * phase) {
   foreach_scalar_in (phase)
-    delete ({T,P,STimp,STexp,rho,mu,MW,lambda,cp,dhev,divu,betaT,DTDt});
+    delete ({T,P,STimp,STexp,rho,mu,MW,lambda,cp,dhev,divu,betaT,chiT,DTDt});
 
   if (phase->YList) delete (phase->YList), free (phase->YList);
   if (phase->XList) delete (phase->XList), free (phase->XList);
@@ -388,6 +424,12 @@ void delete_phase (Phase * phase) {
   if (phase->dhevList) delete (phase->dhevList), free (phase->dhevList);
   if (phase->betaYList) delete (phase->betaYList), free (phase->betaYList);
   if (phase->DYDtList) delete (phase->DYDtList), free (phase->DYDtList);
+#if EMBED
+  if (phase->wetting.i >= 0) {
+    scalar wetting = phase->wetting;
+    delete ({wetting});
+  }
+#endif
 
   if (phase->species)
     foreach_species_in (phase)
@@ -631,7 +673,65 @@ void phase_reset_sources (Phase * phase) {
 }
 
 /**
-### *phase_diffusion()*: resolve diffusion of species and temperature */
+### *phase_embed_flux()*: flux through the embedded boundaries
+
+This function has the same interface as `embed_flux()` (see
+[embed.h](/src/embed.h)), and it computes the flux through the fragment of
+embedded boundary contained in the cell, given the boundary condition of the
+scalar *s* on the embedded boundary, e.g. `T[embed] = neumann (q/lambda)` or
+`T[embed] = dirichlet (Tw)`. The flux of `embed_flux()` is multiplied by the
+wetting correction associated with *s* (the `wetting` attribute, see
+[common-evaporation.h](common-evaporation.h)): in the cut cells crossed by the
+interface, the flux is therefore split between the phases according to the
+portion of the fragment wetted by each phase, instead of the face fractions of
+each phase. The fields without a wetting correction receive the flux of
+`embed_flux()`. Differently from `embed_flux()`, the default (symmetry)
+condition returns a null flux.
+
+The function is passed to `diffusion()` (argument `flux`, see
+[diffusion-flux.h](diffusion-flux.h)) by *phase_diffusion()*: the flux remains
+part of the operator of the multigrid solver, which calls it on every level as
+it does with `embed_flux()`, therefore the boundary conditions are treated
+implicitly. It is also used by *phase_update_divergence()* to include the same
+flux in the velocity divergence. Since it is general for any scalar, it could
+replace `embed_flux()` as the default flux of the embedded boundaries. */
+
+#if EMBED
+double phase_embed_flux (Point point, scalar s, face vector mu, double * val)
+{
+  *val = 0.;
+  if (s.boundary[embed] == symmetry)
+    return 0.;
+  double e = embed_flux (point, s, mu, val);
+  if (s.wetting.i) {
+    scalar wetting = s.wetting;
+    *val *= wetting[];
+    e *= wetting[];
+  }
+  return e;
+}
+#endif
+
+/**
+### *phase_diffusion()*: resolve diffusion of species and temperature
+
+With embedded boundaries, the flux through the boundary is computed by
+*phase_embed_flux()*, using the wetting correction obtained from the volume
+fraction and from the face fractions of the phase used by the diffusion
+coefficients.
+
+The tolerances of the multigrid solver for the temperature and for the mass
+fractions are *TOLERANCE_TEMPERATURE* and *TOLERANCE_SPECIES* (if null, the
+default *TOLERANCE* is used). They are tolerances on the residual of the
+Poisson--Helmholtz problem (see [diffusion-flux.h](diffusion-flux.h)), which
+has the units of $\theta f/\Delta t$, with $\theta$ the coefficient of the time
+derivative (`thetaT` and `thetaY` below): a maximum change $\delta f$ of the
+field during one timestep corresponds to a tolerance
+$\delta f\,\theta/\Delta t$. The same tolerance is used for all the phases,
+therefore it should be set from the phase with the smallest $\theta$. */
+
+double TOLERANCE_TEMPERATURE = 0. [*];
+double TOLERANCE_SPECIES = 0. [*];
 
 void phase_diffusion (Phase * phase, (const) scalar f = unity,
     bool varcoeff = false)
@@ -643,12 +743,19 @@ void phase_diffusion (Phase * phase, (const) scalar f = unity,
   face vector fs[];
   face_fraction (ff, fs); // fixme: can't use f in this function
 
+  double (* flux) (Point, scalar, vector, double *) = NULL;
+#if EMBED
+  flux = phase_embed_flux;
+  if (phase->wetting.i >= 0)
+    embed_fraction (phase->wetting, ff, fs);
+#endif
+
   foreach_scalar_in (phase) {
     if (!phase->isothermal) {
       scalar thetaT[];
       foreach()
-        thetaT[] = varcoeff ? max (cm[]*ff[]*rho[]*cp[], F_ERR)
-                            : max (cm[]*ff[], F_ERR);
+        thetaT[] = varcoeff ? max (cmv()*ff[]*rho[]*cp[], F_ERR)
+                            : max (cmv()*ff[], F_ERR);
 
       face vector lambdaf[];
       foreach_face() {
@@ -664,15 +771,16 @@ void phase_diffusion (Phase * phase, (const) scalar f = unity,
           STimp[] = (rho[]*cp[] > 0.) ? STimp[]/(rho[]*cp[]) : STimp[];
         }
 
-      diffusion (T, dt, D=lambdaf, r=STexp, beta=STimp, theta=thetaT);
+      diffusion (T, dt, D=lambdaf, r=STexp, beta=STimp, theta=thetaT,
+          tolerance = TOLERANCE_TEMPERATURE, flux = flux);
     }
 
     if (!phase->isomassfrac) {
       foreach_species_in (phase) {
         scalar thetaY[];
         foreach()
-          thetaY[] = varcoeff ? max (cm[]*ff[]*rho[], F_ERR)
-                              : max (cm[]*ff[], F_ERR);
+          thetaY[] = varcoeff ? max (cmv()*ff[]*rho[], F_ERR)
+                              : max (cmv()*ff[], F_ERR);
 
         face vector Df[];
         foreach_face() {
@@ -687,7 +795,8 @@ void phase_diffusion (Phase * phase, (const) scalar f = unity,
             SYimp[] = (rho[] > 0.) ? SYimp[]/rho[] : SYimp[];
           }
 
-        diffusion (Y, dt, D=Df, r=SYexp, beta=SYimp, theta=thetaY);
+        diffusion (Y, dt, D=Df, r=SYexp, beta=SYimp, theta=thetaY,
+            tolerance = TOLERANCE_SPECIES, flux = flux);
       }
 
     }
@@ -788,9 +897,44 @@ void phase_add_heat_species_diffusion (Phase * phase, (const) scalar f = unity,
           }
         }
         double ff = phase->inverse ? 1. - f[] : f[];
-        STexp[] -= mde*cm[]*(ff == 1);  // fixme: use interfacial gradients if
+        STexp[] -= mde*cmv()*(ff == 1);  // fixme: use interfacial gradients if
                                         // you want to apply it to interfacial
                                         // cells
+      }
+    }
+  }
+}
+
+/**
+### *phase_add_compression_work()*: work of the thermodynamic pressure
+
+The temperature equation of a closed system includes the work performed by the
+variation of the thermodynamic pressure:
+$$
+  \rho c_p \dfrac{DT}{Dt} = \nabla\cdot\left(\lambda\nabla T\right) +
+    \beta_T T \dfrac{dP_0}{dt}
+$$
+For an ideal gas $\beta_T T = 1$ and this source term reduces to the
+pressurization rate. Without this contribution the divergence-free constraint of
+a closed system returns a pressurization rate which is wrong by a factor
+$\gamma$.
+
+The rate *dPdt* is an argument, rather than being read from the solver which
+computes it, so that this function does not depend on the low Mach number
+module. The source term is weighted on the volume fraction of the phase,
+consistently with the `theta` coefficient used by `phase_diffusion()`: without
+this weighting the source would be divided by a vanishing volume fraction in the
+interfacial cells, generating unphysical temperature peaks. */
+
+void phase_add_compression_work (Phase * phase, double dPdt,
+    (const) scalar f = unity, double tol = 1e-10)
+{
+  if (!phase->isothermal) {
+    foreach_scalar_in (phase) {
+      foreach() {
+        double ff = phase->inverse ? 1. - f[] : f[];
+        if (ff > tol)
+          STexp[] += betaT[]*T[]*dPdt*cmv()*ff;
       }
     }
   }
@@ -867,6 +1011,9 @@ void phase_update_properties (Phase * phase, const ThermoProps * tp,
   double * arrcps  = (double *)malloc (phase->n*sizeof (double));
   foreach(serial) {
     double ff = phase->inverse ? 1. - f[] : f[];
+#if EMBED
+    if (!cs[]) ff = 0.;
+#endif
     if (ff > tol) {
       ThermoState ts;
       foreach_scalar_in (phase) {
@@ -880,7 +1027,8 @@ void phase_update_properties (Phase * phase, const ThermoProps * tp,
         if (tp->muv) mu[] = tp->muv (&ts);
         if (tp->lambdav) lambda[] = tp->lambdav (&ts);
         if (tp->cpv) cp[] = tp->cpv (&ts);
-         if (tp->betaT) betaT[] = tp->betaT (tp, &ts);
+        if (tp->betaT) betaT[] = tp->betaT (tp, &ts);
+        if (tp->chiT) chiT[] = tp->chiT (tp, &ts);
 
         if (tp->diff) tp->diff (&ts, arrdiff);
         if (tp->betaY) tp->betaY (tp, &ts, arrbetaY);
@@ -926,6 +1074,9 @@ void phase_extend_properties (Phase * phase,
   foreach_scalar_in (phase) {
     foreach(serial) {
       double ff = phase->inverse ? 1. - f[] : f[];
+#if EMBED
+      if (!cs[]) ff = 0.;
+#endif
       if (ff <= tol) {
         double ext_rho = 0.;
         double ext_mu = 0.;
@@ -934,6 +1085,7 @@ void phase_extend_properties (Phase * phase,
         double ext_cp = 0.;
         double ext_dhev = 0.;
         double ext_betaT = 0.;
+        double ext_chiT = 0.;
 
         foreach_species_in (phase) {
           ext_diff[i] = 0.;
@@ -945,6 +1097,9 @@ void phase_extend_properties (Phase * phase,
         int counter = 0;
         foreach_neighbor(1) {
           double ffnei = phase->inverse ? 1. - f[] : f[];
+#if EMBED
+          if (!cs[]) ffnei = 0.;
+#endif
           if (ffnei > tol) {
             counter++;
             increment_property (ext_rho, rho);
@@ -954,6 +1109,7 @@ void phase_extend_properties (Phase * phase,
             increment_property (ext_cp, cp);
             increment_property (ext_dhev, dhev);
             increment_property (ext_betaT, betaT);
+            increment_property (ext_chiT, chiT);
 
             foreach_species_in (phase) {
               increment_property (ext_diff[i], D);
@@ -970,6 +1126,7 @@ void phase_extend_properties (Phase * phase,
         assign_property (ext_cp, cp, counter);
         assign_property (ext_dhev, dhev, counter);
         assign_property (ext_betaT, betaT, counter);
+        assign_property (ext_chiT, chiT, counter);
 
         foreach_species_in (phase) {
           assign_property (ext_diff[i], D, counter);
@@ -1000,6 +1157,11 @@ void phase_update_divergence (Phase * phase,
   face vector fs[];
   face_fraction (ff, fs); // fixme: can't use f in this function
 
+#if EMBED
+  if (phase->wetting.i >= 0)
+    embed_fraction (phase->wetting, ff, fs);
+#endif
+
   foreach_scalar_in (phase) {
 
     /**
@@ -1015,6 +1177,27 @@ void phase_update_divergence (Phase * phase,
         DTDt[] += (lambdagrad.x[1] - lambdagrad.x[])/Delta;
       DTDt[] += STexp[] + STimp[]*T[];
     }
+
+    /**
+    The heat flux through the embedded boundaries is not included in the face
+    fluxes. We add it using `phase_embed_flux()`, with the same coefficient and
+    the same wetting correction used by `phase_diffusion()`, and with the sign
+    of the residual of [poisson.h](/src/poisson.h): without this contribution,
+    the heat supplied by the walls would change the temperature, but not the
+    velocity divergence and the thermodynamic pressure. */
+
+#if EMBED
+    if (T.boundary[embed] != symmetry) {
+      face vector lambdaf[];
+      foreach_face()
+        lambdaf.x[] = face_value (lambda, 0)*fm.x[]*fs.x[];
+
+      foreach (nowarning) {
+        double c, e = phase_embed_flux (point, T, lambdaf, &c);
+        DTDt[] += e*T[] - c;
+      }
+    }
+#endif
 
     /**
     We calculate the Lagrangian derivative of the chemical species mass fractions.
@@ -1033,6 +1216,23 @@ void phase_update_divergence (Phase * phase,
           DYDt[] += (rhoDmixY.x[1] - rhoDmixY.x[])/Delta;
         DYDt[] += (SYexp[] + SYimp[]*Y[]); // fixme: I was using the YGInt
       }
+
+      /**
+      As for the temperature, we add the flux of the chemical species through
+      the embedded boundaries. */
+
+#if EMBED
+      if (Y.boundary[embed] != symmetry) {
+        face vector rhoDf[];
+        foreach_face()
+          rhoDf.x[] = face_value (rho, 0)*face_value (D, 0)*fm.x[]*fs.x[];
+
+        foreach (nowarning) {
+          double c, e = phase_embed_flux (point, Y, rhoDf, &c);
+          DYDt[] += e*Y[] - c;
+        }
+      }
+#endif
     }
 
     /**
@@ -1081,7 +1281,12 @@ void phase_update_divergence (Phase * phase,
 #endif
     /**
     We calculate the divergence of the phase, just in the region occupied by the
-    phase, defined by the volume fraction `f`. */
+    phase, defined by the volume fraction `f`. The Lagrangian derivatives
+    `DTDt` and `DYDt` are already volume-averaged: the source terms are weighted
+    by the volume fraction of the phase (consistently with the `theta`
+    coefficient of `phase_diffusion()`), and the diffusive fluxes by the face
+    fractions `fs`. Therefore, they must not be multiplied again by the volume
+    fraction of the phase. */
 
     foreach() {
       divu[] = 0.;
@@ -1094,9 +1299,6 @@ void phase_update_divergence (Phase * phase,
       foreach_species_in (phase)
         divuspecies += (rho[] > 0.) ? betaY[]/rho[]*DYDt[] : 0.;
       divu[] += divuspecies;
-
-      // Volume-averaged divergence
-      divu[] *= ff[];
 
       // Adjust sign for internal convention
       divu[] *= -1;
@@ -1127,7 +1329,7 @@ void phase_update_divergence_density (Phase * phase, vector u,
         divu[] += u.x[]*grho.x[];
 
       double ff = phase->inverse ? 1. - f[] : f[];
-      divu[] *= (rho[] > 0.) ? cm[]/rho[]*ff : 0.;
+      divu[] *= (rho[] > 0.) ? cmv()/rho[]*ff : 0.;
     }
   }
 }
@@ -1255,14 +1457,14 @@ void phase_chemistry_direct (Phase * phase, double dt,
         // Resolve the ODE system
         stiff_ode_solver (batch, NEQ, dt, y0, &data);
 
-        // Recover the results of the ODE system
+        // Recover the results of the ODE system (volume-averaged sources)
         foreach_species_in (phase) {
           Y[] = y0[i];
-          DYDt[] += s0[i]*cm[];
+          DYDt[] += s0[i]*cmv()*ff;
         }
         if (!phase->isothermal) {
           T[] = y0[phase->n];
-          DTDt[] += s0[phase->n]*cm[];
+          DTDt[] += s0[phase->n]*cmv()*ff;
         }
       }
     }
@@ -1331,15 +1533,16 @@ void phase_chemistry_binning (Phase * phase, double dt,
   }
   binning_remap (table, fields, phase->rho, phase->cp);
 
-  // Recover the source term for the divergence
+  // Recover the source term for the divergence (volume-averaged)
   foreach_scalar_in (phase) {
     foreach() {
+      double ff = phase->inverse ? 1. - f[] : f[];
       foreach_species_in (phase) {
         scalar Y0 = Y0List[i];
-        DYDt[] += (rho[] > 0) ? (Y[] - Y0[])/dt/rho[]*cm[] : 0.;
+        DYDt[] += (rho[] > 0) ? (Y[] - Y0[])/dt/rho[]*cmv()*ff : 0.;
       }
       if (!phase->isothermal)
-        DTDt[] += (rho[]*cp[] > 0) ? (T[] - T0[])/dt/rho[]/cp[]*cm[] : 0.;
+        DTDt[] += (rho[]*cp[] > 0) ? (T[] - T0[])/dt/rho[]/cp[]*cmv()*ff : 0.;
     }
   }
 

@@ -31,6 +31,15 @@ kp = 5 * 2 * np.pi / L0
 lvl_surf = -1
 threshold = -2 * kp
 
+target = 7  # the object (this is a random number, can change between 2 saved file ...)
+itarget = 1  # the snapshot time index
+
+print("===========================================================")
+print("BEWARE")
+print(f"I'm working on object number {target}, located at around")
+print("i=95 j=117")
+print("The actuel label of the breaking might be different !")
+print("===========================================================\n")
 # =========================================
 print("\n=> get the data")
 # chunking along 'time' but no 'x' or 'y' as we compute XY diags and we want to // on time
@@ -69,7 +78,7 @@ for it in range(nt):
     s = ax[it].pcolormesh(u.x, u.y, u, cmap="Greys_r", vmin=-4, vmax=4, rasterized=True)
 
     # labels
-    points = np.logical_not(dmask.mask[it])
+    points = dmask.mask[it]
     labels, num_features = label_periodic(points, structure)
 
     ax[it].pcolormesh(
@@ -122,10 +131,7 @@ objects_infos = track_table(events, nt)
 print("\n=> Compute a length of a breaking")
 
 # Step 0: working setup
-target = 7  # the object
-itarget = 1  # the snapshot time index
 snapshot = crest_mask_labelled.isel(time=itarget)
-print("working at it=%d on object %d" % (itarget, target))
 
 sizes = length1(target, snapshot.values, dx, dy)
 
@@ -156,9 +162,6 @@ if True:
 print("\n => Compute barycenter of a breaking")
 
 # 1 get the (X,Y) values for each point of a breaking on a snapshot
-target = 7
-itarget = 1  # int((istart + iend) / 2)  # working at mid age
-print("working at it=%d" % itarget)
 snapshot = crest_mask_labelled.isel(time=itarget)
 
 # compute barycenter
@@ -168,9 +171,6 @@ print(f"position of the barycenter for it=%d: {bposition}" % itarget)
 # TEST =======================================
 print("\n=> Compute speed and direction of the breaking")
 
-target = 7
-itarget = 1  # int((istart + iend) / 2)  # working at mid age
-print("working at it=%d" % itarget)
 snapshot = crest_mask_labelled.isel(time=itarget)
 
 speed, direction = speed_direction(
@@ -185,10 +185,7 @@ print(
 # TEST =======================================
 print("\n => Breaking-centered vue")
 # Step 0: working setup
-target = 7  # the object
-itarget = 1  # the snapshot time index
 snapshot = crest_mask_labelled.isel(time=itarget)
-print("working at it=%d on object %d" % (itarget, target))
 
 # Step 1: compute the size of the breaking
 sizes = length1(target, snapshot.values, dx, dy)
@@ -214,6 +211,7 @@ mask_local = snapshot.sel(
 nX = (ds_local.x - bposition[0]) / Lb
 nY = (ds_local.y - bposition[1]) / Lb
 iy, ix = np.where(mask_local == target)
+
 fig, ax = plt.subplots(1, 1, figsize=(4, 3), constrained_layout=True, dpi=200)
 s = ax.pcolormesh(nX, nY, ds_local["w"], cmap="seismic", vmin=-1.5, vmax=1.5)
 ax.scatter(nX[ix], nY[iy], marker="x", color="k", s=10, linewidth=0.5)

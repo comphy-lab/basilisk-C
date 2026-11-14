@@ -12,7 +12,7 @@ scalar rhov[];
 
 int NS = 0;
 double rhoval = 1., muval = 0., lambdaval = 1., cpval = 1., Dmixval = 1.;
-double T0 = 300., YG0 = 1., Pref = 101325., MWval = 1.;
+double T0 = 300., YG0 = 1., MWval = 1.;
 
 Phase * gas;
 char ** gas_species = NULL;
@@ -63,7 +63,7 @@ event defaults (i = 0) {
     xg[0] = YG0, xg[1] = 1. - YG0;
 
   ThermoState tsg;
-  tsg.T = T0, tsg.P = Pref, tsg.x = xg;
+  tsg.T = T0, tsg.P = P0, tsg.x = xg;
 
   phase_set_thermo_state (gas, &tsg);
 
@@ -118,8 +118,42 @@ event reset_sources (i++);
 
 #if VARIABLE_PROPERTIES
 event phase_properties (i++) {
+
+#if LOW_MACH
+  /**
+  In a closed system the thermodynamic pressure changes in time, and the
+  material properties must be updated using its current value. */
+
+  if (closed)
+    foreach()
+      foreach_scalar_in (gas)
+        P[] = P0;
+#endif
+
   phase_update_mw_moles (gas, f, tol = P_ERR, extend = true);
   phase_update_properties (gas, &tp2, f, P_ERR);
+
+#if LOW_MACH
+  /**
+  The work performed by the variation of the thermodynamic pressure is added to
+  the temperature equation, see `phase_add_compression_work()`. The rate of the
+  current time step is known only after the projection, therefore we use the one
+  computed by the projection of the previous time step, consistently with
+  [phasechange.h](phasechange.h).
+
+  The source is added here, together with the material properties, and not in
+  the `divergence` event, because `betaT` is evaluated by
+  `phase_update_properties()` using the temperature of this event: the product
+  $\beta_T T$ must be formed from the same thermodynamic state, and it reduces
+  to one for an ideal gas. Adding the source after `chemistry`, which updates
+  the temperature in place, would combine the new temperature with the old
+  expansion coefficient. The source still reaches the velocity divergence,
+  because `phase_update_divergence()` accumulates `STexp` into the material
+  derivative of the temperature. */
+
+  if (closed)
+    phase_add_compression_work (gas, dP0dt, f, F_ERR);
+#endif
 }
 #endif
 
@@ -185,9 +219,21 @@ event properties (i++) {
 event properties (i++) {
   scalar rhog = gas->rho;
   scalar mug = gas->mu;
+#if LOW_MACH
+  scalar chiTg = gas->chiT;
+#endif
   foreach() {
     rho2v[] = rhog[];
     mu2v[] = mug[];
+
+    /**
+    A single phase fills the domain, therefore its isothermal compressibility
+    is published directly into the field used by the closed-system
+    projection. */
+
+#if LOW_MACH
+    chiT[] = chiTg[];
+#endif
   }
 }
 

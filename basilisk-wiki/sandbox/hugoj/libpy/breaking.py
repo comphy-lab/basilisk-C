@@ -11,6 +11,7 @@ import os
 from collections import Counter
 import json
 import matplotlib.pyplot as plt
+import warnings
 
 """
 Base code from Jiarong Wu ("simple_mapping")
@@ -146,22 +147,37 @@ def simple_mapping(
     else:
         raise NameError(f"method={method} behavior is not defined")
 
-    # A edge has two sides !
-    #    Here we consider that the front is at the right edge
+    # Note:
+    # In order to get quasi-1D objects, Jiarong is using the filter below to get only the right
+    # edge of the breaking, assuming they all propagate along X. This may not be true for a X-propagating
+    # wave field, and even less for other direction.
+    # For now we disable this filter, with the goal of doing something similar later in the direction of the breaking
 
-    a_ = np.zeros(b_.shape)
+    if True:
+        a_ = np.zeros(b_.shape)
 
-    # for i in range(0, N - 1):
-    #     for j in range(1, N - 1):
-    #         if (b_[i, j - 1] > 0) and (b_[i, j + 1] == 0):
-    #             a_[i, j] = 1
-    # vectorized version of the loop above.
-    a_[:-1, 1:-1] = (np.asarray(b_[:-1, :-2]) > 0) & (np.asarray(b_[:-1, 2:]) == 0)
+        # This loop is now vectorized !
+        # for i in range(0, N - 1):
+        #     for j in range(1, N - 1):
+        #         if (b_[i, j - 1] > 0) and (b_[i, j + 1] == 0):
+        #             a_[i, j] = 1
+        #
+        a_[:-1, 1:-1] = (np.asarray(b_[:-1, :-2]) > 0) & (np.asarray(b_[:-1, 2:]) == 0)
+    else:
+        a_ = np.asarray(b_) > 0
 
-    # mask is when value = 1 (filters give detected = True) so
-    # we invert the values
+    # A plot to show what the filter is doing
+    # fig, ax = plt.subplots(1, 2, figsize=(7, 3), constrained_layout=True, dpi=200)
+    # s = ax[0].pcolormesh(b_, cmap="Greys")
+    # plt.colorbar(s, ax=ax[0])
+    # s = ax[1].pcolormesh(a_, cmap="Greys")
+    # plt.colorbar(s, ax=ax[1])
+    # for axe in ax:
+    #     axe.set_xlim((160, 220))
+    #     axe.set_ylim((200, 260))
+    # plt.show()
+
     a_ = np.logical_not(a_)
-
     ux_a = np.ma.masked_where(a_, ux, copy=True)
     uy_a = np.ma.masked_where(a_, uy, copy=True)
     # not in threshold = masked. Need to use .compressed() to avoid taking into account masked values
@@ -175,7 +191,7 @@ def simple_mapping(
         ((ux_a**2 + uy_a**2) ** 0.5).compressed(), bins=bins, density=False
     )
 
-    return hist, a_
+    return hist, np.bitwise_not(a_)
 
 
 def simple_mapping_parallel(
@@ -246,7 +262,6 @@ def simple_mapping_parallel(
                 "threshold": float(threshold),
             },
         )
-
         out["mask"].attrs["long_name"] = "crest mask (1 = hidden, 0 = crest)"
 
         if output_file is not None:
@@ -385,16 +400,15 @@ def btrack(
         return tracks, events
 
     next_id, prev, out = 1, None, []
-    nframes = frames.sizes["t"]
+    nframes = frames.sizes["time"]
 
     for t in range(nframes):
-        mask = frames.isel(t=t).values.astype(bool)
+        mask = frames.isel(time=t).values.astype(bool)
 
         ny, nx = mask.shape
         box = (ny * dy, nx * dx)
 
         labels, n = label_periodic(mask, structure)
-
         ys, xs = np.nonzero(mask)
         pts = np.column_stack([ys * dy, xs * dx])
         lab = labels[ys, xs]
@@ -555,11 +569,13 @@ def bbarycenter(value, a):
 def circular_extent(i, n):
     """Extent of indices i on a periodic axis of length n."""
     u = np.unique(i)
+    if u.size == 0:
+        return np.nan
     gaps = np.diff(np.concatenate([u, [u[0] + n]]))  # includes the wrap-around gap
     return n - gaps.max() + 1
 
 
-def length1(value, a, dx, dy):
+def length_fitrectangle(value, a, dx, dy):
     """
     Computes the spatial extent of the points in an array whose value is
     equal to the specified value, accounting for periodic boundaries.
@@ -573,20 +589,47 @@ def length1(value, a, dx, dy):
     INPUTS:
     - value (int): Value used to select the points in the array.
     - a (numpy.ndarray): N-dimensional array containing the object values.
+    - dx, dy: grid size in X and Y directions
 
     OUTPUTS:
     - numpy.ndarray: 1D array containing the extent of the selected
       object along each axis in meters, accounting for periodic boundaries.
       index 0 = along axis 0 of a, index 1 = along axis 1 of a
     """
-    idx = np.nonzero(a == value)
-    # return np.array([i.max() - i.min() + 1 for i in idx]) # not taking into account periodic BC
-    return np.array([circular_extent(i, a.shape[0]) for i in idx]) * np.asarray(
-        [dx, dy]
-    )
+    indices = np.nonzero(a == value)  # one index array per axis
+    extents = [circular_extent(i, n) for i, n in zip(indices, a.shape)]
+    return np.array(extents) * np.array([dx, dy])
 
 
-def speed_direction(value, mask, speedu, speedv):
+def length_npixels(value, a, dx):
+    """
+    Computes the number of 'value' in the 2D array 'a', then multiply this by 'dx'
+    to get a length.
+
+    Note:
+    This is what is done in the 'regular' way of computing a Lambda(c) spectrum.
+
+    INPUTS:
+        - value (int): label of object
+        - a (2D xr.DataArray): a snapshot of objects labelled
+        - dx (float): grid spacing (assuming dx=dy)
+    OUTPUTS:
+        - Lb: length of the object 'value' on snapshot 'a'
+    """
+    return xr.where(a == value, 1, 0).sum().values * dx
+
+
+def length_b(id, mask_labelled, dx, dy, method=0):
+    if method == 0:
+        Lb = length_fitrectangle(id, mask_labelled, dx, dy)
+    elif method == 1:
+        Lb = length_npixels(id, mask_labelled, dx)
+    else:
+        raise Exception(f"method {method} is not recognized, aborting ...")
+    return Lb
+
+
+def speed_direction(value, mask, speedu, speedv, reduce_method=None):
     """
     Computes the mean velocity speed and direction of points belonging to
     a specified object.
@@ -608,7 +651,102 @@ def speed_direction(value, mask, speedu, speedv):
     """
     u = speedu.where(mask == value).values
     v = speedv.where(mask == value).values
-    um, vm = np.nanmean(u), np.nanmean(v)
+    if reduce_method == "mean":
+        um, vm = np.nanmean(u), np.nanmean(v)
+    else:
+        um, vm = u[~np.isnan(u)], v[~np.isnan(v)]
     speed = np.sqrt(um**2 + vm**2)
     direction = np.arctan2(vm, um) * 180 / np.pi
     return np.asarray([speed, direction])
+
+
+def breaker_characteristics(
+    events,
+    crest_mask_labelled,
+    ds_surface_currents,
+    method_length=0,
+    output="breaking_infos.npy",
+    verbose=False,
+):
+    nt = len(crest_mask_labelled.time)
+    NT_objects = np.amax(crest_mask_labelled).values
+    dx = float(crest_mask_labelled.x[1] - crest_mask_labelled.x[0])
+    dy = dx
+    # we get infos for each object by 'inverting' the 'events' list
+    objects_infos = track_table(events, nt)
+    allobj = list(objects_infos.keys())
+    stopat = len(allobj)  # to reduce the dataset if needed
+
+    # if the file is already here, open it
+    if output is not None and os.path.exists(output):
+        try:
+            loaded = np.load(output, allow_pickle=True)[()]
+        except (OSError, EOFError, ValueError) as err:
+            warnings.warn(f"Could not read '{output}': {err}")
+        else:
+            objects_infos = loaded
+
+    else:
+        # we extend 'object_infos' by computing length, speed, position of breakers
+        for target in allobj[:stopat]:  # we go over all of the objects
+            istart = objects_infos[target]["birth"]
+            iend = objects_infos[target]["death"]
+
+            if iend is not None:
+                lengths = np.zeros((iend - istart, 2))  # Y, X
+                barys = np.zeros((iend - istart, 2))  # X, Y
+                # Note:
+                # The number of cells with id==target can vary along
+                # the lifetime of the object. This is why we use a list for 'speeds'
+                speeds = []
+                Npxl = []
+
+                # we go over the lifetime of the object
+                for it in range(istart, iend):
+                    snapshot = crest_mask_labelled.isel(time=it)
+
+                    # number of cells for current breaking
+                    ncells = np.sum(snapshot == target).values
+                    SD = np.zeros((2, ncells))  # Speed-direction array
+
+                    obj_it = it - istart
+
+                    # step 3a: length
+                    lengths[obj_it, :] = length_b(
+                        target, snapshot, dx, dy, method=method_length
+                    )
+
+                    # step 3b: speed and direction
+                    SD = speed_direction(
+                        target,
+                        snapshot.values,
+                        ds_surface_currents["u.x"].isel(time=it),
+                        ds_surface_currents["u.y"].isel(time=it),
+                        reduce_method=None,
+                    )
+                    speeds.append(SD)
+
+                    # step 3c: position
+                    barys[obj_it] = bbarycenter(target, snapshot)
+
+                    # step 4: number of pixels
+                    Npxl.append(ncells)
+
+                # extend the 'objects_infos' dict
+                objects_infos[target]["length"] = lengths
+                objects_infos[target]["speeds_currents"] = speeds
+                objects_infos[target]["position"] = barys
+                objects_infos[target]["Npxl"] = Npxl
+
+            if verbose:
+                pct = 100 * (target + 1) / NT_objects
+                print(
+                    f"  object {target + 1}/{NT_objects} ({pct:.0f}%)",
+                    end="\r",
+                    flush=True,
+                )
+
+        # saving
+        np.save(output, objects_infos)
+        objects_infos = np.load(output, allow_pickle=True)[()]
+    return objects_infos

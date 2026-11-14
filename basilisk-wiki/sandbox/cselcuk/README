@@ -4,18 +4,20 @@
 You can find here documentations, examples and test cases related to my implementation
 of a fictitious-domain method within basilisk. 
 
-# Distributed Lagrange multiplier/fictitious domain method for rigid particle laden flows 
-<!-- The basic idea of the method is to fill the particle's domain with a hypothetical fluid similar to the surrounding fluid. The fluid, real and hypothetical, occupies the whole domain, real and fictitious. Thus, the fluid flow equations  -->
+# Distributed Lagrange multiplier/fictitious domain method for rigid particle laden flows
 
-<!-- and constraint the hypothetical fluid to move as a solid body.  -->
+<!-- The basic idea of the method is to fill the particle's domain with a hypothetical fluid similar to the surrounding fluid. The fluid, real and hypothetical, occupies the whole domain, real and fictitious. Thus, the fluid flow equations 
 
-<!-- occupies the "fictitious" part of the total domain.  -->
+and constraint the hypothetical fluid to move as a solid body.
+
+occupies the "fictitious" part of the total domain.
 
 
-<!--  and constraint the hypothetical fluid with Lagrange multipliers with a force density field distributed within the .  -->
-<!--  One of the advantages of afictitious-domain methods is -->
-<!-- that the velocities (fluid and particle) are computed implicitly. This -->
-<!-- is a nice feature for moving and colliding particles. -->
+and constraint the hypothetical fluid with Lagrange multipliers with a force density field distributed within the .
+One of the advantages of afictitious-domain methods is
+that the velocities (fluid and particle) are computed implicitly. This
+is a nice feature for moving and colliding particles.
+-->
 
 We are looking for a numerical approximation for the solution of the
 following equations 
@@ -88,29 +90,30 @@ $$
 \mathbf{u}_{ns}^{n+1}  =  \mathbf{u}_{ns}^{n} + \Delta t (-\mathbf{u}_{ns}^{n+1/2} \cdot \nabla \mathbf{u}_{ns}^{n+1/2}-\nabla p^{n+1}/\rho + \nabla \cdot [2 \mu \mathcal{D}^{n+1}_v] + \mathbf{a}^{n+1}),
 $$
 
-<!-- splitted within the folowing  steps: -->
+<!-- splitted within the folowing steps:
 
-<!-- 1. a pure advection problem (event advection_term) -->
-<!-- $$ -->
-<!-- \rho\left(\frac{\mathbf{u_a} - \mathbf{u}^{n}}{\Delta t} + \mathbf{u}^{n+1/2}\cdot\mathbf{\nabla}\mathbf{u}^{n+1/2}\right) = \mathbf{0}, -->
-<!-- $$ -->
-<!-- where the convectif term $\mathbf{u}^{n+1/2}\cdot\mathbf{\nabla}\mathbf{u}^{n+1/2}$ is computed before-hand with a BCG scheme.  -->
-<!-- 2. addition of a coupling term $\left(-\mathbf{\nabla}p^{n}+\rho\mathbf{a}^{n}\right)$ (function correction) -->
-<!-- $$ -->
-<!-- \rho\left(\frac{\mathbf{u_r} - \mathbf{u_a}}{\Delta t}\right) = +\left(-\mathbf{\nabla}p^{n}+\rho\mathbf{a}^{n}\right) -->
-<!-- $$ -->
-<!-- 3. a pure diffusion problem (event viscous_term) -->
-<!-- $$ -->
-<!-- \rho\left(\frac{\mathbf{u_v} - \mathbf{u_r}}{\Delta t}\right) =\mathbf{\nabla}\cdot\left(2\mu\mathbf{D\left(\mathbf{u_v}\right)}\right) -->
-<!-- $$ -->
-<!-- 4. substraction of the coupling term (function correction)  -->
-<!-- $$ -->
-<!-- \rho\left(\frac{\mathbf{u_*} - \mathbf{u_v}}{\Delta t} \right) = -\left(-\mathbf{\nabla}p^{n}+\rho\mathbf{a}^{n}\right) -->
-<!-- $$ -->
-<!-- 5. Poisson/Helmoltz equation to enforce the incompressibility constraint (event projection) -->
-<!-- $$ -->
-<!-- \rho\left(\frac{\mathbf{u}^{n+1} - \mathbf{u_*}}{\Delta t}\right) = -\mathbf{\nabla}p^{n+1}+\rho \mathbf{a}^{{n+1}} -->
-<!-- $$ -->
+1. a pure advection problem (event advection_term)
+$$
+\rho\left(\frac{\mathbf{u_a} - \mathbf{u}^{n}}{\Delta t} + \mathbf{u}^{n+1/2}\cdot\mathbf{\nabla}\mathbf{u}^{n+1/2}\right) = \mathbf{0},
+$$
+where the convectif term $\mathbf{u}^{n+1/2}\cdot\mathbf{\nabla}\mathbf{u}^{n+1/2}$ is computed before-hand with a BCG scheme.
+2. addition of a coupling term $\left(-\mathbf{\nabla}p^{n}+\rho\mathbf{a}^{n}\right)$ (func correction)
+$$
+\rho\left(\frac{\mathbf{u_r} - \mathbf{u_a}}{\Delta t}\right) = +\left(-\mathbf{\nabla}p^{n}+\rho\mathbf{a}^{n}\right)
+$$
+3. a pure diffusion problem (event viscous_term)
+$$
+\rho\left(\frac{\mathbf{u_v} - \mathbf{u_r}}{\Delta t}\right) =\mathbf{\nabla}\cdot\left(2\mu\mathbf{D\left(\mathbf{u_v}\right)}\right)
+$$
+4. substraction of the coupling term (func correction)
+$$
+\rho\left(\frac{\mathbf{u_*} - \mathbf{u_v}}{\Delta t} \right) = -\left(-\mathbf{\nabla}p^{n}+\rho\mathbf{a}^{n}\right)
+$$
+5. Poisson/Helmoltz equation to enforce the incompressibility constraint (event projection)
+$$
+\rho\left(\frac{\mathbf{u}^{n+1} - \mathbf{u_*}}{\Delta t}\right) = -\mathbf{\nabla}p^{n+1}+\rho \mathbf{a}^{{n+1}}
+$$
+-->
 
 $$
 \mathbf{\nabla}\cdot\mathbf{u}_{ns}^{{n+1}} =\mathbf{0}

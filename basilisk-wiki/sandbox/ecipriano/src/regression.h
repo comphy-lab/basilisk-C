@@ -57,11 +57,9 @@ void vof_advection_phasechange (
 
   foreach() {
     coord m = interface_normal (point, f);
-    double nn = 0.;
+    normalize (&m);
     foreach_dimension()
-      nn += sq (m.x);
-    foreach_dimension()
-      n.x[] = m.x/sqrt (nn);
+      n.x[] = m.x;
     foreach_dimension()
       n.x[] *= (rho[] > 0.) ? mEvapTot[]/rho[] : 0.;
   }

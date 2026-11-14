@@ -23,11 +23,11 @@ For degenerate cases, a non-zero value of *coef* is returned and
   (((a1)*((x) - 1.) + (a3)*((x) + 1.))*(x)/2. - (a2)*((x) - 1.)*((x) + 1.))
 
 typedef struct {
-  double d[2], v[2];
+  double d[2], v[2], coef;
 } dstats;
 
 foreach_dimension()
-static inline double dirichlet_gradient_x (Point point, scalar s,
+static inline double vof_dirichlet_gradient_x (Point point, scalar s,
              scalar cs, face vector fs,
              coord n, coord p, double bc,
              double * coef, bool vof = false, dstats * stat = NULL)
@@ -105,25 +105,25 @@ static inline double dirichlet_gradient_x (Point point, scalar s,
 }
 
 /**
-## dirichlet_gradient(): embed interface gradients
+## vof_dirichlet_gradient(): embed interface gradients
 */
 
-double dirichlet_gradient (Point point, scalar s, scalar cs, face vector fs,
+double vof_dirichlet_gradient (Point point, scalar s, scalar cs, face vector fs,
          coord n, coord p, double bc, double * coef,
          bool vof = false, dstats * stat = NULL)
 {
 #if dimension == 2
   foreach_dimension()
     if (fabs(n.x) >= fabs(n.y))
-      return dirichlet_gradient_x (point, s, cs, fs, n, p, bc, coef, vof, stat);
+      return vof_dirichlet_gradient_x (point, s, cs, fs, n, p, bc, coef, vof, stat);
 #else // dimension == 3
   if (fabs(n.x) >= fabs(n.y)) {
     if (fabs(n.x) >= fabs(n.z))
-      return dirichlet_gradient_x (point, s, cs, fs, n, p, bc, coef, vof, stat);
+      return vof_dirichlet_gradient_x (point, s, cs, fs, n, p, bc, coef, vof, stat);
   }
   else if (fabs(n.y) >= fabs(n.z))
-    return dirichlet_gradient_y (point, s, cs, fs, n, p, bc, coef, vof, stat);
-  return dirichlet_gradient_z (point, s, cs, fs, n, p, bc, coef, vof, stat);
+    return vof_dirichlet_gradient_y (point, s, cs, fs, n, p, bc, coef, vof, stat);
+  return vof_dirichlet_gradient_z (point, s, cs, fs, n, p, bc, coef, vof, stat);
 #endif // dimension == 3
   return nodata;
 }
@@ -134,7 +134,12 @@ double dirichlet_gradient (Point point, scalar s, scalar cs, face vector fs,
 The interface gradients for VOF-tracers can be computed using the following
 function, provided the volume and surface fractions `cs` and `fs` which define
 the region where the tracers `s` is defined, and the value of the field at the
-interface (`bc`). */
+interface (`bc`). In degenerate cases the gradient is zero and the
+degenerate coefficient is stored in `stat->coef`.
+
+Note that, inside `foreach` loops, all the arguments must be given
+explicitly: omitting the optional ones makes qcc pass `NULL` for the
+face vector *fs* in the stencil functions. */
 
 double plic_gradient (Point point, scalar s, scalar cs, face vector fs,
     double bc, bool vof = true, dstats * stat = NULL)
@@ -146,9 +151,70 @@ double plic_gradient (Point point, scalar s, scalar cs, face vector fs,
   plane_area_center (m, alpha, &p);
   normalize (&m);
   double coef = 0.;
-  double grad = dirichlet_gradient (point, s, cs, fs, m, p, bc, &coef, vof, stat);
+  double grad = vof_dirichlet_gradient (point, s, cs, fs, m, p, bc, &coef, vof, stat);
+  if (stat)
+    stat->coef = coef;
   return (grad == nodata || coef != 0.) ? 0. : grad;
 }
+
+/**
+## plic_navier(): Navier/Robin interface values
+
+This function returns the interface value $s_b$ which satisfies the
+Navier/Robin condition
+$$
+s_b + \lambda \partial_n s|_b = expr
+$$
+with $\mathbf{n}$ pointing out of the region where *cs* = 1 (as for
+the domain boundaries). The gradient computed by *plic_gradient()* is
+linear in the interface value, $\partial_n s|_b = a s_b + b$, so two
+evaluations give $a$ and $b$, and
+$$
+s_b = \frac{expr - \lambda b}{1 + \lambda a}
+$$
+In degenerate cases we use the gradient $-coef\,(s_b - s[])$ of
+[embed_flux()](/src/embed.h#embed_flux). */
+
+double plic_navier (Point point, scalar s, scalar cs, face vector fs,
+    double expr, double lambda, bool vof = true)
+{
+  dstats stat;
+  double b = plic_gradient (point, s, cs, fs, 0., vof, &stat);
+  double a = plic_gradient (point, s, cs, fs, 1., vof, &stat) - b;
+  if (stat.coef)
+    a = - stat.coef, b = stat.coef*s[];
+  return (expr - lambda*b)/(1. + lambda*a);
+}
+
+/**
+## navier(): Navier/Robin condition on embedded boundaries
+
+On embedded boundaries the Navier condition is turned into a Dirichlet
+condition with value given by *plic_navier()*. On the domain
+boundaries we use the default [navier()](/src/grid/cartesian-common.h)
+condition. */
+
+#if EMBED
+macro2
+double navier (double expr, double lambda, Point point = point,
+    scalar s = _s, bool * data = data)
+{
+  return data ? embed_area_center (point, &x, &y, &z),
+    *((bool *)data) = true,
+    plic_navier (point, s, cs, fs, expr, lambda, false) :
+    (Delta*expr + s[]*(lambda - Delta/2.))/(lambda + Delta/2.);
+}
+
+macro2
+double navier_homogeneous (double expr, double lambda, Point point = point,
+    scalar s = _s, bool * data = data)
+{
+  return data ? embed_area_center (point, &x, &y, &z),
+    *((bool *)data) = true,
+    plic_navier (point, s, cs, fs, 0., lambda, false) :
+    s[]*(lambda - Delta/2.)/(lambda + Delta/2.);
+}
+#endif
 
 /**
 ## References

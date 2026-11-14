@@ -173,10 +173,10 @@ more accurate than the PLIC (`mycs`) reconstruction used as a fallback where
 the height is undefined. Reusable for post-processing the contact-line
 location. */
 
-double interface_position (Point point, scalar f) {
+double interface_position (Point point, scalar f, bool boundary = false) {
   if (f.height.y.i) {
     vector h = f.height;
-    if (h.y[] != nodata && h.y[-1] != nodata)
+    if (boundary && h.y[] != nodata && h.y[-1] != nodata)
       return y + Delta*0.5*(height (h.y[]) + height (h.y[-1]));
     else if (h.y[] != nodata)
       return y + Delta*height (h.y[]);
@@ -218,24 +218,37 @@ face lookup to an arbitrary boundary is left for future work. */
 double capillary (void) {
   if (f.height.x.i) {
     vector h = f.height;
-    double ucl = 0., sign = 0.;
-    foreach (serial)
+
+    // First, we gather the coordinates in a `foreach()` loop.
+    double xcl = -HUGE, ycl = -HUGE, sign = -HUGE;
+    foreach (reduction(max:xcl) reduction(max:ycl) reduction(max:sign))
       if (is_contact_x (point, f, theta0*pi/180.)) {
         coord m = interface_normal (point, f);
+        double yp = 0.;
         if (fabs (m.y) > fabs (m.x) && h.y[] != nodata)
-          ucl = interpolate (u.y, x, y + Delta*height (h.y[]));
+          yp = y + Delta*height (h.y[]);
         else {
           double alpha = plane_alpha (f[], m);
-          double ycl = fabs (m.y) > 1e-10 ?
-            clamp ((alpha + 0.5*m.x)/m.y, -0.5, 0.5) : 0.;
-          ucl = interpolate (u.y, x, y + Delta*ycl);
+          yp = y + Delta*(fabs (m.y) > 1e-10 ?
+              clamp ((alpha + 0.5*m.x)/m.y, -0.5, 0.5) : 0.);
         }
+        xcl = x, ycl = yp;
         sign = (f[0,1] < f[0,-1]) ? 1. : -1.;
       }
+
+    // Then, we call `interpolate` from outside the `foreach()`. Calling it
+    // inside the loop would result in a stuck simulation due to a nested
+    // reduction loop
+    if (xcl == -HUGE)
+      return 0.;
+
+    double ucl = interpolate (u.y, xcl, ycl);
+    if (ucl == nodata)
+      ucl = 0.;
+
     return sign*ucl*mu1/f.sigma;
   }
-  else
-    return 0.;
+  return 0.;
 }
 
 /**

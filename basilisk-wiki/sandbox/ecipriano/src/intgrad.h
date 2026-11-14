@@ -135,7 +135,7 @@ double ebmgrad (Point point,
                   face vector fsG,
                   bool inverse,
                   double trint,
-                  bool* success)
+                  bool * success)
 {
   coord m = interface_normal (point, fL);
 #if dimension == 2

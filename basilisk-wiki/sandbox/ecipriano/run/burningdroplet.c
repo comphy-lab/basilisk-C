@@ -303,7 +303,7 @@ int main (int argc, char ** argv) {
   /**
   We set the initial thermodynamic state of the two-phase system (SI units). */
 
-  Pref = inputdata.P0*101325.;
+  P0 = inputdata.P0*101325.;
   TG0 = inputdata.TG0;
   TL0 = inputdata.TL0;
 
@@ -418,8 +418,8 @@ event init (i = 0) {
   initial thermo state */
 
   ThermoState tsl, tsg;
-  tsl.T = TL0, tsl.P = Pref, tsl.x = NULL;
-  tsg.T = TG0, tsg.P = Pref, tsg.x = NULL;
+  tsl.T = TL0, tsl.P = P0, tsl.x = NULL;
+  tsg.T = TG0, tsg.P = P0, tsg.x = NULL;
 
   phase_set_thermo_state (liq, &tsl, force = !restored);
   phase_set_thermo_state (gas, &tsg, force = !restored);
@@ -448,7 +448,7 @@ event init (i = 0) {
   double MWLs[NLS], MWGs[NGS];
   molecular_weights (NGS, MWGs);
   foreach_species_in (liq)
-    MWLs[i] = MWGs[LSI[i]];
+    MWLs[i] = MWGs[DSI[i]];
 
   phase_set_properties (liq, MWs = MWLs);
   phase_set_properties (gas, MWs = MWGs);
@@ -500,7 +500,7 @@ event init (i = 0) {
 ## Boundary conditions
 
 We set the boundary conditions in the `defaults` event because, in
-[navier-stokes/centered-new.h](navier-stokes/centered-new.h) the boundary
+[navier-stokes/low-mach.h](navier-stokes/low-mach.h) the boundary
 conditions for the additional velocity fields are copied from u and p.
 */
 
@@ -600,7 +600,7 @@ event output_data (i += 50) {
       TIntAvg, TDropAvg);
 
   foreach_species_in (liq_int) {
-    scalar YGInt = gas_int->YList[LSI[i]];
+    scalar YGInt = gas_int->YList[DSI[i]];
     double YGIntAvg = avg_interface (YGInt, f, tol = 0.1);
     fprintf (fp, " %g", YGIntAvg);
   }

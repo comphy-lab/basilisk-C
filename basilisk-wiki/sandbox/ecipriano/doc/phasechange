@@ -84,6 +84,7 @@ $$
 = \textcolor{blue}{-\dfrac{1}{\rho_k}\dfrac{D\rho_k}{Dt}}
 = \textcolor{blue}{\beta_{T,k}\dfrac{DT_k}{Dt}
 + \sum_{i=1}^{NS} \beta_{\omega_{i,k}}\dfrac{D\omega_{i,k}}{Dt}}
+\textcolor{purple}{- \chi_{T,k} \dfrac{dP_0}{dt}}
 $$
 
 $$
@@ -103,6 +104,7 @@ $$
 \rho_k Cp_k\dfrac{DT_k}{Dt}
 = \nabla\cdot\left(\lambda\nabla T_k\right)
 \textcolor{blue}{- \left(\sum_{i=1}^{NS}Cp_{i,k}\mathbf{j}_{i,k}\right)\cdot\nabla T_k}
+\textcolor{purple}{+ \beta_{T,k} T_k \dfrac{dP_0}{dt} }
 \textcolor{red}{- \sum_{i=1}^{NS} h_{i,k}\dot{\Omega}_{i,k}
 - \nabla\cdot\mathbf{q}_{rad}}
 $$
@@ -111,8 +113,18 @@ $$
 \textcolor{blue}{\phi_k = f(T_k, P_k, \omega_{i,k})}
 $$
 
-where blue terms account for the low-Mach number variable material properties
-while red terms include chemical reactions and radiation. The variable $\phi_k$
+$$
+\textcolor{purple} {
+\dfrac{dP_0}{dt} = \dfrac{\int_\Omega \left(\beta_T\dfrac{DT}{Dt} + \sum_{i=1}^{NS}
+  \beta_{\omega_i}\dfrac{D\omega_i}{Dt}\right)dV
+  - \dot{Q}}{\int_\Omega \chi_T\,dV}
+}
+$$
+
+where blue terms account for the low-Mach number variable material properties,
+purple terms for the pressurization of closed systems, with $\dot{Q}$ the net
+volumetric outflow (see [low-mach.h](../src/navier-stokes/low-mach.h)), while red terms include chemical
+reactions and radiation. The variable $\phi_k$
 is a generic phase property (i.e. density, viscosity, diffusivity, ecc.),
 computed as a function of the thermodynamic state, defined by temperature,
 pressure, and mass fractions.
@@ -189,7 +201,9 @@ centered solver.
 to include volumetric sources, either continuous `drhodt`, or localized at the
 interface `intexp`. The solver itself does not determine how the flow
 divergence is computed; this depends on the specific scalar fields
-(temperature, pressure, mass fractions) and the problem setup.
+(temperature, pressure, mass fractions) and the problem setup. In closed systems
+it also computes the pressurization rate `dP0dt`, using the isothermal
+compressibility `chiT`.
 
 * [navier-stokes/velocity-jump.h](../src/navier-stokes/velocity-jump.h):
 Implements a Ghost Fluid Method (GFM)-style approach. Instead of localized
@@ -284,27 +298,30 @@ $$
   \dot{m} = K
 $$
 
-* [temperature-gradient.h](../src/temperature-gradient.h):
-  Vaporization rate from interface energy balance under boiling conditions:
+* [boiling.h](../src/boiling.h):
+  Vaporization rate from interface energy balance under boiling conditions,
+  with $\mathbf{n}_\Gamma$ pointing towards the liquid:
 $$
   \dot{m} = \dfrac{\lambda_l \nabla T_l\cdot\mathbf{n}_\Gamma
     - \lambda_g \nabla T_g\cdot\mathbf{n}_\Gamma}{\Delta h_{ev}}
 $$
 
-* [multicomponent.h](../src/multicomponent.h):
-  Vaporization rate from species mass balance assuming diffusion-driven evaporation:
+* [evaporation.h](../src/evaporation.h):
+  Vaporization rate from species mass balance assuming diffusion-driven phase
+  change. The *dispersed* phase (the one with fewer species, e.g. the liquid
+  droplet for evaporation, the gas bubble for dissolution) exchanges its *NDS*
+  species with the *continuous* phase, which also contains *NIS* inert
+  species. The balance is written on the continuous side, with
+  $\mathbf{n}_c$ the normal entering the continuous phase:
 $$
-  \dot{m} = \dfrac{\sum_{i=1}^{NS} \mathbf{j}_{i,g}\cdot\mathbf{n}_\Gamma}{1 - \sum_{i=1}^{NS} \omega_{i,g}}
+  \dot{m} = -\dfrac{\sum_{i=1}^{NDS} \rho_c\mathcal{D}_{i,c}\partial\omega_{i,c}/\partial\mathbf{n}_c}{1 - \sum_{i=1}^{NDS} \omega_{i,c}}
 $$
 
 These models cover all phase change types currently implemented in Basilisk.
-Combining [phasechange.h](../src/phasechange.h) with one interface model allows
-the simulation of evaporation or boiling.
-
-In order to simplify setting up phase change simulations, we have two additional
-modules: [evaporation.h](../src/evaporation.h) and [boiling.h](../src/boiling.h)
-which include the necessary headers and set the phase change model parameters at
-the current best configuration. These two files are the user interface. The
+[evaporation.h](../src/evaporation.h) and [boiling.h](../src/boiling.h) include
+[phasechange.h](../src/phasechange.h), compute the vaporization rate, and set
+the phase change model parameters at the current best configuration. These two
+files are the user interface. The
 default setup and methods can be changed using the attributes of the `pcm`
 structure (see [Phase Change Options](#phase-change-options)).
 
@@ -444,10 +461,13 @@ int main() {
   lambda1 = 0.1121, lambda2 = 0.04428;
   cp1 = 2505., cp2 = 1053.;
   dhev = 3.23e5;
-  Pref = 2860000.;
+  P0 = 2860000.;
   ...
 }
 ~~~
+
+The thermodynamic pressure `P0` is declared by
+[low-mach.h](../src/navier-stokes/low-mach.h) and it is null by default.
 
 For multicomponent phases, you may need to set an initial composition vector.
 The initial state of the phases can be imposed by setting the thermodynamic
@@ -497,6 +517,31 @@ event init (i = 0) {
 This does not apply for velocity boundary conditions, which can be set in the
 global scope.
 
+With [embed.h](/src/embed.h), the conditions on the embedded boundary are set in
+the same way, e.g. `TG[embed] = neumann (qw/lambda2)`. At the contact line, the
+flux through the boundary is split between the phases according to the wetted
+portion of the boundary (`phase_embed_flux()` in [phase.h](../src/phase.h)).
+
+#### Closed Systems
+
+In a closed domain the thermodynamic pressure changes in time. The projection
+computes `dP0dt`, while `P0` is updated by the simulation, see
+[pressurization.c](../run/pressurization.c):
+
+~~~literatec
+int main() {
+  ...
+  P0 = 101325.;
+  closed = true;
+  closed_flux = 0.; // net volumetric outflow (e.g. inflow in piston.c)
+  ...
+}
+
+event pressurization (i++) {
+  P0 += dt*dP0dt;
+}
+~~~
+
 #### Default Vaporization Rate
 
 By default, evaporation rate is zero. To activate phase change, modify
@@ -511,7 +556,9 @@ TL0 = 354.55, TG0 = 351.45, TIntVal = TG0;
 ~~~
 
 *Evaporation*: The default thermodynamic equilibrium constant is zero $K_{eq} =
-\hat{x}_{i,g}/\hat{x}_{i,l} = 0$, meaning no evaporation. For isothermal
+\hat{x}_{i,c}/\hat{x}_{i,d} = 0$ (continuous over dispersed interface mole
+fractions, i.e. $\hat{x}_{i,g}/\hat{x}_{i,l}$ for evaporation), meaning no
+evaporation. For isothermal
 evaporation, set this parameter as:
 
 ~~~literatec
@@ -525,7 +572,7 @@ YIntVals[1] = 0.4;
 
 For temperature-dependent evaporation, use [Antoine's
 equation](https://en.wikipedia.org/wiki/Antoine_equation) via a function pointer
-assigned to each liquid species:
+assigned to each dispersed species (the liquid species for evaporation):
 
 ~~~literatec
 // Declare Antoine's equation for dodecane with parameters from NIST database
@@ -543,7 +590,9 @@ event init (i = 0) {
 
 Note that [Clausius-Clapeyron's
 equation](https://en.wikipedia.org/wiki/Clausius–Clapeyron_relation), which is a
-special case, can be adopted as well.
+special case, can be adopted as well. For bubble dissolution, where the gas is
+the dispersed phase, the same attribute of the gas mass fraction returns Henry's law
+constant $K_{eq} = P/H_i(T)$.
 
 You can also set a global `antoine()` function valid for all species, e.g., using
 [OpenSMOKE++](#cuoci2015):
@@ -561,7 +610,7 @@ event init (i = 0) {
 ~~~
 
 What happends if you set all of these methods? The priority will be given to the
-global `antoine()` function, then the attribute of the liquid mass fraction, the
+global `antoine()` function, then the attribute of the dispersed mass fraction, the
 vector `YIntVals`, and lastly the pure equilibrium constant value `YIntVal`.
 
 ### Variable material properties and chemical reactions
@@ -647,7 +696,7 @@ following table reports an overview of the available settings.
 | `isomassfrac`             | `false`              | `true`, `false`                                                       | Skip the solution of the species equations. |
 | `isothermal_interface`    | `false`              | `true`, `false`                                                       | Set a constant interfacial temperature, to the value `TIntVal`. |
 | `fick_corrected`          | `false` or `true`¹   | `true`, `false`                                                       | Enables Fick’s law correction for multi-component diffusion (only available if `TWO_PHASE_VARPROP` is defined) ([Cipriano et al., 2024](#cipriano2024)).|
-| `molar_diffusion`         | `false` or `true`¹   | `true`, `false`                                                       | Enables molar-based diffusion formulation. |
+| `molar_diffusion`         | `false` or `true`¹   | `true`, `false`                                                       | Enables molar-based diffusion formulation ([Cipriano et al., 2024](#cipriano2024)). |
 | `mass_diffusion_enthalpy` | `false` or `true`¹   | `true`, `false`                                                       | Include enthalpy transport due to species diffusion. |
 | `divergence`              | `false` or `true`¹   | `true`, `false`                                                       | Updates phase divergence fields for variable-property systems.                                                                                        |
 | `chemistry`               | `false`              | `true`, `false`                                                       | Enables chemical reaction source terms (requires chemistry module).                                                                                   |
@@ -666,13 +715,14 @@ models. Feel free to add new ideas below.
 for plane shifting and explicit sources.
 1. The velocity field that transports the interface might be independent from
 those in `uflist`.
-1. Compatibility with [embed.h](/src/embed.h): the incompressible boiling model works with solid boundaries, see [filmboiling.c](../run/filmboiling.c). More complex cases with variable properties and diffusion corrections must be tested.
+1. Complete the compatibility with [embed.h](/src/embed.h) (e.g. `advection_div()`
+in [low-mach.h](../src/navier-stokes/low-mach.h)).
 1. Automatic transition from diffusion-driven to temperature-driven phase change -
 this is not so difficult for pure liquids, but it is really challenging for
 multicomponent systems.
 1. Avoid dependency from GSL library for root-finding
 1. Move the species diffusion contribution to the heat equation from
-[multicomponent.h](../src/multicomponent.h) to
+[evaporation.h](../src/evaporation.h) to
 [phasechange.h](../src/phasechange.h).
 
 ## References

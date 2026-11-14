@@ -179,6 +179,7 @@ def render_movie2D(
             cmap=cmap,
             vmin=clim[0],
             vmax=clim[1],
+            shading="gouraud",
         )
         plt.colorbar(s, ax=ax, label=f"{var} ({unit})")
         ax.set_xlabel("x (m)")
@@ -192,7 +193,7 @@ def render_movie2D(
 
     os.system(f"rm {nameout}")
     os.system(
-        f"ffmpeg -framerate 30 -i ./tmp/{var}_t%05d.png -c:v libx264 -pix_fmt yuv420p -r 30 {nameout}"
+        f"ffmpeg -framerate {fps} -i ./tmp/{var}_t%05d.png -c:v libx264 -pix_fmt yuv420p -r 30 {nameout}"
     )
 
 

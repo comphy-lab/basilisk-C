@@ -185,17 +185,7 @@ void const_gasprop_species_expansion (const void * p, void * s, double * r) {
 */
 
 double const_liqprop_thermal_expansion (const void * p, void * s) {
-  ThermoProps * tp = (ThermoProps *)p;
-  ThermoState * ts = (ThermoState *)s;
-
-  double epsT = 1.e-3;
-  double Ttop = ts->T + epsT, Tbot = ts->T - epsT;
-  ThermoState tstop, tsbot;
-  tstop.T = Ttop, tstop.P = ts->P, tstop.x = ts->x;
-  tsbot.T = Tbot, tsbot.P = ts->P, tsbot.x = ts->x;
-  double rhotop = tp->rhov (&tstop), rhobot = tp->rhov (&tsbot);
-  double rhoval = tp->rhov (ts);
-  return (rhoval > 0.) ? -1./rhoval*(rhotop - rhobot)/(2.*epsT) : 0.;
+  return liqprop_thermal_expansion (p, s);
 }
 
 /**
@@ -206,6 +196,26 @@ void const_liqprop_species_expansion (const void * p, void * s, double * r)
 {
   for (unsigned int i = 0; i < NLS; i++)
     r[i] = 0.;  // fixme: empty
+}
+
+/**
+### *const_gasprop_isothermal_compressibility()*: gas isothermal compressibility
+
+Consistently with `const_gasprop_density()`, the gas density is constant and
+does not depend on the thermodynamic pressure, therefore the isothermal
+compressibility is null.
+*/
+
+double const_gasprop_isothermal_compressibility (const void * p, void * s) {
+  return 0.;
+}
+
+/**
+### *const_liqprop_isothermal_compressibility()*: liq isothermal compressibility
+*/
+
+double const_liqprop_isothermal_compressibility (const void * p, void * s) {
+  return liqprop_isothermal_compressibility (p, s);
 }
 
 /**
@@ -243,6 +253,7 @@ event defaults (i = 0) {
   tp1.sigmas  = const_liqprop_sigma;
   tp1.betaT   = const_liqprop_thermal_expansion;
   tp1.betaY   = const_liqprop_species_expansion;
+  tp1.chiT    = const_liqprop_isothermal_compressibility;
 
   tp2.rhov    = const_gasprop_density;
   tp2.muv     = const_gasprop_viscosity;
@@ -252,4 +263,5 @@ event defaults (i = 0) {
   tp2.cps     = const_gasprop_heatcapacity_species;
   tp2.betaT   = const_gasprop_thermal_expansion;
   tp2.betaY   = const_gasprop_species_expansion;
+  tp2.chiT    = const_gasprop_isothermal_compressibility;
 }
