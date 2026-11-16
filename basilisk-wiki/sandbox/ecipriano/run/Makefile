@@ -1,22 +1,6 @@
 include $(BASILISK)/Makefile.defs
 
-CFLAGS += -O2 \
-	-DMOVIE=1 \
-	-DUSE_GSL=1 \
-	-DUSE_CANTERA=1 \
-	-DUSE_OPENSMOKE=0 \
-	-DTEST_RESTART=0 \
-	-DMTRACE=0 \
-	-DTRACE=0 \
-	-DBASILISK_SERVER=1 \
-	-disable-dimensions \
-	-I../src \
-	$(BASILISK_INCLUDES) \
-	$(BASILISK_LIBS)
-
-ifdef CANTERA_LIBRARY_PATH
-CFLAGS += -I$(CANTERA_INCLUDE_PATH) -L$(CANTERA_LIBRARY_PATH) -Wl,-rpath,$(CANTERA_LIBRARY_PATH)
-endif
+CFLAGS += -O2 -DMOVIE=1 -DUSE_GSL=1 -DUSE_CANTERA=1 -DBASILISK_SERVER=1 -disable-dimensions -I../src
 
 microgravity.yaml:
 	ln -s normalgravity.yaml microgravity.yaml
@@ -48,6 +32,6 @@ pressurization-heatflux-embed.c: pressurization.c
 pressurization-heatflux-embed.s: CFLAGS += -DHEATFLUX=1 -DSOLID=1
 pressurization-heatflux-embed.tst: CFLAGS += -DHEATFLUX=1 -DSOLID=1
 
-pressurization.tst: pressurization-embed.tst pressurization-heatflux.tst \
-	pressurization-heatflux-embed.tst piston.tst cavity.tst
+#pressurization.tst: pressurization-embed.tst pressurization-heatflux.tst \
+#	pressurization-heatflux-embed.tst piston.tst cavity.tst
 
