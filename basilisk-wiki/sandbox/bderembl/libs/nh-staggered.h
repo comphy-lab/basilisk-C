@@ -1,47 +1,121 @@
 /**
-# Vertically-staggered non-hydrostatic solver
+# Staggered non-hydrostatic extension
 
-Staggered non-hydrostatic solver described in section 3.6.1 of [Popinet
-(2020)](/Bibliography#popinet2020), updated to work with the current multilayer
-framework ([hydro.h](hydro.h), [implicit.h](implicit.h)). It should be a drop-in replacement for
-[nh.h](nh.h): just use
+This adds the non-hydrostatic terms of the [vertically-Lagrangian
+multilayer solver for free-surface flows](hydro.h) described in
+[Popinet, 2020](/Bibliography#popinet2020). The corresponding system
+of equations is
+$$
+\begin{aligned}
+  \partial_t h_k + \mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k & =
+  0,\\
+  \partial_t \left( h \mathbf{u} \right)_k + \mathbf{{\nabla}} \cdot \left(
+  h \mathbf{u}  \mathbf{u} \right)_k & = - gh_k  \mathbf{{\nabla}} (\eta)
+  {\color{blue} - \mathbf{{\nabla}} (h \phi)_k + \left[ \phi
+      \mathbf{{\nabla}} z \right]_k},\\
+  {\color{blue} \partial_t (hw)_k + \mathbf{{\nabla}} \cdot
+  \left( hw \mathbf{u} \right)_k} & {\color{blue} = - [\phi]_k,}\\
+  {\color{blue} \mathbf{{\nabla}} \cdot \left( h \mathbf{u} \right)_k +
+  \left[ w - \mathbf{u} \cdot \mathbf{{\nabla}} z \right]_k} &
+  {\color{blue} = 0}.
+\end{aligned}
+$$
 
-~~~c
-#include "layered/hydro.h"
-#include "layered/nh-staggered.h"  // instead of layered/nh.h
-~~~
+## Staggered fields
 
-As in [nh.h](nh.h), the vertical velocity *w* is advected as a tracer (which
-conserves the layer-integrated vertical momentum $hw$ through advection and
-remapping), and the non-hydrostatic pressure *phi* is staggered vertically with
-respect to *w*. The main differences with the (Keller box, collocated) [nh.h](nh.h)
-is the linear system for $\phi_k$ in each column is tridiagonal (can be solved
-with Thomas algorithm) rather than Hessenberg.
+The vertical velocity $w_l$ is stored at the center of layer $l$.
+The pressure $\phi_l$ is stored at its lower interface. Thus
+$\phi_{l+1}$ is the pressure at the upper interface of the same
+layer, and the atmospheric condition at the free surface is imposed by
+the convention
+$$
+\phi_{nl} = 0.
+$$
 
-In contrast with the original 2019 version, the semi-implicit free-surface
-coupling of [implicit.h](implicit.h) is retained: the coupled system for $\phi^{n+1}$ and
-$\eta^{n+1}$ is solved with the multigrid solver, as in [nh.h](nh.h). Wave breaking
-can be parameterised with the *breaking* parameter (off by default).
+The vertical pressure acceleration and its dual centered difference are
+$$
+(G_v\phi)_l = \frac{\phi_{l+1}-\phi_l}{h_l},
+\qquad
+(D_v G_v\phi)_l = (G_v\phi)_l - (G_v\phi)_{l-1},
+$$
+with $(G_v\phi)_{-1}=0$. After the pressure solve, the vertical
+velocity is corrected over the full timestep according to
+$$
+w_l^{n+1} = w_l^\star - \Delta t\,(G_v\phi)_l.
+$$
 
-/!\ With few layer, it is better to use the keller scheme; this version is
-intended to be used for many layers.
+## Mid-step continuity
 
+Let $\theta=\theta_H$, and let stars denote the predictor values
+before the non-hydrostatic pressure correction. On each vertical face,
+define
+$$
+q_{\phi,l} = -pg_l,
+\qquad
+q_{\eta,l} = hf_l\,a_{baro}(\eta),
+$$
+where $pg_l$ is the pressure acceleration returned by `hpg`.
+The midpoint velocities and fluxes have the pressure responses
+$$
+\begin{aligned}
+w^{n+\theta} &= w^\star - \theta\Delta t\,G_v\phi,\\
+Q^{n+\theta} &= Q^\star - \theta\Delta t\,q_\phi
+                    + \theta^2\Delta t\,q_\eta .
+\end{aligned}
+$$
+The last term contains $\theta^2$ because `implicit.h` stores the
+$\theta$-weighted end-of-step flux in `hu`.
+
+The discrete incompressibility condition is imposed at
+$n+\theta$:
+$$
+D_v w^{n+\theta} + D_h Q^{n+\theta} = 0.
+$$
+Here
+$$
+(D_v w)_l = w_l - w_{l-1}, \qquad w_{-1}=0,
+$$
+and $D_h$ is the dual horizontal divergence documented below.
+Substitution of the pressure responses gives
+$$
+S - \theta\Delta t\,D_vG_v\phi
+  - \theta\Delta t\,D_hq_\phi
+  + \theta^2\Delta t\,D_hq_\eta = 0,
+\qquad
+S = D_vw^\star + D_hQ^\star .
+$$
+After division by $\theta\Delta t$, the pressure right-hand side
+and local operator are therefore
+$$
+rhs_\phi = -\frac{S}{\theta\Delta t},
+\qquad
+L_\phi = -D_vG_v\phi - D_hq_\phi + \theta D_hq_\eta .
+$$
+The full-step correction is still applied to `w`, while the horizontal
+flux correction is $\theta\Delta t\,pg$. For
+$\theta=1/2$, the linear constant-coefficient time integration
+is centered; $\theta=1$ gives the first-order backward-Euler
+form.
 */
 
 #define NH 1
-#include "implicit.h"
+#include "layered/implicit.h"
 
 scalar w, phi;
 mgstats mgp;
 double breaking = HUGE;
 
+/**
+## Setup
+*/
+
 event defaults (i = 0)
 {
   hydrostatic = false;
-  mgp.nrelax = 4;
   assert (nl > 0);
   w = new scalar[nl];
   phi = new scalar[nl];
+
   reset ({w, phi}, 0.);
   if (!linearised)
     tracers = list_append (tracers, w);
@@ -50,374 +124,555 @@ event defaults (i = 0)
 /**
 ## Viscous term
 
-Vertical diffusion of the vertical velocity *w* (no-flux at the
-surface, zero at the bottom). */
+Vertical diffusion is added to the vertical component of velocity. The
+free-surface condition is $\partial_z w=0$ by default.
+*/
+
+(const) scalar dwt[] = 0.;
 
 event viscous_term (i++)
 {
   if (nu > 0.)
     foreach()
-      vertical_diffusion (point, h, w, dt, nu, 0., 0., 0.);
+      vertical_diffusion (point, h, w, dt, nu, dwt[], 0., 0.);
 }
 
-#define PHIT 6. // extrapolation coefficient of the top Dirichlet BC
-
 /**
-This applies the vertical pressure gradient correction to the
-vertical velocity
+## Geometric coefficients
+
+For face offset `i = 0`, the face lies between cells `-1` and `0`;
+for `i = 1`, it lies between cells `0` and `1`. Denote the two cells
+by $L$ and $R$, and the lower and upper interface elevations
+of layer $l$ by $z_b$ and $z_t$. Define
 $$
-w^{n+1}_l = w^\star_l - \frac{\Delta t}{h_l}\,  [\phi]_l
+s_b = z_{b,R}-z_{b,L}, \qquad s_t = z_{t,R}-z_{t,L}.
 $$
-with the top Dirichlet condition $\phi_{surface} = 0$ imposed through
-a quadratic extrapolation (PHIT) of $\phi$ below the surface. */
+In the formulas below, these differences are limited as in
+`hpg`: each $s$ is replaced by $\Delta x\,slope\_limited(s/\Delta x)$.
+
+With $\bar h=(h_L+h_R)/2$, the geometric coefficients are
+$$
+\begin{aligned}
+C_b &= \frac{-h_L+s_b}{2\bar h\,\Delta x}, &
+C_t &= \frac{-h_L-s_t}{2\bar h\,\Delta x},\\
+D_b &= \frac{ h_R+s_b}{2\bar h\,\Delta x}, &
+D_t &= \frac{ h_R-s_t}{2\bar h\,\Delta x}.
+\end{aligned}
+$$
+These coefficients contain only interface geometry and use the
+arithmetic normalization of `hpg`. The face thickness `hf` is applied
+separately when forming a flux.
+*/
 
 
-static void correct_w (double dt)
-{
-  foreach()
-    foreach_layer() {
-      double phit;
-      if (point.l == nl - 1) {
-	double phib = point.l > 0 ? phi[0,0,-1] : phi[];
-	phit = (phib - PHIT*phi[])/3.; // top BC (Dirichlet) Eq. (23)
-      }
-      else
-	phit = phi[0,0,1];
-      if (h[] > dry)
-	w[] -= dt*(phit - phi[])/h[];
-  }
-}
+/*
+macro to work within a foreach_dimension().
+*/
 
-/**
-## Face coefficients
-
-The coefficients of the staggered horizontal pressure gradient at a
-face.  `i` is the face offset (0: left face, 1: right face
-of the cell). */
-
-// todo? store coeffs1 for each mgsolve for efficiency?
-
-static void coeffs1 (Point point, int i,
-		     double * a, double * b0, double * b1, double * c)
-{
-  double zr = zb[i], zl = zb[i-1];
-  foreach_layer() {
-    int l = point.l;
-    b0[l] = - (zr - zl - 2.*h[i-1])/(2.*Delta);
-    b1[l] = - (zr - zl + 2.*h[i])/(2.*Delta);
-    if (l == nl - 1) {
-      a[l] = (zr + h[i] - zl - h[i-1])/3./(2.*Delta);
-      b0[l] -= PHIT*a[l];
-      b1[l] -= PHIT*a[l];
-      c[l] = 0.;
-    }
-    else {
-      a[l] = 0.;
-      c[l] = (zr + h[i] - zl - h[i-1])/(2.*Delta);
-    }
-    zr += h[i], zl += h[i-1];
-  }
-}
-
-/**
-The staggered face "acceleration" $a_x = -[\nabla(h\phi) -
-\phi\nabla z]/h$ for each layer, at face *i*. */
-
-
-static void face_gradient (Point point, scalar phi, int i, double * ax)
-{
-  double ac[nl], bc0[nl], bc1[nl], cc[nl];
-  coeffs1 (point, i, ac, bc0, bc1, cc);
-  foreach_layer() {
-    int l = point.l;
-    double phibL = l > 0      ? phi[i-1,0,-1] : phi[i-1];
-    double phibR = l > 0      ? phi[i,0,-1]   : phi[i];
-    double phitL = l < nl - 1 ? phi[i-1,0,1]  : phi[i-1];
-    double phitR = l < nl - 1 ? phi[i,0,1]    : phi[i];
-    double hl = h[i-1], hr = h[i];
-    ax[l] = (hl + hr > dry) ?
-      - fm.x[i]*(ac[l]*(phibL + phibR) +
-		 bc0[l]*phi[i-1] + bc1[l]*phi[i] +
-		 cc[l]*(phitL + phitR))/((hl + hr)/2.) : 0.;
-  }
-}
-
-/**
-This macro computes the height-weighted face value
-$pg = -h_f a_x$ for each layer at face *i* (the quantity added to the
-face acceleration *ha* and fluxes *hu*), and executes *code* for each
-layer. It plays the role of the `hpg` macro of [hydro.h](hydro.h) for the
-staggered discretisation. */
-
-
-#define shpg(pg, phi, i, code) do {					\
-  double _ax[nl];							\
-  face_gradient (point, phi, i, _ax);					\
-  double pg = 0.;							\
-  foreach_layer() {                                                     \
-    pg = - hf.x[i]*_ax[point.l];                                        \
-    code;								\
-  }									\
+#define nh_face_coefficients(point, i, Cb, Ct, Db, Dt) do {           \
+  double _nh_zL = zb[i-1];                                             \
+  double _nh_zR = zb[i];                                               \
+  foreach_layer() {                                                    \
+    if (h[i-1] + h[i] > dry) {                                        \
+      double _nh_sb =                                                 \
+        Delta*slope_limited ((_nh_zR - _nh_zL)/Delta);                \
+      double _nh_st =                                                 \
+        Delta*slope_limited (((_nh_zR + h[i]) -                       \
+                              (_nh_zL + h[i-1]))/Delta);              \
+      double _nh_scale = 1./((h[i-1] + h[i])*Delta);                  \
+                                                                      \
+      Cb[point.l] = (- h[i-1] + _nh_sb)*_nh_scale;                    \
+      Ct[point.l] = (- h[i-1] - _nh_st)*_nh_scale;                    \
+      Db[point.l] = (  h[i]   + _nh_sb)*_nh_scale;                    \
+      Dt[point.l] = (  h[i]   - _nh_st)*_nh_scale;                    \
+      _nh_zL += h[i-1];                                               \
+      _nh_zR += h[i];                                                 \
+    }                                                                 \
+    else {                                                            \
+      /* The face is absent from the operator. */                \
+      Cb[point.l] = 0.;                                               \
+      Ct[point.l] = 0.;                                               \
+      Db[point.l] = 0.;                                               \
+      Dt[point.l] = 0.;                                               \
+    }                                                                 \
+  }                                                                   \
 } while (0)
 
 
 /**
-## Tridiagonal system
-
-For the staggered scheme, the linear system for the column of
-$\phi_l$ is tridiagonal. The row for layer $l$ is
+On a one-dimensional Cartesian mesh, the face flux associated with the
+pressure acceleration returned by `hpg` can be written
 $$
-a_l \phi_{l-1} + b_l \phi_l + c_l \phi_{l+1} = d_l
+q_{\phi,l} = hf_l\left(
+ C_{b,l}\phi_{L,l} + D_{b,l}\phi_{R,l}
++C_{t,l}\phi_{L,l+1} + D_{t,l}\phi_{R,l+1}\right),
 $$
-
-with the vertical $[\phi]_l$ terms, the horizontal terms and, the semi-implicit
-free-surface coupling $+\theta\nabla\cdot(h_f\nabla\eta)$. The top Dirichlet
-condition is included in the coefficients of the last row.
-
-The horizontal terms do not include the metric factors $cm/fm$ (valid for
-Cartesian metrics). */
+with $\phi_{nl}=0$. The residual obtains the pressure flux by calling
+`hpg`, so that its metric and wet-face treatment are identical to the
+pressure correction. The relaxation uses this coefficient form to
+assemble the current-column response without reevaluating `hpg`.
 
 
-static void matrix (Point point, scalar phi, scalar eta, scalar rhs,
-		    double * a, double * b, double * c, double * d)
-{
-  double al[nl], bl0[nl], bl1[nl], cl[nl];
-  double ar[nl], br0[nl], br1[nl], cr[nl];
-  coeffs1 (point, 0, al, bl0, bl1, cl); // left face
-  coeffs1 (point, 1, ar, br0, br1, cr); // right face
-  foreach_layer () {
-
-    int l = point.l;
-    d[l] = rhs[];
-    c[l] = 1.0;
-    if (l == 0)
-      a[l] = 0.; // bottom BC (Neumann)
-    else
-      a[l] = h[]/h[0,0,-1];
-    b[l] = - a[l] - c[l];
-    if (l == nl - 1) {
-      // top BC (Dirichlet, phi_surface = 0)
-      if (l == 0)
-	b[l] -= (PHIT - 1.)*c[l]/3.;
-      else {
-	b[l] -= PHIT*c[l]/3.;
-	a[l] += c[l]/3.;
-      }
-    }
-
-    // horizontal non-hydrostatic coupling
-    a[l] -= theta_H*h[]*(ar[l] - al[l])/Delta;
-    b[l] -= theta_H*h[]*(br0[l] - bl1[l])/Delta;
-    c[l] -= theta_H*h[]*(cr[l] - cl[l])/Delta;
-    double phib1  = l > 0      ? phi[1,0,-1]  : phi[1];
-    double phib_1 = l > 0      ? phi[-1,0,-1] : phi[-1];
-    double phit1  = l < nl - 1 ? phi[1,0,1]   : phi[1];
-    double phit_1 = l < nl - 1 ? phi[-1,0,1]  : phi[-1];
-    d[l] += theta_H*h[]*
-      ((ar[l]*phib1 + br1[l]*phi[1] + cr[l]*phit1) -
-       (al[l]*phib_1 + bl0[l]*phi[-1] + cl[l]*phit_1))/Delta;
-
-/**
-## Semi-implicit coupling coefficient:
-
-The implicit barotropic gradient enters the stored (theta-weighted) flux
-twice: once through the theta-splitting of the gravity term
-(a_baro(eta^{n+1}) = theta_H*g*grad(eta^{n+1})), and once through the
-theta-weighting of the flux itself (hu = theta_H*(hf*uf + dt*ha), where
-the "- dt*ha" of the implicit rebuild is cancelled by hydro.h's
-"hu += dt*ha"). The eta-dependent part of the corrected flux is thus
-
-    theta_H^2*dt*hf*a_baro(eta^{n+1}),
-
-and the phi-row must anticipate exactly this divergence for the solved
-(phi,eta) to leave the corrected state divergence-free.
+For left and right face flux arrays $q_L$ and $q_R$, the
+horizontal contribution to layer-integrated incompressibility is
+$$
+\begin{aligned}
+(D_hq)_l ={}& -C^R_{b,l}q_{R,l}-D^L_{b,l}q_{L,l}\\
+&-C^R_{t,l-1}q_{R,l-1}-D^L_{t,l-1}q_{L,l-1},
+\end{aligned}
+$$
+where the last two terms are omitted for $l=0$. The superscripts
+indicate the face at which the coefficients are evaluated. This is the
+dual of the horizontal pressure-gradient stencil: the same coefficients
+are used in `hpg`, in this divergence and in the relaxation matrix.
 */
-    /* d[l] += theta_H*(1-theta_H)*h[]*(hf.x[1]*a_baro (eta, 1) - */
-    /*     		 hf.x[]*a_baro (eta, 0))/(Delta*cm[]); */
-    d[l] += sq(theta_H)*h[]*(hf.x[1]*a_baro (eta, 1) -
-        		 hf.x[]*a_baro (eta, 0))/(Delta*cm[]);
-  }
-}
+
 
 /**
-## Relaxation operator
+## Residual
 
-The tridiagonal system of each column is solved exactly with the
-Thomas algorithm, and the value of $\eta$ is then updated exactly
-given the new $\phi$ (as in [nh.h](nh.h)). */
+The combined horizontal flux is
+$$
+q = -q_\phi + \theta q_\eta ,
+$$
+so that the layer operator evaluated below is
+$$
+L_\phi = -D_vG_v\phi + D_hq,
+\qquad res_\phi = rhs_\phi-L_\phi .
+$$
+With $g=\alpha_{eta}a_{baro}(\eta)$ and $\beta=1$ for a free
+surface and $\beta=0$ for a rigid lid, the surface residual uses
+$$
+L_\eta = \beta\eta
+ - \frac{g_R-g_L}{\Delta x\,cm}
+ - \theta\Delta t^2\frac{\sum_l(q_{\phi,R,l}-q_{\phi,L,l})}
+                         {\Delta x\,cm},
+\qquad res_\eta = rhs_\eta-L_\eta .
+$$
+*/
 
-trace
-static void relax_nh (scalar * phil, scalar * rhsl, int lev, void * data)
+static double residual_nh (scalar * pl, scalar * rhsl,
+                    scalar * resl, void * data)
 {
-  scalar phi = phil[0], rhs = rhsl[0];
-  scalar eta = phil[1], rhs_eta = rhsl[1];
+  scalar p = pl[0], eta = pl[1];
+  scalar rhs = rhsl[0], surface_rhs = rhsl[1];
+  scalar res = resl[0], surface_res = resl[1];
+
   face vector alpha = *((vector *)data);
-#if GAUSS_SEIDEL || _GPU
-  for (int parity = 0; parity < 2; parity++)
-    foreach_level_or_leaf (lev)
-      if (level == 0 || ((point.i + parity) % 2) != (point.j % 2))
-#else
-  foreach_level_or_leaf (lev)
-#endif
-  {
-    double ta[nl], tb[nl], tc[nl], td[nl];
-    matrix (point, phi, eta, rhs, ta, tb, tc, td);
-    for (int l = 1; l < nl; l++) {
-      tb[l] -= ta[l]*tc[l-1]/tb[l-1];
-      td[l] -= ta[l]*td[l-1]/tb[l-1];
-    }
-    ta[nl-1] = td[nl-1]/tb[nl-1];
-    for (int l = nl - 2; l >= 0; l--)
-      ta[l] = (td[l] - tc[l]*ta[l+1])/tb[l];
-    foreach_layer () {
-      phi[] = ta[point.l];
-    }
 
-    /**
-    The value of $\eta$ is updated using the same discretisation of
-    the pressure gradient as the residual and the correction below. */
-
-    double n = 0.;
-    foreach_dimension() {
-      shpg (pg, phi, 0, n -= pg);
-      shpg (pg, phi, 1, n += pg);
-    }
-    n *= theta_H*sq(dt);
-    double d = rigid ? 0. : - cm[]*Delta;
-    n -= cm[]*Delta*rhs_eta[];
-    eta[] = 0.;
-    foreach_dimension() {
-      n += alpha.x[0]*a_baro (eta, 0) - alpha.x[1]*a_baro (eta, 1);
-      diagonalize (eta)
-	d -= alpha.x[0]*a_baro (eta, 0) - alpha.x[1]*a_baro (eta, 1);
-    }
-    eta[] = n/d;
-  }
-}
-
-/**
-## Residual computation
-
-The residual for $\phi$ is computed from the same tridiagonal system
-as the relaxation ("naive" discretisation, only 1st order on
-trees). The residual for $\eta$ uses the face field $g$ combining the
-staggered non-hydrostatic pressure gradient and the implicit
-barotropic term, as in [nh.h](nh.h). */
-
-trace
-static double residual_nh (scalar * phil, scalar * rhsl,
-			   scalar * resl, void * data)
-{
-  scalar phi = phil[0], rhs = rhsl[0], res = resl[0];
-  scalar eta = phil[1], rhs_eta = rhsl[1], res_eta = resl[1];
-  face vector alpha = *((vector *)data);
   double maxres = 0.;
-  face vector g = new face vector[nl];
-  foreach_face() {
-    double pgh = theta_H*a_baro (eta, 0);
-    shpg (pg, phi, 0,
-	  g.x[] = - 2.*(pg + hf.x[]*pgh));
-  }
-  foreach (reduction(max:maxres)) {
-    double a[nl], b[nl], c[nl], d[nl];
-    matrix (point, phi, eta, rhs, a, b, c, d);
+
+  foreach (reduction(max:maxres))  {
+
     foreach_layer() {
-      int l = point.l;
-      res[] = d[l] - b[l]*phi[];
-      if (l > 0)
-	res[] -= a[l]*phi[0,0,-1];
-      if (l < nl - 1)
-	res[] -= c[l]*phi[0,0,1];
-      if (fabs (res[]) > maxres)
-	maxres = fabs (res[]);
+      double above = point.l < nl - 1 ? p[0,0,1] : 0.;
+      double dv = (above - p[])/h[];
+
+      if (point.l > 0)
+        dv -= (p[] - p[0,0,-1])/h[0,0,-1];
+
+      res[] = rhs[] + dv;
     }
-    res_eta[] = rhs_eta[] - (rigid ? 0. : eta[]);
-    foreach_layer()
-      foreach_dimension()
-	res_eta[] += theta_H*sq(dt)/2.*(g.x[1] - g.x[])/(Delta*cm[]);
+
+    surface_res[] = surface_rhs[] - (rigid ? 0. : eta[]);
+
+    foreach_dimension() {
+      double CbL[nl], CtL[nl], DbL[nl], DtL[nl];
+      double CbR[nl], CtR[nl], DbR[nl], DtR[nl];
+
+      nh_face_coefficients (point, 0, CbL, CtL, DbL, DtL);
+      nh_face_coefficients (point, 1, CbR, CtR, DbR, DtR);
+
+      double axL = a_baro (eta, 0);
+      double axR = a_baro (eta, 1);
+      double divq = 0.;
+
+      /*
+      A face flux in layer l contributes to residual rows l and l + 1.
+      Since res = rhs + dv - dh, these contributions have positive signs.
+      */
+
+      hpg (pg, p, 0, {
+        double q = pg + theta_H*hf.x[]*axL;
+
+        divq += pg;
+        if (h[] > dry)
+          res[] += DbL[point.l]*q;
+
+        if (point.l + 1 < nl && h[0,0,1] > dry)
+          (res[0,0,1] += DtL[point.l]*q);
+      });
+
+      hpg (pg, p, 1, {
+        double q = pg + theta_H*hf.x[1]*axR;
+
+        divq -= pg;
+        if (h[] > dry)
+          res[] += CbR[point.l]*q;
+
+        if (point.l + 1 < nl && h[0,0,1] > dry)
+          (res[0,0,1] += CtR[point.l]*q);
+      });
+
+      /*
+      Accumulate the barotropic divergence and the pressure-flux
+      contribution to the free-surface residual for this direction.
+      */
+
+      surface_res[] +=
+        (alpha.x[1]*axR - alpha.x[]*axL)/(Delta*cm[])
+        + theta_H*sq(dt)*divq/(Delta*cm[]);
+    }
+
+    for (int l = 0; l < nl; l++)
+      maxres = max (maxres, fabs (res[0,0,l]));
+
+    maxres = max (maxres, fabs (surface_res[]));
   }
-  delete ((scalar *){g});
+
   return maxres;
 }
 
-/**
-## Coupled solution
 
-The rhs is the divergence form of the predicted fluxes and
-vertical momentum, scaled by $1/\Delta t$
+/**
+## Tridiagonal coupled column relaxation
+
+With neighboring columns fixed, the local coupled system has the form
+$$
+\begin{aligned}
+b_\phi + Tp + c\eta &= rhs_\phi,\\
+b_\eta + r^Tp + d\eta &= rhs_\eta ,
+\end{aligned}
+$$
+where $T$ is the tridiagonal pressure-pressure matrix. One Thomas
+factorization is used for the two right-hand sides
+$$
+Tp_0 = rhs_\phi-b_\phi, \qquad Tp_c=c.
+$$
+The local coupled solution is then
+$$
+p = p_0-\eta p_c,
+\qquad
+\eta = \frac{rhs_\eta-b_\eta-r^Tp_0}{d-r^Tp_c}.
+$$
+Only the current-column block is assembled in $T$. Contributions
+from neighboring columns are contained in the baseline responses.
+*/
+
+static void nh_thomas_solve (const double * lower,
+                    const double * diagonal,
+                    const double * upper,
+                    double * b, double * c)
+{
+  double d[nl];
+
+  d[0] = diagonal[0];
+  assert (fabs (d[0]) > 0.);
+
+  for (int l = 1; l < nl; l++) {
+    double multiplier = lower[l]/d[l-1];
+
+    d[l] = diagonal[l] - multiplier*upper[l-1];
+    assert (fabs (d[l]) > 0.);
+
+    b[l] -= multiplier*b[l-1];
+    c[l] -= multiplier*c[l-1];
+  }
+
+  b[nl-1] /= d[nl-1];
+  c[nl-1] /= d[nl-1];
+
+  for (int l = nl - 2; l >= 0; l--) {
+    b[l] = (b[l] - upper[l]*b[l+1])/d[l];
+    c[l] = (c[l] - upper[l]*c[l+1])/d[l];
+  }
+}
+
+static void relax_nh (scalar * pl, scalar * rhsl, int lev,
+                    void * data)
+{
+  scalar p = pl[0], eta = pl[1];
+  scalar rhs = rhsl[0], surface_rhs = rhsl[1];
+
+  face vector alpha = *((vector *)data);
+
+
+foreach_level_or_leaf (lev) {
+    double lower[nl], diagonal[nl], upper[nl];
+    double base_phi[nl], p0[nl], pc[nl], rphi[nl];
+    bool active[nl];
+
+    for (int l = 0; l < nl; l++) {
+      active[l] = h[0,0,l] > dry;
+      p[0,0,l] = 0.;
+
+      lower[l] = 0.;
+      upper[l] = 0.;
+
+      base_phi[l] = 0.;
+      pc[l] = 0.;
+      rphi[l] = 0.;
+
+      if (active[l]) {
+        diagonal[l] = 1./h[0,0,l];
+
+        if (l + 1 < nl && h[0,0,l+1] > dry)
+          upper[l] = - 1./h[0,0,l];
+
+        if (l > 0 && h[0,0,l-1] > dry) {
+          diagonal[l] += 1./h[0,0,l-1];
+          lower[l] = - 1./h[0,0,l-1];
+        }
+      }
+      else {
+        /* Dry pressure unknown: p_l = 0. */
+        diagonal[l] = 1.;
+      }
+    }
+
+    eta[] = 0.;
+
+    double base_eta = 0.;
+    double d_eta = rigid ? 0. : 1.;
+
+    foreach_dimension() {
+      double CbL[nl], CtL[nl], DbL[nl], DtL[nl];
+      double CbR[nl], CtR[nl], DbR[nl], DtR[nl];
+
+      nh_face_coefficients (point, 0, CbL, CtL, DbL, DtL);
+      nh_face_coefficients (point, 1, CbR, CtR, DbR, DtR);
+
+      /*
+      Evaluate the base and unit-eta barotropic responses. The current
+      column pressure remains zero while neighboring columns are frozen.
+      */
+
+      double axL0 = a_baro (eta, 0);
+      double axR0 = a_baro (eta, 1);
+
+      eta[] = 1.;
+      double axL1 = a_baro (eta, 0);
+      double axR1 = a_baro (eta, 1);
+      eta[] = 0.;
+
+      double divq_base = 0.;
+
+      for (int l = 0; l < nl; l++) {
+        double aboveL = l + 1 < nl ? p[-1,0,l+1] : 0.;
+        double aboveR = l + 1 < nl ? p[1,0,l+1]  : 0.;
+
+        /* Pressure fluxes containing only neighboring columns. */
+
+        double qpL = gmetric (0)*hf.x[0,0,l]*
+          (CbL[l]*p[-1,0,l] + CtL[l]*aboveL);
+        double qpR = gmetric (1)*hf.x[1,0,l]*
+          (DbR[l]*p[1,0,l] + DtR[l]*aboveR);
+
+        divq_base += qpR - qpL;
+
+        double qL = theta_H*hf.x[0,0,l]*axL0 - qpL;
+        double qR = theta_H*hf.x[1,0,l]*axR0 - qpR;
+
+        double qeL = hf.x[0,0,l]*(axL1 - axL0);
+        double qeR = hf.x[1,0,l]*(axR1 - axR0);
+
+        /*
+        A flux in layer l contributes to rows l and l + 1. This is
+        the dual-divergence stencil without the *_below temporaries.
+        */
+        if (active[l]) {
+          base_phi[l] -= CbR[l]*qR + DbL[l]*qL;
+          pc[l] -= theta_H*(CbR[l]*qeR + DbL[l]*qeL);
+        }
+
+        if (l + 1 < nl && active[l+1]) {
+          base_phi[l+1] -= CtR[l]*qR + DtL[l]*qL;
+          pc[l+1] -= theta_H*(CtR[l]*qeR + DtL[l]*qeL);
+        }
+      }
+
+      double divg0 = (alpha.x[1]*axR0 - alpha.x[]*axL0)
+        /(Delta*cm[]);
+      double divg1 = (alpha.x[1]*axR1 - alpha.x[]*axL1)
+        /(Delta*cm[]);
+
+      divq_base /= Delta*cm[];
+
+      base_eta -= divg0 + theta_H*sq(dt)*divq_base;
+      d_eta -= divg1 - divg0;
+
+      double surface_factor = theta_H*sq(dt)/(Delta*cm[]);
+      double gmL = gmetric (0), gmR = gmetric (1);
+
+      for (int l = 0; l < nl; l++) {
+        if (active[l])
+          diagonal[l] += gmetric (1)*hf.x[1,0,l]*sq (CbR[l])
+                      +  gmetric (0)*hf.x[0,0,l]*sq (DbL[l]);
+
+        if (l + 1 < nl && active[l+1])
+           diagonal[l+1] += gmetric (1)*hf.x[1,0,l]*sq (CtR[l])
+                    + gmetric (0)*hf.x[0,0,l]*sq (DtL[l]);
+
+        if (l + 1 < nl && active[l] && active[l+1]) {
+           double coupling = gmetric (1)*hf.x[1,0,l]*CbR[l]*CtR[l]
+                    + gmetric (0)*hf.x[0,0,l]*DbL[l]*DtL[l];
+
+          upper[l] += coupling;
+          lower[l+1] += coupling;
+        }
+
+        if (h[-1,0,l] + h[0,0,l] > dry) {
+          double f = surface_factor*gmL*hf.x[0,0,l];
+
+          if (active[l])
+            rphi[l] += f*DbL[l];
+
+          if (l + 1 < nl && active[l+1])
+            rphi[l+1] += f*DtL[l];
+        }
+
+        if (h[0,0,l] + h[1,0,l] > dry) {
+          double f = surface_factor*gmR*hf.x[1,0,l];
+          if (active[l])
+            rphi[l] -= f*CbR[l];
+
+          if (l + 1 < nl && active[l+1])
+            rphi[l+1] -= f*CtR[l];
+        }
+      }
+    }
+
+    for (int l = 0; l < nl; l++)
+      p0[l] = active[l] ? rhs[0,0,l] - base_phi[l] : 0.;
+
+    nh_thomas_solve (lower, diagonal, upper, p0, pc);
+
+    double r_p0 = 0., r_pc = 0.;
+
+    for (int l = 0; l < nl; l++) {
+      r_p0 += rphi[l]*p0[l];
+      r_pc += rphi[l]*pc[l];
+    }
+
+    double denominator = d_eta - r_pc;
+    assert (fabs (denominator) > 0.);
+
+    double new_eta =
+      (surface_rhs[] - base_eta - r_p0)/denominator;
+
+    for (int l = 0; l < nl; l++)
+      p[0,0,l] = active[l] ? p0[l] - new_eta*pc[l] : 0.;
+    eta[] = new_eta;
+  }
+}
+
+/**
+## Coupled pressure solution
+
+The predictor defect is assembled using $D_v$ and $D_h$.
+After the coupled solve, the non-hydrostatic pressure gradient is added
+once to the face acceleration and to the midpoint flux. The summed
+gradient `su` is retained for the second-pass free-surface correction
+in `implicit.h`.
 */
 
 event pressure (i++)
 {
+
   scalar rhs = new scalar[nl];
   double h1 = 0., v1 = 0.;
+
   foreach (reduction(+:h1) reduction(+:v1)) {
-    double zl = zb[-1], zr = zb[1];
+
+    /*
+    Accumulate the mid-step defect S = D_v w + D_h Q.
+    Start with the vertical contribution.
+    */
+
     foreach_layer() {
-      double ufl = hf.x[]  > dry ? hu.x[]/hf.x[]    : 0.;
-      double ufr = hf.x[1] > dry ? hu.x[1]/hf.x[1]  : 0.;
-      rhs[] = h[]*w[] - h[]*(ufl + ufr)*(zr + h[1] - zl - h[-1])/(4.*Delta);
-      if (point.l > 0) {
-	double ul = hf.x[0,0,-1] > dry ? hu.x[0,0,-1]/hf.x[0,0,-1] : 0.;
-	double ur = hf.x[1,0,-1] > dry ? hu.x[1,0,-1]/hf.x[1,0,-1] : 0.;
-	rhs[] -= h[]*w[0,0,-1];
-	rhs[] += h[]*(ul + ur)*(zr - zl)/(4.*Delta);
+      if (h[] > dry) {
+        double below =
+          point.l > 0 && h[0,0,-1] > dry ? w[0,0,-1] : 0.;
+        rhs[] = - (w[] - below);
       }
-      foreach_dimension()
-	rhs[] += h[]*(hu.x[1] - hu.x[])/Delta;
-      rhs[] /= dt;
+      else {
+        rhs[] = 0.;
+        w[] = 0.;
+        phi[] = 0.;
+      }
+    }
+
+    /* Add the horizontal divergence direction by direction. */
+
+    foreach_dimension() {
+      double CbL[nl], CtL[nl], DbL[nl], DtL[nl];
+      double CbR[nl], CtR[nl], DbR[nl], DtR[nl];
+
+      nh_face_coefficients (point, 0, CbL, CtL, DbL, DtL);
+      nh_face_coefficients (point, 1, CbR, CtR, DbR, DtR);
+
+      for (int l = 0; l < nl; l++) {
+        if (h[0,0,l] > dry) {
+          double dh = - CbR[l]*hu.x[1,0,l]
+                      - DbL[l]*hu.x[0,0,l];
+
+          if (l > 0)
+            dh -= CtR[l-1]*hu.x[1,0,l-1]
+                + DtL[l-1]*hu.x[0,0,l-1];
+
+          rhs[0,0,l] -= dh;
+        }
+      }
+    }
+
+    /* rhs_phi = -S/(theta_H*dt). */
+
+    foreach_layer() {
+      if (h[] > dry)
+        rhs[] /= theta_H*dt;
+      else {
+        rhs[] = 0.;
+        w[] = 0.;
+        phi[] = 0.;
+      }
       h1 += dv()*h[];
       v1 += dv();
-      zl += h[-1], zr += h[1];
     }
+
   }
 
-  /**
-  The fields used by the relaxation function above need to be
-  restricted to all levels (the other fields `cm`, `fm`,
-  `alpha_eta` were already restricted in
-  [implicit.h](implicit.h)). */
+  /* All geometry used on coarse multigrid levels must be restricted. */
 
-  restriction ({zb, h, hf});
+  restriction ({zb, h, hf, alpha_eta});
 
-  /**
-  We then call the multigrid solver to get both the non-hydrostatic
-  pressure $\phi$ and the free-surface elevation $\eta$. */
-
+  double hbar = h1/v1;
+  double scale = hbar/sq(dt);
+  double tolerance = TOLERANCE*scale;
 
   scalar res;
   if (res_eta.i >= 0)
     res = new scalar[nl];
-  mgp = mg_solve ({phi,eta_r}, {rhs,rhs_eta}, residual_nh, relax_nh, &alpha_eta,
-		  res = res_eta.i >= 0 ? (scalar *){res,res_eta} : NULL,
-		  nrelax = 4, minlevel = 1,
-		  tolerance = TOLERANCE*sq(h1/(dt*v1)));
+
+  mgp = mg_solve ({phi, eta_r}, {rhs, rhs_eta},
+                  residual_nh, relax_nh, &alpha_eta,
+                  res = res_eta.i >= 0 ? (scalar *){res, res_eta} : NULL,
+                  nrelax = 4, minlevel = 1,
+                  tolerance = tolerance);
+
   delete ({rhs});
   if (res_eta.i >= 0)
     delete ({res});
 
-
-  /**
-  The non-hydrostatic pressure gradient is added to the face-weighted
-  acceleration *ha* and to the face fluxes *hu* (which store
-  $\theta_H(hu)^{n+1}$, hence the factor $\theta_H\Delta t$). */
-
   face vector su[];
-  foreach_face() {
+  foreach_face () {
     su.x[] = 0.;
-    shpg (pg, phi, 0,
-	  ha.x[] += pg;
-	  su.x[] -= pg;
-	  hu.x[] += theta_H*dt*pg );
+    hpg (pg, phi, 0, {
+      ha.x[] += pg;
+      hu.x[] += theta_H*dt*pg;
+      su.x[] -= pg;
+    });
   }
 
-
-  /**
-  The vertical pressure gradient is applied to the vertical velocity
-  *w*, which is then limited by the breaking parameter in the same
-  way as in [nh.h](nh.h). */
-
-  correct_w (dt);
   foreach() {
     double wmax = HUGE;
     if (breaking < HUGE) {
@@ -426,23 +681,25 @@ event pressure (i++)
 	wmax += h[];
       wmax = wmax > 0. ? breaking*sqrt(G*wmax) : 0.;
     }
-
     foreach_layer() {
-      if (h[] > dry && fabs (w[]) > wmax)
-	w[] = (w[] > 0. ? 1. : -1.)*wmax;
+      if (h[] > dry) {
+        bool above_active =
+          point.l < nl - 1 && h[0,0,1] > dry;
+        double above = above_active ? phi[0,0,1] : 0.;
+
+        w[] -= dt*(above - phi[])/h[];
+      }
+      else {
+        w[] = 0.;
+        phi[] = 0.;
+      }
+      if (fabs(w[]) > wmax)
+        w[] = (w[] > 0. ? 1. : -1.)*wmax;
     }
-
-    /**
-    The rhs for $\eta^{n+1}$ is updated for the second pass of the
-    [semi-implicit free-surface solver](implicit.h). */
-
     foreach_dimension()
       rhs_eta[] += theta_H*sq(dt)*(su.x[1] - su.x[])/(Delta*cm[]);
   }
 }
-
-/**
-## Cleanup */
 
 event cleanup (i = end, last) {
   delete ({w, phi});
