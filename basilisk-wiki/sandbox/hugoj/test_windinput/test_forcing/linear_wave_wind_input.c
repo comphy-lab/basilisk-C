@@ -1,12 +1,12 @@
 /**
 # Wave growth using wind forcing
 
-## 1. Decay of a linear wave
+## Decay of a linear wave
 
 ### Analytical solution
 
 A linear surface gravity wave will decay in a viscous fluid. For a no stress
-boundary condition at the moving surface, Lamb (1932) gives
+boundary condition at the moving surface, Lamb (1932, pp. 623–625, see also article 349) gives
 
 \begin{aligned}
   E(t)=E_0 e^{-4\nu k^2 T_0 \tilde{t}}
@@ -27,9 +27,9 @@ One of the essential ingredient for the dissipation from the model to match the
 theoretical dissipation is to correctly represent currents, i.e. have enough
 layers for the vertical exponential decay discretisation.
 
-### Notes
+## Wind forcing
 
-## 2. Wind forcing: form drag
+### Form drag
 
 We use the following principle: a wind pressure is applied on positive slopes
 (in the x direction) with the norm
@@ -58,25 +58,35 @@ a_p = \frac{\partial p_s}{\partial x} = \frac{p0}{\rho} \frac{\partial^2 \eta}{\
 \end{aligned}
 $$
 
-In the multilayer, $dz=h$. The discretised energy input is (here in 1D):
+In 1D, the energy input is:
 $$
 \begin{aligned}
-\frac{\partial E_{in}}{\partial t} = \frac{p0}{\rho}\sum_i^N ( \sum_{k}^{nl} h_k u.x_k) \frac{1}{\Delta^2} (eta_[i+1} + eta[i-1] - 2 eta[i]) \frac{L}{N}
+\frac{\partial E_{in}}{\partial t} = \int_x \int_z u \frac{p_0}{\rho}
+\frac{\partial \eta}{\partial x} dx dz
+\end{aligned}
+$$
+
+In the multilayer, $dz=h$, the discretised version is:
+$$
+\begin{aligned}
+\frac{\partial E_{in}}{\partial t} = \frac{p_0}{\rho}\frac{1}{\Delta}\sum_i^N ( \sum_{k}^{nl} h_k u.x_k) (\eta[i+1] + \eta[i-1] - 2 \eta[i])
 \end{aligned}
 $$
 
 This formulation was first used in the multilayer context by Rui Yang (Princeton).
 
-## 3. Exact forcing of to counter viscous dissipation
+### Exact forcing of to counter viscous dissipation
 
-For a viscous dissipation $\nu$, the pressure $p0$ of the forcing is
+For a viscous dissipation $\nu$, the pressure $p_0$ of the forcing is
 $$
 \begin{aligned}
- p_0= 4 \rho \nu k c
+ p_0= 2 \rho \nu k c
 \end{aligned}
 $$
 
-## 4. Dynamic forcing to reach a target energy
+### Dynamic forcing to reach a target energy
+
+See this [file](https://basilisk.fr/sandbox/hugoj/lib/wind_forcing.h).
 
 Let's say we want to maintain a quasi-stationnary sea state. We can do this
 by holding the the variance of the surface height to a constant value. At each
@@ -102,19 +112,79 @@ $$
 Rearranging terms gives the amplitude for the current timestep
 $$
 \begin{aligned}
- p0 = \frac{-\rho g}{\Delta t}( \overline{\eta^2}_{target} - \overline{\eta^2}(t))
-        / \sum_N (Q \frac{\partial^2 \eta}{\partial x^2} dx)
+ p_0 = \frac{-\rho g}{\Delta t}( \overline{\eta^2}_{target} - \overline{\eta^2}(t))
+        / \sum_{x,y} (Q \frac{\partial^2 \eta}{\partial x^2} dx)
 \end{aligned}
 $$
 
-with $Q= \sum_{k}^{nl} h_k u_k$ the integrated transport.
+with $Q= \sum_{k}^{nl} h_k u_k$ the integrated zonal transport.
+
+This approach is naive for two reasons:
+
+ * Potential energy usually oscillates a lot for a real sea state, while the
+    total energy is much more regular. An oscillating error mesurement can induce
+    instability with the proportionnal controller presented above.
+
+  * A proportionnal controller will never reach the target value, an integral
+    component is needed.
+
+In order to improve the controller robustness for a real sea state and to shocks
+in the solution (e.g. initialisation), we propose to use a
+proportionnal-integral controller (PI). The $p_0$ value at time $t$ is computed as:
+$$
+\begin{aligned}
+ p0 = rhs / \sum_{x,y} (Q \frac{\partial^2 \eta}{\partial x^2} dx)
+\end{aligned}
+$$
+
+with
+$$
+\begin{aligned}
+ rhs = K_1 \Delta E + K_2 \int_0^t \Delta E dt
+\end{aligned}
+$$
+
+The values of $K_1$ and $K_2$ are set to minimise the response time of the
+system while having a small overshoot. After some tuning, we use the values 
+$K_1 = 2/T_0$ and $K_2 = 1/T_0^2$ with $T_0$ the period of the monochromatic wave (this file) or the main
+peak period for a real seastate ([here](https://basilisk.fr/sandbox/hugoj/test_windinput/test_real_field/PM_seastate.c))
+
+## How to run this code
+
+~~~bash
+make
+~~~
+
+## Results
+
+### 1D linear wave
+
+In 1D for a linear wave, the multilayer code is able to reproduce the theoretical dissipation (red vs
+    pink curves). 
+
+When setting a constant $p_0=2 \rho \nu k c$, energy is close to
+constant (orange vs grey curves). 
+
+The dynmic forcing is fast: even if the initial value of $p_0$ is far from the
+theoretical value, the controller adjust fast enough the total energy so that it
+always stays in +/- 5% of the target (= initial) value. We note that energy
+curves computed from the simulation are not starting at exactly 1.0, this is
+because of the discretisation error of the initial condition. Increasing the
+number of layer reduces this error. For dynamic forcing cases, we target the
+numerical initial energy, not the theoretical one, this is why the end value of
+energy is slightly less than the $E/E_0=1.0$ mark.
+
+![Energy evolution for a 1D linear wave](energy_1D_linear.png){ width="60%" }
+
+### 2D linear wave
+
+### 1D Stokes wave
+
+### 2D Stokes wave
 
 ## References
 
-Horace Lamb, Hydrodynamics (6th ed., 1932), Chapter XI, Article 348, "Effect of
-Viscosity on Water-Waves," pp. 623–625, see also article 349 
-
-~~bib
+~~~bib
 @book{lambHydrodynamics1932,
   title = {Hydrodynamics},
   author = {Lamb, Horace},
@@ -136,6 +206,7 @@ Viscosity on Water-Waves," pp. 623–625, see also article 349
   urldate = {2026-10-23},
   langid = {english},
 }
+
 @article{josephDissipationApproximationViscous2004,
   title = {The Dissipation Approximation and Viscous Potential Flow},
   author = {Joseph, D. D. and Wang, J.},
@@ -166,31 +237,14 @@ Viscosity on Water-Waves," pp. 623–625, see also article 349
   copyright = {https://www.cambridge.org/core/terms},
   langid = {english},
 }
-
-~~
+~~~
 
 Ref Rui Yang
-
-## TODO
-
-- better control (right final value, minimal oscillation) of dynamic forcing using integral quantities
-
-- effect of p0 initial value
-- effect of number of layer (geometric, equidistant)
-- effect of N
-- understand why dissipation rate in 2D is not equal to dissipation rate in 1D
-
 */
 
 // Dim [L, T, Mass, Temp]
-
-double p0 = 0.00625 [-1, -2, 1]; // Pa
 double rho = 1000 [-3, 0, 1];
-
-// Note: here I replaced gmetric(i) with 1.0 as I do not use adaptative mesh.
-// this is necessary for the code to compile on CUDA.
-
-
+double p0 = 0. [-1, -2, 1]; // Pa
 /** The forcing is implemented as an overload of 'a_baro' macro */
 #if HOLD_FORCING || EXACT_FORCING
 
@@ -203,13 +257,15 @@ y-passes.
 coord windmask = {1, 0, 0}; 
 
 /** Definition of the macro. 
-This has to be in 1 expression (no nested macros) and not using already used
-index such as 'i' for the macro to be compiled on GPU (CUDA).
+  This has to be in 1 expression (no nested macros) and not using already used
+  index such as 'i' for the macro to be compiled on GPU (CUDA). Note also that
+  here I replaced gmetric(i) with 1.0 as I do not use adaptative mesh.
+  this is necessary for the code to compile on CUDA.
 */
 
 // this compiles
 // #define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*windmask.x*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
-#define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
+// #define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
 
 // This doesnt
 //#define a_baro(f,k) (gmetric(k)*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
@@ -221,11 +277,12 @@ index such as 'i' for the macro to be compiled on GPU (CUDA).
 //         (eta[i+1] - 2.*eta[i] + eta[i-1])/(Delta*Delta) \
 //   ))
 
-
+// overload of the a_baro macro to add wind pressure
+#define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
 
 #endif // HOLD_FORCING || EXACT_FORCING
 
-
+/** regular imports */
 #include "grid/multigrid.h"
 #include "layered/hydro.h"
 #include "layered/nh.h"
@@ -236,7 +293,6 @@ index such as 'i' for the macro to be compiled on GPU (CUDA).
 #include "bderembl/libs/netcdf_bas.h"
 #endif
 
-double pp0 = 0. [-1, -2, 1];
 
 /** ## Parameters */
 double g_ = 1. [1,-2];
@@ -269,23 +325,6 @@ double Ep_i = 0. [2, -2, 1];
 double etam_i = 0. [1];
 double etavar_i = 0. [2];
 
-
-// Control
-double K_1 = 1. [0,0,0];
-double relax_dt = 0. [0,1];
-
-double K_2 = 0. [0,0,0];
-double T_f = 1.;
-double sum_I = 0.;
-
-double K_3 = 0. [0,0,0];
-double last_dE=0.;
-
-// Low pass filter
-double dE_f, sum_f, tau_f, sum_abs_f;
-// p0 clip
-double p0_max = 100. [-1,-2,1];
-
 /** A function to compute the energy of the simulation */
 void energy_stats (double *mean, double *variance, double *pe, double *ke)
 {
@@ -310,13 +349,20 @@ void energy_stats (double *mean, double *variance, double *pe, double *ke)
   *ke = 0.5*rho*ke2;
 }
 
+/** wind forcing controler is added with this [file](https://basilisk.fr/sandbox/hugoj/lib/wind_forcing.h) */
+#if HOLD_FORCING
+#include "hugoj/lib/wind_forcing.h"
+#endif
+
+/** main program */
+
 int main()
 {
   L0=1.;
   origin (-L0/2.);
   periodic (right);
 
-  N = 64;
+  N = 128;
   nl = 64;
   G = g_;
   lam = 2*pi/k_*L0;
@@ -332,55 +378,49 @@ int main()
   In the case of counter balancing the viscous dissipation exactly, we set once
   the value of p0
   */
-  pp0 = 2*rho*nu*k_*cp; // Forcing to exactly balance viscous diss
-  p0 = pp0; 
+  
+  p0 = 2*rho*nu*k_*cp; // Forcing to exactly balance viscous diss
     
   /** 
-  If the dynamic forcing is used, we use PID correction.
+  If the dynamic forcing is used, we use PI correction.
   */
-  dE_f = 0.;      // filtered error
-  sum_f = 0.;     // filtered sum
-  sum_abs_f = 0.;
+  #if HOLD_FORCING
+  pp0 = 2*rho*nu*k_*cp;
   tau_f = T0/2.;  // timescale for low pass filter
   
-  // double Ku = 1./(2.*T0); // Ultimate gain
-  double Ku = 2./(T0);                   //
-  double Tu = 2.*T0;      // Ultimate time scale
+  double Ku = 2./(T0);        // Ultimate gain
+  double Tu = 2.*T0;          // Ultimate time scale
   double Td = T0/2.;
   
   K_1 = Ku;               // P
   K_2 = Ku/Tu;            // I, K2 = K_1/Ti
   K_3 = 0.*Ku*Td;         // D, K3 = K_1*Td
-
-  // PI
-  // response time = 2π·sqrt(Tu/Ku)
-  // damping = sqrt(Ku·Tu)/2
-
-
+  #endif 
 
   fprintf(stderr, 
       "T0 = %f, lam=%f, g_=%f,omega=%f,nu=%g\n", T0, lam, g_, omega,nu);
 
-  // study with varying initial p0
   run();
 
-  #if HOLD_FORCING || TESTS_P0
-  pp0 /= 2.;
+  /** Study with varying initial p0 */
+  #if HOLD_FORCING && TESTS_P0
+  pp0 = 0.05;
   p0 = pp0;
-  dE_f = 0., sum_f = 0.;
+  dE_f = 0., sum_f = 0., sum_abs_f = 0., sum_I = 0.;
   run();
 
-  pp0 /= 2.;
+  pp0 = 0.01;
   p0 = pp0;
-  dE_f = 0., sum_f = 0.;      
+  dE_f = 0., sum_f = 0., sum_abs_f = 0., sum_I = 0.;      
   run();
 
-  pp0 /= 2.;
+  pp0 = 0.;
   p0 = pp0;
-  dE_f = 0., sum_f = 0.;
+  dE_f = 0., sum_f = 0., sum_abs_f=0., sum_I = 0.;
   run();
   #endif
 }
+
 
 
 event init (i = 0)
@@ -401,13 +441,12 @@ event init (i = 0)
       h[] = H*beta[point.l];
       
       /** 
-      We use true z levels for the initialisation of the Stokes wave, but for
-      the linear waves, z levels are flat. 
-
-      Using true z levels is adding energy compared to the linear theory as some
-      z points are positive, so the exponential in the currents can grow fast
-      for steeper cases.
+        We use true z levels for the initialisation of the Stokes wave, but for
+        the linear waves, z levels are flat. Using true z levels is adding
+        energy compared to the linear theory as some z points are positive, so
+        the exponential in the currents can grow fast for steeper cases.
       */
+
       #if STOKES
       z += H*beta[point.l]/2.; 
       u.x[] = u_x_stokes (x, z, ak, k_, h_);
@@ -424,25 +463,22 @@ event init (i = 0)
   }
   /** 
   The initial energy of the wavefield is computed.
-  If dynamic forcing is used, the target energy is the initial energy
   */
   energy_stats(&etam_i, &etavar_i, &Ep_i, &Ek_i);
   fprintf (stderr, "INITIAL eta mean = %.10f, variance = %.10f\n", etam_i, etavar_i);
   fprintf (stderr, "initial p0 = %f\n", p0);
-  fprintf(stderr, "target Et = %g\n", Ep_i+Ek_i);
-  /**
-  Outputs for visual inspection 
-  */
+  /** If dynamic forcing is used, the target energy is the initial energy */
+  #if HOLD_FORCING
+  Etarget = Ep_i + Ek_i;
+  fprintf(stderr, "target Et = %g\n", Etarget);
+  #endif
+  /** Outputs for visual inspection */
   #if OUTNC
   create_nc({zb, eta, h, u, w}, "out.nc");
   #endif
 
   
 }
-
-
-
-
 /** 
   We log potential and kinetic energy. 
  */
@@ -455,91 +491,7 @@ event logfile (i++; t <= NT0*T0) // target: at least 300*T0
   #else
   fprintf (stdout, "%g %g %g\n", t/T0, ke, pe);
   #endif 
-
 }
-/**
-  ## Forcing using a controler
-
-  IN 2D (x,z):
-  input_power = -sum_xy(dp/dx Q)dx
-             with p = p0.deta/dx
-                  Q = sum_layer(u*h)
-      
-        so input_power = - p0* sum_xy(sum_layer(d2eta/dx2*u*h*dx))
-
-
-  Energy deficit = E_ini - E(t)
-  */
-#if HOLD_FORCING
-event update_p0 (i++)
-{
-  /** Computing the error on wave energy */
-  double etam = 0., etavar_current = 0., pe = 0., ke = 0.;
-  energy_stats (&etam, &etavar_current, &pe, &ke);
-  double dE = (Ek_i+Ep_i) - (pe + ke);
-  //double dE = 0., etam=0., etavar_current=0.;
-  /**
-  Computing input power, P = p0*sum
-  */
-  double sum = 0.; 
-    foreach(reduction(+:sum)) {
-    double etaxx = (eta[1] + eta[-1]- 2*eta[])/sq(Delta);
-    foreach_layer()
-      sum += - h[] * u.x[] * etaxx * dv(); 
-  }
-  /**
-  Low pass filter on error and sum
-  */
-  dE_f += (dE  - dE_f ) * dt / tau_f;
-  sum_f += (sum - sum_f) * dt / tau_f;
-
-  /**
-  safeguard: never divide by near zero sum  
-  */
-  sum_abs_f += (fabs(sum) - sum_abs_f) * dt / tau_f;
-  double sum_den = (sum_f >= 0. ? 1. : -1.) * fmax (fabs(sum_f), 0.1*sum_abs_f);
-  /**
-  PID Control
-
-  p0 = 1/sum * K1( dE + 1/Ti*int_t dE dt + Td*dE/dt ) */
-  double rhs = 0.;
-  
-  /** P: proportional constrain */
-  if (i>1){
-    rhs += K_1 * dE_f;
-  }
-
-  /** I: integral constrain */
-  if (fabs((rhs + K_2*sum_I)/sum_den) <= p0_max)
-  { 
-    // avoid to take into account spikes of energy
-    sum_I += dE_f * dt;
-  }
-  //sum_I += dE_f * dt;
-  //rhs += K_2 * sum_I;
-
-  /**  D: derivative constrain */  
-  double dedt = 0.;  
-  dedt = (dE_f-last_dE)/dt;
-  rhs += K_3*dedt;
-  last_dE = dE_f;
-  /** Finally we compute p0 */
-  double dp0 = rhs/sum_den;
-
-  p0 = pp0 + dp0;
-
-  /** safeguard 2: p0 limiter */
-  if (p0 >  p0_max) p0 =  p0_max;
-  if (p0 < -p0_max) p0 = -p0_max;
-
-  // if (i%10==0){
-  //   fprintf(stderr, "i=%d etam=%.3e var=%.6e dE=%g sum=%g sum_den=%g p0=%g\n",
-  //       i, etam, etavar_current, dE, sum, sum_den, p0);
-  // }
-  fprintf(stderr, "i=%d etam=%.3e var=%.6e dE=%g sum=%g sum_den=%g p0=%g\n",
-        i, etam, etavar_current, dE, sum, sum_den, p0);
-}
-#endif 
 
 /** 
 Isotropic viscous dissipation
@@ -558,9 +510,6 @@ event viscous_term (i++) {
  A second one could be in the advection scheme but I still need to look at this.
 */
 
-
-
-
 /**
   Optional: output fields for analysis
 */
@@ -574,28 +523,30 @@ event writenc (i++; t <= NT0*T0)
 #endif
 
 
-// #if HOLD_FORCING || TESTS_P0
-// event save_p0 (t>NT0*T0 - dt)
-// {
-//   char mycmd[100];
-//   sprintf (mycmd, "mv out out_p0%.03f", pp0);
-//   system (mycmd);
-//   // system ("rm -f out");
-//   // system ("touch out");
-// }
-//
-// #endif
-
 /**
-NOTES:
+## TODO
+
+- effect of number of layer (geometric, equidistant)
+- effect of N
+- understand why dissipation rate in 2D is not equal to dissipation rate in 1D
+- run the 2D case with the patch that fixes BC on GPU
+- use a mask to apply a_baro only along X (parser bug for now on GPU)
+- add figures for 1D stokes, 2D linear, 2D stokes
+
+## NOTES:
 
 2/11/26
+
 - 2D CPU (HPC) has a big energy decrease at startup (~0.3%)
 - 2D CPU (HPC) is more dissipative than GPU (local)
 - 2D GPU (local) is more dissipative than theory
 - 2D GPU (local) with exact forcing. E grows with time whereas 2D CPU (HPC)
 decay with time.
 
-
-
+*/
+/**
+~~~pythonplot
+import os
+os.system("cd ..; python3 script.py")
+~~~
 */

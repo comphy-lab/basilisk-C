@@ -67,6 +67,7 @@ Sampling stays collective; the `nz*len` FFT jobs after it are independent,
 so they run round-robin (index `iz*len + is`) instead of serially on
 `pid() == 0`, and `E` is reduced across ranks at the end. */
 
+trace
 void spectrum_scalar_stack (scalar * list,
                             const char * filename = "spectra.asc",
                             double hmin = 0., double hmax = 0.,
@@ -120,6 +121,7 @@ void spectrum_scalar_stack (scalar * list,
 
 /** A single plane, as one row block of the above. */
 
+trace
 void spectrum_scalar_plane (scalar * list,
                             const char * filename = "spectra.asc",
                             double h = 0.,
@@ -131,6 +133,7 @@ void spectrum_scalar_plane (scalar * list,
 /** Per-component spectra of a vector. The total and any horizontal/vertical
 split follow by summing in post-processing. */
 
+trace
 void spectrum_vector_stack (vector u,
                             const char * filename = "spectra_u.asc",
                             double hmin = 0., double hmax = 0.,
@@ -141,6 +144,7 @@ void spectrum_vector_stack (vector u,
                          slablevel, mode, format);
 }
 
+trace
 void spectrum_vector_plane (vector u,
                             const char * filename = "spectra_u.asc",
                             double h = 0.,
@@ -161,6 +165,7 @@ Only 2 fields per plane, so the `nz` planes themselves are handed out
 round-robin (`iz % npe() == pid()`) instead of an `is` axis; sampling stays
 collective, `E` is reduced across ranks at the end. */
 
+trace
 void cross_spectrum_stack (scalar a, scalar b, const char * label,
                            const char * filename = "spectra_cross.asc",
                            double hmin = 0., double hmax = 0.,
@@ -235,6 +240,7 @@ hmax]`, a representative location for the zone the spectrum was folded over;
 transverse stack.
 */
 
+trace
 void spectrum_scalar_foliated (scalar * list, const double * means,
                                const char * filename = "spectra_foliated.asc",
                                double hmin = 0., double hmax = 0.,
@@ -284,6 +290,7 @@ void spectrum_scalar_foliated (scalar * list, const double * means,
 /** Per-component foliated spectra of a vector, as `spectrum_vector_stack()`
 is to `spectrum_scalar_stack()`. */
 
+trace
 void spectrum_vector_foliated (vector u, const double * means,
                                const char * filename = "spectra_u_foliated.asc",
                                double hmin = 0., double hmax = 0.,
@@ -306,6 +313,7 @@ $(F^\sigma_x, u_x)$, one call per component so the total follows by summing
 in post-processing.
 */
 
+trace
 void cross_spectrum_foliated (scalar a, scalar b,
                               const double * means_a, const double * means_b,
                               const char * label,

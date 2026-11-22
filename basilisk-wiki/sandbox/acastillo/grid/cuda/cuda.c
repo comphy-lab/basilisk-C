@@ -1,0 +1,864 @@
+/**
+# CUDA backend for GPUs
+
+This relies on the CUDA and
+[NVRTC](https://docs.nvidia.com/cuda/nvrtc/index.html) libraries which
+can be installed on Debian systems using:
+
+~~~bash
+apt install nvidia-driver nvidia-cuda-dev
+cd $BASILISK/grid/cuda
+make libbuda.a
+~~~
+
+The [default Makefile](/src/Makefile.defs) provides a recipe to run a
+program using the cuda grid:
+
+~~~bashrc
+make myprogram.cuda.tst
+~~~
+
+The tests cases are:
+
+~~~bashrc
+cd $BASILISK/test
+make cuda-tests
+~~~
+*/
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+#include <math.h>
+#include <assert.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include "a32.h"
+
+typedef struct { double x, y, z; } coord;
+typedef struct { double x, y, z; } _coord;
+typedef struct { float r, g, b, a; } vec4;
+#if SINGLE_PRECISION
+typedef float real;
+#else // DOUBLE_PRECISION
+typedef double real;
+#endif
+#define HUGE 1e30f
+typedef struct { int i; } scalar;
+extern int datasize;
+
+typedef struct {
+  coord p, * box, n; // region
+  int level; // level
+} RegionParameters;
+
+extern int N;
+extern double X0, Y0, Z0, L0;
+extern struct { int x, y, z; } Dimensions;
+
+#include "ast/symbols.h"
+
+enum typedef_kind_t {
+  sym_SCALAR = sym_root + 1,
+  sym_VECTOR,
+  sym_TENSOR,
+  sym_COORD,
+  sym__COORD,
+  sym_VEC4,
+  sym_IVEC
+};
+
+#define min(a,b) ((a) < (b) ? (a) : (b))
+#define max(a,b) ((a) > (b) ? (a) : (b))
+
+#define sysrealloc realloc
+
+#define _GPU 1
+#define _CUDA 1
+#include "grid/externals.h"
+#include "grid/gpu/backend.h"
+
+#include <cuda.h>
+#include <nvrtc.h>
+
+static CUdeviceptr ssbo = 0;
+static CUdevice dev = 0;
+static CUcontext ctx = 0;
+static CUstream stream = 0;
+
+#define CUDA_CHECK(x)                                                   \
+  do {                                                                  \
+    CUresult err = (x);                                                 \
+    if (err != CUDA_SUCCESS) {                                          \
+      const char *msg;                                                  \
+      cuGetErrorName(err, &msg);                                        \
+      fprintf(stderr, "%s:%d: CUDA error: %s\n", __FILE__, __LINE__, msg); \
+      exit(1);                                                          \
+    }                                                                   \
+  } while(0)
+
+#define NVRTC_CHECK(x)                          \
+  do {                                          \
+    nvrtcResult err = (x);                      \
+    if (err != NVRTC_SUCCESS) {                 \
+      fprintf(stderr, "%s:%d: NVRTC error: %s\n", __FILE__, __LINE__,   \
+              nvrtcGetErrorString(err));        \
+      exit(1);                                  \
+    }                                           \
+  } while(0)
+
+typedef struct {
+  int type, nd, local;
+  size_t size, esize;
+  void * pointer;
+} MyUniform;
+
+struct _Ctx_ {
+  CUdeviceptr _data;
+};
+
+struct _Shader {
+  unsigned ng[3], nwg[3];
+  int dimension;
+  struct _Ctx_ * hctx, * tmp;
+  CUdeviceptr dctx;
+  MyUniform * uniforms, * locals;
+  char * args;
+  size_t size, lsize;
+  CUmodule module;
+  CUfunction kernel;
+};
+
+void free_shader (Shader * s)
+{
+  free (s->hctx);
+  free (s->tmp);
+  free (s->uniforms);
+  free (s->args);
+  free (s);
+}
+
+static
+void architecture (char * arch)
+{
+  int major, minor;
+  CUdevice cuDevice;
+  CUDA_CHECK (cuDeviceGet(&cuDevice, 0));
+  CUDA_CHECK (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR,
+                                    cuDevice));
+  CUDA_CHECK (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR,
+                                    cuDevice));
+  sprintf (arch, "--gpu-architecture=sm_%d%d", major, minor);
+  // fixme: not sure whether this should be compute_%d%d or sm_%d%d ??
+}
+
+static char * compile_ptx (const char * fs, const char * arch,
+                           const char * func, const char * file, int line,
+                           size_t * ptxSize)
+{
+  if (false) str_append_array (NULL, NULL); // just to avoid a -Wunused-function
+  //  fputs (fs, stderr);
+  nvrtcProgram prog;
+  NVRTC_CHECK(nvrtcCreateProgram (&prog, fs,
+                                  "kernel.cu",
+                                  0,
+                                  NULL,
+                                  NULL
+                                  ));
+  const char *opts[] = {
+    "--std=c++11",
+    arch,
+    "-default-device",
+    "-diag-suppress=177",
+    "--ptxas-options=-O3",
+    "--extra-device-vectorization",
+    "--restrict",
+#if SINGLE_PRECISION
+    "-use_fast_math",
+#endif
+  };
+
+  nvrtcResult compile_res = nvrtcCompileProgram (prog, sizeof(opts)/sizeof(char *), opts);
+
+  if (compile_res != NVRTC_SUCCESS) {
+    size_t logSize;
+    NVRTC_CHECK (nvrtcGetProgramLogSize (prog, &logSize));
+    if (logSize > 1) {
+      char * log = (char *) malloc (logSize);
+      NVRTC_CHECK (nvrtcGetProgramLog (prog, log));
+      // fputs (log, stderr);
+      char * error = gpu_errors (log, fs, NULL, "CUDA");
+      fputs (error, stderr);
+      free (error);
+      free (log);
+    }
+    return NULL;
+  }
+
+  // ------------------------------------------------------------
+  // Get PTX
+  // ------------------------------------------------------------
+
+  NVRTC_CHECK (nvrtcGetPTXSize (prog, ptxSize));
+  char * ptx = malloc (*ptxSize);
+  NVRTC_CHECK (nvrtcGetPTX (prog, ptx));
+  NVRTC_CHECK (nvrtcDestroyProgram (&prog));
+
+#if SINGLE_PRECISION
+  //  fputs (ptx, stderr);
+  if (strstr (ptx, ".f64"))
+    fprintf (stderr, "%s:%d: warning: CUDA: found FP64 assembly in single precision mode\n",
+             file, line);
+#endif // SINGLE_PRECISION
+
+  return ptx;
+}
+
+static
+int create_tmpdir (const char * path)
+{
+  struct stat st;
+  if (stat (path, &st) == 0) {
+    if (S_ISDIR (st.st_mode))
+      return 0; // Directory exists
+    else {
+      errno = ENOTDIR;
+      return -1; // Path exists but is not a directory
+    }
+  }
+  // Directory does not exist, try to create it
+  if (mkdir (path, 0755) == 0)
+    return 0; // Successfully created
+  return -1; // Failed to create
+}
+
+Shader * load_normal_shader (const char * fs,
+                             const char * func, const char * file, int line)
+{
+  char arch[] = "--gpu-architecture=compute_????";
+  architecture (arch);
+
+  // ---------------------------------------------------------------
+  // Try to read from a compilation cache (by default in /tmp/buda/)
+  // ---------------------------------------------------------------
+  
+  Adler32Hash hasha;
+  a32_hash_init (&hasha);
+  a32_hash_add (&hasha, fs, strlen (fs));
+  a32_hash_add (&hasha, arch, strlen (arch));
+  uint32_t hash = a32_hash (&hasha);
+
+  const char * tmpdir = getenv ("TMPDIR"), * tmp = tmpdir ? tmpdir : "/tmp";
+  char cache[strlen(tmp) + strlen("/buda/ffffffff") + 1];
+  sprintf (cache, "%s/buda", tmp);
+  if (create_tmpdir (cache)) {
+    fprintf (stderr, "%s:%d: cannot create temporary directory '%s'\n", \
+             __FILE__, __LINE__, cache);
+    perror ("");
+    exit (1);
+  }
+  sprintf (cache, "%s/buda/%x", tmp, hash);
+  char * ptx;
+  struct stat st;
+  if (stat (cache, &st) == 0) { // found in cache
+    FILE * fp = fopen (cache, "r");
+    assert (fp);
+    ptx = malloc (st.st_size);
+    assert (fread (ptx, 1, st.st_size, fp) == st.st_size);
+    fclose (fp);
+  }
+  else { // not found in cache
+    size_t size;
+    ptx = compile_ptx (fs, arch, func, file, line, &size);
+    if (!ptx)
+      return NULL;
+    FILE * fp = fopen (cache, "w");
+    if (fp) {
+      assert (fwrite (ptx, 1, size, fp) == size);
+      fclose (fp);
+    }
+  }
+  
+  // ------------------------------------------------------------
+  // Load PTX module
+  // ------------------------------------------------------------
+
+  Shader * shader = calloc (1, sizeof (Shader));
+  CUDA_CHECK (cuModuleLoadData (&shader->module, ptx));
+  free (ptx);
+  CUDA_CHECK (cuModuleGetFunction (&shader->kernel, shader->module, func));
+  return shader;
+}
+
+bool gpu_init_context (GPUData ** data)
+{
+  bool initialized = ctx;
+  if (!initialized) {
+    CUDA_CHECK (cuInit (0));
+    CUDA_CHECK (cuDeviceGet (&dev, 0));
+#if CUDA_VERSION >= 13000
+    CUDA_CHECK (cuCtxCreate (&ctx, NULL, 0, dev));
+#else
+    CUDA_CHECK (cuCtxCreate (&ctx, 0, dev));
+#endif
+  }
+  *data = NULL;
+  return !initialized;
+}
+
+void gpu_free_context (GPUData * data)
+{
+  if (ssbo) {
+    CUDA_CHECK (cuMemFree (ssbo));
+    ssbo = 0;
+  }
+  GPUContext.current_size = 0;
+}
+
+void realloc_ssbo (size_t field_size)
+{
+  if (!datasize)
+    return;
+  size_t totalsize = field_size*datasize;
+  assert (totalsize > GPUContext.current_size);
+  CUDA_CHECK (cuMemFree (ssbo));
+  CUDA_CHECK (cuMemAlloc (&ssbo, totalsize));
+  GPUContext.current_size = totalsize;
+}
+
+void gpu_cpu_sync_scalar (int i, int block, char * data, size_t field_size, SyncMode mode)
+{
+  size_t size = field_size*sizeof(real), offset = i*size, totalsize = block*size;
+  char * cd = data + offset;
+  CUdeviceptr gd = ssbo + offset;
+  if (mode == GPU_READ)
+    CUDA_CHECK (cuMemcpyDtoH (cd, gd, totalsize));
+  else if (mode == GPU_WRITE)
+    CUDA_CHECK (cuMemcpyHtoD (gd, cd, totalsize));
+  else
+    assert (false);
+}
+
+void reset_scalar (int i, int block, size_t field_size, double val)
+{
+  size_t size = field_size*sizeof(real);
+  size_t offset = i*size, totalsize = max(block, 1)*size;
+#if SINGLE_PRECISION
+  float fval = val;
+  uint32_t bits;
+  memcpy (&bits, &fval, sizeof(bits));
+  CUDA_CHECK (cuMemsetD32 (ssbo + offset, bits, totalsize/sizeof(float)));
+#else // DOUBLE_PRECISION
+  if (!totalsize)
+    return;
+  if (val == 0.)
+    CUDA_CHECK (cuMemsetD8 (ssbo + offset, 0, totalsize));
+  else {
+    static CUfunction kfill = 0;
+    if (!kfill) {
+      static const char fill_src[] =
+        "extern \"C\"\n"
+        "__global__ void fill_fp64 (double * dst, double val, size_t n) {\n"
+        "  size_t i = (size_t) blockIdx.x*blockDim.x + threadIdx.x;\n"
+        "  if (i < n) dst[i] = val;\n"
+        "}\n";
+      size_t ptx_size;
+      char arch[] = "--gpu-architecture=compute_????";
+      architecture (arch);
+      char * ptx = compile_ptx (fill_src, arch, "fill_fp64",
+                                __FILE__, __LINE__, &ptx_size);
+      CUmodule mod;
+      CUDA_CHECK (cuModuleLoadData (&mod, ptx));
+      free (ptx);
+      CUDA_CHECK (cuModuleGetFunction (&kfill, mod, "fill_fp64"));
+    }
+    CUdeviceptr dst = ssbo + offset;
+    size_t n = totalsize/sizeof(double);
+    const size_t threads = 256;
+    size_t blocks = (n + threads - 1)/threads;
+    void * args[] = {&dst, &val, &n};
+    CUDA_CHECK (cuLaunchKernel (kfill, blocks, 1, 1, threads, 1, 1, 0,
+                                stream, args, NULL));
+  }
+#endif
+}
+
+// Calculate padding needed to align 'current_offset' to 'alignment'
+static size_t pad_to_align (size_t current_offset, size_t alignment) {
+  return (alignment - (current_offset % alignment)) % alignment;
+}
+
+void finalize_shader (Shader * shader, External * externals, External * merged,
+                      unsigned ng[3], unsigned nwg[3], int dim)
+{
+  for (int i = 0; i < 3; i++)
+    shader->ng[i] = ng[i], shader->nwg[i] = nwg[i];
+  shader->dimension = dim;
+
+  /**
+  FP64 3D kernels can exceed the register budget of the default
+  `NWG` block size (`8x8x8 = 512` or `9x9x9 = 729` threads). Clamp
+  `shader->nwg` to `CU_FUNC_ATTRIBUTE_MAX_THREADS_PER_BLOCK` while
+  preserving `ng[i]*nwg[i]` exactly. */
+
+  int max_threads = 0;
+  if (cuFuncGetAttribute (&max_threads,
+                          CU_FUNC_ATTRIBUTE_MAX_THREADS_PER_BLOCK,
+                          shader->kernel) == CUDA_SUCCESS && max_threads > 0) {
+    while (shader->nwg[0]*shader->nwg[1]*shader->nwg[2] >
+           (unsigned) max_threads) {
+      int imax = 0;
+      for (int i = 1; i < dim; i++)
+        if (shader->nwg[i] > shader->nwg[imax])
+          imax = i;
+      if (shader->nwg[imax] <= 1)
+        break;
+      unsigned total = shader->ng[imax]*shader->nwg[imax];
+      unsigned d = shader->nwg[imax]/2;
+      while (d > 1 && (total % d) != 0)
+        d--;
+      shader->nwg[imax] = d;
+      shader->ng[imax] = total/d;
+    }
+  }
+  
+  /**
+  ## Make list of local and global uniforms */
+
+  for (External * g = merged; g; g = g->next)
+    g->used = 0;
+  int index = 1;
+  for (External * g = externals; g && g->name; g++)
+    g->used = index++;
+  int nglobals = 0, nlocals = 0;
+  for (const External * g = merged; g; g = g->next)
+    if (is_external_variable (g)) {
+      int nd = g->data ? ((int *)g->data)[0] : 1;
+      size_t esize;
+      switch (g->type) {
+      case sym_INT: case sym_LONG:
+        esize = sizeof(int); break;
+      case sym_FLOAT:
+        esize = sizeof(float); break;
+      case sym_VEC4:
+        nd *= 4;
+        esize = sizeof(float); break;
+      case sym_BOOL:
+        esize = sizeof(bool); break;
+#if SINGLE_PRECISION
+      case sym_DOUBLE:
+        esize = sizeof(float); break;
+      case sym__COORD:
+        nd *= dim;
+        esize = sizeof(float); break;
+      case sym_COORD:
+        nd *= 3;
+        esize = sizeof(float); break;
+#else // DOUBLE_PRECISION
+      case sym_DOUBLE:
+        esize = sizeof(double); break;
+      case sym__COORD:
+        nd *= dim;
+        esize = sizeof(double); break;
+      case sym_COORD:
+        nd *= 3;
+        esize = sizeof(double); break;
+#endif // DOUBLE_PRECISION
+      default:
+        assert (false);
+      }
+      MyUniform uniform = {
+        .type = g->type, .nd = nd, .size = nd*esize, .esize = esize,
+        .local = g->global == 1 ? -1 : g->used - 1,
+        .pointer = g->global == 1 ? g->pointer : NULL
+      };
+      if (g->global) {
+        shader->uniforms = realloc (shader->uniforms, (nglobals + 2)*sizeof(MyUniform));
+        shader->uniforms[nglobals] = uniform;
+        shader->uniforms[nglobals + 1].type = 0;
+        nglobals++;
+        // fprintf (stderr, "global: %s\n", g->name);
+      }
+      else {
+        shader->locals = realloc (shader->locals, (nlocals + 2)*sizeof(MyUniform));
+        shader->locals[nlocals] = uniform;
+        shader->locals[nlocals + 1].type = 0;
+        nlocals++;
+        // fprintf (stderr, "local: %s\n", g->name);
+      }
+    }
+
+  /**
+  Allocate host and device buffers to hold uniforms. */
+
+  shader->size = sizeof (struct _Ctx_);
+  for (const MyUniform * g = shader->uniforms; g && g->type; g++)
+    shader->size += pad_to_align (shader->size, g->esize) + g->size;
+  shader->hctx = calloc (1, shader->size);
+  shader->tmp = calloc (1, shader->size);
+  CUDA_CHECK (cuMemAlloc (&shader->dctx, shader->size));
+
+  /**
+  Allocate host buffer to hold locals. */
+  
+  if (shader->locals) {
+    size_t max_align = 1;
+    for (const MyUniform * g = shader->locals; g && g->type; g++) {
+      if (g->esize > max_align) max_align = g->esize;
+      shader->lsize += pad_to_align (shader->lsize, g->esize) + g->size;
+    }
+    size_t alloc_size = shader->lsize + pad_to_align (shader->lsize, max_align);
+    shader->args = calloc (1, alloc_size);
+  }
+}
+
+static char * set_uniforms (const MyUniform * uniforms,
+                            const External * externals,
+                            char * buffer, char * start)
+{
+  for (const MyUniform * g = uniforms; g && g->type; g++) {
+    void * pointer = g->pointer;
+    if (!pointer) {
+      assert (g->local >= 0);
+      pointer = externals[g->local].pointer;
+    }
+    buffer += pad_to_align (buffer - start, g->esize);
+    switch (g->type) {
+    case sym_INT: case sym_FLOAT: case sym_VEC4: case sym_BOOL:
+      memcpy (buffer, pointer, g->size);
+      break;
+    case sym_LONG: {
+      int p[g->nd];
+      long * data = pointer;
+      for (int i = 0; i < g->nd; i++)
+	p[i] = data[i];
+      memcpy (buffer, p, g->size);
+      break;
+    }
+#if SINGLE_PRECISION
+    case sym_DOUBLE: case sym__COORD: case sym_COORD: {
+      float p[g->nd];
+      double * data = pointer;
+      for (int i = 0; i < g->nd; i++)
+	p[i] = data[i];
+      memcpy (buffer, p, g->size);
+      break;
+    }
+#else // DOUBLE_PRECISION
+    case sym_DOUBLE: case sym__COORD: case sym_COORD:
+      memcpy (buffer, pointer, g->size);
+      break;
+#endif // DOUBLE_PRECISION
+    default:
+      assert (false);
+    }
+    buffer += g->size;
+  }
+  return buffer;
+}
+
+void post_setup_shader (Shader * shader, External * externals)
+{
+  
+  /**
+  Set SSBO pointer. */
+  
+  assert (ssbo);
+  shader->tmp->_data = ssbo;
+  char * buffer = ((char *)shader->tmp) + sizeof(struct _Ctx_);
+
+  /**
+  Set globals */
+  
+  buffer = set_uniforms (shader->uniforms, externals, buffer, (char *)shader->tmp);
+  assert (shader->size == buffer - (char *)shader->tmp);
+
+  if (memcmp (shader->hctx, shader->tmp, shader->size)) {
+    struct _Ctx_ * tmp = shader->tmp; shader->tmp = shader->hctx; shader->hctx = tmp;
+    CUDA_CHECK (cuMemcpyHtoDAsync (shader->dctx, shader->hctx, shader->size, stream));
+  }
+
+  /**
+  Set locals */
+
+  buffer = set_uniforms (shader->locals, externals, shader->args, shader->args);
+  assert (shader->lsize == buffer - shader->args);
+}
+
+int run_shader (const Shader * shader, const RegionParameters * region)
+{
+  CUdeviceptr dctx = shader->dctx;
+  struct { int x, y, z; } csOrigin = {0,0,0};
+  void * params[] = { &dctx, &csOrigin, shader->args };
+  
+  /**
+  ## Render
+
+  If this is a `foreach_point()` iteration, we access a single point */
+
+  int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
+  if (region->n.x == 1 && region->n.y == 1 &&
+      (shader->dimension == 2 || region->n.z == 1)) {
+    csOrigin.x = (region->p.x - X0)/L0*Nl*Dimensions.x;
+    csOrigin.y = (region->p.y - Y0)/L0*Nl*Dimensions.x;
+    if (shader->dimension == 3)
+      csOrigin.z = (region->p.z - Z0)/L0*Nl*Dimensions.x;
+    assert (!GPUContext.fragment_shader);
+    CUDA_CHECK (cuLaunchKernel (shader->kernel,
+                                1, 1, 1,
+                                1, 1, 1,
+                                0, stream, params, NULL));
+  }
+
+  /**
+  This is a region */
+  
+  else if (region->n.x || region->n.y ||
+           (shader->dimension == 3 && region->n.z)) {
+#if 1
+    assert (false);
+#else
+    float vsScale[] = {
+      (region->box[1].x - region->box[0].x)/L0,
+      (region->box[1].y - region->box[0].y)/L0
+    };
+    float vsOrigin[] = { (region->box[0].x - X0)/L0, (region->box[0].y - Y0)/L0 };
+    GL_C (glUniform2fv (1, 1, vsOrigin));
+    GL_C (glUniform2fv (2, 1, vsScale));
+    assert (GPUContext.fragment_shader);
+    GL_C (glMemoryBarrier (GL_SHADER_STORAGE_BARRIER_BIT));
+    GL_C (glDrawArrays (GL_TRIANGLES, 0, 6));
+#endif
+  }
+
+  else {
+    assert (!GPUContext.fragment_shader);
+    CUDA_CHECK (cuLaunchKernel (shader->kernel,
+                                shader->ng[0], shader->ng[1], shader->ng[2],
+                                shader->nwg[0], shader->nwg[1], shader->nwg[2],
+                                0, stream, params, NULL));
+  }
+  return Nl;
+}
+
+void gpu_free_solver (void)
+{
+  CUDA_CHECK (cuCtxSynchronize ());
+  CUDA_CHECK (cuCtxDestroy (ctx));
+  ctx = NULL;
+}
+
+void gpu_synchronize()
+{
+  if (ctx)
+    CUDA_CHECK (cuCtxSynchronize ());
+}
+
+/**
+## Reductions */
+   
+#if SINGLE_PRECISION
+# define CUDA_REAL_STR "float"
+#else
+# define CUDA_REAL_STR "double"
+#endif
+
+static char kernel_source[] =
+"#define REDUCE(reduced,rhs) reduced += rhs                                          \n"
+"typedef " CUDA_REAL_STR " rtype;\n"
+"extern \"C\"\n"
+"__global__ void reduce (const rtype* input, rtype* output, int n){\n"
+"    __shared__ rtype sdata[256];                       \n"
+"    unsigned int tid = threadIdx.x;                    \n"
+"    unsigned int i = blockIdx.x * blockDim.x * 2 + tid;\n"
+"    rtype reduced = 0.0;                               \n"
+"    if (i < n)                                         \n"
+"        REDUCE (reduced, input[i]);                    \n"
+"    if (i + blockDim.x < n)                            \n"
+"        REDUCE (reduced, input[i + blockDim.x]);       \n"
+"    sdata[tid] = reduced;                              \n"
+"    __syncthreads();                                   \n"
+"                                                       \n"
+"    for (unsigned int s = blockDim.x/2; s > 32; s >>= 1){\n"
+"        if (tid < s)                                    \n"
+"            REDUCE (sdata[tid], sdata[tid + s]);        \n"
+"        __syncthreads();                                \n"
+"    }                                                   \n"
+"    if (tid < 32) {                                     \n"
+"        volatile rtype* smem = sdata;                   \n"
+"        REDUCE (smem[tid], smem[tid + 32]);             \n"
+"        REDUCE (smem[tid], smem[tid + 16]);             \n"
+"        REDUCE (smem[tid], smem[tid + 8]);              \n"
+"        REDUCE (smem[tid], smem[tid + 4]);              \n"
+"        REDUCE (smem[tid], smem[tid + 2]);              \n"
+"        REDUCE (smem[tid], smem[tid + 1]);              \n"
+"    }                                                   \n"
+"    if (tid == 0)                                       \n"
+"        output[blockIdx.x] = sdata[0];                  \n"
+"}                                                       \n";
+
+static CUfunction compile_kernel (const char * start, const char * op)
+{
+  nvrtcProgram prog;
+  char * s = kernel_source + strlen("#define REDUCE(reduced,rhs) ");
+  memcpy (s, op, strlen (op));
+  s += strlen(op); while (*s != '\n') *s++ = ' ';
+  s = strstr (kernel_source, "rtype reduced = ");
+  s += strlen ("rtype reduced = ");
+  memcpy (s, start, strlen (start));
+  s += strlen(start); while (*s != '\n') *s++ = ' ';
+  NVRTC_CHECK (nvrtcCreateProgram (&prog, kernel_source, "reduce.cu",
+                                   0, NULL, NULL));
+  char arch[] = "--gpu-architecture=compute_????";
+  architecture (arch);
+#if SINGLE_PRECISION
+  const char* options[] = {
+    arch,
+    "--std=c++11",
+    "--use_fast_math"
+  };
+  int nopt = 3;
+#else
+  const char* options[] = {
+    arch,
+    "--std=c++11"
+  };
+  int nopt = 2;
+#endif
+  if (nvrtcCompileProgram (prog, nopt, options) != NVRTC_SUCCESS) {
+    //    fputs (kernel_source, stderr);
+    size_t log_size;
+    NVRTC_CHECK (nvrtcGetProgramLogSize (prog, &log_size));
+    if (log_size) {
+      char * log = (char *)malloc (log_size);
+      NVRTC_CHECK (nvrtcGetProgramLog (prog, log));
+      fprintf (stderr, "%s:%d: %s\n", __FILE__, __LINE__, log);
+      free (log);
+    }
+    exit (EXIT_FAILURE);
+  }
+
+  /*    Extract PTX    */
+  size_t ptx_size;
+  NVRTC_CHECK (nvrtcGetPTXSize (prog, &ptx_size));
+  char * ptx = (char *) malloc (ptx_size);
+  NVRTC_CHECK (nvrtcGetPTX (prog, ptx));
+  NVRTC_CHECK (nvrtcDestroyProgram (&prog));
+
+  /*    Load module    */
+  CUmodule module;
+  CUDA_CHECK (cuModuleLoadData (&module, ptx));
+  free (ptx);
+
+  CUfunction kernel;
+  CUDA_CHECK(cuModuleGetFunction (&kernel, module, "reduce"));
+  return kernel;
+}
+
+static
+double cuda_reduce (CUdeviceptr d_input, const size_t N, const char op)
+{
+  /*    Compile kernel with NVRTC    */
+
+  CUfunction kernel;
+  switch (op) {
+  case '+': {
+    static CUfunction k = 0;
+#if SINGLE_PRECISION
+    if (!k) k = compile_kernel ("0.0f;", "reduced += rhs");
+#else
+    if (!k) k = compile_kernel ("0.0;", "reduced += rhs");
+#endif
+    kernel = k;
+    break;
+  }
+  case 'm': {
+    static CUfunction k = 0;
+#if SINGLE_PRECISION
+    if (!k) k = compile_kernel ("3e38f;", "reduced = min(reduced,rhs)");
+#else
+    if (!k) k = compile_kernel ("1e300;", "reduced = min(reduced,rhs)");
+#endif
+    kernel = k;
+    break;
+  }
+  case 'M': {
+    static CUfunction k = 0;
+#if SINGLE_PRECISION
+    if (!k) k = compile_kernel ("-3e38f;", "reduced = max(reduced,rhs)");
+#else
+    if (!k) k = compile_kernel ("-1e300;", "reduced = max(reduced,rhs)");
+#endif
+    kernel = k;
+    break;
+  }
+  default:
+    assert (0);
+  }
+
+  /*    Allocate device memory    */
+
+  static size_t Np = 0;
+  static CUdeviceptr d_output_a = 0, d_output_b = 0;
+  if (N > Np) {
+    const size_t max_blocks = (N + 511)/512;
+    if (d_output_a) {
+      CUDA_CHECK (cuMemFree (d_output_a));
+      CUDA_CHECK (cuMemFree (d_output_b));
+    }
+    CUDA_CHECK (cuMemAlloc (&d_output_a, max_blocks*sizeof(real)));
+    CUDA_CHECK (cuMemAlloc (&d_output_b, max_blocks*sizeof(real)));
+    Np = N;
+  }
+
+  /*    Multi-pass reduction    */
+
+  CUdeviceptr input = d_input, output = d_output_a;
+  size_t current_n = N;
+  while (current_n > 1) {
+    const size_t threads = 256;
+    size_t blocks = (current_n + threads*2 - 1)/(threads*2);
+    void * args[] = {&input, &output, &current_n};
+    CUDA_CHECK (cuLaunchKernel (kernel,
+                                blocks, 1, 1, threads,
+                                1, 1, 0, stream,
+                                args, NULL));
+    //    CUDA_CHECK (cuCtxSynchronize());
+    current_n = blocks;
+    input = output;
+    output = (output == d_output_a) ? d_output_b : d_output_a;
+  }
+
+  /*        Copy result back        */
+  real gpu_reduce;
+  CUDA_CHECK (cuMemcpyDtoH (&gpu_reduce, input, sizeof(real)));
+#if 0
+  /*    Cleanup    */
+  CUDA_CHECK(cuMemFree(d_output_a));
+  CUDA_CHECK(cuMemFree(d_output_b));
+  CUDA_CHECK(cuModuleUnload(module));
+#endif
+  return gpu_reduce;
+}
+
+double gpu_reduction (size_t offset,
+                      const char op,
+                      const RegionParameters * region,
+                      GPUData * data,
+                      size_t nb,
+                      int dim)
+{
+  if (region->n.x == 1 && region->n.y == 1 && (dim == 2 || region->n.z == 1)) {
+    int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
+    int nx = Nl*Dimensions.x, ny = Nl*Dimensions.y, nz = dim == 3 ? Nl*Dimensions.z : 1;
+    int i = (region->p.x - X0)/L0*nx;
+    int j = (region->p.y - Y0)/L0*nx;
+    int k = dim == 3 ? (region->p.z - Z0)/L0*nx : 0;
+    if (i < 0 || i >= nx || j < 0 || j >= ny || (dim == 3 && (k < 0 || k >= nz)))
+      return (op == 'm' ? HUGE : op == 'M' ? -HUGE : 0.);
+    offset += dim == 2 ? (size_t)i*ny + j : ((size_t)i*ny + j)*nz + k;
+    nb = 1;
+  }
+  return cuda_reduce (ssbo + offset*sizeof(real), nb, op);
+}

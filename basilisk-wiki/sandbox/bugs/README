@@ -29,6 +29,14 @@ cases](/src/test/README#running-and-creating-test-cases-and-examples).
 
 # Bugs
 
+* [`apply_bc()` zeroes out boundary values of `vertex scalar` fields on GPU](gpu_vertex_scalar_bc_zero.c)
+* [Periodic `face vector` normal components are not wrapped on GPU](gpu_periodic_face_bc.c)
+* [`libbuda.a` and `libgpu.a` hardcode FP32 (`SINGLE_PRECISION`), breaking `DOUBLE_PRECISION=1`](cuda_fp64_abi_and_reset.c)
+* [CUDA `DOUBLE_PRECISION=1` leaves `dvec2`/`dvec3` undefined and downcasts `cos/sin/exp/pow`](cuda_fp64_dvec_undef.c)
+* [`DOUBLE_PRECISION=1` silently truncates GPU kernel literals to FP32](gpu_fp64_literal_truncation.c)
+* [`multigrid.h` / `multigrid3D.h` MPI crashes in `boundary_stencil()` when `max(nx, ny, nz) >= 3` and `uf.n[wall] = 0`](multigrid_mpi_uf_bc.c)
+* [`interpolate()` / `foreach_point()` uses `N` instead of `(nx, ny, nz)` on non-square GPU grids](gpu_interpolate_dimensions.c)
+* [OpenGL GPU reduction scratch SSBO overflows when `Dimensions.y > Dimensions.x`](gpu_reduct_ssbo_overflow.c)
 * [vector expansion in a macro doesn't compile on GPU](vector_exp_macro_gpu.c)
 * [multigrid3D dump/restart grid depth do not match](my_report_bug.c) 
 * [No inheritance of dimension from scalar to array](https://basilisk.fr/sandbox/hugoj/bug_dimension_of_array/main.c)

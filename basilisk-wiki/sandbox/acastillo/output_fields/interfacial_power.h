@@ -88,6 +88,7 @@ against a field other than the solver's own `u` (a spectral flux term, say)
 instead of only integrated against it.
 */
 
+trace
 void surface_tension_force (scalar c, vector Fs)
 {
   scalar phi[];
@@ -110,6 +111,7 @@ $\Psi_\sigma$ and its density, as `u`.$\mathbf{F}_\sigma$ built from
 its volume integral.
 */
 
+trace
 double interfacial_power_curvature (scalar c, scalar d)
 {
   vector Fs[];

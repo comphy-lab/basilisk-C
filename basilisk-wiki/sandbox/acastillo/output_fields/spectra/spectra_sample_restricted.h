@@ -39,6 +39,7 @@ caller allocates `plane` with `m1*m2*len` doubles, laid out as
 `sample_scalar_plane()`'s output. Returns the number of unfilled points, 0
 for a complete plane. */
 
+trace
 int sample_scalar_plane_restrict (scalar * list, double * plane, double h,
                                   int slablevel)
 {
@@ -86,6 +87,7 @@ the count of `(i,j,iz)` cells with no contributing tree cell, summed over
 slabs -- like `sample_scalar_stack_sum()`, this can't distinguish an empty
 point from one whose contributions summed to exactly zero. */
 
+trace
 int sample_scalar_stack_sum_restrict (scalar * list, double * plane,
                                       const double * means, double * zout,
                                       double hmin, double hmax, int nz,

@@ -55,6 +55,7 @@ static bool profile_slab_level_set (int slablevel, const char * filename)
 
 /** Fill the non-leaf cells the binning reads, `w` alongside the data. */
 
+trace
 static void profile_slab_restrict (scalar * list, scalar w)
 {
   scalar * r = list_copy (list);
@@ -77,6 +78,7 @@ static void profile_slab_restrict (scalar * list, scalar w)
 ## Scalar profiles -- mean and mean-square of each field in `list`
 */
 
+trace
 void profile_scalar_slab (scalar * list = all, PROFILE_SLAB_PARAMS)
 {
   if (!profile_slab_level_set (slablevel, filename)) return;
@@ -188,6 +190,7 @@ void profile_scalar_slab (scalar * list = all, PROFILE_SLAB_PARAMS)
 ## Product profiles -- mean of `s1*s2` for matching pairs in `list1`, `list2`
 */
 
+trace
 void profile_product_slab (scalar * list1 = all, scalar * list2 = all,
                             PROFILE_SLAB_PARAMS)
 {
@@ -296,6 +299,7 @@ $\partial_i u_j$ stay local doubles.
 Gradients are differenced at the leaves: this is the resolved dissipation, not
 that of the filtered field. */
 
+trace
 void profile_dissipation_slab (vector u, PROFILE_SLAB_PARAMS)
 {
   if (!profile_slab_level_set (slablevel, filename)) return;

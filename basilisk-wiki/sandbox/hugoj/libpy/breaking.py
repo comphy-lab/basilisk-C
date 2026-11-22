@@ -616,7 +616,8 @@ def length_npixels(value, a, dx):
     OUTPUTS:
         - Lb: length of the object 'value' on snapshot 'a'
     """
-    return xr.where(a == value, 1, 0).sum().values * dx
+    ones = np.ones(2)
+    return ones * xr.where(a == value, 1, 0).sum().values * dx
 
 
 def length_b(id, mask_labelled, dx, dy, method=0):
@@ -629,7 +630,7 @@ def length_b(id, mask_labelled, dx, dy, method=0):
     return Lb
 
 
-def speed_direction(value, mask, speedu, speedv, reduce_method=None):
+def speed_direction(value, mask, speedu, speedv):
     """
     Computes the mean velocity speed and direction of points belonging to
     a specified object.
@@ -651,10 +652,7 @@ def speed_direction(value, mask, speedu, speedv, reduce_method=None):
     """
     u = speedu.where(mask == value).values
     v = speedv.where(mask == value).values
-    if reduce_method == "mean":
-        um, vm = np.nanmean(u), np.nanmean(v)
-    else:
-        um, vm = u[~np.isnan(u)], v[~np.isnan(v)]
+    um, vm = u[~np.isnan(u)], v[~np.isnan(v)]
     speed = np.sqrt(um**2 + vm**2)
     direction = np.arctan2(vm, um) * 180 / np.pi
     return np.asarray([speed, direction])
@@ -668,76 +666,101 @@ def breaker_characteristics(
     output="breaking_infos.npy",
     verbose=False,
 ):
-    nt = len(crest_mask_labelled.time)
-    NT_objects = np.amax(crest_mask_labelled).values
-    dx = float(crest_mask_labelled.x[1] - crest_mask_labelled.x[0])
-    dy = dx
-    # we get infos for each object by 'inverting' the 'events' list
-    objects_infos = track_table(events, nt)
-    allobj = list(objects_infos.keys())
-    stopat = len(allobj)  # to reduce the dataset if needed
+    """
+    Computes the characteristics of tracked breaking objects, including
+    their length, velocity, position and number of pixels throughout
+    their lifetime.
 
+    If an existing output file is found, its contents are loaded instead
+    of recomputing the characteristics.
+
+    INPUTS:
+    - events (list): List of tracking events used to reconstruct object
+      birth and death times.
+    - crest_mask_labelled (xarray.DataArray): 3D labelled array with
+      dimensions (time, y, x). Each object is identified by a unique ID.
+    - ds_surface_currents (xarray.Dataset): Dataset containing the
+      surface velocity components ``u.x`` and ``u.y``.
+    - method_length (int): Method used to compute object lengths.
+    - output (str or pathlib.Path, optional): Path to the output NumPy
+      file. If None, results are not saved.
+    - verbose (bool): If True, displays progress and computation status.
+
+    OUTPUTS:
+    - objects_infos (dict): Dictionary containing the characteristics
+      of each tracked object, including its birth and death times,
+      lengths, velocities, positions and pixel counts.
+    """
     # if the file is already here, open it
     if output is not None and os.path.exists(output):
         try:
-            loaded = np.load(output, allow_pickle=True)[()]
+            objects_infos = np.load(output, allow_pickle=True)[()]
         except (OSError, EOFError, ValueError) as err:
             warnings.warn(f"Could not read '{output}': {err}")
         else:
-            objects_infos = loaded
+            return objects_infos
 
-    else:
-        # we extend 'object_infos' by computing length, speed, position of breakers
-        for target in allobj[:stopat]:  # we go over all of the objects
-            istart = objects_infos[target]["birth"]
-            iend = objects_infos[target]["death"]
+    nt = len(crest_mask_labelled.time)
 
-            if iend is not None:
-                lengths = np.zeros((iend - istart, 2))  # Y, X
-                barys = np.zeros((iend - istart, 2))  # X, Y
-                # Note:
-                # The number of cells with id==target can vary along
-                # the lifetime of the object. This is why we use a list for 'speeds'
-                speeds = []
-                Npxl = []
+    # Grid spacing
+    dx = float(crest_mask_labelled.x[1] - crest_mask_labelled.x[0])
+    dy = dx
 
-                # we go over the lifetime of the object
-                for it in range(istart, iend):
-                    snapshot = crest_mask_labelled.isel(time=it)
+    # We get infos for each object by 'inverting' the 'events' list
+    objects_infos = track_table(events, nt)
+    NT_objects = len(objects_infos)
+    allobj = list(objects_infos.keys())
 
-                    # number of cells for current breaking
-                    ncells = np.sum(snapshot == target).values
-                    SD = np.zeros((2, ncells))  # Speed-direction array
+    # 'object_infos' is extended by computing length, speed, position of breakers
+    for target in allobj:  # we go over all of the objects
+        istart = objects_infos[target]["birth"]
+        iend = objects_infos[target]["death"]
 
-                    obj_it = it - istart
+        if iend is not None:
+            lengths = np.zeros((iend - istart, 2))  # Y, X
+            barys = np.zeros((iend - istart, 2))  # X, Y
+            # Note:
+            # The number of cells with id==target can vary along
+            # the lifetime of the object. This is why we use lists
+            speeds = []
+            Npxl = []
 
-                    # step 3a: length
-                    lengths[obj_it, :] = length_b(
-                        target, snapshot, dx, dy, method=method_length
-                    )
+            # we go over the lifetime of the object
+            for it in range(istart, iend):
+                snapshot = crest_mask_labelled.isel(time=it).load()
 
-                    # step 3b: speed and direction
-                    SD = speed_direction(
-                        target,
-                        snapshot.values,
-                        ds_surface_currents["u.x"].isel(time=it),
-                        ds_surface_currents["u.y"].isel(time=it),
-                        reduce_method=None,
-                    )
-                    speeds.append(SD)
+                # number of cells for current breaking
+                ncells = np.sum(snapshot == target).values
 
-                    # step 3c: position
-                    barys[obj_it] = bbarycenter(target, snapshot)
+                obj_it = it - istart
 
-                    # step 4: number of pixels
-                    Npxl.append(ncells)
+                # Length
+                lengths[obj_it, :] *= length_b(
+                    target, snapshot, dx, dy, method=method_length
+                )
 
-                # extend the 'objects_infos' dict
-                objects_infos[target]["length"] = lengths
-                objects_infos[target]["speeds_currents"] = speeds
-                objects_infos[target]["position"] = barys
-                objects_infos[target]["Npxl"] = Npxl
+                # Speed and direction
+                SD = speed_direction(
+                    target,
+                    snapshot.values,
+                    ds_surface_currents["u.x"].isel(time=it),
+                    ds_surface_currents["u.y"].isel(time=it),
+                    reduce_method=None,
+                )
+                speeds.append(SD)
 
+                # Position
+                barys[obj_it] = bbarycenter(target, snapshot)
+
+                # Number of pixels
+                Npxl.append(ncells)
+
+            # Store characteristics
+            objects_infos[target]["length"] = lengths
+            objects_infos[target]["speeds_currents"] = speeds
+            objects_infos[target]["position"] = barys
+            objects_infos[target]["Npxl"] = Npxl
+            objects_infos[target]["method_length"] = method_length
             if verbose:
                 pct = 100 * (target + 1) / NT_objects
                 print(
@@ -747,6 +770,162 @@ def breaker_characteristics(
                 )
 
         # saving
-        np.save(output, objects_infos)
-        objects_infos = np.load(output, allow_pickle=True)[()]
+        if output is not None:
+            np.save(output, objects_infos)
+
     return objects_infos
+
+
+def reducer(method):
+    # TODO:
+    # make this robust to list of array structure
+    if method == "mean":
+        return lambda a: np.atleast_1d(np.asarray(a).mean(axis=a.shape))
+    elif method == "None" or method is None:
+        return lambda a: np.atleast_1d(np.asarray(a))
+    else:
+        raise Exception(f"method {method} isnt recognized")
+
+
+def breaking_celerity_distribution(
+    breaking_data,
+    bins,
+    obs_surface,
+    obs_n_timesteps,
+    reduce_method={"speed": None},
+    verbose=0,
+    CHECK=False,
+    crest_mask=None,
+):
+    """
+    This function computes the lambda(c) distribution following the
+    definition of Phillips (198?) in an object framework.
+    From a dictionnary of objects (keys = id of object), we get the length
+    and the speed(s) of the breaking pixel associated with this object.
+
+    Note:
+    - this approach is equivalent to the "traditionnal" computation of
+      lambda(c) is the length of the breaker is the number of pixel times
+      the grid size and if velocities are not reduced.
+
+    Todo:
+    - add other reduce methods for speed and length
+    - test this with most of the object with lifetime > 1
+
+    INPUTS:
+    - breaking_data (dict): object data (length 'L', speed 'S' and 'lifetime)
+    - bins (np.ndarray 1D): velocity bins
+    - obs_surface (scalar): physical size of observed surface
+    - obs_n_timesteps (integer): number of time snapshot observed
+    - reduce_method (dict): how to reduce breaker velocities and length
+
+    OUTPUTS:
+    - Lavg (np.ndarray): the distribution of length associated with the velocities of 'bins'
+    - bins (np.ndarray): same as input, for convenience
+    - Lt (float): the total length of breaker per time snapshot
+    """
+    Lt = 0.0  # total length of breaking (dimension=length)
+    old_b = 0.0  # breaker with lifetime > 1
+    bins_center = bins[1:] - (bins[2] - bins[1]) / 2
+    Lavg = np.zeros(len(bins_center))
+    outside = 0
+    nobj = len(breaking_data.keys())
+    speed_index = 0  # 0: norm, 1: direction
+    length_index = 0  # 0: Y
+
+    reduce_length = reducer(reduce_method["length"])
+    reduce_speed = reducer(reduce_method["speed"])
+
+    # loop over the objects
+    for io in range(1, nobj + 1):
+        if breaking_data[io]["death"] is not None:
+            lifetime = breaking_data[io]["lifetime"]
+            if lifetime > 1:
+                old_b += 1
+
+            # loop over lifetime of object
+            for it in range(lifetime):
+                length = breaking_data[io]["length"][it][length_index]
+                speed = breaking_data[io]["speeds_currents"][it][speed_index]
+                Lt += length
+                ncells = len(np.atleast_1d(speed))
+
+                # the speeds of breaker 'io' can be reduced
+                speed = reduce_speed(speed)
+
+                # loop over breaking speeds (along the breaker points)
+                for ispeed in range(ncells):
+                    # loop over the bins to add the length of this breaking to corresponding velocity
+                    for ib in range(0, len(bins_center)):
+                        is_in_bin = (
+                            speed[ispeed] >= bins[ib] and speed[ispeed] < bins[ib + 1]
+                        )
+                        is_outside = speed[ispeed] < bins[0] or speed[ispeed] > bins[-1]
+
+                        if is_in_bin:
+                            Lavg[ib] += length / ncells / lifetime
+                            break
+                        if is_outside:
+                            outside += 1
+
+            if (outside > 1) & verbose == 1:
+                print(
+                    f"WARNING: object {io} has {outside} pixels with velocity out of bins range [{bins[0]},{bins[-1]}"
+                )
+                outside = 0
+
+    # Normalize by observed surface, time and bin width
+    Lavg /= obs_surface * obs_n_timesteps * np.diff(bins)
+
+    # As a check, we compute the total length of breaker per snapshot
+    Lt /= obs_n_timesteps
+
+    if verbose == 1:
+        print("INFO: number of old (lifetime>1) breakers = %d" % old_b)
+
+    if CHECK:
+        if crest_mask is not None:
+            # square grid size is assumed here
+            dx = crest_mask.x[1] - crest_mask.x[0]
+            nt = len(crest_mask.time)
+            print("===========================================")
+            print("CHECK: total crest length per timestep (m)")
+            print("\n * (1) Computed from integrating spectrum")
+            print(
+                f" reduction methods: speed={reduce_method['speed']}, length={reduce_method['length']}"
+            )
+            print(" length method = %d" % breaking_data[1]["method_length"])
+            print("Lavg (m/step) = %f" % (np.sum(Lavg * np.diff(bins)) * obs_surface))
+            print("\n * (2) Computed from summing the length of objects (m)")
+            print(" Lavg (m/step) = %f" % Lt)
+            print("\n * (3) Computed from the total of breaker pixels")
+            print(
+                "\tNote: this is the 'regular' way of computing this quantity from the lambda(c) spectrum"
+            )
+            print(
+                " N_pixel_breakers*delta/nt (m/step) =%.1f"
+                % (crest_mask.sum().values * dx / nt)
+            )
+
+            ratio = []
+            counter = 0
+            for io in breaking_data.keys():
+                if breaking_data[io]["death"] is not None:
+                    for it in range(breaking_data[io]["lifetime"]):
+                        No = breaking_data[io]["Npxl"][it]
+                        Lo = breaking_data[io]["length"][it][length_index]
+                        ratio.append(No * dx / Lo)
+                        if verbose == 2:
+                            print(
+                                "object %d, No*delta=%.1f, No=%d, Lo=%.1f (ratio=%.1f)"
+                                % (io, No * dx, No, Lo, ratio[-1])
+                            )
+                        counter += 1
+            ratio = np.asarray(ratio)
+            print("\n * Ratio of the lengths from (3)/(2)")
+            print(" mean = %f, std = %f" % (ratio.mean(), ratio.std()))
+            print("===========================================")
+        else:
+            print("Warning: you asked for CHECK but didn't provide the crest mask")
+
+    return Lavg, bins, Lt

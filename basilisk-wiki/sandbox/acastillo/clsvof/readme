@@ -1,0 +1,40 @@
+# 3D coupled Level-Set / VOF (CLSVOF) and integral surface tension
+
+This directory extends Basilisk's 2D CLSVOF and integral surface-tension
+formulation (`two-phase-clsvof.h`, `two-phase-levelset.h`, and `integral.h`)
+to 3D (while remaining backward-compatible with 1D, 2D, and axisymmetric
+simulations).
+
+## Usage
+
+Include the headers from this sandbox (with `BASILISK_INCLUDE_PATH`
+pointing to `sandbox/`):
+
+~~~literatec
+#include "acastillo/clsvof/two-phase-clsvof.h"
+#include "acastillo/clsvof/integral.h"
+~~~
+
+By default (`INTEGRAL_TENSOR=0`), constant surface tension uses the direct
+3D line-integral formulation; compile with `-DINTEGRAL_TENSOR=1` to enable
+the full $3\times 3$ capillary-stress tensor (supporting variable surface
+tension / Marangoni flows in 2D, `AXI`, and 3D).
+
+## Summary of changes vs. `$BASILISK/src/`
+
+* [two-phase-clsvof.h](two-phase-clsvof.h): Extends vertex averaging of the
+  signed distance `d` to 1D/2D/3D (8-cell average in 3D) and normalizes
+  `plane_alpha(f[], n)` by $\|\mathbf{n}\|_2$ to obtain the Euclidean signed
+  distance in all dimensions during VOF-to-levelset relaxation.
+* [two-phase-levelset.h](two-phase-levelset.h): Extends `levelset_to_vof()`
+  vertex averaging of `d` to 1D/2D/3D.
+* [integral.h](integral.h): Extends the integral surface-tension formulation
+  to 3D with:
+  * **`INTEGRAL_TENSOR=0`**: Exact 3D triangulated face-intersection
+    line integral for constant surface tension $\sigma$.
+  * **`INTEGRAL_TENSOR=1`**: Full $3\times 3$ capillary-stress
+    tensor $\mathbf{S}_h$ supporting spatially varying $\sigma$ (Marangoni
+    stresses) in 2D, `AXI`, and 3D, with machine-zero force on tilted planes
+    and machine-zero global momentum conservation.
+  * Portable helper signatures (no helper-only `typedef struct`) so the
+    operator also compiles cleanly on GPU/CUDA backends.

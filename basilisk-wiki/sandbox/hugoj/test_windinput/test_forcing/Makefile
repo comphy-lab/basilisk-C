@@ -2,10 +2,17 @@ CFLAGS += -I$(DOCUMENT_ROOT)/sandbox -O2
 CFLAGS += -disable-dimensions # skip dimensions check for now
 #CFLAGS += -DOUTNC
 
-all: no_forcing.tst linear_wave_wind_input.tst exact_forcing.tst linear_wave_wind_input/plots
+all: 1D_all
 
 # 1D
+1D_all: no_forcing.tst test_p0s.tst exact_forcing.tst linear_wave_wind_input/plots
+
 linear_wave_wind_input.tst: CFLAGS+= -grid=multigrid1D -DHOLD_FORCING=1
+
+test_p0s.c: linear_wave_wind_input.c
+	ln -sf linear_wave_wind_input.c test_p0s.c
+test_p0s.tst: CFLAGS+= -grid=multigrid1D -DHOLD_FORCING=1 -DTESTS_P0=1
+
 
 no_forcing.c: linear_wave_wind_input.c
 	ln -sf linear_wave_wind_input.c no_forcing.c

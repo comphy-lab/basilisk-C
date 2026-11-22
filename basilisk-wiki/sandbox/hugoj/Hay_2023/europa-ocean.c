@@ -1,6 +1,11 @@
 /**
 # Rotating convection in Europa's subsurface ocean
 
+This code was produced by GLM5.3, with small tweaks from Hugo. This serves as a
+test for LLM-produced code, where we give the LLM the paper and it must
+reproduce a figure. Here the first goal is the reproduce similar ocean currents
+with the multilayer solver.
+
 First-step reproduction of [Hay et al.,
 2023](../REPORT.md) (JGR Planets, 128, e2022JE007648) with the
 hydrostatic [multilayer solver](/src/layered/README) of Basilisk,

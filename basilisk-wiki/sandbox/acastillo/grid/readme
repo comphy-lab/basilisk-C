@@ -1,0 +1,93 @@
+# Multi-root ("Brick-of-Roots") adaptive trees
+
+This directory provides a drop-in extension of Basilisk's `quadtree.h` and
+`octree.h` grids supporting non-cubic domains via `dimensions(nx, ny, nz)` —
+a rectangular brick of $n_x \times n_y \times n_z$ root cells, with full
+adaptive mesh refinement, periodicity, dump/restore, and MPI load balancing.
+
+## Usage
+
+Include the grid header from this sandbox (with `BASILISK_INCLUDE_PATH`
+pointing to `sandbox/`):
+
+~~~literatec
+#include "acastillo/grid/quadtree.h"  // 2D
+#include "acastillo/grid/octree.h"    // 3D
+~~~
+
+Then set the domain aspect ratio with `dimensions(nx, ny)` (2D) or
+`dimensions(nx, ny, nz)` (3D) before `init_grid(N)` (where `N` is a multiple
+of `nx` by a power of two).
+
+## Summary of changes vs. `$BASILISK/src/grid/`
+
+* [quadtree.h](quadtree.h), [octree.h](octree.h): Unchanged entry points
+  (byte-identical to upstream) so relative includes resolve locally.
+* [memindex/virtual.h](memindex/virtual.h): Generalizes the sparse virtual
+  array size from scalar `int len` to per-axis `ivec len` for rectangular
+  bricks (`nx != ny != nz`), and fixes the `mem_free1d` slice bound.
+* [foreach_cell.h](foreach_cell.h): Adds `for_each_root()` and extends
+  `foreach_cell*` / `foreach_cell_restore` to traverse all
+  $n_x \times n_y \times n_z$ roots while avoiding periodic alias
+  double-visits.
+* [tree.h](tree.h): Adds `dimensions(nx, ny, nz)`, `Dimensions_scale` /
+  `_DELTA`, per-axis `Layer.len`, multi-root `init_grid()`, `periodic_function`,
+  `locate()`, `tree_is_full()`, `tree_periodic()`, 1D/2D/3D periodic-aware
+  `check_two_one()`, and independent `(kx, ky)` corner loops in
+  `diagonal_neighbor_2D()` for `BGHOSTS >= 2` at level 0.
+* [tree-common.h](tree-common.h): Generalizes `periodic_clamp()` to per-axis
+  extents and handles `refine_level(0)` MPI updates.
+* [tree-mpi.h](tree-mpi.h): Adds level-0 inter-root halo exchange,
+  `sync_root_pids()`, multi-root `restore_mpi()`, and root-prefix-sum
+  `z_weights()` / `z_indexing()`.
+* [balance.h](balance.h): Migrates level-0 root $5^d$ neighborhoods,
+  synchronizes root and prolongation-child `pid`s before rebuilding halo
+  buffers, and updates `grid->tn` / `grid->maxdepth` for `npe() == 1`.
+
+---
+
+# True-FP64 GPU / CUDA Multigrid (`cuda/`, `gpu/`)
+
+This directory also provides double-precision (FP64) 2D and 3D GPU multigrid
+backends for both **CUDA** (`libbuda64.a`) and **OpenGL/GLSL** (`libgpu64.a`),
+while keeping single-precision FP32 support (`libbuda.a`, `libgpu.a`) intact.
+
+## Building the runtime libraries
+
+Build the static libraries once inside `sandbox/acastillo/grid/`:
+
+~~~bash
+make -C $BASILISK_INCLUDE_PATH/acastillo/grid/cuda all
+make -C $BASILISK_INCLUDE_PATH/acastillo/grid/gpu all
+~~~
+
+## Usage
+
+Include the desired backend header (with `BASILISK_INCLUDE_PATH` pointing to
+`sandbox/`):
+
+~~~literatec
+#include "acastillo/grid/cuda/multigrid_fp64.h"    // 2D CUDA FP64
+#include "acastillo/grid/cuda/multigrid3D_fp64.h"  // 3D CUDA FP64
+#include "acastillo/grid/gpu/multigrid_fp64.h"     // 2D OpenGL FP64
+#include "acastillo/grid/gpu/multigrid3D_fp64.h"   // 3D OpenGL FP64
+~~~
+
+## Summary of changes vs. `$BASILISK/src/grid/`
+
+* [gpu-multigrid.h](gpu-multigrid.h): Derives `SINGLE_PRECISION` /
+  `DOUBLE_PRECISION` cleanly so FP32 entry headers trigger `qcc`'s `fp32 = 1`
+  mode while FP64 headers preserve full `double` literals.
+* [gpu/grid.h](gpu/grid.h): Adds `dvec2`/`dvec3` and native FP64 device math
+  for `_CUDA`, uses FP64 `pi` while keeping `nodata = (1e30f)` bit-identical
+  to CPU `common.h`, serializes `_constant[]` and `double` attributes with
+  `"%#.17g"`, uses `dvec2`/`dvec3` in `foreach_region`, and guards NULL
+  boundary pointers in `apply_bc()` (fixing `vertex scalar` BC zeroing).
+* [cuda/cuda.c](cuda/cuda.c): Adds `typedef double real`, FP64
+  `reset_scalar()` and `cuda_reduce()`, `CU_FUNC_ATTRIBUTE_MAX_THREADS_PER_BLOCK`
+  block-size clamping for register-heavy 3D FP64 kernels, `#if SINGLE_PRECISION`
+  guard on `-use_fast_math`, and `max_align` trailing padding on `shader->args`.
+* [gpu/opengl.c](gpu/opengl.c): Adds `#if SINGLE_PRECISION` `typedef float/double real`.
+* [cuda/Makefile](cuda/Makefile), [gpu/Makefile](gpu/Makefile), and
+  `multigrid*_fp64.h`: Build and autolink `libbuda{,64}.a` and `libgpu{,64}.a`
+  via `$BASILISK_INCLUDE_PATH/acastillo/grid/{cuda,gpu}`.

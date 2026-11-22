@@ -50,6 +50,7 @@ static void fft2D_plan_free (fft2D_plan p)
   gsl_fft_complex_workspace_free (p.ws);
 }
 
+trace
 static void fft2D_forward (double * data, fft2D_plan p)
 {
   int n = p.m;
@@ -137,6 +138,7 @@ past `slablevel`. Only rank 0 transforms, since the sampled plane is
 replicated everywhere.
 */
 
+trace
 int spectrum_plane (scalar * list, double * E, double h, int slablevel)
 {
   int m = 1 << slablevel, len = list_len (list), nk = nshells (m, m);
@@ -169,6 +171,7 @@ an auto-spectrum when `b` and `a` are the same field. `holes` is reported from
 samples return the same count (see `sample_scalar_plane()`).
 */
 
+trace
 int cross_spectrum_plane (scalar a, scalar b, double * E, double h,
                           int slablevel)
 {
@@ -208,6 +211,7 @@ layout, one per field. `holes` is the sum over both fields and all slabs.
 requires.
 */
 
+trace
 int cross_spectrum_scalar_foliated (scalar a, scalar b,
                                     const double * means_a,
                                     const double * means_b,

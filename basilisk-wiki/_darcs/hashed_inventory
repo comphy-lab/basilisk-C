@@ -1,4 +1,4 @@
-pristine:bfc7ce66cd57139a038440b64372f733913b77dcefefcf777a01ab9810631c0a
+pristine:09e4ba2982a09fe3eaa2dad8c2f9adebac89c953010c439ded2a8fa2af9aa9d8
 Starting with inventory:
 0000813987-628d164d39a1d82699a5748e94edf693e5eb9a9f95a23cdf237f7153776390af
 [TAG release-26-11-14
@@ -46,3 +46,189 @@ Bruno Deremble <bruno.deremble@cnrs.fr>**20261118132823
  Ignore-this: 5a52a2296812decb3472b0f050a2c50d864b60c32c5c943b2107f589fa1a4c8e480144e2bd2b549a
 ] 
 hash: 0000033092-01744a41b9165590c0af9253aeb0c8f5ab161f8a09037dc19df8fbe8eb585f99
+[creation 
+mvacher <marc.cordelle.vacher@gmail.com>**20261119094811
+ Ignore-this: 8cb9f9261a7f3e89502bede282297a12bc0fb8c1af2a43caedfcb72e26c61786a19238869ea7a262
+] 
+hash: 0000006015-690e5f6fd8338efc29a3ab2eac396f3e7e402fa208b94d5b358ea3c185aef646
+[videos
+mvacher <marc.cordelle.vacher@gmail.com>**20261119094846
+ Ignore-this: 68de1d928009e706f4f091057bb2919471194154e2cbaee836a9c8e7161a5b0021d5685cad3cd789
+] 
+hash: 0000000407-94a6041ad1c4a23f0f1848d7d50601aae46baebf8144e1c8e2dc6871981eccd2
+[managing contact angle
+mvacher <marc.cordelle.vacher@gmail.com>**20261119102328
+ Ignore-this: ac28f15fa1e23d37ec3751d1d9874c5fa2b66d6bb4b2890a7aeced02c33da31b512f4834ae8fb951
+] 
+hash: 0000000953-ecf6ccdfdac6d3f1d4c967fe74d8067d7298500380f2de64607044719ba22c46
+[cleaner code, doc, sanity checks
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261119102848
+ Ignore-this: eaefab8782badd8402d0bc62ac01887e3ff9170b6b269842e322b7bd44afb7fa71a7d3f78d982c61
+] 
+hash: 0000028732-64c0da08831020d4333858767c028dafdcf1ea899429c897f6631775d0b7a471
+[mask in the videos + managing the contact angle
+mvacher <marc.cordelle.vacher@gmail.com>**20261119103145
+ Ignore-this: d06b3554d774f6ccfe735dbf51722c0ea51ea3167fe82d1aad50f064aed626f0328731a6f685345c
+] 
+hash: 0000002936-4e8670394534410186f44d02f19ab0b24f5108479e2e1d98d310ff5ea4bd8214
+[theory + managing the contact angles
+mvacher <marc.cordelle.vacher@gmail.com>**20261119104803
+ Ignore-this: cf3f7d098f891e0f170380647c4377470ad5a2a6775a467333b07f4e394dc488fabf0db9fd1eb58e
+] 
+hash: 0000004603-388e69d2c3242b432d98ba7cb78f9d4d11c37421c8aba08f991bb203ae5addcd
+[update
+mvacher <marc.cordelle.vacher@gmail.com>**20261119110036
+ Ignore-this: 617a4fcdf2902a0247558f2ae2bb7f60283d73b074a7870f5b207e88e63ff323650d66a8220ed35a
+] 
+hash: 0000000237-21585b63948dff3f26456c99cc36d17d07d6e7d76766a5261ebb2fb1fe944442
+[add theory
+mvacher <marc.cordelle.vacher@gmail.com>**20261119111701
+ Ignore-this: 78c9121ef35351b889149685d6167447118fd9651633bb65da325ccac9bfb0de2eb96e8f4a8c7334
+] 
+hash: 0000009133-cb4869ba8052b13e7ea293d241ab7daf81337e82e25bcdf35e8fa62143d24936
+[creation
+mvacher <marc.cordelle.vacher@gmail.com>**20261119113245
+ Ignore-this: 47951cb080391eb24a35761887d6ea67b5274d43c689446b49ec9a6acda304bd86ccb8b09b349e9f
+] 
+hash: 0000006060-3de3d3cfdd539dd8f8d81c656dfd5ffed61608eadeb726c641449bc33eb5fe80
+[run
+mvacher <marc.cordelle.vacher@gmail.com>**20261119113314
+ Ignore-this: be034db21856bfd6a56485edea5a16df0f9710c2b3fe4d9662eeccc28a194a0ec42598ef696eddc4
+] 
+hash: 0000000227-e013259524099b25c80ed8487dd020742d225fdf896fb96046609cdf5cc49017
+[-Wmaybe-uninitialized
+ecipriano <edoardo.cip@gmail.com>**20261119130720
+ Ignore-this: 65291e0f6aa79cfa781a994356837528a531c93b754d0f9691467a1133dcbc9f1eaafd464afa3b15
+] 
+hash: 0000000435-c0f5eaebc68d466406568897fd3770ddff0d4f51d7cc535384c9462209ba69b2
+[Removed useless flag
+ecipriano <edoardo.cip@gmail.com>**20261119131704
+ Ignore-this: 81b4e86e64305a8d3aeacfa2e63b4028b9e86185e7428117c6aef745612b23a68e2bd104f78fd3e
+] 
+hash: 0000000433-4af2685ce746ff416741671edfbd19f55f1fee83cff813611283d84c2a61027b
+[output_fields: trace the profile, spectra and interfacial-power routines
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20260927131011
+ Ignore-this: e31a03f7657153806a98503c70e03bc29d76ceb6333b67be3579cd3b65039f0f4d78c9d53273f9b3
+ 
+ Marks the coarse per-call functions with `trace` so a -DTRACE=2 build
+ reports them separately instead of folding them into the calling event:
+ slab profiles and their restriction, the stacked/foliated/cross spectra,
+ per-plane sampling and FFT, and the interfacial power/tension force.
+ No effect without -DTRACE.
+] 
+hash: 0000002183-3ae6569df1d808c3652de027c3db1de184d594c2920768ad38dc074ad0de69cf
+[Report GPU multigrid bugs with non-square dimensions()
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261119144135
+ Ignore-this: efe051639c74c826f5bb5f43b8332b3f9dad874eb2fcf89561920faf3194c56de735a32bd942c0c5
+] 
+hash: 0000008904-24c64372c274c8f3f0767a29f7829bc564707660a7f946ba53d8c554dd91bab8
+[Add root cause and proposed fix for too_fast.c
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261119150030
+ Ignore-this: 69e86af5f7083984f8ff5dfa8999d6a8b35d02b16b9fbc4a777560604a762a7c18cdafeaec110e41
+] 
+hash: 0000001478-6c281a22a586e740af98f9edf78e6a6aefa41c75cca3fa1604ca3d945bef1bfc
+[Use memcmp in gpu_init_grid diff for 2D/3D compatibility
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261119151817
+ Ignore-this: c2f28f602663a9acecb5c9adf15705bd11deb4538d44aac6fae676b63cc2c235282854c3ebefbe4c
+] 
+hash: 0000000596-28552c7a16658d5ba44bb89866ba847bf1778e93a7a1444ab747818ea569fa53
+[added erosion of maintained wave field
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261119154331
+ Ignore-this: 62f2af0d19b96242ffcdc1b8dfc703e6cfd3be5d1326d10a7fe9bbc85ea321c2f100beff4311696f
+] 
+hash: 0000016068-e182464c40f38152ef2f6349c4a13194d4ecf9903ded9da8f7a7a36a8c4498af
+[simpler code, ready to add windforcing
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261119171936
+ Ignore-this: 9c692e8ee5aebc1c5ad9728f6976383c3dc96147cc09138af515cb4d638b759b56143d08567376
+] 
+hash: 0000004802-bc5f8ad7c8846ac84fae24d91f6194f743ab36fe36b9249cccd07f7381a258ee
+[Add multigrid MPI boundary_stencil() rank-divergence bug report (multigrid_mpi_uf_bc.c)
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261119222637
+ Ignore-this: 7c7dfb8bee47001cefb688a2701a08a85b8b5f6325ef7fc90a0ab7cc1ce23189edd618091324d0b2
+] 
+hash: 0000005612-1cbbe63b9b37c6f980d1fe604ca81c51de62f0a6c5ca02fc751bff9217d00853
+[Fix comment syntax and improve root-cause/fix description in multigrid_mpi_uf_bc.c
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261119224103
+ Ignore-this: 521481cbb130bba63ddfefd9c53dc62dfe6631f81db33c5c55df4d38b26d930b2d2742d67f7679e3
+] 
+hash: 0000006846-80e65bc7ec781695df99c1f67054a8bfa0b8595bf2e82f3ef8148a5f7ca8f632
+[run after a bug
+mvacher <marc.cordelle.vacher@gmail.com>**20261120070721
+ Ignore-this: 1db3c6dc87fdcd3c2a3e46fdd0655a433354ebbe4eb68e53aaa1b546bf050ae3570327b5d01f5efb
+] 
+hash: 0000000239-3941452a11e11e51ed3828a8207ff4dd195562f2304bec1cb28a3907134d14d2
+[unconfining the domain + better plots
+mvacher <marc.cordelle.vacher@gmail.com>**20261120072856
+ Ignore-this: 54aa891d785ae9450e6d938fc6efe58c1d198e6771d42c01a6c20f376f6e58113736e03c817ef8da
+] 
+hash: 0000006035-4a2020ebce2061e4cc4e3883bfc462b4faa8190e79a0b7486c503296eb9f969c
+[updating maximum velocity
+mvacher <marc.cordelle.vacher@gmail.com>**20261120074001
+ Ignore-this: 19e0c185a14fe26c833e3a97c3e37f8965a1733ac81ba0e5f1cec95a8c2d3ec6d5dcee22c188a00
+] 
+hash: 0000002533-35fe8d495bfb62c12e0a0c9656f1e566ddc6f0997aa8236c7f85a0193c818d84
+[added wind_forcing.h PI controller + nice html page, doc
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261120121057
+ Ignore-this: 94dda683fcd09209e013401bc130df870071888a16a29dae4d5138cb3e9e48fccc428ee8956e2ee1
+] 
+hash: 0000028268-e0f4812c3c3e693aa324c52a14b8d33fda6947711d91c47ab230af016fe27cd4
+[added breaker as object: 1 breaker study
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261120121348
+ Ignore-this: 5e7d4c556c628296d8e7e219d02b5c35119e6b7130c0eeff79d2abc6079b52709c0f30411cf01029
+] 
+hash: 0000004040-a0a36afe79e5da6efb3f10aa0683ac1c08310d0c7d99616242948cde447e369a
+[update front page, small tweaks
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261120121442
+ Ignore-this: 255e68c8aef8e2a9c703ee79bff09ded91390d71c0d31d3f8fe35d11b91384e1aac8dd2af15ad7d2
+] 
+hash: 0000001325-6328157f6276cb1f303bd3d54fd2c2f4f68042bdf4dddb51aeda97b3742bb035
+[Add bug report for DOUBLE_PRECISION=1 GPU literal truncation
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261120191933
+ Ignore-this: d289fde1ec8def11ed0760e5bf36d47163af10799c22005cc7ce88752bf3e8d030e4fe7cf9da28aa
+] 
+hash: 0000003342-44c896f774aa18c2b962918ba9616d4ea47ddc06df4af49415482e009f4d0762
+[Add bug report for undefined dvec2/dvec3 in CUDA DOUBLE_PRECISION=1
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261120192232
+ Ignore-this: 9f47cd30d2fb92b8613b42b0f90fab7bd0f4174c30e1a47062a5fb508b3636ecc87619d3dec40ac8
+] 
+hash: 0000002877-66fd40a6643a0abdb8cbc37d7cf36d50fd80646990360312b4ef8befe78e2c40
+[Add bug report for FP32 hardcodes in libbuda.a and libgpu.a under DOUBLE_PRECISION=1
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261120192448
+ Ignore-this: f24cb36bb540b434147c5df87e0bf350af7be8d22a7f531d598448aad7114e5d61cdcc1e5d255806
+] 
+hash: 0000003219-b4979c57e67973e0af327af14dc8bf56df0af994c2c5623804c59a8cd0bcc6ee
+[Use grid/gpu/multigrid.h directly so GPU bug reports reproduce on server
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261120193519
+ Ignore-this: 78581f405a7809605f93c3b12133c31494085610c7d0742a78d630b84642416bb5d012bade873f25
+] 
+hash: 0000001270-4bca1aaeb76a025d2c8f0b680b5dbfcc2603efa0040c985471acf73f9ae60142
+[Add GPU periodic face vector BC bug MWE (gpu_periodic_face_bc.c)
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261120201401
+ Ignore-this: 4a582d8f5d2fe55da8bf857a7bfb54de24eee8b5eeaa41be0e12aac4dd99b79274dd0624edfb41e4
+] 
+hash: 0000002495-2cbea55ef5bfc5052734327493af03147b9ad393c77edb37e5b768c93b32a909
+[Add GPU vertex scalar BC zeroing bug MWE (gpu_vertex_scalar_bc_zero.c)
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261120203555
+ Ignore-this: d211faed432e6d061401c58e80286b5ed18f121da02cac952dd0f6a8d509aa09bd8a8c0d37cc185c
+] 
+hash: 0000002115-b80eb7c12a7cf24bea6050e78da98254128d0b6c2d719d476fa70f47ea4b8c9b
+[sandbox/acastillo/grid: add multi-root (Brick-of-Roots) quadtree/octree headers and readme
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261120214015
+ Ignore-this: 17ada7b14c515541113f08573bd5b710da5acaaa3886bf9e26c9cef2d2519855bd08cf87221e81e5
+] 
+hash: 0000146711-e71bfae1600ebaf8341fa556bc320b8476d551783ba446b8e7f9211c998d91b3
+[sandbox/acastillo/clsvof: add 3D CLSVOF and integral surface-tension headers and readme
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261120214016
+ Ignore-this: e987e82b6f46ba52fe5f2d368923f1c2fc406f25d4ca9050e4d3e8c9d0b94d5e75a661fda76f99bd
+] 
+hash: 0000034890-94739bcd80812c3ab4c143c30b4fbb1d2d44d369cab002a4661089e3337cd513
+[sandbox/acastillo/grid: add FP64 GPU/CUDA multigrid backends and update readme
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261120220623
+ Ignore-this: bb543718d12703be6b7e85a10ae35d2af1968ef9a0a096eae87eeaf4e3c3a5bea8e3f5002ae48a7d
+] 
+hash: 0000148591-0bf5d9f172de983d61e73f4906e3de952584e895570ae2412082e1fcd8a715c7
+[Updated readme
+acastillo <andres.castillo.castellanos@gmail.com>**20261121091352
+ Ignore-this: 3acb79400c77d3978e52fdc8ac4d0125ff7ded408c315688642856f683308ce7da4762071cc7a8aa
+] 
+hash: 0000000550-bfa469a8eb59f04c181cf50a34823c6d7d37fb31c691d0bce2937f791298490a

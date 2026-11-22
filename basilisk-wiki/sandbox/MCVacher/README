@@ -34,6 +34,8 @@ This is the sandbox of Marc Vacher, Ph.D from LadHyX & PMMH, now teaching at ENS
 
 * [Sloshing in a 90° wedge](slosh_wedge.c)
 
+* [Oscillations in a U-tube](u_tube.c)
+
 ## Other
 
 * [Gravity current (Huppert)](gravity_current.c)

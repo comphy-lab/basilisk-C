@@ -23,11 +23,21 @@ state](example_PM_spectrum/ml_breaking/eta.mp4)
 
 * [breaking with stratification](./breaking_strat/ml_breaking_strat.c)
 
+* [quasi-stationnary breaking field over a passive tracer](./breaking_strat_hold/breaking_strat.c)
+
 ### Convection 
 
 * WIP [Oceanic convection](./multilayer_stratified/ml_convection.c)
 
 * WIP [Reproducing a convection experiment](./simu_Olivier_convection/ml_convection.c)
+
+### Breaker dynamics
+
+* [Object oriented breaking wave analysis](object_breaker/breaking.c)
+
+## Planet scale flows
+
+* [Ocean of Europa exerces a torque on its ice crust (Hay 2023 paper)](./Hay_2023/europa-ocean.c)
 
 ## Examples
 
@@ -74,7 +84,10 @@ spectrum](./verif_spectrum/verif_spectrum.py)
 
 * [Test of Neumann condition at bottom for multilayer](test_diffusion_with_bott_neumann/diff_test.c)
 
-* [Test of wind forcing implementation, growth and constant energy](test_windinput/linear_wave_wind_input.c)
+* [Test of wind forcing implementation, growth and constant energy](test_windinput/test_forcing/linear_wave_wind_input.c)
+* [Test of wind forcing for a real sea state](test_windinput/test_real/PM_seastate.c)
+
+* [Test of breaker object detection](./test_breaking_detection/README.md)
 
 ## Bugs
 
