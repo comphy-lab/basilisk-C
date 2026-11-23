@@ -46,15 +46,24 @@ of `nx` by a power of two).
 
 ---
 
-# True-FP64 GPU / CUDA Multigrid (`cuda/`, `gpu/`)
+# Multi-GPU (`CUDA + MPI`), Rectangular Sub-Brick MPI & FP64 GPU Multigrid
 
-This directory also provides double-precision (FP64) 2D and 3D GPU multigrid
-backends for both **CUDA** (`libbuda64.a`) and **OpenGL/GLSL** (`libgpu64.a`),
-while keeping single-precision FP32 support (`libbuda.a`, `libgpu.a`) intact.
+This directory also provides:
+
+1. **Double- and single-precision GPU multigrid backends** for both **CUDA**
+   (`libbuda64.a`, `libbuda.a`) and **OpenGL/GLSL** (`libgpu64.a`, `libgpu.a`)
+   in 2D and 3D.
+2. **Multi-GPU (`CUDA + MPI`) and arbitrary-rank rectangular sub-brick MPI
+   multigrid** (`LocalDims`), removing upstream `multigrid-mpi.h`'s
+   `npe = nx*ny*nz * (2^d)^i` single-root-per-rank restriction on both CUDA
+   GPUs and CPUs, with CUDA-aware MPI (GPUDirect P2P / RDMA) and automatic
+   pinned-host fallback (`BASILISK_CUDA_MPI=0|1`).
 
 ## Building the runtime libraries
 
-Build the static libraries once inside `sandbox/acastillo/grid/`:
+Build the static libraries once inside `sandbox/acastillo/grid/` (`libbuda*.a`
+are pure CUDA with zero `mpi.h` dependency, so a single build serves both
+serial and MPI runs):
 
 ~~~bash
 make -C $BASILISK_INCLUDE_PATH/acastillo/grid/cuda all
@@ -64,30 +73,60 @@ make -C $BASILISK_INCLUDE_PATH/acastillo/grid/gpu all
 ## Usage
 
 Include the desired backend header (with `BASILISK_INCLUDE_PATH` pointing to
-`sandbox/`):
+`sandbox/`), and compile with either `CC=gcc` (1 GPU / 1 CPU) or
+`CC='mpicc -D_MPI=N'` ($N$ GPUs or $N$ CPU ranks):
 
 ~~~literatec
-#include "acastillo/grid/cuda/multigrid_fp64.h"    // 2D CUDA FP64
-#include "acastillo/grid/cuda/multigrid3D_fp64.h"  // 3D CUDA FP64
+#include "acastillo/grid/cuda/multigrid_fp64.h"    // 2D CUDA FP64 (1 or N GPUs)
+#include "acastillo/grid/cuda/multigrid3D_fp64.h"  // 3D CUDA FP64 (1 or N GPUs)
+#include "acastillo/grid/cuda/multigrid.h"         // 2D CUDA FP32 (1 or N GPUs)
+#include "acastillo/grid/cuda/multigrid3D.h"       // 3D CUDA FP32 (1 or N GPUs)
 #include "acastillo/grid/gpu/multigrid_fp64.h"     // 2D OpenGL FP64
 #include "acastillo/grid/gpu/multigrid3D_fp64.h"   // 3D OpenGL FP64
+#include "acastillo/grid/multigrid.h"              // 2D CPU / rectangular MPI
+#include "acastillo/grid/multigrid3D.h"            // 3D CPU / rectangular MPI
 ~~~
+
+By default under `_MPI`, `mpi_boundary_new()` automatically factors `npe()`
+into `MpiDims = {px, py, pz}` to preserve the coarsest root grid (`S = 1` when
+`p_d | nx_d`) and minimize halo surface area; an explicit decomposition can
+also be requested via `mpi_dims(px, py, pz)` before `init_grid()`. For
+canonical multi-root `dump()` / `restore()` and 3D `output_ppm_slice()`, see
+[`acastillo/output_fields/dump_restore.h`](../output_fields/dump_restore.h) and
+[`acastillo/output_fields/output_ppm_slice.h`](../output_fields/output_ppm_slice.h).
 
 ## Summary of changes vs. `$BASILISK/src/grid/`
 
+* [multigrid.h](multigrid.h), [multigrid1D.h](multigrid1D.h),
+  [multigrid3D.h](multigrid3D.h): Introduces `UserDims`, `MpiDims`, `LocalDims`,
+  `mpi_dims()`, and `global_root_index()`, unifies `_ND()`, `SET_DIMENSIONS()`,
+  and `locate()` across serial and MPI, skips internal MPI seam faces in
+  `box_boundary_level()`, and defines `foreach_cell()` over `LocalDims`.
+* [multigrid-mpi.h](multigrid-mpi.h): Adds rectangular sub-brick factorization,
+  pointer-keyed MPI `+` reduction helpers, `foreach_dimension()` CPU halo
+  slices, canonical `for_each_root (LocalDims)` `z_indexing()`, and the
+  batched GPU-resident `mpi_boundary_level_gpu()` halo exchange.
 * [gpu-multigrid.h](gpu-multigrid.h): Derives `SINGLE_PRECISION` /
-  `DOUBLE_PRECISION` cleanly so FP32 entry headers trigger `qcc`'s `fp32 = 1`
-  mode while FP64 headers preserve full `double` literals.
-* [gpu/grid.h](gpu/grid.h): Adds `dvec2`/`dvec3` and native FP64 device math
-  for `_CUDA`, uses FP64 `pi` while keeping `nodata = (1e30f)` bit-identical
-  to CPU `common.h`, serializes `_constant[]` and `double` attributes with
-  `"%#.17g"`, uses `dvec2`/`dvec3` in `foreach_region`, and guards NULL
-  boundary pointers in `apply_bc()` (fixing `vertex scalar` BC zeroing).
-* [cuda/cuda.c](cuda/cuda.c): Adds `typedef double real`, FP64
-  `reset_scalar()` and `cuda_reduce()`, `CU_FUNC_ATTRIBUTE_MAX_THREADS_PER_BLOCK`
-  block-size clamping for register-heavy 3D FP64 kernels, `#if SINGLE_PRECISION`
-  guard on `-use_fast_math`, and `max_align` trailing padding on `shader->args`.
-* [gpu/opengl.c](gpu/opengl.c): Adds `#if SINGLE_PRECISION` `typedef float/double real`.
+  `DOUBLE_PRECISION` cleanly, includes `multigrid-mpi.h` under `_MPI`, and
+  syncs `subtree_size()` to host when read on CPU.
+* [gpu/gpu.h](gpu/gpu.h): Merges `listf` into `listc` under `_MPI` to prevent
+  rank divergence on wall-normal face BCs, enables host-synced `foreach_region`
+  on `_CUDA`, and dispatches GPU-resident fields to `mpi_boundary_level_gpu()`.
+* [gpu/grid.h](gpu/grid.h): Adds `dvec2`/`dvec3` and native FP64 device math,
+  64-bit `size_t` `_CUDA` SSBO indexing (`> 4G` elements), non-divisor
+  `LocalDims` workgroup sizing, `_mpi_wall` physical-BC mask, `_mpi_seam` face
+  reduction mask, lazy per-level `s_phys_gpu` / `mpi_clean` halo schedule,
+  `MPI_Allreduce` on GPU reductions, `ferr`/`fout` external filtering, and
+  opt-in `-DSTRICT_GPU=1`.
+* [cuda/cuda.c](cuda/cuda.c): Adds FP64 support (`typedef double real`,
+  `reset_scalar`, `cuda_reduce`, non-divisor register block clamping), local
+  MPI rank GPU binding (`cuda_set_device`), `dlsym("MPIX_Query_cuda_support")`
+  detection (keeping `libbuda{,64}.a` `mpi.h`-free), atomic PID-suffixed NVRTC
+  PTX caching, FP32 subnormal literal clamping (`1e-50f`), sub-brick
+  `foreach_point` offsets, and GPU `halo_pack` / `halo_unpack` kernels.
+* [gpu/opengl.c](gpu/opengl.c), [gpu/reduction.c](gpu/reduction.c): Adds FP64
+  support and fixes non-square `Dimensions` scratch-SSBO sizing and
+  `foreach_point` offsets in OpenGL reductions.
 * [cuda/Makefile](cuda/Makefile), [gpu/Makefile](gpu/Makefile), and
-  `multigrid*_fp64.h`: Build and autolink `libbuda{,64}.a` and `libgpu{,64}.a`
-  via `$BASILISK_INCLUDE_PATH/acastillo/grid/{cuda,gpu}`.
+  `{cuda,gpu}/multigrid*.h`: Build and autolink `libbuda{,64}.a` (`-ldl`) and
+  `libgpu{,64}.a` via `$BASILISK_INCLUDE_PATH/acastillo/grid/{cuda,gpu}`.

@@ -3,9 +3,9 @@
 #define _CUDA 1
 #include "../gpu-multigrid.h"
 #if DOUBLE_PRECISION
-# pragma autolink -L$BASILISK_INCLUDE_PATH/acastillo/grid/cuda -lbuda64 -lcuda -lnvrtc -L$BASILISK/grid/gpu -lerrors
+# pragma autolink -L$BASILISK_INCLUDE_PATH/acastillo/grid/cuda -lbuda64 -lcuda -lnvrtc -ldl -L$BASILISK/grid/gpu -lerrors
 #else
-# pragma autolink -L$BASILISK_INCLUDE_PATH/acastillo/grid/cuda -lbuda -lcuda -lnvrtc -L$BASILISK/grid/gpu -lerrors
+# pragma autolink -L$BASILISK_INCLUDE_PATH/acastillo/grid/cuda -lbuda -lcuda -lnvrtc -ldl -L$BASILISK/grid/gpu -lerrors
 #endif
 
 static void cuda_multigrid_methods()

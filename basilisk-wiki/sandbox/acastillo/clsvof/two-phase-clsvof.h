@@ -28,21 +28,28 @@ scalar d[], f[], * interfaces = {f}, * tracers = {d};
 
 /**
 The initial volume fraction is computed from the initial distance
-field, which must be initialised by the user. */
+field, which must be initialised by the user, unless `f` has already
+been populated (for instance by `restore()` or directly in user
+`event init`). */
 
 event init (i = 0)
 {
-  vertex scalar phi[];
-  foreach_vertex()
+  double vof_sum = 0.;
+  foreach(reduction(+:vof_sum))
+    vof_sum += f[];
+  if (i == 0 && vof_sum == 0.) {
+    vertex scalar phi[];
+    foreach_vertex()
 #if dimension == 1
-    phi[] = (d[] + d[-1])/2.;
+      phi[] = (d[] + d[-1])/2.;
 #elif dimension == 2
-    phi[] = (d[] + d[-1] + d[0,-1] + d[-1,-1])/4.;
+      phi[] = (d[] + d[-1] + d[0,-1] + d[-1,-1])/4.;
 #else // dimension == 3
-    phi[] = (d[] + d[-1] + d[0,-1] + d[-1,-1] +
-             d[0,0,-1] + d[-1,0,-1] + d[0,-1,-1] + d[-1,-1,-1])/8.;
+      phi[] = (d[] + d[-1] + d[0,-1] + d[-1,-1] +
+               d[0,0,-1] + d[-1,0,-1] + d[0,-1,-1] + d[-1,-1,-1])/8.;
 #endif
-  fractions (phi, f);
+    fractions (phi, f);
+  }
 }
 
 /**

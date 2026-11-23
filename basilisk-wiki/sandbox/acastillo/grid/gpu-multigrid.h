@@ -15,6 +15,20 @@
 #define grid_data() (multigrid->d)
 #define field_offset(s, level) (shift_level((level) ? (level) - 1 : depth()) + (s).i*field_size())
 
+#if _CUDA
+void cuda_set_device (int local_rank);
+void cuda_halo_sync (void);
+int cuda_query_mpi_support (void);
+size_t cuda_halo_pack (const int * fields, int nfields, size_t fsize, size_t shift,
+		       int ny_tot, int nz_tot, int i0, int j0, int k0,
+		       int ci, int cj, int ck, int slot);
+void * cuda_halo_snd_ptr (int slot, int to_host, size_t nbytes);
+void * cuda_halo_rcv_ptr (int slot, int from_host, size_t nbytes);
+void cuda_halo_unpack (const int * fields, int nfields, size_t fsize, size_t shift,
+		       int ny_tot, int nz_tot, int i0, int j0, int k0,
+		       int ci, int cj, int ck, int slot, int from_host, size_t nbytes);
+#endif
+
 #if dimension == 2
 #define GPU_CODE()							\
   "#define valt(s,di,dj,dk)"						\
@@ -54,11 +68,14 @@
 
 static bool _gpu_done_ = false;
 
-#include "grid/multigrid.h"
+#include "multigrid.h"
 #include "grid/stencils.h"
-#include "grid/gpu/gpu.h"
+#include "gpu/gpu.h"
 #include "grid/multigrid-common.h"
 #include "grid/gpu/backend.h"
+#if _MPI
+# include "multigrid-mpi.h"
+#endif
 
 void realloc_scalar_gpu (int size)
 {
@@ -89,3 +106,13 @@ typedef struct {
 @endif
 
 #include "gpu/grid.h"
+
+static inline void gpu_subtree_size (scalar size, bool leaves)
+{
+  subtree_size (size, leaves);
+  if (size.gpu.stored < 0) {
+    gpu_cpu_sync_scalar (size.i, size.block, grid_data(), field_size(), GPU_READ);
+    size.gpu.stored = 0;
+  }
+}
+#define subtree_size(s, l) gpu_subtree_size(s, l)

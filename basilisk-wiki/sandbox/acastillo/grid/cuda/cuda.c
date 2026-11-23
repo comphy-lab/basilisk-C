@@ -26,6 +26,7 @@ make cuda-tests
 ~~~
 */
 
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -34,6 +35,10 @@ make cuda-tests
 #include <assert.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <ctype.h>
+#include <unistd.h>
+#include <stdint.h>
+#include <dlfcn.h>
 #include "a32.h"
 
 typedef struct { double x, y, z; } coord;
@@ -56,6 +61,27 @@ typedef struct {
 extern int N;
 extern double X0, Y0, Z0, L0;
 extern struct { int x, y, z; } Dimensions;
+extern struct { int x, y, z; } LocalDims;
+extern int mpi_off0, mpi_off1, mpi_off2;
+
+static int cuda_local_rank = 0;
+
+void cuda_set_device (int local_rank)
+{
+  cuda_local_rank = local_rank;
+}
+
+int cuda_query_mpi_support (void)
+{
+  const char * env = getenv ("BASILISK_CUDA_MPI");
+  if (env)
+    return atoi (env) != 0;
+  typedef int (* query_fn_t) (void);
+  query_fn_t fn = (query_fn_t) dlsym (RTLD_DEFAULT, "MPIX_Query_cuda_support");
+  if (fn)
+    return fn () == 1;
+  return 0;
+}
 
 #include "ast/symbols.h"
 
@@ -142,15 +168,16 @@ void free_shader (Shader * s)
 static
 void architecture (char * arch)
 {
-  int major, minor;
+  int major, minor, ngpu = 1;
   CUdevice cuDevice;
-  CUDA_CHECK (cuDeviceGet(&cuDevice, 0));
+  CUDA_CHECK (cuInit (0));
+  CUDA_CHECK (cuDeviceGetCount (&ngpu));
+  CUDA_CHECK (cuDeviceGet (&cuDevice, ngpu > 0 ? (cuda_local_rank % ngpu) : 0));
   CUDA_CHECK (cuDeviceGetAttribute (&major, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR,
                                     cuDevice));
   CUDA_CHECK (cuDeviceGetAttribute (&minor, CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MINOR,
                                     cuDevice));
   sprintf (arch, "--gpu-architecture=sm_%d%d", major, minor);
-  // fixme: not sure whether this should be compute_%d%d or sm_%d%d ??
 }
 
 static char * compile_ptx (const char * fs, const char * arch,
@@ -159,8 +186,25 @@ static char * compile_ptx (const char * fs, const char * arch,
 {
   if (false) str_append_array (NULL, NULL); // just to avoid a -Wunused-function
   //  fputs (fs, stderr);
+#if SINGLE_PRECISION
+  char * fs_fp32 = strdup (fs);
+  for (char * p = fs_fp32; (p = strstr (p, "1e-")) != NULL; p += 3) {
+    if ((p == fs_fp32 || (!isalnum ((unsigned char)p[-1]) && p[-1] != '_' && p[-1] != '.')) &&
+        isdigit ((unsigned char)p[3]) && isdigit ((unsigned char)p[4]) && p[5] == 'f' &&
+        !isalnum ((unsigned char)p[6]) && p[6] != '_') {
+      int exp2 = (p[3] - '0')*10 + (p[4] - '0');
+      if (exp2 >= 38) {
+        p[3] = '3';
+        p[4] = '0';
+      }
+    }
+  }
+  const char * src_code = fs_fp32;
+#else
+  const char * src_code = fs;
+#endif
   nvrtcProgram prog;
-  NVRTC_CHECK(nvrtcCreateProgram (&prog, fs,
+  NVRTC_CHECK(nvrtcCreateProgram (&prog, src_code,
                                   "kernel.cu",
                                   0,
                                   NULL,
@@ -188,13 +232,19 @@ static char * compile_ptx (const char * fs, const char * arch,
       char * log = (char *) malloc (logSize);
       NVRTC_CHECK (nvrtcGetProgramLog (prog, log));
       // fputs (log, stderr);
-      char * error = gpu_errors (log, fs, NULL, "CUDA");
+      char * error = gpu_errors (log, src_code, NULL, "CUDA");
       fputs (error, stderr);
       free (error);
       free (log);
     }
+#if SINGLE_PRECISION
+    free (fs_fp32);
+#endif
     return NULL;
   }
+#if SINGLE_PRECISION
+  free (fs_fp32);
+#endif
 
   // ------------------------------------------------------------
   // Get PTX
@@ -228,8 +278,9 @@ int create_tmpdir (const char * path)
     }
   }
   // Directory does not exist, try to create it
-  if (mkdir (path, 0755) == 0)
-    return 0; // Successfully created
+  if (mkdir (path, 0755) == 0 ||
+      (errno == EEXIST && stat (path, &st) == 0 && S_ISDIR (st.st_mode)))
+    return 0; // Successfully created (or concurrently created by a peer MPI rank)
   return -1; // Failed to create
 }
 
@@ -273,10 +324,16 @@ Shader * load_normal_shader (const char * fs,
     ptx = compile_ptx (fs, arch, func, file, line, &size);
     if (!ptx)
       return NULL;
-    FILE * fp = fopen (cache, "w");
+    char tmpcache[strlen(cache) + 32];
+    sprintf (tmpcache, "%s.%d~", cache, (int) getpid ());
+    FILE * fp = fopen (tmpcache, "w");
     if (fp) {
-      assert (fwrite (ptx, 1, size, fp) == size);
-      fclose (fp);
+      if (fwrite (ptx, 1, size, fp) == size && fclose (fp) == 0)
+        rename (tmpcache, cache);
+      else {
+        fclose (fp);
+        unlink (tmpcache);
+      }
     }
   }
   
@@ -291,12 +348,19 @@ Shader * load_normal_shader (const char * fs,
   return shader;
 }
 
+static CUdeviceptr halo_d_snd[2] = {0, 0}, halo_d_rcv[2] = {0, 0}, halo_d_fields = 0;
+static void * halo_h_snd[2] = {NULL, NULL}, * halo_h_rcv[2] = {NULL, NULL};
+static size_t halo_snd_cap[2] = {0, 0}, halo_rcv_cap[2] = {0, 0};
+static size_t halo_hsnd_cap[2] = {0, 0}, halo_hrcv_cap[2] = {0, 0}, halo_fields_cap = 0;
+
 bool gpu_init_context (GPUData ** data)
 {
   bool initialized = ctx;
   if (!initialized) {
+    int ngpu = 1;
     CUDA_CHECK (cuInit (0));
-    CUDA_CHECK (cuDeviceGet (&dev, 0));
+    CUDA_CHECK (cuDeviceGetCount (&ngpu));
+    CUDA_CHECK (cuDeviceGet (&dev, ngpu > 0 ? (cuda_local_rank % ngpu) : 0));
 #if CUDA_VERSION >= 13000
     CUDA_CHECK (cuCtxCreate (&ctx, NULL, 0, dev));
 #else
@@ -312,6 +376,17 @@ void gpu_free_context (GPUData * data)
   if (ssbo) {
     CUDA_CHECK (cuMemFree (ssbo));
     ssbo = 0;
+  }
+  for (int s = 0; s < 2; s++) {
+    if (halo_d_snd[s]) { CUDA_CHECK (cuMemFree (halo_d_snd[s])); halo_d_snd[s] = 0; halo_snd_cap[s] = 0; }
+    if (halo_d_rcv[s]) { CUDA_CHECK (cuMemFree (halo_d_rcv[s])); halo_d_rcv[s] = 0; halo_rcv_cap[s] = 0; }
+    if (halo_h_snd[s]) { CUDA_CHECK (cuMemFreeHost (halo_h_snd[s])); halo_h_snd[s] = NULL; halo_hsnd_cap[s] = 0; }
+    if (halo_h_rcv[s]) { CUDA_CHECK (cuMemFreeHost (halo_h_rcv[s])); halo_h_rcv[s] = NULL; halo_hrcv_cap[s] = 0; }
+  }
+  if (halo_d_fields) {
+    CUDA_CHECK (cuMemFree (halo_d_fields));
+    halo_d_fields = 0;
+    halo_fields_cap = 0;
   }
   GPUContext.current_size = 0;
 }
@@ -406,6 +481,11 @@ void finalize_shader (Shader * shader, External * externals, External * merged,
   if (cuFuncGetAttribute (&max_threads,
                           CU_FUNC_ATTRIBUTE_MAX_THREADS_PER_BLOCK,
                           shader->kernel) == CUDA_SUCCESS && max_threads > 0) {
+    unsigned orig_total[3] = {
+      shader->ng[0]*shader->nwg[0],
+      shader->ng[1]*shader->nwg[1],
+      shader->ng[2]*shader->nwg[2]
+    };
     while (shader->nwg[0]*shader->nwg[1]*shader->nwg[2] >
            (unsigned) max_threads) {
       int imax = 0;
@@ -414,12 +494,10 @@ void finalize_shader (Shader * shader, External * externals, External * merged,
           imax = i;
       if (shader->nwg[imax] <= 1)
         break;
-      unsigned total = shader->ng[imax]*shader->nwg[imax];
       unsigned d = shader->nwg[imax]/2;
-      while (d > 1 && (total % d) != 0)
-        d--;
+      if (d < 1) d = 1;
       shader->nwg[imax] = d;
-      shader->ng[imax] = total/d;
+      shader->ng[imax] = (orig_total[imax] + d - 1)/d;
     }
   }
   
@@ -600,10 +678,17 @@ int run_shader (const Shader * shader, const RegionParameters * region)
   int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
   if (region->n.x == 1 && region->n.y == 1 &&
       (shader->dimension == 2 || region->n.z == 1)) {
-    csOrigin.x = (region->p.x - X0)/L0*Nl*Dimensions.x;
-    csOrigin.y = (region->p.y - Y0)/L0*Nl*Dimensions.x;
+    int ix = (int) floor ((region->p.x - X0)/L0*Nl*Dimensions.x) - mpi_off0*Nl;
+    int iy = (int) floor ((region->p.y - Y0)/L0*Nl*Dimensions.x) - mpi_off1*Nl;
+    int iz = shader->dimension == 3 ?
+      (int) floor ((region->p.z - Z0)/L0*Nl*Dimensions.x) - mpi_off2*Nl : 0;
+    if (ix < 0 || ix >= Nl*LocalDims.x || iy < 0 || iy >= Nl*LocalDims.y ||
+        (shader->dimension == 3 && (iz < 0 || iz >= Nl*LocalDims.z)))
+      return Nl;
+    csOrigin.x = ix;
+    csOrigin.y = iy;
     if (shader->dimension == 3)
-      csOrigin.z = (region->p.z - Z0)/L0*Nl*Dimensions.x;
+      csOrigin.z = iz;
     assert (!GPUContext.fragment_shader);
     CUDA_CHECK (cuLaunchKernel (shader->kernel,
                                 1, 1, 1,
@@ -851,14 +936,180 @@ double gpu_reduction (size_t offset,
 {
   if (region->n.x == 1 && region->n.y == 1 && (dim == 2 || region->n.z == 1)) {
     int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
-    int nx = Nl*Dimensions.x, ny = Nl*Dimensions.y, nz = dim == 3 ? Nl*Dimensions.z : 1;
-    int i = (region->p.x - X0)/L0*nx;
-    int j = (region->p.y - Y0)/L0*nx;
-    int k = dim == 3 ? (region->p.z - Z0)/L0*nx : 0;
+    int nx = Nl*LocalDims.x, ny = Nl*LocalDims.y, nz = dim == 3 ? Nl*LocalDims.z : 1;
+    int i = (int) floor ((region->p.x - X0)/L0*Nl*Dimensions.x) - mpi_off0*Nl;
+    int j = (int) floor ((region->p.y - Y0)/L0*Nl*Dimensions.x) - mpi_off1*Nl;
+    int k = dim == 3 ? (int) floor ((region->p.z - Z0)/L0*Nl*Dimensions.x) - mpi_off2*Nl : 0;
     if (i < 0 || i >= nx || j < 0 || j >= ny || (dim == 3 && (k < 0 || k >= nz)))
-      return (op == 'm' ? HUGE : op == 'M' ? -HUGE : 0.);
+#if SINGLE_PRECISION
+      return (op == 'm' ? 3e38 : op == 'M' ? -3e38 : 0.);
+#else
+      return (op == 'm' ? 1e300 : op == 'M' ? -1e300 : 0.);
+#endif
     offset += dim == 2 ? (size_t)i*ny + j : ((size_t)i*ny + j)*nz + k;
     nb = 1;
   }
   return cuda_reduce (ssbo + offset*sizeof(real), nb, op);
+}
+
+/**
+## GPU-Resident Halo Pack & Unpack Kernels */
+
+static CUfunction k_halo_pack = 0, k_halo_unpack = 0;
+
+static void ensure_halo_kernels (void)
+{
+  if (k_halo_pack && k_halo_unpack)
+    return;
+  static const char halo_src[] =
+    "typedef " CUDA_REAL_STR " rtype;\n"
+    "extern \"C\" __global__\n"
+    "void halo_pack (const rtype * __restrict__ data, rtype * __restrict__ buf,\n"
+    "                const int * __restrict__ fields, int nfields,\n"
+    "                size_t fsize, size_t shift, int ny_tot, int nz_tot,\n"
+    "                int i0, int j0, int k0, int ci, int cj, int ck) {\n"
+    "  size_t idx = (size_t) blockIdx.x*blockDim.x + threadIdx.x;\n"
+    "  size_t plane = (size_t) ci*cj*ck;\n"
+    "  size_t total = plane*(size_t)nfields;\n"
+    "  if (idx >= total) return;\n"
+    "  int f = (int)(idx / plane);\n"
+    "  size_t rem = idx % plane;\n"
+    "  int dk = (int)(rem % (size_t)ck); rem /= (size_t)ck;\n"
+    "  int dj = (int)(rem % (size_t)cj);\n"
+    "  int di = (int)(rem / (size_t)cj);\n"
+    "  size_t off = (size_t)fields[f]*fsize + shift +\n"
+    "    (size_t)nz_tot*((size_t)(j0 + dj) + (size_t)(i0 + di)*(size_t)ny_tot) + (size_t)(k0 + dk);\n"
+    "  buf[idx] = data[off];\n"
+    "}\n"
+    "extern \"C\" __global__\n"
+    "void halo_unpack (rtype * __restrict__ data, const rtype * __restrict__ buf,\n"
+    "                  const int * __restrict__ fields, int nfields,\n"
+    "                  size_t fsize, size_t shift, int ny_tot, int nz_tot,\n"
+    "                  int i0, int j0, int k0, int ci, int cj, int ck) {\n"
+    "  size_t idx = (size_t) blockIdx.x*blockDim.x + threadIdx.x;\n"
+    "  size_t plane = (size_t) ci*cj*ck;\n"
+    "  size_t total = plane*(size_t)nfields;\n"
+    "  if (idx >= total) return;\n"
+    "  int f = (int)(idx / plane);\n"
+    "  size_t rem = idx % plane;\n"
+    "  int dk = (int)(rem % (size_t)ck); rem /= (size_t)ck;\n"
+    "  int dj = (int)(rem % (size_t)cj);\n"
+    "  int di = (int)(rem / (size_t)cj);\n"
+    "  size_t off = (size_t)fields[f]*fsize + shift +\n"
+    "    (size_t)nz_tot*((size_t)(j0 + dj) + (size_t)(i0 + di)*(size_t)ny_tot) + (size_t)(k0 + dk);\n"
+    "  data[off] = buf[idx];\n"
+    "}\n";
+  size_t ptx_size;
+  char arch[] = "--gpu-architecture=compute_????";
+  architecture (arch);
+  char * ptx = compile_ptx (halo_src, arch, "halo_pack", __FILE__, __LINE__, &ptx_size);
+  CUmodule mod;
+  CUDA_CHECK (cuModuleLoadData (&mod, ptx));
+  free (ptx);
+  CUDA_CHECK (cuModuleGetFunction (&k_halo_pack, mod, "halo_pack"));
+  CUDA_CHECK (cuModuleGetFunction (&k_halo_unpack, mod, "halo_unpack"));
+}
+
+static void upload_halo_fields (const int * fields, int nfields)
+{
+  size_t need = (size_t) nfields * sizeof(int);
+  if (need > halo_fields_cap) {
+    if (halo_d_fields)
+      CUDA_CHECK (cuMemFree (halo_d_fields));
+    CUDA_CHECK (cuMemAlloc (&halo_d_fields, need));
+    halo_fields_cap = need;
+  }
+  CUDA_CHECK (cuMemcpyHtoDAsync (halo_d_fields, fields, need, stream));
+}
+
+size_t cuda_halo_pack (const int * fields, int nfields, size_t fsize, size_t shift,
+                       int ny_tot, int nz_tot, int i0, int j0, int k0,
+                       int ci, int cj, int ck, int slot)
+{
+  ensure_halo_kernels ();
+  size_t nelem = (size_t) nfields * ci * cj * ck;
+  size_t nbytes = nelem * sizeof(real);
+  if (nbytes > halo_snd_cap[slot]) {
+    if (halo_d_snd[slot])
+      CUDA_CHECK (cuMemFree (halo_d_snd[slot]));
+    CUDA_CHECK (cuMemAlloc (&halo_d_snd[slot], nbytes));
+    halo_snd_cap[slot] = nbytes;
+  }
+  upload_halo_fields (fields, nfields);
+  const size_t threads = 256;
+  size_t blocks = (nelem + threads - 1) / threads;
+  void * args[] = { &ssbo, &halo_d_snd[slot], &halo_d_fields, &nfields,
+                    &fsize, &shift, &ny_tot, &nz_tot,
+                    &i0, &j0, &k0, &ci, &cj, &ck };
+  CUDA_CHECK (cuLaunchKernel (k_halo_pack, blocks, 1, 1, threads, 1, 1, 0,
+                              stream, args, NULL));
+  return nbytes;
+}
+
+void * cuda_halo_snd_ptr (int slot, int to_host, size_t nbytes)
+{
+  if (to_host) {
+    if (nbytes > halo_hsnd_cap[slot]) {
+      if (halo_h_snd[slot])
+        CUDA_CHECK (cuMemFreeHost (halo_h_snd[slot]));
+      CUDA_CHECK (cuMemAllocHost (&halo_h_snd[slot], nbytes));
+      halo_hsnd_cap[slot] = nbytes;
+    }
+    CUDA_CHECK (cuMemcpyDtoHAsync (halo_h_snd[slot], halo_d_snd[slot], nbytes, stream));
+    CUDA_CHECK (cuStreamSynchronize (stream));
+    return halo_h_snd[slot];
+  }
+  CUDA_CHECK (cuStreamSynchronize (stream));
+  return (void *)(uintptr_t) halo_d_snd[slot];
+}
+
+void * cuda_halo_rcv_ptr (int slot, int from_host, size_t nbytes)
+{
+  if (nbytes > halo_rcv_cap[slot]) {
+    if (halo_d_rcv[slot])
+      CUDA_CHECK (cuMemFree (halo_d_rcv[slot]));
+    CUDA_CHECK (cuMemAlloc (&halo_d_rcv[slot], nbytes));
+    halo_rcv_cap[slot] = nbytes;
+  }
+  if (from_host) {
+    if (nbytes > halo_hrcv_cap[slot]) {
+      if (halo_h_rcv[slot])
+        CUDA_CHECK (cuMemFreeHost (halo_h_rcv[slot]));
+      CUDA_CHECK (cuMemAllocHost (&halo_h_rcv[slot], nbytes));
+      halo_hrcv_cap[slot] = nbytes;
+    }
+    return halo_h_rcv[slot];
+  }
+  return (void *)(uintptr_t) halo_d_rcv[slot];
+}
+
+void cuda_halo_unpack (const int * fields, int nfields, size_t fsize, size_t shift,
+                       int ny_tot, int nz_tot, int i0, int j0, int k0,
+                       int ci, int cj, int ck, int slot, int from_host, size_t nbytes)
+{
+  ensure_halo_kernels ();
+  CUdeviceptr src_buf;
+  if (from_host < 0) {
+    src_buf = halo_d_snd[slot];
+  }
+  else {
+    if (from_host > 0)
+      CUDA_CHECK (cuMemcpyHtoDAsync (halo_d_rcv[slot], halo_h_rcv[slot], nbytes, stream));
+    src_buf = halo_d_rcv[slot];
+  }
+  upload_halo_fields (fields, nfields);
+  size_t nelem = (size_t) nfields * ci * cj * ck;
+  const size_t threads = 256;
+  size_t blocks = (nelem + threads - 1) / threads;
+  void * args[] = { &ssbo, &src_buf, &halo_d_fields, &nfields,
+                    &fsize, &shift, &ny_tot, &nz_tot,
+                    &i0, &j0, &k0, &ci, &cj, &ck };
+  CUDA_CHECK (cuLaunchKernel (k_halo_unpack, blocks, 1, 1, threads, 1, 1, 0,
+                              stream, args, NULL));
+}
+
+void cuda_halo_sync (void)
+{
+  if (ctx)
+    CUDA_CHECK (cuStreamSynchronize (stream));
 }

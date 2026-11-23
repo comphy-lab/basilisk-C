@@ -13,10 +13,10 @@ libgpu64.a: glad.o opengl64.o
 glad.o: $(BASILISK)/grid/gpu/glad.c
 	$(CC) $(BASE_CFLAGS) -c -o $@ $<
 
-opengl.o: opengl.c
+opengl.o: opengl.c reduction.c
 	$(CC) $(BASE_CFLAGS) -DSINGLE_PRECISION=1 -c -o $@ $<
 
-opengl64.o: opengl.c
+opengl64.o: opengl.c reduction.c
 	$(CC) $(BASE_CFLAGS) -DSINGLE_PRECISION=0 -DDOUBLE_PRECISION=1 -c -o $@ $<
 
 clean:

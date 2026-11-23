@@ -1,4 +1,4 @@
-pristine:09e4ba2982a09fe3eaa2dad8c2f9adebac89c953010c439ded2a8fa2af9aa9d8
+pristine:72542eaff461bcc7ddefd5163bdd7a0d537aac0fc52eedd3345b70c5d90db163
 Starting with inventory:
 0000813987-628d164d39a1d82699a5748e94edf693e5eb9a9f95a23cdf237f7153776390af
 [TAG release-26-11-14
@@ -232,3 +232,23 @@ acastillo <andres.castillo.castellanos@gmail.com>**20261121091352
  Ignore-this: 3acb79400c77d3978e52fdc8ac4d0125ff7ded408c315688642856f683308ce7da4762071cc7a8aa
 ] 
 hash: 0000000550-bfa469a8eb59f04c181cf50a34823c6d7d37fb31c691d0bce2937f791298490a
+[sandbox/acastillo/grid: add Multi-GPU CUDA+MPI and rectangular LocalDims multigrid
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261122171827
+ Ignore-this: 4390f357d803921875aecf815a6e38d986e0629f6f02191e6f9f25f058e9b91897618def10664ac4
+] 
+hash: 0000100675-39277c37dd8a36d95001edee04f5fd5452f73cbde167432232766a75ff62e96a
+[sandbox/acastillo/output_fields: add output_ppm_slice.h and multi-root dump_restore.h
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261122171828
+ Ignore-this: 72587451f1a800754444a8297a5e228d51c691ba91e5c30bf9a7ca1913e9924fc37b4806c55a7182
+] 
+hash: 0000022489-2db81e60c2afe76d5ef627c25c6ff7a618fd57ffab0e99a326357c370f3c6abe
+[sandbox/acastillo/input_fields: mark Dimonte FFT GSL interpolation loops cpu for GPU compatibility
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261122171828
+ Ignore-this: 96b774289c201f4642a5691745a9a85a72eeb689445bd53f4d490a2a8cf4e6f7a0a3b0263050dccc
+] 
+hash: 0000000861-9cebed5e6ee809be04781477e7da3f4a766917e0d1ff87512777d916787f7fc6
+[sandbox/acastillo/clsvof: preserve restored VOF fraction in two-phase-clsvof.h init
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261122180950
+ Ignore-this: f5b477dd857f906595fa1aad7c03e4b5496f8cd54b155f43ea74a7101bf81a30ada453b6b953611a
+] 
+hash: 0000001458-dd9c61ab5b27fee7f7576abcb755ffcad56f7b6a3a0bea9c98b15566794b6c04

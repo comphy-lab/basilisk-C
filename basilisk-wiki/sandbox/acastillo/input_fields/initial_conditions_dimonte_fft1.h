@@ -247,11 +247,11 @@ void initial_condition_dimonte_fft(vertex scalar phi, double amplitude=1, int NX
   */
   
   if (isvertex){
-    foreach_vertex()
+    foreach_vertex(cpu)
       phi[] = gsl_interp_eval(interp, xdata_tiled, ydata_tiled, x, acc) - y;
   }
   else {
-    foreach()
+    foreach(cpu)
       phi[] = gsl_interp_eval(interp, xdata_tiled, ydata_tiled, x, acc) - y;
   }  
 

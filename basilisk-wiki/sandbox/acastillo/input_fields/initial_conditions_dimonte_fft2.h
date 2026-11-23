@@ -387,14 +387,14 @@ void initial_condition_dimonte_fft2(vertex scalar phi, double amplitude=1, int N
   */
   if (isvof) {
     if (isvertex)
-      foreach_vertex()
+      foreach_vertex(cpu)
         phi[] = gsl_interp2d_eval(interp, xdata_tiled, ydata_tiled, zdata_tiled, x, y, x_acc, y_acc) - z;
     else
-      foreach()
+      foreach(cpu)
         phi[] = gsl_interp2d_eval(interp, xdata_tiled, ydata_tiled, zdata_tiled, x, y, x_acc, y_acc) - z;
   }
   else {
-    foreach(){
+    foreach(cpu){
       phi[] = gsl_interp2d_eval(interp, xdata_tiled, ydata_tiled, zdata_tiled, x, y, x_acc, y_acc);
     }
   }  

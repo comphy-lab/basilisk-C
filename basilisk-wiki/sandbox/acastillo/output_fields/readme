@@ -315,6 +315,39 @@ Examples are available in [`tests_outputs/test_output_vtkhdf*.c`](tests_outputs/
 
 ---
 
+### `output_ppm_slice()`
+
+**Location:** [`output_ppm_slice.h`](output_ppm_slice.h)
+
+**Description:**
+Exports a colormapped 2D Portable PixMap (`.ppm`, `.png`, or `.mp4` via
+`open_image()`) of a 3D scalar field on an axis-aligned `x`, `y`, or `z` plane
+defined by normal `n` and intercept `alpha` (`n.x*x + n.y*y + n.z*z = alpha`),
+matching the plane convention of [`xdmf/output_xdmf_slice.h`](xdmf/output_xdmf_slice.h)
+and `view.h`'s `squares()`. Works identically on CPU, CPU+MPI, single-GPU CUDA,
+and Multi-GPU CUDA+MPI, defaulting `res` to the native cell count along the
+slice's horizontal axis so physical aspect ratio is preserved automatically.
+
+---
+
+### `dump_multigrid()` and `restore_multigrid()`
+
+**Location:** [`dump_restore.h`](dump_restore.h)
+
+**Description:**
+Drop-in `dump()` / `restore()` override for [`acastillo/grid/`](../grid/readme)
+rectangular sub-brick (`LocalDims`) CPU+MPI and Multi-GPU CUDA+MPI multigrids
+(leaving `dump()` and `restore()` untouched when included on tree grids or
+stock `grid/multigrid*.h`). Buffers standard C `stdio` one `level = 0` root at
+a time in canonical `(ox, oy, oz)` order without allocating temporary GPU
+fields (`scalar size[]` or `scalar index[]`), avoiding `SINGLE_PRECISION`
+24-bit float index overflow above $16.7\times 10^6$ cells and producing
+rank-count-independent files compatible with stock CPU `restore()` and MPI
+[`acastillo/grid/octree.h`](../grid/octree.h). When used alongside
+`maxruntime.h`, include `dump_restore.h` *before* `maxruntime.h`.
+
+---
+
 ## Running the tests
 
 [`tests_profiles/`](tests_profiles/), [`tests_quantities/`](tests_quantities/)

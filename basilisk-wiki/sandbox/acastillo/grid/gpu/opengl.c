@@ -730,4 +730,4 @@ int run_shader (const Shader * shader, const RegionParameters * region)
 
 extern const char glsl_preproc[];
 
-#include "grid/gpu/reduction.c"
+#include "reduction.c"
