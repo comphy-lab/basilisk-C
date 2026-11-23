@@ -130,9 +130,11 @@ for platform in mac linux; do
   [[ ! -e "$dest/2026-08-14-comphy-bview.patch" ]] || fail "$platform tarball staged comphy-bview"
   if [[ "$platform" == linux ]]; then
     [[ ! -e "$dest/2025-11-03-macos-mman-compatibility.patch" ]] || fail "linux tarball staged macos patch"
-    [[ -z "$(ls -A "$dest")" ]] || fail "linux default tarball should stage no patches"
+    [[ "$(ls -A "$dest")" == "2026-11-23-restore-field-name-bounds.patch" ]] \
+      || fail "linux default tarball should stage only the restore bounds patch"
   else
     [[ -f "$dest/2025-11-03-macos-mman-compatibility.patch" ]] || fail "mac tarball missing macos patch"
+    [[ -f "$dest/2026-11-23-restore-field-name-bounds.patch" ]] || fail "mac tarball missing restore bounds patch"
   fi
   pass "$platform release staging copies only the default platform patches"
 done
