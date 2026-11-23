@@ -1,0 +1,42 @@
+# Patch: restore-field-name-bounds
+# Author: CoMPhy Lab
+# Date: 2026-11-23
+# Description: Bound the field-name length that restore() reads from a dump.
+#
+# restore() in src/output.h reads an unsigned name length from the dump file
+# and uses it to size a variable-length array on the stack:
+#
+#   char name[len + 1];
+#
+# A dump is external data. A corrupt or crafted file can set that length to
+# anything up to 2^32 - 1, which overflows the stack before any check runs.
+# The read is also only checked for "at least one item", so a truncated name
+# is accepted and used partly uninitialised.
+#
+# This patch replaces the array with a fixed 4097-byte buffer, rejects a
+# zero or oversized length with a clear error, and requires the whole name
+# to be read. Field names of 4097 bytes or more can no longer be restored;
+# Basilisk does not generate names of that size.
+#
+# Platform: All
+# Files: src/output.h
+#
+diff -rN -u old-basilisk/src/output.h new-basilisk/src/output.h
+--- old-basilisk/src/output.h
++++ new-basilisk/src/output.h
+@@ -1302,8 +1302,13 @@
+ 	fprintf (ferr, "restore(): error: expecting len\n");
+ 	exit (1);
+       }
+-      char name[len + 1];
+-      if (fread (name, sizeof(char), len, fp) < 1) {
++      /* A dump is external data: never size the stack from its fields. */
++      char name[4097];
++      if (len == 0 || len >= sizeof name) {
++	fprintf (ferr, "restore(): error: invalid field-name length\n");
++	exit (1);
++      }
++      if (fread (name, sizeof *name, len, fp) != len) {
+ 	fprintf (ferr, "restore(): error: expecting s.name\n");
+ 	exit (1);
+       }

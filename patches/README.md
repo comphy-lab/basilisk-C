@@ -174,6 +174,29 @@ be rebuilt. A full `make` handles this; patching a tree with a prebuilt
 
 ---
 
+### 2026-11-23-restore-field-name-bounds.patch
+
+**Platform:** All
+**Files modified:** `src/output.h`
+**Applied by default:** yes, and included in release tarballs
+
+Bounds the field-name length that `restore()` reads from a dump file.
+
+Upstream sizes a stack array from that length (`char name[len + 1]`). A dump
+is external data, so a corrupt or crafted file can request up to 4 GiB of
+stack and crash the solver before any check runs. The read was also checked
+only for "at least one item", so a truncated name was accepted.
+
+**What it changes:**
+- Reads names into a fixed 4097-byte buffer
+- Rejects a zero or oversized length with `restore(): error: invalid field-name length`
+- Requires the whole name to be read, otherwise `restore(): error: expecting s.name`
+
+**Limitation:** a field name of 4097 bytes or more can be dumped but no
+longer restored. Basilisk does not generate names of that size.
+
+---
+
 ## Applying Patches Manually
 
 To apply a patch to an existing Basilisk installation:
@@ -247,6 +270,7 @@ When creating a new patch for this repository:
 | macos-mman-compatibility | No | comphy-lab maintained |
 | local-bview | No | comphy-lab maintained |
 | comphy-bview | No | comphy-lab maintained |
+| restore-field-name-bounds | No | comphy-lab maintained; worth sending upstream |
 
 Patches marked as "comphy-lab maintained" are specific to our workflow or haven't been submitted upstream yet. If you believe a patch should be submitted to the main Basilisk project, please open an issue.
 
