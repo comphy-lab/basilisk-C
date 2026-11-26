@@ -78,24 +78,24 @@ event logfile (i++) {
 }
 
 /**
-We generate videos:
+We generate videos. The solid walls are drawn in black: `output_ppm` does not
+draw the cells where the mask is negative, here $c_s - 1/2 < 0$ (solid cells).
 */
 event ppm_output (t = 0; t += 0.02; t <= 10) {
+  scalar m[];
+  foreach()
+    m[] = cs[] - 0.5;
+
   char name[80];
   sprintf (name, "f.mp4");
-  output_ppm (f, file = name, n = 512, min = 0, max = 1, linear = true);
+  output_ppm (f, file = name, n = 512, min = 0, max = 1, linear = true, mask = m);
   
   char name1[80];
   sprintf (name1, "uY.mp4");
-  output_ppm (u.y, file = name1, n = 512, linear = true);
-  
-  char name2[80];
-  sprintf (name2, "cs.mp4");
-  output_ppm (cs, file = "cs.mp4", n = 512, min = 0, max = 1, linear = false);
+  output_ppm (u.y, file = name1, n = 512, min = -2.*U0, max = 2.*U0, linear = true, mask = m, map = cool_warm);
 }
 
 /**
 ![Free-surface](bubble_injection/f.mp4)
 ![Vertical velocity](bubble_injection/uY.mp4)
-![Geometry](bubble_injection/cs.mp4)
 */

@@ -17,6 +17,35 @@
    z >= (box)[0].z && z < (box)[1].z)
 #endif
 
+/** ### Synchronize scalar and vector fields for host-side output extraction
+
+Ensures boundary/MPI halos (needed by face-averaging slice stencils) are
+current and, on GPU backends, downloads non-constant fields in `list`,
+`vlist` (and `cs` under `EMBED`) to host memory before `foreach (serial, noauto)`
+extraction. */
+static inline void sync_output_fields (scalar * list, vector * vlist) {
+  boundary (list);
+  boundary ((scalar *) vlist);
+#if _GPU
+  for (scalar _s in list)
+    if (!is_constant (_s) && _s.gpu.stored < 0) {
+      gpu_cpu_sync_scalar (_s.i, _s.block, grid_data(), field_size(), GPU_READ);
+      _s.gpu.stored = 0;
+    }
+  for (scalar _s in (scalar *) vlist)
+    if (!is_constant (_s) && _s.gpu.stored < 0) {
+      gpu_cpu_sync_scalar (_s.i, _s.block, grid_data(), field_size(), GPU_READ);
+      _s.gpu.stored = 0;
+    }
+#if EMBED
+  if (!is_constant (cs) && cs.gpu.stored < 0) {
+    gpu_cpu_sync_scalar (cs.i, cs.block, grid_data(), field_size(), GPU_READ);
+    cs.gpu.stored = 0;
+  }
+#endif
+#endif
+}
+
 /** ### Count points and cells in each subdomain and total */
 void count_points_and_cells(long *num_points_glob, long *num_cells_glob, long *num_points, long *num_cells, scalar per_mask) {
   foreach_vertex(serial, noauto){

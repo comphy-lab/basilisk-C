@@ -1,4 +1,4 @@
-pristine:72542eaff461bcc7ddefd5163bdd7a0d537aac0fc52eedd3345b70c5d90db163
+pristine:0b621252d8638e14423ef2f49b827023e16b3b54c9237d09b17313da0a11ed8b
 Starting with inventory:
 0000813987-628d164d39a1d82699a5748e94edf693e5eb9a9f95a23cdf237f7153776390af
 [TAG release-26-11-14
@@ -252,3 +252,264 @@ Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**2026112218095
  Ignore-this: f5b477dd857f906595fa1aad7c03e4b5496f8cd54b155f43ea74a7101bf81a30ada453b6b953611a
 ] 
 hash: 0000001458-dd9c61ab5b27fee7f7576abcb755ffcad56f7b6a3a0bea9c98b15566794b6c04
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20261123073342
+ Ignore-this: e495c0bfed43d33e4eaa007235d64c9971685be5d587d48ea61e28f778a2444906e2a782c203035a
+] 
+hash: 0000001508-9746a5bc13ab27d0218b21970b1d0265253296b78e4d6146255ab2bc1b6c44ca
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20261123073835
+ Ignore-this: 94f7b89abcfed37eb0efdc8e3abc0e5e4abb87b2962a4f330a6789d4bea610adfa07e0b826167d59
+] 
+hash: 0000000693-ef55e8e9149484d80f94c8fd06b1d2c4d4ea57a537cc889226b167de9641900b
+[add blasius
+mvacher <marc.cordelle.vacher@gmail.com>**20261123081259
+ Ignore-this: 505a71eab9e5a8e98c045c026741299e3b9272ac48b4cc4037c5a3a32be27a22cafc6b82ebae247b
+] 
+hash: 0000000251-70cc50da0bf8e48dd28c05ccc75df2e7c396e02cc766a4029fbd1f6687921384
+[adding theory
+mvacher <marc.cordelle.vacher@gmail.com>**20261123082428
+ Ignore-this: 3ab37f1664972ac06498321851753918dd553b6ab7160bb7a4c05f26e5dfa82ff921cc06277534dc
+] 
+hash: 0000008586-3303394b3979e26f33b6baec3cf82c121a6ea404d859d230b6972e15031f495d
+[better resolution to avoid momentum loss
+mvacher <marc.cordelle.vacher@gmail.com>**20261123084158
+ Ignore-this: c67b9e7a9f5b1d5d167e3712fdbaf43d96833fdd173866ddec36a65e607a0ce23e32cbc60d6b3824
+] 
+hash: 0000010489-c91c95f4f475e0f97d262f4d401c8eab4d710d45aad9019f441ae553f4da9b03
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20261123084807
+ Ignore-this: 8957018bba912beaa5f2e7b77ae580c895724151fb5c1b8951c09c7bd8c5ca8500e44e60b73a5cc2
+] 
+hash: 0000000246-f44577f323bbe4ef27459a46f5245d240cfdd1849f0f724212293ff9bc58edb2
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20261123084838
+ Ignore-this: 98649d3037d902462a0cc99cc90de7fd3a75bd0059287f7c79cf8804eb56c6ed0e39dccfcbcc3e31
+] 
+hash: 0000000206-cc2d5ecec377a23723bac3924a2a314079578274cd4e634a051cb4fa5791a65e
+[better theory comparison + text 
+mvacher <marc.cordelle.vacher@gmail.com>**20261123085518
+ Ignore-this: 7f3eefba300f6504cee5dcd26d0e9592e7bf2b4b31cb9612338e1bc49118442b3b9007a129da460c
+] 
+hash: 0000010966-a3be4c55bf09be20656ecf6562047fe81a40f732be6b600ec47f6d999aa82afb
+[better comparison with theory
+mvacher <marc.cordelle.vacher@gmail.com>**20261123092738
+ Ignore-this: 1d33a50b6531ce1a2fa661d02d39b806d4088b0e82d3ea93fd8246698ab6cf4d187d1c824a382b19
+] 
+hash: 0000006518-6d1f1c450177259d272e2fbe85716f736bbd3768b61b4a27d77efb6be8d5a270
+[text, plots + better comparison :)
+mvacher <marc.cordelle.vacher@gmail.com>**20261123095358
+ Ignore-this: 690e061c80c9f16f03430e5abda8d7685f3585bdfa0d159b087872a0b3aff0343a31ca2f2a37ceef
+] 
+hash: 0000006956-89165802473ec8cce8488c81dcbec5c3b6d23fd223bab94bcbe0464a786f8613
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20261123100428
+ Ignore-this: de3826e056548f84a112d6a14f60f4267dcdfed3368ec901e5d92bc7ad4b472f9a3463fe1d8dd307
+] 
+hash: 0000003596-532af1483d1dd299b598537f6b29b39df210d325f34e170c05e36e21db45c1c5
+[text + better plot comparisons
+mvacher <marc.cordelle.vacher@gmail.com>**20261123101555
+ Ignore-this: 1cc0483dc2b397e90d31c04a42bd01b028dc310b545192e33b7c94cfbc659d0b9dac9638b99d9e13
+] 
+hash: 0000012369-4b5323ccf073f1a35c4c6c484f4f03040e3307f8637bd730f56be62019399062
+[theory
+mvacher <marc.cordelle.vacher@gmail.com>**20261123120314
+ Ignore-this: fc17d31d1526ed954ea809d989773391d53cc103eabb11bc0098930c7e23c0b06bcea8977ade38d0
+] 
+hash: 0000010947-cd0ed8957dc5efd92aaebc3ed00ecae16a1ae84df3822bf55cb27cc8e5c5f99b
+[theory
+mvacher <marc.cordelle.vacher@gmail.com>**20261123122043
+ Ignore-this: 3c2b7b0d58694247eb9bccdce6cd84bc6bc862b1512ead482813fc0b7c67213e6d2ec77a7a75621a
+] 
+hash: 0000003309-f920e8b676bc3689d5c237e41835d16e7a152cafc3e06ecafa74b742cc57f71a
+[test dirichlet
+mvacher <marc.cordelle.vacher@gmail.com>**20261123133648
+ Ignore-this: af36380a7484249c40362109b76fff7f1e211d78394480f682db054a80a065c8d1034cca2459af8
+] 
+hash: 0000004247-c36ff0452efc681167c3cb198a4c255403abbeca1b4389f81581f99e367e32bf
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20261123141047
+ Ignore-this: 2261b03862f60b1ee67c764974d944683be0aed75914908d515eae78c46a472cc1e6cdb50c2e95c0
+] 
+hash: 0000001512-9904dd87900db71e721e3e554f80ad6034a4f4e12aef0216dda1fe99f01357da
+[add probe and videos
+mvacher <marc.cordelle.vacher@gmail.com>**20261123153826
+ Ignore-this: 85222082a6d48ece3064678af1c7493a2e82fd9a8fdc2b73f38f97c1af50679d6bb698b40ccb9bdf
+] 
+hash: 0000011448-1a85815cd98d319665656a7b92bb4486d8461c2f0287335a6dd8053443bd1fe8
+[harmonic analysis t 65
+mvacher <marc.cordelle.vacher@gmail.com>**20261123160716
+ Ignore-this: d29474880eee146608063a1305b521eb6b2969ed894178259864feebaf84b109ea3bcdf6e4e3f81c
+] 
+hash: 0000000352-3e676bc601ab6e575488f4b65431566c8d1a76878991391045702c442133c2c9
+[Fix multi-root MPI and multigrid regressions
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261123164955
+ Ignore-this: 6fc290d64e23b9617a325bad0c6e1d831b5e31f9e3eda9a20851e53a65b3d94a918b834cd5574319
+] 
+hash: 0000002120-0b1fd4b2f0d54a8b605f9e834bbf9d19a512e225fdcb88cda7e4661b7ea7bd27
+[instability analysis
+mvacher <marc.cordelle.vacher@gmail.com>**20261123173105
+ Ignore-this: 4129804aeb12361584420562c1b598bce0ebc0441b0b98093e66452975df3bcc0521589722d59b9e
+] 
+hash: 0000006800-d2bf686b0ed683867f3029b25e44e4920d0d898f7e63925c63e193745678f0a9
+[foreach_dimension() does not rotate the coordinates.
+jmlopezherrera <jmlopezherrera@gmail.com>**20261124101115
+ Ignore-this: 4e767eaf752305b7b744e2c58fb66b238c7c0c4c0179ae951d552280b5cf5a666d010f5c27c6458d
+] 
+hash: 0000000743-f8f0488682242d51a470dde108558757618633e484d4dfcc445268fa16832127
+[add harmonic.h analysis
+mvacher <marc.cordelle.vacher@gmail.com>**20261124122730
+ Ignore-this: aba5e3be77f3d9622340ca5d5dbdaee687d3b0003d0c553155fa25d0d0ce1266bdc48d40aa1b881e
+] 
+hash: 0000005024-309279d99bb88b689def174179b770580c2e10fa445cdcc13f6f81eb188ef7b0
+[longer sim
+mvacher <marc.cordelle.vacher@gmail.com>**20261124123051
+ Ignore-this: e31b9263ad3a78adf0a8915a2a19d43cdf8e7d24b2dcb1fe4e42f287fb2d75f661f1f3a786097255
+] 
+hash: 0000000437-225b9bcb4ab4ffa1f5e4a4257eaca5c6a24c0fd9893a74484ffaed00db8d1838
+[lower Reynolds
+mvacher <marc.cordelle.vacher@gmail.com>**20261124124356
+ Ignore-this: f2929756f838dfe8c416a9bfbcba7338c9bf2d97537ed598ad55dca5ab9697efa504e0621e9ec5e6
+] 
+hash: 0000000249-6559ad942f44ade1a1ac243a6add03e23a0719a8bf39f1ebe54540f99478095a
+[Announcement for the Basilisk Editor Support release: text highlights, completion, syntax check directly for the Basilisk language
+rcaraccio <riccardo.caraccio@polimi.it>**20261124125629
+ Ignore-this: eea9b9f8b5b959574b52e1b6f69e78a667e2f56b1b20cab7be47972b823a53fc4052b18af2b9a2e0
+] 
+hash: 0000001033-9f37a88301523e01d8dfe97017405cbbeb32567d9124332c5d57a091588c9de9
+[sandbox/acastillo/grid: backport upstream GPU/CUDA/MPI-multigrid refactors and fixes
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261124163746
+ Ignore-this: 5d0d3dd8d2e36fd2e3208e3e9beea02f9e558d29733a759ab0c85e1c9877e6dd7adf53a763ad1a0e
+ 
+ Sync sandbox/acastillo/grid with the cleaned upstream patch series while
+ preserving sandbox-only compatibility with unmodified $BASILISK:
+ 
+ - Split CUDA MPI halo runtime into cuda/cuda-mpi.c (included from cuda.c)
+   and GPU-resident MPI halo exchange into cuda/multigrid-mpi.h (included
+   from multigrid-mpi.h), adding sandbox/acastillo/grid/externals.h.
+ - Replace mpi_neighbor[6] / mpi_off0..2 / current_mpi_boundary globals
+   with MpiOffset, cuda_set_mpi_domain(), periodic_boundary(), and
+   mpi->cartcomm; extract choose_mpi_dims(), mpi_wall_mask(),
+   mpi_seam_mask(), and gpu_mpi_sync_boundaries().
+ - Backport race-free post-kernel gpu_periodic_face_bc(), GLSL FP64 'lf'
+   literals and explicit != 0 boolean casts, and floor() in reduction.c.
+ - Verified 9/9 on_basilisk/test_multigpu PART_A_TESTS (MPI -np 2,
+   STRICT_GPU=1) and 16/16 on_basilisk/test_gpu_fp64 Stage 1 tests against
+   pristine upstream Basilisk.
+] 
+hash: 0000079893-164a74c881ddebf88e7701661999d660d303966eaa5d28a544b42364867f0cf4
+[acastillo/poisson: add coarse-level Jacobi-PCG and singular RHS projection
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261124190515
+ Ignore-this: 6ac08a32728fbd6e2850b4783191fd55f8051a64aefd1d76a955ccd7f116606568c0ef88adac56d
+] 
+hash: 0000021993-55f1d21a83bc02e4b705ae4c80f876dff7025823c2a263008a30b5a5f7598d83
+[acastillo/output_fields/dump_restore.h: rename mpi_off0..2 to MpiOffset.{x,y,z}
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261124192726
+ Ignore-this: aebfbda8dffaa01727d7aee23df098f4aed754a897c6cf724ba27bc3025147393d9b01bf9610a638
+] 
+hash: 0000000784-35b03c6df9f5eb2124d5bcc77954ae1b8e73ab89eb591ef013b1cc427d1184e8
+[output_fields: add GPU-to-CPU sync helper for VTU/VTKHDF/XDMF facets output
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261124214056
+ Ignore-this: 2a3d3403e5dc468347d88a1c07bb108cf8021cf5d3fe58e5095ea9963856b4e42d17467d5df33c73
+] 
+hash: 0000002095-89495e1b4b1983ad9891c028aad68b932386f65f6ce52cb404b5e76a53fd3243
+[remove saturation amplitude
+mvacher <marc.cordelle.vacher@gmail.com>**20261124215959
+ Ignore-this: 27d646a76a0bf477f915f5fe51e4d39c0c75daee4512900764ae840893914cf1882911221a8910a0
+] 
+hash: 0000001607-8128cb7b53d0f06693a6c4f9a9e5abf72dd05e9462199dfdf8b99e51fb859cd1
+[add mask for geometry
+mvacher <marc.cordelle.vacher@gmail.com>**20261124221106
+ Ignore-this: d5b99cda5b3bbd803824fc917fedbf406f8581c708a9095928428b300d55bc68aada5f6aea008634
+] 
+hash: 0000001141-4b15f1985da5872ff709a267dcb603193097abf29178e3dafb7b2970b062070d
+[changed p0 for pw to avoid conflict with nh-staggered.h, recipes for cpu2D cuda2D and according plots
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261125075737
+ Ignore-this: a76d0855f30362c61fd2c6bea55b5bee1d48a4c14f25c232319c0e7c7dec3991d903767380aa6551
+] 
+hash: 0000007079-38130946e6ebfa38602c149cd4641f401defd4b4e96cbe8368862a5ede97f511
+[changed pp0 for ppw
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261125075834
+ Ignore-this: bb3acd8fe24975ba619ef339df69f25380d8088fac8b4de9ad5177029cf0f9d90c19a2e3f1897b74
+] 
+hash: 0000002404-2a5f3eb59deccab50502a4f972595a0870bccd17cab5c1fe8648347f91d0688d
+[fixed case nl=1
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261125075935
+ Ignore-this: f0538a0775e70b30be1ec722f21db0e3410c21b0ec169ca4cf2b6ce2f45ddb57eac69c3871c3a0a
+] 
+hash: 0000000664-6a73c7c791dc017cd9091a5315a2dbbfaa91d9c8e6c2daebe1cbe70768375ff4
+[text
+mvacher <marc.cordelle.vacher@gmail.com>**20261125090247
+ Ignore-this: f9992f648d5188bc68e3dc9ff67299113f00b53870bfef7489baaedecc994eeff92121ba987c8270
+] 
+hash: 0000000500-ce141bd73a5a449a935f0e0a3d9ae6c0e7714000a3035c88956e98c45d2923b3
+[improving initial conditions using schlichting.c
+mvacher <marc.cordelle.vacher@gmail.com>**20261125094457
+ Ignore-this: 3e1d79db54072b643f6bd0afa58222cbf2f6c9287e9df17b13a71625f17f8091187d201970969f30
+] 
+hash: 0000008927-fccf4f3ae11c523e28c021d2df380afc29f7526982f553eb7826a46589fcc795
+[dip-coating with wind
+twitkamp**20261125095837
+ Ignore-this: cc344c23fb5dc37dd395539994f28676a2c0b14b8ac6f2edf3f22bacee5b4ba2b0edcd8b38cb8e94
+] 
+hash: 0000004575-219f97209d3c620ffcf071712bfabb6e5f2bff8a5e004d2fc7cbc72fc4259047
+[contact-fixed.h
+twitkamp**20261125100156
+ Ignore-this: a4efc431e40eb2ce0dbf17fd1d1896c531005e7e1a08e71f09ac37aa9f135b975702c8da6ccc2dcd
+] 
+hash: 0000004623-b9737b96275d4a733d46b1fb8cc4e2f4024bc5c280d37be405540f152a1d30d7
+[c2 to see the thin layer
+mvacher <marc.cordelle.vacher@gmail.com>**20261125101112
+ Ignore-this: a6d7afd5fec72002d9e6bde2a2c799c083f5343d6c2274bc6e151a0dc28cf42613c713916a932402
+] 
+hash: 0000004172-f174b032e86c8e61eeed84be3d7c14a0af1273d3220fbda14c2659b319d08da8
+[Remove unnecessary OpenMP thread-count toggle in output_vtu_facets.h
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261125094330
+ Ignore-this: 2959dc843f043db59da540aa8973b9723f517c3062da81ce596bec1c0fbd05d4dd3515a6e5063d7a
+] 
+hash: 0000000999-53565398c787b641fa35f5fa1afe581b25b27f4c41e8ab1211729b74c63b7860
+[Enable GPU support for VTU/VTKHDF/XDMF 2D slices and centralize HDF5 include
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261125094331
+ Ignore-this: 2ae68567d5ad894cd47adc865e430a4d027d087a2bf60ff4025acb52882b45f9a91ff795bb441faf
+] 
+hash: 0000005030-e57aa991fd3329d8d5318a9557122486a276ec7ab3ce3b0282f254be5d7b863f
+[Enable GPU support and remove OpenMP thread toggles across VTU/VTKHDF/XDMF domain and box writers
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261125100548
+ Ignore-this: 6d10a980f2040f7d9cb15ab8838253d6278c62b7e5ad0b06457325ce6982dcaddd71fecc2a8deca3
+] 
+hash: 0000003655-08aa6a214a96244743b2c7021451dc88b78b993a7c2113106de996918c19dad5
+[Fix SINGLE_PRECISION (FP32) fwrite widening in VTU heavy data and clear gpu.stored after sync
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261125101550
+ Ignore-this: 9e12ee1371ed8818c3484e7b2761a3bdd2635606d946a2223910ebe8727c7e4f638108433a1e3cb4
+] 
+hash: 0000001899-1649585dea3e89bf3aaab0d6a4d8eca1efbd3acf71c69dcd97ecd2c435e2c7f5
+[Add upstream gpu/multigrid 2D group to tests_outputs/run_tests.py
+Andres Castillo <andres.castillo_castellanos@ens-paris-saclay.fr>**20261125101840
+ Ignore-this: b75e7149b5dd2dab383ed69cef9433057fb6a93811cc00784803b2d8577569e722f2d4cb21db512
+] 
+hash: 0000001913-8b9dc78b227ba259c31017639388f8b0d900245d58a611f63794fbe876fd04f3
+[plots for interpretation
+mvacher <marc.cordelle.vacher@gmail.com>**20261125103805
+ Ignore-this: 98a958a60bb4ba72cce54828f2faca8c0c6910bf7da6ecf6dfae474f7e90fbc67f072d9972ecf8a6
+] 
+hash: 0000002684-44f916a5cff0c5f0a1ad5b940d0fb9b453f5bfca8ff1e8e8122bbd51da282ffe
+[added widget for 2D snapshot tool, minor fixes on the 2D movie tool
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261125112731
+ Ignore-this: 57fed950bfb13673728397c4d590e12245a85d497b97aedab8aecccc6c81f7ea55f7c49223fe8c5b
+] 
+hash: 0000006301-abf60305aeffb39e9182da7c71371d2abae127ba0302586ae97b41a6f1bef60a
+[better plots
+mvacher <marc.cordelle.vacher@gmail.com>**20261125124852
+ Ignore-this: 848477e2f0f6510781f9e0f29688c8e0388cf4901cde532aca9550cb966cbe6425007651619a1b4f
+] 
+hash: 0000003308-9734ffd2bd5afc4688397522322e2d9450bfb80e71b3635950199122a57894b5
+[test parameters closer to paper
+mvacher <marc.cordelle.vacher@gmail.com>**20261125133602
+ Ignore-this: f905f9401c7018de6a34adcc188375b278d6d6f7e95f9b5b8a16bbc7a3610b8100b00060dc42b30c
+] 
+hash: 0000000925-bed0a3dff04c53eb844044097ebf2175b7745caecb1c2057668debf71b66ac60
+[add needle geometry
+mvacher <marc.cordelle.vacher@gmail.com>**20261125232310
+ Ignore-this: eeb0cb34bd25b20be6986b1e42771447a435d3353ae1195aadd0e9449351edc857931e02eaba1450
+] 
+hash: 0000012200-df2a6044edb1c28a17283e169624d8d660596d3757527db130bedab69e14d29b

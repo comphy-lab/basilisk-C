@@ -12,7 +12,7 @@ Note:
 - Ideally this file should be merged with the a_baro overload into a hydro-wind.h
  **/
 
-double pp0 = 0. [-1, -2, 1];
+double ppw = 0. [-1, -2, 1];
 
 // target energy
 double Etarget = 0. [];
@@ -33,8 +33,8 @@ double sum_f = 0.;
 double sum_abs_f = 0.;
 double tau_f = 1.;
 
-// p0 clip
-double p0_max = 100. [-1,-2,1];
+// pw clip
+double pw_max = 100. [-1,-2,1];
 
 
 // PI
@@ -46,24 +46,25 @@ double p0_max = 100. [-1,-2,1];
 
   IN 2D (x,z):
   input_power = -sum_xy(dp/dx Q)dx
-             with p = p0.deta/dx
+             with p = pw.deta/dx
                   Q = sum_layer(u*h)
       
-        so input_power = - p0* sum_xy(sum_layer(d2eta/dx2*u*h*dx))
+        so input_power = - pw* sum_xy(sum_layer(d2eta/dx2*u*h*dx))
 
 
   Energy deficit = E_ini - E(t)
   */
 
-event update_p0 (i++)
+event update_pw (i++)
 {
   /** Computing the error on wave energy */
   double etam = 0., etavar_current = 0., pe = 0., ke = 0.;
   energy_stats (&etam, &etavar_current, &pe, &ke);
+  // fprintf(stderr, "etam=%f, etavar=%f, pe=%f, ke=%f\n",etam,etavar_current,pe,ke);
   double dE = Etarget - (pe + ke);
   //double dE = 0., etam=0., etavar_current=0.;
   /**
-  Computing input power, P = p0*sum
+  Computing input power, P = pw*sum
   */
   double sum = 0.; 
     foreach(reduction(+:sum)) {
@@ -85,7 +86,7 @@ event update_p0 (i++)
   /**
   PID Control
 
-  p0 = 1/sum * K1( dE + 1/Ti*int_t dE dt + Td*dE/dt ) */
+  pw = 1/sum * K1( dE + 1/Ti*int_t dE dt + Td*dE/dt ) */
   double rhs = 0.;
   
   /** P: proportional constrain */
@@ -94,7 +95,7 @@ event update_p0 (i++)
   }
 
   /** I: integral constrain */
-  if (fabs((rhs + K_2*sum_I)/sum_den) <= p0_max)
+  if (fabs((rhs + K_2*sum_I)/sum_den) <= pw_max)
   { 
     // avoid to take into account spikes of energy
     sum_I += dE_f * dt;
@@ -107,21 +108,21 @@ event update_p0 (i++)
   dedt = (dE_f-last_dE)/dt;
   rhs += K_3*dedt;
   last_dE = dE_f;
-  /** Finally we compute p0 */
-  double dp0 = rhs/sum_den;
+  /** Finally we compute pw */
+  double dpw = rhs/sum_den;
 
-  p0 = pp0 + dp0;
+  pw = ppw + dpw;
 
-  /** safeguard 2: p0 limiter */
-  if (p0 >  p0_max) p0 =  p0_max;
-  if (p0 < -p0_max) p0 = -p0_max;
+  /** safeguard 2: pw limiter */
+  if (pw >  pw_max) pw =  pw_max;
+  if (pw < -pw_max) pw = -pw_max;
 
   // if (i%10==0){
-  //   fprintf(stderr, "i=%d etam=%.3e var=%.6e dE=%g sum=%g sum_den=%g p0=%g\n",
-  //       i, etam, etavar_current, dE, sum, sum_den, p0);
+  //   fprintf(stderr, "i=%d etam=%.3e var=%.6e dE=%g sum=%g sum_den=%g pw=%g\n",
+  //       i, etam, etavar_current, dE, sum, sum_den, pw);
   // }
-  fprintf(stderr, "i=%d etam=%.3e var=%.6e dE=%g sum=%g sum_den=%g p0=%g\n",
-        i, etam, etavar_current, dE, sum, sum_den, p0);
+  fprintf(stderr, "i=%d etam=%.3e var=%.6e dE=%g sum=%g sum_den=%g pw=%g\n",
+        i, etam, etavar_current, dE, sum, sum_den, pw);
 }
 
 

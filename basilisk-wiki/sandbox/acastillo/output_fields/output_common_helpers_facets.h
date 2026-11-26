@@ -30,7 +30,24 @@ coord mycs(Point point, scalar c)
 /**
 ## Other functions
 
-### Count the number of vertices and facets */
+### Synchronize VOF and facet scalar fields for host-side extraction
+
+Ensures boundary/MPI halos of *c* are current (needed by the $3^d$ stencil in
+`mycs`) and, on GPU backends, downloads *c* and *slist* to host memory before
+`foreach (serial, noauto)` facet extraction. */
+
+static inline void sync_facets_fields (scalar c, scalar * slist) {
+  boundary ({c});
+#if _GPU
+  if (!is_constant (c) && c.gpu.stored < 0)
+    gpu_cpu_sync_scalar (c.i, c.block, grid_data(), field_size(), GPU_READ);
+  for (scalar _s in slist)
+    if (!is_constant (_s) && _s.gpu.stored < 0)
+      gpu_cpu_sync_scalar (_s.i, _s.block, grid_data(), field_size(), GPU_READ);
+#endif
+}
+
+/** ### Count the number of vertices and facets */
 
 void count_vertices_and_facets(scalar c, long *nverts, long *nfacets) {
   foreach (serial, noauto){

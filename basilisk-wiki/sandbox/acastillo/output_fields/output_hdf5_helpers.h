@@ -1,6 +1,17 @@
 #ifndef OUTPUT_HDF5_HELPERS_H
 #define OUTPUT_HDF5_HELPERS_H
 
+// Check if HDF5 is available by testing if the header can be included
+#if __has_include(<hdf5.h>)
+  #ifndef HAVE_HDF5
+    #define HAVE_HDF5 1
+  #endif
+  #pragma autolink -lhdf5
+  #include <hdf5.h>
+#else
+  #warning "HDF5 library not found. HDF5 output functions will be disabled."
+#endif
+
 #ifdef HAVE_HDF5
 
 #define HDF5_CONTIGUOUS 0

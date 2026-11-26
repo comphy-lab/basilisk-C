@@ -84,11 +84,6 @@ void write_xdmf_footer(FILE *fp) {
 
 void write_xdmf_light_data(scalar *slist, vector *vlist, char *file_name, char *subname, long num_cells = 0, long num_points = 0, int dim = dimension){
 
-#if defined(_OPENMP)
-  int num_omp = omp_get_max_threads();
-  omp_set_num_threads(1);
-#endif
-
   // Open a file for writing
   char name[111];
   sprintf(name, "%s.xmf", subname);
@@ -103,10 +98,6 @@ void write_xdmf_light_data(scalar *slist, vector *vlist, char *file_name, char *
   // Close the file
   fflush(fp);
   fclose(fp);
-
-#if defined(_OPENMP)
-  omp_set_num_threads(num_omp);
-#endif
 }
 
 #endif // OUTPUT_XDMF_HELPERS_XML_H

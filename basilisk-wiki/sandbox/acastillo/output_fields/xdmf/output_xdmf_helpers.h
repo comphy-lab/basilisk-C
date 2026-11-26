@@ -5,6 +5,7 @@
 #ifndef OUTPUT_XDMF_HELPERS_H
 #define OUTPUT_XDMF_HELPERS_H
 
+#include "acastillo/output_fields/output_hdf5_helpers.h"
 #include "acastillo/output_fields/output_common_helpers.h"
 
 #ifdef HAVE_HDF5

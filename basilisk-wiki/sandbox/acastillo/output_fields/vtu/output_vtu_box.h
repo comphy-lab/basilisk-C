@@ -86,11 +86,6 @@ void output_vtu_box(scalar *list, vector *vlist, char *subname, coord box[2]){
 /** ### *output_vtu_box_pid()*: writes one `.vtu` file for the current process */
 void output_vtu_box_pid(scalar *list, vector *vlist, char *subname, coord box[2]) {
 
-#if defined(_OPENMP)
-  int num_omp = omp_get_max_threads(); // Get the number of OpenMP threads
-  omp_set_num_threads(1);              // Set the number of OpenMP threads to 1
-#endif
-
   char name[111];                   // Buffer for file name construction
   sprintf(name, "%s.vtu", subname); // Construct the VTU filename
 
@@ -99,9 +94,12 @@ void output_vtu_box_pid(scalar *list, vector *vlist, char *subname, coord box[2]
     fprintf(stderr, "Error opening file %s for writing.\n", name);
   }
 
+  /** Sync GPU fields to host before host-side extraction */
+  sync_output_fields (list, vlist);
+
   /** Define a scalar field for cell selection with consistent boundaries */ 
   scalar cell_mask[];
-  foreach () {
+  foreach (serial, noauto) {
     cell_mask[] = 0.;  // Initialize to 0
 #if dimension == 2
     if (x >= box[0].x && x < box[1].x &&
@@ -119,7 +117,7 @@ void output_vtu_box_pid(scalar *list, vector *vlist, char *subname, coord box[2]
   /** Obtain the number of points, cells, and marker used for connectivity */ 
   vertex scalar marker[];
   vertex scalar vertex_needed[];
-  foreach_vertex(){
+  foreach_vertex(serial, noauto){
     marker[] = 0;
     vertex_needed[] = 0;
   }
@@ -183,10 +181,6 @@ void output_vtu_box_pid(scalar *list, vector *vlist, char *subname, coord box[2]
   fputs("</VTKFile>\n", fp);
   fflush(fp); // Flush the file buffer
   fclose(fp); // Close the VTU file
-
-#if defined(_OPENMP)
-  omp_set_num_threads(num_omp); // Restore the original number of OpenMP threads
-#endif
 }
 
 /** ### *output_pvtu()*: if MPI, writes one `.pvtu` and `.vtu` for each process */

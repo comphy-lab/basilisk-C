@@ -438,12 +438,15 @@ macro1 foreach_child (Point point = point, break = (_l = _m = _n = 2)) {
 #define is_boundary(cell)     (cell.pid < 0)
   
 @def is_refined_check() (is_refined(cell) &&
-			 point.i > 0 && point.i < Dimensions.x*(1 << level) + 2*GHOSTS - 1
+			 point.i > 0 &&
+			 point.i < Dimensions.x*(1 << level) + 2*GHOSTS - 1
 #if dimension > 1
-			 && point.j > 0 && point.j < Dimensions.y*(1 << level) + 2*GHOSTS - 1
+			 && point.j > 0 &&
+			 point.j < Dimensions.y*(1 << level) + 2*GHOSTS - 1
 #endif
 #if dimension > 2
-			 && point.k > 0 && point.k < Dimensions.z*(1 << level) + 2*GHOSTS - 1
+			 && point.k > 0 &&
+			 point.k < Dimensions.z*(1 << level) + 2*GHOSTS - 1
 #endif
 			 )
 @

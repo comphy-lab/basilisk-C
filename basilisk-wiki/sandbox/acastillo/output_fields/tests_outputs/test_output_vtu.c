@@ -44,9 +44,10 @@ int main(){
   // Create test fields 
   scalar f[], p[];
   vector u[];
+  int rank = pid();
   foreach(){    
     f[] = point.level;
-    p[] = pid();
+    p[] = rank;
     u.x[] = x;
     u.y[] = y;
     #if dimension == 3

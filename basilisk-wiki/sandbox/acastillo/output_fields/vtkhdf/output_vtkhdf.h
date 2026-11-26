@@ -43,15 +43,6 @@ An explanation can be found [here](https://groups.google.com/g/basilisk-fr/c/CM2
 */
 
 
-// Check if HDF5 is available by testing if the header can be included
-#if __has_include(<hdf5.h>)
-  #define HAVE_HDF5 1
-  #pragma autolink -lhdf5
-  #include <hdf5.h>
-#else
-  #warning "HDF5 library not found. VTKHDF output functions will be disabled."
-#endif
-
 /** 
 ## preamble: define some useful macros
 */
@@ -106,9 +97,12 @@ trace void output_vtkhdf(scalar *list, vector *vlist, char *name = "domain.vtkhd
   hsize_t offset[2]; // Offset for hyperslab
   hsize_t dims[1] = {2};
   
+  // Sync GPU fields to host before host-side extraction
+  sync_output_fields (list, vlist);
+
   // Define a scalar mask for periodic conditions
   scalar per_mask[];
-  foreach () {
+  foreach (serial, noauto) {
     per_mask[] = 1.;
   }
 

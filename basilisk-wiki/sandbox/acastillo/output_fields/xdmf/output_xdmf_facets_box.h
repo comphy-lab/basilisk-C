@@ -59,6 +59,7 @@ void output_facets_xmf_box(scalar c, scalar * slist, char *subname, coord box[2]
   snprintf(name, sizeof(name), "%s.h5", subname);
 
   // Obtain the number of vertices and facets within the box
+  sync_facets_fields (c, slist);
   long num_points_loc = 0, num_cells_loc = 0;
   long num_points = 0, num_cells = 0;
   count_vertices_and_facets_box(c, box, &num_points_loc, &num_cells_loc);

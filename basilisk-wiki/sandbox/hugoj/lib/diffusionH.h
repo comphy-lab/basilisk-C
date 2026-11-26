@@ -7,17 +7,16 @@ to implement a Neumann condition at the top and the bottom of the domain.
 See the test case [here](https://basilisk.fr/sandbox/hugoj/test_diffusion_with_bott_neumann/diff_test.c)
 
 */
-//@define double float
-
-#define DIFFUSIONH_VERSION "2026-09-22-a"
-#if !DIFF_DELTA
-# pragma message ("diffusionH.h version " DIFFUSIONH_VERSION)
-#endif
 
 void vertical_diffusion2 (Point point, scalar h, scalar s, double dt, double D,
 			 double dst, double dsb)
 {
   double a[nl], b[nl], c[nl], rhs[nl];
+
+  if (nl == 1) {   // put this at the top of the function
+    s[] += D*dt*(dst - dsb)/h[];
+    return;
+ }
 
   /**
   The *rhs* of the tridiagonal system is $h_l s_l$. */
@@ -61,7 +60,6 @@ void vertical_diffusion2 (Point point, scalar h, scalar s, double dt, double D,
   (hs)_{\mathrm{nl} - 1}^{\star} + D \Delta t \dot{s}_t
   $$
   */
-
   a[nl-1] = - 2.*D*dt/(h[0,0,nl-2] + h[0,0,nl-1]);
   b[nl-1] = h[0,0,nl-1] - a[nl-1];
   rhs[nl-1] += D*dt*dst;
@@ -92,9 +90,3 @@ void vertical_diffusion2 (Point point, scalar h, scalar s, double dt, double D,
   for (int l = nl - 2; l >= 0; l--)
     s[0,0,l] = a[l] = (rhs[l] - c[l]*a[l+1])/b[l];
 }
-//@undef double
-/* # TODO
-
-- fix the case nl=1
-
-**/

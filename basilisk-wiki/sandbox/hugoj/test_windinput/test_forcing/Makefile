@@ -31,6 +31,11 @@ hold_stokes.c: linear_wave_wind_input.c
 hold_stokes.tst: CFLAGS += -DSTOKES -DHOLD_FORCING=1 -grid=multigrid1D
 
 # 2D
+
+2D_all_cuda: no_forcing2D.cuda.tst linear_wave_wind_input2D.cuda.tst exact_forcing2D.cuda.tst
+
+2D_all: no_forcing2D.tst linear_wave_wind_input2D.tst exact_forcing2D.tst
+
 no_forcing2D.c: linear_wave_wind_input.c
 	ln -sf linear_wave_wind_input.c no_forcing2D.c
 

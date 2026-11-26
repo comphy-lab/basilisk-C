@@ -77,11 +77,6 @@ void output_slice_vtu(scalar *list, vector *vlist, char *subname, coord n = {0, 
 
 void output_slice_vtu_pid(scalar *list, vector *vlist, char *subname, coord n = {0, 0, 1}, double _alpha = 0){
 
-#if defined(_OPENMP)
-  int num_omp = omp_get_max_threads();  // Get the number of OpenMP threads
-  omp_set_num_threads(1);               // Set the number of OpenMP threads to 1
-#endif
-
   char name[111];                       // Buffer for file name construction
   sprintf(name, "%s.vtu", subname);     // Construct the VTU filename
 
@@ -90,9 +85,12 @@ void output_slice_vtu_pid(scalar *list, vector *vlist, char *subname, coord n = 
     fprintf(stderr, "Error opening file %s for writing.\n", name);
   }
 
+  /** Ensure +1 face-averaging halos are current and sync GPU fields to host */
+  sync_output_fields (list, vlist);
+
   /** Define a scalar field to deal with solids and periodic conditions */ 
   scalar per_mask[];
-  foreach (){
+  foreach (serial, noauto){
     per_mask[] = 0.;
     shortcut_slice(n, _alpha);
     if (alpha > 0.){
@@ -147,10 +145,6 @@ void output_slice_vtu_pid(scalar *list, vector *vlist, char *subname, coord n = 
   fputs("</VTKFile>\n", fp);
   fflush(fp); // Flush the file buffer
   fclose(fp); // Close the VTU file
-
-#if defined(_OPENMP)
-  omp_set_num_threads(num_omp); // Restore the original number of OpenMP threads
-#endif
 }
 
 

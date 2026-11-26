@@ -40,9 +40,12 @@ trace void output_xmf_slice(scalar *slist, vector *vlist, char *subname, coord n
   char name[260];  // Buffer for file name construction
   snprintf(name, sizeof(name), "%s.h5", subname); 
 
+  // Ensure +1 face-averaging halos are current and sync GPU fields to host
+  sync_output_fields (slist, vlist);
+
   // Define a scalar mask to deal with solids and periodic conditions
   scalar per_mask[];
-  foreach (){
+  foreach (serial, noauto){
     per_mask[] = 0.;
     shortcut_slice(n, _alpha);
     if (alpha > 0.){

@@ -16,7 +16,7 @@ The non-dimensional momentum equation reads:
 
 $$\frac{\partial \mathbf{u}^*}{\partial t^*} + (\mathbf{u}^* \cdot \nabla)\mathbf{u}^* = -\nabla p^* + Pr \, \nabla^2 \mathbf{u}^* + Ra \cdot Pr \; \theta \, \mathbf{e}_y$$
 
-and the energy equation:
+and the heat equation:
 
 $$\frac{\partial \theta}{\partial t^*} + \mathbf{u}^* \cdot \nabla \theta = \nabla^2 \theta$$
 
@@ -30,7 +30,7 @@ The buoyancy term `Ra * Pr * θ` appears directly in the `acceleration` event.
 With $Ra = 10^5$, the thermal boundary layer thickness at the top of the
 domain is $\delta \approx 6\,Ra^{-1/4} \approx 0.34\,L_0$: the boundary
 layer is thin enough to be compared with the self-similar solution
-(see below), and it is resolved by about 90 cells with $N = 256$.
+(see below).
 */
 
 #include "grid/multigrid.h"
@@ -60,7 +60,7 @@ int main()
 
   DT = 1e-4;
   TOLERANCE = 1e-4;
-  NITERMIN = 4;
+  NITERMIN = 4;  //helps multigrid
 
   a  = av;
   mu = muc;
@@ -78,13 +78,13 @@ int main()
   u.n[left] = dirichlet(0.);
   u.t[left] = dirichlet(0.);
 
-  // Right: open boundary (entrainment)
+  // Right: open boundary 
   u.n[right]  = neumann(0.);
   u.t[right]  = neumann(0.);
   p[right]    = dirichlet(0.);
   pf[right]   = dirichlet(0.);
 
-  // Bottom: open boundary (entrainment)
+  // Bottom: open boundary 
   u.n[bottom] = neumann(0.);
   u.t[bottom] = neumann(0.);
   p[bottom]   = dirichlet(0.);

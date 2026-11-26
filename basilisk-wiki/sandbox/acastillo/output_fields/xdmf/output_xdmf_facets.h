@@ -43,6 +43,7 @@ void output_facets_xmf(scalar c, scalar s, char *subname, int mode = HDF5_CHUNKE
   snprintf(name, sizeof(name), "%s.h5", subname); 
 
   // Obtain the number of vertices and facets
+  sync_facets_fields (c, {s});
   long num_points_loc = 0, num_cells_loc = 0;
   long num_points = 0, num_cells = 0;
   count_vertices_and_facets(c, &num_points_loc, &num_cells_loc);

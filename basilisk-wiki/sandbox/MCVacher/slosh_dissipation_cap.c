@@ -183,6 +183,14 @@ event ppm_output (t = 0; t += 0.01; t <= 15) {
   char name_u[80];
   sprintf (name_u, "u_y.mp4");
   output_ppm (u.y, file = name_u, n = 512,min = -0.1, max = 0.1, linear = true);
+
+  // vorticity, in the liquid only (the air, f < 0.5, is masked)
+  scalar omega[], m[];
+  vorticity (u, omega);
+  foreach()
+    m[] = f[] - 0.5;
+  output_ppm (omega, file = "omega.mp4", n = 512, min = -3, max = 3,
+              linear = true, mask = m, map = cool_warm);
 }
 
   
@@ -195,7 +203,7 @@ event ppm_output (t = 0; t += 0.01; t <= 15) {
 
 The mathematical considerations for the computation of dissipation in the case of linear capillary waves are the same than in the case of gravity waves, at least when $k_m^2 << \frac{\omega_m}{\nu}$ (case of weak damping).  
 
-We still have a potential problem and essentially "we can replace $g$ by $\frac{\sigma^2}{k_m}$"... (Lamb, *Hydrodynamics* §265-267)
+We still have a potential problem and essentially "we can replace $g$ by $\frac{\sigma k_m^2}{\rho}$"... (Lamb, *Hydrodynamics* §265-267)
 
 And so, we still have in the end that the amplitude of the oscillation $\eta_0$ is following a logarithmic decrement at long period of times (we consider the envelope of oscillations), such as :
 
@@ -215,73 +223,226 @@ $$\eta_0(t) = \eta_0(0)\exp(-\lambda_1 t)$$
 
 **Note :** For non-linear effect, one can check *Denner, "Frequency dispersion of small-amplitude capillary waves in viscous fluids", Phys. Rev. E, 2016* and this test case : [Capillary wave](https://basilisk.fr/src/test/capwave.c).
 
+The amplitude is measured by projecting the interface $\eta(x,t)$ on the sloshing mode $m=3$ (the initial shape):
+
+$$a(t) = \frac{2}{L}\int_{-L/2}^{L/2} \left(\eta(x,t)-h\right)\sin\left(\frac{3\pi x}{L}\right)\mathrm{d}x \simeq h_1\,e^{-\lambda_1 t}\cos(\omega_p t)$$
+
+This projection filters out the other modes and the mean level. The decay rate is obtained by a linear fit of $\ln|a|$ at the extrema of $a(t)$, and the pseudo-pulsation from the time between successive maxima.
+
 ~~~pythonplot Comparison with theory
 import matplotlib.pyplot as plt
 import numpy as np
 import glob as gb
 import re
-import os
-from scipy.signal import find_peaks
 
-#####################Init######################
-l_x_surf_app=[]
-l_y_surf_app=[]
+# ============================================================
+# Parameters (same as in main())
+# ============================================================
 
-listeFichiersTxt_1=sorted(gb.glob('interface_cap-'+'*.txt'),key=str.casefold) 
-listeFichiersTxt_1.sort(key=lambda f: int(re.search(r'\d+', f).group()))
+L = 0.4
+h = 0.15
+h_1 = 0.02
+m = 3
+nu = 0.5 / 1000          # mu1/rho1
+sigma = 5
+rho = 1000
+dt_save = 0.005          # interval of the res_save event
 
-###############################################
+k_m = m * np.pi / L
+lamb_th = 2 * nu * k_m**2
+omega_m = np.sqrt(sigma * k_m**3 / rho)   # capillary waves
+omega_th = omega_m * np.sqrt(1 - (lamb_th / omega_m)**2)
 
-for ind_fichier in range(1,len(listeFichiersTxt_1)):
-    list_x_surf=[]
-    list_y_surf=[]
-    time_name=listeFichiersTxt_1[ind_fichier]
-    with open(time_name, encoding='utf8') as File:
-        for line in File:
-            if line.isspace()==0:
-                temp=line.split()
-                x=float(temp[0])
-                list_x_surf.append(x)
-                y=float(temp[1])
-                list_y_surf.append(y)
-        File.close()
+# exact Lamb dispersion relation (deep water), perturbation ~ exp(s t):
+# (s + 2 nu k^2)^2 + omega_0^2 = 4 nu^2 k^4 sqrt(1 + s/(nu k^2))
+def lamb_exact(nu, k, w0sq):
+    F = lambda s: (s + 2*nu*k**2)**2 + w0sq - 4*nu**2*k**4*np.sqrt(1 + s/(nu*k**2) + 0j)
+    s = -2*nu*k**2 + 1j*np.sqrt(w0sq)
+    for _ in range(50):                      # complex Newton iterations
+        ds = 1e-8 * (1 + 1j)
+        s = s - F(s) * ds / (F(s + ds) - F(s))
+    return -s.real, s.imag                   # decay rate, pseudo-pulsation
 
-    l_x_surf_app.append(list_x_surf)
-    l_y_surf_app.append(list_y_surf) 
+lamb_ex, omega_ex = lamb_exact(nu, k_m, sigma * k_m**3 / rho)
 
-liste_decrease=[]
+# ============================================================
+# Modal amplitude a(t): projection of the interface on mode m
+# ============================================================
 
-for i in range(len(l_y_surf_app)):
-        liste_decrease.append(max(l_y_surf_app[i][:])-0.15)
-        
-corr=liste_decrease[-1]
+files = gb.glob('interface_cap-*.txt')
+files.sort(key=lambda f: int(re.search(r'\d+', f).group()))
 
-for i in range(len(l_y_surf_app)):
-        liste_decrease[i]=liste_decrease[i]-corr
+x_grid = np.linspace(-L/2, L/2, 401)
+t_list, a_list = [], []
 
-x=np.linspace(0,15,len(liste_decrease))
-y=liste_decrease
+for name in files:
+    data = np.loadtxt(name)
+    if data.size == 0:
+        continue
+    order = np.argsort(data[:, 0])
+    eta = np.interp(x_grid, data[order, 0], data[order, 1])
+    f = (eta - h) * np.sin(m * np.pi * x_grid / L)
+    a = 2 / L * np.sum((f[1:] + f[:-1]) / 2 * np.diff(x_grid))   # trapezoidal rule
+    t_list.append((int(re.search(r'\d+', name).group()) - 1) * dt_save)
+    a_list.append(a)
 
-peaks, _ = find_peaks(y)
-x_peaks = [x[element] for element in peaks]
-y_peaks = [y[element] for element in peaks]
+t = np.array(t_list)
+a = np.array(a_list)
 
-rho=1000
-nu=0.5/rho
-L=0.4
-m=3
-h=0.15
-sigma=5
+# ============================================================
+# Extrema of a(t): decay rate and pseudo-pulsation
+# ============================================================
 
-k_m=m*np.pi/L
+absa = np.abs(a)
+ext = np.where((absa[1:-1] > absa[:-2]) & (absa[1:-1] >= absa[2:]))[0] + 1
+ext = ext[absa[ext] > 0.05 * h_1]          # stay above the numerical noise
 
-lamb=2*nu*k_m**2
+slope, intercept = np.polyfit(t[ext], np.log(absa[ext]), 1)
+lamb_num = -slope
 
-plt.figure()
-plt.plot(x_peaks,y_peaks,'r*',label='Num.')
-plt.plot(x,[0.021*np.exp(-lamb*elem) for elem in x],label='Theory')
-plt.legend()
+maxi = ext[a[ext] > 0]
+omega_num = 2 * np.pi / np.mean(np.diff(t[maxi]))
+
+print("lambda: num = %.4f, theory = %.4f (ratio %.3f), exact Lamb = %.4f (ratio %.3f)"
+      % (lamb_num, lamb_th, lamb_num / lamb_th, lamb_ex, lamb_num / lamb_ex))
+print("omega : num = %.4f, theory = %.4f (ratio %.3f)" % (omega_num, omega_th, omega_num / omega_th))
+
+# ============================================================
+# Plot
+# ============================================================
+
+fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
+
+ax[0].plot(t, a / h_1, 'b-', linewidth=1, label=r'Simulation: $a(t)/h_1$')
+ax[0].plot(t, np.exp(-lamb_th * t), 'r--', linewidth=2,
+           label=r'Theory: $\pm e^{-\lambda_1 t}$')
+ax[0].plot(t, -np.exp(-lamb_th * t), 'r--', linewidth=2)
+ax[0].plot(t, np.exp(-lamb_ex * t), 'g-.', linewidth=2,
+           label=r'Exact Lamb: $\pm e^{-\lambda t}$')
+ax[0].plot(t, -np.exp(-lamb_ex * t), 'g-.', linewidth=2)
+ax[0].set_xlabel(r'$t$ (s)')
+ax[0].set_ylabel(r'$a/h_1$')
+ax[0].set_xlim([0, 8])
+ax[0].legend()
+ax[0].grid(True)
+
+ax[1].semilogy(t[ext], absa[ext] / h_1, 'b*', label='Simulation (extrema)')
+ax[1].semilogy(t, np.exp(intercept + slope * t) / h_1, 'b-', linewidth=1,
+               label=r'Fit: $\lambda_\mathrm{num} = %.3f$ s$^{-1}$' % lamb_num)
+ax[1].semilogy(t, np.exp(-lamb_th * t), 'r--', linewidth=2,
+               label=r'Theory: $\lambda_1 = 2\nu k_m^2 = %.3f$ s$^{-1}$' % lamb_th)
+ax[1].semilogy(t, np.exp(-lamb_ex * t), 'g-.', linewidth=2,
+               label=r'Exact Lamb: $\lambda = %.3f$ s$^{-1}$' % lamb_ex)
+ax[1].set_xlabel(r'$t$ (s)')
+ax[1].set_ylabel(r'$|a|/h_1$')
+ax[1].set_xlim([0, 8])
+ax[1].set_ylim([1e-2, 2])
+ax[1].legend(loc='lower left')
+ax[1].grid(True, which='both', alpha=0.4)
+ax[1].text(0.97, 0.97,
+           r'$\lambda_\mathrm{num}/\lambda_1 = %.3f$' '\n' r'$\lambda_\mathrm{num}/\lambda_\mathrm{Lamb} = %.3f$' '\n'
+           r'$\omega_\mathrm{num}/\omega_p = %.3f$'
+           % (lamb_num / lamb_th, lamb_num / lamb_ex, omega_num / omega_th),
+           transform=ax[1].transAxes, ha='right', va='top',
+           bbox=dict(facecolor='white', alpha=0.8))
+
+plt.tight_layout()
 plt.savefig('decreasing.png')
+~~~
+**Steepness.** The theory above is linear: it assumes a small steepness $\varepsilon = k_m h_1 \ll 1$. Here $\varepsilon = (3\pi/0.4)\times 0.02 \approx 0.47$, a very steep standing wave. To check that the discrepancy comes from the steepness, we compute a local decay rate, fitted over a sliding window of 3 periods, and plot it against the local steepness $k_m|a|$.
+
+**Exact linear theory.** $\lambda_1 = 2\nu k^2$ is only the first term of Lamb's result (§ 349): it neglects the vortical boundary layer below the surface, of thickness $\sqrt{2\nu/\omega}. The exact dispersion relation (deep water, $\tanh(kh) \approx 1$), for $\eta \propto e^{st}$,
+
+$$(s + 2\nu k^2)^2 + \frac{\sigma k^3}{\rho} = 4\nu^2k^4\sqrt{1 + \frac{s}{\nu k^2}}$$
+
+Its expansion gives $\lambda \simeq 2\nu k^2\left(1 - \sqrt{\varepsilon_\nu/2}\right)$ with $\varepsilon_\nu = \nu k^2/\omega_0$. The vorticity video below shows this boundary layer: the vorticity is confined in a thin layer under the surface, the bulk of the liquid being irrotational.
+
+~~~pythonplot Local decay rate vs steepness
+import matplotlib.pyplot as plt
+import numpy as np
+import glob as gb
+import re
+
+L = 0.4
+h = 0.15
+h_1 = 0.02
+m = 3
+nu = 0.5 / 1000
+sigma = 5
+rho = 1000
+dt_save = 0.005
+
+k_m = m * np.pi / L
+lamb_th = 2 * nu * k_m**2
+
+# exact Lamb dispersion relation (deep water), perturbation ~ exp(s t):
+# (s + 2 nu k^2)^2 + omega_0^2 = 4 nu^2 k^4 sqrt(1 + s/(nu k^2))
+def lamb_exact(nu, k, w0sq):
+    F = lambda s: (s + 2*nu*k**2)**2 + w0sq - 4*nu**2*k**4*np.sqrt(1 + s/(nu*k**2) + 0j)
+    s = -2*nu*k**2 + 1j*np.sqrt(w0sq)
+    for _ in range(50):                      # complex Newton iterations
+        ds = 1e-8 * (1 + 1j)
+        s = s - F(s) * ds / (F(s + ds) - F(s))
+    return -s.real, s.imag                   # decay rate, pseudo-pulsation
+
+lamb_ex, omega_ex = lamb_exact(nu, k_m, sigma * k_m**3 / rho)
+
+# modal amplitude a(t), as above
+files = gb.glob('interface_cap-*.txt')
+files.sort(key=lambda f: int(re.search(r'\d+', f).group()))
+x_grid = np.linspace(-L/2, L/2, 401)
+t_list, a_list = [], []
+for name in files:
+    data = np.loadtxt(name)
+    if data.size == 0:
+        continue
+    order = np.argsort(data[:, 0])
+    eta = np.interp(x_grid, data[order, 0], data[order, 1])
+    f = (eta - h) * np.sin(m * np.pi * x_grid / L)
+    a_list.append(2 / L * np.sum((f[1:] + f[:-1]) / 2 * np.diff(x_grid)))
+    t_list.append((int(re.search(r'\d+', name).group()) - 1) * dt_save)
+t = np.array(t_list)
+absa = np.abs(np.array(a_list))
+
+ext = np.where((absa[1:-1] > absa[:-2]) & (absa[1:-1] >= absa[2:]))[0] + 1
+ext = ext[absa[ext] > 0.05 * h_1]
+
+# local fit of ln|a| over n_win consecutive extrema (3 periods)
+n_win = 6
+t_loc, lamb_loc, eps_loc = [], [], []
+for i in range(len(ext) - n_win + 1):
+    idx = ext[i:i + n_win]
+    slope, intercept = np.polyfit(t[idx], np.log(absa[idx]), 1)
+    tc = np.mean(t[idx])
+    t_loc.append(tc)
+    lamb_loc.append(-slope)
+    eps_loc.append(k_m * np.exp(intercept + slope * tc))   # local steepness
+t_loc, lamb_loc, eps_loc = map(np.array, (t_loc, lamb_loc, eps_loc))
+
+fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
+
+ax[0].plot(t_loc, lamb_loc / lamb_th, 'bo-', markersize=4)
+ax[0].axhline(1, color='r', linestyle='--', linewidth=2, label=r'Linear theory $\lambda_1 = 2\nu k_m^2$')
+ax[0].axhline(lamb_ex / lamb_th, color='g', linestyle='-.', linewidth=2, label='Exact Lamb (linear)')
+ax[0].set_xlabel(r'$t$ (s)')
+ax[0].set_ylabel(r'$\lambda_\mathrm{loc}/\lambda_1$')
+ax[0].set_ylim([0.5, 1.2])
+ax[0].legend(loc='lower right')
+ax[0].grid(True)
+
+sc = ax[1].scatter(eps_loc, lamb_loc / lamb_th, c=t_loc, cmap='viridis', s=25)
+ax[1].axhline(1, color='r', linestyle='--', linewidth=2)
+ax[1].axhline(lamb_ex / lamb_th, color='g', linestyle='-.', linewidth=2)
+ax[1].set_xlabel(r'Local steepness $k_m|a|$')
+ax[1].set_ylabel(r'$\lambda_\mathrm{loc}/\lambda_1$')
+ax[1].set_xlim(left=0)
+ax[1].set_ylim([0.5, 1.2])
+ax[1].grid(True)
+cbar = fig.colorbar(sc, ax=ax[1])
+cbar.set_label(r'$t$ (s)')
+
+plt.tight_layout()
+plt.savefig('local_decay.png')
 ~~~
 
 */
@@ -310,7 +471,8 @@ Hence, after the initial start, we observe that the component of the mode $m=3$ 
 */
 
 /**
-![Vitesse verticale](slosh_dissipation_cap/u_y.mp4)
-![Projection de la norme de la vitesse verticale sur le mode n°3](slosh_dissipation_cap/u_y_3.mp4)
-![Projection de la norme de la vitesse verticale sur le mode n°1](slosh_dissipation_cap/u_y_1.mp4)
+![Vertical velocity](slosh_dissipation_cap/u_y.mp4)
+![Vorticity in the liquid (air masked): surface boundary layer](slosh_dissipation_cap/omega.mp4)
+![Harmonic amplitude of the vertical velocity at the frequency of mode 3](slosh_dissipation_cap/u_y_3.mp4)
+![Harmonic amplitude of the vertical velocity at the frequency of mode 1](slosh_dissipation_cap/u_y_1.mp4)
 */

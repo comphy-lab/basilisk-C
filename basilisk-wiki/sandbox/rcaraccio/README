@@ -35,6 +35,12 @@ Coming soon!
 ### Biomass combustion
 Coming soon!
 
+## Editor support for Basilisk C
+I also maintain [basilisk-editor](https://github.com/Riccaraccio/basilisk-editor), which provides editor support for Basilisk C in vim/neovim, Emacs, VS Code and nano, with configurations for Helix, Sublime Text and Kate.
+It recognises Basilisk files and highlights Basilisk constructs (`foreach` loops, events, fields, literate comments).
+It also shows qcc errors as you type, and offers completion, documentation on hover and go to definition into the Basilisk headers.
+It is still in beta (mostly developed with the help of an AI assistant), so feedback and bug reports are very welcome on the [GitHub issues page](https://github.com/Riccaraccio/basilisk-editor/issues).
+
 ## List of Co-Authored pubblications
 Brief list of related topic on which I collaborated.
 More research in different area can be found [here](https://scholar.google.com/citations?user=haLeMlYAAAAJ&hl=en&oi=sra)

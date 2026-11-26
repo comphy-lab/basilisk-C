@@ -140,9 +140,21 @@ macro for_each_root (ivec d = Dimensions)
 macro2 foreach_cell()
 {
   {
+#if TREE
     for_each_root()
       foreach_cell_root (root)
         {...}
+#else // !TREE
+#if dimension == 1
+    Point root = {GHOSTS,0};
+#elif dimension == 2
+    Point root = {GHOSTS,GHOSTS,0};
+#else // dimension == 3
+    Point root = {GHOSTS,GHOSTS,GHOSTS,0};
+#endif
+    foreach_cell_root (root)
+      {...}
+#endif // !TREE
   }
 }
 

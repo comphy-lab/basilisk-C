@@ -50,6 +50,7 @@ trace void output_facets_vtkhdf_box(scalar c, scalar s, char *name = "domain.vtk
   hsize_t dims[1] = {2};
 
   // Obtain the number of vertices and facets within the box
+  sync_facets_fields (c, {s});
   long num_points_loc = 0, num_cells_loc = 0;
   long num_points = 0, num_cells = 0;
   count_vertices_and_facets_box(c, box, &num_points_loc, &num_cells_loc);

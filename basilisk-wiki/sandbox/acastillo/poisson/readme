@@ -1,0 +1,48 @@
+/**
+# Multigrid Poisson–Helmholtz Solver with Coarse-Level Jacobi-PCG
+
+Drop-in replacement for upstream [`src/poisson.h`](/src/poisson.h) that
+eliminates coarse-grid relaxation stalls on elongated / multi-root
+`dimensions()` domains (e.g. `25 x 2 x 4`) and Fredholm compatibility stalls
+on singular pure-Neumann / periodic problems, using 100% pure Basilisk C
+(`foreach_level_or_leaf`, `boundary_level`, `reduction`) compatible with
+CPU serial, OpenMP, CPU MPI, 1× GPU, and Multi-GPU MPI.
+
+## Summary of Changes vs. Upstream `src/poisson.h`
+
+1. **Coarse-level Jacobi-PCG (`coarse_pcg`) at `l == minlevel`**:
+   * Controlled by global `int NITERCOARSE = 40;` (alongside `NITERMAX` and
+     `NITERMIN`; set `NITERCOARSE = 0;` to revert to pure upstream relaxation).
+   * Solves the $-\Delta^2$-scaled SPD coarse system with diagonal (Jacobi)
+     preconditioning, exiting early at $\|r\|_2^2 \le 10^{-16}\|r_0\|_2^2$.
+   * Automatically falls back to `relax()` for `#if EMBED` (`embed_flux != NULL`)
+     and non-Poisson callers of `mg_cycle()` (e.g. `viscosity.h`).
+2. **Exact operator singularity test & Fredholm compatibility projection**:
+   * `is_singular()` checks $\|A \cdot \mathbf{1}\|_1 \le 10^{-12}$ on
+     `l = minlevel` using `a.boundary_homogeneous`, cached in
+     `struct Poisson.singular`.
+   * Untouched for Dirichlet, Robin, mixed, or Helmholtz ($\lambda \neq 0$)
+     problems; for singular pure-Neumann/periodic operators with
+     $|\bar{b}| > 10^{-14}$, projects $b \mapsto b - \bar{b}$ onto
+     $\operatorname{Range}(A) = \mathbf{1}^\perp$.
+3. **3D `level == 0` red-black parity fix (`relax`)**:
+   * Removes `level == 0 ||` from the 3D red-black parity guard, fixing a
+     parallel write-race on multi-root GPU grids.
+
+## Usage
+
+* **Standalone Poisson/Helmholtz**:
+  ```c
+  #include "acastillo/poisson/poisson.h"
+  ```
+* **With `navier-stokes/centered.h`** (without modifying `$BASILISK/src/poisson.h`):
+  1. Place a 1-line `poisson.h` redirect in your simulation directory:
+     ```c
+     #include "acastillo/poisson/poisson.h"
+     ```
+  2. Include `"poisson.h"` **before** `"navier-stokes/centered.h"` in `main.c`:
+     ```c
+     #include "poisson.h"
+     #include "navier-stokes/centered.h"
+     ```
+*/

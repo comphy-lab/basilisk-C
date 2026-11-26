@@ -1,6 +1,8 @@
 #ifndef OUTPUT_VTKHDF_BOX_H
 #define OUTPUT_VTKHDF_BOX_H
 
+#include "output_vtkhdf_helpers.h"
+
 /** 
 ## *output_vtkhdf_box()*: Exports 2D (or 3D) fields within a specified box region.
 
@@ -49,9 +51,12 @@ trace void output_vtkhdf_box(scalar *list, vector *vlist, char *name = "domain.v
   hsize_t offset[2]; // Offset for hyperslab
   hsize_t dims[1] = {2};
   
+  /** Sync GPU fields to host before host-side extraction */
+  sync_output_fields (list, vlist);
+
   /** Define a scalar field for cell selection with consistent boundaries */ 
   scalar cell_mask[];
-  foreach () {
+  foreach (serial, noauto) {
     cell_mask[] = 0.;  // Initialize to 0
 #if dimension == 2
     if (x >= box[0].x && x < box[1].x &&
@@ -67,7 +72,7 @@ trace void output_vtkhdf_box(scalar *list, vector *vlist, char *name = "domain.v
   }
 
   vertex scalar vertex_needed[];
-  foreach_vertex(){
+  foreach_vertex(serial, noauto){
     vertex_needed[] = 0;
   }
 

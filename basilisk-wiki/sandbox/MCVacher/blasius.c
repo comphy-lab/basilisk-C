@@ -1,19 +1,18 @@
 /**
 # Blasius boundary layer
 
-Semi-infinite flat plate along $y = 0$ for $x > X_0$ (leading edge
-at $x = X_0$).
+Semi-infinite flat plate along $y = 0$ with no-slip at $x > X_0$.
 */
 
 #include "grid/multigrid.h"
 #include "navier-stokes/centered.h"
 
 #define U_INF  1.0
-#define RE     500.0        // Re_x >> 1 needed: thin boundary layer vs domain height
+#define RE     500.0        
 #define NU     (U_INF/RE)
 #define X0     0.2          // leading edge of the plate
 
-#define LEVEL  9            // ~7 cells per delta at x - X0 = 0.1
+#define LEVEL  9            
 #define T_END  3.0          // a few L/U crossing times to reach steady state
 
 double t_output = 0.01;
@@ -27,7 +26,7 @@ u.n[right]  = neumann(0.);
 u.t[right]  = neumann(0.);
 p[right]    = dirichlet(0.);
 
-// Bottom wall: symmetry before X0, no-slip after
+// Bottom wall: slip before X0, no-slip after
 u.t[bottom] = x > X0 ? dirichlet(0.) : neumann(0.);
 u.n[bottom] = dirichlet(0.);
 
@@ -39,7 +38,7 @@ p[top]      = dirichlet(0.);
 int main() {
   size(1.0);
   origin(0., 0.);
-  init_grid(1 << LEVEL);
+  init_grid(1 << LEVEL); //2^LEVEL
 
   const face vector muv[] = {NU, NU};
   mu = muv;
@@ -94,12 +93,7 @@ the layer. The flow above the layer is not uniform in $y$
 either: $u$ reaches a maximum just above the layer, then decreases slowly
 towards the top of the domain. The displacement thickness acts like a growing
 bump on the wall, and the flow over a bump is fastest close to its surface.
-This is a second-order boundary-layer effect, of relative size
-$\delta^{*} / x \approx 1.72/\sqrt{Re_x}$, i.e. 10 to 25 % here since $Re_x$ is
-only 50 to 300. At leading order (Prandtl model) it vanishes and
-$\partial_y p = 0$. For each column we therefore define the edge velocity as
-the maximum of the profile, $U_e(x) = \max_{y < y_e} u(x, y)$ with
-$y_e = 0.5$. We then use
+At leading order (Prandtl model) it vanishes and $\partial_y p = 0$. For each column we therefore define the edge velocity as the maximum of the profile, $U_e(x) = \max_{y < y_e} u(x, y)$ with $y_e = 0.5$. We then use:
 
 $$
 \delta(x) = \sqrt{\frac{\nu (x-X_0)}{U_e}}, \qquad

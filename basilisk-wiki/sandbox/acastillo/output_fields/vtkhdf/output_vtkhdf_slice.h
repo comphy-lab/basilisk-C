@@ -1,6 +1,8 @@
 #ifndef OUTPUT_VTKHDF_SLICE_H
 #define OUTPUT_VTKHDF_SLICE_H
 
+#include "output_vtkhdf_helpers.h"
+
 /** 
 ## output_vtkhdf_slice(): Exports a 2D slice of a 3D field along x, y, or z.
 
@@ -55,9 +57,12 @@ trace void output_vtkhdf_slice(scalar *list, vector *vlist, char *name, coord n 
   hsize_t offset[2]; // Offset for hyperslab
   hsize_t dims[1] = {2};
 
+  // Ensure +1 face-averaging halos are current and sync GPU fields to host
+  sync_output_fields (list, vlist);
+
   // Define a scalar mask to deal with solids and periodic conditions
   scalar per_mask[];
-  foreach (){
+  foreach (serial, noauto){
     per_mask[] = 0.;
     shortcut_slice(n, _alpha);
     if (alpha > 0.){

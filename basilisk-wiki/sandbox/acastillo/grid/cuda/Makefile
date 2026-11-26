@@ -10,10 +10,10 @@ libbuda.a: cuda.o
 libbuda64.a: cuda64.o
 	ar cr libbuda64.a cuda64.o
 
-cuda.o: cuda.c
+cuda.o: cuda.c cuda-mpi.c ../externals.h
 	$(CC) $(BASE_CFLAGS) -DSINGLE_PRECISION=1 -c -o $@ $<
 
-cuda64.o: cuda.c
+cuda64.o: cuda.c cuda-mpi.c ../externals.h
 	$(CC) $(BASE_CFLAGS) -DSINGLE_PRECISION=0 -DDOUBLE_PRECISION=1 -c -o $@ $<
 
 clean:

@@ -7,9 +7,10 @@ void write_scalar_heavy_data(FILE *fp, scalar *list, scalar per_mask, long no_ce
   long block_len = no_cells * sizeof(double);
   for (scalar s in list){
     fwrite(&block_len, sizeof(long), 1, fp);
-    foreach (){
+    foreach (serial, noauto){
       if (per_mask[]){
-        fwrite(&val(s), sizeof(double), 1, fp);
+        double sval = val(s);
+        fwrite(&sval, sizeof(double), 1, fp);
       }
     }
   }
@@ -19,7 +20,7 @@ void write_scalar_heavy_data_slice(FILE *fp, scalar *list, scalar per_mask, long
   long block_len = no_cells * sizeof(double);
   for (scalar s in list){
     fwrite(&block_len, sizeof(long), 1, fp);
-    foreach (){
+    foreach (serial, noauto){
       if (per_mask[]){
         double sval;
         if (n.x == 1)
@@ -47,15 +48,17 @@ void write_vector_heavy_data(FILE *fp, vector *vlist, scalar per_mask, long no_c
   long block_len = no_cells * 3 * sizeof(double);
   for (vector v in vlist){
     fwrite(&block_len, sizeof(long), 1, fp);
-    foreach (){
+    foreach (serial, noauto){
       if (per_mask[]){
-        fwrite(&val(v.x), sizeof(double), 1, fp);
-        fwrite(&val(v.y), sizeof(double), 1, fp);
+        double vx = val(v.x), vy = val(v.y);
+        fwrite(&vx, sizeof(double), 1, fp);
+        fwrite(&vy, sizeof(double), 1, fp);
         #if dimension == 2
-          double vz = 0;
+          double vz = 0.;
           fwrite(&vz, sizeof(double), 1, fp);
         #elif dimension == 3
-          fwrite(&val(v.z), sizeof(double), 1, fp);
+          double vz = val(v.z);
+          fwrite(&vz, sizeof(double), 1, fp);
         #endif
       }
     }
@@ -66,7 +69,7 @@ void write_vector_heavy_data_slice(FILE *fp, vector *vlist, scalar per_mask, lon
   long block_len = no_cells * 3 * sizeof(double);
   for (vector v in vlist){
     fwrite(&block_len, sizeof(long), 1, fp);
-    foreach (){
+    foreach (serial, noauto){
       if (per_mask[]){
         double xval, yval, zval;
         if (n.x == 1){
@@ -108,7 +111,7 @@ void write_vector_heavy_data_slice(FILE *fp, vector *vlist, scalar per_mask, lon
 void write_points_heavy_data(FILE *fp, long no_points) {
   long block_len = no_points * 3 * sizeof(double);
   fwrite(&block_len, sizeof(long), 1, fp);
-  foreach_vertex(){
+  foreach_vertex(serial, noauto){
     fwrite(&x, sizeof(double), 1, fp);
     fwrite(&y, sizeof(double), 1, fp);
     fwrite(&z, sizeof(double), 1, fp);
@@ -118,7 +121,7 @@ void write_points_heavy_data(FILE *fp, long no_points) {
 void write_points_heavy_data_masked(FILE *fp, long no_points, vertex scalar mask) {
   long block_len = no_points * 3 * sizeof(double);
   fwrite(&block_len, sizeof(long), 1, fp);
-  foreach_vertex(){
+  foreach_vertex(serial, noauto){
     if (mask[] >= 0.5){
       fwrite(&x, sizeof(double), 1, fp);
       fwrite(&y, sizeof(double), 1, fp);
@@ -130,7 +133,7 @@ void write_points_heavy_data_masked(FILE *fp, long no_points, vertex scalar mask
 void write_points_heavy_data_slice(FILE *fp, long no_points, coord n = {0,0,1}, double _alpha = 0) {
   long block_len = no_points * 3 * sizeof(double);
   fwrite(&block_len, sizeof(long), 1, fp);
-  foreach_vertex(){
+  foreach_vertex(serial, noauto){
     shortcut_slice(n, _alpha);
     fwrite(&x, sizeof(double), 1, fp);
     fwrite(&y, sizeof(double), 1, fp);

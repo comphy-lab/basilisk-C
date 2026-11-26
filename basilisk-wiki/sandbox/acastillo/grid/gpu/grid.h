@@ -430,6 +430,8 @@ declared at program scope must reside in the `constant` address space
   TYPEDEF("ivec3", "{ int x, y, z; }")     \
   TYPEDEF("vec2", "{ float x, y; }")       \
   TYPEDEF("vec3", "{ float x, y, z; }")    \
+  TYPEDEF("dvec2", "{ double x, y; }")     \
+  TYPEDEF("dvec3", "{ double x, y, z; }")  \
   TYPEDEF("vec4", "{ float r, g, b, a; }") \
   "#define forin(type,s,list) for (int _i = 0; _i < int(sizeof(list)/sizeof(type)) - 1; _i++) { type s = list[_i];\n" \
   "#define forin2(a,b,c,d) for (int _i = 0; _i < int(sizeof(c)/sizeof(a)) - 1; _i++)" \
@@ -525,14 +527,14 @@ declared at program scope must reside in the `constant` address space
 # define GPU_REAL_TYPE "double"
 # define GPU_COORD2_TYPE "dvec2"
 # define GPU_COORD3_TYPE "dvec3"
-# if _CUDA
-#  define GPU_MATH_DECLS
-# else
+# if !_CUDA
 #  define GPU_MATH_DECLS                                            \
   "#define cos(x) cos(float(x))\n"                                  \
   "#define sin(x) sin(float(x))\n"                                  \
   "#define exp(x) exp(float(x))\n"                                  \
   "#define pow(x,y) pow(float(x), float(y))\n"
+# else
+#  define GPU_MATH_DECLS
 # endif
 #endif
 
@@ -625,10 +627,14 @@ const char glsl_preproc[] =
   "#define NOT_UNUSED(x)\n"
 #if SINGLE_PRECISION
   "#define pi 3.14159265359f\n"
-#else // DOUBLE_PRECISION
-  "#define pi 3.14159265358979323846\n"
-#endif
   "#define nodata (1e30f)\n"
+#elif !_CUDA // GLSL DOUBLE_PRECISION
+  "#define pi 3.14159265358979323846lf\n"
+  "#define nodata (1e30lf)\n"
+#else // CUDA DOUBLE_PRECISION
+  "#define pi 3.14159265358979323846\n"
+  "#define nodata (1e30)\n"
+#endif
   GPU_UNUSED_COORDS
   "_CONST_ int ig = 0, jg = 0, kg = 0;\n"
   GPU_UNIFORM_DECLS
@@ -797,10 +803,60 @@ static char * write_tensor (char * fs, tensor t)
 static scalar * apply_bc_list;
 
 static const int bc_period_x = -1, bc_period_y = -1;
-static const int _mpi_wall = 63;
 #if dimension == 3
 static const int bc_period_z = -1;
 #endif
+static const int _mpi_wall = 63;
+
+#ifdef _LOCALDIMS
+# define _GPU_DIMS LocalDims
+#else
+# define _GPU_DIMS Dimensions
+#endif
+
+/**
+Return a 6-bit mask of the local subdomain faces that are physical
+(non-periodic, non-MPI-seam) boundaries: bits 0..5 correspond to
+`left`, `right`, `bottom`, `top`, `back`, `front`. Injected as
+`_CONST_ int _mpi_wall` at shader compile time so `apply_bc()` only
+applies physical boundary conditions on real walls and leaves internal
+MPI/periodic ghost layers to `mpi_boundary_level_gpu()`. */
+
+static inline int mpi_wall_mask (void)
+{
+#if _MPI && defined(_LOCALDIMS)
+  int wmask = 0;
+  struct { int x, y, z; } dir = {0, 1, 2};
+  foreach_dimension()
+    if (!Period.x) {
+      if (mpi_coords[dir.x] == 0) wmask |= 1 << (2*dir.x);
+      if (mpi_coords[dir.x] == MpiDims.x - 1) wmask |= 1 << (2*dir.x + 1);
+    }
+  return wmask;
+#else
+  return 63;
+#endif
+}
+
+/**
+Return a 3-bit mask of axes where this rank has an internal upper MPI
+neighbor (`mpi_coords[d] < MpiDims[d] - 1`). Used in `+` reductions on
+`foreach_face()` / `foreach_vertex()` so shared seam faces/vertices are
+counted by only one rank. */
+
+static inline int mpi_seam_mask (void)
+{
+#if _MPI && defined(_LOCALDIMS)
+  int smask = 0;
+  struct { int x, y, z; } dir = {0, 1, 2};
+  foreach_dimension()
+    if (mpi_coords[dir.x] < MpiDims.x - 1)
+      smask |= 1 << dir.x;
+  return smask;
+#else
+  return 0;
+#endif
+}
 
 static void boundary_top (Point point, int i, int k)
 {
@@ -865,17 +921,17 @@ void apply_bc (Point point)
 {
   bool data = false;
   // face BCs
-  if ((_mpi_wall & 1) && point.i == GHOSTS)
+  if (((_mpi_wall & 1) != 0) && point.i == GHOSTS)
     for (scalar s in apply_bc_list)
       if (s.face && s.i == s.v.x.i && s.boundary_left)
 	foreach_blockf(s)
 	  s[] = s.boundary_left (point, neighborp(bc_period_x,0,0), s, &data);
-  if ((_mpi_wall & 2) && point.i == N*Dimensions.x + GHOSTS)
+  if (((_mpi_wall & 2) != 0) && point.i == N*Dimensions.x + GHOSTS)
     for (scalar s in apply_bc_list)
       if (s.face && s.i == s.v.x.i && s.boundary_right)
 	foreach_blockf(s)
 	  s[] = s.boundary_right (neighborp(bc_period_x,0,0), point, s, &data);
-  if ((_mpi_wall & 4) && point.j == GHOSTS)
+  if (((_mpi_wall & 4) != 0) && point.j == GHOSTS)
     for (scalar s in apply_bc_list)
       if (s.face && s.i == s.v.y.i) {
 	scalar b = s.v.x;
@@ -883,7 +939,7 @@ void apply_bc (Point point)
 	  foreach_blockf(s)
 	    s[] = b.boundary_bottom (point, neighborp(0,bc_period_y,0), s, &data);
       }
-  if ((_mpi_wall & 8) && point.j == N*Dimensions.y + GHOSTS)
+  if (((_mpi_wall & 8) != 0) && point.j == N*Dimensions.y + GHOSTS)
     for (scalar s in apply_bc_list)
       if (s.face && s.i == s.v.y.i) {
 	scalar b = s.v.x;
@@ -892,7 +948,7 @@ void apply_bc (Point point)
 	    s[] = b.boundary_top (neighborp(0,bc_period_y,0), point, s, &data);
       }
 #if dimension == 3
-  if ((_mpi_wall & 16) && point.k == GHOSTS)
+  if (((_mpi_wall & 16) != 0) && point.k == GHOSTS)
     for (scalar s in apply_bc_list)
       if (s.face && s.i == s.v.z.i) {
 	scalar b = s.v.x;
@@ -900,7 +956,7 @@ void apply_bc (Point point)
 	  foreach_blockf(s)
 	    s[] = b.boundary_back (point, neighborp(0,0,bc_period_z), s, &data);
       }
-  if ((_mpi_wall & 32) && point.k == N*Dimensions.z + GHOSTS)
+  if (((_mpi_wall & 32) != 0) && point.k == N*Dimensions.z + GHOSTS)
     for (scalar s in apply_bc_list)
       if (s.face && s.i == s.v.z.i) {
 	scalar b = s.v.x;
@@ -909,89 +965,90 @@ void apply_bc (Point point)
 	    s[] = b.boundary_front (neighborp(0,0,bc_period_z), point, s, &data);
       }
 #endif
-  // centered BCs (_mpi_wall bits: 0=left, 1=right, 2=bottom, 3=top, 4=back, 5=front)
-  if ((_mpi_wall & 1) && point.i == GHOSTS) { // left
+  // centered BCs (_mpi_wall bits: 0..5 = left,right,bottom,top,back,front)
+  if (((_mpi_wall & 1) != 0) && point.i == GHOSTS) { // left
     for (scalar s in apply_bc_list)
       if ((!s.face || s.i != s.v.x.i) && s.boundary_left)
 	foreach_blockf(s)
 	  s[bc_period_x,0,0] = s.boundary_left (point, neighborp(bc_period_x,0,0), s, &data);
-    if ((_mpi_wall & 4) && point.j == GHOSTS) {
+    if (((_mpi_wall & 4) != 0) && point.j == GHOSTS) {
       boundary_bottom (point, bc_period_x, 0);
 #if dimension == 3
-      if ((_mpi_wall & 16) && point.k == GHOSTS)
+      if (((_mpi_wall & 16) != 0) && point.k == GHOSTS)
 	boundary_back (point, bc_period_x, bc_period_y);
-      if ((_mpi_wall & 32) && point.k == N*Dimensions.z + GHOSTS - 1)
+      if (((_mpi_wall & 32) != 0) && point.k == N*Dimensions.z + GHOSTS - 1)
 	boundary_front (point, bc_period_x, bc_period_y);
 #endif
     }
-    if ((_mpi_wall & 8) && point.j == N*Dimensions.y + GHOSTS - 1) {
+    if (((_mpi_wall & 8) != 0) && point.j == N*Dimensions.y + GHOSTS - 1) {
       boundary_top (point, bc_period_x, 0);
 #if dimension == 3
-      if ((_mpi_wall & 16) && point.k == GHOSTS)
+      if (((_mpi_wall & 16) != 0) && point.k == GHOSTS)
 	boundary_back (point, bc_period_x, -bc_period_y);
-      if ((_mpi_wall & 32) && point.k == N*Dimensions.z + GHOSTS - 1)
+      if (((_mpi_wall & 32) != 0) && point.k == N*Dimensions.z + GHOSTS - 1)
 	boundary_front (point, bc_period_x, -bc_period_y);
 #endif
     }
 #if dimension == 3
-    if ((_mpi_wall & 16) && point.k == GHOSTS)
+    if (((_mpi_wall & 16) != 0) && point.k == GHOSTS)
       boundary_back (point, bc_period_x, 0);
-    if ((_mpi_wall & 32) && point.k == N*Dimensions.z + GHOSTS - 1)
+    if (((_mpi_wall & 32) != 0) && point.k == N*Dimensions.z + GHOSTS - 1)
       boundary_front (point, bc_period_x, 0);
 #endif
   }
-  if ((_mpi_wall & 2) && point.i == N*Dimensions.x + GHOSTS - 1) { // right
+  if (((_mpi_wall & 2) != 0) &&
+      point.i == N*Dimensions.x + GHOSTS - 1) { // right
     for (scalar s in apply_bc_list)
       if ((!s.face || s.i != s.v.x.i) && s.boundary_right)
 	foreach_blockf(s)
 	  s[-bc_period_x,0,0] = s.boundary_right (point, neighborp(-bc_period_x,0,0), s, &data);
-    if ((_mpi_wall & 4) && point.j == GHOSTS) {
+    if (((_mpi_wall & 4) != 0) && point.j == GHOSTS) {
       boundary_bottom (point, -bc_period_x, 0);
 #if dimension == 3
-      if ((_mpi_wall & 16) && point.k == GHOSTS)
+      if (((_mpi_wall & 16) != 0) && point.k == GHOSTS)
 	boundary_back (point, -bc_period_x, bc_period_y);
-      if ((_mpi_wall & 32) && point.k == N*Dimensions.z + GHOSTS - 1)
+      if (((_mpi_wall & 32) != 0) && point.k == N*Dimensions.z + GHOSTS - 1)
 	boundary_front (point, -bc_period_x, bc_period_y);
 #endif
     }
-    if ((_mpi_wall & 8) && point.j == N*Dimensions.y + GHOSTS - 1) {
+    if (((_mpi_wall & 8) != 0) && point.j == N*Dimensions.y + GHOSTS - 1) {
       boundary_top (point, -bc_period_x, 0);
 #if dimension == 3
-      if ((_mpi_wall & 16) && point.k == GHOSTS)
+      if (((_mpi_wall & 16) != 0) && point.k == GHOSTS)
 	boundary_back (point, -bc_period_x, -bc_period_y);
-      if ((_mpi_wall & 32) && point.k == N*Dimensions.z + GHOSTS - 1)
+      if (((_mpi_wall & 32) != 0) && point.k == N*Dimensions.z + GHOSTS - 1)
 	boundary_front (point, -bc_period_x, -bc_period_y);
 #endif
     }
 #if dimension == 3
-    if ((_mpi_wall & 16) && point.k == GHOSTS)
+    if (((_mpi_wall & 16) != 0) && point.k == GHOSTS)
       boundary_back (point, -bc_period_x, 0);
-    if ((_mpi_wall & 32) && point.k == N*Dimensions.z + GHOSTS - 1)
+    if (((_mpi_wall & 32) != 0) && point.k == N*Dimensions.z + GHOSTS - 1)
       boundary_front (point, -bc_period_x, 0);
 #endif
   }
-  if ((_mpi_wall & 4) && point.j == GHOSTS) {
+  if (((_mpi_wall & 4) != 0) && point.j == GHOSTS) {
     boundary_bottom (point, 0, 0);
 #if dimension == 3
-    if ((_mpi_wall & 16) && point.k == GHOSTS)
+    if (((_mpi_wall & 16) != 0) && point.k == GHOSTS)
       boundary_back (point, 0, bc_period_y);
-    if ((_mpi_wall & 32) && point.k == N*Dimensions.z + GHOSTS - 1)
+    if (((_mpi_wall & 32) != 0) && point.k == N*Dimensions.z + GHOSTS - 1)
       boundary_front (point, 0, bc_period_y);
 #endif
   }
-  if ((_mpi_wall & 8) && point.j == N*Dimensions.y + GHOSTS - 1) {
+  if (((_mpi_wall & 8) != 0) && point.j == N*Dimensions.y + GHOSTS - 1) {
     boundary_top (point, 0, 0);
 #if dimension == 3
-    if ((_mpi_wall & 16) && point.k == GHOSTS)
+    if (((_mpi_wall & 16) != 0) && point.k == GHOSTS)
       boundary_back (point, 0, -bc_period_y);
-    if ((_mpi_wall & 32) && point.k == N*Dimensions.z + GHOSTS - 1)
+    if (((_mpi_wall & 32) != 0) && point.k == N*Dimensions.z + GHOSTS - 1)
       boundary_front (point, 0, -bc_period_y);
 #endif
   }
 #if dimension == 3
-  if ((_mpi_wall & 16) && point.k == GHOSTS)
+  if (((_mpi_wall & 16) != 0) && point.k == GHOSTS)
     boundary_back (point, 0, 0);
-  if ((_mpi_wall & 32) && point.k == N*Dimensions.z + GHOSTS - 1)
+  if (((_mpi_wall & 32) != 0) && point.k == N*Dimensions.z + GHOSTS - 1)
     boundary_front (point, 0, 0);
 #endif
 }
@@ -1085,10 +1142,9 @@ uint32_t hash_shader (const External * externals,
 #if LAYERS
   a32_hash_add (&hash, &nl, sizeof (nl));
 #endif
-  a32_hash_add (&hash, &LocalDims, sizeof (LocalDims));
+  a32_hash_add (&hash, &_GPU_DIMS, sizeof (_GPU_DIMS));
   a32_hash_add (&hash, &Period, sizeof (Period));
-  a32_hash_add (&hash, mpi_neighbor, sizeof (mpi_neighbor));
-#if _MPI
+#if _MPI && defined(_LOCALDIMS)
   a32_hash_add (&hash, &MpiDims, sizeof (MpiDims));
   a32_hash_add (&hash, mpi_coords, sizeof (mpi_coords));
 #endif
@@ -1292,20 +1348,10 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
 #endif
       fs = str_append (fs, "};\n");
 #endif // ifdef shift_level
-      int smask = 0;
-#if _MPI
-      if (mpi_coords[0] < MpiDims.x - 1) smask |= 1;
-#if dimension > 1
-      if (mpi_coords[1] < MpiDims.y - 1) smask |= 2;
-#endif
-#if dimension > 2
-      if (mpi_coords[2] < MpiDims.z - 1) smask |= 4;
-#endif
-#endif
       char seam_s[20];
-      snprintf (seam_s, 19, "%d", smask);
-      snprintf (s, 19, "%d", LocalDims.x);
-      snprintf (d, 19, "%d", LocalDims.y);
+      snprintf (seam_s, 19, "%d", mpi_seam_mask ());
+      snprintf (s, 19, "%d", _GPU_DIMS.x);
+      snprintf (d, 19, "%d", _GPU_DIMS.y);
 #if dimension == 2
       fs = str_append (fs,
                        "_CONST_ int _mpi_seam = ", seam_s, ";\n"
@@ -1316,7 +1362,7 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
                        loop->face > 1 || loop->vertex ? "+1" : "", ";\n");
 #elif dimension == 3
       char e[20];
-      snprintf (e, 19, "%d", LocalDims.z);
+      snprintf (e, 19, "%d", _GPU_DIMS.z);
       fs = str_append (fs,
                        "_CONST_ int _mpi_seam = ", seam_s, ";\n"
                        "_CONST_ ivec3 Dimensions = {", s, ",", d, ",", e, "};\n"
@@ -1373,18 +1419,10 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
       snprintf (nl, 19, "%d", *((int *)g->pointer));
       fs = str_append (fs, "_CONST_ int nl = ", nl, ";\n");
     }
-    else if (g->type == sym_INT && g->global && !strcmp (g->name, "_mpi_wall")) {
-      int wmask = 0;
-      if (mpi_neighbor[left]   < 0) wmask |= 1;
-      if (mpi_neighbor[right]  < 0) wmask |= 2;
-      if (mpi_neighbor[bottom] < 0) wmask |= 4;
-      if (mpi_neighbor[top]    < 0) wmask |= 8;
-#if dimension == 3
-      if (mpi_neighbor[back]   < 0) wmask |= 16;
-      if (mpi_neighbor[front]  < 0) wmask |= 32;
-#endif
+    else if (g->type == sym_INT && g->global &&
+             !strcmp (g->name, "_mpi_wall")) {
       char s[20];
-      snprintf (s, 19, "%d", wmask);
+      snprintf (s, 19, "%d", mpi_wall_mask ());
       fs = str_append (fs, "_CONST_ int _mpi_wall = ", s, ";\n");
     }
     else if (g->type == sym_INT && g->global && !strcmp (g->name, "bc_period_x")) {
@@ -1392,9 +1430,9 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
 #if !_MPI
       if (Period.x)
 #if _OPENCL
-        snprintf (s, 19, "(int)(N*%d)", LocalDims.x);
+        snprintf (s, 19, "(int)(N*%d)", _GPU_DIMS.x);
 #else
-        snprintf (s, 19, "int(N*%d)", LocalDims.x);
+        snprintf (s, 19, "int(N*%d)", _GPU_DIMS.x);
 #endif
 #endif
       fs = str_append (fs, "_CONST_ int bc_period_x = ", s, ";\n");
@@ -1404,9 +1442,9 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
 #if !_MPI
       if (Period.y)
 #if _OPENCL
-        snprintf (s, 19, "(int)(N*%d)", LocalDims.y);
+        snprintf (s, 19, "(int)(N*%d)", _GPU_DIMS.y);
 #else
-        snprintf (s, 19, "int(N*%d)", LocalDims.y);
+        snprintf (s, 19, "int(N*%d)", _GPU_DIMS.y);
 #endif
 #endif
       fs = str_append (fs, "_CONST_ int bc_period_y = ", s, ";\n");
@@ -1417,9 +1455,9 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
 #if !_MPI
       if (Period.z)
 #if _OPENCL
-        snprintf (s, 19, "(int)(N*%d)", LocalDims.z);
+        snprintf (s, 19, "(int)(N*%d)", _GPU_DIMS.z);
 #else
-        snprintf (s, 19, "int(N*%d)", LocalDims.z);
+        snprintf (s, 19, "int(N*%d)", _GPU_DIMS.z);
 #endif
 #endif
       fs = str_append (fs, "_CONST_ int bc_period_z = ", s, ";\n");
@@ -1435,7 +1473,7 @@ char * external_write (char * fs, const External * g, const ForeachData * loop,
 	
 #if SINGLE_PRECISION
       fs = str_append (fs, "coord p = vec3((vsPoint*vsScale + vsOrigin)*L0 + vec2(X0, Y0),0);\n");
-#else // DOUBLE_PRECISION
+#else
       fs = str_append (fs, "coord p = dvec3((dvec2(vsPoint)*dvec2(vsScale) + dvec2(vsOrigin))*L0 + dvec2(X0, Y0),0);\n");
 #endif
     }
@@ -1519,8 +1557,13 @@ char * build_shader (External * externals, const ForeachData * loop,
 {
   char s[30];
   snprintf (s, 19, "%d", nconst > 0 ? nconst : 1);
-  char a[30];
-  snprintf (a, 29, "%#.17g", nconst > 0 ? _constant[0] : 0.);
+  char a[36];
+#if !_CUDA && !SINGLE_PRECISION
+  const char * fmt = "%#.17glf";
+#else
+  const char * fmt = "%#.17g";
+#endif
+  snprintf (a, 35, fmt, nconst > 0 ? _constant[0] : 0.);
   char * fs = str_append (NULL,
 #if !_CUDA
                           "#version 430\n",
@@ -1529,7 +1572,7 @@ char * build_shader (External * externals, const ForeachData * loop,
 			  "_CONST_ int _nconst = ", s, ";\n"
 			  "_CONST_ real _constant[", s, "] = {", a);
   for (int i = 1; i < nconst; i++) {
-    snprintf (a, 29, "%#.17g", _constant[i]);
+    snprintf (a, 35, fmt, _constant[i]);
     fs = str_append (fs, ",", a);
   }
   fs = str_append (fs, "};\n"
@@ -1551,7 +1594,9 @@ char * build_shader (External * externals, const ForeachData * loop,
 		     "#define _data_val(field,index) _data[(field)*field_size() + (index)]\n");
 #elif _CUDA
     fs = str_append (fs,
-		     "#define _data_val(field,index) _ctx_->_data[(size_t)(field)*field_size() + (size_t)(index)]\n");
+		     "#define _data_val(field,index)"
+		     " _ctx_->_data[(size_t)(field)*field_size()"
+		     " + (size_t)(index)]\n");
 #else
     fs = str_append (fs, ";\n"
 		     "#define _data_val(field,index) _data.f[(field)*field_size() + (index)]\n");
@@ -1606,7 +1651,11 @@ char * build_shader (External * externals, const ForeachData * loop,
 	      fs = str_append (fs, s);
 	    }
 	    else if (g->type == sym_DOUBLE) {
-	      char s[30]; snprintf (s, 29, "%#.17g", *((double *)(data + g->nd)));
+#if !_CUDA && !SINGLE_PRECISION
+	      char s[36]; snprintf (s, 35, "%#.17glf", *((double *)(data + g->nd)));
+#else
+	      char s[32]; snprintf (s, 31, "%#.17g", *((double *)(data + g->nd)));
+#endif
 	      fs = str_append (fs, s);
 	    }
 	    else if (g->type == sym_IVEC) {
@@ -1695,7 +1744,10 @@ char * build_shader (External * externals, const ForeachData * loop,
 #elif _CUDA
   fs = str_append (fs, "struct _Ctx_ {\n  __global real * _data;\n");
   for (const External * g = externals; g; g = g->next)
-    if (g->global && is_external_variable (g)) {
+    if (g->global && strcmp (g->name, "_mpi_wall") &&
+        (is_external_variable (g) ||
+         (g->type == sym_IVEC && !g->nd &&
+          (!g->data || ((int *)g->data)[1] == 0)))) {
       fs = str_append (fs, "  const ");
       fs = external_declaration (fs, g);
       fs = str_append (fs, ";\n");
@@ -1826,6 +1878,7 @@ void reset_gpu (void * alist, double val)
 
 void gpu_init_grid (int n)
 {
+#ifdef _LOCALDIMS
   static ivec prev_udim = {0}, prev_mpidim = {0};
   if (grid && n == N &&
       !memcmp (&UserDims, &prev_udim, sizeof (UserDims)) &&
@@ -1833,6 +1886,12 @@ void gpu_init_grid (int n)
     return;
   prev_udim = UserDims;
   prev_mpidim = UserMpiDims;
+#else
+  static ivec prev_dim = {0};
+  if (grid && n == N && !memcmp (&Dimensions, &prev_dim, sizeof (Dimensions)))
+    return;
+  prev_dim = Dimensions;
+#endif
   gpu_free_grid();
   init_grid (n);
   grid = realloc (grid, sizeof (GridGPU));
@@ -2080,24 +2139,18 @@ static Shader * compile_shader (ForeachData * loop,
   unsigned ng[3] = {1, 1, 1};
   unsigned nwg[3] = {1, 1, 1};
   int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
-  int * dims = &LocalDims.x;
+  int * dims = &_GPU_DIMS.x;
   if (loop->face || loop->vertex)
     for (int i = 0; i < dimension; i++) {
-      unsigned total = Nl*dims[dimension - 1 - i] + 1;
-      if (Nl*dims[dimension - 1 - i] > NWG[i]) {
-	nwg[i] = NWG[i] + 1;
-	ng[i] = (total + nwg[i] - 1)/nwg[i];
-      }
-      else {
-	nwg[i] = total;
-	ng[i] = 1;
-      }
+      int total = Nl*dims[dimension - 1 - i] + 1;
+      nwg[i] = total <= NWG[i] + 1 ? total : NWG[i] + 1;
+      ng[i] = (total + nwg[i] - 1)/nwg[i];
       assert (nwg[i]*ng[i] >= total);
     }
   else
     for (int i = 0; i < dimension; i++) {
-      unsigned total = Nl*dims[dimension - 1 - i];
-      nwg[i] = total < (unsigned)NWG[i] ? total : (unsigned)NWG[i];
+      int total = Nl*dims[dimension - 1 - i];
+      nwg[i] = total < NWG[i] ? total : NWG[i];
       ng[i] = (total + nwg[i] - 1)/nwg[i];
       assert (nwg[i]*ng[i] >= total);
     }
@@ -2183,23 +2236,25 @@ static Shader * compile_shader (ForeachData * loop,
 #endif
 			 );
   }
-  {
-    const char * _fpad = (loop->face || loop->vertex) ? " + 1" : "";
 #if dimension == 2
-    shader = str_append (shader,
-			 "if (point.i < N*Dimensions.x + GHOSTS", _fpad, " && "
-			 "point.j < N*Dimensions.y + GHOSTS", _fpad, ") {\n");
-    if (loop->vertex)
-      shader = str_append (shader, "  int ig = -1, jg = -1;\n");
+  shader = str_append (shader,
+		       "if (point.i < N*Dimensions.x + GHOSTS",
+		       loop->face || loop->vertex ? " + 1" : "",
+		       " && point.j < N*Dimensions.y + GHOSTS",
+		       loop->face || loop->vertex ? " + 1" : "", ") {\n");
+  if (loop->vertex)
+    shader = str_append (shader, "  int ig = -1, jg = -1;\n");
 #elif dimension == 3
-    shader = str_append (shader,
-			 "if (point.i < N*Dimensions.x + GHOSTS", _fpad, " && "
-			 "point.j < N*Dimensions.y + GHOSTS", _fpad, " && "
-			 "point.k < N*Dimensions.z + GHOSTS", _fpad, ") {\n");
-    if (loop->vertex)
-      shader = str_append (shader, "  int ig = -1, jg = -1, kg = -1;\n");
+  shader = str_append (shader,
+		       "if (point.i < N*Dimensions.x + GHOSTS",
+		       loop->face || loop->vertex ? " + 1" : "",
+		       " && point.j < N*Dimensions.y + GHOSTS",
+		       loop->face || loop->vertex ? " + 1" : "",
+		       " && point.k < N*Dimensions.z + GHOSTS",
+		       loop->face || loop->vertex ? " + 1" : "", ") {\n");
+  if (loop->vertex)
+    shader = str_append (shader, "  int ig = -1, jg = -1, kg = -1;\n");
 #endif
-  }
   for (const External * g = merged; g; g = g->next) {
     if (!(g->global || !is_normal_variable (g) || is_external_variable (g)))
       shader = external_write (shader, g, loop, region, nwg, true);    
@@ -2217,25 +2272,41 @@ static Shader * compile_shader (ForeachData * loop,
   }
   shader = str_append (shader, kernel);
 #if dimension == 2
-  shader = str_append (shader, "\nif (point.i - GHOSTS < NX && point.j - GHOSTS < NY) {");
+  shader = str_append (shader,
+		       "\nif (point.i - GHOSTS < NX && point.j - GHOSTS < NY) {");
+#if _MPI
   if (loop->face || loop->vertex)
     shader = str_append (shader,
-                         "\n  const bool _on_seam = ((_mpi_seam & 1) && point.i == N*Dimensions.x + GHOSTS) ||"
-                         " ((_mpi_seam & 2) && point.j == N*Dimensions.y + GHOSTS);");
+			 "\n  const bool _on_seam = (((_mpi_seam & 1) != 0) && "
+			 "point.i == N*Dimensions.x + GHOSTS) || "
+			 "(((_mpi_seam & 2) != 0) && "
+			 "point.j == N*Dimensions.y + GHOSTS);");
+#endif
 #elif dimension == 3
-  shader = str_append (shader, "\nif (point.i - GHOSTS < NX && point.j - GHOSTS < NY && point.k - GHOSTS < NZ) {");
+  shader = str_append (shader,
+		       "\nif (point.i - GHOSTS < NX && "
+		       "point.j - GHOSTS < NY && point.k - GHOSTS < NZ) {");
+#if _MPI
   if (loop->face || loop->vertex)
     shader = str_append (shader,
-                         "\n  const bool _on_seam = ((_mpi_seam & 1) && point.i == N*Dimensions.x + GHOSTS) ||"
-                         " ((_mpi_seam & 2) && point.j == N*Dimensions.y + GHOSTS) ||"
-                         " ((_mpi_seam & 4) && point.k == N*Dimensions.z + GHOSTS);");
+			 "\n  const bool _on_seam = (((_mpi_seam & 1) != 0) && "
+			 "point.i == N*Dimensions.x + GHOSTS) || "
+			 "(((_mpi_seam & 2) != 0) && "
+			 "point.j == N*Dimensions.y + GHOSTS) || "
+			 "(((_mpi_seam & 4) != 0) && "
+			 "point.k == N*Dimensions.z + GHOSTS);");
+#endif
 #endif
   for (const External * g = merged; g; g = g->next)
     if (g->reduct) {
+#if _MPI
       if ((loop->face || loop->vertex) && g->reduct == '+')
-        shader = str_append (shader, "\n  val_red_(", g->name, "_out_) = _on_seam ? 0. : ", g->name, ";");
+	shader = str_append (shader, "\n  val_red_(", g->name,
+			     "_out_) = _on_seam ? 0 : ", g->name, ";");
       else
-        shader = str_append (shader, "\n  val_red_(", g->name, "_out_) = ", g->name, ";");
+#endif
+	shader = str_append (shader, "\n  val_red_(", g->name,
+			     "_out_) = ", g->name, ";");
       scalar s = g->s;
       s.gpu.stored = -1;
     }
@@ -2301,7 +2372,7 @@ static void gpu_cpu_sync (scalar * list, SyncMode mode, const char * fname, int 
       gpu_cpu_sync_scalar (s.i, s.block, grid_data(), field_size(), mode);
 #endif
       if (mode == GPU_WRITE)
-        s.gpu.mpi_clean = 0;
+	s.gpu.mpi_clean = 0;
       s.gpu.stored = 0;
     }
 #if PRINTCOPYGPU
@@ -2309,6 +2380,53 @@ static void gpu_cpu_sync (scalar * list, SyncMode mode, const char * fname, int 
     fprintf (stderr, "} %s GPU\n", mode == GPU_READ ? "from" : "to");
 #endif
 }
+
+#if _MPI && _CUDA
+void mpi_boundary_level_gpu (scalar * list, int level);
+
+/**
+Apply physical GPU boundary conditions (if not yet applied on GPU) and
+exchange MPI ghost layers at `lvl` (`< 0` for leaves) for `list`. */
+
+static void gpu_mpi_sync_boundaries (scalar * list, int lvl, bool mark_gpu)
+{
+  if (!list)
+    return;
+  scalar * need_phys = NULL;
+  for (scalar s in list) {
+    if (!(s.stencil.bc & (s_centered | s_face | s_phys_gpu)))
+      s.gpu.mpi_clean = 0;
+    if (!(s.stencil.bc & s_phys_gpu))
+      need_phys = list_append (need_phys, s);
+  }
+  if (need_phys) {
+    int nvar = datasize/sizeof(real);
+    _Attributes backup[nvar];
+    memcpy (backup, _attribute, nvar*sizeof(_Attributes));
+    if (lvl < 0 || mark_gpu)
+      foreach (gpu)
+	for (scalar s in need_phys)
+	  s[] = s[];
+    if (lvl >= 0 && (!mark_gpu || lvl != depth()))
+      foreach_level (lvl, gpu)
+	for (scalar s in need_phys)
+	  s[] = s[];
+    memcpy (_attribute, backup, nvar*sizeof(_Attributes));
+    for (scalar s in need_phys) {
+      s.stencil.bc |= s_phys_gpu;
+      s.gpu.stored = -1;
+    }
+    free (need_phys);
+  }
+  mpi_boundary_level_gpu (list, lvl);
+  for (scalar s in list) {
+    if (lvl < 0)
+      s.stencil.bc |= s_centered | s_face | s_phys_gpu;
+    if (mark_gpu)
+      s.gpu.stored = -1;
+  }
+}
+#endif
 
 trace
 static Shader * setup_shader (ForeachData * loop, const RegionParameters * region,
@@ -2366,23 +2484,24 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
              s.gpu.index);
 #endif
 #if _MPI
-    s.boundary_left   = (mpi_neighbor[left]   < 0 && s.boundary[left]   != periodic_bc) ? s.boundary[left]   : NULL;
-    s.boundary_right  = (mpi_neighbor[right]  < 0 && s.boundary[right]  != periodic_bc) ? s.boundary[right]  : NULL;
-    s.boundary_top    = (mpi_neighbor[top]    < 0 && s.boundary[top]    != periodic_bc) ? s.boundary[top]    : NULL;
-    s.boundary_bottom = (mpi_neighbor[bottom] < 0 && s.boundary[bottom] != periodic_bc) ? s.boundary[bottom] : NULL;
-#if dimension == 3
-    s.boundary_front  = (mpi_neighbor[front]  < 0 && s.boundary[front]  != periodic_bc) ? s.boundary[front]  : NULL;
-    s.boundary_back   = (mpi_neighbor[back]   < 0 && s.boundary[back]   != periodic_bc) ? s.boundary[back]   : NULL;
-#endif
+    int wmask = mpi_wall_mask ();
+    s.boundary_left   = (wmask & 1) ? s.boundary[left]   : NULL;
+    s.boundary_right  = (wmask & 2) ? s.boundary[right]  : NULL;
+    s.boundary_bottom = (wmask & 4) ? s.boundary[bottom] : NULL;
+    s.boundary_top    = (wmask & 8) ? s.boundary[top]    : NULL;
+# if dimension == 3
+    s.boundary_back   = (wmask & 16) ? s.boundary[back]  : NULL;
+    s.boundary_front  = (wmask & 32) ? s.boundary[front] : NULL;
+# endif
 #else
     s.boundary_left   = s.boundary[left];
     s.boundary_right  = s.boundary[right];
     s.boundary_top    = s.boundary[top];
     s.boundary_bottom = s.boundary[bottom];
-#if dimension == 3
+# if dimension == 3
     s.boundary_front  = s.boundary[front];
     s.boundary_back   = s.boundary[back];
-#endif
+# endif
 #endif
   }
   
@@ -2452,48 +2571,15 @@ static Shader * setup_shader (ForeachData * loop, const RegionParameters * regio
     fputc ('\n', stderr);
 #endif
 #if _MPI && _CUDA
-    {
-      scalar * need_phys = NULL;
-      for (scalar s in listc) {
-        if (!(s.stencil.bc & (s_centered | s_face | s_phys_gpu)))
-          s.gpu.mpi_clean = 0;
-        if (!(s.stencil.bc & s_phys_gpu))
-          need_phys = list_append (need_phys, s);
-      }
-      if (need_phys) {
-        int nvar = datasize/sizeof(real);
-        _Attributes backup[nvar];
-        memcpy (backup, _attribute, nvar*sizeof(_Attributes));
-        foreach (gpu)
-          for (scalar s in need_phys)
-            s[] = s[];
-        if (region->level > 0 && region->level - 1 != depth()) {
-          int lvl = region->level - 1;
-          foreach_level (lvl, gpu)
-            for (scalar s in need_phys)
-              s[] = s[];
-        }
-        memcpy (_attribute, backup, nvar*sizeof(_Attributes));
-        for (scalar s in need_phys) {
-          s.stencil.bc |= s_phys_gpu;
-          s.gpu.stored = -1;
-        }
-        free (need_phys);
-      }
-      if (listc) {
-        void mpi_boundary_level_gpu (scalar * list, int l);
-        mpi_boundary_level_gpu (listc, region->level > 0 ? region->level - 1 : -1);
-        for (scalar s in listc) {
-          if (region->level == 0)
-            s.stencil.bc |= s_centered | s_face | s_phys_gpu;
-          s.gpu.stored = -1;
-        }
-        free (listc);
-      }
-      foreach_dimension()
-        free (listf_x);
-      apply_bc_list = loop->dirty;
+    if (listc) {
+      gpu_mpi_sync_boundaries (listc,
+			       region->level > 0 ? region->level - 1 : -1,
+			       true);
+      free (listc);
     }
+    foreach_dimension()
+      free (listf_x);
+    apply_bc_list = loop->dirty;
 #else
     int nvar = datasize/sizeof(real);
     _Attributes backup[nvar];
@@ -2555,7 +2641,7 @@ static bool doloop_on_gpu (ForeachData * loop, const RegionParameters * region,
     if (g->reduct) {
       scalar s = g->s;
       size_t nb = 1;
-      int * dims = &LocalDims.x;
+      int * dims = &_GPU_DIMS.x;
       for (int d = 0; d < dimension; d++)
         nb *= (size_t)(Nl*dims[d] + ((loop->face & (1 << d)) || loop->vertex));
       double result = gpu_reduction (field_offset(s, region->level), g->reduct, region,
@@ -2563,9 +2649,10 @@ static bool doloop_on_gpu (ForeachData * loop, const RegionParameters * region,
 				     nb, dimension);
 #if _MPI
       {
-        MPI_Op mop = (g->reduct == '+' ? MPI_SUM :
-                      g->reduct == 'm' ? MPI_MIN : MPI_MAX);
-        MPI_Allreduce (MPI_IN_PLACE, &result, 1, MPI_DOUBLE, mop, MPI_COMM_WORLD);
+	MPI_Op mop = (g->reduct == '+' ? MPI_SUM :
+		      g->reduct == 'm' ? MPI_MIN : MPI_MAX);
+	MPI_Allreduce (MPI_IN_PLACE, &result, 1, MPI_DOUBLE, mop,
+		       MPI_COMM_WORLD);
       }
 #endif
 #if PRINTREDUCT
@@ -2598,6 +2685,58 @@ static bool doloop_on_gpu (ForeachData * loop, const RegionParameters * region,
 # define STRICT_GPU 0
 #endif
 
+static void gpu_periodic_face_bc (scalar * dirty, int level)
+{
+  static bool in_bc = false;
+  if (in_bc)
+    return;
+  in_bc = true;
+  for (scalar s in dirty)
+    if (s.face) {
+      int dir = (Period.x && s.i == s.v.x.i ? 1 :
+		 Period.y && s.i == s.v.y.i ? 2 :
+#if dimension == 3
+		 Period.z && s.i == s.v.z.i ? 3 :
+#endif
+		 0);
+      if (!dir)
+	continue;
+#ifdef shift_level // multigrid
+      if (level > 0) {
+	int l = level - 1;
+	foreach_level (l) {
+	  if (dir == 1 && point.i == GHOSTS)
+	    foreach_blockf (s)
+	      s[bc_period_x,0,0] = s[];
+	  else if (dir == 2 && point.j == GHOSTS)
+	    foreach_blockf (s)
+	      s[0,bc_period_y,0] = s[];
+# if dimension == 3
+	  else if (dir == 3 && point.k == GHOSTS)
+	    foreach_blockf (s)
+	      s[0,0,bc_period_z] = s[];
+# endif
+	}
+      }
+      else
+#endif // shift_level
+	foreach () {
+	  if (dir == 1 && point.i == GHOSTS)
+	    foreach_blockf (s)
+	      s[bc_period_x,0,0] = s[];
+	  else if (dir == 2 && point.j == GHOSTS)
+	    foreach_blockf (s)
+	      s[0,bc_period_y,0] = s[];
+#if dimension == 3
+	  else if (dir == 3 && point.k == GHOSTS)
+	    foreach_blockf (s)
+	      s[0,0,bc_period_z] = s[];
+#endif
+	}
+    }
+  in_bc = false;
+}
+
 bool gpu_end_stencil (ForeachData * loop,
 		      const RegionParameters * region,
 		      External * externals,
@@ -2619,12 +2758,14 @@ bool gpu_end_stencil (ForeachData * loop,
                "GLSL"
 #endif
                " errors above)\n",
-	       loop->fname, loop->line, (loop->parallel == 3 || STRICT_GPU) ? "error" : "warning");
+	       loop->fname, loop->line,
+	       (loop->parallel == 3 || STRICT_GPU) ? "error" : "warning");
       if (loop->parallel == 3 || STRICT_GPU) // must run on GPU
 	exit (1);
       loop->data = NULL;
     }
   }
+  scalar * periodic_dirty = NULL;
   if (on_gpu) {
     // do not apply BCs on CPU
     free (loop->listc), loop->listc = NULL;
@@ -2634,69 +2775,40 @@ bool gpu_end_stencil (ForeachData * loop,
     int lvl = region->level > 0 ? region->level - 1 : depth();
     for (scalar s in loop->dirty) {
       if (region->level > 0)
-        s.gpu.mpi_clean &= ~(1u << lvl);
+	s.gpu.mpi_clean &= ~(1u << lvl);
       else
-        s.gpu.mpi_clean = 0;
+	s.gpu.mpi_clean = 0;
       s.stencil.bc = s_phys_gpu;
     }
     for (scalar s in baseblock)
       if (s.stencil.io & s_output) {
-        if (region->level > 0)
-          s.gpu.mpi_clean &= ~(1u << lvl);
-        else
-          s.gpu.mpi_clean = 0;
-        s.stencil.bc = s_phys_gpu;
+	if (region->level > 0)
+	  s.gpu.mpi_clean &= ~(1u << lvl);
+	else
+	  s.gpu.mpi_clean = 0;
+	s.stencil.bc = s_phys_gpu;
       }
+    free (loop->dirty), loop->dirty = NULL;
 #else
     for (scalar s in loop->dirty)
       s.stencil.bc = s_centered|s_face;
+    periodic_dirty = loop->dirty, loop->dirty = NULL;
 #endif
-    free (loop->dirty), loop->dirty = NULL;
   }
   else {
 #if _MPI && _CUDA
     if (loop->listc) {
       int lvl = region->level > 0 ? region->level - 1 : -1;
-      scalar * need_phys = NULL, * gpu_list = NULL, * cpu_list = NULL;
+      scalar * gpu_list = NULL, * cpu_list = NULL;
       for (scalar s in loop->listc) {
-        if (s.gpu.stored > 0)
-          cpu_list = list_append (cpu_list, s);
-        else {
-          if (!(s.stencil.bc & (s_centered | s_face | s_phys_gpu)))
-            s.gpu.mpi_clean = 0;
-          if (!(s.stencil.bc & s_phys_gpu))
-            need_phys = list_append (need_phys, s);
-          gpu_list = list_append (gpu_list, s);
-        }
-      }
-      if (need_phys) {
-        int nvar = datasize/sizeof(real);
-        _Attributes backup[nvar];
-        memcpy (backup, _attribute, nvar*sizeof(_Attributes));
-        if (lvl >= 0) {
-          foreach_level (lvl, gpu)
-            for (scalar s in need_phys)
-              s[] = s[];
-        }
-        else {
-          foreach (gpu)
-            for (scalar s in need_phys)
-              s[] = s[];
-        }
-        memcpy (_attribute, backup, nvar*sizeof(_Attributes));
-        for (scalar s in need_phys) {
-          s.stencil.bc |= s_phys_gpu;
-          s.gpu.stored = -1;
-        }
-        free (need_phys);
+	if (s.gpu.stored > 0)
+	  cpu_list = list_append (cpu_list, s);
+	else
+	  gpu_list = list_append (gpu_list, s);
       }
       if (gpu_list) {
-        void mpi_boundary_level_gpu (scalar * list, int l);
-        mpi_boundary_level_gpu (gpu_list, lvl);
-        for (scalar s in gpu_list)
-          if (lvl < 0)
-            s.stencil.bc |= s_centered | s_face | s_phys_gpu;
-        free (gpu_list);
+	gpu_mpi_sync_boundaries (gpu_list, lvl, false);
+	free (gpu_list);
       }
       free (loop->listc);
       loop->listc = cpu_list;
@@ -2707,13 +2819,18 @@ bool gpu_end_stencil (ForeachData * loop,
 #if _MPI
     for (scalar s in baseblock)
       if (s.stencil.io & s_output)
-        s.gpu.mpi_clean = 0;
+	s.gpu.mpi_clean = 0;
 #endif
   }
   
   for (scalar s in baseblock)
     if (s.stencil.io & s_output)
       s.gpu.stored = on_gpu ? -1 : 1;
+
+  if (periodic_dirty) {
+    gpu_periodic_face_bc (periodic_dirty, region->level);
+    free (periodic_dirty);
+  }
 
   return on_gpu && loop->parallel != 3;
 }

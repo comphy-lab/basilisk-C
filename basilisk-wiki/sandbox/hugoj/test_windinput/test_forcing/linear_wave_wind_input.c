@@ -54,7 +54,7 @@ $$
 where $a_p$ is the barotropic acceleration 
 $$
 \begin{aligned}
-a_p = \frac{\partial p_s}{\partial x} = \frac{p0}{\rho} \frac{\partial^2 \eta}{\partial x^2} 
+a_p = \frac{\partial p_s}{\partial x} = \frac{pw}{\rho} \frac{\partial^2 \eta}{\partial x^2} 
 \end{aligned}
 $$
 
@@ -133,7 +133,7 @@ in the solution (e.g. initialisation), we propose to use a
 proportionnal-integral controller (PI). The $p_0$ value at time $t$ is computed as:
 $$
 \begin{aligned}
- p0 = rhs / \sum_{x,y} (Q \frac{\partial^2 \eta}{\partial x^2} dx)
+ pw = rhs / \sum_{x,y} (Q \frac{\partial^2 \eta}{\partial x^2} dx)
 \end{aligned}
 $$
 
@@ -244,7 +244,7 @@ Ref Rui Yang
 
 // Dim [L, T, Mass, Temp]
 double rho = 1000 [-3, 0, 1];
-double p0 = 0. [-1, -2, 1]; // Pa
+double pw = 0. [-1, -2, 1]; // Pa
 /** The forcing is implemented as an overload of 'a_baro' macro */
 #if HOLD_FORCING || EXACT_FORCING
 
@@ -264,29 +264,33 @@ coord windmask = {1, 0, 0};
 */
 
 // this compiles
-// #define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*windmask.x*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
-// #define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
+// #define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (pw/rho)*windmask.x*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
+// #define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (pw/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
 
 // This doesnt
-//#define a_baro(f,k) (gmetric(k)*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
+//#define a_baro(f,k) (gmetric(k)*(-G*(f[k]-f[k-1])/Delta - (pw/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
 // This doesnt either
 // #define a_baro(eta,i) \
 //     (1.0 * ( \
 //       -G*(eta[i] - eta[i-1])/Delta \
-//       - (p0/rho) * \
+//       - (pw/rho) * \
 //         (eta[i+1] - 2.*eta[i] + eta[i-1])/(Delta*Delta) \
 //   ))
 
 // overload of the a_baro macro to add wind pressure
-#define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (p0/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
+#define a_baro(f,k) (1.0*(-G*(f[k]-f[k-1])/Delta - (pw/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta)))
+//#define a_baro_p(f,k) (- (pw/rho)*(f[k+1]-2.*f[k]+f[k-1])/sq(Delta))
 
 #endif // HOLD_FORCING || EXACT_FORCING
 
 /** regular imports */
 #include "grid/multigrid.h"
 #include "layered/hydro.h"
+#if NH-S
+#include "layered/nh-staggered.h" // Bruno's staggered, replaced in src/layered
+#else
 #include "layered/nh.h"
-//#include "layered/nh-staggered.h" // Bruno's staggered, replaced in src/layered
+#endif // NH-S
 #include "layered/remap.h"
 #include "layered/perfs.h"
 #if OUTNC
@@ -354,6 +358,24 @@ void energy_stats (double *mean, double *variance, double *pe, double *ke)
 #include "hugoj/lib/wind_forcing.h"
 #endif
 
+// Note
+// For now I have to use this face_fields event to add the forcing.
+// When i'll be able to use a vector inside the a_baro macro I will 
+// be able to use the original machinery with the a_baro macro overloaded.
+#if 0
+#if HOLD_FORCING || CST_FORCING
+event face_fields (i++,first) {
+  foreach_face (x) {
+    double ax = a_baro_p (eta, 0);
+    foreach_layer() {
+      ha.x[] += hf.x[]*ax;
+    }
+  }
+}
+#endif // HOLD_FORCING || CST_FORCING
+#endif
+
+
 /** main program */
 
 int main()
@@ -376,16 +398,16 @@ int main()
   
   /**
   In the case of counter balancing the viscous dissipation exactly, we set once
-  the value of p0
+  the value of pw
   */
   
-  p0 = 2*rho*nu*k_*cp; // Forcing to exactly balance viscous diss
+  pw = 2*rho*nu*k_*cp; // Forcing to exactly balance viscous diss
     
   /** 
   If the dynamic forcing is used, we use PI correction.
   */
   #if HOLD_FORCING
-  pp0 = 2*rho*nu*k_*cp;
+  ppw = 2*rho*nu*k_*cp;
   tau_f = T0/2.;  // timescale for low pass filter
   
   double Ku = 2./(T0);        // Ultimate gain
@@ -402,20 +424,20 @@ int main()
 
   run();
 
-  /** Study with varying initial p0 */
+  /** Study with varying initial pw */
   #if HOLD_FORCING && TESTS_P0
-  pp0 = 0.05;
-  p0 = pp0;
+  ppw = 0.05;
+  pw = ppw;
   dE_f = 0., sum_f = 0., sum_abs_f = 0., sum_I = 0.;
   run();
 
-  pp0 = 0.01;
-  p0 = pp0;
+  ppw = 0.01;
+  pw = ppw;
   dE_f = 0., sum_f = 0., sum_abs_f = 0., sum_I = 0.;      
   run();
 
-  pp0 = 0.;
-  p0 = pp0;
+  ppw = 0.;
+  pw = ppw;
   dE_f = 0., sum_f = 0., sum_abs_f=0., sum_I = 0.;
   run();
   #endif
@@ -466,7 +488,7 @@ event init (i = 0)
   */
   energy_stats(&etam_i, &etavar_i, &Ep_i, &Ek_i);
   fprintf (stderr, "INITIAL eta mean = %.10f, variance = %.10f\n", etam_i, etavar_i);
-  fprintf (stderr, "initial p0 = %f\n", p0);
+  fprintf (stderr, "initial pw = %f\n", pw);
   /** If dynamic forcing is used, the target energy is the initial energy */
   #if HOLD_FORCING
   Etarget = Ep_i + Ek_i;
@@ -487,7 +509,7 @@ event logfile (i++; t <= NT0*T0) // target: at least 300*T0
   double etam = 0., etavar_current = 0., pe = 0., ke = 0.;
   energy_stats (&etam, &etavar_current, &pe, &ke);
   #if HOLD_FORCING || EXACT_FORCING
-  fprintf (stdout, "%g %g %g %g\n", t/T0, ke, pe, p0);
+  fprintf (stdout, "%g %g %g %g\n", t/T0, ke, pe, pw);
   #else
   fprintf (stdout, "%g %g %g\n", t/T0, ke, pe);
   #endif 

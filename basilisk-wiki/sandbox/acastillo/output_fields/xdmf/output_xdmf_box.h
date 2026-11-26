@@ -1,6 +1,8 @@
 #ifndef OUTPUT_XDMF_BOX_H
 #define OUTPUT_XDMF_BOX_H
 
+#include "output_xdmf_helpers.h"
+
 /** 
 ## *output_xmf_box()*: Exports 2D (or 3D) fields within a specified box region.
 
@@ -29,9 +31,12 @@ trace void output_xmf_box(scalar *slist, vector *vlist, char *subname, coord box
   char name[260];  // Buffer for file name construction
   snprintf(name, sizeof(name), "%s.h5", subname); 
 
+  /** Sync GPU fields to host before host-side extraction */
+  sync_output_fields (slist, vlist);
+
   /** Define a scalar field for cell selection with consistent boundaries */ 
   scalar cell_mask[];
-  foreach () {
+  foreach (serial, noauto) {
     cell_mask[] = 0.;  // Initialize to 0
 #if dimension == 2
     if (x >= box[0].x && x < box[1].x &&
@@ -47,7 +52,7 @@ trace void output_xmf_box(scalar *slist, vector *vlist, char *subname, coord box
   }
 
   vertex scalar vertex_needed[];
-  foreach_vertex(){
+  foreach_vertex(serial, noauto){
     vertex_needed[] = 0;
   }
 

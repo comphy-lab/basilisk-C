@@ -1277,8 +1277,15 @@ static void sync_root_pids (void)
   m = 0;
   for_each_root() {
     Point point = root;
-    if (allocated (0) && rpid[m] >= 0)
+    int ig = 0, jg = 0, kg = 0; NOT_UNUSED(ig); NOT_UNUSED(jg); NOT_UNUSED(kg);
+    if (allocated (0) && rpid[m] >= 0 && cell.pid != rpid[m]) {
       cell.pid = rpid[m];
+      if (is_leaf(cell) && cell.neighbors) {
+	foreach_child()
+	  if (cell.pid >= 0)
+	    cell.pid = rpid[m];
+      }
+    }
     m++;
   }
   free (rpid);
@@ -1329,11 +1336,10 @@ void mpi_partitioning ((const) scalar w = unity)
       }
     }
 
+  prof_stop();
+
   sync_root_pids();
   flag_border_cells();
-  
-  prof_stop();
-  
   mpi_boundary_update_buffers();
 }
 

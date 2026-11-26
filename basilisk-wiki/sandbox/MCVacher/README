@@ -42,5 +42,7 @@ This is the sandbox of Marc Vacher, Ph.D from LadHyX & PMMH, now teaching at ENS
 
 * [Heated plate (natural convection boundary layer)](heated_plate.c)
 
+* [Blasius (laminar boundary layer)](blasius.c)
+
 * [Test of harmonic.h](test_harmonic.c)
 

@@ -52,7 +52,7 @@ enum typedef_kind_t {
 #define sysrealloc realloc
 
 #define _GPU 1
-#include "grid/externals.h"
+#include "../externals.h"
 #include "grid/gpu/backend.h"
 
 Shader * load_shader (const char * fs, uint32_t hash, void * loop);

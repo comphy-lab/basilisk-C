@@ -55,7 +55,7 @@ double gpu_reduction (size_t offset, const char op, const RegionParameters * reg
       size_t nmax = (size_t)(N/Dimensions.x);
       size_t total = (nmax*Dimensions.x + 1)*(nmax*Dimensions.y + 1);
       if (dim == 3)
-        total *= (nmax*Dimensions.z + 1);
+	total *= (nmax*Dimensions.z + 1);
       size_t size = (total/stride + 1)*sizeof(real);
       assert (size < GPUContext.max_ssbo_size); // must fit within a single SSBO
       GL_C (glBufferData (GL_SHADER_STORAGE_BUFFER, size, NULL, GL_DYNAMIC_READ));
@@ -143,14 +143,18 @@ double gpu_reduction (size_t offset, const char op, const RegionParameters * reg
     GL_C (glBindBufferBase (GL_SHADER_STORAGE_BUFFER, 1 + i - start, ssbo[i]));
 
   if (is_foreach_point) {
-    real result = (op == 'm' ? HUGE : op == 'M' ? -HUGE : 0.);
+    real result = 0.;
+    if (op == 'm') result = HUGE;
+    else if (op == 'M') result = - HUGE;
     int Nl = region->level > 0 ? 1 << (region->level - 1) : N/Dimensions.x;
-    int nx = Nl*Dimensions.x, ny = Nl*Dimensions.y, nz = dim == 3 ? Nl*Dimensions.z : 1;
-    int i = (region->p.x - X0)/L0*nx;
-    int j = (region->p.y - Y0)/L0*nx;
-    int k = dim == 3 ? (region->p.z - Z0)/L0*nx : 0;
-    if (i >= 0 && i < nx && j >= 0 && j < ny && (dim == 2 || (k >= 0 && k < nz))) {
-      offset += dim == 2 ? (size_t)i*ny + j : ((size_t)i*ny + j)*nz + k;
+    int nx = Nl*Dimensions.x, ny = Nl*Dimensions.y;
+    int nz = dim == 3 ? Nl*Dimensions.z : 1;
+    int i = floor ((region->p.x - X0)/L0*nx);
+    int j = floor ((region->p.y - Y0)/L0*nx);
+    int k = dim == 3 ? floor ((region->p.z - Z0)/L0*nx) : 0;
+    if (i >= 0 && i < nx && j >= 0 && j < ny &&
+	(dim == 2 || (k >= 0 && k < nz))) {
+      offset += dim == 2 ? (size_t) i*ny + j : ((size_t) i*ny + j)*nz + k;
       GL_C (glUniform1ui (loffset, offset));
       GL_C (glBindBufferBase (GL_SHADER_STORAGE_BUFFER, 0, br[0]));
       GL_C (glUniform1ui (lnbr, 1));

@@ -379,9 +379,13 @@ bool restore_multigrid (const char * file = "dump",
 	      p += sizeof(unsigned) + sizeof(double);
 	      if (fl >= shift_lvl) {
 		int loc_l = fl - shift_lvl;
-		int li = fox*(1 << fl) + (fi - GHOSTS) - mpi_off0*(1 << loc_l);
-		int lj = foy*(1 << fl) + (fj - GHOSTS) - mpi_off1*(1 << loc_l);
-		int lk = foz*(1 << fl) + (fk - GHOSTS) - mpi_off2*(1 << loc_l);
+		int li = fox*(1 << fl) + (fi - GHOSTS) - MpiOffset.x*(1 << loc_l);
+#if dimension >= 2
+		int lj = foy*(1 << fl) + (fj - GHOSTS) - MpiOffset.y*(1 << loc_l);
+#endif
+#if dimension >= 3
+		int lk = foz*(1 << fl) + (fk - GHOSTS) - MpiOffset.z*(1 << loc_l);
+#endif
 		bool inside = (li >= 0 && li < LocalDims.x*(1 << loc_l))
 #if dimension >= 2
 			   && (lj >= 0 && lj < LocalDims.y*(1 << loc_l))

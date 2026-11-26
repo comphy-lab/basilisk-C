@@ -13,7 +13,7 @@ attribute {
 
 #define periodic_clamp(a, n) do {					\
     if (a < GHOSTS) a += (n);						\
-    else if (a >= GHOSTS + (n)) a -= (n); } while(0)
+    else if (a >= GHOSTS + (n)) a -= (n); } while (0)
 
 /*
   A cache of refined cells is maintained (if not NULL).

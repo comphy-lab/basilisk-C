@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 def parse_args(argv=None):
     p = argparse.ArgumentParser(
         prog="visu_3Dsnap",
-        description="Render a 3D PyVista snapshot from a NetCDF simulation output.",
+        description="Render a 2D movie from a NetCDF simulation output.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     # Positional args
@@ -54,6 +54,12 @@ def parse_args(argv=None):
         choices=["nearest", "interp"],
         default="nearest",
         help="How to sample simulation time onto the video time axis",
+    )
+    p.add_argument(
+        "--shading",
+        choices=["nearest", "gouraud"],
+        default="gouraud",
+        help="Matplotlib shading to use, nearest=faster, gouraud=cleanest",
     )
     p.add_argument(
         "--t-start",
@@ -123,6 +129,7 @@ def render_movie2D(
     fps=30,
     speed=1.0,
     method="nearest",
+    shading="gouraud",
     t_start=None,
     t_end=None,
     L0=200.0,
@@ -179,7 +186,7 @@ def render_movie2D(
             cmap=cmap,
             vmin=clim[0],
             vmax=clim[1],
-            shading="gouraud",
+            shading=shading,
         )
         plt.colorbar(s, ax=ax, label=f"{var} ({unit})")
         ax.set_xlabel("x (m)")
@@ -206,6 +213,7 @@ def main(argv=None):
             fps=args.fps,
             speed=args.speed,
             method=args.method,
+            shading=args.shading,
             t_start=args.t_start,
             t_end=args.t_end,
             L0=args.L0,

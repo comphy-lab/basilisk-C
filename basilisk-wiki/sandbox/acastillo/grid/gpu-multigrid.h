@@ -17,16 +17,19 @@
 
 #if _CUDA
 void cuda_set_device (int local_rank);
+void cuda_set_mpi_domain (int lx, int ly, int lz, int ox, int oy, int oz);
 void cuda_halo_sync (void);
 int cuda_query_mpi_support (void);
-size_t cuda_halo_pack (const int * fields, int nfields, size_t fsize, size_t shift,
-		       int ny_tot, int nz_tot, int i0, int j0, int k0,
-		       int ci, int cj, int ck, int slot);
+size_t cuda_halo_pack (const int * fields, int nfields, size_t fsize,
+		       size_t shift, int ny_tot, int nz_tot,
+		       int i0, int j0, int k0, int ci, int cj, int ck,
+		       int slot);
 void * cuda_halo_snd_ptr (int slot, int to_host, size_t nbytes);
 void * cuda_halo_rcv_ptr (int slot, int from_host, size_t nbytes);
-void cuda_halo_unpack (const int * fields, int nfields, size_t fsize, size_t shift,
-		       int ny_tot, int nz_tot, int i0, int j0, int k0,
-		       int ci, int cj, int ck, int slot, int from_host, size_t nbytes);
+void cuda_halo_unpack (const int * fields, int nfields, size_t fsize,
+		       size_t shift, int ny_tot, int nz_tot,
+		       int i0, int j0, int k0, int ci, int cj, int ck,
+		       int slot, int from_host, size_t nbytes);
 #endif
 
 #if dimension == 2
@@ -73,9 +76,6 @@ static bool _gpu_done_ = false;
 #include "gpu/gpu.h"
 #include "grid/multigrid-common.h"
 #include "grid/gpu/backend.h"
-#if _MPI
-# include "multigrid-mpi.h"
-#endif
 
 void realloc_scalar_gpu (int size)
 {
@@ -106,12 +106,16 @@ typedef struct {
 @endif
 
 #include "gpu/grid.h"
+#if _MPI
+# include "multigrid-mpi.h"
+#endif
 
 static inline void gpu_subtree_size (scalar size, bool leaves)
 {
   subtree_size (size, leaves);
   if (size.gpu.stored < 0) {
-    gpu_cpu_sync_scalar (size.i, size.block, grid_data(), field_size(), GPU_READ);
+    gpu_cpu_sync_scalar (size.i, size.block, grid_data(),
+                         field_size(), GPU_READ);
     size.gpu.stored = 0;
   }
 }

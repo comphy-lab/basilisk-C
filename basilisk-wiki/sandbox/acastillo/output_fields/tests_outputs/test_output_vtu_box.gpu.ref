@@ -1,0 +1,15 @@
+VTU Box Output: 25 points, 16 cells
+--- domain.vtu
+points                 25
+cells                  16
+cell types             QUAD=16
+connectivity in range  OK
+offsets consistent     OK
+orphan points          OK
+vertex ordering        OK
+u == cell centroid     OK
+levels present         [3]
+f == cell level        OK
+p (pid) values         [0]
+cells inside box       OK
+verdict                PASS

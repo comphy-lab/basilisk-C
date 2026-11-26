@@ -404,16 +404,6 @@ bool balance ((const) scalar w = unity)
   mpi_all_reduce (pid_changed, MPI_INT, MPI_MAX);
   if (pid_changed) {
     sync_root_pids();
-    foreach_cell()
-      if (is_leaf(cell)) {
-	if (cell.neighbors && cell.pid >= 0) {
-	  int lpid = cell.pid;
-	  foreach_child()
-	    if (cell.pid >= 0)
-	      cell.pid = lpid;
-	}
-	continue;
-      }
     flag_border_cells();
     mpi_boundary_update_buffers();
   }

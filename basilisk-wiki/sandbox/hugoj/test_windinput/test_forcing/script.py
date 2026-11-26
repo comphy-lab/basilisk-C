@@ -6,7 +6,7 @@ import matplotlib as mpl
 # PARAMETERS
 CASE = "1D"
 EXP = "linear"
-PLOT_HPC = True
+PLOT_CUDA = False
 PLOT_KE_GPE = False
 
 skip = 1  # plot every "skip"
@@ -73,12 +73,12 @@ if CASE == "1D":
 elif CASE == "2D":
     if EXP == "linear":
         data = {
-            # "current_noforcing": load_cube("no_forcing2D.cuda/out"),
-            # "current_noforcing.hpc": load_cube("no_forcing2D.hpc.cpu/out"),
-            # "current_exactforced": load_cube("exact_forcing2D.cuda/out"),
-            # "current_exactforced.hpc": load_cube("exact2D.hpc.cpu/out"),
-            "current_forced": load_cube("linear_wave_wind_input2D.cuda/out"),
-            # "current_forced.hpc": load_cube("holding2D.hpc.cpu/out"),
+            "current_noforcing": load_cube("no_forcing2D/out"),
+            # "current_noforcing.cuda": load_cube("no_forcing2D.cuda/out"),
+            "current_exactforced": load_cube("exact_forcing2D/out"),
+            # "current_exactforced.cuda": load_cube("exact2D.cuda/out"),
+            "current_forced": load_cube("linear_wave_wind_input2D/out"),
+            # "current_forced.cuda": load_cube("holding2D.cuda/out"),
         }
     else:  # EXP == "stokes"
         data = {
@@ -226,27 +226,27 @@ for axe in [ax, ax2]:
             ls="-",
         )
 
-    if PLOT_HPC and CASE == "2D":
+    if PLOT_CUDA and CASE == "2D":
         axe.plot(
-            time["current_noforcing.hpc"],
-            E["current_noforcing.hpc"] / E0,
+            time["current_noforcing.cuda"],
+            E["current_noforcing.cuda"] / E0,
             color="pink",
             ls="dashdot",
-            label="E (current noforcing hpc)",
+            label="noforcing (cuda)",
         )
         axe.plot(
-            time["current_exactforced.hpc"][::skip],
-            E["current_exactforced.hpc"][::skip] / E0,
+            time["current_exactforced.cuda"][::skip],
+            E["current_exactforced.cuda"][::skip] / E0,
             color="orange",
             ls="dashdot",
-            label="E (current exact forcing hpc)",
+            label="exact (cuda)",
         )
         axe.plot(
-            time["current_forced.hpc"][::skip],
-            E["current_forced.hpc"][::skip] / E0,
+            time["current_forced.cuda"][::skip],
+            E["current_forced.cuda"][::skip] / E0,
             color="purple",
             ls="dashdot",
-            label="E (current forced hpc)",
+            label="forced (hpc)",
         )
     for ck, p0value in enumerate(p0s.keys()):
         axe.plot(

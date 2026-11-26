@@ -25,9 +25,10 @@ unset key
 unset xtics
 unset ytics
 unset border
-set xrange [-1.6:1.6]
-set yrange [0:]
-plot 'out' w l, '' u (-$1):2 w l lt 1, 0 lt -1
+set xrange [0:]
+set yrange [-1.6:1.6]
+set arrow from 0, graph 0 to 0, graph 1 nohead lt -1
+plot 'out' w l, '' u 1:(-$2) w l lt 1
 set term pop
 ~~~
 */
@@ -48,7 +49,8 @@ heigth function at the neighbouring cell.*/
 foreach_dimension()
 static double line_x (Point point, scalar h, double a)
 {
-  return (h[] == nodata ? nodata : -h[] + 2.*(a-x)/Delta);
+  coord p = {x, y, z};
+  return (h[] == nodata ? nodata : -h[] + 2.*(a-p.y)/Delta);
 }
 
 #define contact_line(theta) contact_line_ (point, neighbor, _s, theta)
@@ -64,7 +66,7 @@ double contact_line_ (Point point, Point neighbor, scalar h, double a)
 }
 
 double ap;
-h.t[bottom] = contact_line (ap);
+h.t[left] = contact_line (ap);
 
 int main()
 {

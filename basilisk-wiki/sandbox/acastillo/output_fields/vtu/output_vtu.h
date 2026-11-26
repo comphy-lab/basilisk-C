@@ -82,11 +82,6 @@ void output_vtu(scalar *list, vector *vlist, char *subname){
 /** ### *output_vtu_pid()*: writes one `.vtu` file for the current process */
 void output_vtu_pid(scalar *list, vector *vlist, char *subname) {
 
-#if defined(_OPENMP)
-  int num_omp = omp_get_max_threads(); // Get the number of OpenMP threads
-  omp_set_num_threads(1);              // Set the number of OpenMP threads to 1
-#endif
-
   char name[111];                   // Buffer for file name construction
   sprintf(name, "%s.vtu", subname); // Construct the VTU filename
 
@@ -95,9 +90,12 @@ void output_vtu_pid(scalar *list, vector *vlist, char *subname) {
     fprintf(stderr, "Error opening file %s for writing.\n", name);
   }
 
+  /** Sync GPU fields to host before host-side extraction */
+  sync_output_fields (list, vlist);
+
   /** Define a scalar field for periodic conditions */ 
   scalar per_mask[];
-  foreach () {
+  foreach (serial, noauto) {
     per_mask[] = 1.;
   }
 
@@ -144,10 +142,6 @@ void output_vtu_pid(scalar *list, vector *vlist, char *subname) {
   fputs("</VTKFile>\n", fp);
   fflush(fp); // Flush the file buffer
   fclose(fp); // Close the VTU file
-
-#if defined(_OPENMP)
-  omp_set_num_threads(num_omp); // Restore the original number of OpenMP threads
-#endif
 }
 
 /** ### *output_pvtu()*: if MPI, writes one `.pvtu` and `.vtu` for each process */

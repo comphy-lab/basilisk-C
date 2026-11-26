@@ -300,7 +300,7 @@ $$-\frac{\partial\psi}{\partial y}\frac{\partial^{2} \psi}{\partial x^{2}} + \fr
 
 We look for a self-similar solution for the stream function $\psi$ that would be satisified far from the nozzle: 
 
-$$\psi(x,y) = y^{p}F(\frac{x}{y^{p}})$$
+$$\psi(x,y) = y^{p}F(\frac{x}{y^{q}})$$
 
 To find $p$ and $q$, we refer to the two following conditions. First, the total y-momentum fluw has to be constant (see Schlichting's book for details):
 
@@ -329,13 +329,20 @@ It can be shown that the solution of this ODE is:
 
 $$ F'(\frac{1}{3\nu^{1/2}}\eta) = 2\alpha \times \mathrm{sech^{2}}(\alpha\frac{1}{3\nu^{1/2}} \eta)$$
 
-where $\alpha$ is deduced from $J$ (see Schlichting's book). In the end, we can write :
+where $\alpha$ is deduced from $J$ (see Schlichting's book). With $K = J/\rho$ the kinematic momentum flux, this gives the closed form:
 
-$$ y^{1/3} \times v(x,y) = A~\mathrm{sech^{2}}(B \eta) $$
+$$ v(x,y) = \left(\frac{3K^2}{32\,\nu\,y}\right)^{1/3}\mathrm{sech}^2\xi, \qquad \xi = \left(\frac{K}{48\,\nu^2}\right)^{1/3}\frac{x}{y^{2/3}}$$
 
-with $A$ and $B$ constants.
+i.e. $y^{1/3}\,v = A\,\mathrm{sech}^2(B\eta)$ with $A = (3K^2/32\nu)^{1/3}$ and $B = (K/48\nu^2)^{1/3}$: no free constant once $K$ is known.
 
-This is verified just below for most of the positions, far enough from the boundaries.                                    
+### Effective momentum flux and virtual origin
+
+As in the [axisymmetric case](/sandbox/MCVacher/schlichting_axi.c), the simulated jet does not come from a point source and does not carry exactly the nozzle momentum $K = 2R_dU_0^2$ (inlet discretised on a few cells, suction along the bottom wall, outflow at the top). We therefore measure, in the window $10 \le y/D \le 40$:
+
+* $K_\text{eff} = \langle \int v^2\,\mathrm{d}x \rangle$, the momentum flux actually carried by the jet;
+* the virtual origin $y_0$ and a second estimate $K_\text{slope}$, from a linear fit of the centreline velocity $v_c^{-3} = 32\nu\,(y-y_0)/(3K^2)$.
+
+The theory is then plotted with $K_\text{eff}$ and $y - y_0$, without any fitted constant. With the half-width $b_{1/2}$ ($v = v_c/2$), the normalised profile $v/v_c = \mathrm{sech}^2(0.8814\,x/b_{1/2})$ has no parameter at all.
 */
 
 
@@ -346,175 +353,177 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # ============================================================
-# Load numerical data
-# ============================================================
-data = np.loadtxt("res_end.txt")
-
-x = data[:, 0]
-y = data[:, 1]
-u_y = data[:, 3]
-
-# ============================================================
 # Simulation parameters
 # ============================================================
 
 Re = 10
 V_0 = 1
-rho = 1
 R_d = 0.01
-nu = V_0 * R_d / Re
 D = 2 * R_d
+nu = V_0 * R_d / Re
+K0 = 2 * R_d * V_0**2        # nozzle momentum flux (full jet, per unit depth)
+
+def A(K): return (3 * K**2 / (32 * nu))**(1/3)
+def B(K): return (K / (48 * nu**2))**(1/3)
 
 # ============================================================
-# Define usable y/D range (avoid inlet & boundary)
+# Load numerical data, structured array V[y, x], jet axis first
 # ============================================================
 
-yD = y / D
+data = np.loadtxt("res_end.txt")
+x_unique, ix = np.unique(data[:, 0], return_inverse=True)
+y_unique, iy = np.unique(data[:, 1], return_inverse=True)
+V = np.full((len(y_unique), len(x_unique)), np.nan)
+V[iy, ix] = data[:, 3]
 
-yD_min = 10    # avoid inlet
-yD_max = 40     # avoid external boundary
+Delta = x_unique[1] - x_unique[0]
+x_axis = x_unique[-1] + Delta / 2           # symmetry plane (right boundary)
+xs = (x_axis - x_unique)[::-1]              # distance from the jet axis
+V = V[:, ::-1]
 
-mask = (yD >= yD_min) & (yD <= yD_max)
-
-x = x[mask]
-y = y[mask]
-u_y = u_y[mask]
-yD = yD[mask]
-
-# ============================================================
-# Build structured 2D matrix U_y[y,x]
-# ============================================================
-x_unique = np.unique(x)
-y_unique = np.unique(y)
-
-nx = len(x_unique)
-ny = len(y_unique)
-
-U_y = np.zeros((ny, nx))
-
-for i, yi in enumerate(y_unique):
-    for j, xj in enumerate(x_unique):
-        idx = np.where((x == xj) & (y == yi))[0]
-        if len(idx) > 0:
-            U_y[i, j] = u_y[idx[0]]
-        else:
-            U_y[i, j] = np.nan
+yD_min, yD_max = 10, 40                     # avoid inlet & top boundary
+win = (y_unique / D >= yD_min) & (y_unique / D <= yD_max)
 
 # ============================================================
-# Self-similar collapse from numerical data
+# Effective momentum flux and virtual origin
 # ============================================================
 
-eta_all = []
-f_all = []
-yD_all = []
+K_y = 2 * np.sum(V**2, axis=1) * Delta      # int v^2 dx over both halves
+K_eff = np.mean(K_y[win])
 
-for i, yi in enumerate(y_unique):
+vc = V[:, 0]                                # centreline velocity
+slope, intercept = np.polyfit(y_unique[win], vc[win]**-3, 1)
+y0 = -intercept / slope                     # vc^-3 = slope (y - y0)
+K_slope = np.sqrt(32 * nu / (3 * slope))
 
-    if yi <= 0:
-        continue
+print("K_eff/K0 = %.3f, K_slope/K0 = %.3f, y0/D = %.2f"
+      % (K_eff / K0, K_slope / K0, y0 / D))
 
-    v_slice = U_y[i, :]
+# ============================================================
+# Self-similar collapse
+# ============================================================
 
-    if np.max(np.abs(v_slice)) < 1e-10:
-        continue
+eta_all, f_all, s_all, g_all, yD_all = [], [], [], [], []
 
-    # shifted x
-    x_shift = x_unique - 1/2
+for i in np.where(win)[0]:
+    v = V[i, :]
+    Y = y_unique[i] - y0                    # distance from virtual origin
 
-    # similarity variable
-    eta = x_shift / (yi**(2/3))
+    # half-width: first x where v < vc/2, linear interpolation
+    j = np.argmax(v < vc[i] / 2)
+    b12 = xs[j-1] + (vc[i]/2 - v[j-1]) * (xs[j] - xs[j-1]) / (v[j] - v[j-1])
 
-    # rescaled velocity (multiply by y^(2/3))
-    f = v_slice * (yi**(1/3))
+    eta_all.extend(xs / Y**(2/3))
+    f_all.extend(Y**(1/3) * v)
+    s_all.extend(xs / b12)
+    g_all.extend(v / vc[i])
+    yD_all.extend([y_unique[i] / D] * len(xs))
 
-    eta_all.extend(eta)
-    f_all.extend(f)
-    yD_all.extend([yi/D]*len(eta))
-
-eta_all = np.array(eta_all)
-f_all = np.array(f_all)
+eta_all, f_all = np.array(eta_all), np.array(f_all)
+s_all, g_all = np.array(s_all), np.array(g_all)
 yD_all = np.array(yD_all)
 
-# ============================================================
-# Theoretical profile: A y^{-1/3} sech²(B x / y^{2/3})
-# In similarity variables:
-# y^{1/3} v = A sech²(B eta)
-# ============================================================
-
-J=rho*V_0**2*0.01
-alpha=0.8255*(J/(rho*nu**(1/2)))**(1/3)
-
-A=2/3*alpha**2 #Theory
-B=alpha*1/(3*nu**(1/2)) #Theory
-
-A = 0.3 #best fit according to me ^^
-B = 7.1 #best fit according to me ^^
-
-eta_theory = np.linspace(-1, 1, 500)
-f_theory = A * (1 / np.cosh(B * eta_theory))**2
+eta_th = np.linspace(-1, 1, 500)
+s_th = np.linspace(-3, 3, 500)
 
 # ============================================================
-# Gaussian comparison
+# Plot (mirrored for symmetry)
 # ============================================================
 
-sigma = 0.12
-f_gauss = A * np.exp(-(eta_theory**2) / (2 * sigma**2))
+fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
 
-# ============================================================
-# Plot
-# ============================================================
+for sgn in (1, -1):
+    sc = ax[0].scatter(sgn * eta_all, f_all, c=yD_all, cmap='viridis',
+                       vmin=yD_min, vmax=yD_max, s=5, alpha=0.6)
+    ax[1].scatter(sgn * s_all, g_all, c=yD_all, cmap='viridis',
+                  vmin=yD_min, vmax=yD_max, s=5, alpha=0.6)
 
-plt.figure(figsize=(7,6))
+ax[0].plot(eta_th, A(K_eff) / np.cosh(B(K_eff) * eta_th)**2, 'r', linewidth=2,
+           label=r'Theory with $K_\mathrm{eff}$')
+ax[0].plot(eta_th, A(K0) / np.cosh(B(K0) * eta_th)**2, 'k--', linewidth=1.5,
+           label=r'Theory with nozzle $K$')
+ax[0].set_xlabel(r'$\eta = x/(y-y_0)^{2/3}$')
+ax[0].set_ylabel(r'$(y-y_0)^{1/3}\,v(x,y)$')
+ax[0].set_xlim([-0.5, 0.5])
+ax[0].legend(loc='upper left')
+ax[0].grid(True)
+ax[0].text(0.97, 0.6,
+           r'$K_\mathrm{eff}/K = %.2f$' '\n' r'$K_\mathrm{slope}/K = %.2f$' '\n' r'$y_0/D = %.1f$'
+           % (K_eff / K0, K_slope / K0, y0 / D),
+           transform=ax[0].transAxes, ha='right', va='top',
+           bbox=dict(facecolor='white', alpha=0.8))
 
-sc = plt.scatter(
-    eta_all,
-    f_all,
-    c=yD_all,
-    cmap='viridis',
-    s=5,
-    alpha=0.6,
-)
+ax[1].plot(s_th, 1 / np.cosh(0.8814 * s_th)**2, 'r', linewidth=2,
+           label=r'$\mathrm{sech}^2(0.8814\,x/b_{1/2})$')
+ax[1].set_xlabel(r'$x/b_{1/2}$')
+ax[1].set_ylabel(r'$v/v_c$')
+ax[1].set_xlim([-3, 3])
+ax[1].legend(loc='upper left')
+ax[1].grid(True)
 
-# symmetry
-plt.scatter(
-    -eta_all,
-    f_all,
-    c=yD_all,
-    cmap='viridis',
-    vmin=yD_min,
-    vmax=yD_max,
-    s=6,
-    alpha=0.7
-)
+cbar = fig.colorbar(sc, ax=ax.ravel().tolist())
+cbar.set_label(r'Vertical position $y/D$')
 
-plt.plot(
-    eta_theory,
-    f_theory,
-    'r',
-    linewidth=2,
-    label=r'Theory: $A\,\mathrm{sech}^2(B\eta)$'
-)
+plt.savefig('self_sim.png')
+~~~
 
-plt.plot(
-    eta_theory,
-    f_gauss,
-    'k--',
-    linewidth=2,
-    label='Gaussian'
-)
+~~~pythonplot Centreline decay and momentum flux
+import numpy as np
+import matplotlib.pyplot as plt
 
-plt.xlabel(r'$\eta = \frac{x}{y^{2/3}}$')
-plt.ylabel(r'$y^{1/3} v(x,y)$')
-plt.xlim([-0.5,0.5])
-plt.ylim([-0.025,0.4])
-plt.legend()
-plt.grid(True)
+Re = 10
+V_0 = 1
+R_d = 0.01
+D = 2 * R_d
+nu = V_0 * R_d / Re
+K0 = 2 * R_d * V_0**2
 
-cbar = plt.colorbar(sc)
-cbar.set_label(r'$\mathrm{Vertical~position~~~y/D}$')
+data = np.loadtxt("res_end.txt")
+x_unique, ix = np.unique(data[:, 0], return_inverse=True)
+y_unique, iy = np.unique(data[:, 1], return_inverse=True)
+V = np.full((len(y_unique), len(x_unique)), np.nan)
+V[iy, ix] = data[:, 3]
+V = V[:, ::-1]                              # jet axis first
+Delta = x_unique[1] - x_unique[0]
+
+yD_min, yD_max = 10, 40
+win = (y_unique / D >= yD_min) & (y_unique / D <= yD_max)
+
+vc = V[:, 0]
+K_y = 2 * np.sum(V**2, axis=1) * Delta
+K_eff = np.mean(K_y[win])
+slope, intercept = np.polyfit(y_unique[win], vc[win]**-3, 1)
+y0 = -intercept / slope
+
+yD = y_unique / D
+
+fig, ax = plt.subplots(1, 2, figsize=(11, 4.5))
+
+ax[0].plot(yD, vc**-3, 'b-', label='Simulation')
+ax[0].plot(yD, 32 * nu * y_unique / (3 * K0**2), 'k--', linewidth=1.5,
+           label=r'Point source at nozzle, nozzle $K$')
+ax[0].plot(yD, 32 * nu * (y_unique - y0) / (3 * K_eff**2), 'r', linewidth=2,
+           label=r'Point source at $y_0$, $K_\mathrm{eff}$')
+ax[0].axvspan(yD_min, yD_max, color='gray', alpha=0.15, label='Comparison window')
+ax[0].set_xlabel(r'$y/D$')
+ax[0].set_ylabel(r'$v_c^{-3}$')
+ax[0].legend()
+ax[0].grid(True)
+
+ax[1].plot(yD, K_y / K0, 'b-', label=r'Simulation: $\int v^2\,\mathrm{d}x$')
+ax[1].axhline(1, color='k', linestyle='--', linewidth=1.5,
+              label=r'Nozzle: $K = 2R_dU_0^2$')
+ax[1].axhline(K_eff / K0, color='r', linewidth=2,
+              label=r'$K_\mathrm{eff}/K = %.2f$' % (K_eff / K0))
+ax[1].axvspan(yD_min, yD_max, color='gray', alpha=0.15)
+ax[1].set_xlabel(r'$y/D$')
+ax[1].set_ylabel(r'$K(y)/K$')
+ax[1].set_ylim([0, 1.5])
+ax[1].legend()
+ax[1].grid(True)
 
 plt.tight_layout()
-plt.savefig('self_sim.png')
+plt.savefig('centreline.png')
 ~~~
 */
 

@@ -19,13 +19,14 @@ typedef double real;
 #define _LOCALDIMS 1
 #if dimension == 1
 ivec UserDims = {1}, MpiDims = {1}, LocalDims = {1}, UserMpiDims = {0};
+ivec MpiOffset = {0};
 #elif dimension == 2
 ivec UserDims = {1,1}, MpiDims = {1,1}, LocalDims = {1,1}, UserMpiDims = {0,0};
+ivec MpiOffset = {0,0};
 #elif dimension == 3
 ivec UserDims = {1,1,1}, MpiDims = {1,1,1}, LocalDims = {1,1,1}, UserMpiDims = {0,0,0};
+ivec MpiOffset = {0,0,0};
 #endif
-int mpi_off0 = 0, mpi_off1 = 0, mpi_off2 = 0;
-int mpi_neighbor[6] = {-1, -1, -1, -1, -1, -1};
 
 #define _ND(i) ((size_t)(1 << point.level)*((int *)&LocalDims)[i])
 
@@ -610,8 +611,6 @@ static void box_boundary_level (const Boundary * b, scalar * scalars, int l)
 	  if (s.gpu.stored < 0)
 	    continue;
 #endif
-	  if (mpi_neighbor[d] >= 0)
-	    continue;
 	  scalar sb = s;
 #if dimension > 1
 	  if (s.v.x.i >= 0) {
@@ -811,9 +810,8 @@ void init_grid (int n)
   Dimensions = UserDims;
   LocalDims = UserDims;
   Dimensions_scale = Dimensions.x;
-  mpi_off0 = mpi_off1 = mpi_off2 = 0;
-  for (int i = 0; i < 6; i++)
-    mpi_neighbor[i] = -1;
+  foreach_dimension()
+    MpiOffset.x = 0;
   Multigrid * m = qmalloc (1, Multigrid);
   grid = (Grid *) m;
   grid->depth = grid->maxdepth = log_base2(n/Dimensions.x);
@@ -868,9 +866,9 @@ int mpi_coords[dimension];
 #undef _I
 #undef _J
 #undef _K
-#define _I     (point.i - GHOSTS + mpi_off0*(1 << point.level))
-#define _J     (point.j - GHOSTS + mpi_off1*(1 << point.level))
-#define _K     (point.k - GHOSTS + mpi_off2*(1 << point.level))
+#define _I (point.i - GHOSTS + MpiOffset.x*(1 << point.level))
+#define _J (point.j - GHOSTS + MpiOffset.y*(1 << point.level))
+#define _K (point.k - GHOSTS + MpiOffset.z*(1 << point.level))
 #endif
 
 Point locate (double xp = 0, double yp = 0, double zp = 0)
@@ -880,16 +878,25 @@ Point locate (double xp = 0, double yp = 0, double zp = 0)
   SET_DIMENSIONS();
   int Nl = 1 << point.level;
   point.level = -1;
-  point.i = (int) floor((xp - X0)/L0*Nl*Dimensions.x) + GHOSTS - mpi_off0*Nl;
+  point.i = floor ((xp - X0)/L0*Nl*Dimensions.x) + GHOSTS;
+#if _MPI
+  point.i -= mpi_coords[0]*LocalDims.x*Nl;
+#endif
   if (point.i < GHOSTS || point.i >= point.n.x + GHOSTS)
     return point;
 #if dimension >= 2
-  point.j = (int) floor((yp - Y0)/L0*Nl*Dimensions.x) + GHOSTS - mpi_off1*Nl;
+  point.j = floor ((yp - Y0)/L0*Nl*Dimensions.x) + GHOSTS;
+#if _MPI
+  point.j -= mpi_coords[1]*LocalDims.y*Nl;
+#endif
   if (point.j < GHOSTS || point.j >= point.n.y + GHOSTS)
     return point;
 #endif
 #if dimension >= 3
-  point.k = (int) floor((zp - Z0)/L0*Nl*Dimensions.x) + GHOSTS - mpi_off2*Nl;
+  point.k = floor ((zp - Z0)/L0*Nl*Dimensions.x) + GHOSTS;
+#if _MPI
+  point.k -= mpi_coords[2]*LocalDims.z*Nl;
+#endif
   if (point.k < GHOSTS || point.k >= point.n.z + GHOSTS)
     return point;
 #endif
@@ -957,12 +964,12 @@ ivec mpi_dims (int px = 0, int py = 0, int pz = 0)
 
 static inline long global_root_index (Point root)
 {
-  long idx = mpi_off0 + root.i - GHOSTS;
+  long idx = MpiOffset.x + root.i - GHOSTS;
 #if dimension >= 2
-  idx = idx*Dimensions.y + mpi_off1 + root.j - GHOSTS;
+  idx = idx*Dimensions.y + MpiOffset.y + root.j - GHOSTS;
 #endif
 #if dimension >= 3
-  idx = idx*Dimensions.z + mpi_off2 + root.k - GHOSTS;
+  idx = idx*Dimensions.z + MpiOffset.z + root.k - GHOSTS;
 #endif
   return idx;
 }

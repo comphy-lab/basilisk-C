@@ -43,15 +43,6 @@ not be the case, but HDF5 is a messy library that just won't pass through `qcc`
 An explanation can be found [here](https://groups.google.com/g/basilisk-fr/c/CM270hBSfWo) 
 */
 
-// Check if HDF5 is available by testing if the header can be included
-#if __has_include(<hdf5.h>)
-  #define HAVE_HDF5 1
-  #pragma autolink -lhdf5
-  #include <hdf5.h>
-#else
-  #warning "HDF5 library not found. XDMF output functions will be disabled."
-#endif
-
 #include "output_xdmf_helpers.h"
 
 /** 
@@ -87,9 +78,12 @@ trace void output_xmf(scalar *slist, vector *vlist, char *subname, int mode = HD
   char name[260];  // Buffer for file name construction
   snprintf(name, sizeof(name), "%s.h5", subname); 
 
+  // Sync GPU fields to host before host-side extraction
+  sync_output_fields (slist, vlist);
+
   // Define a scalar mask for periodic conditions
   scalar per_mask[];
-  foreach () {
+  foreach (serial, noauto) {
     per_mask[] = 1.;
   }
 

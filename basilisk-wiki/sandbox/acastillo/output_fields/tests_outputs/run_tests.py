@@ -23,6 +23,8 @@ GROUPS = {
   'vtu':      (['test_output_vtu',
                 'test_output_vtu_box',
                 'test_output_vtu_facets'], False),
+  'gpu':      (['test_output_vtu.gpu',
+                'test_output_vtu_box.gpu'], False),
   'xmf':      (['test_output_xmf',
                 'test_output_xmf2',
                 'test_output_xmf_box',

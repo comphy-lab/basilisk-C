@@ -74,18 +74,13 @@ void output_facets_vtu(scalar c, scalar s, char *subname){
 void output_facets_pid(scalar c, scalar kappa, char *subname)
 {
 
-#if defined(_OPENMP)
-  // Save current number of OpenMP threads and set it to 1 for this function
-  int num_omp = omp_get_max_threads();
-  omp_set_num_threads(1);
-#endif
-
   /** Construct the filename and open the file for writing */ 
   char name[99];
   sprintf(name, "%s.vtu", subname);
   FILE *fp = fopen(name, "w");
 
   /** Obtain the number of vertices (points) and assets (cells) */ 
+  sync_facets_fields (c, {kappa});
   long nverts = 0, nfacets = 0;
   count_vertices_and_facets(c, &nverts, &nfacets);
 
@@ -145,10 +140,6 @@ void output_facets_pid(scalar c, scalar kappa, char *subname)
   free(pt_array_z);
 #endif
   free(fc_array_kappa);
-
-#if defined(_OPENMP)
-  omp_set_num_threads(num_omp);
-#endif
 }
 
 /** ### *output_facets_pvtu()*: if MPI, writes one `.pvtu` and `.vtu` for each process */
@@ -156,13 +147,8 @@ void output_facets_pid(scalar c, scalar kappa, char *subname)
 @ if _MPI
 void output_facets_pvtu(scalar c, scalar kappa, char *subname){
 
-#if defined(_OPENMP)
-  // Save current number of OpenMP threads and set it to 1 for this function
-  int num_omp = omp_get_max_threads();
-  omp_set_num_threads(1);
-#endif
-
   /** Obtain the number of vertices (points) and assets (cells) */ 
+  sync_facets_fields (c, {kappa});
   long nverts_long = 0, nfacets_long = 0;
   count_vertices_and_facets(c, &nverts_long, &nfacets_long);
   int nverts = (int)nverts_long, nfacets = (int)nfacets_long;
@@ -266,7 +252,7 @@ void output_facets_pvtu(scalar c, scalar kappa, char *subname){
     write_vtu_header(fp, glob_nverts, glob_nfacets);               // Write the VTU file header
     write_points_light_data(fp, &count, glob_nverts);              // Write points data array
     write_cells_light_data(fp, &count, glob_nfacets, glob_nverts); // Write cells data arrays
-    write_scalar_light_data(fp, {kappa}, NULL, &count, nfacets);   // Write scalar data arrays
+    write_scalar_light_data(fp, {kappa}, NULL, &count, glob_nfacets);   // Write scalar data arrays
     write_vtu_appended(fp);                                        // Write the VTU appended data section
 
     // Write the points (vertices) data to the VTK file
@@ -291,10 +277,6 @@ void output_facets_pvtu(scalar c, scalar kappa, char *subname){
 #endif
     free(glob_fc_array_kappa);
   }
-
-#if defined(_OPENMP)
-  omp_set_num_threads(num_omp);
-#endif
 }
 @endif
 

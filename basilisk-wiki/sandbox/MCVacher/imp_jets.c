@@ -8,14 +8,14 @@ This simulation reproduces the **planar impinging jets configuration** studied i
 In this configuration, two **opposing laminar jets** impinge at the mid-plane of a rectangular domain, forming a stagnation region and recirculation cells.  
 At moderate Reynolds numbers, the steady symmetric solution can lose stability and lead to periodic oscillations even **without any external feedback** — a purely hydrodynamic oscillator.
 
-This case studies that geometry and basic setup in a 2D viscous, incompressible flow using the *Basilisk* framework. **Many thanks to Timothée Salamon for the collaboration and the linear stability analysis.**
+This case studies that geometry and basic setup in a 2D viscous, incompressible flow using the *Basilisk* framework. **Many thanks to Timothée Salamon for the collaboration**
 
 ## Simulation Overview
 
 We solve the incompressible Navier–Stokes equations with a passive tracer field `s` to visualize the jet interaction and recirculating structures.
 
 Parameters:
-- $Re = 25$ (based on jet radius $R_d$ and inlet velocity $U_0$)
+- $Re = 20$ (based on jet radius $R_d$ and inlet velocity $U_0$)
 - $R_d = 0.03$
 - $U_0 = 1$
 - Domain size $L_0 = 1$
@@ -28,6 +28,7 @@ Slip/outflow conditions are imposed on the left and right sides; two opposing in
 #include "navier-stokes/centered.h"
 #include "tracer.h"
 #include "navier-stokes/perfs.h"
+#include "harmonic.h"
 
 scalar s[];
 scalar * tracers = {s};
@@ -39,22 +40,23 @@ double Re;
 face vector muv[];
 FILE * fpmax;
 
+// Harmonic analysis of the oscillation
+double t_harm = 70.;           // start of the harmonic analysis
+double omegas[2] = {0., 0.};   // measured pulsation, 0-terminated for harmonic.h
+double t_cross[1000];          // upward zero crossings of u.x at the centre
+int n_cross = 0;
+double ux_prev = 0., t_prev = 0.;
+
 int main() {
 
-  Re = 25;         // moderate Reynolds number, laminar regime
+  Re = 20;         
   R_d = 0.03;      // half jet width
   L0  = 1.0;       // domain size
   U0  = 1.0;       // reference velocity
 
   TOLERANCE = 1e-3 [*];
-
-  
-  //- **Bottom boundary:** upward jet (positive y-direction)
-  //- **Top boundary:** downward jet (negative y-direction)
-  //- **Left & Right:** open / outflow conditions
   
   //Each jet is defined by a rectangular inlet of half-width `R_d`.
-  
 
   u.n[bottom] = dirichlet ( U0 * (x > -R_d && x < R_d) );
   u.t[bottom] = dirichlet (0.);
@@ -94,14 +96,9 @@ We initialize the tracer `s` to distinguish the top and bottom flow regions visu
 
 event init (t = 0) {
   foreach()
-    s[] = (y < L0/2);  // simple step distribution
+    s[] = (y < L0/2); 
 }
 
-/**
-## Viscosity Field
-
-We enforce a uniform kinematic viscosity corresponding to the chosen Reynolds number.
-*/
 
 event properties (i++) {
   foreach_face()
@@ -119,7 +116,7 @@ event logfile (i++) {
 We output the vertical velocity component and the tracer field for visualization.
 */
 
-event ppm_output (t = 0; t += 0.1; t <= 100) {
+event ppm_output (t = 0; t += 0.1; t <= 200) {
 
   char name1[80];
   sprintf(name1, "uY.mp4");
@@ -136,11 +133,105 @@ event ppm_output (t = 0; t += 0.1; t <= 100) {
 
 We observe the interaction region where the opposing jets collide at mid-height,
 forming recirculating cells and a stagnation point.
-For Reynolds numbers near the onset threshold ($Re \approx 25$),
+For Reynolds numbers near the onset threshold ($Re \approx 20$),
 small asymmetries can grow, leading to a **self-sustained oscillation** of the impingement point,
 as reported by Bongarzone *et al.* (2021) and Bertsch *et al.* (2020).
 */
 
+/**
+## Mode structure (harmonic.h)
+
+The pulsation $\omega$ of the oscillation is measured from the upward zero
+crossings of $u_x$ at the centre $(0, L_0/2)$ during $[t_\text{harm}-20, t_\text{harm}]$.
+From $t_\text{harm}$ to the end, the velocity is decomposed with
+[harmonic.h](/src/harmonic.h):
+$\mathbf{u} \simeq \mathbf{Z} + \mathbf{A}\cos(\omega t) + \mathbf{B}\sin(\omega t)$,
+with $\mathbf{Z}$ the mean flow and $\sqrt{|\mathbf{A}|^2 + |\mathbf{B}|^2}$ the
+local amplitude of the oscillation. $t_\text{harm}$ must be in the saturated regime.
+*/
+
+event harmonic_analysis (t += 0.01; t <= 200) {
+  double ux = interpolate (u.x, 0., L0/2);
+
+  if (t > t_harm - 20. && t <= t_harm && ux_prev < 0. && ux >= 0. && n_cross < 1000)
+    t_cross[n_cross++] = t_prev + (t - t_prev)*(-ux_prev)/(ux - ux_prev);
+  ux_prev = ux;
+  t_prev = t;
+
+  if (t > t_harm && omegas[0] == 0. && n_cross >= 2) {
+    omegas[0] = 2.*pi*(n_cross - 1)/(t_cross[n_cross - 1] - t_cross[0]);
+    fprintf (stderr, "Oscillation: omega = %g\n", omegas[0]);
+  }
+
+  if (omegas[0] > 0.) {
+    harmonic_decomposition (u.x, t, omegas);
+    harmonic_decomposition (u.y, t, omegas);
+  }
+}
+
+event mode_output (t = end) {
+  if (omegas[0] > 0. && u.x.harmonic.invertible) {
+    scalar Zx = u.x.harmonic.Z, Ax = u.x.harmonic.A[0], Bx = u.x.harmonic.B[0];
+    scalar Zy = u.y.harmonic.Z, Ay = u.y.harmonic.A[0], By = u.y.harmonic.B[0];
+    FILE * fp = fopen ("mode.txt", "w");
+    fprintf (fp, "# omega = %g\n", omegas[0]);
+    foreach()
+      fprintf (fp, "%g %g %g %g %g %g %g %g\n",
+               x, y, Zx[], Zy[], Ax[], Bx[], Ay[], By[]);
+    fclose (fp);
+  }
+}
+
 event profile (t = end) {
   printf("-----END-----\n");
 }
+
+
+/**
+~~~pythonplot Mean flow and mode structure
+import numpy as np
+import matplotlib.pyplot as plt
+
+with open('mode.txt') as fh:
+    omega = float(fh.readline().split('=')[1])
+m = np.loadtxt('mode.txt')
+xu, ix = np.unique(m[:, 0], return_inverse=True)
+yu, iy = np.unique(m[:, 1], return_inverse=True)
+
+def grid(col):
+    G = np.zeros((len(yu), len(xu)))
+    G[iy, ix] = m[:, col]
+    return G
+
+Zx, Zy, Ax, Bx, Ay, By = [grid(c) for c in range(2, 8)]
+ext = [xu[0], xu[-1], yu[0], yu[-1]]
+
+fig, ax = plt.subplots(1, 3, figsize=(15, 4.5))
+
+im = ax[0].imshow(np.hypot(Zx, Zy), origin='lower', extent=ext, cmap='viridis')
+xs = np.linspace(xu[0], xu[-1], len(xu))       # exact uniform grid for streamplot
+ys = np.linspace(yu[0], yu[-1], len(yu))
+ax[0].streamplot(xs, ys, Zx, Zy, color='w', linewidth=0.5, density=1.2)
+ax[0].set_title(r'Mean flow $|\mathbf{Z}|$')
+fig.colorbar(im, ax=ax[0])
+
+im = ax[1].imshow(np.sqrt(Ax**2 + Bx**2 + Ay**2 + By**2), origin='lower', extent=ext, cmap='magma')
+ax[1].set_title(r'Mode amplitude $\sqrt{|\mathbf{A}|^2 + |\mathbf{B}|^2}$')
+fig.colorbar(im, ax=ax[1])
+
+vmax = np.abs(Ax).max()
+im = ax[2].imshow(Ax, origin='lower', extent=ext, cmap='RdBu_r', vmin=-vmax, vmax=vmax)
+ax[2].set_title(r'Mode $A_x$ ($\omega = %.3f$, $f = %.3f$)' % (omega, omega / (2 * np.pi)))
+fig.colorbar(im, ax=ax[2])
+
+for a_ in ax:
+    a_.set_xlabel(r'$x$')
+    a_.set_ylabel(r'$y$')
+    a_.set_xlim([ext[0], ext[1]])
+    a_.set_ylim([ext[2], ext[3]])
+
+plt.tight_layout()
+plt.savefig('mode.png')
+~~~
+*/
+
