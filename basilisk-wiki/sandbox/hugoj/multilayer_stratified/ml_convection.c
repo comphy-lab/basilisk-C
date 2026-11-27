@@ -26,12 +26,10 @@ they take into account entrainment of cold water into the mixed layer, while
 */
 
 
-//#include "grid/gpu/multigrid.h"
 #include "grid/multigrid.h"
-//#include "grid/multigrid1D.h"
 #include "layered/hydro.h"
 #include "layered/nh.h"
-
+//#include "layered/nh-staggered.h"
 /**
 We use remapping, but this might not be necessary
 */
@@ -66,12 +64,12 @@ double Ts = 20. [0,0,1];              // [K] Surface temperature (arbitrary)
 // -> Forcing
 double qt = 100. [-2,-1,0,1];         // [W.m-2] Heat flux
 // -> Domain definition
-int N_grid = 64;                       // 2^N_grid : number of x and y gridpoints
+int N_grid = 64 [];                       // 2^N_grid : number of x and y gridpoints
 double L = 200.0 [1];                 // domain size
-int N_layer = 5;                      // number of layers
+int N_layer = 5 [];                      // number of layers
 double h0 = 1.0 [1];                  // depth of water
 // -> Runtime parameters
-int restart = 0 [0];                  // 1: restart, 0: no restart
+int restart = 0 [];                  // 1: restart, 0: no restart
 double tend = 2.0 [0,1];              // end time of simulation
 // -> saving outputs
 double dtout = 2.0 [0,1];             // dt for output in netcdf
@@ -86,10 +84,10 @@ double thetaH = 0.5 [0];              // theta_h for dumping fast barotropic mod
 double rho0 = 1025. [-3,0,0,0,1];     // [kg.m-3] reference density
 double cp = 4.2e3 [0,0,-1,1,-1];      // [J.kg-1.K-1] heat capacity water
 double alphaT = 2e-4 [0,0,-1];        // [K-1] Thermal expansion coeff for water
-double Pr = 1.;                       // Prandtl number = nu/diff_T
+double Pr = 1. [0,0,0,0,0];                       // Prandtl number = nu/diff_T
 double diff_T = 1.5e-5 [2,-1];         // [m2.s-1] Scalar vertical diffusion coeff
 double T0 = 20. [0,0,1];              // [°C] Reference temperature
-double Trand = 0.1 [0,0,1];           // [°C] Random temperature perturbution
+double Trand = 0.01 [0,0,1];           // [°C] Random temperature perturbution
 const double g_ = 9.81 [1,-2];        // [m.s-2] Gravity
 #define drho(T) (alphaT*(T0-T))       // Linear equation of state (Vallis 2.4)
 #define Tini(z) strat/(g_*alphaT)*z + Ts
@@ -144,7 +142,7 @@ int main(int argc, char *argv[])
   L0 = L;
   nu = nu0;
   diff_T = nu0/Pr;
-  N = N_grid; // 1*2^N_grid
+  N = N_grid; 
   nl = N_layer;
   G = g_;
   theta_H = thetaH;
@@ -188,7 +186,7 @@ event init(i =  0) {
     eta[] = 0.;
     double H = - zb[];
     foreach_layer() 
-      h[] = H/nl;
+      h[] = H*beta[point.l];
   }
 
   reset({T},0.);
@@ -206,7 +204,7 @@ event init(i =  0) {
 Initial temperature profile is linear. We add a white noise in the upper layers
 to trigger the instability.
 */
-      T[] = Tini(z) + Trand * noise() * exp(z/h0) ;
+      T[] = Tini(z) + Trand * noise() * exp(-z/h0) ;
       z += h[]/2.;
     }
   }
@@ -239,8 +237,7 @@ to trigger the instability.
 event viscous_term (i++)
 {
   foreach()
-    vertical_diffusion2 (point, h, T, dt, diff_T, qt/(diff_T*rho0*cp), strat/(g_*alphaT));
-  //TODO: ADD HORIZONTAL DIFF
+    vertical_diffusion2 (point, h, T, dt, diff_T, qt/(diff_T*rho0*cp), 0.); // strat/(g_*alphaT)
   horizontal_diffusion ({T}, diff_T, dt);
   horizontal_diffusion ({u, w}, nu, dt);
 }

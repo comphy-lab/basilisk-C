@@ -1,4 +1,4 @@
-pristine:0b621252d8638e14423ef2f49b827023e16b3b54c9237d09b17313da0a11ed8b
+pristine:c593d690e8f09c9b3a46686abef08bbad2ae478988e401103f7fd6d91941142b
 Starting with inventory:
 0000813987-628d164d39a1d82699a5748e94edf693e5eb9a9f95a23cdf237f7153776390af
 [TAG release-26-11-14
@@ -513,3 +513,13 @@ mvacher <marc.cordelle.vacher@gmail.com>**20261125232310
  Ignore-this: eeb0cb34bd25b20be6986b1e42771447a435d3353ae1195aadd0e9449351edc857931e02eaba1450
 ] 
 hash: 0000012200-df2a6044edb1c28a17283e169624d8d660596d3757527db130bedab69e14d29b
+[warning for unused variables
+Bruno Deremble <bruno.deremble@cnrs.fr>**20261126110506
+ Ignore-this: 2b2c25e2a89f0cfac3e18cfbec645eb76de2dacc7eec50b30fcef30c477e33d3bb33aea208d1e1dd
+] 
+hash: 0000000776-85c2294aacfc45c3ec8672a5c83076a3f0e89319ee0c5e8cdb504444450c7254
+[small changes, using nh-staggered
+Hugo Jacquet <hugo.jacquet.work@gmail.com>**20261126111540
+ Ignore-this: bbc3cb78ba7c0bb6a4f066760d23a8f87ba38b0cda1503c95f41d289afe78e0075e958fc9e3a3a11
+] 
+hash: 0000005841-ab6de830db00fcf34e110c6820d2bca7db4d4889cb39cf9ae8d93db6c0c7ec3c

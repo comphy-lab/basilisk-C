@@ -279,6 +279,8 @@ static double residual_nh (scalar * pl, scalar * rhsl,
     foreach_dimension() {
       double CbL[nl], CtL[nl], DbL[nl], DtL[nl];
       double CbR[nl], CtR[nl], DbR[nl], DtR[nl];
+      NOT_UNUSED(CbL); NOT_UNUSED(CtL); NOT_UNUSED(DbL); NOT_UNUSED(DtL);
+      NOT_UNUSED(CbR); NOT_UNUSED(CtR); NOT_UNUSED(DbR); NOT_UNUSED(DtR);
 
       nh_face_coefficients (point, 0, CbL, CtL, DbL, DtL);
       nh_face_coefficients (point, 1, CbR, CtR, DbR, DtR);
@@ -438,6 +440,8 @@ foreach_level_or_leaf (lev) {
     foreach_dimension() {
       double CbL[nl], CtL[nl], DbL[nl], DtL[nl];
       double CbR[nl], CtR[nl], DbR[nl], DtR[nl];
+      NOT_UNUSED(CbL); NOT_UNUSED(CtL); NOT_UNUSED(DbL); NOT_UNUSED(DtL);
+      NOT_UNUSED(CbR); NOT_UNUSED(CtR); NOT_UNUSED(DbR); NOT_UNUSED(DtR);
 
       nh_face_coefficients (point, 0, CbL, CtL, DbL, DtL);
       nh_face_coefficients (point, 1, CbR, CtR, DbR, DtR);
@@ -607,6 +611,8 @@ event pressure (i++)
     foreach_dimension() {
       double CbL[nl], CtL[nl], DbL[nl], DtL[nl];
       double CbR[nl], CtR[nl], DbR[nl], DtR[nl];
+      NOT_UNUSED(CbL); NOT_UNUSED(CtL); NOT_UNUSED(DbL); NOT_UNUSED(DtL);
+      NOT_UNUSED(CbR); NOT_UNUSED(CtR); NOT_UNUSED(DbR); NOT_UNUSED(DtR);
 
       nh_face_coefficients (point, 0, CbL, CtL, DbL, DtL);
       nh_face_coefficients (point, 1, CbR, CtR, DbR, DtR);
