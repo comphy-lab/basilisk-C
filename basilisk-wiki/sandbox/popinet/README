@@ -26,13 +26,6 @@ CV](https://cv.archives-ouvertes.fr/stephane-popinet).
 ## Papers submitted
 
 ~~~bib
-@Article{popinet2026,
-author={Popinet, Stéphane and Zaleski, Stéphane},
-title={{Multiscale Multiphase Flows: a numerical Perspective}},
-journal={Journal of Fluid Mechanics: Perspectives},
-year={2026}
-}
-
 @Article{kulkarni2026,
 author={Kulkarni, Yash and Fullana, Tomas and Popinet, Stéphane and Zaleski, Stéphane},
 title={The rapidly advancing contact line {P}art-1: {N}avier slip and microscale inertial effects},
@@ -70,6 +63,24 @@ year={2025}
 ~~~
 
 ## Published papers
+
+### Reviews
+
+~~~bib
+@hal{popinet2026, hal-05883725}
+
+@hal{popinet2018, hal-01528255}
+
+@Article{fuster2009b,
+  author = 	 {D. Fuster and G. Agbaglah and C. Josserand and S. Popinet and S. Zaleski},
+  title = 	 {Numerical simulation of droplets, bubbles and waves: state of the art},
+  journal = 	 {Fluid dynamics research},
+  year = 	 {2009},
+  volume =       {41},
+  pages =        {065001},
+  url =          {https://gerris.dalembert.upmc.fr/papers/FDR.pdf}
+}
+~~~
 
 ### Atomisation
 
@@ -739,8 +750,6 @@ keywords = {Dynamic contact line/angle, Contact line stress singularity, Slip bo
 
 @hal{alsaud2018, hal-01706565}
 
-@hal{popinet2018, hal-01528255}
-
 @article{shui2015,
 title = "Direct Numerical Simulation Study of Hydrodynamic Interactions between Immersed Solids and Wall During Flow ",
 journal = "Procedia {IUTAM} ",
@@ -775,16 +784,6 @@ abstract = "Abstract This work reports a direct numerical simulation study on su
   url =          {https://gerris.dalembert.upmc.fr/papers/agbaglah2011.pdf},
   volume =       {339},
   pages =        {194-207}
-}
-
-@Article{fuster2009b,
-  author = 	 {D. Fuster and G. Agbaglah and C. Josserand and S. Popinet and S. Zaleski},
-  title = 	 {Numerical simulation of droplets, bubbles and waves: state of the art},
-  journal = 	 {Fluid dynamics research},
-  year = 	 {2009},
-  volume =       {41},
-  pages =        {065001},
-  url =          {https://gerris.dalembert.upmc.fr/papers/FDR.pdf}
 }
 
 @Article{popinet2009,
@@ -835,6 +834,13 @@ abstract = "Abstract This work reports a direct numerical simulation study on su
 ## Conferences
 
 ~~~bib
+@InProceedings{popinet2026,
+  author = {Stéphane Popinet and Pierre-Yves Lagrée and Luc Deike and Jiarong Wu and Bruno Deremble and Christophe Josserand and Stéphane Zaleski and Laurent Duchemin and Thomas Séon and Palas Farsoiya and Wouter Mostert and Alexis Berny},
+  title = {Fluid mechanics for the environment: drops, bubbles, waves and films ({S}tanley {C}orrsin {A}ward {L}ecture)},
+  year =	 2026,
+  booktitle =	 {79th Annual Meeting of the APS Division of Fluid Dynamics, Orlando, November 22-24}
+}
+
 @InProceedings{popinet2025b,
   author = {Stéphane Popinet and Pierre-Yves Lagrée and Matthew Hayward and Emily Lane and Eddie Beetham and Paul S. Kench and Jiarong Wu and Luc Deike},
   title = {Mécanique des fluides pour l'environnement : de d'{A}lembert et {B}enjamin {F}ranklin à nos jours (invited opening plenary lecture)},

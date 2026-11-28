@@ -3,33 +3,40 @@
 # Convection with the multilayer
 
 This code aims to represent a oceanic convection case. The water is stratified
-with $N^2=\sqrt{g\frac{\partial \rho}{\partial z}}$. The equation of state is
-linear, following $\rho = \rho_0(1-\alpha(T-T_0))$ or in Basilisk's dr.h
-notation $\Delta \rho = -\alpha(T-T_0)$.
+with $N^2=\sqrt{g\frac{\partial \rho}{\partial z}}$. 
+
+The equation of state is linear, following $\rho = \rho_0(1-\alpha(T-T_0))$ or
+in Basilisk's dr.h notation $\Delta \rho = -\alpha(T-T_0)$.
 
 The experiment depends on the Richardson number $Ri=N^2.H^2/w_*^2$ and Prandtl
-number which is the ratio of viscosity to temperature diffusion $Pr=\nu/\diff_T$.
-We use the convective velocity $w_*=(-B0.h)^(1/3)$, $B_0$ the buoyancy flux at the
-surface $B_0=\frac{g\alpha}{rho.cp}Q with $Q$ the heat flux in $W.m^{-2}$, $H$
-the depth of the mixed layer. A convective time can be built $t_*=H/w_*$ and
-[Van Roeckel, Souza] get an analytical expression for the mixed layer height
-evolution:
+number which is the ratio of viscosity to temperature diffusion $Pr=\nu/diff_T$.
+We use the convective velocity $w_*=(-B0.h)^{1/3}$, $B_0$ the buoyancy flux at the
+surface $B_0=\frac{g\alpha}{\rho.cp}Q$ with $Q$ the heat flux in $W.m^{-2}$, $H$
+the depth of the mixed layer. An analytical expression for the mixed layer height
+evolution [Van Roeckel, Souza] can be derived:
 
-\begin{equation}
+$$
+\begin{aligned}
   h(t) = \sqrt{a \frac{-B_0}{N^2}t }
-\end{equation}
+\end{aligned}
+$$
 
 where $a$ is a prefactor. [Souza] found that their prefactor was $a=3.0$ when
 they take into account entrainment of cold water into the mixed layer, while
 [Roeckel] has $a=2.8$ without entrainment.
 
+## Warning
+
+Please note that this code uses the nh-staggered.h code from
+sandbox/bderembl/libs/nh-staggered.h. Copy it to src/layered to be able to use
+it easily with ml_convection.c
+
 */
 
-
-#include "grid/multigrid.h"
+#include "grid/multigrid1D.h"
 #include "layered/hydro.h"
-#include "layered/nh.h"
-//#include "layered/nh-staggered.h"
+//#include "layered/nh.h"
+#include "layered/nh-staggered.h"
 /**
 We use remapping, but this might not be necessary
 */
@@ -42,12 +49,6 @@ We use remapping, but this might not be necessary
 #include "hugoj/lib/diffusionH.h" // Neuman bott and top
 //#define g_ 9.81
 
-/*
-
-TO DO : 
-- add dimensions so that they can be saved in the netcdf ?
-
-*/
 
 /*
 DEFAULT PARAMETERS
@@ -87,10 +88,10 @@ double alphaT = 2e-4 [0,0,-1];        // [K-1] Thermal expansion coeff for water
 double Pr = 1. [0,0,0,0,0];                       // Prandtl number = nu/diff_T
 double diff_T = 1.5e-5 [2,-1];         // [m2.s-1] Scalar vertical diffusion coeff
 double T0 = 20. [0,0,1];              // [°C] Reference temperature
-double Trand = 0.01 [0,0,1];           // [°C] Random temperature perturbution
+double Trand = 0.0001 [0,0,1];          // [°C] Random temperature perturbution
 const double g_ = 9.81 [1,-2];        // [m.s-2] Gravity
+double mld_i = 10.;                   // initial MLD
 #define drho(T) (alphaT*(T0-T))       // Linear equation of state (Vallis 2.4)
-#define Tini(z) strat/(g_*alphaT)*z + Ts
 
 #include "layered/dr.h"
 
@@ -100,11 +101,17 @@ double *W_profile;
 double *Tflx_profile;
 double dt_mean = 1.;
 
-static FILE * fp1;
-static FILE * fp2;
+/** Initial profile of temperature */
+double T_ini(double z, double mld_i, double strat, double g_, double alphaT, double Ts){
+  if (z>=-mld_i){
+    return Ts;
+  }
+  else{
+    return strat/(g_*alphaT)*(z + mld_i) + Ts;
+  }
+}
 
-double umax,vmax;
-
+/** main program*/
 int main(int argc, char *argv[])  
 {
  
@@ -127,9 +134,7 @@ int main(int argc, char *argv[])
   add_param("qt", &qt, "double");
   add_param("dt_mean", &dt_mean, "double");
   add_param("Pr", &Pr, "double");
-  // show_dimension (u);
-  //dimensional (T_profile[0], T0);
-  //dimensional (W_profile[0], L/dt);
+  add_param("mld_i", &mld_i, "double");
 
   // Search for the configuration file with a given path or read params.in
   if (argc == 2)
@@ -138,10 +143,12 @@ int main(int argc, char *argv[])
     strcpy(file_param, namlist);
   read_params(file_param);
   
-  // Settings solver values from namlist values
+  /** Settings solver values from namlist values */
   L0 = L;
   nu = nu0;
   diff_T = nu0/Pr;
+  /** If the horizontal grid is too coarse, a wave develops at the free surface.
+      In 1D and for N>=128 the surface stays static */
   N = N_grid; 
   nl = N_layer;
   G = g_;
@@ -149,10 +156,7 @@ int main(int argc, char *argv[])
   CFL_H = 1.;
   CFL = 0.5;
   TOLERANCE = 1e-2;
-  //CFL_H = 40; 
-  //CFL=0.5;
 
-  // Boundary condition
   origin (-L0/2., -L0/2.);
   
   //periodic (right);
@@ -165,10 +169,6 @@ int main(int argc, char *argv[])
   T_profile = (double*)calloc(nl, sizeof(double));
   W_profile = (double*)calloc(nl, sizeof(double));
   Tflx_profile = (double*)calloc(nl, sizeof(double));
-  fp1  = fopen("T_profile.dat","w"); // reset file
-  fclose(fp1);
-  // fp2  = fopen("Tflx_profile.dat","w"); // reset file
-  // fclose(fp2);
 
   fprintf (stderr, "Read in parameters!\n");
   fprintf (stderr, "CFL_H=%g CFL=%g\n", CFL_H,CFL);
@@ -204,7 +204,7 @@ event init(i =  0) {
 Initial temperature profile is linear. We add a white noise in the upper layers
 to trigger the instability.
 */
-      T[] = Tini(z) + Trand * noise() * exp(-z/h0) ;
+      T[] = T_ini(z,mld_i,strat,g_,alphaT,Ts) + Trand * noise() * exp(-z/(10.0*h0));
       z += h[]/2.;
     }
   }
@@ -221,19 +221,13 @@ to trigger the instability.
   show_dimension (T);
   
   // original version, bug for now (currents writes = 0)
-  // create_nc({zb, h, u, w, eta, T}, file_out);
+  create_nc({zb, h, u, w, eta, T}, file_out);
 
-  // temporary fix
-  #if dimension==1
-    create_nc((scalar *){zb, h, u.x, w, eta, T}, file_out);
-  #else
-    create_nc((scalar *){zb, h, u.x, u.y, w, eta, T}, file_out);
-  #endif
   fprintf (stderr,"Done initialization!\n");
 }
 
-// vertical diffusion on T
-// This implements a heat flux at the surface
+/** Vertical diffusion on T
+This implements a heat flux at the surface */
 event viscous_term (i++)
 {
   foreach()
@@ -242,7 +236,7 @@ event viscous_term (i++)
   horizontal_diffusion ({u, w}, nu, dt);
 }
 
-//Writing a netcdf file
+/** Writing a netcdf file*/
 event output(t = 0.; t<= tend+smalltime; t+=dtout){
   write_nc();
 }
@@ -251,32 +245,7 @@ event end(t=tend+smalltime){
   dump();
 }
 
-// event print_max_u (i++)
-// {
-//   umax = 0.;
-//   vmax = 0.;
-//   foreach_layer(){
-//     foreach(reduction(max:umax) reduction(max:vmax)){
-//       if (fabs(u.x[])>umax){
-//         umax=u.x[];
-//       }
-//       #if dimension>1
-//       if (fabs(u.y[])>vmax){
-//           vmax=u.y[];
-//         }
-//       #endif
-//     }
-//   }
-//   if (vmax>umax){
-//     umax = vmax;
-//   }
-//   fprintf(stderr, "max current is %g with dt=%g and DT=%g and dtmax=%g\n", umax, dt, DT,dtmax);
-// }
 
-
-
-
-#if DIAG==1
 double* h_avg(scalar var, double* profile){
   /*
   This function computes the horizontal average of var.
@@ -305,23 +274,13 @@ double* h_avg(scalar var, double* profile){
   return profile;
 }
 
-int write_profile(char* name, double* profile, FILE* fp){
-  /*
-  docstring
-
-  */
+int write_profile(char* name, double* profile){
   // main worker is writing the file
   if (pid()==0) {
-    fp  = fopen(name,"a");
-    if (fp == NULL){
-      fprintf(stderr, "Error opening file %s", name);
-      return 2;
-    }
     for (int i=0; i<nl; ++i) {
-      fprintf (fp, "%f %d %g\n", t, i, profile[i]);
+      fprintf (stdout, "%f %d %g\n", t, i, profile[i]);
     }
-    fprintf(fp,"\n");
-    fclose(fp);
+    fprintf(stdout,"\n");
   }
   return 0;
 }
@@ -349,7 +308,13 @@ event compute_horizontal_avg (t+=dt_mean; t<=tend+smalltime){
 
 // This even writes to a file the layer average
 event write_diag(t=0., t+=dt_mean){
-    write_profile("T_profile.dat", T_profile, fp1);
+    //write_profile("T_profile.dat", T_profile, fp1);
+    if (pid()==0){
+      for (int ik=0; ik<nl; ++ik) {
+          fprintf (stdout, "%f %d %g\n", t, ik, T_profile[ik]);
+        }
+      fprintf(stdout,"\n");
+    }
     //write_profile("Tflx_profile.dat", Tflx_profile, fp2);
 
     // Reset the profile for all workers
@@ -364,24 +329,69 @@ event cleanup(t=end){
   free(T_profile);
   //free(Tflx_profile);
 }
-#endif // DIAG
+
+/*
+
+## TO DO : 
+- add dimensions
+*/
+
 
 /**
 Results: plots
-~~~gnuplot 
-# Plot the heatmap
-set pm3d map
-set view map
-set xlabel "Time (s)"
-set ylabel "Layer"
-set cblabel "T (°C)"
-set yrange [0:14]
-set xrange [0:200]
-set terminal pngcairo size 800,600 enhanced font 'Verdana_r,12'
-set output 'T_profile.png'
-set size 0.9, 0.9
-splot "T_profile.dat" using 1:2:3 with pm3d
-unset output
+~~~pythonplot
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load data: columns = time, layer, temperature
+with open("out", "r") as f:
+    lines = []
+    for line in f:
+        if line.lstrip().startswith("#"):
+            break
+        lines.append(line)
+
+data = np.loadtxt(lines)
+# data = np.loadtxt("out", usecols=(0,1,2))
+
+times = np.unique(data[:, 0])
+
+# Plasma colormap
+cmap = plt.cm.plasma
+norm = plt.Normalize(times.min(), times.max())
+
+fig, ax = plt.subplots(figsize=(10, 7))
+
+# Plot one temperature profile per time instant
+for t in times:
+    
+    profile = data[data[:, 0] == t]
+
+    layer = profile[:, 1]
+    temperature = profile[:, 2]
+
+    ax.plot(
+        temperature,
+        layer,
+        color=cmap(norm(t)),
+        linewidth=1.5
+    )
+
+ax.set_xlabel("Temperature (°C)")
+ax.set_ylabel("Layer")
+
+ax.set_xlim(19.90, 20.01)
+ax.set_ylim(0, 127)
+
+# No legend or time labels
+ax.grid(True, alpha=0.25)
+
+plt.tight_layout()
+plt.savefig("T_profiles.png", dpi=300)
+plt.show()
+
+
 ~~~
 
 **/
